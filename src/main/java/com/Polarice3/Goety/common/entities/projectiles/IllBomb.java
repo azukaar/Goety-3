@@ -26,8 +26,6 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.network.NetworkHooks;
-
 /**
  * Bouncing mechanic based from codes by @ModdingLegacy used in The Conjurer.
  */
@@ -177,6 +175,6 @@ public class IllBomb extends ThrowableProjectile {
 
     @Override
     public Packet<ClientGamePacketListener> getAddEntityPacket() {
-        return NetworkHooks.getEntitySpawningPacket(this);
+        return new net.minecraft.network.protocol.game.ClientboundAddEntityPacket(this);
     }
 }

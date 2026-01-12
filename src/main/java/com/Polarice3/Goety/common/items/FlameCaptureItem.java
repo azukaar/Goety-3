@@ -22,7 +22,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.SpawnerBlockEntity;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.neoforge.registries.NeoForgeRegistries;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -106,7 +106,7 @@ public class FlameCaptureItem extends Item {
 
                 MutableComponent textComponent = Component.translatable("tooltip.goety.entity")
                         .append(": ")
-                        .append(Component.literal(Objects.requireNonNull(ForgeRegistries.ENTITY_TYPES.getKey(entity.getType())).toString()))
+                        .append(Component.literal(Objects.requireNonNull(NeoForgeRegistries.ENTITY_TYPES.getKey(entity.getType())).toString()))
                         .withStyle(ChatFormatting.GREEN);
 
                 tooltip.add(textComponent);
@@ -125,7 +125,7 @@ public class FlameCaptureItem extends Item {
 
     private void setEntity(Entity entity, ItemStack stack) {
         CompoundTag entityTag = stack.getOrCreateTag();
-        ResourceLocation name = ForgeRegistries.ENTITY_TYPES.getKey(entity.getType());
+        ResourceLocation name = NeoForgeRegistries.ENTITY_TYPES.getKey(entity.getType());
 
         if (name == null) {
             return;
@@ -141,7 +141,7 @@ public class FlameCaptureItem extends Item {
             return null;
         }
 
-        EntityType<?> entityType = ForgeRegistries.ENTITY_TYPES.getValue(new ResourceLocation(itemTag.getString("mob")));
+        EntityType<?> entityType = NeoForgeRegistries.ENTITY_TYPES.getValue(new ResourceLocation(itemTag.getString("mob")));
 
         if (entityType == null) {
             return null;

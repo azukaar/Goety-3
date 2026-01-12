@@ -4,7 +4,7 @@ import com.Polarice3.Goety.client.particles.ModParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraftforge.common.Tags;
+import net.neoforged.neoforge.common.Tags;
 
 public class DoomEffect extends GoetyBaseEffect{
     public DoomEffect() {

@@ -57,12 +57,12 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.gameevent.GameEvent;
-import net.minecraft.world.level.pathfinder.BlockPathTypes;
+import net.minecraft.world.level.pathfinder.PathType;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.event.ForgeEventFactory;
-import net.minecraftforge.event.entity.EntityTeleportEvent;
+import net.neoforged.neoforge.capabilities.Capabilities;
+
+import net.neoforged.neoforge.event.entity.EntityTeleportEvent;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3f;
 
@@ -133,8 +133,8 @@ public class EnderKeeper extends AbstractEnderling implements Enemy {
         this.setHostile(true);
         this.bossInfo = new ModServerBossInfo(this, BossEvent.BossBarColor.PURPLE, true, false);
         this.setMaxUpStep(2.0F);
-        this.setPathfindingMalus(BlockPathTypes.UNPASSABLE_RAIL, 0.0F);
-        this.setPathfindingMalus(BlockPathTypes.WATER, -1.0F);
+        this.setPathfindingMalus(PathType.UNPASSABLE_RAIL, 0.0F);
+        this.setPathfindingMalus(PathType.WATER, -1.0F);
     }
 
     @Override
@@ -954,7 +954,7 @@ public class EnderKeeper extends AbstractEnderling implements Enemy {
         if (this.level.getGameRules().getBoolean(GameRules.RULE_DOMOBLOOT)) {
             if (this.getVoidShrine() != null) {
                 try {
-                    this.getVoidShrine().getCapability(ForgeCapabilities.ITEM_HANDLER).ifPresent(handler -> {
+                    this.getVoidShrine().getCapability(Capabilities.ITEM_HANDLER).ifPresent(handler -> {
                         ItemStack itemStack = handler.getStackInSlot(0);
                         if (itemStack.isEmpty()) {
                             handler.insertItem(0, new ItemStack(ModItems.SHROUDED_BLUEPRINT.get()), false);
@@ -1664,7 +1664,7 @@ public class EnderKeeper extends AbstractEnderling implements Enemy {
         boolean flag = blockstate.blocksMotion();
         boolean flag1 = blockstate.getFluidState().is(FluidTags.WATER);
         if (flag && !flag1) {
-            EntityTeleportEvent.EnderEntity event = ForgeEventFactory.onEnderTeleport(this, x, y, z);
+            EntityTeleportEvent.EnderEntity event = true;
             if (event.isCanceled()) return false;
             Vec3 vec3 = this.position();
             boolean flag2 = this.randomTeleport(event.getTargetX(), event.getTargetY(), event.getTargetZ(), false);
@@ -1693,7 +1693,7 @@ public class EnderKeeper extends AbstractEnderling implements Enemy {
                     double d1 = entity.getX() + this.level.getRandom().nextIntBetweenInclusive(-range2, range2);
                     double d2 = entity.getY();
                     double d3 = entity.getZ() + this.level.getRandom().nextIntBetweenInclusive(-range2, range2);
-                    EntityTeleportEvent.EnderEntity event = ForgeEventFactory.onEnderTeleport(this, d1, d2, d3);
+                    EntityTeleportEvent.EnderEntity event = true;
                     if (event.isCanceled()) {
                         break;
                     }

@@ -11,12 +11,10 @@ import net.minecraft.world.SimpleMenuProvider;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.common.capabilities.ICapabilityProvider;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.ItemStackHandler;
-import net.minecraftforge.network.NetworkHooks;
-
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.capabilities.ICapabilityProvider;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.ItemStackHandler;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -37,7 +35,7 @@ public class FocusPack extends FocusBag {
      * Found Creative Server Bug fix from @mraof's Minestuck Music Player Weapon code.
      */
     private static IItemHandler getItemHandler(ItemStack itemStack) {
-        return itemStack.getCapability(ForgeCapabilities.ITEM_HANDLER).orElseThrow(() ->
+        return itemStack.getCapability(Capabilities.ITEM_HANDLER).orElseThrow(() ->
                 new IllegalArgumentException("Expected an item handler for the Magic Focus item, but " + itemStack + " does not expose an item handler."));
     }
 

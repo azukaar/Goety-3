@@ -41,11 +41,10 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.phys.BlockHitResult;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.TierSortingRegistry;
-import net.minecraftforge.event.ForgeEventFactory;
-import net.minecraftforge.event.level.BlockEvent;
-import net.minecraftforge.items.ItemHandlerHelper;
+import net.neoforged.neoforge.common.NeoForge;
+
+import net.neoforged.neoforge.event.level.BlockEvent;
+import net.neoforged.neoforge.items.ItemHandlerHelper;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -142,7 +141,15 @@ public class BurrowingSpell extends EverChargeSpell {
             if (canMineBlock(worldIn, player, blockPos, blockState)) {
                 int miningLevel = 1 + potency;
                 Tier tier = miningLevel < 3 ? Tiers.IRON : miningLevel == 3 ? Tiers.DIAMOND : Tiers.NETHERITE;
-                if (!TierSortingRegistry.isCorrectTierForDrops(tier, blockState)){
+
+                ItemStack tempTool = new ItemStack(Items.IRON_PICKAXE);
+                if (miningLevel == 3){
+                    tempTool = new ItemStack(Items.DIAMOND_PICKAXE);
+                } else if (miningLevel > 3){
+                    tempTool = new ItemStack(Items.NETHERITE_PICKAXE);
+                }
+
+                if (!tempTool.isCorrectToolForDrops(blockState)){
                     hardness = blockState.getDestroySpeed(worldIn, blockPos) * 5;
                 }
                 SoundType soundtype = blockState.getSoundType(worldIn, blockPos, null);
@@ -159,12 +166,6 @@ public class BurrowingSpell extends EverChargeSpell {
                     worldIn.playSound(null, blockPos, soundtype.getHitSound(), SoundSource.BLOCKS, (soundtype.getVolume() + 1.0F) / 2.0F, soundtype.getPitch() * 0.8F);
                 }
                 if (SEHelper.getMiningProgress(player) >= hardness){
-                    ItemStack tempTool = new ItemStack(Items.IRON_PICKAXE);
-                    if (miningLevel == 3){
-                        tempTool = new ItemStack(Items.DIAMOND_PICKAXE);
-                    } else if (miningLevel > 3){
-                        tempTool = new ItemStack(Items.NETHERITE_PICKAXE);
-                    }
                     int silk = WandUtil.getLevels(Enchantments.SILK_TOUCH, player);
                     int fortune = WandUtil.getLevels(Enchantments.BLOCK_FORTUNE, player);
 
@@ -199,12 +200,12 @@ public class BurrowingSpell extends EverChargeSpell {
 
     public void breakBlocks(ServerLevel serverLevel, BlockState blockState, BlockPos blockPos, Player player, SoundType soundtype, int silk, int fortune, int burning, ItemStack tempTool, Tier tier) {
         BlockEvent.BreakEvent breakEvent = fixForgeEventBreakBlock(blockState, player, serverLevel, blockPos, silk, fortune);
-        MinecraftForge.EVENT_BUS.post(breakEvent);
+        NeoForge.EVENT_BUS.post(breakEvent);
         if (breakEvent.isCanceled()) {
             return;
         }
 
-        if (TierSortingRegistry.isCorrectTierForDrops(tier, blockState)){
+        if (tempTool.isCorrectToolForDrops(blockState)){
             List<ItemStack> drops = Block.getDrops(blockState, serverLevel, blockPos, null, player, tempTool);
 
             int exp = blockState.getExpDrop(serverLevel, serverLevel.getRandom(), blockPos, fortune, silk);
@@ -221,7 +222,7 @@ public class BurrowingSpell extends EverChargeSpell {
                         }
                     }
                     if (magnetMode) {
-                        int wasPickedUp = ForgeEventFactory.onItemPickup(new ItemEntity(serverLevel, blockPos.getX(), blockPos.getY(), blockPos.getZ(), drop), player);
+                        int wasPickedUp = 0;
                         if (wasPickedUp == 0) {
                             if (!player.addItem(drop)) {
                                 Block.popResource(serverLevel, blockPos, drop);
@@ -281,7 +282,7 @@ public class BurrowingSpell extends EverChargeSpell {
             return false;
         }
 
-        return isValid(pos, world) && !MinecraftForge.EVENT_BUS.post(new BlockEvent.BreakEvent(world, pos, state, player));
+        return isValid(pos, world) && !NeoForge.EVENT_BUS.post(new BlockEvent.BreakEvent(world, pos, state, player));
     }
 
     private static boolean isValid(BlockPos pos, Level world) {
@@ -330,7 +331,7 @@ public class BurrowingSpell extends EverChargeSpell {
         BlockState state = world.getBlockState(blockPos);
 
         if (player instanceof Player player1) {
-            toolSpeed = net.minecraftforge.event.ForgeEventFactory.getBreakSpeed(player1, state, toolSpeed, blockPos);
+            toolSpeed = net.neoforged.event.EventFactory.getBreakSpeed(player1, state, toolSpeed, blockPos);
         }
 
         hardness += (state.getDestroySpeed(world, blockPos) * 30) / toolSpeed;

@@ -2,7 +2,7 @@ package com.Polarice3.Goety.api.entities;
 
 import com.Polarice3.Goety.utils.ModFoodData;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraftforge.common.ForgeMod;
+import net.neoforged.neoforge.common.NeoForgeMod;
 
 public interface IHungry {
 
@@ -17,7 +17,7 @@ public interface IHungry {
                     if (i > 0) {
                         this.causeFoodExhaustion(0.01F * (float) i * 0.01F);
                     }
-                } else if (livingEntity.isEyeInFluidType(ForgeMod.WATER_TYPE.get())) {
+                } else if (livingEntity.isEyeInFluidType(NeoForgeMod.WATER_TYPE.value())) {
                     int j = Math.round((float) sqrt * 100.0F);
                     if (j > 0) {
                         this.causeFoodExhaustion(0.01F * (float) j * 0.01F);
@@ -49,9 +49,10 @@ public interface IHungry {
 
     default void causeFoodExhaustion(float p_36400_) {
         if (this instanceof LivingEntity livingEntity) {
-            if (!livingEntity.level.isClientSide) {
+            if (!livingEntity.level().isClientSide) {
                 this.getFoodData().addExhaustion(p_36400_);
             }
         }
     }
 }
+

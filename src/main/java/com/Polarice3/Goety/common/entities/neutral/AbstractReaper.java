@@ -34,7 +34,6 @@ import net.minecraft.world.entity.decoration.ArmorStand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
-import net.minecraft.world.item.enchantment.SweepingEdgeEnchantment;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.gameevent.GameEvent;
@@ -548,7 +547,7 @@ public class AbstractReaper extends Summoned {
             f1 = f1 * f2;
             f = f + f1;
 
-            float f3 = 1.0F + SweepingEdgeEnchantment.getSweepingDamageRatio(3) * f;
+            float f3 = 1.0F;
             int j = EnchantmentHelper.getFireAspect(reaper);
             double area = 2.0D;
             for (LivingEntity livingentity : reaper.level.getEntitiesOfClass(LivingEntity.class, this.reaper.getBoundingBox().move(this.getHorizontalLookAngle().scale(2.0D)).inflate(area, area, area))) {

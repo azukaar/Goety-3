@@ -1,43 +1,34 @@
 package com.Polarice3.Goety.client.particles;
 
-import com.mojang.brigadier.StringReader;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleType;
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.network.FriendlyByteBuf;
-
-import java.util.Locale;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 
 public class CircleExplodeParticleOption implements ParticleOptions {
-   public static final Codec<CircleExplodeParticleOption> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-           Codec.FLOAT.fieldOf("red").forGetter(d -> d.red),
-           Codec.FLOAT.fieldOf("green").forGetter(d -> d.green),
-           Codec.FLOAT.fieldOf("blue").forGetter(d -> d.blue),
-           Codec.FLOAT.fieldOf("size").forGetter(d -> d.size),
-           Codec.INT.fieldOf("speed").forGetter(d -> d.speed)
+   public static final MapCodec<CircleExplodeParticleOption> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
+           com.mojang.serialization.Codec.FLOAT.fieldOf("red").forGetter(d -> d.red),
+           com.mojang.serialization.Codec.FLOAT.fieldOf("green").forGetter(d -> d.green),
+           com.mojang.serialization.Codec.FLOAT.fieldOf("blue").forGetter(d -> d.blue),
+           com.mojang.serialization.Codec.FLOAT.fieldOf("size").forGetter(d -> d.size),
+           com.mojang.serialization.Codec.INT.fieldOf("speed").forGetter(d -> d.speed)
    ).apply(instance, CircleExplodeParticleOption::new));
-   public static final Deserializer<CircleExplodeParticleOption> DESERIALIZER = new Deserializer<>() {
-      public CircleExplodeParticleOption fromCommand(ParticleType<CircleExplodeParticleOption> p_235961_, StringReader p_235962_) throws CommandSyntaxException {
-         p_235962_.expect(' ');
-         float r = p_235962_.readFloat();
-         p_235962_.expect(' ');
-         float g = p_235962_.readFloat();
-         p_235962_.expect(' ');
-         float b = p_235962_.readFloat();
-         p_235962_.expect(' ');
-         float s = p_235962_.readFloat();
-         p_235962_.expect(' ');
-         int s2 = p_235962_.readInt();
-         return new CircleExplodeParticleOption(r, g, b, s, s2);
-      }
-
-      public CircleExplodeParticleOption fromNetwork(ParticleType<CircleExplodeParticleOption> p_235964_, FriendlyByteBuf p_235965_) {
-         return new CircleExplodeParticleOption(p_235965_.readFloat(), p_235965_.readFloat(), p_235965_.readFloat(), p_235965_.readFloat(), p_235965_.readInt());
-      }
-   };
+   public static final StreamCodec<RegistryFriendlyByteBuf, CircleExplodeParticleOption> STREAM_CODEC = StreamCodec.of(
+           (buf, value) -> {
+              buf.writeFloat(value.red);
+              buf.writeFloat(value.green);
+              buf.writeFloat(value.blue);
+              buf.writeFloat(value.size);
+              buf.writeInt(value.speed);
+           },
+           buf -> new CircleExplodeParticleOption(
+                   buf.readFloat(), buf.readFloat(), buf.readFloat(),
+                   buf.readFloat(),
+                   buf.readInt()
+           )
+   );
    private final float red;
    private final float green;
    private final float blue;
@@ -58,19 +49,6 @@ public class CircleExplodeParticleOption implements ParticleOptions {
       this.blue = b;
       this.size = size;
       this.speed = speed;
-   }
-
-   public void writeToNetwork(FriendlyByteBuf p_235956_) {
-      p_235956_.writeFloat(this.red);
-      p_235956_.writeFloat(this.green);
-      p_235956_.writeFloat(this.blue);
-      p_235956_.writeFloat(this.size);
-      p_235956_.writeInt(this.speed);
-   }
-
-   public String writeToString() {
-      return String.format(Locale.ROOT, "%s %.2f %.2f %.2f %.2f %s",
-              BuiltInRegistries.PARTICLE_TYPE.getKey(this.getType()), this.red, this.green, this.blue, this.size, this.speed);
    }
 
    public ParticleType<CircleExplodeParticleOption> getType() {

@@ -32,9 +32,9 @@ import net.minecraft.world.level.pathfinder.PathComputationType;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.common.extensions.IForgeBlock;
-import net.minecraftforge.items.IItemHandler;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.common.extensions.IForgeBlock;
+import net.neoforged.neoforge.items.IItemHandler;
 
 import javax.annotation.Nullable;
 
@@ -89,7 +89,7 @@ public class DarkAltarBlock extends BaseEntityBlock implements IForgeBlock, Simp
             BlockEntity tileentity = pLevel.getBlockEntity(pPos);
             if (tileentity instanceof DarkAltarBlockEntity) {
                 ((DarkAltarBlockEntity) tileentity).stopRitual(false);
-                tileentity.getCapability(ForgeCapabilities.ITEM_HANDLER).ifPresent(handler -> {
+                tileentity.getCapability(Capabilities.ITEM_HANDLER).ifPresent(handler -> {
                     dropInventoryItems(tileentity.getLevel(), tileentity.getBlockPos(), handler);
                 });
             }

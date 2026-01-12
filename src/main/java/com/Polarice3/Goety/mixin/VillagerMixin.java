@@ -42,7 +42,7 @@ public abstract class VillagerMixin extends AbstractVillager {
                     }
 
                     witch.setPersistenceRequired();
-                    net.minecraftforge.event.ForgeEventFactory.onLivingConvert(this, witch);
+                    net.neoforged.event.net.neoforged.neoforge.event.EventHooks.onLivingConvert(this, witch);
                     serverLevel.addFreshEntityWithPassengers(witch);
                     this.releaseAllPois();
                     this.discard();
@@ -54,5 +54,4 @@ public abstract class VillagerMixin extends AbstractVillager {
     @Shadow
     private void releaseAllPois() {
     }
-
 }

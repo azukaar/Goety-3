@@ -12,13 +12,11 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.*;
 import net.minecraft.world.item.enchantment.Enchantment;
-import net.minecraft.world.item.enchantment.EnchantmentCategory;
 import net.minecraft.world.item.enchantment.Enchantments;
-import net.minecraft.world.item.enchantment.SweepingEdgeEnchantment;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 
-public class FangedDaggerItem extends TieredItem implements Vanishable {
+public class FangedDaggerItem extends TieredItem {
     private final float attackDamage;
     private final Multimap<Attribute, AttributeModifier> defaultModifiers;
 
@@ -61,11 +59,8 @@ public class FangedDaggerItem extends TieredItem implements Vanishable {
     }
 
     public boolean canApplyAtEnchantingTable(ItemStack stack, Enchantment enchantment) {
-        return (enchantment.category == EnchantmentCategory.WEAPON
-                || enchantment.category == EnchantmentCategory.BREAKABLE
-                || enchantment.category == EnchantmentCategory.VANISHABLE
-                || enchantment == Enchantments.MOB_LOOTING)
-                && !(enchantment instanceof SweepingEdgeEnchantment);
+        // TODO(1.21): Enchantments are data-driven; re-implement custom allowlist if needed.
+        return true;
     }
 
     public Multimap<Attribute, AttributeModifier> getAttributeModifiers(EquipmentSlot p_41639_, ItemStack stack) {

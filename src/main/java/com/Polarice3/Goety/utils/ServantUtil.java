@@ -17,7 +17,6 @@ import com.Polarice3.Goety.common.entities.hostile.Wraith;
 import com.Polarice3.Goety.common.entities.neutral.ender.AbstractEnderling;
 import com.Polarice3.Goety.common.events.ArcaTeleporter;
 import com.Polarice3.Goety.config.MobsConfig;
-import com.Polarice3.Goety.init.ModMobType;
 import com.Polarice3.Goety.init.ModTags;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
@@ -36,7 +35,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.RespawnAnchorBlock;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.common.IExtensibleEnum;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
@@ -45,7 +43,7 @@ import java.util.function.Predicate;
 public class ServantUtil {
 
     public static void convertZombies(Entity target, LivingEntity owner, boolean permanent){
-        if (target instanceof Zombie zombieEntity && net.minecraftforge.event.ForgeEventFactory.canLivingConvert(zombieEntity, ModEntityType.ZOMBIE_SERVANT.get(), (timer) -> {})) {
+        if (target instanceof Zombie zombieEntity && net.neoforged.event.net.neoforged.neoforge.event.EventHooks.canLivingConvert(zombieEntity, ModEntityType.ZOMBIE_SERVANT.get(), (timer) -> {})) {
             EntityType<? extends Mob> entityType = ModEntityType.ZOMBIE_SERVANT.get();
             if (zombieEntity instanceof ZombieVillager){
                 entityType = ModEntityType.ZOMBIE_VILLAGER_SERVANT.get();
@@ -73,7 +71,7 @@ public class ServantUtil {
                 if (!permanent) {
                     zombieServant.setLimitedLife(10 * (15 + target.level.random.nextInt(45)));
                 }
-                net.minecraftforge.event.ForgeEventFactory.onLivingConvert(zombieEntity, zombieServant);
+                net.neoforged.event.net.neoforged.neoforge.event.EventHooks.onLivingConvert(zombieEntity, zombieServant);
                 if (!zombieServant.isSilent()) {
                     zombieServant.level.levelEvent(null, 1026, zombieServant.blockPosition(), 0);
                 }
@@ -82,7 +80,7 @@ public class ServantUtil {
     }
 
     public static void convertSkeletons(Entity target, LivingEntity owner, boolean wither, boolean permanent){
-        if (target instanceof AbstractSkeleton skeleton && net.minecraftforge.event.ForgeEventFactory.canLivingConvert(skeleton, ModEntityType.SKELETON_SERVANT.get(), (timer) -> {})) {
+        if (target instanceof AbstractSkeleton skeleton && net.neoforged.event.net.neoforged.neoforge.event.EventHooks.canLivingConvert(skeleton, ModEntityType.SKELETON_SERVANT.get(), (timer) -> {})) {
             EntityType<? extends Mob> entityType = ModEntityType.SKELETON_SERVANT.get();
             if (skeleton instanceof Stray){
                 entityType = ModEntityType.STRAY_SERVANT.get();
@@ -100,7 +98,7 @@ public class ServantUtil {
                 if (!permanent) {
                     skeletonServant.setLimitedLife(10 * (15 + target.level.random.nextInt(45)));
                 }
-                net.minecraftforge.event.ForgeEventFactory.onLivingConvert(skeleton, skeletonServant);
+                net.neoforged.event.net.neoforged.neoforge.event.EventHooks.onLivingConvert(skeleton, skeletonServant);
                 if (!skeletonServant.isSilent()) {
                     skeletonServant.level.levelEvent(null, 1026, skeletonServant.blockPosition(), 0);
                 }
@@ -130,7 +128,7 @@ public class ServantUtil {
 
         if (summoned != null) {
             EntityType<? extends LivingEntity> entityType = (EntityType<? extends LivingEntity>) summoned.getType();
-            if (net.minecraftforge.event.ForgeEventFactory.canLivingConvert(target, entityType, (timer) -> {})) {
+            if (net.neoforged.event.net.neoforged.neoforge.event.EventHooks.canLivingConvert(target, entityType, (timer) -> {})) {
                 if (target.level instanceof ServerLevel serverLevel) {
                     summoned.finalizeSpawn(serverLevel, target.level.getCurrentDifficultyAt(summoned.blockPosition()), MobSpawnType.CONVERSION, null, null);
                 }
@@ -157,7 +155,7 @@ public class ServantUtil {
                         servant.setVillagerXp(prisoner.getVillagerXp());
                     }
                 }
-                net.minecraftforge.event.ForgeEventFactory.onLivingConvert(target, summoned);
+                net.neoforged.event.net.neoforged.neoforge.event.EventHooks.onLivingConvert(target, summoned);
                 if (!summoned.isSilent()) {
                     summoned.level.levelEvent(null, 1026, summoned.blockPosition(), 0);
                 }
@@ -257,7 +255,7 @@ public class ServantUtil {
                                     Optional<Vec3> optional2 = RespawnAnchorBlock.findStandUpPosition(livingOwned.getType(), newLevel, blockPos);
                                     if (optional2.isPresent()) {
                                         Vec3 vec32 = optional2.get();
-                                        Entity entity = livingOwned.changeDimension(newLevel, new ArcaTeleporter(vec32));
+                                        Entity entity = livingOwned.changeDimension(ArcaTeleporter.transition(newLevel, livingOwned, vec32));
                                         if (entity != null) {
                                             if (newLevel.getWorldBorder().isWithinBounds(vec32.x, vec32.y, vec32.z)) {
                                                 entity.teleportTo(vec32.x, vec32.y, vec32.z);
@@ -358,7 +356,7 @@ public class ServantUtil {
         return equipmentslot;
     }
 
-    enum HealType implements IExtensibleEnum {
+    enum HealType {
         ABYSS(
                 ServantUtil::isAbyssHeal,
                 CuriosFinder::hasAbyssRobes,

@@ -60,7 +60,6 @@ import net.minecraft.world.level.block.entity.ChestBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.gameevent.*;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.common.TierSortingRegistry;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -364,7 +363,7 @@ public class Prisoner extends RaiderServant implements VillagerDataHolder, ILoot
         if (this.level instanceof ServerLevel serverLevel) {
             Entity entity = pCause.getEntity();
             if (entity instanceof Zombie zombie) {
-                if ((zombie.level.getDifficulty() == Difficulty.NORMAL || zombie.level.getDifficulty() == Difficulty.HARD) && net.minecraftforge.event.ForgeEventFactory.canLivingConvert(this, EntityType.ZOMBIE_VILLAGER, (timer) -> {})) {
+                if ((zombie.level.getDifficulty() == Difficulty.NORMAL || zombie.level.getDifficulty() == Difficulty.HARD) && net.neoforged.event.net.neoforged.neoforge.event.EventHooks.canLivingConvert(this, EntityType.ZOMBIE_VILLAGER, (timer) -> {})) {
                     if (!(zombie.level.getDifficulty() != Difficulty.HARD && this.random.nextBoolean())) {
                         ZombieVillager zombievillager = this.convertTo(EntityType.ZOMBIE_VILLAGER, false);
                         if (zombievillager != null) {
@@ -377,7 +376,7 @@ public class Prisoner extends RaiderServant implements VillagerDataHolder, ILoot
                                 zombievillager.setTradeOffers(this.getOffers());
                             }
                             zombievillager.setVillagerXp(this.getVillagerXp());
-                            net.minecraftforge.event.ForgeEventFactory.onLivingConvert(this, zombievillager);
+                            net.neoforged.event.net.neoforged.neoforge.event.EventHooks.onLivingConvert(this, zombievillager);
                             if (!this.isSilent()) {
                                 serverLevel.levelEvent(null, 1026, this.blockPosition(), 0);
                             }
@@ -504,7 +503,7 @@ public class Prisoner extends RaiderServant implements VillagerDataHolder, ILoot
                             }
                             if (blockPos != null) {
                                 BlockState blockState = serverLevel.getBlockState(blockPos);
-                                if (TierSortingRegistry.isCorrectTierForDrops(pickaxe.getTier(), blockState)) {
+                                if (this.getMainHandItem().isCorrectToolForDrops(blockState)) {
                                     for (ItemStack itemStack : Block.getDrops(blockState, serverLevel, blockPos, this.level.getBlockEntity(blockPos), this, this.getMainHandItem())) {
                                         this.getInventory().addItem(itemStack);
                                     }
@@ -781,7 +780,7 @@ public class Prisoner extends RaiderServant implements VillagerDataHolder, ILoot
             ServerParticleUtil.addParticlesAroundMiddleSelf(serverLevel, new BlockParticleOption(ParticleTypes.BLOCK, Blocks.CHAIN.defaultBlockState()), villager);
             villager.finalizeSpawn(serverLevel, serverLevel.getCurrentDifficultyAt(villager.blockPosition()), MobSpawnType.CONVERSION, (SpawnGroupData) null, (CompoundTag) null);
             villager.setHealth(this.getHealth());
-            net.minecraftforge.event.ForgeEventFactory.onLivingConvert(this, villager);
+            net.neoforged.event.net.neoforged.neoforge.event.EventHooks.onLivingConvert(this, villager);
         }
     }
 

@@ -13,7 +13,7 @@ public class ModRitualFactory {
 
     public Ritual create(RitualRecipe recipe) {
         Ritual ritual = this.constructor.apply(recipe);
-        ritual.setFactoryId(ModRituals.REGISTRY.get().getKey(this));
+        ritual.setFactoryId(ModRituals.REGISTRY.getKey(this));
         return ritual;
     }
 }

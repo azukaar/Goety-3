@@ -54,10 +54,10 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.LeavesBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.gameevent.GameEvent;
-import net.minecraft.world.level.pathfinder.BlockPathTypes;
+import net.minecraft.world.level.pathfinder.PathType;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.common.ForgeMod;
+import net.neoforged.neoforge.common.NeoForgeMod;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
@@ -76,7 +76,7 @@ public class ModRavager extends RaiderServant implements PlayerRideable, IAutoRi
 
     public ModRavager(EntityType<? extends Summoned> type, Level worldIn) {
         super(type, worldIn);
-        this.setPathfindingMalus(BlockPathTypes.LEAVES, 0.0F);
+        this.setPathfindingMalus(PathType.LEAVES, 0.0F);
     }
 
     protected void registerGoals() {
@@ -306,7 +306,7 @@ public class ModRavager extends RaiderServant implements PlayerRideable, IAutoRi
                 }
             }
             if (!this.level.isClientSide) {
-                if (net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(this.level, this)) {
+                if (this.level.getGameRules().getBoolean(GameRules.RULE_MOB_GRIEFING)) {
                     boolean flag = false;
                     AABB aabb = this.getBoundingBox().inflate(0.2D);
 
@@ -549,7 +549,7 @@ public class ModRavager extends RaiderServant implements PlayerRideable, IAutoRi
                 }
 
                 if (this.getMobType() != MobType.UNDEAD) {
-                    if (this.isInWater() && this.getFluidTypeHeight(ForgeMod.WATER_TYPE.get()) > this.getFluidJumpThreshold() || this.isInLava() || this.isInFluidType((fluidType, height) -> this.canSwimInFluidType(fluidType) && height > this.getFluidJumpThreshold())) {
+                    if (this.isInWater() && this.getFluidTypeHeight(NeoForgeMod.WATER_TYPE.get()) > this.getFluidJumpThreshold() || this.isInLava() || this.isInFluidType((fluidType, height) -> this.canSwimInFluidType(fluidType) && height > this.getFluidJumpThreshold())) {
                         Vec3 vector3d = this.getDeltaMovement();
                         this.setDeltaMovement(vector3d.x, 0.04F, vector3d.z);
                         this.hasImpulse = true;
@@ -590,7 +590,7 @@ public class ModRavager extends RaiderServant implements PlayerRideable, IAutoRi
                                 servant.equipSaddle(false);
                             }
                             servant.updateArmor();
-                            net.minecraftforge.event.ForgeEventFactory.onLivingConvert(this, servant);
+                            net.neoforged.event.net.neoforged.neoforge.event.EventHooks.onLivingConvert(this, servant);
                             if (!this.isSilent()) {
                                 this.level.levelEvent((Player) null, 1026, this.blockPosition(), 0);
                             }

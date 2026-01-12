@@ -21,7 +21,7 @@ import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.gameevent.GameEventListener;
 import net.minecraft.world.level.gameevent.PositionSource;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.neoforge.registries.NeoForgeRegistries;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -142,7 +142,7 @@ public abstract class BarracksBlockEntity extends OwnedBlockEntity implements Ga
         if (entityType == null) {
             this.entityTrainTo = new CompoundTag();
         } else {
-            ResourceLocation location = ForgeRegistries.ENTITY_TYPES.getKey(entityType);
+            ResourceLocation location = NeoForgeRegistries.ENTITY_TYPES.getKey(entityType);
             this.entityTrainTo.putString("id", location != null ? location.toString() : "minecraft:pig");
         }
     }

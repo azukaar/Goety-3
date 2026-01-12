@@ -12,7 +12,7 @@ import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.targeting.TargetingConditions;
 import net.minecraft.world.level.biome.MobSpawnSettings;
-import net.minecraftforge.event.ForgeEventFactory;
+
 
 public class EvilEyeEffect extends BrewMobEffect {
 
@@ -38,7 +38,7 @@ public class EvilEyeEffect extends BrewMobEffect {
                                 if (entity instanceof Mob mob) {
                                     BlockPos blockPos = BlockFinder.SummonRadius(living.blockPosition(), mob, serverLevel, 16);
                                     mob.setPos(blockPos.getX() + 0.5F, blockPos.getY(), blockPos.getZ() + 0.5F);
-                                    ForgeEventFactory.onFinalizeSpawn(mob, serverLevel, serverLevel.getCurrentDifficultyAt(blockPos), MobSpawnType.SPAWNER, (SpawnGroupData) null, (CompoundTag) null);
+                                    net.neoforged.neoforge.event.EventHooks.onFinalizeSpawn(mob, serverLevel, serverLevel.getCurrentDifficultyAt(blockPos), MobSpawnType.SPAWNER, (SpawnGroupData) null, (CompoundTag) null);
                                     if (serverLevel.addFreshEntity(mob)) {
                                         ServerParticleUtil.addParticlesAroundMiddleSelf(serverLevel, ParticleTypes.FLAME, mob);
                                     }

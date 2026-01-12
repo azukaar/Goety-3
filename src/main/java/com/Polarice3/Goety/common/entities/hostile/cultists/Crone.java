@@ -63,8 +63,8 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.common.ForgeMod;
-import net.minecraftforge.event.ForgeEventFactory;
+import net.neoforged.neoforge.common.NeoForgeMod;
+
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -263,7 +263,7 @@ public class Crone extends Cultist implements RangedAttackMob {
                     brewEffectInstance.add(new BrewEffectInstance(new HarvestBlockEffect()));
                 } else if (this.random.nextFloat() < 0.15F && this.getHealth() < this.getMaxHealth() && (this.getTarget() == null || this.lastHitTime == 0)) {
                     mobEffectInstance.add(new MobEffectInstance(MobEffects.HEAL, 1, amp));
-                } else if (this.random.nextFloat() < 0.15F && this.isEyeInFluidType(ForgeMod.WATER_TYPE.get()) && !this.hasEffect(MobEffects.WATER_BREATHING)) {
+                } else if (this.random.nextFloat() < 0.15F && this.isEyeInFluidType(NeoForgeMod.WATER_TYPE.get()) && !this.hasEffect(MobEffects.WATER_BREATHING)) {
                     mobEffectInstance.add(new MobEffectInstance(MobEffects.WATER_BREATHING, 3600));
                     mobEffectInstance.add(new MobEffectInstance(GoetyEffects.SWIFT_SWIM.get(), 3600));
                 } else if (this.random.nextFloat() < 0.15F && (this.isOnFire() || this.getLastDamageSource() != null && this.getLastDamageSource().is(DamageTypeTags.IS_FIRE)) && !this.hasEffect(MobEffects.FIRE_RESISTANCE)) {
@@ -372,7 +372,7 @@ public class Crone extends Cultist implements RangedAttackMob {
 
     public void performRangedAttack(LivingEntity target, float p_34144_) {
         if (!this.isDrinkingPotion()) {
-            boolean grief = ForgeEventFactory.getMobGriefingEvent(this.level, this);
+            boolean grief = this.level.getGameRules().getBoolean(GameRules.RULE_MOB_GRIEFING);
             Vec3 vec3 = target.getDeltaMovement();
             double d0 = target.getX() + vec3.x - this.getX();
             double d1 = target.getEyeY() - (double)1.1F - this.getY();
@@ -528,7 +528,8 @@ public class Crone extends Cultist implements RangedAttackMob {
                 if (this.getHealth() <= 0.0F){
                     break;
                 }
-                net.minecraftforge.event.entity.EntityTeleportEvent.EnderEntity event = net.minecraftforge.event.ForgeEventFactory.onEnderTeleport(this, d3, d4, d5);
+                net.neoforged.event.entity.EntityTeleportEvent.EnderEntity event = new net.neoforged.event.entity.EntityTeleportEvent.EnderEntity(this, d3, d4, d5);
+                net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(event);
                 if (event.isCanceled()) {
                     break;
                 }
@@ -552,7 +553,8 @@ public class Crone extends Cultist implements RangedAttackMob {
                 if (this.getHealth() <= 0.0F){
                     return false;
                 }
-                net.minecraftforge.event.entity.EntityTeleportEvent.EnderEntity event = net.minecraftforge.event.ForgeEventFactory.onEnderTeleport(this, d1, d2, d3);
+                net.neoforged.event.entity.EntityTeleportEvent.EnderEntity event = new net.neoforged.event.entity.EntityTeleportEvent.EnderEntity(this, d1, d2, d3);
+                net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(event);
                 if (event.isCanceled()) {
                     return false;
                 }

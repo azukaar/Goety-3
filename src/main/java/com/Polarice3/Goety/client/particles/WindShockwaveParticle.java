@@ -9,10 +9,11 @@ import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.client.particle.ParticleProvider;
 import net.minecraft.client.particle.SpriteSet;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleType;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.Locale;
@@ -50,7 +51,7 @@ public class WindShockwaveParticle extends WindParticle{
     }
 
     public static class Option implements ParticleOptions {
-        public static final Codec<Option> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+        public static final com.mojang.serialization.MapCodec<Option> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
                 Codec.FLOAT.fieldOf("red").forGetter(d -> d.red),
                 Codec.FLOAT.fieldOf("green").forGetter(d -> d.green),
                 Codec.FLOAT.fieldOf("blue").forGetter(d -> d.blue),
@@ -61,33 +62,25 @@ public class WindShockwaveParticle extends WindParticle{
                 Codec.INT.fieldOf("life").forGetter(d -> d.life),
                 Codec.INT.fieldOf("ownerId").forGetter(d -> d.ownerId)
         ).apply(instance, Option::new));
-        public static final Deserializer<Option> DESERIALIZER = new Deserializer<Option>() {
-            public Option fromCommand(ParticleType<Option> particleTypeIn, StringReader reader) throws CommandSyntaxException {
-                reader.expect(' ');
-                float red = reader.readFloat();
-                reader.expect(' ');
-                float green = reader.readFloat();
-                reader.expect(' ');
-                float blue = reader.readFloat();
-                reader.expect(' ');
-                float width = reader.readFloat();
-                reader.expect(' ');
-                float height = reader.readFloat();
-                reader.expect(' ');
-                float increase = reader.readFloat();
-                reader.expect(' ');
-                float startYRot = reader.readFloat();
-                reader.expect(' ');
-                int life = reader.readInt();
-                reader.expect(' ');
-                int ownerId = reader.readInt();
-                return new Option(red, green, blue, width, height, increase, startYRot, life, ownerId);
-            }
-
-            public Option fromNetwork(ParticleType<Option> particleTypeIn, FriendlyByteBuf buffer) {
-                return new Option(buffer.readFloat(), buffer.readFloat(), buffer.readFloat(), buffer.readFloat(), buffer.readFloat(), buffer.readFloat(), buffer.readFloat(), buffer.readInt(), buffer.readInt());
-            }
-        };
+        public static final StreamCodec<RegistryFriendlyByteBuf, Option> STREAM_CODEC = StreamCodec.of(
+                (buf, value) -> {
+                    buf.writeFloat(value.red);
+                    buf.writeFloat(value.green);
+                    buf.writeFloat(value.blue);
+                    buf.writeFloat(value.width);
+                    buf.writeFloat(value.height);
+                    buf.writeFloat(value.increase);
+                    buf.writeFloat(value.startYRot);
+                    buf.writeInt(value.life);
+                    buf.writeInt(value.ownerId);
+                },
+                buf -> new Option(
+                        buf.readFloat(), buf.readFloat(), buf.readFloat(),
+                        buf.readFloat(), buf.readFloat(),
+                        buf.readFloat(), buf.readFloat(),
+                        buf.readInt(), buf.readInt()
+                )
+        );
         private final float red;
         private final float green;
         private final float blue;
@@ -144,23 +137,6 @@ public class WindShockwaveParticle extends WindParticle{
             this.startYRot = startYRot;
             this.life = life;
             this.ownerId = ownerId;
-        }
-
-        public void writeToNetwork(FriendlyByteBuf buffer) {
-            buffer.writeFloat(this.red);
-            buffer.writeFloat(this.green);
-            buffer.writeFloat(this.blue);
-            buffer.writeFloat(this.width);
-            buffer.writeFloat(this.height);
-            buffer.writeFloat(this.increase);
-            buffer.writeFloat(this.startYRot);
-            buffer.writeInt(this.life);
-            buffer.writeInt(this.ownerId);
-        }
-
-        public String writeToString() {
-            return String.format(Locale.ROOT, "%s %.2f %.2f %.2f %.2f %.2f %.2f %.2f %d %d",
-                    BuiltInRegistries.PARTICLE_TYPE.getKey(this.getType()), this.red, this.green, this.blue, this.width, this.height, this.increase, this.startYRot, this.life, this.ownerId);
         }
 
         public ParticleType<Option> getType() {

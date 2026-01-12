@@ -1,39 +1,29 @@
 package com.Polarice3.Goety.client.particles;
 
-import com.mojang.brigadier.StringReader;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.core.particles.DustParticleOptionsBase;
 import net.minecraft.core.particles.ParticleType;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.util.ExtraCodecs;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import org.joml.Vector3f;
 
-public class DustCloudParticleOption extends DustParticleOptionsBase {
-   public static final Codec<DustCloudParticleOption> CODEC = RecordCodecBuilder.create((p_175793_) -> {
-      return p_175793_.group(ExtraCodecs.VECTOR3F.fieldOf("color").forGetter((p_175797_) -> {
-         return p_175797_.color;
-      }), Codec.FLOAT.fieldOf("scale").forGetter((p_175795_) -> {
-         return p_175795_.scale;
-      })).apply(p_175793_, DustCloudParticleOption::new);
-   });
-   public static final Deserializer<DustCloudParticleOption> DESERIALIZER = new Deserializer<DustCloudParticleOption>() {
-      public DustCloudParticleOption fromCommand(ParticleType<DustCloudParticleOption> p_123689_, StringReader p_123690_) throws CommandSyntaxException {
-         Vector3f vector3f = DustParticleOptionsBase.readVector3f(p_123690_);
-         p_123690_.expect(' ');
-         float f = p_123690_.readFloat();
-         return new DustCloudParticleOption(vector3f, f);
-      }
+public record DustCloudParticleOption(Vector3f color, float scale) implements net.minecraft.core.particles.ParticleOptions {
+   public static final MapCodec<DustCloudParticleOption> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
+           com.mojang.serialization.Codec.FLOAT.fieldOf("r").forGetter(o -> o.color.x()),
+           com.mojang.serialization.Codec.FLOAT.fieldOf("g").forGetter(o -> o.color.y()),
+           com.mojang.serialization.Codec.FLOAT.fieldOf("b").forGetter(o -> o.color.z()),
+           com.mojang.serialization.Codec.FLOAT.fieldOf("scale").forGetter(DustCloudParticleOption::scale)
+   ).apply(instance, (r, g, b, scale) -> new DustCloudParticleOption(new Vector3f(r, g, b), scale)));
 
-      public DustCloudParticleOption fromNetwork(ParticleType<DustCloudParticleOption> p_123692_, FriendlyByteBuf p_123693_) {
-         return new DustCloudParticleOption(DustParticleOptionsBase.readVector3f(p_123693_), p_123693_.readFloat());
-      }
-   };
-
-   public DustCloudParticleOption(Vector3f p_175790_, float p_175791_) {
-      super(p_175790_, p_175791_);
-   }
+   public static final StreamCodec<RegistryFriendlyByteBuf, DustCloudParticleOption> STREAM_CODEC = StreamCodec.of(
+           (buf, value) -> {
+              buf.writeFloat(value.color().x());
+              buf.writeFloat(value.color().y());
+              buf.writeFloat(value.color().z());
+              buf.writeFloat(value.scale());
+           },
+           buf -> new DustCloudParticleOption(new Vector3f(buf.readFloat(), buf.readFloat(), buf.readFloat()), buf.readFloat())
+   );
 
    public ParticleType<DustCloudParticleOption> getType() {
       return ModParticleTypes.DUST_CLOUD.get();

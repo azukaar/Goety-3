@@ -7,7 +7,6 @@ import com.Polarice3.Goety.config.SpellConfig;
 import com.Polarice3.Goety.utils.MobUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.server.level.ServerLevel;
@@ -22,8 +21,6 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.entity.IEntityAdditionalSpawnData;
-import net.minecraftforge.network.NetworkHooks;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
@@ -35,7 +32,7 @@ import java.util.function.Predicate;
 /**
  * Beam codes based on ArtifactBeamEntity on @Thelnfamous1's Dungeon Gears
  */
-public abstract class AbstractBeam extends Entity implements IEntityAdditionalSpawnData, ISpellEntity {
+public abstract class AbstractBeam extends Entity implements ISpellEntity {
     public static final double MAX_RAYTRACE_DISTANCE = 64;
     public float extraDamage = 0;
     public boolean itemBase;
@@ -208,22 +205,10 @@ public abstract class AbstractBeam extends Entity implements IEntityAdditionalSp
         pCompound.putBoolean("ItemBase", this.itemBase);
     }
 
-    @Override
-    public void writeSpawnData(FriendlyByteBuf buffer) {
-        if (this.ownerUUID != null) {
-            buffer.writeUUID(this.ownerUUID);
-        }
-        buffer.writeBoolean(this.itemBase);
-    }
 
-    @Override
-    public void readSpawnData(FriendlyByteBuf additionalData) {
-        this.ownerUUID = additionalData.readUUID();
-        this.itemBase = additionalData.readBoolean();
-    }
 
     @Override
     public @NotNull Packet<ClientGamePacketListener> getAddEntityPacket() {
-        return NetworkHooks.getEntitySpawningPacket(this);
+        return new net.minecraft.network.protocol.game.ClientboundAddEntityPacket(this);
     }
 }

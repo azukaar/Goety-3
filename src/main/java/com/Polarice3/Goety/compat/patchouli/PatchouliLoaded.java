@@ -1,6 +1,6 @@
 package com.Polarice3.Goety.compat.patchouli;
 
-import net.minecraftforge.fml.ModList;
+import net.neoforged.fml.ModList;
 
 public enum PatchouliLoaded {
     PATCHOULI("patchouli");
@@ -13,5 +13,4 @@ public enum PatchouliLoaded {
     public boolean isLoaded() {
         return this.loaded;
     }
-
 }

@@ -61,7 +61,7 @@ public class DarkAnvilMenu extends AnvilMenu {
             }
         }
 
-        float breakChance = net.minecraftforge.common.ForgeHooks.onAnvilRepair(p_150474_, p_150475_, DarkAnvilMenu.this.inputSlots.getItem(0), DarkAnvilMenu.this.inputSlots.getItem(1));
+        float breakChance = net.neoforged.common.ForgeHooks.onAnvilRepair(p_150474_, p_150475_, DarkAnvilMenu.this.inputSlots.getItem(0), DarkAnvilMenu.this.inputSlots.getItem(1));
 
         if (breakChance > 0.05F) {
             breakChance = 0.05F;
@@ -127,7 +127,7 @@ public class DarkAnvilMenu extends AnvilMenu {
             this.repairItemCountCost = 0;
             boolean flag = false;
 
-            if (!net.minecraftforge.common.ForgeHooks.onAnvilChange(this, itemstack, itemstack2, resultSlots, itemName, j, this.player)) return;
+            if (!net.neoforged.common.ForgeHooks.onAnvilChange(this, itemstack, itemstack2, resultSlots, itemName, j, this.player)) return;
             if (!itemstack2.isEmpty()) {
                 flag = itemstack2.getItem() == Items.ENCHANTED_BOOK && !EnchantedBookItem.getEnchantments(itemstack2).isEmpty();
                 if (itemstack1.isDamageableItem() && itemstack1.getItem().isValidRepairItem(itemstack, itemstack2)) {
@@ -321,5 +321,4 @@ public class DarkAnvilMenu extends AnvilMenu {
     public void setMaximumCost(int value) {
         this.cost.set(value);
     }
-
 }

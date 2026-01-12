@@ -13,11 +13,10 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.common.capabilities.ICapabilityProvider;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.ItemStackHandler;
-import net.minecraftforge.network.NetworkHooks;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.capabilities.ICapabilityProvider;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.ItemStackHandler;
 import top.theillusivec4.curios.api.SlotContext;
 import top.theillusivec4.curios.api.type.capability.ICurioItem;
 
@@ -52,7 +51,7 @@ public class FocusBag extends Item implements ICurioItem {
      * Found Creative Server Bug fix from @mraof's Minestuck Music Player Weapon code.
      */
     private static IItemHandler getItemHandler(ItemStack itemStack) {
-        return itemStack.getCapability(ForgeCapabilities.ITEM_HANDLER).orElseThrow(() ->
+        return itemStack.getCapability(Capabilities.ITEM_HANDLER).orElseThrow(() ->
                 new IllegalArgumentException("Expected an item handler for the Magic Focus item, but " + itemStack + " does not expose an item handler."));
     }
 

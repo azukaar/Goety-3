@@ -15,8 +15,6 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.material.PushReaction;
-import net.minecraftforge.network.NetworkHooks;
-
 import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Map;
@@ -306,6 +304,6 @@ public class DragonBreathCloud extends Entity implements TraceableEntity {
 
     @Override
     public Packet<ClientGamePacketListener> getAddEntityPacket() {
-        return NetworkHooks.getEntitySpawningPacket(this);
+        return new net.minecraft.network.protocol.game.ClientboundAddEntityPacket(this);
     }
 }

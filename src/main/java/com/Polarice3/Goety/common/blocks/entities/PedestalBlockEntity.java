@@ -6,18 +6,14 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.items.ItemStackHandler;
+import net.neoforged.neoforge.items.ItemStackHandler;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 public class PedestalBlockEntity extends RitualBlockEntity {
     public long lastChangeTime;
-    public LazyOptional<ItemStackHandler> itemStackHandler = LazyOptional.of(
-            () -> new ItemStackHandler(1) {
+    public ItemStackHandler itemStackHandler = new ItemStackHandler(1) {
                 @Override
                 public int getSlotLimit(int slot) {
                     return 1;
@@ -36,7 +32,7 @@ public class PedestalBlockEntity extends RitualBlockEntity {
                         }
                     }
                 }
-            });
+    };
     protected boolean initialized = false;
 
     public PedestalBlockEntity(BlockPos blockPos, BlockState blockState) {
@@ -47,32 +43,22 @@ public class PedestalBlockEntity extends RitualBlockEntity {
         super(blockEntity, blockPos, blockState);
     }
 
-    @Nonnull
-    @Override
-    public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction direction) {
-        if (cap == ForgeCapabilities.ITEM_HANDLER) {
-            return this.itemStackHandler.cast();
-        }
-        return super.getCapability(cap, direction);
-    }
 
     @Override
     public void readNetwork(CompoundTag compound) {
-        this.itemStackHandler.ifPresent((handler) -> handler.deserializeNBT(compound.getCompound("inventory")));
+        if (this.level != null) {
+            this.itemStackHandler.deserializeNBT(this.level.registryAccess(), compound.getCompound("inventory"));
+        }
         this.lastChangeTime = compound.getLong("lastChangeTime");
     }
 
     @Override
     public CompoundTag writeNetwork(CompoundTag compound) {
-        this.itemStackHandler.ifPresent(handler -> compound.put("inventory", handler.serializeNBT()));
+        if (this.level != null) {
+            compound.put("inventory", this.itemStackHandler.serializeNBT(this.level.registryAccess()));
+        }
         compound.putLong("lastChangeTime", this.lastChangeTime);
         return compound;
-    }
-
-    @Override
-    public void invalidateCaps() {
-        super.invalidateCaps();
-        this.itemStackHandler.invalidate();
     }
 }
 /*

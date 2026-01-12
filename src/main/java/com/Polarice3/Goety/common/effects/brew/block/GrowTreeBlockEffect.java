@@ -11,14 +11,14 @@ import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.grower.AbstractTreeGrower;
+import net.minecraft.world.level.block.grower.TreeGrower;
 import net.minecraft.world.level.block.state.BlockState;
 
 public class GrowTreeBlockEffect extends BrewEffect {
     public Block block;
-    public AbstractTreeGrower treeGrower;
+    public TreeGrower treeGrower;
 
-    public GrowTreeBlockEffect(Block block, AbstractTreeGrower treeGrower) {
+    public GrowTreeBlockEffect(Block block, TreeGrower treeGrower) {
         super(block.getDescriptionId(), BrewConfig.GrowTreeCost.get(), 0, MobEffectCategory.NEUTRAL, 0x5a3f1e, true);
         this.block = block;
         this.treeGrower = treeGrower;

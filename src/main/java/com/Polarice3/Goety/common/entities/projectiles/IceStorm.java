@@ -19,8 +19,6 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.projectile.AbstractHurtingProjectile;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.network.NetworkHooks;
-
 public class IceStorm extends SpellHurtingProjectile {
     private static final EntityDataAccessor<Float> ID_SIZE = SynchedEntityData.defineId(IceStorm.class, EntityDataSerializers.FLOAT);
     public int duration = 0;
@@ -166,6 +164,6 @@ public class IceStorm extends SpellHurtingProjectile {
 
     @Override
     public Packet<ClientGamePacketListener> getAddEntityPacket() {
-        return NetworkHooks.getEntitySpawningPacket(this);
+        return new net.minecraft.network.protocol.game.ClientboundAddEntityPacket(this);
     }
 }

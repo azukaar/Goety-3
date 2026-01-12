@@ -65,15 +65,15 @@ import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.pathfinder.AmphibiousNodeEvaluator;
-import net.minecraft.world.level.pathfinder.BlockPathTypes;
+import net.minecraft.world.level.pathfinder.PathType;
 import net.minecraft.world.level.pathfinder.PathFinder;
 import net.minecraft.world.level.pathfinder.WalkNodeEvaluator;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.event.ForgeEventFactory;
-import net.minecraftforge.fluids.FluidType;
+
+import net.neoforged.neoforge.fluids.FluidType;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
@@ -125,12 +125,12 @@ public class Wight extends Summoned implements Enemy, NeutralMob, IHiding {
         this.setHostile(true);
         this.waterNavigation = new WightAquaticNavigation(this, worldIn);
         this.groundNavigation = new WightNavigation(this, worldIn);
-        this.setPathfindingMalus(BlockPathTypes.WATER, 0.0F);
-        this.setPathfindingMalus(BlockPathTypes.LEAVES,0);
-        this.setPathfindingMalus(BlockPathTypes.UNPASSABLE_RAIL,0);
-        this.setPathfindingMalus(BlockPathTypes.DOOR_OPEN,0);
-        this.setPathfindingMalus(BlockPathTypes.DOOR_IRON_CLOSED,0);
-        this.setPathfindingMalus(BlockPathTypes.DOOR_WOOD_CLOSED,0);
+        this.setPathfindingMalus(PathType.WATER, 0.0F);
+        this.setPathfindingMalus(PathType.LEAVES,0);
+        this.setPathfindingMalus(PathType.UNPASSABLE_RAIL,0);
+        this.setPathfindingMalus(PathType.DOOR_OPEN,0);
+        this.setPathfindingMalus(PathType.DOOR_IRON_CLOSED,0);
+        this.setPathfindingMalus(PathType.DOOR_WOOD_CLOSED,0);
     }
 
     protected void registerGoals() {
@@ -350,11 +350,6 @@ public class Wight extends Summoned implements Enemy, NeutralMob, IHiding {
         }
 
         super.onSyncedDataUpdated(p_219422_);
-    }
-
-    @Override
-    public @NotNull MobType getMobType() {
-        return MobType.UNDEAD;
     }
 
     @Override
@@ -622,7 +617,7 @@ public class Wight extends Summoned implements Enemy, NeutralMob, IHiding {
     }
 
     public void breakBlocksAround() {
-        if (this.isDeadOrDying() || this.isHallucination() || !ForgeEventFactory.getMobGriefingEvent(this.level, this)) {
+        if (this.isDeadOrDying() || this.isHallucination() || !this.level.getGameRules().getBoolean(GameRules.RULE_MOB_GRIEFING)) {
             return;
         }
 
@@ -966,7 +961,8 @@ public class Wight extends Summoned implements Enemy, NeutralMob, IHiding {
         boolean flag = blockstate.blocksMotion();
         boolean flag1 = blockstate.getFluidState().is(FluidTags.WATER) && !this.isSwimming();
         if (flag && !flag1) {
-            net.minecraftforge.event.entity.EntityTeleportEvent.EnderEntity event = net.minecraftforge.event.ForgeEventFactory.onEnderTeleport(this, pX, pY, pZ);
+            net.neoforged.event.entity.EntityTeleportEvent.EnderEntity event = new net.neoforged.event.entity.EntityTeleportEvent.EnderEntity(this, pX, pY, pZ);
+            net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(event);
             if (event.isCanceled()) return false;
             Vec3 vec3 = this.position();
             boolean flag2 = this.randomTeleport(event.getTargetX(), event.getTargetY(), event.getTargetZ(), false);

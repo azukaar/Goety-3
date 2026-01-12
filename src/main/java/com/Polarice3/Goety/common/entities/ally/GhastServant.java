@@ -14,7 +14,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.event.ForgeEventFactory;
+
 
 public class GhastServant extends Malghast {
 
@@ -166,7 +166,7 @@ public class GhastServant extends Malghast {
                     largefireball.setExplosionPower(this.ghast.getExplosionPower());
                     largefireball.setDamage(AttributesConfig.GhastServantDamage.get().floatValue() + this.ghast.getFireBallDamage());
                     largefireball.setPos(this.ghast.getX() + vec3.x() * 4.0D, this.ghast.getY() + 0.25D, this.ghast.getZ() + vec3.z() * 4.0D);
-                    largefireball.setDangerous(ForgeEventFactory.getMobGriefingEvent(world, this.ghast));
+                    largefireball.setDangerous(world.getGameRules().getBoolean(GameRules.RULE_MOB_GRIEFING));
                     world.addFreshEntity(largefireball);
                     this.chargeTime = -40;
                 }

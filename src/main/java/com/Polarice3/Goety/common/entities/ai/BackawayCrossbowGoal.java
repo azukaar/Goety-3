@@ -16,7 +16,7 @@ import net.minecraft.world.item.FireworkRocketItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.SupportType;
-import net.minecraft.world.level.pathfinder.BlockPathTypes;
+import net.minecraft.world.level.pathfinder.PathType;
 import net.minecraft.world.level.pathfinder.NodeEvaluator;
 
 import java.util.EnumSet;
@@ -143,7 +143,7 @@ public class BackawayCrossbowGoal<T extends PathfinderMob & RangedAttackMob & Cr
     private boolean isWalkable() {
         PathNavigation pathnavigator = this.mob.getNavigation();
         NodeEvaluator nodeprocessor = pathnavigator.getNodeEvaluator();
-        return nodeprocessor.getBlockPathType(this.mob.level(), Mth.floor(this.mob.getX() + 1.0D), Mth.floor(this.mob.getY()), Mth.floor(this.mob.getZ() + 1.0D)) == BlockPathTypes.WALKABLE;
+        return nodeprocessor.getBlockPathType(this.mob.level(), Mth.floor(this.mob.getX() + 1.0D), Mth.floor(this.mob.getY()), Mth.floor(this.mob.getZ() + 1.0D)) == PathType.WALKABLE;
     }
 
     private boolean isCrossbowUncharged() {

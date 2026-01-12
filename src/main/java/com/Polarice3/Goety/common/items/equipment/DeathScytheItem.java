@@ -3,15 +3,12 @@ package com.Polarice3.Goety.common.items.equipment;
 import com.Polarice3.Goety.api.items.ISoulRepair;
 import com.Polarice3.Goety.common.entities.projectiles.ScytheSlash;
 import com.Polarice3.Goety.common.items.ModTiers;
-import com.Polarice3.Goety.common.network.ModNetwork;
-import com.Polarice3.Goety.common.network.client.CScytheStrikePacket;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.network.PacketDistributor;
 
 public class DeathScytheItem extends DarkScytheItem implements ISoulRepair {
 
@@ -21,7 +18,7 @@ public class DeathScytheItem extends DarkScytheItem implements ISoulRepair {
 
     public static void emptyClick(ItemStack stack) {
         if (!stack.isEmpty() && stack.getItem() instanceof DeathScytheItem){
-            ModNetwork.INSTANCE.send(PacketDistributor.SERVER.noArg(), new CScytheStrikePacket());
+            // TODO (NeoForge 1.21): re-implement client->server networking via CustomPacketPayload.
         }
     }
 

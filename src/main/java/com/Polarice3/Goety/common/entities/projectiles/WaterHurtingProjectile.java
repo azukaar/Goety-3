@@ -66,7 +66,7 @@ public abstract class WaterHurtingProjectile extends AbstractHurtingProjectile i
 
     public void hitDetection(){
         HitResult hitresult = ProjectileUtil.getHitResultOnMoveVector(this, this::canHitEntity);
-        if (hitresult.getType() != HitResult.Type.MISS && !net.minecraftforge.event.ForgeEventFactory.onProjectileImpact(this, hitresult)) {
+        if (hitresult.getType() != HitResult.Type.MISS && !net.neoforged.event.EventFactory.onProjectileImpact(this, hitresult)) {
             this.onHit(hitresult);
         }
     }

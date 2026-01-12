@@ -12,8 +12,6 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.projectile.Fireball;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.network.NetworkHooks;
-
 public abstract class ExplosiveProjectile extends Fireball implements ISpellEntity {
     private static final EntityDataAccessor<Boolean> DATA_UPGRADED = SynchedEntityData.defineId(ExplosiveProjectile.class, EntityDataSerializers.BOOLEAN);
     public static final EntityDataAccessor<Boolean> DATA_DANGEROUS = SynchedEntityData.defineId(ExplosiveProjectile.class, EntityDataSerializers.BOOLEAN);
@@ -166,7 +164,7 @@ public abstract class ExplosiveProjectile extends Fireball implements ISpellEnti
 
     @Override
     public Packet<ClientGamePacketListener> getAddEntityPacket() {
-        return NetworkHooks.getEntitySpawningPacket(this);
+        return new net.minecraft.network.protocol.game.ClientboundAddEntityPacket(this);
     }
 
 }

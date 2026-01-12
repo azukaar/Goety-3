@@ -1,6 +1,6 @@
 package com.Polarice3.Goety.compat.curios;
 
-import net.minecraftforge.fml.ModList;
+import net.neoforged.fml.ModList;
 
 public enum CuriosLoaded {
     CURIOS("curios");
@@ -13,5 +13,4 @@ public enum CuriosLoaded {
     public boolean isLoaded() {
         return this.loaded;
     }
-
 }

@@ -25,9 +25,6 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.items.IItemHandler;
 
 import java.util.Optional;
 
@@ -80,15 +77,7 @@ public class VoidShrineBlockEntity extends PedestalBlockEntity {
                         }
                     }
                     ItemStack itemStack = ItemStack.EMPTY;
-                    LazyOptional<IItemHandler> lazyOptional = this.getCapability(ForgeCapabilities.ITEM_HANDLER, null);
-                    if (lazyOptional.isPresent()) {
-                        if (lazyOptional.resolve().isPresent()) {
-                            Optional<IItemHandler> optional = lazyOptional.resolve();
-                            if (optional.isPresent()) {
-                                itemStack = optional.get().getStackInSlot(0);
-                            }
-                        }
-                    }
+                    itemStack = this.itemStackHandler.getStackInSlot(0);
                     if (this.coolTick >= 20 && itemStack.isEmpty()) {
                         serverLevel.playSound(null, this.worldPosition, SoundEvents.RESPAWN_ANCHOR_DEPLETE.get(), SoundSource.BLOCKS, 1.0F, 0.8F);
                         serverLevel.setBlockAndUpdate(this.worldPosition, this.getBlockState().setValue(VoidShrineBlock.CHARGE, 0).setValue(VoidShrineBlock.TRIGGERED, false));

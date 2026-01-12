@@ -2,13 +2,14 @@ package com.Polarice3.Goety.common.items.handler;
 
 import com.Polarice3.Goety.api.items.magic.IFocus;
 import net.minecraft.core.NonNullList;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.ItemStackHandler;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.ItemStackHandler;
+import net.minecraft.world.item.component.CustomData;
 
 import javax.annotation.Nonnull;
 
@@ -48,37 +49,31 @@ public class SoulUsingItemHandler extends ItemStackHandler {
     }
 
     @Override
-    public CompoundTag serializeNBT() {
-        CompoundTag nbt = super.serializeNBT();
+    public CompoundTag serializeNBT(HolderLookup.Provider provider) {
+        CompoundTag nbt = super.serializeNBT(provider);
         nbt.putInt("slot", slot);
         return nbt;
     }
 
     @Override
-    public void deserializeNBT(CompoundTag nbt) {
-        super.deserializeNBT(nbt);
-        ListTag tagList = nbt.getList("Items", Tag.TAG_COMPOUND);
-        for (int i = 0; i < tagList.size(); i++)
-        {
-            CompoundTag itemTags = tagList.getCompound(i);
-            if (nbt.contains("slot")) {
-                slot = nbt.getInt("slot");
-                stacks.set(slot, ItemStack.of(itemTags));
-            }
+    public void deserializeNBT(HolderLookup.Provider provider, CompoundTag nbt) {
+        super.deserializeNBT(provider, nbt);
+        if (nbt.contains("slot")) {
+            slot = nbt.getInt("slot");
         }
         onLoad();
-
     }
 
     @Override
     protected void onContentsChanged(int slot) {
-        CompoundTag nbt = itemStack.getOrCreateTag();
-        nbt.putBoolean("goety-dirty", !nbt.getBoolean("goety-dirty"));
+        CustomData.update(DataComponents.CUSTOM_DATA, itemStack, nbt -> nbt.putBoolean("goety-dirty", !nbt.getBoolean("goety-dirty")));
     }
 
     public static SoulUsingItemHandler get(ItemStack stack) {
-        IItemHandler handler = stack.getCapability(ForgeCapabilities.ITEM_HANDLER)
-                .orElseThrow(() -> new IllegalArgumentException("ItemStack is missing item capability"));
-        return (SoulUsingItemHandler) handler;
+        IItemHandler handler = stack.getCapability(Capabilities.ItemHandler.ITEM);
+        if (!(handler instanceof SoulUsingItemHandler soulHandler)) {
+            throw new IllegalArgumentException("ItemStack is missing SoulUsingItemHandler item capability");
+        }
+        return soulHandler;
     }
 }

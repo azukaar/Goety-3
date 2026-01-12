@@ -34,7 +34,8 @@ public class BlindJumpBrewEffect extends BrewEffect {
                 double d0 = pTarget.getX() + (pTarget.getRandom().nextDouble() - 0.5D) * (16.0D * d);
                 double d1 = Mth.clamp(pTarget.getY() + (double)(pTarget.getRandom().nextInt((16 * d)) - (8.0D * d)), (double)pTarget.level.getMinBuildHeight(), (double)(pTarget.level.getMinBuildHeight() + ((ServerLevel)pTarget.level).getLogicalHeight() - 1));
                 double d2 = pTarget.getZ() + (pTarget.getRandom().nextDouble() - 0.5D) * (16.0D * d);
-                net.minecraftforge.event.entity.EntityTeleportEvent.EnderEntity event = net.minecraftforge.event.ForgeEventFactory.onEnderTeleport(pTarget, d0, d1, d2);
+                net.neoforged.event.entity.EntityTeleportEvent.EnderEntity event = new net.neoforged.event.entity.EntityTeleportEvent.EnderEntity(pTarget, d0, d1, d2);
+                    net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(event);
                 if (event.isCanceled()) {
                     break;
                 }

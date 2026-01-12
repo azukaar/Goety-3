@@ -38,11 +38,9 @@ import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.material.FluidState;
-import net.minecraft.world.level.pathfinder.BlockPathTypes;
+import net.minecraft.world.level.pathfinder.PathType;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.common.ForgeMod;
-import net.minecraftforge.fluids.FluidType;
-
+import net.neoforged.neoforge.common.NeoForgeMod;
 import javax.annotation.Nullable;
 
 public class Snapper extends AnimalSummon{
@@ -50,7 +48,7 @@ public class Snapper extends AnimalSummon{
     public Snapper(EntityType<? extends Owned> type, Level worldIn) {
         super(type, worldIn);
         this.moveControl = new SnapperMoveControl(this);
-        this.setPathfindingMalus(BlockPathTypes.WATER, 0.0F);
+        this.setPathfindingMalus(PathType.WATER, 0.0F);
     }
 
     protected void registerGoals() {
@@ -76,7 +74,7 @@ public class Snapper extends AnimalSummon{
     public static AttributeSupplier.Builder setCustomAttributes() {
         return Mob.createMobAttributes()
                 .add(Attributes.MOVEMENT_SPEED, 0.5D)
-                .add(ForgeMod.SWIM_SPEED.get(), 0.7D)
+                .add(NeoForgeMod.SWIM_SPEED.get(), 0.7D)
                 .add(Attributes.MAX_HEALTH, AttributesConfig.SnapperHealth.get())
                 .add(Attributes.ARMOR, AttributesConfig.SnapperArmor.get())
                 .add(Attributes.ATTACK_DAMAGE, AttributesConfig.SnapperDamage.get());
@@ -91,18 +89,6 @@ public class Snapper extends AnimalSummon{
     @Override
     public boolean canUpdateMove() {
         return true;
-    }
-
-    public MobType getMobType() {
-        return MobType.WATER;
-    }
-
-    public boolean canDrownInFluidType(FluidType type){
-        return false;
-    }
-
-    public boolean isPushedByFluid(FluidType type) {
-        return false;
     }
 
     public boolean checkSpawnObstruction(LevelReader p_32829_) {
@@ -246,11 +232,11 @@ public class Snapper extends AnimalSummon{
 
     public void travel(Vec3 vec3) {
         if (this.isControlledByLocalInstance()) {
-            double d0 = this.getAttributeValue(ForgeMod.ENTITY_GRAVITY.get());
+            double d0 = this.getAttributeValue(NeoForgeMod.ENTITY_GRAVITY.get());
             boolean flag = this.getDeltaMovement().y <= 0.0D;
 
             FluidState fluidstate = this.level().getFluidState(this.blockPosition());
-            if ((this.isInWater() || (this.isInFluidType(fluidstate) && fluidstate.getFluidType() != ForgeMod.LAVA_TYPE.get())) && this.isAffectedByFluids() && !this.canStandOnFluid(fluidstate)) {
+            if ((this.isInWater() || (this.isInFluidType(fluidstate) && fluidstate.getFluidType() != NeoForgeMod.LAVA_TYPE.get())) && this.isAffectedByFluids() && !this.canStandOnFluid(fluidstate)) {
                 if (this.isInWater() || (this.isInFluidType(fluidstate) && !this.moveInFluid(fluidstate, vec3, d0))) {
                     double d9 = this.getY();
                     float f4 = 0.96F;
@@ -268,7 +254,7 @@ public class Snapper extends AnimalSummon{
                         f5 += (this.getSpeed() - f5) * f6 / 3.0F;
                     }
 
-                    f5 *= (float)this.getAttributeValue(ForgeMod.SWIM_SPEED.get());
+                    f5 *= (float)this.getAttributeValue(NeoForgeMod.SWIM_SPEED.get());
                     this.moveRelative(f5, vec3);
                     this.move(MoverType.SELF, this.getDeltaMovement());
                     Vec3 vec36 = this.getDeltaMovement();

@@ -20,9 +20,6 @@ import net.minecraft.world.entity.projectile.AbstractHurtingProjectile;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
-import net.minecraftforge.entity.PartEntity;
-import net.minecraftforge.network.NetworkHooks;
-
 import java.util.List;
 
 public class ModDragonFireball extends AbstractHurtingProjectile {
@@ -98,7 +95,7 @@ public class ModDragonFireball extends AbstractHurtingProjectile {
 
     protected boolean canHitEntity(Entity pEntity) {
         if (this.getOwner() != null){
-            if (pEntity == this.getOwner() || (pEntity instanceof PartEntity<?> partEntity && partEntity.getParent() == this.getOwner())){
+            if (pEntity == this.getOwner()){
                 return false;
             }
             if (this.getOwner() instanceof Mob mob && mob.getTarget() == pEntity){
@@ -117,6 +114,6 @@ public class ModDragonFireball extends AbstractHurtingProjectile {
 
     @Override
     public Packet<ClientGamePacketListener> getAddEntityPacket() {
-        return NetworkHooks.getEntitySpawningPacket(this);
+        return new net.minecraft.network.protocol.game.ClientboundAddEntityPacket(this);
     }
 }

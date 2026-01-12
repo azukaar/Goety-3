@@ -2,13 +2,13 @@ package com.Polarice3.Goety.init;
 
 import com.Polarice3.Goety.Goety;
 import net.minecraft.sounds.SoundEvent;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.RegistryObject;
+import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.neoforged.neoforge.registries.DeferredRegister;
+import net.neoforged.neoforge.registries.NeoForgeRegistries;
+import net.neoforged.neoforge.registries.RegistryObject;
 
 public class ModSounds {
-    public static DeferredRegister<SoundEvent> SOUNDS = DeferredRegister.create(ForgeRegistries.SOUND_EVENTS, Goety.MOD_ID);
+    public static DeferredRegister<SoundEvent> SOUNDS = DeferredRegister.create(NeoForgeRegistries.SOUND_EVENTS, Goety.MOD_ID);
 
     public static void init(){
         SOUNDS.register(FMLJavaModLoadingContext.get().getModEventBus());

@@ -9,7 +9,6 @@ import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
-import net.minecraft.world.item.enchantment.ProtectionEnchantment;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
@@ -72,9 +71,7 @@ public class SpellExplosion {
     public void explodeHurt(Entity target, DamageSource damageSource, double x, double y, double z, double seen, float actualDamage){
         target.hurt(damageSource, actualDamage);
         double d11 = seen;
-        if (target instanceof LivingEntity) {
-            d11 = ProtectionEnchantment.getExplosionKnockbackAfterDampener((LivingEntity) target, seen);
-        }
+        // 1.21+ enchantments are data-driven; old ProtectionEnchantment dampener helper no longer exists.
         if (damageSource.is(DamageTypes.MAGIC)){
             if (target instanceof AbstractCyclone cyclone && (cyclone.getTrueOwner() == null || damageSource.getEntity() == null || !MobUtil.areAllies(damageSource.getEntity(), cyclone.getTrueOwner()))){
                 cyclone.trueRemove();

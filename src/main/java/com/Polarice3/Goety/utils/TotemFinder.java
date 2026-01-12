@@ -4,13 +4,8 @@ import com.Polarice3.Goety.api.items.magic.IFocus;
 import com.Polarice3.Goety.api.items.magic.ITotem;
 import com.Polarice3.Goety.common.items.handler.FocusBagItemHandler;
 import com.Polarice3.Goety.common.items.magic.FocusBag;
-import com.Polarice3.Goety.compat.curios.CuriosLoaded;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import top.theillusivec4.curios.api.CuriosApi;
-import top.theillusivec4.curios.api.SlotResult;
-
-import java.util.Optional;
 
 public class TotemFinder {
 
@@ -20,13 +15,7 @@ public class TotemFinder {
 
     public static ItemStack findBag(Player playerEntity) {
         ItemStack foundStack = ItemStack.EMPTY;
-        if (CuriosLoaded.CURIOS.isLoaded()) {
-            Optional<SlotResult> slotResult = CuriosApi.getCuriosInventory(playerEntity).map(inv -> inv.findFirstCurio(TotemFinder::isFocusBag))
-                    .orElse(Optional.empty());
-            if (slotResult.isPresent()) {
-                foundStack = slotResult.get().stack();
-            }
-        }
+        // Curios integration disabled for now (no Curios dependency pinned for 1.21.1 yet).
         for (int i = 0; i < playerEntity.getInventory().getContainerSize(); i++) {
             ItemStack itemStack = playerEntity.getInventory().getItem(i);
             if (!itemStack.isEmpty() && isFocusBag(itemStack)) {

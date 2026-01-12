@@ -1,6 +1,6 @@
 package com.Polarice3.Goety.api.client;
 
-public enum SpellArmPose implements net.minecraftforge.common.IExtensibleEnum {
+public enum SpellArmPose {
     /*DEFAULT(SpellPoseType.DEFAULT, HumanoidModel.ArmPose.create(SpellPoseType.DEFAULT.getName(), false, (model, entity, arm) -> {
         float f5 = entity.walkAnimation.position(Minecraft.getInstance().getPartialTick());
         if (arm == HumanoidArm.RIGHT) {
@@ -58,3 +58,4 @@ public enum SpellArmPose implements net.minecraftforge.common.IExtensibleEnum {
         POSE_LIST.add(poseType);
     }*/
 }
+

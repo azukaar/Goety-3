@@ -47,7 +47,7 @@ import net.minecraft.world.level.block.CropBlock;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
-import net.minecraftforge.common.ForgeMod;
+import net.neoforged.neoforge.common.NeoForgeMod;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
@@ -100,7 +100,7 @@ public class Trampler extends Raider implements ICharger, ICustomAttributes {
         return Mob.createMobAttributes()
                 .add(Attributes.MAX_HEALTH, AttributesConfig.TramplerHealth.get())
                 .add(Attributes.ARMOR, AttributesConfig.TramplerArmor.get())
-                .add(ForgeMod.STEP_HEIGHT_ADDITION.get(), 1.0D)
+                .add(NeoForgeMod.STEP_HEIGHT_ADDITION.get(), 1.0D)
                 .add(Attributes.FOLLOW_RANGE, 32.0D)
                 .add(Attributes.MOVEMENT_SPEED, 0.35D)
                 .add(Attributes.ATTACK_DAMAGE, AttributesConfig.TramplerDamage.get());
@@ -344,7 +344,7 @@ public class Trampler extends Raider implements ICharger, ICustomAttributes {
                 this.walkAnimation.setSpeed(this.walkAnimation.speed() + 0.8F);
             }
 
-            if (this.horizontalCollision && net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(this.level, this)) {
+            if (this.horizontalCollision && this.level.getGameRules().getBoolean(GameRules.RULE_MOB_GRIEFING)) {
                 boolean flag = false;
                 AABB aabb = this.getBoundingBox().inflate(0.2D);
 

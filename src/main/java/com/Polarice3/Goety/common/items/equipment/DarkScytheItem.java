@@ -23,14 +23,13 @@ import net.minecraft.world.entity.decoration.ArmorStand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.*;
 import net.minecraft.world.item.enchantment.Enchantment;
-import net.minecraft.world.item.enchantment.EnchantmentCategory;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.common.ForgeMod;
+import net.neoforged.neoforge.common.NeoForgeMod;
 
-public class DarkScytheItem extends TieredItem implements Vanishable {
+public class DarkScytheItem extends TieredItem {
     private static float initialDamage = ItemConfig.ScytheBaseDamage.get().floatValue();
     private final Multimap<Attribute, AttributeModifier> scytheAttributes;
 
@@ -41,7 +40,7 @@ public class DarkScytheItem extends TieredItem implements Vanishable {
         double attackSpeed = 4.0D - ItemConfig.ScytheAttackSpeed.get();
         builder.put(Attributes.ATTACK_DAMAGE, new AttributeModifier(BASE_ATTACK_DAMAGE_UUID, "Tool modifier", initialDamage - 1.0D, AttributeModifier.Operation.ADDITION));
         builder.put(Attributes.ATTACK_SPEED, new AttributeModifier(BASE_ATTACK_SPEED_UUID, "Tool modifier", -attackSpeed, AttributeModifier.Operation.ADDITION));
-        builder.put(ForgeMod.ENTITY_REACH.get(), new AttributeModifier(ModUUIDUtil.createUUID("item.goety.scythe.reach"), "Tool modifier", 1.0F, AttributeModifier.Operation.ADDITION));
+        builder.put(NeoForgeMod.ENTITY_REACH.get(), new AttributeModifier(ModUUIDUtil.createUUID("item.goety.scythe.reach"), "Tool modifier", 1.0F, AttributeModifier.Operation.ADDITION));
         this.scytheAttributes = builder.build();
     }
 
@@ -152,13 +151,8 @@ public class DarkScytheItem extends TieredItem implements Vanishable {
     }
 
     public boolean canApplyAtEnchantingTable(ItemStack stack, Enchantment enchantment) {
-        return (enchantment.category == EnchantmentCategory.VANISHABLE
-                || enchantment.category == EnchantmentCategory.WEAPON
-                || enchantment.category == EnchantmentCategory.BREAKABLE
-                || enchantment.category == EnchantmentCategory.DIGGER
-                || enchantment.getDescriptionId().contains("vanillatweaks:siphon")
-                || enchantment == Enchantments.MOB_LOOTING
-                || enchantment == Enchantments.BLOCK_FORTUNE);
+        // TODO(1.21): Enchantments are data-driven; re-implement custom allowlist if needed.
+        return true;
     }
 
     public Multimap<Attribute, AttributeModifier> getDefaultAttributeModifiers(EquipmentSlot equipmentSlot) {

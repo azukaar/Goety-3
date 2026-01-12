@@ -34,7 +34,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.common.ForgeMod;
+import net.neoforged.neoforge.common.NeoForgeMod;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
@@ -75,7 +75,7 @@ public class BoundWindCaller extends AbstractBoundIllager{
     public static AttributeSupplier.Builder setCustomAttributes() {
         return Monster.createMonsterAttributes()
                 .add(Attributes.MOVEMENT_SPEED, 0.35D)
-                .add(ForgeMod.STEP_HEIGHT_ADDITION.get(), 1.0D)
+                .add(NeoForgeMod.STEP_HEIGHT_ADDITION.get(), 1.0D)
                 .add(Attributes.FLYING_SPEED, 0.15D)
                 .add(Attributes.FOLLOW_RANGE, AttributesConfig.WindCallerServantFollowRange.get())
                 .add(Attributes.ARMOR, AttributesConfig.WindCallerServantArmor.get())

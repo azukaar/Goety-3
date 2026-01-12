@@ -25,15 +25,13 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.*;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.item.enchantment.Enchantment;
-import net.minecraft.world.item.enchantment.EnchantmentCategory;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
-import net.minecraft.world.item.enchantment.SweepingEdgeEnchantment;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.common.Tags;
+import net.neoforged.neoforge.common.Tags;
 
-public class HammerItem extends TieredItem implements Vanishable {
+public class HammerItem extends TieredItem {
     private static float initialDamage = ItemConfig.HammerBaseDamage.get().floatValue();
     private final Multimap<Attribute, AttributeModifier> hammerAttributes;
     protected final float speed;
@@ -164,12 +162,8 @@ public class HammerItem extends TieredItem implements Vanishable {
     }
 
     public boolean canApplyAtEnchantingTable(ItemStack stack, Enchantment enchantment) {
-        return (enchantment.category == EnchantmentCategory.WEAPON
-                || enchantment.category == EnchantmentCategory.DIGGER
-                || enchantment == ModEnchantments.RADIUS.get()
-                || enchantment.getDescriptionId().contains("vanillatweaks:siphon")
-                || super.canApplyAtEnchantingTable(stack, enchantment))
-                && !(enchantment instanceof SweepingEdgeEnchantment);
+        // TODO(1.21): Enchantments are data-driven; re-implement custom allowlist if needed.
+        return true;
     }
 
     public Multimap<Attribute, AttributeModifier> getDefaultAttributeModifiers(EquipmentSlot equipmentSlot) {

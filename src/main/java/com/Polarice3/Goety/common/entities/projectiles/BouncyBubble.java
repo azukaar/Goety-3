@@ -29,8 +29,6 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.network.NetworkHooks;
-
 public class BouncyBubble extends SpellHurtingProjectile{
     private static final EntityDataAccessor<Integer> BOUNCE_TIMES = SynchedEntityData.defineId(BouncyBubble.class, EntityDataSerializers.INT);
     private static final EntityDataAccessor<Float> SIZE = SynchedEntityData.defineId(BouncyBubble.class, EntityDataSerializers.FLOAT);
@@ -227,6 +225,6 @@ public class BouncyBubble extends SpellHurtingProjectile{
 
     @Override
     public Packet<ClientGamePacketListener> getAddEntityPacket() {
-        return NetworkHooks.getEntitySpawningPacket(this);
+        return new net.minecraft.network.protocol.game.ClientboundAddEntityPacket(this);
     }
 }

@@ -37,12 +37,12 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.RegistryObject;
+import net.neoforged.neoforge.registries.DeferredRegister;
+import net.neoforged.neoforge.registries.NeoForgeRegistries;
+import net.neoforged.neoforge.registries.RegistryObject;
 
 public class ModEntityType {
-    public static final DeferredRegister<EntityType<?>> ENTITY_TYPE = DeferredRegister.create(ForgeRegistries.ENTITY_TYPES, Goety.MOD_ID);
+    public static final DeferredRegister<EntityType<?>> ENTITY_TYPE = DeferredRegister.create(NeoForgeRegistries.ENTITY_TYPES, Goety.MOD_ID);
 
     public static final RegistryObject<EntityType<NetherMeteor>> NETHER_METEOR = register("nether_meteor",
             EntityType.Builder.<NetherMeteor>of(NetherMeteor::new, MobCategory.MISC)

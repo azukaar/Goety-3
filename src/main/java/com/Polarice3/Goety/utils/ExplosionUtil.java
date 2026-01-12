@@ -15,7 +15,7 @@ public class ExplosionUtil {
 
     public static LootingExplosion lootExplode(Level world, @Nullable Entity pExploder, double pX, double pY, double pZ, float pSize, boolean pCausesFire, Explosion.BlockInteraction pMode, LootingExplosion.Mode pLootMode) {
         LootingExplosion explosion = new LootingExplosion(world, pExploder, pX, pY, pZ, pSize, pCausesFire, pMode, pLootMode);
-        if (net.minecraftforge.event.ForgeEventFactory.onExplosionStart(world, explosion)) return explosion;
+        if (net.neoforged.event.EventFactory.onExplosionStart(world, explosion)) return explosion;
         explosion.explode();
         if (world instanceof ServerLevel serverLevel) {
             explosion.finalizeExplosion(false);
@@ -32,7 +32,7 @@ public class ExplosionUtil {
 
     public static FungusExplosion fungusExplode(Level world, @Nullable Entity pExploder, double pX, double pY, double pZ, float pSize, boolean pCausesFire) {
         FungusExplosion explosion = new FungusExplosion(world, pExploder, pX, pY, pZ, pSize, pCausesFire);
-        if (net.minecraftforge.event.ForgeEventFactory.onExplosionStart(world, explosion)) return explosion;
+        if (net.neoforged.event.EventFactory.onExplosionStart(world, explosion)) return explosion;
         explosion.explode();
         if (world instanceof ServerLevel serverLevel) {
             explosion.finalizeExplosion(false);

@@ -54,14 +54,14 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.common.ForgeMod;
+import net.neoforged.neoforge.common.NeoForgeMod;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 import java.util.*;
 import java.util.function.Predicate;
 
-public class AbstractBroodMother extends Summoned implements IAutoRideable, PlayerRideableJumping, RiderShieldingMount, RangedAttackMob {
+public class AbstractBroodMother extends Summoned implements IAutoRideable, PlayerRideableJumping, RangedAttackMob {
     private static final EntityDataAccessor<Byte> DATA_FLAGS_ID = SynchedEntityData.defineId(AbstractBroodMother.class, EntityDataSerializers.BYTE);
     private static final UUID DETECTION_MODIFIER_UUID = UUID.fromString("858f6b2f-73e3-45a0-8bef-bb31e0d55be4");
     public static final AttributeModifier DETECTION_MODIFIER = new AttributeModifier(DETECTION_MODIFIER_UUID, "Light Is Blinding", -1.0D, AttributeModifier.Operation.ADDITION);
@@ -175,7 +175,7 @@ public class AbstractBroodMother extends Summoned implements IAutoRideable, Play
                 .add(Attributes.ARMOR, AttributesConfig.BroodMotherArmor.get())
                 .add(Attributes.ATTACK_DAMAGE, AttributesConfig.BroodMotherDamage.get())
                 .add(Attributes.FOLLOW_RANGE, 32.0D)
-                .add(ForgeMod.STEP_HEIGHT_ADDITION.get(), 2.0D)
+                .add(NeoForgeMod.STEP_HEIGHT_ADDITION.get(), 2.0D)
                 .add(Attributes.KNOCKBACK_RESISTANCE, 1.0D);
     }
 
@@ -403,9 +403,9 @@ public class AbstractBroodMother extends Summoned implements IAutoRideable, Play
     @Override
     public boolean canBeAffected(MobEffectInstance instance) {
         if (instance.getEffect() == GoetyEffects.ACID_VENOM.get() || instance.getEffect() == MobEffects.POISON) {
-            net.minecraftforge.event.entity.living.MobEffectEvent.Applicable event = new net.minecraftforge.event.entity.living.MobEffectEvent.Applicable(this, instance);
-            net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(event);
-            return event.getResult() == net.minecraftforge.eventbus.api.Event.Result.ALLOW;
+            net.neoforged.event.entity.living.MobEffectEvent.Applicable event = new net.neoforged.event.entity.living.MobEffectEvent.Applicable(this, instance);
+            net.neoforged.common.NeoForge.EVENT_BUS.post(event);
+            return event.getResult() == net.neoforged.eventbus.api.Event.Result.ALLOW;
         }
         return super.canBeAffected(instance);
     }
@@ -817,7 +817,7 @@ public class AbstractBroodMother extends Summoned implements IAutoRideable, Play
                 }
 
                 if (this.getMobType() != MobType.UNDEAD) {
-                    if (this.isInWater() && this.getFluidTypeHeight(ForgeMod.WATER_TYPE.get()) > this.getFluidJumpThreshold() || this.isInLava() || this.isInFluidType((fluidType, height) -> this.canSwimInFluidType(fluidType) && height > this.getFluidJumpThreshold())) {
+                    if (this.isInWater() && this.getFluidTypeHeight(NeoForgeMod.WATER_TYPE.get()) > this.getFluidJumpThreshold() || this.isInLava() || this.isInFluidType((fluidType, height) -> this.canSwimInFluidType(fluidType) && height > this.getFluidJumpThreshold())) {
                         Vec3 vector3d = this.getDeltaMovement();
                         this.setDeltaMovement(vector3d.x, 0.04F, vector3d.z);
                         this.hasImpulse = true;
@@ -895,7 +895,7 @@ public class AbstractBroodMother extends Summoned implements IAutoRideable, Play
         ModNetwork.sendToServer(new CSetDeltaMovement(this.getId(), vec3.x, d1, vec3.z));
         this.setIsJumping(true);
         this.hasImpulse = true;
-        net.minecraftforge.common.ForgeHooks.onLivingJump(this);
+        net.neoforged.common.ForgeHooks.onLivingJump(this);
         this.setAnimationState(JUMP);
         this.jumpTicks = 10;
         if (p_275435_.z > 0.0D) {

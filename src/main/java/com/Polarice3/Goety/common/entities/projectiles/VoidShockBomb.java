@@ -22,8 +22,6 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.network.NetworkHooks;
-
 public class VoidShockBomb extends SpellThrowableProjectile {
     public double prevDeltaMovementX, prevDeltaMovementY, prevDeltaMovementZ;
     public int growTick = 0;
@@ -226,6 +224,6 @@ public class VoidShockBomb extends SpellThrowableProjectile {
 
     @Override
     public Packet<ClientGamePacketListener> getAddEntityPacket() {
-        return NetworkHooks.getEntitySpawningPacket(this);
+        return new net.minecraft.network.protocol.game.ClientboundAddEntityPacket(this);
     }
 }

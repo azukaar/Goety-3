@@ -56,7 +56,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.common.ForgeMod;
+import net.neoforged.neoforge.common.NeoForgeMod;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -149,7 +149,7 @@ public class Endersent extends AbstractEnderling implements Enemy {
                 .add(Attributes.ATTACK_DAMAGE, AttributesConfig.EndersentDamage.get())
                 .add(Attributes.ARMOR, AttributesConfig.EndersentArmor.get())
                 .add(Attributes.KNOCKBACK_RESISTANCE, 1.0D)
-                .add(ForgeMod.STEP_HEIGHT_ADDITION.get(), 1.0D)
+                .add(NeoForgeMod.STEP_HEIGHT_ADDITION.get(), 1.0D)
                 .add(Attributes.ATTACK_KNOCKBACK, 2.0D)
                 .add(Attributes.FOLLOW_RANGE, 32.0D);
     }
@@ -903,7 +903,8 @@ public class Endersent extends AbstractEnderling implements Enemy {
                 if (this.getTarget() != null && i < 64) {
                     flag = BlockFinder.canSeeBlock(this.getTarget(), blockPos);
                 }
-                net.minecraftforge.event.entity.EntityTeleportEvent.EnderEntity event = net.minecraftforge.event.ForgeEventFactory.onEnderTeleport(this, blockPos.getX(), blockPos.getY(), blockPos.getZ());
+                net.neoforged.event.entity.EntityTeleportEvent.EnderEntity event = new net.neoforged.event.entity.EntityTeleportEvent.EnderEntity(this, d3, d4, d5);
+                net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(event);
                 if (event.isCanceled()) {
                     this.teleportIn();
                     return false;
@@ -934,7 +935,8 @@ public class Endersent extends AbstractEnderling implements Enemy {
                     double d1 = entity.getX() + this.level.getRandom().nextIntBetweenInclusive(-range2, range2);
                     double d2 = entity.getY();
                     double d3 = entity.getZ() + this.level.getRandom().nextIntBetweenInclusive(-range2, range2);
-                    net.minecraftforge.event.entity.EntityTeleportEvent.EnderEntity event = net.minecraftforge.event.ForgeEventFactory.onEnderTeleport(this, d1, d2, d3);
+                    net.neoforged.event.entity.EntityTeleportEvent.EnderEntity event = new net.neoforged.event.entity.EntityTeleportEvent.EnderEntity(entity, d1, d2, d3);
+                    net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(event);
                     if (event.isCanceled()) {
                         if (this.getHidingDuration() > 0) {
                             this.teleportIn();
@@ -1077,7 +1079,7 @@ public class Endersent extends AbstractEnderling implements Enemy {
         if (entityIn instanceof Mob) {
             MobUtil.disableShield(entityIn);
         }
-        return flag;
+        return false;
     }
 
     class AttackGoal extends MeleeAttackGoal {

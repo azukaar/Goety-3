@@ -1,9 +1,8 @@
 package com.Polarice3.Goety.common.events.spell;
 
 import net.minecraft.world.entity.player.Player;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.entity.player.PlayerEvent;
-import net.minecraftforge.eventbus.api.Cancelable;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 
 /**
  * ChangeSoulEnergyEvent is fired when player gains or loss Soul Energy. <br>
@@ -15,9 +14,8 @@ import net.minecraftforge.eventbus.api.Cancelable;
  * <br>
  * This event does not have a result. {@link HasResult}<br>
  * <br>
- * This event is fired on the {@link MinecraftForge#EVENT_BUS}.
+ * This event is fired on the {@link NeoForge#EVENT_BUS}.
  **/
-@Cancelable
 public class ChangeSoulEnergyEvent extends PlayerEvent {
     private int soulChange;
 
@@ -34,14 +32,12 @@ public class ChangeSoulEnergyEvent extends PlayerEvent {
         this.soulChange = soulChange;
     }
 
-    @Cancelable
     public static class Gain extends ChangeSoulEnergyEvent {
         public Gain(Player e, int soulChange){
             super(e, soulChange);
         }
     }
 
-    @Cancelable
     public static class Loss extends ChangeSoulEnergyEvent {
         public Loss(Player e, int soulChange){
             super(e, soulChange);

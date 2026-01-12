@@ -63,7 +63,7 @@ public class HoleBlock extends BaseEntityBlock {
         return Shapes.block();
     }
 
-    public boolean canSustainPlant(BlockState state, BlockGetter world, BlockPos pos, Direction facing, net.minecraftforge.common.IPlantable plantable) {
+    public boolean canSustainPlant(BlockState state, BlockGetter world, BlockPos pos, Direction facing, net.neoforged.common.IPlantable plantable) {
         return true;
     }
 

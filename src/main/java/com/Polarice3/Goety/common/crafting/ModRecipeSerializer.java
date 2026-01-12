@@ -4,18 +4,18 @@ import com.Polarice3.Goety.Goety;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.RegistryObject;
+import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.neoforged.neoforge.registries.DeferredRegister;
+import net.neoforged.neoforge.registries.NeoForgeRegistries;
+import net.neoforged.neoforge.registries.RegistryObject;
 
 public class ModRecipeSerializer {
 
     public static final DeferredRegister<RecipeType<?>> RECIPE_TYPES = DeferredRegister.create(
-            ForgeRegistries.RECIPE_TYPES, Goety.MOD_ID);
+            NeoForgeRegistries.RECIPE_TYPES, Goety.MOD_ID);
 
     public static final DeferredRegister<RecipeSerializer<?>> RECIPE_SERIALIZERS = DeferredRegister.create(
-            ForgeRegistries.RECIPE_SERIALIZERS, Goety.MOD_ID);
+            NeoForgeRegistries.RECIPE_SERIALIZERS, Goety.MOD_ID);
 
     public static void init(){
         RECIPE_TYPES.register(FMLJavaModLoadingContext.get().getModEventBus());
@@ -52,8 +52,10 @@ public class ModRecipeSerializer {
     public static final RegistryObject<RecipeSerializer<PulverizeRecipe>> PULVERIZE = RECIPE_SERIALIZERS.register("pulverize",
             () -> PulverizeRecipe.SERIALIZER);
 
-    public static final RegistryObject<RecipeSerializer<ModShapelessRecipe>> MODDED_SHAPELESS = RECIPE_SERIALIZERS.register("crafting_shapeless",
-            ModShapelessRecipe.Serializer::new);
+    // 1.21+: vanilla shapeless recipe already supports complex ingredients via codecs/stream codecs.
+    // This legacy shim is disabled until the custom serializer is ported.
+//    public static final RegistryObject<RecipeSerializer<ModShapelessRecipe>> MODDED_SHAPELESS = RECIPE_SERIALIZERS.register("crafting_shapeless",
+//            ModShapelessRecipe.Serializer::new);
 
     static <T extends Recipe<?>> RegistryObject<RecipeType<T>> register(final String id) {
         return RECIPE_TYPES.register(id, () -> new RecipeType<T>() {

@@ -9,8 +9,8 @@ import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.network.NetworkDirection;
-import net.minecraftforge.network.NetworkEvent;
+import net.neoforged.network.NetworkDirection;
+import net.neoforged.network.NetworkEvent;
 
 import java.util.function.Supplier;
 

@@ -16,7 +16,6 @@ import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.item.PrimedTnt;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.enchantment.ProtectionEnchantment;
 import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BaseFireBlock;
@@ -99,7 +98,7 @@ public class LootingExplosion extends Explosion {
         int j2 = Mth.floor(this.z - (double)f2 - 1.0D);
         int j1 = Mth.floor(this.z + (double)f2 + 1.0D);
         List<Entity> list = this.level.getEntities(this.source, new AABB((double)k1, (double)i2, (double)j2, (double)l1, (double)i1, (double)j1));
-        net.minecraftforge.event.ForgeEventFactory.onExplosionDetonate(this.level, this, list, f2);
+        net.neoforged.event.EventFactory.onExplosionDetonate(this.level, this, list, f2);
         Vec3 vector3d = new Vec3(this.x, this.y, this.z);
 
         boolean flag = this.lootMode == Mode.LOOT;
@@ -132,9 +131,7 @@ public class LootingExplosion extends Explosion {
                                     entity.hurt(this.getDamageSource(), (float) ((int) ((d10 * d10 + d10) / 2.0D * 7.0D * (double) f2 + 1.0D)));
                                 }
                                 double d11 = d10;
-                                if (entity instanceof LivingEntity) {
-                                    d11 = ProtectionEnchantment.getExplosionKnockbackAfterDampener((LivingEntity) entity, d10);
-                                }
+                                // 1.21+ enchantments are data-driven; old ProtectionEnchantment dampener helper no longer exists.
 
                                 entity.setDeltaMovement(entity.getDeltaMovement().add(d5 * d11, d7 * d11, d9 * d11));
                                 if (entity instanceof Player player) {

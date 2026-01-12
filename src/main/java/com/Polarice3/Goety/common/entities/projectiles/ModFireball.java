@@ -157,7 +157,7 @@ public class ModFireball extends SmallFireball implements ISpellEntity {
         if (!this.level.isClientSide) {
             Entity entity = this.getOwner();
             if (this.isDangerous()) {
-                boolean flag = net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(this.level, this.getOwner());
+                boolean flag = this.level.getGameRules().getBoolean(GameRules.RULE_MOB_GRIEFING);
                 if (entity instanceof Player || (entity instanceof IOwned iOwned && iOwned.getTrueOwner() instanceof Player)){
                     flag = SpellConfig.FireballGriefing.get();
                 }

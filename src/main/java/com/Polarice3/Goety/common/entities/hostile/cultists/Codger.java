@@ -330,7 +330,8 @@ public class Codger extends Cultist implements RangedAttackMob {
                 if (this.getHealth() <= 0.0F){
                     return false;
                 }
-                net.minecraftforge.event.entity.EntityTeleportEvent.EnderEntity event = net.minecraftforge.event.ForgeEventFactory.onEnderTeleport(this, d1, d2, d3);
+                net.neoforged.event.entity.EntityTeleportEvent.EnderEntity event = new net.neoforged.event.entity.EntityTeleportEvent.EnderEntity(this, this.getX(), this.getY(), this.getZ());
+                net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(event);
                 if (event.isCanceled()) {
                     return false;
                 }

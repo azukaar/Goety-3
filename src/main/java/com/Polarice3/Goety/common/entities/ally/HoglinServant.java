@@ -8,7 +8,6 @@ import com.Polarice3.Goety.common.entities.ai.ModMeleeAttackGoal;
 import com.Polarice3.Goety.common.entities.neutral.Owned;
 import com.Polarice3.Goety.config.AttributesConfig;
 import com.Polarice3.Goety.config.MobsConfig;
-import com.Polarice3.Goety.init.ModMobType;
 import com.Polarice3.Goety.utils.CuriosFinder;
 import com.Polarice3.Goety.utils.MobUtil;
 import net.minecraft.core.BlockPos;
@@ -234,7 +233,7 @@ public class HoglinServant extends AnimalSummon implements HoglinBase, PlayerRid
         Zoglin zoglin = this.convertTo(EntityType.ZOGLIN, true);
         if (zoglin != null) {
             zoglin.addEffect(new MobEffectInstance(MobEffects.CONFUSION, 200, 0));
-            net.minecraftforge.event.ForgeEventFactory.onLivingConvert(this, zoglin);
+            net.neoforged.event.net.neoforged.neoforge.event.EventHooks.onLivingConvert(this, zoglin);
         }
 
     }
@@ -307,7 +306,7 @@ public class HoglinServant extends AnimalSummon implements HoglinBase, PlayerRid
         super.customServerAiStep();
         if (this.isConverting()) {
             ++this.timeInOverworld;
-            if (this.timeInOverworld > 300 && net.minecraftforge.event.ForgeEventFactory.canLivingConvert(this, EntityType.ZOGLIN, (timer) -> this.timeInOverworld = timer)) {
+            if (this.timeInOverworld > 300 && net.neoforged.event.net.neoforged.neoforge.event.EventHooks.canLivingConvert(this, EntityType.ZOGLIN, (timer) -> this.timeInOverworld = timer)) {
                 this.playSound(SoundEvents.HOGLIN_CONVERTED_TO_ZOMBIFIED);
                 this.finishConversion();
             }

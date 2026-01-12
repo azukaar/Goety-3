@@ -24,15 +24,13 @@ import net.minecraft.world.entity.ai.control.MoveControl;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
-import net.minecraft.world.level.pathfinder.BlockPathTypes;
+import net.minecraft.world.level.pathfinder.PathType;
 import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.common.ForgeMod;
-import net.minecraftforge.fluids.FluidType;
-
+import net.neoforged.neoforge.common.NeoForgeMod;
 import java.util.EnumSet;
 
 public class TropicalSlimeServant extends SlimeServant{
@@ -41,7 +39,7 @@ public class TropicalSlimeServant extends SlimeServant{
     public TropicalSlimeServant(EntityType<? extends Owned> type, Level worldIn) {
         super(type, worldIn);
         this.moveControl = new TropicalSlimeMoveControl(this);
-        this.setPathfindingMalus(BlockPathTypes.WATER, 0.0F);
+        this.setPathfindingMalus(PathType.WATER, 0.0F);
     }
 
     public ResourceLocation getResourceLocation() {
@@ -61,7 +59,7 @@ public class TropicalSlimeServant extends SlimeServant{
     public static AttributeSupplier.Builder setCustomAttributes() {
         return Mob.createMobAttributes()
                 .add(Attributes.ATTACK_DAMAGE)
-                .add(ForgeMod.SWIM_SPEED.get(), 0.1D);
+                .add(NeoForgeMod.SWIM_SPEED.get(), 0.1D);
     }
 
     @Override
@@ -197,19 +195,6 @@ public class TropicalSlimeServant extends SlimeServant{
         return 1.0D;
     }
 
-    @Override
-    public MobType getMobType() {
-        return MobType.WATER;
-    }
-
-    public boolean canDrownInFluidType(FluidType type){
-        return false;
-    }
-
-    public boolean isPushedByFluid(FluidType type) {
-        return false;
-    }
-
     public boolean checkSpawnObstruction(LevelReader p_32829_) {
         return p_32829_.isUnobstructed(this);
     }
@@ -279,7 +264,7 @@ public class TropicalSlimeServant extends SlimeServant{
                 this.operation = MoveControl.Operation.WAIT;
                 if (this.mob.isInWater() && !this.mob.onGround()) {
 
-                    float f1 = (float) (this.speedModifier * this.mob.getAttributeValue(ForgeMod.SWIM_SPEED.get()));
+                    float f1 = (float) (this.speedModifier * this.mob.getAttributeValue(NeoForgeMod.SWIM_SPEED.get()));
 
                     double d1 = this.wantedY - this.mob.getY();
                     boolean flag = d1 < 0.0D && this.mob.getTarget() != null;

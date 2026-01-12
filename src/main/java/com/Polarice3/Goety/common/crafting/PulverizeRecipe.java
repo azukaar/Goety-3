@@ -13,7 +13,7 @@ import net.minecraft.world.item.crafting.*;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.neoforge.registries.NeoForgeRegistries;
 
 public class PulverizeRecipe implements Recipe<Container> {
     public static Serializer SERIALIZER = new Serializer();
@@ -86,14 +86,14 @@ public class PulverizeRecipe implements Recipe<Container> {
                 } else {
                     String s1 = GsonHelper.getAsString(pJson, "item_result");
                     ResourceLocation resourcelocation = new ResourceLocation(s1);
-                    itemstack = new ItemStack(ForgeRegistries.ITEMS.getValue(resourcelocation));
+                    itemstack = new ItemStack(NeoForgeRegistries.ITEMS.getValue(resourcelocation));
                 }
             }
             Block block = Blocks.CAVE_AIR;
             if (pJson.has("block_result")){
                 String s1 = GsonHelper.getAsString(pJson, "block_result");
                 ResourceLocation resourcelocation = new ResourceLocation(s1);
-                block = ForgeRegistries.BLOCKS.getValue(resourcelocation);
+                block = NeoForgeRegistries.BLOCKS.getValue(resourcelocation);
             }
 
             return new PulverizeRecipe(pRecipeId, ingredient, itemstack, block);
@@ -102,14 +102,14 @@ public class PulverizeRecipe implements Recipe<Container> {
         public PulverizeRecipe fromNetwork(ResourceLocation pRecipeId, FriendlyByteBuf pBuffer) {
             Ingredient ingredient = Ingredient.fromNetwork(pBuffer);
             ItemStack itemstack = pBuffer.readItem();
-            Block block = ForgeRegistries.BLOCKS.getValue(pBuffer.readResourceLocation());
+            Block block = NeoForgeRegistries.BLOCKS.getValue(pBuffer.readResourceLocation());
             return new PulverizeRecipe(pRecipeId, ingredient, itemstack, block);
         }
 
         public void toNetwork(FriendlyByteBuf pBuffer, PulverizeRecipe pRecipe) {
             pRecipe.ingredient.toNetwork(pBuffer);
             pBuffer.writeItem(pRecipe.itemResult);
-            ResourceLocation resourceLocation = ForgeRegistries.BLOCKS.getKey(pRecipe.blockResult);
+            ResourceLocation resourceLocation = NeoForgeRegistries.BLOCKS.getKey(pRecipe.blockResult);
             if (resourceLocation != null) {
                 pBuffer.writeResourceLocation(resourceLocation);
             }

@@ -37,7 +37,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.common.ForgeMod;
+import net.neoforged.neoforge.common.NeoForgeMod;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -80,7 +80,7 @@ public class StormCasterServant extends AbstractIllagerServant {
     public static AttributeSupplier.Builder setCustomAttributes(){
         return Mob.createMobAttributes()
                 .add(Attributes.FOLLOW_RANGE, 16.0D)
-                .add(ForgeMod.STEP_HEIGHT_ADDITION.get(), 1.0D)
+                .add(NeoForgeMod.STEP_HEIGHT_ADDITION.get(), 1.0D)
                 .add(Attributes.MAX_HEALTH, AttributesConfig.StormCasterHealth.get())
                 .add(Attributes.ARMOR, AttributesConfig.StormCasterArmor.get())
                 .add(Attributes.MOVEMENT_SPEED, 0.35D)
@@ -257,7 +257,7 @@ public class StormCasterServant extends AbstractIllagerServant {
                         BoundStormCaster servant = this.convertTo(ModEntityType.BOUND_STORM_CASTER.get(), true);
                         if (servant != null) {
                             servant.setTrueOwner(this.getTrueOwner());
-                            net.minecraftforge.event.ForgeEventFactory.onLivingConvert(this, servant);
+                            net.neoforged.event.net.neoforged.neoforge.event.EventHooks.onLivingConvert(this, servant);
                             if (!this.isSilent()) {
                                 this.level.levelEvent((Player)null, 1026, this.blockPosition(), 0);
                             }

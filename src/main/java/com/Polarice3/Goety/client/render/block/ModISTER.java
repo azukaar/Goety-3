@@ -20,7 +20,7 @@ import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.ChestBlock;
-import net.minecraftforge.registries.RegistryObject;
+import net.neoforged.neoforge.registries.RegistryObject;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -132,3 +132,4 @@ public class ModISTER extends BlockEntityWithoutLevelRenderer {
         map.put(block, new ModChestBlockEntity(BlockPos.ZERO, block.defaultBlockState()));
     }
 }
+

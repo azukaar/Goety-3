@@ -3,9 +3,8 @@ package com.Polarice3.Goety.common.events.spell;
 import com.Polarice3.Goety.api.magic.ISpell;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.entity.living.LivingEvent;
-import net.minecraftforge.eventbus.api.Cancelable;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.entity.living.LivingEvent;
 
 /**
  * CastingMagicEvent is fired when stopped using {@link com.Polarice3.Goety.common.items.magic.DarkWand} to cast a spell. <br>
@@ -17,9 +16,8 @@ import net.minecraftforge.eventbus.api.Cancelable;
  * <br>
  * This event does not have a result. {@link HasResult}<br>
  * <br>
- * This event is fired on the {@link MinecraftForge#EVENT_BUS}.
+ * This event is fired on the {@link NeoForge#EVENT_BUS}.
  **/
-@Cancelable
 public class StopMagicEvent extends LivingEvent {
     private final ISpell spell;
     private final ItemStack useItem;

@@ -43,8 +43,8 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.pathfinder.Path;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.common.ForgeMod;
-import net.minecraftforge.common.Tags;
+import net.neoforged.neoforge.common.NeoForgeMod;
+import net.neoforged.neoforge.common.Tags;
 
 import javax.annotation.Nullable;
 import java.util.function.Predicate;
@@ -97,7 +97,7 @@ public class AbstractWraith extends Summoned {
                 .add(Attributes.ARMOR, AttributesConfig.WraithArmor.get())
                 .add(Attributes.FOLLOW_RANGE, 16.0D)
                 .add(Attributes.MOVEMENT_SPEED, 0.25F)
-                .add(ForgeMod.STEP_HEIGHT_ADDITION.get(), 1.0F)
+                .add(NeoForgeMod.STEP_HEIGHT_ADDITION.get(), 1.0F)
                 .add(Attributes.ATTACK_DAMAGE, AttributesConfig.WraithDamage.get());
     }
 
@@ -185,10 +185,6 @@ public class AbstractWraith extends Summoned {
 
     public boolean isInterested() {
         return this.entityData.get(DATA_INTERESTED_ID);
-    }
-
-    public MobType getMobType() {
-        return MobType.UNDEAD;
     }
 
     protected SoundEvent getAmbientSound() {
@@ -455,7 +451,8 @@ public class AbstractWraith extends Summoned {
     }
 
     public boolean canTeleport(){
-        net.minecraftforge.event.entity.EntityTeleportEvent.EnderEntity event = net.minecraftforge.event.ForgeEventFactory.onEnderTeleport(this, this.getX(), this.getY(), this.getZ());
+        net.neoforged.event.entity.EntityTeleportEvent.EnderEntity event = new net.neoforged.event.entity.EntityTeleportEvent.EnderEntity(this, this.getX(), this.getY(), this.getZ());
+        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(event);
         return !event.isCanceled() && !this.isStaying() && this.teleportCooldown <= 0 && !this.isPostTeleporting();
     }
 

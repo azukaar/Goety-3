@@ -27,11 +27,9 @@ public class ModFoodData {
     }
 
     public void eat(ItemStack itemStack, @Nullable LivingEntity entity) {
-        if (itemStack.isEdible()) {
-            FoodProperties foodproperties = itemStack.getFoodProperties(entity);
-            if (foodproperties != null) {
-                this.eat(foodproperties.getNutrition(), foodproperties.getSaturationModifier());
-            }
+        FoodProperties foodproperties = itemStack.getFoodProperties(entity);
+        if (foodproperties != null) {
+            this.eat(foodproperties.nutrition(), foodproperties.saturation());
         }
     }
 

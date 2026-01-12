@@ -4,7 +4,7 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.navigation.GroundPathNavigation;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.pathfinder.BlockPathTypes;
+import net.minecraft.world.level.pathfinder.PathType;
 import net.minecraft.world.level.pathfinder.Path;
 import net.minecraft.world.level.pathfinder.PathFinder;
 import net.minecraft.world.level.pathfinder.WalkNodeEvaluator;
@@ -106,13 +106,13 @@ public class ModGroundNavigation extends GroundPathNavigation {
     }
 
 
-    protected boolean hasValidPathType(BlockPathTypes p_26467_) {
-        if (p_26467_ == BlockPathTypes.WATER) {
+    protected boolean hasValidPathType(PathType p_26467_) {
+        if (p_26467_ == PathType.WATER) {
             return false;
-        } else if (p_26467_ == BlockPathTypes.LAVA) {
+        } else if (p_26467_ == PathType.LAVA) {
             return false;
         } else {
-            return p_26467_ != BlockPathTypes.OPEN;
+            return p_26467_ != PathType.OPEN;
         }
     }
 

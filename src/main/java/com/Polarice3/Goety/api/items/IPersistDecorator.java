@@ -6,7 +6,7 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.client.IItemDecorator;
+import net.neoforged.neoforge.client.IItemDecorator;
 
 public class IPersistDecorator implements IItemDecorator {
     public static final ResourceLocation BROKEN_OVERLAY = Goety.location("textures/item/broken_overlay.png");
@@ -33,3 +33,4 @@ public class IPersistDecorator implements IItemDecorator {
         return true;
     }
 }
+

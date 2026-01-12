@@ -5,8 +5,6 @@ import com.Polarice3.Goety.common.blocks.ArcaBlock;
 import com.Polarice3.Goety.common.blocks.entities.ArcaBlockEntity;
 import com.Polarice3.Goety.common.events.ArcaTeleporter;
 import com.Polarice3.Goety.common.magic.spells.void_spells.RecallSpell;
-import com.Polarice3.Goety.common.network.ModNetwork;
-import com.Polarice3.Goety.common.network.server.SPlayWorldSoundPacket;
 import com.Polarice3.Goety.init.ModTags;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -16,6 +14,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.InteractionResultHolder;
@@ -31,7 +30,6 @@ import net.minecraft.world.level.block.RespawnAnchorBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.network.PacketDistributor;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -98,13 +96,17 @@ public class RecallFocus extends MagicFocus{
                     if (getDimension(stack.getTag()).get() == livingEntity.level.dimension()) {
                         Optional<Vec3> optional = RespawnAnchorBlock.findStandUpPosition(EntityType.PLAYER, livingEntity.level, blockPos);
                         if (optional.isPresent()) {
-                            net.minecraftforge.event.entity.EntityTeleportEvent.EnderEntity event = net.minecraftforge.event.ForgeEventFactory.onEnderTeleport(livingEntity, optional.get().x, optional.get().y, optional.get().z);
+                            Vec3 pos = optional.get();
+                            net.neoforged.neoforge.event.entity.EntityTeleportEvent.EnderEntity event = new net.neoforged.neoforge.event.entity.EntityTeleportEvent.EnderEntity(livingEntity, pos.x, pos.y, pos.z);
+                            net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(event);
                             if (event.isCanceled()) {
                                 return false;
                             }
                             livingEntity.teleportTo(event.getTargetX(), event.getTargetY(), event.getTargetZ());
-                            ModNetwork.INSTANCE.send(PacketDistributor.ALL.noArg(), new SPlayWorldSoundPacket(BlockPos.containing(livingEntity.xo, livingEntity.yo, livingEntity.zo), SoundEvents.ENDERMAN_TELEPORT, 1.0F, 1.0F));
-                            ModNetwork.INSTANCE.send(PacketDistributor.ALL.noArg(), new SPlayWorldSoundPacket(BlockPos.containing(optional.get()), SoundEvents.ENDERMAN_TELEPORT, 1.0F, 1.0F));
+                            if (livingEntity.level instanceof ServerLevel serverLevel) {
+                                serverLevel.playSound(null, BlockPos.containing(livingEntity.xo, livingEntity.yo, livingEntity.zo), SoundEvents.ENDERMAN_TELEPORT, SoundSource.NEUTRAL, 1.0F, 1.0F);
+                                serverLevel.playSound(null, BlockPos.containing(optional.get()), SoundEvents.ENDERMAN_TELEPORT, SoundSource.NEUTRAL, 1.0F, 1.0F);
+                            }
                             return true;
                         }
                     } else {
@@ -113,11 +115,13 @@ public class RecallFocus extends MagicFocus{
                             if (serverWorld != null) {
                                 Optional<Vec3> optional = RespawnAnchorBlock.findStandUpPosition(EntityType.PLAYER, serverWorld, blockPos);
                                 if (optional.isPresent()) {
-                                    net.minecraftforge.event.entity.EntityTeleportEvent.EnderEntity event = net.minecraftforge.event.ForgeEventFactory.onEnderTeleport(livingEntity, optional.get().x, optional.get().y, optional.get().z);
+                                    Vec3 pos = optional.get();
+                            net.neoforged.neoforge.event.entity.EntityTeleportEvent.EnderEntity event = new net.neoforged.neoforge.event.entity.EntityTeleportEvent.EnderEntity(livingEntity, pos.x, pos.y, pos.z);
+                            net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(event);
                                     if (event.isCanceled()) {
                                         return false;
                                     }
-                                    livingEntity.changeDimension(serverWorld, new ArcaTeleporter(optional.get()));
+                                    livingEntity.changeDimension(ArcaTeleporter.transition(serverWorld, livingEntity, optional.get()));
                                     livingEntity.teleportTo(event.getTargetX(), event.getTargetY(), event.getTargetZ());
                                     return true;
                                 }
@@ -204,5 +208,4 @@ public class RecallFocus extends MagicFocus{
             }
         }
     }
-
 }

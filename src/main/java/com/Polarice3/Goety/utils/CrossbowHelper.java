@@ -56,7 +56,7 @@ public class CrossbowHelper {
     }
 
     public static void performCustomShooting(Level level, LivingEntity shooter, InteractionHand hand, ItemStack crossbow, Projectile projectile, SoundEvent soundEvent, float velocity, float p_40893_) {
-        if (shooter instanceof Player player && net.minecraftforge.event.ForgeEventFactory.onArrowLoose(crossbow, shooter.level, player, 1, true) < 0) return;
+        if (shooter instanceof Player player && net.neoforged.event.EventFactory.onArrowLoose(crossbow, shooter.level, player, 1, true) < 0) return;
         List<ItemStack> list = getChargedProjectiles(crossbow);
         float[] afloat = getShotPitches(shooter.getRandom());
 

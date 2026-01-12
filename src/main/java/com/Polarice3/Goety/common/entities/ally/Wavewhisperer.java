@@ -23,11 +23,10 @@ import net.minecraft.world.entity.ai.util.DefaultRandomPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.pathfinder.BlockPathTypes;
+import net.minecraft.world.level.pathfinder.PathType;
 import net.minecraft.world.level.pathfinder.Path;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.common.ForgeMod;
-import net.minecraftforge.fluids.FluidType;
+import net.neoforged.neoforge.common.NeoForgeMod;
 import org.jetbrains.annotations.Nullable;
 
 public class Wavewhisperer extends Whisperer{
@@ -39,8 +38,8 @@ public class Wavewhisperer extends Whisperer{
         super(type, worldIn);
         this.setMaxUpStep(1.25F);
         this.moveControl = new MoveHelperController(this);
-        this.setPathfindingMalus(BlockPathTypes.WATER, 0.0F);
-        this.setPathfindingMalus(BlockPathTypes.WATER_BORDER, 0.0F);
+        this.setPathfindingMalus(PathType.WATER, 0.0F);
+        this.setPathfindingMalus(PathType.WATER_BORDER, 0.0F);
         this.waterNavigation = new ModWaterPathNavigation(this, worldIn);
         this.groundNavigation = new GroundPathNavigatorFat(this, worldIn);
     }
@@ -176,14 +175,6 @@ public class Wavewhisperer extends Whisperer{
             }
 
         }
-    }
-
-    public boolean canDrownInFluidType(FluidType type) {
-        return type != ForgeMod.WATER_TYPE.get();
-    }
-
-    public boolean isPushedByFluid(FluidType type) {
-        return !this.isSwimming();
     }
 
     @Nullable

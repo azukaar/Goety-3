@@ -21,8 +21,6 @@ import net.minecraft.world.entity.projectile.Arrow;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
-import net.minecraftforge.network.NetworkHooks;
-
 public class DeathArrow extends Arrow {
 
     public DeathArrow(EntityType<? extends Arrow> p_36721_, Level p_36722_) {
@@ -147,6 +145,6 @@ public class DeathArrow extends Arrow {
 
     @Override
     public Packet<ClientGamePacketListener> getAddEntityPacket() {
-        return NetworkHooks.getEntitySpawningPacket(this);
+        return new net.minecraft.network.protocol.game.ClientboundAddEntityPacket(this);
     }
 }

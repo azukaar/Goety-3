@@ -1,18 +1,18 @@
 package com.Polarice3.Goety.client.inventory.container;
 
 import com.Polarice3.Goety.common.items.handler.FocusBagItemHandler;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.items.SlotItemHandler;
+import net.neoforged.neoforge.items.SlotItemHandler;
 
 public class FocusPackContainer extends AbstractContainerMenu {
     private final ItemStack stack;
 
-    public static FocusPackContainer createContainerClientSide(int id, Inventory inventory, FriendlyByteBuf buffer) {
+    public static FocusPackContainer createContainerClientSide(int id, Inventory inventory, RegistryFriendlyByteBuf buffer) {
         return new FocusPackContainer(id, inventory, new FocusBagItemHandler(ItemStack.EMPTY, 21), ItemStack.EMPTY);
     }
 
@@ -73,3 +73,4 @@ public class FocusPackContainer extends AbstractContainerMenu {
         return !stack.isEmpty();
     }
 }
+

@@ -351,7 +351,7 @@ public class SEHelper {
                             Optional<Vec3> optional = RespawnAnchorBlock.findStandUpPosition(EntityType.PLAYER, serverWorld, blockPos1);
                             if (optional.isPresent()) {
                                 Vec3 vec3 = optional.get();
-                                player.changeDimension(serverWorld, new ArcaTeleporter(optional.get()));
+                                player.changeDimension(ArcaTeleporter.transition(serverWorld, player, optional.get()));
                                 if (serverWorld.getWorldBorder().isWithinBounds(vec3.x, vec3.y, vec3.z)) {
                                     player.teleportTo(vec3.x, vec3.y, vec3.z);
                                 } else {

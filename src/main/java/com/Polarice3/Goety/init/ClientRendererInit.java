@@ -1,8 +1,8 @@
 package com.Polarice3.Goety.init;
 
 import com.Polarice3.Goety.client.render.ModPlayerRenderer;
-import net.minecraftforge.client.event.EntityRenderersEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.neoforged.neoforge.client.event.EntityRenderersEvent;
+import net.neoforged.bus.api.SubscribeEvent;
 import org.jetbrains.annotations.UnknownNullability;
 
 public class ClientRendererInit {

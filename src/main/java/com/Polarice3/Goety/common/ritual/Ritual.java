@@ -144,13 +144,10 @@ public abstract class Ritual {
 
         List<PedestalBlockEntity> pedestals = this.getPedestals(world, darkAltarPos);
         for (PedestalBlockEntity pedestal : pedestals) {
-            pedestal.itemStackHandler.map(handler -> {
-                ItemStack stack = handler.extractItem(0, 1, true);
-                if (!stack.isEmpty()) {
-                    addItemParticles((ServerLevel) world, pedestal.getBlockPos(), darkAltarPos, stack);
-                }
-                return true;
-            });
+            ItemStack stack = pedestal.itemStackHandler.extractItem(0, 1, true);
+            if (!stack.isEmpty()) {
+                addItemParticles((ServerLevel) world, pedestal.getBlockPos(), darkAltarPos, stack);
+            }
         }
 
     }
@@ -199,30 +196,21 @@ public abstract class Ritual {
                                                List<PedestalBlockEntity> pedestals,
                                                Ingredient ingredient, List<ItemStack> consumedIngredients) {
         for (PedestalBlockEntity pedestal : pedestals) {
-            if (pedestal.itemStackHandler.map(handler -> {
-                ItemStack stack = handler.extractItem(0, 1, true);
-                if (ingredient.test(stack)) {
-                    ItemStack extracted = handler.extractItem(0, 1, false);
+            ItemStack preview = pedestal.itemStackHandler.extractItem(0, 1, true);
+            if (!preview.isEmpty() && ingredient.test(preview)) {
+                ItemStack extracted = pedestal.itemStackHandler.extractItem(0, 1, false);
+                consumedIngredients.add(extracted);
 
-                    consumedIngredients.add(extracted);
-
-                    if (extracted.getItem() instanceof BucketItem bucketItem && !bucketItem.getFluid().defaultFluidState().isEmpty()){
-                        ItemHelper.addItemEntity(world, pedestal.getBlockPos().above(), new ItemStack(Items.BUCKET));
-                        world.playSound(null, pedestal.getBlockPos(), SoundEvents.BUCKET_EMPTY, SoundSource.BLOCKS,
-                                0.7F, 0.7F);
-                    } else if (extracted.hasCraftingRemainingItem()){
-                        ItemHelper.addItemEntity(world, pedestal.getBlockPos().above(), extracted.getCraftingRemainingItem());
-                    }
-
-                    handler.setStackInSlot(0, ItemStack.EMPTY);
-
-                    world.playSound(null, pedestal.getBlockPos(), SoundEvents.ITEM_PICKUP, SoundSource.BLOCKS,
-                            0.7F, 0.7F);
-                    return true;
+                if (extracted.hasCraftingRemainingItem()) {
+                    ItemHelper.addItemEntity(world, pedestal.getBlockPos().above(), extracted.getCraftingRemainingItem());
                 }
-                return false;
-            }).orElse(false))
+
+                pedestal.itemStackHandler.setStackInSlot(0, ItemStack.EMPTY);
+
+                world.playSound(null, pedestal.getBlockPos(), SoundEvents.ITEM_PICKUP, SoundSource.BLOCKS,
+                        0.7F, 0.7F);
                 return true;
+            }
 
         }
         return false;
@@ -276,14 +264,12 @@ public abstract class Ritual {
 
         List<PedestalBlockEntity> pedestals = this.getPedestals(world, darkAltarPos);
         for (PedestalBlockEntity pedestalTile : pedestals) {
-            pedestalTile.itemStackHandler.ifPresent(handler -> {
-                ItemStack stack = handler.getStackInSlot(0);
-                for (Ingredient ingredient : additionalIngredients) {
-                    if (ingredient.test(stack) && !result.contains(stack)) {
-                        result.add(stack);
-                    }
+            ItemStack stack = pedestalTile.itemStackHandler.getStackInSlot(0);
+            for (Ingredient ingredient : additionalIngredients) {
+                if (ingredient.test(stack) && !result.contains(stack)) {
+                    result.add(stack);
                 }
-            });
+            }
         }
 
         return result;
@@ -294,12 +280,10 @@ public abstract class Ritual {
 
         List<PedestalBlockEntity> pedestals = this.getPedestals(world, darkAltarPos);
         for (PedestalBlockEntity pedestalTile : pedestals) {
-            pedestalTile.itemStackHandler.ifPresent(handler -> {
-                ItemStack stack = handler.getStackInSlot(0);
-                if (!stack.isEmpty()) {
-                    result.add(stack);
-                }
-            });
+            ItemStack stack = pedestalTile.itemStackHandler.getStackInSlot(0);
+            if (!stack.isEmpty()) {
+                result.add(stack);
+            }
         }
 
         return result;
@@ -330,8 +314,7 @@ public abstract class Ritual {
             mob.absMoveTo(darkAltarPos.getX() + 0.5F, darkAltarPos.getY() + 1.0F, darkAltarPos.getZ() + 0.5F,
                     world.random.nextInt(360), 0);
             mob.finalizeSpawn((ServerLevel) world, world.getCurrentDifficultyAt(darkAltarPos),
-                    MobSpawnType.MOB_SUMMONED, null,
-                    null);
+                    MobSpawnType.MOB_SUMMONED, null);
         } else {
             livingEntity.setPos(darkAltarPos.getX() + 0.5F, darkAltarPos.getY() + 1, darkAltarPos.getZ() + 0.5F);
         }

@@ -20,8 +20,6 @@ import net.minecraft.world.entity.vehicle.DismountHelper;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.fluids.FluidType;
-
 import javax.annotation.Nullable;
 import java.util.List;
 
@@ -266,13 +264,8 @@ public class PioneerRock extends SpellEntity {
     }
 
     @Override
-    public boolean isPushedByFluid(FluidType type) {
+    public boolean isPushedByFluid() {
         return false;
-    }
-
-    @Override
-    public boolean canBeRiddenUnderFluidType(FluidType type, Entity rider) {
-        return true;
     }
 
     public InteractionResult interact(Player p_38330_, InteractionHand p_38331_) {

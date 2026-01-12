@@ -11,12 +11,10 @@ import net.minecraft.client.particle.ParticleProvider;
 import net.minecraft.client.particle.SpriteSet;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleType;
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.Locale;
 
 public class GatherTrailParticle extends WindTrailParticle {
     public final Vec3 origin;
@@ -73,7 +71,7 @@ public class GatherTrailParticle extends WindTrailParticle {
     }
 
     public static class Option implements ParticleOptions {
-        public static final Codec<Option> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+        public static final com.mojang.serialization.MapCodec<Option> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
                 Codec.FLOAT.fieldOf("red").forGetter(d -> d.red),
                 Codec.FLOAT.fieldOf("green").forGetter(d -> d.green),
                 Codec.FLOAT.fieldOf("blue").forGetter(d -> d.blue),
@@ -81,27 +79,17 @@ public class GatherTrailParticle extends WindTrailParticle {
                 Codec.FLOAT.fieldOf("endY").forGetter(d -> d.endY),
                 Codec.FLOAT.fieldOf("endZ").forGetter(d -> d.endZ)
         ).apply(instance, Option::new));
-        public static final Deserializer<Option> DESERIALIZER = new Deserializer<Option>() {
-            public Option fromCommand(ParticleType<Option> particleTypeIn, StringReader reader) throws CommandSyntaxException {
-                reader.expect(' ');
-                float red = reader.readFloat();
-                reader.expect(' ');
-                float green = reader.readFloat();
-                reader.expect(' ');
-                float blue = reader.readFloat();
-                reader.expect(' ');
-                float endX = reader.readFloat();
-                reader.expect(' ');
-                float endY = reader.readFloat();
-                reader.expect(' ');
-                float endZ = reader.readFloat();
-                return new Option(red, green, blue, endX, endY, endZ);
-            }
-
-            public Option fromNetwork(ParticleType<Option> particleTypeIn, FriendlyByteBuf buffer) {
-                return new Option(buffer.readFloat(), buffer.readFloat(), buffer.readFloat(), buffer.readFloat(), buffer.readFloat(), buffer.readFloat());
-            }
-        };
+        public static final StreamCodec<RegistryFriendlyByteBuf, Option> STREAM_CODEC = StreamCodec.of(
+                (buf, value) -> {
+                    buf.writeFloat(value.red);
+                    buf.writeFloat(value.green);
+                    buf.writeFloat(value.blue);
+                    buf.writeFloat(value.endX);
+                    buf.writeFloat(value.endY);
+                    buf.writeFloat(value.endZ);
+                },
+                buf -> new Option(buf.readFloat(), buf.readFloat(), buf.readFloat(), buf.readFloat(), buf.readFloat(), buf.readFloat())
+        );
         private final float red;
         private final float green;
         private final float blue;
@@ -134,20 +122,6 @@ public class GatherTrailParticle extends WindTrailParticle {
             this.endX = endX;
             this.endY = endY;
             this.endZ = endZ;
-        }
-
-        public void writeToNetwork(FriendlyByteBuf buffer) {
-            buffer.writeFloat(this.red);
-            buffer.writeFloat(this.green);
-            buffer.writeFloat(this.blue);
-            buffer.writeFloat(this.endX);
-            buffer.writeFloat(this.endY);
-            buffer.writeFloat(this.endZ);
-        }
-
-        public String writeToString() {
-            return String.format(Locale.ROOT, "%s %.2f %.2f %.2f %.2f %.2f %.2f",
-                    BuiltInRegistries.PARTICLE_TYPE.getKey(this.getType()), this.red, this.green, this.blue, this.endX, this.endY, this.endZ);
         }
 
         public ParticleType<Option> getType() {

@@ -5,7 +5,7 @@ import com.Polarice3.Goety.utils.FungusExplosion;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.network.NetworkEvent;
+import net.neoforged.network.NetworkEvent;
 
 import javax.annotation.Nullable;
 import java.util.function.Supplier;

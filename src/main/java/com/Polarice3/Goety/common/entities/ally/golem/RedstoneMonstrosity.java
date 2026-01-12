@@ -56,13 +56,13 @@ import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.LeavesBlock;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.pathfinder.BlockPathTypes;
+import net.minecraft.world.level.pathfinder.PathType;
 import net.minecraft.world.level.pathfinder.NodeEvaluator;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.minecraftforge.common.ForgeMod;
-import net.minecraftforge.common.Tags;
+import net.neoforged.neoforge.common.NeoForgeMod;
+import net.neoforged.neoforge.common.Tags;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -116,10 +116,10 @@ public class RedstoneMonstrosity extends RaiderGolemServant implements PlayerRid
 
     public RedstoneMonstrosity(EntityType<? extends Owned> type, Level worldIn) {
         super(type, worldIn);
-        this.setPathfindingMalus(BlockPathTypes.DANGER_FIRE, 0.0F);
-        this.setPathfindingMalus(BlockPathTypes.UNPASSABLE_RAIL, 0.0F);
-        this.setPathfindingMalus(BlockPathTypes.DAMAGE_FIRE, 0.0F);
-        this.setPathfindingMalus(BlockPathTypes.LEAVES, 0.0F);
+        this.setPathfindingMalus(PathType.DANGER_FIRE, 0.0F);
+        this.setPathfindingMalus(PathType.UNPASSABLE_RAIL, 0.0F);
+        this.setPathfindingMalus(PathType.DAMAGE_FIRE, 0.0F);
+        this.setPathfindingMalus(PathType.LEAVES, 0.0F);
         this.moveControl = new SlowRotMoveControl(this);
     }
 
@@ -145,7 +145,7 @@ public class RedstoneMonstrosity extends RaiderGolemServant implements PlayerRid
                 .add(Attributes.MOVEMENT_SPEED, 0.23D)
                 .add(Attributes.KNOCKBACK_RESISTANCE, 1.0D)
                 .add(Attributes.ATTACK_KNOCKBACK, 6.0D)
-                .add(ForgeMod.STEP_HEIGHT_ADDITION.get(), 2.0D)
+                .add(NeoForgeMod.STEP_HEIGHT_ADDITION.get(), 2.0D)
                 .add(Attributes.ATTACK_DAMAGE, AttributesConfig.RedstoneMonstrosityDamage.get())
                 .add(Attributes.FOLLOW_RANGE, AttributesConfig.RedstoneMonstrosityFollowRange.get());
     }
@@ -652,7 +652,7 @@ public class RedstoneMonstrosity extends RaiderGolemServant implements PlayerRid
         if (!this.level.isClientSide){
             if (this.isAlive() && !this.isActivating()) {
                 if (MobsConfig.RedstoneMonstrosityLeafBreak.get()) {
-                    if (net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(this.level, this)) {
+                    if (this.level.getGameRules().getBoolean(GameRules.RULE_MOB_GRIEFING)) {
                         boolean flag = false;
                         AABB aabb = this.getBoundingBox().inflate(0.2D);
 
@@ -1383,7 +1383,7 @@ public class RedstoneMonstrosity extends RaiderGolemServant implements PlayerRid
             if (pathnavigation != null) {
                 NodeEvaluator nodeevaluator = pathnavigation.getNodeEvaluator();
                 return nodeevaluator == null || nodeevaluator.getBlockPathType(this.mob.level, Mth.floor(this.mob.getX() + (double) p_24997_),
-                        this.mob.getBlockY(), Mth.floor(this.mob.getZ() + (double) p_24998_)) == BlockPathTypes.WALKABLE;
+                        this.mob.getBlockY(), Mth.floor(this.mob.getZ() + (double) p_24998_)) == PathType.WALKABLE;
             }
             return true;
         }

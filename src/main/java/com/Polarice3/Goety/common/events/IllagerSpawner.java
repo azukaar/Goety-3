@@ -39,9 +39,9 @@ import net.minecraft.world.level.NaturalSpawner;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.Heightmap;
-import net.minecraftforge.common.Tags;
-import net.minecraftforge.event.ForgeEventFactory;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.neoforge.common.Tags;
+
+import net.neoforged.neoforge.registries.NeoForgeRegistries;
 
 import java.util.Map;
 
@@ -98,7 +98,7 @@ public class IllagerSpawner {
                                     int i1 = 0;
                                     for (IllagerDataType data : IllagerAssaultListener.ILLAGER_LIST.values()){
                                         if (data != null){
-                                            EntityType<?> entityType = ForgeRegistries.ENTITY_TYPES.getValue(data.raider);
+                                            EntityType<?> entityType = NeoForgeRegistries.ENTITY_TYPES.getValue(data.raider);
                                             if (entityType != null && entityType != EntityType.PIG) {
                                                 if (soulEnergy >= MobsConfig.IllagerAssaultSEThreshold.get() * data.thresholdTimes && pLevel.random.nextFloat() <= data.chance) {
                                                     ++i1;
@@ -161,7 +161,7 @@ public class IllagerSpawner {
                 return false;
             } else {
                 illager.setPos(pos.getX(), pos.getY(), pos.getZ());
-                ForgeEventFactory.onFinalizeSpawn(illager, worldIn, worldIn.getCurrentDifficultyAt(pos), MobSpawnType.PATROL, null, null);
+                net.neoforged.neoforge.event.EventHooks.onFinalizeSpawn(illager, worldIn, worldIn.getCurrentDifficultyAt(pos), MobSpawnType.PATROL, null, null);
                 illager.goalSelector.addGoal(0, new HuntDownPlayerGoal<>(illager));
                 if (illager instanceof HuntingIllagerEntity huntingIllager){
                     float rawPercent = (float) SEHelper.getSoulAmountInt(player) / MainConfig.MaxArcaSouls.get();
@@ -177,12 +177,12 @@ public class IllagerSpawner {
                 this.upgradeIllagers(illager, soulAmount);
                 if (dataType.riding != null){
                     if (worldIn.random.nextFloat() <= dataType.rideChance){
-                        EntityType<?> entityType1 = ForgeRegistries.ENTITY_TYPES.getValue(dataType.riding);
+                        EntityType<?> entityType1 = NeoForgeRegistries.ENTITY_TYPES.getValue(dataType.riding);
                         if (entityType1 != null){
                             Entity entity1 = entityType1.create(worldIn);
                             if (entity1 instanceof PathfinderMob mount) {
                                 mount.setPos(pos.getX(), pos.getY(), pos.getZ());
-                                ForgeEventFactory.onFinalizeSpawn(mount, worldIn, worldIn.getCurrentDifficultyAt(pos), MobSpawnType.PATROL, null, null);
+                                net.neoforged.neoforge.event.EventHooks.onFinalizeSpawn(mount, worldIn, worldIn.getCurrentDifficultyAt(pos), MobSpawnType.PATROL, null, null);
                                 illager.startRiding(mount);
                                 if (CuriosFinder.hasCurio(player, ModItems.ALARMING_CHARM.get())){
                                     mount.addEffect(new MobEffectInstance(MobEffects.GLOWING, 60));
@@ -262,7 +262,7 @@ public class IllagerSpawner {
                 } else if (!IllagerAssaultListener.ILLAGER_LIST.isEmpty()){
                     for (IllagerDataType data : IllagerAssaultListener.ILLAGER_LIST.values()){
                         if (data != null){
-                            EntityType<?> entityType = ForgeRegistries.ENTITY_TYPES.getValue(data.raider);
+                            EntityType<?> entityType = NeoForgeRegistries.ENTITY_TYPES.getValue(data.raider);
                             if (entityType != null && entityType != EntityType.PIG) {
                                 if (soulEnergy >= MobsConfig.IllagerAssaultSEThreshold.get() * data.thresholdTimes && pLevel.random.nextFloat() <= data.chance) {
                                     int cost = (int) (soulEnergy / data.thresholdTimes);

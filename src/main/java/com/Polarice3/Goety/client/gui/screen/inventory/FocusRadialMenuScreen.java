@@ -21,18 +21,17 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.RenderGuiOverlayEvent;
-import net.minecraftforge.client.gui.overlay.VanillaGuiOverlay;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.items.IItemHandler;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.neoforge.client.event.RenderGuiLayerEvent;
+import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.neoforge.items.IItemHandler;
 
 import java.util.List;
 /**
  * Radial Menu as a whole based of @gigaherz Toolbelt codes: <a href="https://github.com/gigaherz/ToolBelt/blob/master/src/main/java/dev/gigaherz/toolbelt/client/RadialMenuScreen.java">...</a>
  * */
-@Mod.EventBusSubscriber(Dist.CLIENT)
 public class FocusRadialMenuScreen extends Screen {
     private ItemStack stackEquipped;
     private IItemHandler focusBagHandler;
@@ -85,10 +84,8 @@ public class FocusRadialMenuScreen extends Screen {
     }
 
     @SubscribeEvent
-    public static void overlayEvent(RenderGuiOverlayEvent.Pre event) {
-        if (event.getOverlay() != VanillaGuiOverlay.CROSSHAIR.type())
-            return;
-
+    public static void overlayEvent(RenderGuiLayerEvent.Pre event) {
+        if (!event.getName().equals(VanillaGuiLayers.CROSSHAIR)) return;
         if (Minecraft.getInstance().screen instanceof FocusRadialMenuScreen) {
             event.setCanceled(true);
         }

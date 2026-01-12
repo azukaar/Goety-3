@@ -67,29 +67,33 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.common.Tags;
-import net.minecraftforge.event.entity.*;
-import net.minecraftforge.event.entity.living.*;
-import net.minecraftforge.event.entity.player.PlayerEvent;
-import net.minecraftforge.event.entity.player.PlayerInteractEvent;
-import net.minecraftforge.event.level.BlockEvent;
-import net.minecraftforge.eventbus.api.Event;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.neoforge.common.Tags;
+import net.neoforged.neoforge.event.entity.*;
+import net.neoforged.neoforge.event.entity.living.*;
+import net.neoforged.neoforge.event.entity.player.PlayerEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
+import net.neoforged.neoforge.event.level.BlockEvent;
+import net.neoforged.neoforge.event.tick.EntityTickEvent;
+import net.neoforged.bus.api.Event;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.fml.common.Mod;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
-import static net.minecraftforge.event.entity.living.LivingChangeTargetEvent.LivingTargetType.MOB_TARGET;
+import static net.neoforged.neoforge.event.entity.living.LivingChangeTargetEvent.LivingTargetType.MOB_TARGET;
 
-@Mod.EventBusSubscriber(modid = Goety.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE)
+@EventBusSubscriber(modid = Goety.MOD_ID, bus = EventBusSubscriber.Bus.GAME)
 public class PotionEvents {
 
     @SubscribeEvent
-    public static void LivingEffects(LivingEvent.LivingTickEvent event){
-        LivingEntity livingEntity = event.getEntity();
+    public static void LivingEffects(EntityTickEvent.Post event){
+        if (!(event.getEntity() instanceof LivingEntity livingEntity)) {
+            return;
+        }
         if (livingEntity != null){
             if (livingEntity.level instanceof ServerLevel serverLevel) {
                 if (livingEntity.hasEffect(GoetyEffects.ILLAGUE.get())) {
@@ -239,7 +243,7 @@ public class PotionEvents {
     }
 
     @SubscribeEvent
-    public static void HurtEvent(LivingHurtEvent event){
+    public static void HurtEvent(LivingDamageEvent.Post event){
         LivingEntity victim = event.getEntity();
         Entity attacker = event.getSource().getEntity();
 
@@ -279,11 +283,11 @@ public class PotionEvents {
         if (victim.hasEffect(GoetyEffects.SOUL_ARMOR.get())){
             MobEffectInstance mobEffectInstance = victim.getEffect(GoetyEffects.SOUL_ARMOR.get());
             if (mobEffectInstance != null){
-                if (mobEffectInstance.getDuration() > MathHelper.secondsToTicks(event.getAmount())){
-                    EffectsUtil.decreaseDuration(victim, GoetyEffects.SOUL_ARMOR.get(), MathHelper.secondsToTicks(event.getAmount()), mobEffectInstance.isAmbient(), mobEffectInstance.isVisible());
+                if (mobEffectInstance.getDuration() > MathHelper.secondsToTicks(event.getNewDamage())){
+                    EffectsUtil.decreaseDuration(victim, GoetyEffects.SOUL_ARMOR.get(), MathHelper.secondsToTicks(event.getNewDamage()), mobEffectInstance.isAmbient(), mobEffectInstance.isVisible());
                 }
                 if (victim instanceof Player player){
-                    SEHelper.decreaseSouls(player, (int) event.getAmount());
+                    SEHelper.decreaseSouls(player, (int) event.getNewDamage());
                 }
             }
         }
@@ -548,8 +552,10 @@ public class PotionEvents {
     }
 
     @SubscribeEvent
-    public static void ChargeEffect(LivingEvent.LivingTickEvent event){
-        LivingEntity livingEntity = event.getEntity();
+    public static void ChargeEffect(EntityTickEvent.Post event){
+        if (!(event.getEntity() instanceof LivingEntity livingEntity)) {
+            return;
+        }
         if (livingEntity != null){
             AttributeInstance speed = livingEntity.getAttribute(Attributes.MOVEMENT_SPEED);
             AttributeInstance attack = livingEntity.getAttribute(Attributes.ATTACK_DAMAGE);

@@ -2,7 +2,7 @@ package com.Polarice3.Goety.api.magic;
 
 import net.minecraft.network.chat.Component;
 
-public enum SpellType implements net.minecraftforge.common.IExtensibleEnum {
+public enum SpellType {
     NONE("none"),
     NECROMANCY("necromancy"),
     NETHER("nether"),
@@ -34,5 +34,4 @@ public enum SpellType implements net.minecraftforge.common.IExtensibleEnum {
     public Component getName(){
         return name;
     }
-
 }

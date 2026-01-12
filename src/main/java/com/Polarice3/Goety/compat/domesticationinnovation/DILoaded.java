@@ -1,6 +1,6 @@
 package com.Polarice3.Goety.compat.domesticationinnovation;
 
-import net.minecraftforge.fml.ModList;
+import net.neoforged.fml.ModList;
 
 public enum DILoaded {
     DOMESTICATION_INNOVATION("domesticationinnovation");

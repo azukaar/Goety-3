@@ -24,9 +24,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.entity.PartEntity;
-import net.minecraftforge.network.NetworkHooks;
-
 public class Pyroclast extends ThrowableProjectile implements ISpellEntity {
     public static final EntityDataAccessor<Boolean> DATA_DANGEROUS = SynchedEntityData.defineId(Pyroclast.class, EntityDataSerializers.BOOLEAN);
     public float explosionPower = 1.5F;
@@ -176,8 +173,6 @@ public class Pyroclast extends ThrowableProjectile implements ISpellEntity {
                 return false;
             } else if (MobUtil.areAllies(pEntity, this.getOwner())){
                 return false;
-            } else if (pEntity instanceof PartEntity<?> partEntity && partEntity.getParent() == pEntity){
-                return false;
             } else if (this.getOwner() instanceof IOwned owned){
                 if (pEntity instanceof IOwned owned1){
                     if (owned.getTrueOwner() == owned1.getTrueOwner()){
@@ -193,6 +188,6 @@ public class Pyroclast extends ThrowableProjectile implements ISpellEntity {
 
     @Override
     public Packet<ClientGamePacketListener> getAddEntityPacket() {
-        return NetworkHooks.getEntitySpawningPacket(this);
+        return new net.minecraft.network.protocol.game.ClientboundAddEntityPacket(this);
     }
 }

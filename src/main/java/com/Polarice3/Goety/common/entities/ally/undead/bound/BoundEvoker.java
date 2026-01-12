@@ -296,7 +296,7 @@ public class BoundEvoker extends AbstractBoundIllager{
                 return false;
             } else if (BoundEvoker.this.tickCount < this.nextAttackTickCount) {
                 return false;
-            } else if (!net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(BoundEvoker.this.level, BoundEvoker.this)) {
+            } else if (!net.neoforged.event.BoundEvoker.this.level.getGameRules().getBoolean(GameRules.RULE_MOB_GRIEFING)) {
                 return false;
             } else {
                 List<Sheep> list = BoundEvoker.this.level.getNearbyEntities(Sheep.class, this.wololoTargeting, BoundEvoker.this, BoundEvoker.this.getBoundingBox().inflate(16.0D, 4.0D, 16.0D));

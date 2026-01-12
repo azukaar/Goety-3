@@ -29,7 +29,7 @@ import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.pathfinder.PathComputationType;
 import net.minecraft.world.phys.BlockHitResult;
-import net.minecraftforge.common.extensions.IForgeBlock;
+import net.neoforged.neoforge.common.extensions.IForgeBlock;
 
 import javax.annotation.Nullable;
 
@@ -165,3 +165,4 @@ public class AnimatorBlock extends BaseEntityBlock implements IForgeBlock {
         };
     }
 }
+

@@ -12,10 +12,8 @@ import net.minecraft.client.particle.SpriteSet;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleType;
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.network.FriendlyByteBuf;
-
-import java.util.Locale;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 
 public class WindBlowParticle extends WindTrailParticle {
     public final int width;
@@ -67,7 +65,7 @@ public class WindBlowParticle extends WindTrailParticle {
     }
 
     public static class Option implements ParticleOptions {
-        public static final Codec<Option> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+        public static final com.mojang.serialization.MapCodec<Option> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
                 Codec.FLOAT.fieldOf("red").forGetter(d -> d.red),
                 Codec.FLOAT.fieldOf("green").forGetter(d -> d.green),
                 Codec.FLOAT.fieldOf("blue").forGetter(d -> d.blue),
@@ -75,27 +73,17 @@ public class WindBlowParticle extends WindTrailParticle {
                 Codec.FLOAT.fieldOf("height").forGetter(d -> d.height),
                 Codec.INT.fieldOf("life").forGetter(d -> d.life)
         ).apply(instance, Option::new));
-        public static final Deserializer<Option> DESERIALIZER = new Deserializer<>() {
-            public Option fromCommand(ParticleType<Option> particleTypeIn, StringReader reader) throws CommandSyntaxException {
-                reader.expect(' ');
-                float red = reader.readFloat();
-                reader.expect(' ');
-                float green = reader.readFloat();
-                reader.expect(' ');
-                float blue = reader.readFloat();
-                reader.expect(' ');
-                int width = reader.readInt();
-                reader.expect(' ');
-                float height = reader.readFloat();
-                reader.expect(' ');
-                int life = reader.readInt();
-                return new Option(red, green, blue, width, height, life);
-            }
-
-            public Option fromNetwork(ParticleType<Option> particleTypeIn, FriendlyByteBuf buffer) {
-                return new Option(buffer.readFloat(), buffer.readFloat(), buffer.readFloat(), buffer.readInt(), buffer.readFloat(), buffer.readInt());
-            }
-        };
+        public static final StreamCodec<RegistryFriendlyByteBuf, Option> STREAM_CODEC = StreamCodec.of(
+                (buf, value) -> {
+                    buf.writeFloat(value.red);
+                    buf.writeFloat(value.green);
+                    buf.writeFloat(value.blue);
+                    buf.writeInt(value.width);
+                    buf.writeFloat(value.height);
+                    buf.writeInt(value.life);
+                },
+                buf -> new Option(buf.readFloat(), buf.readFloat(), buf.readFloat(), buf.readInt(), buf.readFloat(), buf.readInt())
+        );
         private final float red;
         private final float green;
         private final float blue;
@@ -137,20 +125,6 @@ public class WindBlowParticle extends WindTrailParticle {
             this.width = width;
             this.height = height;
             this.life = 0;
-        }
-
-        public void writeToNetwork(FriendlyByteBuf buffer) {
-            buffer.writeFloat(this.red);
-            buffer.writeFloat(this.green);
-            buffer.writeFloat(this.blue);
-            buffer.writeInt(this.width);
-            buffer.writeFloat(this.height);
-            buffer.writeInt(this.life);
-        }
-
-        public String writeToString() {
-            return String.format(Locale.ROOT, "%s %.2f %.2f %.2f %d %.2f %d",
-                    BuiltInRegistries.PARTICLE_TYPE.getKey(this.getType()), this.red, this.green, this.blue, this.width, this.height, this.life);
         }
 
         public ParticleType<Option> getType() {

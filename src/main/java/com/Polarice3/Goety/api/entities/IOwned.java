@@ -1,6 +1,7 @@
 package com.Polarice3.Goety.api.entities;
 
 import com.Polarice3.Goety.api.blocks.entities.IOwnedBlock;
+import com.Polarice3.Goety.Goety;
 import com.Polarice3.Goety.common.effects.GoetyEffects;
 import com.Polarice3.Goety.common.entities.boss.Apostle;
 import com.Polarice3.Goety.config.MobsConfig;
@@ -30,7 +31,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.schedule.Activity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.common.Tags;
+import net.neoforged.neoforge.common.Tags;
 
 import javax.annotation.Nullable;
 import java.util.UUID;
@@ -38,9 +39,9 @@ import java.util.function.Predicate;
 
 public interface IOwned {
 
-    UUID SPEED_MODIFIER_UUID = UUID.fromString("9c47949c-b896-4802-8e8a-f08c50791a8a");
+    ResourceLocation SPEED_MODIFIER_ID = ResourceLocation.fromNamespaceAndPath(Goety.MOD_ID, "staying_speed_penalty");
 
-    AttributeModifier SPEED_MODIFIER = new AttributeModifier(SPEED_MODIFIER_UUID, "Staying speed penalty", -1.0D, AttributeModifier.Operation.ADDITION);
+    AttributeModifier SPEED_MODIFIER = new AttributeModifier(SPEED_MODIFIER_ID, -1.0D, AttributeModifier.Operation.ADD_VALUE);
 
     LivingEntity getTrueOwner();
 
@@ -152,7 +153,7 @@ public interface IOwned {
 
     default void onStopAttack() {
         if (this instanceof Entity entity) {
-            if (entity.level instanceof ServerLevel serverLevel) {
+            if (entity.level() instanceof ServerLevel serverLevel) {
                 serverLevel.broadcastEntityEvent(entity, (byte) 20);
             }
         }
@@ -160,7 +161,7 @@ public interface IOwned {
 
     default void checkHostility() {
         if (this instanceof Entity entity) {
-            if (!entity.level.isClientSide) {
+            if (!entity.level().isClientSide) {
                 if (this.getTrueOwner() instanceof Enemy) {
                     this.setHostile(true);
                 }
@@ -178,8 +179,8 @@ public interface IOwned {
 
     default void ownedTick(){
         if (this instanceof Mob mob) {
-            if (!mob.level.isClientSide) {
-                if (!mob.hasEffect(GoetyEffects.WILD_RAGE.get())) {
+            if (!mob.level().isClientSide) {
+                if (!mob.hasEffect(GoetyEffects.WILD_RAGE.getHolder())) {
                     if (mob.getTarget() instanceof IOwned ownedEntity) {
                         if (this.getTrueOwner() != null && (ownedEntity.getTrueOwner() == this.getTrueOwner())) {
                             mob.setTarget(null);
@@ -232,7 +233,7 @@ public interface IOwned {
                             }
                         }
                     }
-                    for (Mob target : mob.level.getEntitiesOfClass(Mob.class, mob.getBoundingBox().inflate(mob.getAttributeValue(Attributes.FOLLOW_RANGE)))) {
+                    for (Mob target : mob.level().getEntitiesOfClass(Mob.class, mob.getBoundingBox().inflate(mob.getAttributeValue(Attributes.FOLLOW_RANGE)))) {
                         if (target instanceof IOwned owned) {
                             if (this.getTrueOwner() != owned.getTrueOwner()
                                     && target.getTarget() == this.getTrueOwner()) {
@@ -259,10 +260,10 @@ public interface IOwned {
 
     default void ownerCheck(){
         if (this instanceof Mob mob){
-            if (!mob.level.isClientSide) {
+            if (!mob.level().isClientSide) {
                 if (this.getTrueOwner() != null) {
                     if (this.getTrueOwner().tickCount < 20) {
-                        Entity entity = mob.level.getEntity(this.getOwnerClientId());
+                        Entity entity = mob.level().getEntity(this.getOwnerClientId());
                         if (entity instanceof LivingEntity livingEntity) {
                             if (livingEntity != this.getTrueOwner()) {
                                 this.setOwnerClientId(this.getTrueOwner().getId());
@@ -327,14 +328,15 @@ public interface IOwned {
 
     default void teleportTowards(Entity entity, double range) {
         if (this instanceof LivingEntity owned) {
-            if (!owned.level.isClientSide() && owned.isAlive()) {
+            if (!owned.level().isClientSide && owned.isAlive()) {
                 for (int i = 0; i < 128; ++i) {
                     Vec3 vector3d = new Vec3(owned.getX() - entity.getX(), owned.getY(0.5D) - entity.getEyeY(), owned.getZ() - entity.getZ());
                     vector3d = vector3d.normalize();
                     double d1 = owned.getX() + (owned.getRandom().nextDouble() - 0.5D) * (range / 2.0D) - vector3d.x * range;
                     double d2 = owned.getY() + (owned.getRandom().nextInt(Mth.floor(range)) - (range / 2.0D)) - vector3d.y * range;
                     double d3 = owned.getZ() + (owned.getRandom().nextDouble() - 0.5D) * (range / 2.0D) - vector3d.z * range;
-                    net.minecraftforge.event.entity.EntityTeleportEvent.EnderEntity event = net.minecraftforge.event.ForgeEventFactory.onEnderTeleport(owned, d1, d2, d3);
+                    net.neoforged.neoforge.event.entity.EntityTeleportEvent.EnderEntity event = new net.neoforged.neoforge.event.entity.EntityTeleportEvent.EnderEntity(owned, d1, d2, d3);
+                    net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(event);
                     if (event.isCanceled()) {
                         break;
                     }
@@ -360,9 +362,9 @@ public interface IOwned {
 
     default void teleportHits(){
         if (this instanceof LivingEntity owned) {
-            owned.level.broadcastEntityEvent(owned, (byte) 46);
+            owned.level().broadcastEntityEvent(owned, (byte) 46);
             if (!owned.isSilent()) {
-                owned.level.playSound((Player) null, owned.xo, owned.yo, owned.zo, SoundEvents.ENDERMAN_TELEPORT, owned.getSoundSource(), 1.0F, 1.0F);
+                owned.level().playSound((Player) null, owned.xo, owned.yo, owned.zo, SoundEvents.ENDERMAN_TELEPORT, owned.getSoundSource(), 1.0F, 1.0F);
                 owned.playSound(SoundEvents.ENDERMAN_TELEPORT, 1.0F, 1.0F);
             }
         }
@@ -421,12 +423,12 @@ public interface IOwned {
 
     default void setRevivePos(BlockPos blockPos){
         if (this instanceof Entity entity) {
-            this.setReviveDim(entity.level.dimension());
+            this.setReviveDim(entity.level().dimension());
         }
     }
 
     default ResourceKey<Level> getReviveLevel() {
-        ResourceLocation resourcelocation = new ResourceLocation(this.getReviveDim());
+        ResourceLocation resourcelocation = ResourceLocation.parse(this.getReviveDim());
         return ResourceKey.create(Registries.DIMENSION, resourcelocation);
     }
 
@@ -465,12 +467,12 @@ public interface IOwned {
             this.setLimitedLife(compound.getInt("LifeTicks"));
         }
         if (compound.contains("RevivePos")){
-            this.setRevivePos(NbtUtils.readBlockPos(compound.getCompound("RevivePos")));
+            NbtUtils.readBlockPos(compound, "RevivePos").ifPresent(this::setRevivePos);
             if (compound.contains("ReviveDim")){
                 this.setReviveDim(compound.getString("ReviveDim"));
             } else {
                 if (this instanceof Entity entity) {
-                    this.setReviveDim(entity.level.dimension());
+                    this.setReviveDim(entity.level().dimension());
                 }
             }
         }

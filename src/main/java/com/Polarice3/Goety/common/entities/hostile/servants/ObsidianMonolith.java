@@ -53,7 +53,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.event.ForgeEventFactory;
+
 
 import javax.annotation.Nullable;
 import java.util.HashMap;
@@ -496,7 +496,7 @@ public class ObsidianMonolith extends AbstractMonolith implements Enemy {
                                             if (entity instanceof Mob mob) {
                                                 if (!(entity instanceof Ghast) && !(entity instanceof AbstractPiglin) && !(entity instanceof Hoglin)) {
                                                     mob.setPos(blockPos.getX() + 0.5F, blockPos.getY(), blockPos.getZ() + 0.5F);
-                                                    ForgeEventFactory.onFinalizeSpawn(mob, serverLevel, serverLevel.getCurrentDifficultyAt(blockPos), MobSpawnType.SPAWNER, null, null);
+                                                    net.neoforged.neoforge.event.EventHooks.onFinalizeSpawn(mob, serverLevel, serverLevel.getCurrentDifficultyAt(blockPos), MobSpawnType.SPAWNER, null, null);
                                                     if (serverLevel.addFreshEntity(mob)) {
                                                         ServerParticleUtil.addParticlesAroundMiddleSelf(serverLevel, ParticleTypes.FLAME, mob);
                                                     }
@@ -531,7 +531,7 @@ public class ObsidianMonolith extends AbstractMonolith implements Enemy {
                     }
                     if (this.destroyBlocksTick > 0) {
                         --this.destroyBlocksTick;
-                        if (this.destroyBlocksTick == 0 && net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(this.level, this)) {
+                        if (this.destroyBlocksTick == 0 && this.level.getGameRules().getBoolean(GameRules.RULE_MOB_GRIEFING)) {
                             int x = Mth.floor(this.getX());
                             int y = Mth.floor(this.getY());
                             int z = Mth.floor(this.getZ());
@@ -545,7 +545,7 @@ public class ObsidianMonolith extends AbstractMonolith implements Enemy {
                                         int i1 = z + z1;
                                         BlockPos blockpos = new BlockPos(l2, l, i1);
                                         BlockState blockstate = this.level.getBlockState(blockpos);
-                                        if (!blockstate.is(BlockTags.WITHER_IMMUNE) && net.minecraftforge.event.ForgeEventFactory.onEntityDestroyBlock(this, blockpos, blockstate)) {
+                                        if (!blockstate.is(BlockTags.WITHER_IMMUNE) && net.neoforged.event.EventFactory.onEntityDestroyBlock(this, blockpos, blockstate)) {
                                             flag = this.level.destroyBlock(blockpos, true, this) || flag;
                                         }
                                     }

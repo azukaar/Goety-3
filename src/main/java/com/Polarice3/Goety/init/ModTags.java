@@ -15,7 +15,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BannerPattern;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.levelgen.structure.Structure;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.neoforge.registries.NeoForgeRegistries;
 
 public class ModTags {
 
@@ -106,7 +106,7 @@ public class ModTags {
         }
 
         private static TagKey<PaintingVariant> create(ResourceLocation p_215874_) {
-            return TagKey.create(ForgeRegistries.PAINTING_VARIANTS.getRegistryKey(), p_215874_);
+            return TagKey.create(NeoForgeRegistries.PAINTING_VARIANTS.getRegistryKey(), p_215874_);
         }
     }
 
@@ -182,7 +182,7 @@ public class ModTags {
         }
 
         private static TagKey<EntityType<?>> create(ResourceLocation p_215874_) {
-            return TagKey.create(ForgeRegistries.ENTITY_TYPES.getRegistryKey(), p_215874_);
+            return TagKey.create(NeoForgeRegistries.ENTITY_TYPES.getRegistryKey(), p_215874_);
         }
     }
 
@@ -237,7 +237,7 @@ public class ModTags {
         }
 
         private static TagKey<Biome> create(ResourceLocation p_215874_) {
-            return TagKey.create(ForgeRegistries.BIOMES.getRegistryKey(), p_215874_);
+            return TagKey.create(NeoForgeRegistries.BIOMES.getRegistryKey(), p_215874_);
         }
     }
 

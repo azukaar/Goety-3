@@ -2,74 +2,99 @@ package com.Polarice3.Goety.common.crafting;
 
 import com.Polarice3.Goety.common.ritual.ModRituals;
 import com.Polarice3.Goety.common.ritual.Ritual;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.NonNullList;
-import net.minecraft.core.RegistryAccess;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
-import net.minecraft.util.GsonHelper;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.*;
-import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.world.item.crafting.RecipeInput;
+import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.registries.ForgeRegistries;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.List;
 
-public class RitualRecipe extends ModShapelessRecipe {
-    public static Serializer SERIALIZER = new Serializer();
+/**
+ * 1.21+ port note:
+ * - Recipes now implement {@link Recipe} with {@link RecipeInput} and are serialized via codecs/stream codecs.
+ * - This class is primarily used by {@link com.Polarice3.Goety.common.blocks.entities.DarkAltarBlockEntity} via
+ *   the custom {@link #matches(Level, BlockPos, Player, ItemStack)} method (not the crafting-table matcher).
+ */
+public class RitualRecipe implements Recipe<RecipeInput> {
+    public static final RecipeSerializer<RitualRecipe> SERIALIZER = new Serializer();
 
-    private final ResourceLocation ritualType;
-    private final Ritual ritual;
+    private final String group;
     private final String craftType;
-    private final int soulCost;
+    private final ResourceLocation ritualType;
+    private final ItemStack result;
+    private final NonNullList<Ingredient> ingredients;
     private final Ingredient activationItem;
-    private final TagKey<EntityType<?>> entityToSacrifice;
-    private final TagKey<EntityType<?>> entityToConvert;
-    private final EntityType<?> entityToSummon;
-    private final EntityType<?> entityToConvertInto;
-    private final Enchantment enchantment;
-    private final int xpLevelCost;
     private final int duration;
     private final int summonLife;
-    private final float durationPerIngredient;
+    private final int soulCost;
+    @Nullable private final TagKey<EntityType<?>> entityToSacrifice;
     private final String entityToSacrificeDisplayName;
+    @Nullable private final TagKey<EntityType<?>> entityToConvert;
     private final String entityToConvertDisplayName;
+    @Nullable private final EntityType<?> entityToSummon;
+    @Nullable private final EntityType<?> entityToConvertInto;
+    private final int xpLevelCost;
     private final String research;
 
-    public RitualRecipe(ResourceLocation id, String group, String pCraftType, ResourceLocation ritualType,
-                        ItemStack result, EntityType<?> entityToSummon, EntityType<?> entityToConvertInto, Ingredient activationItem, NonNullList<Ingredient> input, int duration, int summonLife, int pSoulCost,
-                        TagKey<EntityType<?>> entityToSacrifice, String entityToSacrificeDisplayName,
-                        TagKey<EntityType<?>> entityToConvert, String entityToConvertDisplayName,
-                        Enchantment enchantment, int xpLevelCost, String research) {
-        super(id, group, CraftingBookCategory.MISC, result, input);
-        this.craftType = pCraftType;
-        this.soulCost = pSoulCost;
-        this.entityToSummon = entityToSummon;
-        this.entityToConvertInto = entityToConvertInto;
+    private final Ritual ritual;
+    private final float durationPerIngredient;
+
+    public RitualRecipe(
+            String group,
+            String craftType,
+            ResourceLocation ritualType,
+            ItemStack result,
+            NonNullList<Ingredient> ingredients,
+            Ingredient activationItem,
+            int duration,
+            int summonLife,
+            int soulCost,
+            @Nullable TagKey<EntityType<?>> entityToSacrifice,
+            String entityToSacrificeDisplayName,
+            @Nullable TagKey<EntityType<?>> entityToConvert,
+            String entityToConvertDisplayName,
+            @Nullable EntityType<?> entityToSummon,
+            @Nullable EntityType<?> entityToConvertInto,
+            int xpLevelCost,
+            String research
+    ) {
+        this.group = group;
+        this.craftType = craftType;
         this.ritualType = ritualType;
-        this.ritual = ModRituals.REGISTRY.get().getValue(this.ritualType).create(this);
+        this.result = result;
+        this.ingredients = ingredients;
         this.activationItem = activationItem;
         this.duration = duration;
         this.summonLife = summonLife;
-        this.durationPerIngredient = this.duration / (float) (this.getIngredients().size() + 1);
+        this.soulCost = soulCost;
         this.entityToSacrifice = entityToSacrifice;
         this.entityToSacrificeDisplayName = entityToSacrificeDisplayName;
         this.entityToConvert = entityToConvert;
         this.entityToConvertDisplayName = entityToConvertDisplayName;
-        this.enchantment = enchantment;
+        this.entityToSummon = entityToSummon;
+        this.entityToConvertInto = entityToConvertInto;
         this.xpLevelCost = xpLevelCost;
         this.research = research;
+
+        this.ritual = ModRituals.REGISTRY.get(this.ritualType).create(this);
+        this.durationPerIngredient = this.duration / (float) (this.ingredients.size() + 1);
     }
 
     public String getCraftType() {
@@ -92,30 +117,15 @@ public class RitualRecipe extends ModShapelessRecipe {
         return this.durationPerIngredient;
     }
 
-    @Override
-    public RecipeSerializer<?> getSerializer() {
-        return SERIALIZER;
-    }
-
     public boolean matches(Level world, BlockPos darkAltarPos, Player player, ItemStack activationItem) {
         return this.ritual.identify(world, darkAltarPos, player, activationItem);
     }
 
-    @Override
-    public boolean matches(@Nonnull CraftingContainer inventory, @Nonnull Level world) {
-        return false;
+    public Ritual getRitual() {
+        return this.ritual;
     }
 
-    @Override
-    public ItemStack assemble(CraftingContainer inventoryCrafting, RegistryAccess pAccess) {
-        return null;
-    }
-
-    @Override
-    public RecipeType<?> getType() {
-        return ModRecipeSerializer.RITUAL_TYPE.get();
-    }
-
+    @Nullable
     public TagKey<EntityType<?>> getEntityToSacrifice() {
         return this.entityToSacrifice;
     }
@@ -124,32 +134,27 @@ public class RitualRecipe extends ModShapelessRecipe {
         return this.entityToSacrifice != null;
     }
 
-    public EntityType<?> getEntityToSummon() {
-        return this.entityToSummon;
-    }
-
-    public EntityType<?> getEntityToConvertInto() {
-        return this.entityToConvertInto;
-    }
-
+    @Nullable
     public TagKey<EntityType<?>> getEntityToConvert() {
         return this.entityToConvert;
     }
 
-    public boolean isConversion(){
+    public boolean isConversion() {
         return this.entityToConvert != null && this.entityToConvertInto != null;
     }
 
-    public boolean isSummoning(){
+    public boolean isSummoning() {
         return this.entityToSummon != null;
     }
 
-    public ResourceLocation getRitualType() {
-        return this.ritualType;
+    @Nullable
+    public EntityType<?> getEntityToSummon() {
+        return this.entityToSummon;
     }
 
-    public Ritual getRitual() {
-        return this.ritual;
+    @Nullable
+    public EntityType<?> getEntityToConvertInto() {
+        return this.entityToConvertInto;
     }
 
     public String getEntityToSacrificeDisplayName() {
@@ -160,15 +165,11 @@ public class RitualRecipe extends ModShapelessRecipe {
         return this.entityToConvertDisplayName;
     }
 
-    public Enchantment getEnchantment(){
-        return this.enchantment;
-    }
-
-    public int getXPLevelCost(){
+    public int getXPLevelCost() {
         return this.xpLevelCost;
     }
 
-    public String getResearch(){
+    public String getResearch() {
         return this.research;
     }
 
@@ -176,204 +177,110 @@ public class RitualRecipe extends ModShapelessRecipe {
         return this.summonLife;
     }
 
-    public static class Serializer implements RecipeSerializer<RitualRecipe> {
-        private static final ModShapelessRecipe.Serializer serializer = new ModShapelessRecipe.Serializer();
+    @Override
+    public boolean matches(RecipeInput input, Level level) {
+        // Ritual recipes are not intended to be matched through vanilla crafting grids.
+        return false;
+    }
+
+    @Override
+    public ItemStack assemble(RecipeInput input, HolderLookup.Provider provider) {
+        return this.result.copy();
+    }
+
+    @Override
+    public boolean canCraftInDimensions(int width, int height) {
+        return false;
+    }
+
+    @Override
+    public ItemStack getResultItem(HolderLookup.Provider provider) {
+        return this.result;
+    }
+
+    @Override
+    public NonNullList<Ingredient> getIngredients() {
+        return this.ingredients;
+    }
+
+    @Override
+    public String getGroup() {
+        return this.group;
+    }
+
+    @Override
+    public RecipeSerializer<?> getSerializer() {
+        return SERIALIZER;
+    }
+
+    @Override
+    public RecipeType<?> getType() {
+        return ModRecipeSerializer.RITUAL_TYPE.get();
+    }
+
+    private static final class EntityTagWithName {
+        static final MapCodec<EntityTagWithName> CODEC = RecordCodecBuilder.mapCodec(inst -> inst.group(
+                TagKey.codec(Registries.ENTITY_TYPE).fieldOf("tag").forGetter(v -> v.tag),
+                Codec.STRING.fieldOf("display_name").forGetter(v -> v.displayName)
+        ).apply(inst, EntityTagWithName::new));
+
+        final TagKey<EntityType<?>> tag;
+        final String displayName;
+
+        EntityTagWithName(TagKey<EntityType<?>> tag, String displayName) {
+            this.tag = tag;
+            this.displayName = displayName;
+        }
+    }
+
+    private static final class Serializer implements RecipeSerializer<RitualRecipe> {
+        private static final MapCodec<RitualRecipe> CODEC = RecordCodecBuilder.mapCodec(inst -> inst.group(
+                Codec.STRING.optionalFieldOf("group", "").forGetter(r -> r.group),
+                Codec.STRING.optionalFieldOf("craftType", "").forGetter(r -> r.craftType),
+                ResourceLocation.CODEC.fieldOf("ritual_type").forGetter(r -> r.ritualType),
+                ItemStack.CODEC.fieldOf("result").forGetter(r -> r.result),
+                Ingredient.LIST_CODEC_NONEMPTY.xmap(
+                        list -> {
+                            NonNullList<Ingredient> nn = NonNullList.create();
+                            nn.addAll(list);
+                            return nn;
+                        },
+                        (NonNullList<Ingredient> nn) -> List.copyOf(nn)
+                ).fieldOf("ingredients").forGetter(r -> r.ingredients),
+                Ingredient.CODEC.fieldOf("activation_item").forGetter(r -> r.activationItem),
+                Codec.INT.optionalFieldOf("duration", 30).forGetter(r -> r.duration),
+                Codec.INT.optionalFieldOf("summonLife", -1).forGetter(r -> r.summonLife),
+                Codec.INT.optionalFieldOf("soulCost", 0).forGetter(r -> r.soulCost),
+                EntityTagWithName.CODEC.codec().optionalFieldOf("entity_to_sacrifice").forGetter(r -> r.entityToSacrifice == null ? java.util.Optional.empty() : java.util.Optional.of(new EntityTagWithName(r.entityToSacrifice, r.entityToSacrificeDisplayName))),
+                EntityTagWithName.CODEC.codec().optionalFieldOf("entity_to_convert").forGetter(r -> r.entityToConvert == null ? java.util.Optional.empty() : java.util.Optional.of(new EntityTagWithName(r.entityToConvert, r.entityToConvertDisplayName))),
+                ResourceLocation.CODEC.optionalFieldOf("entity_to_summon").forGetter(r -> java.util.Optional.ofNullable(r.entityToSummon).map(net.minecraft.core.registries.BuiltInRegistries.ENTITY_TYPE::getKey)),
+                ResourceLocation.CODEC.optionalFieldOf("entity_to_convert_into").forGetter(r -> java.util.Optional.ofNullable(r.entityToConvertInto).map(net.minecraft.core.registries.BuiltInRegistries.ENTITY_TYPE::getKey)),
+                Codec.INT.optionalFieldOf("xpLevelCost", 0).forGetter(r -> r.xpLevelCost),
+                Codec.STRING.optionalFieldOf("research", "").forGetter(r -> r.research)
+        ).apply(inst, (group, craftType, ritualType, result, ingredients, activationItem, duration, summonLife, soulCost,
+                       sacrificeOpt, convertOpt, summonIdOpt, convertIntoIdOpt, xpLevelCost, research) -> {
+            TagKey<EntityType<?>> sacrificeTag = sacrificeOpt.map(v -> v.tag).orElse(null);
+            String sacrificeName = sacrificeOpt.map(v -> v.displayName).orElse("");
+            TagKey<EntityType<?>> convertTag = convertOpt.map(v -> v.tag).orElse(null);
+            String convertName = convertOpt.map(v -> v.displayName).orElse("");
+            EntityType<?> toSummon = summonIdOpt.flatMap(id -> net.minecraft.core.registries.BuiltInRegistries.ENTITY_TYPE.getOptional(id)).orElse(null);
+            EntityType<?> toConvertInto = convertIntoIdOpt.flatMap(id -> net.minecraft.core.registries.BuiltInRegistries.ENTITY_TYPE.getOptional(id)).orElse(null);
+            return new RitualRecipe(group, craftType, ritualType, result, ingredients, activationItem, duration, summonLife, soulCost,
+                    sacrificeTag, sacrificeName, convertTag, convertName, toSummon, toConvertInto, xpLevelCost, research);
+        }));
+
+        private static final StreamCodec<net.minecraft.network.RegistryFriendlyByteBuf, RitualRecipe> STREAM_CODEC =
+                ByteBufCodecs.fromCodecWithRegistries(CODEC.codec());
 
         @Override
-        public RitualRecipe fromJson(ResourceLocation recipeId, JsonObject json) {
-
-            String group = GsonHelper.getAsString(json, "group", "");
-            String craftType = GsonHelper.getAsString(json, "craftType", "");
-            NonNullList<Ingredient> ingredients = itemsFromJson(GsonHelper.getAsJsonArray(json, "ingredients"));
-            if (ingredients.isEmpty()) {
-                throw new JsonParseException("No ingredients for shapeless recipe");
-            }
-            ItemStack result = ShapedRecipe.itemStackFromJson(GsonHelper.getAsJsonObject(json, "result"));
-
-            ResourceLocation ritualType = new ResourceLocation(json.get("ritual_type").getAsString());
-
-            EntityType<?> entityToSummon = null;
-            if (json.has("entity_to_summon")) {
-                entityToSummon = ForgeRegistries.ENTITY_TYPES.getValue(new ResourceLocation(GsonHelper.getAsString(json, "entity_to_summon")));
-            }
-
-            JsonElement activationItemElement =
-                    GsonHelper.isArrayNode(json, "activation_item") ? GsonHelper.getAsJsonArray(json,
-                            "activation_item") : GsonHelper.getAsJsonObject(json, "activation_item");
-            Ingredient activationItem = Ingredient.fromJson(activationItemElement);
-
-            int duration = GsonHelper.getAsInt(json, "duration", 30);
-            int summonLife = GsonHelper.getAsInt(json, "summonLife", -1);
-            int soulCost = GsonHelper.getAsInt(json, "soulCost", 0);
-
-            TagKey<EntityType<?>> entityToSacrifice = null;
-            String entityToSacrificeDisplayName = "";
-            if (json.has("entity_to_sacrifice")) {
-                var tagRL = new ResourceLocation(GsonHelper.getAsString(json.getAsJsonObject("entity_to_sacrifice"), "tag"));
-                entityToSacrifice = TagKey.create(Registries.ENTITY_TYPE, tagRL);
-
-                entityToSacrificeDisplayName = json.getAsJsonObject("entity_to_sacrifice").get("display_name").getAsString();
-            }
-
-            EntityType<?> entityToConvertInto = null;
-            TagKey<EntityType<?>> entityToConvert = null;
-            String entityToConvertDisplayName = "";
-            String research = "";
-            Enchantment enchantment = null;
-            int xpLevelCost = 0;
-            if (json.has("entity_to_convert")){
-                var tagRL = new ResourceLocation(GsonHelper.getAsString(json.getAsJsonObject("entity_to_convert"), "tag"));
-                entityToConvert = TagKey.create(Registries.ENTITY_TYPE, tagRL);
-
-                entityToConvertDisplayName = json.getAsJsonObject("entity_to_convert").get("display_name").getAsString();
-            }
-            if (json.has("entity_to_convert_into")) {
-                entityToConvertInto = ForgeRegistries.ENTITY_TYPES.getValue(new ResourceLocation(GsonHelper.getAsString(json, "entity_to_convert_into")));
-            }
-            if (json.has("enchantment")){
-                enchantment = ForgeRegistries.ENCHANTMENTS.getValue(new ResourceLocation(GsonHelper.getAsString(json, "enchantment")));
-                xpLevelCost = GsonHelper.getAsInt(json, "xpLevelCost", 0);
-            }
-            if (json.has("research")){
-                research = GsonHelper.getAsString(json, "research", "");
-            }
-            return new RitualRecipe(recipeId, group, craftType, ritualType,
-                    result, entityToSummon, entityToConvertInto, activationItem, ingredients, duration,
-                    summonLife, soulCost, entityToSacrifice, entityToSacrificeDisplayName,
-                    entityToConvert, entityToConvertDisplayName, enchantment, xpLevelCost, research);
-        }
-
-        private static NonNullList<Ingredient> itemsFromJson(JsonArray pIngredientArray) {
-            NonNullList<Ingredient> nonnulllist = NonNullList.create();
-
-            for(int i = 0; i < pIngredientArray.size(); ++i) {
-                Ingredient ingredient = Ingredient.fromJson(pIngredientArray.get(i));
-                if (!ingredient.isEmpty()) {
-                    nonnulllist.add(ingredient);
-                }
-            }
-
-            return nonnulllist;
-        }
-
-        @Nullable
-        @Override
-        public RitualRecipe fromNetwork(ResourceLocation recipeId, FriendlyByteBuf buffer) {
-            ModShapelessRecipe recipe = serializer.fromNetwork(recipeId, buffer);
-            if (recipe == null){
-                return null;
-            }
-            String craftType = buffer.readUtf(32767);
-
-            ResourceLocation ritualType = buffer.readResourceLocation();
-
-            EntityType<?> entityToSummon = null;
-            if (buffer.readBoolean()) {
-                entityToSummon = buffer.readRegistryId();
-            }
-
-            int duration = buffer.readVarInt();
-            int summonLife = buffer.readVarInt();
-            int soulCost = buffer.readVarInt();
-
-            Ingredient activationItem = Ingredient.fromNetwork(buffer);
-
-            TagKey<EntityType<?>> entityToSacrifice = null;
-            String entityToSacrificeDisplayName = "";
-            if (buffer.readBoolean()) {
-                var tagRL = buffer.readResourceLocation();
-                entityToSacrifice = TagKey.create(Registries.ENTITY_TYPE, tagRL);
-                entityToSacrificeDisplayName = buffer.readUtf();
-            }
-
-            EntityType<?> entityToConvertInto = null;
-            TagKey<EntityType<?>> entityToConvert = null;
-            String entityToConvertDisplayName = "";
-            if (buffer.readBoolean()) {
-                var tagRL = buffer.readResourceLocation();
-                entityToConvert = TagKey.create(Registries.ENTITY_TYPE, tagRL);
-                entityToConvertDisplayName = buffer.readUtf();
-            }
-
-            if (buffer.readBoolean()){
-                entityToConvertInto = buffer.readRegistryId();
-            }
-
-            Enchantment enchantment = null;
-            int xpLevelCost = 0;
-            if (buffer.readBoolean()){
-                enchantment = buffer.readRegistryId();
-                xpLevelCost = buffer.readVarInt();
-            }
-            String research = "";
-            if (buffer.readBoolean()){
-                research = buffer.readUtf(32767);
-            }
-
-            return new RitualRecipe(recipe.getId(), recipe.getGroup(), craftType, ritualType, recipe.getResultItem(null), entityToSummon, entityToConvertInto,
-                    activationItem, recipe.getIngredients(), duration, summonLife, soulCost, entityToSacrifice, entityToSacrificeDisplayName, entityToConvert, entityToConvertDisplayName, enchantment, xpLevelCost, research);
+        public MapCodec<RitualRecipe> codec() {
+            return CODEC;
         }
 
         @Override
-        public void toNetwork(FriendlyByteBuf buffer, RitualRecipe recipe) {
-            serializer.toNetwork(buffer, recipe);
-            buffer.writeUtf(recipe.craftType);
-
-            buffer.writeResourceLocation(recipe.ritualType);
-
-            buffer.writeBoolean(recipe.entityToSummon != null);
-            if (recipe.entityToSummon != null) {
-                buffer.writeRegistryId(ForgeRegistries.ENTITY_TYPES, recipe.entityToSummon);
-            }
-
-            buffer.writeVarInt(recipe.duration);
-            buffer.writeVarInt(recipe.summonLife);
-            buffer.writeVarInt(recipe.soulCost);
-            recipe.activationItem.toNetwork(buffer);
-            buffer.writeBoolean(recipe.entityToSacrifice != null);
-            if (recipe.entityToSacrifice != null) {
-                buffer.writeResourceLocation(recipe.entityToSacrifice.location());
-                buffer.writeUtf(recipe.entityToSacrificeDisplayName);
-            }
-            buffer.writeBoolean(recipe.entityToConvert != null);
-            if (recipe.entityToConvert != null){
-                buffer.writeResourceLocation(recipe.entityToConvert.location());
-                buffer.writeUtf(recipe.entityToConvertDisplayName);
-            }
-            buffer.writeBoolean(recipe.entityToConvertInto != null);
-            if (recipe.entityToConvertInto != null) {
-                buffer.writeRegistryId(ForgeRegistries.ENTITY_TYPES, recipe.entityToConvertInto);
-            }
-            buffer.writeBoolean(recipe.enchantment != null);
-            if (recipe.enchantment != null) {
-                buffer.writeRegistryId(ForgeRegistries.ENCHANTMENTS, recipe.enchantment);
-                buffer.writeVarInt(recipe.xpLevelCost);
-            }
-            buffer.writeBoolean(recipe.research != null);
-            if (recipe.research != null) {
-                buffer.writeUtf(recipe.research);
-            }
+        public StreamCodec<net.minecraft.network.RegistryFriendlyByteBuf, RitualRecipe> streamCodec() {
+            return STREAM_CODEC;
         }
     }
 }
-/*
- * MIT License
- *
- * Copyright 2020 klikli-dev
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
- * associated documentation files (the "Software"), to deal in the Software without restriction, including
- * without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies
- * of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following
- * conditions:
- *
- * The above copyright notice and this permission notice shall be included in all copies or substantial
- * portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
- * INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
- * PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
- * LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT
- * OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- */
+

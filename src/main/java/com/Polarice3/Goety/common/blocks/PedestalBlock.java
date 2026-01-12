@@ -29,10 +29,10 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.common.extensions.IForgeBlock;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.ItemHandlerHelper;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.common.extensions.IForgeBlock;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.ItemHandlerHelper;
 
 import javax.annotation.Nullable;
 
@@ -62,7 +62,7 @@ public class PedestalBlock extends BaseEntityBlock implements IForgeBlock, Simpl
         if (!world.isClientSide) {
             ItemStack heldItem = player.getItemInHand(hand);
             PedestalBlockEntity pedestal = (PedestalBlockEntity) world.getBlockEntity(pos);
-            pedestal.getCapability(ForgeCapabilities.ITEM_HANDLER, hit.getDirection()).ifPresent(handler -> {
+            pedestal.getCapability(Capabilities.ITEM_HANDLER, hit.getDirection()).ifPresent(handler -> {
                 if (!player.isShiftKeyDown() && !player.isCrouching()) {
                     ItemStack itemStack = handler.getStackInSlot(0);
                     if (itemStack.isEmpty()) {
@@ -87,7 +87,7 @@ public class PedestalBlock extends BaseEntityBlock implements IForgeBlock, Simpl
         if (!pState.is(pNewState.getBlock())) {
             BlockEntity tileentity = pLevel.getBlockEntity(pPos);
             if (tileentity instanceof PedestalBlockEntity) {
-                tileentity.getCapability(ForgeCapabilities.ITEM_HANDLER).ifPresent(handler -> {
+                tileentity.getCapability(Capabilities.ITEM_HANDLER).ifPresent(handler -> {
                     dropInventoryItems(tileentity.getLevel(), tileentity.getBlockPos(), handler);
                 });
             }

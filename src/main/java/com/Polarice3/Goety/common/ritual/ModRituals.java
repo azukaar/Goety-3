@@ -1,49 +1,47 @@
 package com.Polarice3.Goety.common.ritual;
 
 import com.Polarice3.Goety.Goety;
-import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.IForgeRegistry;
-import net.minecraftforge.registries.RegistryBuilder;
-import net.minecraftforge.registries.RegistryObject;
-
-import java.util.function.Supplier;
+import net.minecraft.core.Registry;
+import net.neoforged.neoforge.registries.DeferredRegister;
+import net.neoforged.neoforge.registries.RegistryBuilder;
+import net.neoforged.neoforge.registries.DeferredHolder;
 
 public class ModRituals {
 
     public static final DeferredRegister<ModRitualFactory> RITUALS = DeferredRegister.create(Goety.location("ritual_factory"), Goety.MOD_ID);
 
-    public static final Supplier<IForgeRegistry<ModRitualFactory>> REGISTRY = RITUALS.makeRegistry(() ->
-            new RegistryBuilder<ModRitualFactory>().disableSaving().setMaxID(Integer.MAX_VALUE - 1));
+    public static final Registry<ModRitualFactory> REGISTRY =
+            RITUALS.makeRegistry(builder -> builder.disableSaving().setMaxID(Integer.MAX_VALUE - 1));
 
-    public static final RegistryObject<ModRitualFactory> CRAFT_RITUAL =
+    public static final DeferredHolder<ModRitualFactory, ModRitualFactory> CRAFT_RITUAL =
             RITUALS.register("craft",
                     () -> new ModRitualFactory(CraftItemRitual::new));
 
-    public static final RegistryObject<ModRitualFactory> SUMMON_RITUAL =
+    public static final DeferredHolder<ModRitualFactory, ModRitualFactory> SUMMON_RITUAL =
             RITUALS.register("summon",
                     () -> new ModRitualFactory((ritual) -> new SummonRitual(ritual, false)));
 
-    public static final RegistryObject<ModRitualFactory> SUMMON_TAMED_RITUAL =
+    public static final DeferredHolder<ModRitualFactory, ModRitualFactory> SUMMON_TAMED_RITUAL =
             RITUALS.register("summon_tamed",
                     () -> new ModRitualFactory((ritual) -> new SummonRitual(ritual, true)));
 
-    public static final RegistryObject<ModRitualFactory> CONVERT_RITUAL =
+    public static final DeferredHolder<ModRitualFactory, ModRitualFactory> CONVERT_RITUAL =
             RITUALS.register("convert",
                     () -> new ModRitualFactory((ritual) -> new ConvertRitual(ritual, false, false)));
 
-    public static final RegistryObject<ModRitualFactory> CONVERT_TAMED_RITUAL =
+    public static final DeferredHolder<ModRitualFactory, ModRitualFactory> CONVERT_TAMED_RITUAL =
             RITUALS.register("convert_tamed",
                     () -> new ModRitualFactory((ritual) -> new ConvertRitual(ritual, true, false)));
 
-    public static final RegistryObject<ModRitualFactory> CONVERT_COMPLETE_TAMED_RITUAL =
+    public static final DeferredHolder<ModRitualFactory, ModRitualFactory> CONVERT_COMPLETE_TAMED_RITUAL =
             RITUALS.register("convert_complete_tamed",
                     () -> new ModRitualFactory((ritual) -> new ConvertRitual(ritual, true, true)));
 
-    public static final RegistryObject<ModRitualFactory> ENCHANT =
+    public static final DeferredHolder<ModRitualFactory, ModRitualFactory> ENCHANT =
             RITUALS.register("enchant",
                     () -> new ModRitualFactory(EnchantItemRitual::new));
 
-    public static final RegistryObject<ModRitualFactory> TELEPORT =
+    public static final DeferredHolder<ModRitualFactory, ModRitualFactory> TELEPORT =
             RITUALS.register("teleport",
                     () -> new ModRitualFactory(TeleportRitual::new));
 }

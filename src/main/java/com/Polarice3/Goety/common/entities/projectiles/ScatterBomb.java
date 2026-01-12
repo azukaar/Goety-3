@@ -80,7 +80,7 @@ public class ScatterBomb extends Projectile {
             }
         }
 
-        if (hitresult.getType() != HitResult.Type.MISS && !flag && !net.minecraftforge.event.ForgeEventFactory.onProjectileImpact(this, hitresult)) {
+        if (hitresult.getType() != HitResult.Type.MISS && !flag && !net.neoforged.event.EventFactory.onProjectileImpact(this, hitresult)) {
             this.onHit(hitresult);
         }
 

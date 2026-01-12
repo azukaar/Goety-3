@@ -50,7 +50,7 @@ public class OminousShacklesItem extends Item {
                     prisoner.setVillagerXp(villager.getVillagerXp());
                     prisoner.setIsTrader(villager instanceof WanderingTrader);
                     prisoner.setTrueOwner(player);
-                    net.minecraftforge.event.ForgeEventFactory.onLivingConvert(villager, prisoner);
+                    net.neoforged.event.net.neoforged.neoforge.event.EventHooks.onLivingConvert(villager, prisoner);
                     if (!prisoner.isSilent()) {
                         prisoner.playSound(SoundEvents.IRON_TRAPDOOR_CLOSE);
                     }

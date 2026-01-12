@@ -20,9 +20,6 @@ import net.minecraft.world.entity.*;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.material.PushReaction;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.event.ForgeEventFactory;
-import net.minecraftforge.network.NetworkHooks;
-
 import javax.annotation.Nullable;
 import java.util.Optional;
 import java.util.UUID;
@@ -156,7 +153,7 @@ public class DelayedSummon extends Entity {
                             owned.setTrueOwner(this.getTrueOwner());
                         }
                         if (this.entity instanceof Mob mob) {
-                            ForgeEventFactory.onFinalizeSpawn(mob, serverWorld, this.level.getCurrentDifficultyAt(this.blockPosition()), MobSpawnType.MOB_SUMMONED, null, null);
+                            net.neoforged.neoforge.event.EventHooks.onFinalizeSpawn(mob, serverWorld, this.level.getCurrentDifficultyAt(this.blockPosition()), MobSpawnType.MOB_SUMMONED, null, null);
                             if (this.getTrueOwner() != null && this.getTrueOwner() instanceof Mob mob1) {
                                 if (mob1.getTarget() != null) {
                                     mob.setTarget(mob1.getTarget());
@@ -183,6 +180,6 @@ public class DelayedSummon extends Entity {
 
     @Override
     public Packet<ClientGamePacketListener> getAddEntityPacket() {
-        return NetworkHooks.getEntitySpawningPacket(this);
+        return new net.minecraft.network.protocol.game.ClientboundAddEntityPacket(this);
     }
 }

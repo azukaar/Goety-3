@@ -16,7 +16,7 @@ import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import org.jetbrains.annotations.Nullable;
 
 public class BrewingRecipe implements Recipe<Container> {
@@ -120,10 +120,10 @@ public class BrewingRecipe implements Recipe<Container> {
                 if (data2 != null) {
                     if (data2.has("entity_type")) {
                         ResourceLocation resourceLocation = new ResourceLocation(data2.getAsJsonPrimitive("entity_type").getAsString());
-                        entityType = ForgeRegistries.ENTITY_TYPES.getValue(resourceLocation);
+                        entityType = NeoForgeRegistries.ENTITY_TYPES.getValue(resourceLocation);
                     } else if (data2.has("tag")) {
                         ResourceLocation resourceLocation = new ResourceLocation(data2.getAsJsonPrimitive("tag").getAsString());
-                        entityTag = TagKey.create(ForgeRegistries.ENTITY_TYPES.getRegistryKey(), resourceLocation);
+                        entityTag = TagKey.create(NeoForgeRegistries.ENTITY_TYPES.getRegistryKey(), resourceLocation);
                     }
                 }
             }
@@ -131,7 +131,7 @@ public class BrewingRecipe implements Recipe<Container> {
                     ingredient,
                     entityTag,
                     entityType,
-                    ForgeRegistries.MOB_EFFECTS.getValue(new ResourceLocation(GsonHelper.getAsString(json, "effect"))),
+                    NeoForgeRegistries.MOB_EFFECTS.getValue(new ResourceLocation(GsonHelper.getAsString(json, "effect"))),
                     GsonHelper.getAsInt(json, "soulCost"),
                     GsonHelper.getAsInt(json, "capacityExtra"),
                     GsonHelper.getAsInt(json, "duration"));
@@ -152,7 +152,7 @@ public class BrewingRecipe implements Recipe<Container> {
                 entityType = buf.readRegistryId();
             }
 
-            MobEffect mobEffect = ForgeRegistries.MOB_EFFECTS.getValue(new ResourceLocation(buf.readUtf()));
+            MobEffect mobEffect = NeoForgeRegistries.MOB_EFFECTS.getValue(new ResourceLocation(buf.readUtf()));
 
             int soulCost = buf.readInt();
             int capacityExtra = buf.readInt();
@@ -177,9 +177,9 @@ public class BrewingRecipe implements Recipe<Container> {
             }
             buf.writeBoolean(recipe.entityType != null);
             if (recipe.entityType != null) {
-                buf.writeRegistryId(ForgeRegistries.ENTITY_TYPES, recipe.entityType);
+                buf.writeRegistryId(NeoForgeRegistries.ENTITY_TYPES, recipe.entityType);
             }
-            buf.writeUtf(ForgeRegistries.MOB_EFFECTS.getKey(recipe.output).toString());
+            buf.writeUtf(NeoForgeRegistries.MOB_EFFECTS.getKey(recipe.output).toString());
             buf.writeInt(recipe.soulCost);
             buf.writeInt(recipe.capacityExtra);
             buf.writeInt(recipe.duration);

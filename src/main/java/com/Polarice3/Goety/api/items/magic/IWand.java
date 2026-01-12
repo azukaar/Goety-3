@@ -8,23 +8,20 @@ import com.Polarice3.Goety.common.items.capability.SoulUsingItemCapability;
 import com.Polarice3.Goety.common.items.handler.SoulUsingItemHandler;
 import com.Polarice3.Goety.utils.SEHelper;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.common.capabilities.ICapabilityProvider;
-import net.minecraftforge.common.extensions.IForgeItem;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.ItemStackHandler;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.common.extensions.IItemExtension;
+import net.neoforged.neoforge.items.IItemHandler;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public interface IWand extends IForgeItem {
+public interface IWand extends IItemExtension {
     String SOULUSE = "Soul Use";
     String CASTTIME = "Cast Time";
     String SOULCOST = "Soul Cost";
@@ -68,7 +65,7 @@ public interface IWand extends IForgeItem {
 
     default boolean cannotCast(LivingEntity livingEntity, ItemStack stack, ISpell spell){
         boolean flag = false;
-        if (livingEntity.level instanceof ServerLevel serverLevel){
+        if (livingEntity.level() instanceof ServerLevel serverLevel){
             if (spell != null){
                 if (!spell.conditionsMet(serverLevel, livingEntity)){
                     flag = true;
@@ -120,7 +117,7 @@ public interface IWand extends IForgeItem {
     }
 
     default void failParticles(Level worldIn, LivingEntity entityLiving){
-        for (int i = 0; i < entityLiving.level.random.nextInt(35) + 10; ++i) {
+        for (int i = 0; i < entityLiving.level().random.nextInt(35) + 10; ++i) {
             double d = worldIn.random.nextGaussian() * 0.2D;
             worldIn.addParticle(ParticleTypes.CLOUD, entityLiving.getX(), entityLiving.getEyeY(), entityLiving.getZ(), d, d, d);
         }
@@ -130,34 +127,11 @@ public interface IWand extends IForgeItem {
      * Found Creative Server Bug fix from @mraof's Minestuck Music Player Weapon code.
      */
     static IItemHandler getItemHandler(ItemStack itemStack) {
-        return itemStack.getCapability(ForgeCapabilities.ITEM_HANDLER).orElseThrow(() ->
-                new IllegalArgumentException("Expected an item handler for the Magic Focus item, but " + itemStack + " does not expose an item handler."));
-    }
-
-    default CompoundTag getShareTag(ItemStack stack) {
-        IItemHandler iitemHandler = getItemHandler(stack);
-        CompoundTag nbt = stack.getTag() != null ? stack.getTag() : new CompoundTag();
-        if(iitemHandler instanceof ItemStackHandler itemHandler) {
-            nbt.put("cap", itemHandler.serializeNBT());
+        IItemHandler handler = itemStack.getCapability(Capabilities.ItemHandler.ITEM);
+        if (handler == null) {
+            throw new IllegalArgumentException("Expected an item handler for the Magic Focus item, but " + itemStack + " does not expose an item handler.");
         }
-        return nbt;
-    }
-
-    default void readShareTag(ItemStack stack, @Nullable CompoundTag nbt) {
-        if(nbt == null) {
-            stack.setTag(null);
-        } else {
-            IItemHandler iitemHandler = getItemHandler(stack);
-            if(iitemHandler instanceof ItemStackHandler itemHandler)
-                itemHandler.deserializeNBT(nbt.getCompound("cap"));
-            stack.setTag(nbt);
-        }
-    }
-
-    @Override
-    @Nullable
-    default ICapabilityProvider initCapabilities(@Nonnull ItemStack stack, @Nullable CompoundTag nbt) {
-        return new SoulUsingItemCapability(stack);
+        return handler;
     }
 
     @Override

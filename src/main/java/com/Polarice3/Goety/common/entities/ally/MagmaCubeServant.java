@@ -1,7 +1,6 @@
 package com.Polarice3.Goety.common.entities.ally;
 
 import com.Polarice3.Goety.common.entities.neutral.Owned;
-import com.Polarice3.Goety.init.ModMobType;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.resources.ResourceLocation;
@@ -9,7 +8,6 @@ import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.MobType;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.monster.Monster;
@@ -17,9 +15,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.common.ForgeMod;
-import net.minecraftforge.fluids.FluidType;
-
+import net.neoforged.neoforge.common.NeoForgeMod;
 import java.util.function.BooleanSupplier;
 
 public class MagmaCubeServant extends SlimeServant{
@@ -40,11 +36,6 @@ public class MagmaCubeServant extends SlimeServant{
     public void setSize(int p_32972_, boolean p_32973_) {
         super.setSize(p_32972_, p_32973_);
         this.getAttribute(Attributes.ARMOR).setBaseValue((double)(p_32972_ * 3));
-    }
-
-    @Override
-    public MobType getMobType() {
-        return ModMobType.NETHER;
     }
 
     public float getLightLevelDependentMagicValue() {
@@ -71,22 +62,7 @@ public class MagmaCubeServant extends SlimeServant{
         Vec3 vec3 = this.getDeltaMovement();
         this.setDeltaMovement(vec3.x, (double)(this.getJumpPower() + (float)this.getSize() * 0.1F), vec3.z);
         this.hasImpulse = true;
-        net.minecraftforge.common.ForgeHooks.onLivingJump(this);
-    }
-
-    @Override
-    public void jumpInFluid(FluidType type) {
-        this.jumpInLiquidInternal(() -> type == ForgeMod.LAVA_TYPE.get(), () -> super.jumpInFluid(type));
-    }
-
-    private void jumpInLiquidInternal(BooleanSupplier isLava, Runnable onSuper) {
-        if (isLava.getAsBoolean()) {
-            Vec3 vec3 = this.getDeltaMovement();
-            this.setDeltaMovement(vec3.x, (double)(0.22F + (float)this.getSize() * 0.05F), vec3.z);
-            this.hasImpulse = true;
-        } else {
-            onSuper.run();
-        }
+        net.neoforged.common.ForgeHooks.onLivingJump(this);
     }
 
     public boolean causeFallDamage(float p_149717_, float p_149718_, DamageSource p_149719_) {

@@ -21,7 +21,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.pathfinder.PathComputationType;
 import net.minecraft.world.phys.BlockHitResult;
-import net.minecraftforge.common.extensions.IForgeBlock;
+import net.neoforged.neoforge.common.extensions.IForgeBlock;
 
 import javax.annotation.Nullable;
 
@@ -122,3 +122,4 @@ public class ArcaBlock extends BaseEntityBlock implements IForgeBlock {
         };
     }
 }
+

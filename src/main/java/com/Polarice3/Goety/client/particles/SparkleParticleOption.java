@@ -9,26 +9,33 @@
 package com.Polarice3.Goety.client.particles;
 
 import com.Polarice3.Goety.utils.ColorUtil;
-import com.mojang.brigadier.StringReader;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleType;
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Locale;
-
 public class SparkleParticleOption implements ParticleOptions {
-    public static final Codec<SparkleParticleOption> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-            Codec.FLOAT.fieldOf("size").forGetter(d -> d.size),
-            Codec.FLOAT.fieldOf("r").forGetter(d -> d.r),
-            Codec.FLOAT.fieldOf("g").forGetter(d -> d.g),
-            Codec.FLOAT.fieldOf("b").forGetter(d -> d.b),
-            Codec.INT.fieldOf("extraLife").forGetter(d -> d.extraLife)
+    public static final MapCodec<SparkleParticleOption> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
+            com.mojang.serialization.Codec.FLOAT.fieldOf("size").forGetter(d -> d.size),
+            com.mojang.serialization.Codec.FLOAT.fieldOf("r").forGetter(d -> d.r),
+            com.mojang.serialization.Codec.FLOAT.fieldOf("g").forGetter(d -> d.g),
+            com.mojang.serialization.Codec.FLOAT.fieldOf("b").forGetter(d -> d.b),
+            com.mojang.serialization.Codec.INT.fieldOf("extraLife").forGetter(d -> d.extraLife)
     ).apply(instance, SparkleParticleOption::new));
+
+    public static final StreamCodec<RegistryFriendlyByteBuf, SparkleParticleOption> STREAM_CODEC = StreamCodec.of(
+            (buf, value) -> {
+                buf.writeFloat(value.size);
+                buf.writeFloat(value.r);
+                buf.writeFloat(value.g);
+                buf.writeFloat(value.b);
+                buf.writeInt(value.extraLife);
+            },
+            buf -> new SparkleParticleOption(buf.readFloat(), buf.readFloat(), buf.readFloat(), buf.readFloat(), buf.readInt())
+    );
     public final float size;
     public final float r, g, b;
     public final int extraLife;
@@ -54,44 +61,4 @@ public class SparkleParticleOption implements ParticleOptions {
     public ParticleType<SparkleParticleOption> getType() {
         return ModParticleTypes.SPARKLE.get();
     }
-
-    @Override
-    public void writeToNetwork(FriendlyByteBuf buf) {
-        buf.writeFloat(size);
-        buf.writeFloat(r);
-        buf.writeFloat(g);
-        buf.writeFloat(b);
-        buf.writeInt(extraLife);
-    }
-
-    @NotNull
-    @Override
-    public String writeToString() {
-        return String.format(Locale.ROOT, "%s %.2f %.2f %.2f %.2f %d",
-                BuiltInRegistries.PARTICLE_TYPE.getKey(this.getType()), this.size, this.r, this.g, this.b, this.extraLife);
-    }
-
-    public static final Deserializer<SparkleParticleOption> DESERIALIZER = new Deserializer<>() {
-        @NotNull
-        @Override
-        public SparkleParticleOption fromCommand(@NotNull ParticleType<SparkleParticleOption> type, @NotNull StringReader reader) throws CommandSyntaxException {
-            reader.expect(' ');
-            float size = reader.readFloat();
-            reader.expect(' ');
-            float r = reader.readFloat();
-            reader.expect(' ');
-            float g = reader.readFloat();
-            reader.expect(' ');
-            float b = reader.readFloat();
-            reader.expect(' ');
-            int extraLife = reader.readInt();
-
-            return new SparkleParticleOption(size, r, g, b, extraLife);
-        }
-
-        @Override
-        public SparkleParticleOption fromNetwork(@NotNull ParticleType<SparkleParticleOption> type, FriendlyByteBuf buf) {
-            return new SparkleParticleOption(buf.readFloat(), buf.readFloat(), buf.readFloat(), buf.readFloat(), buf.readInt());
-        }
-    };
 }

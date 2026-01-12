@@ -8,8 +8,6 @@ import com.Polarice3.Goety.common.entities.ai.ModMeleeAttackGoal;
 import com.Polarice3.Goety.common.entities.ally.Summoned;
 import com.Polarice3.Goety.common.entities.projectiles.GhostArrow;
 import com.Polarice3.Goety.common.research.ResearchList;
-import com.Polarice3.Goety.compat.serene_seasons.SSeasonsIntegration;
-import com.Polarice3.Goety.compat.serene_seasons.SSeasonsLoaded;
 import com.Polarice3.Goety.config.AttributesConfig;
 import com.Polarice3.Goety.config.SpellConfig;
 import com.Polarice3.Goety.init.ModTags;
@@ -44,7 +42,7 @@ import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.structure.BuiltinStructures;
-import net.minecraftforge.common.Tags;
+import net.neoforged.neoforge.common.Tags;
 
 import javax.annotation.Nullable;
 import java.time.LocalDate;
@@ -174,10 +172,6 @@ public abstract class AbstractSkeletonServant extends Summoned implements Ranged
         this.playSound(this.getStepSound(), 0.15F, 1.0F);
     }
 
-    public MobType getMobType() {
-        return MobType.UNDEAD;
-    }
-
     protected void populateDefaultEquipmentSlots(RandomSource randomSource, DifficultyInstance difficulty) {
         super.populateDefaultEquipmentSlots(randomSource, difficulty);
         this.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.BOW));
@@ -206,10 +200,8 @@ public abstract class AbstractSkeletonServant extends Summoned implements Ranged
             } else if (level.isWaterAt(blockPos)) {
                 entityType = ModEntityType.SUNKEN_SKELETON_SERVANT.get();
             }
-            if (SSeasonsLoaded.SERENE_SEASONS.isLoaded()){
-                if (SSeasonsIntegration.summonSnowVariant(level, blockPos)){
-                    entityType = ModEntityType.STRAY_SERVANT.get();
-                }
+            if (level.getBiome(blockPos).is(BiomeTags.IS_SNOWY)){
+                entityType = ModEntityType.STRAY_SERVANT.get();
             }
         }
         return entityType;

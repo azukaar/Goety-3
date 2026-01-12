@@ -52,7 +52,7 @@ import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.common.ForgeMod;
+import net.neoforged.neoforge.common.NeoForgeMod;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
@@ -99,7 +99,7 @@ public class AllyTrampler extends RaiderServant implements ICharger, IAutoRideab
         return Mob.createMobAttributes()
                 .add(Attributes.MAX_HEALTH, AttributesConfig.TramplerHealth.get())
                 .add(Attributes.ARMOR, AttributesConfig.TramplerArmor.get())
-                .add(ForgeMod.STEP_HEIGHT_ADDITION.get(), 1.0D)
+                .add(NeoForgeMod.STEP_HEIGHT_ADDITION.get(), 1.0D)
                 .add(Attributes.FOLLOW_RANGE, 32.0D)
                 .add(Attributes.MOVEMENT_SPEED, 0.35D)
                 .add(Attributes.ATTACK_DAMAGE, AttributesConfig.TramplerDamage.get());
@@ -370,7 +370,7 @@ public class AllyTrampler extends RaiderServant implements ICharger, IAutoRideab
                 this.walkAnimation.setSpeed(this.walkAnimation.speed() + 0.8F);
             }
 
-            if (this.horizontalCollision && net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(this.level, this)) {
+            if (this.horizontalCollision && this.level.getGameRules().getBoolean(GameRules.RULE_MOB_GRIEFING)) {
                 boolean flag = false;
                 AABB aabb = this.getBoundingBox().inflate(0.2D);
 
@@ -479,7 +479,7 @@ public class AllyTrampler extends RaiderServant implements ICharger, IAutoRideab
                 }
 
                 if (this.getMobType() != MobType.UNDEAD) {
-                    if (this.isInWater() && this.getFluidTypeHeight(ForgeMod.WATER_TYPE.get()) > this.getFluidJumpThreshold() || this.isInLava() || this.isInFluidType((fluidType, height) -> this.canSwimInFluidType(fluidType) && height > this.getFluidJumpThreshold())) {
+                    if (this.isInWater() && this.getFluidTypeHeight(NeoForgeMod.WATER_TYPE.get()) > this.getFluidJumpThreshold() || this.isInLava() || this.isInFluidType((fluidType, height) -> this.canSwimInFluidType(fluidType) && height > this.getFluidJumpThreshold())) {
                         Vec3 vector3d = this.getDeltaMovement();
                         this.setDeltaMovement(vector3d.x, 0.04F, vector3d.z);
                         this.hasImpulse = true;

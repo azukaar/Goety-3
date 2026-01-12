@@ -20,8 +20,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
-import net.minecraftforge.network.NetworkHooks;
-
 public class SoulBullet extends AbstractHurtingProjectile {
     public SoulBullet(EntityType<? extends SoulBullet> p_i50147_1_, Level p_i50147_2_) {
         super(p_i50147_1_, p_i50147_2_);
@@ -104,7 +102,7 @@ public class SoulBullet extends AbstractHurtingProjectile {
 
     @Override
     public Packet<ClientGamePacketListener> getAddEntityPacket() {
-        return NetworkHooks.getEntitySpawningPacket(this);
+        return new net.minecraft.network.protocol.game.ClientboundAddEntityPacket(this);
     }
 
 }

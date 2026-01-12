@@ -7,12 +7,13 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.LevelAccessor;
-import net.minecraft.world.level.block.AbstractGlassBlock;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.HalfTransparentBlock;
+import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
-import net.minecraft.world.level.pathfinder.BlockPathTypes;
+import net.minecraft.world.level.pathfinder.PathType;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.EntityCollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
@@ -21,7 +22,7 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class HauntedGlassBlock extends AbstractGlassBlock {
+public class HauntedGlassBlock extends HalfTransparentBlock {
     public static final BooleanProperty CONNECTED_DOWN = BooleanProperty.create("connected_down");
     public static final BooleanProperty CONNECTED_UP = BooleanProperty.create("connected_up");
     public static final BooleanProperty CONNECTED_NORTH = BooleanProperty.create("connected_north");
@@ -31,7 +32,7 @@ public class HauntedGlassBlock extends AbstractGlassBlock {
     public boolean isPlayerOnly;
     public boolean isTinted;
 
-    public HauntedGlassBlock(Properties properties, boolean isPlayerOnly, boolean isTinted) {
+    public HauntedGlassBlock(BlockBehaviour.Properties properties, boolean isPlayerOnly, boolean isTinted) {
         super(properties);
         this.isPlayerOnly = isPlayerOnly;
         this.isTinted = isTinted;
@@ -74,10 +75,10 @@ public class HauntedGlassBlock extends AbstractGlassBlock {
         return state.getShape(world, pos);
     }
 
-    public BlockPathTypes getBlockPathType(BlockState state, BlockGetter level, BlockPos pos, @Nullable Mob mob) {
+    public PathType getBlockPathType(BlockState state, BlockGetter level, BlockPos pos, @Nullable Mob mob) {
         if (state.getBlock() instanceof HauntedGlassBlock glassBlock){
             if (!glassBlock.isPlayerOnly){
-                return BlockPathTypes.OPEN;
+                return PathType.OPEN;
             }
         }
         return super.getBlockPathType(state, level, pos, mob);

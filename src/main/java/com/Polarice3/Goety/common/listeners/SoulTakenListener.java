@@ -12,9 +12,7 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraftforge.common.crafting.CraftingHelper;
-import net.minecraftforge.common.crafting.conditions.ICondition;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.neoforge.registries.NeoForgeRegistries;
 
 import javax.annotation.Nullable;
 import java.util.HashMap;
@@ -23,11 +21,9 @@ import java.util.Map;
 public class SoulTakenListener extends SimpleJsonResourceReloadListener {
     public static Map<ResourceLocation, SoulTakenDataType> ENTITY_LIST = new HashMap<>();
     private static final Gson GSON = (new GsonBuilder()).create();
-    private final ICondition.IContext context;
 
-    public SoulTakenListener(ICondition.IContext context) {
+    public SoulTakenListener() {
         super(GSON, "soul_taken");
-        this.context = context;
     }
 
     @Override
@@ -36,19 +32,16 @@ public class SoulTakenListener extends SimpleJsonResourceReloadListener {
         for (int i = 0; i < objectIn.size(); i++) {
             ResourceLocation location = (ResourceLocation) objectIn.keySet().toArray()[i];
             JsonObject object = objectIn.get(location).getAsJsonObject();
-            if (!CraftingHelper.processConditions(object, "conditions", this.context)){
-                Goety.LOGGER.debug("Skipping loading soul taken entry {} as it's conditions were not met", location);
-            } else {
-                ResourceLocation entityType = null;
-                ResourceLocation entityTag = null;
-                if (object.has("entity_type")){
-                    entityType = new ResourceLocation(object.getAsJsonPrimitive("entity_type").getAsString());
-                } else if (object.has("tag")){
-                    entityTag = new ResourceLocation(object.getAsJsonPrimitive("tag").getAsString());
-                }
-                int soulAmount = object.getAsJsonPrimitive("soul_amount").getAsInt();
-                ENTITY_LIST.put(location, new SoulTakenDataType(entityType, entityTag, soulAmount));
+            // TODO (NeoForge 1.21): port conditional loading (CraftingHelper/processConditions + ICondition context).
+            ResourceLocation entityType = null;
+            ResourceLocation entityTag = null;
+            if (object.has("entity_type")){
+                entityType = new ResourceLocation(object.getAsJsonPrimitive("entity_type").getAsString());
+            } else if (object.has("tag")){
+                entityTag = new ResourceLocation(object.getAsJsonPrimitive("tag").getAsString());
             }
+            int soulAmount = object.getAsJsonPrimitive("soul_amount").getAsInt();
+            ENTITY_LIST.put(location, new SoulTakenDataType(entityType, entityTag, soulAmount));
         }
     }
 
@@ -58,12 +51,12 @@ public class SoulTakenListener extends SimpleJsonResourceReloadListener {
                 for (SoulTakenDataType dataType : ENTITY_LIST.values()) {
                     boolean flag = false;
                     if (dataType.entityType != null) {
-                        EntityType<?> entityType = ForgeRegistries.ENTITY_TYPES.getValue(dataType.entityType);
+                        EntityType<?> entityType = NeoForgeRegistries.ENTITY_TYPES.getValue(dataType.entityType);
                         if (entityType != null && entityType != EntityType.PIG) {
                             flag = victim.getType() == entityType;
                         }
                     } else if (dataType.entityTag != null) {
-                        TagKey<EntityType<?>> tagKey = TagKey.create(ForgeRegistries.ENTITY_TYPES.getRegistryKey(), dataType.entityTag);
+                        TagKey<EntityType<?>> tagKey = TagKey.create(NeoForgeRegistries.ENTITY_TYPES.getRegistryKey(), dataType.entityTag);
                         flag = victim.getType().is(tagKey);
                     }
                     if (flag) {

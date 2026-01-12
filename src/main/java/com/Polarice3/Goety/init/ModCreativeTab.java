@@ -5,8 +5,6 @@ import com.Polarice3.Goety.common.blocks.ModBlocks;
 import com.Polarice3.Goety.common.items.ModItems;
 import com.Polarice3.Goety.common.items.ModSpawnEggs;
 import com.Polarice3.Goety.common.items.ServantSpawnEggs;
-import com.Polarice3.Goety.compat.patchouli.PatchouliIntegration;
-import com.Polarice3.Goety.compat.patchouli.PatchouliLoaded;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.Registries;
@@ -17,8 +15,8 @@ import net.minecraft.world.entity.decoration.PaintingVariant;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.RegistryObject;
+import net.neoforged.neoforge.registries.DeferredRegister;
+import net.neoforged.neoforge.registries.RegistryObject;
 
 import java.util.Comparator;
 import java.util.function.Predicate;
@@ -31,10 +29,7 @@ public class ModCreativeTab {
             .title(Component.translatable("itemGroup.goety"))
             .withSearchBar()
             .displayItems((parameters, output) -> {
-                if (PatchouliLoaded.PATCHOULI.isLoaded()){
-                    output.accept(PatchouliIntegration.getBlackBook());
-                    output.accept(PatchouliIntegration.getWitchesBrew());
-                }
+                // Patchouli integration disabled for now (no 1.21.1 dependency pinned in build yet).
                 output.accept(ModItems.TOTEM_OF_SOULS.get().getEmptyTotem());
                 output.accept(ModItems.TOTEM_OF_SOULS.get().getFilledTotem());
                 output.accept(ModItems.TOTEM_OF_ROOTS.get().getEmptyTotem());

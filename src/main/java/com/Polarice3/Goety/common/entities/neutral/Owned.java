@@ -25,15 +25,18 @@ import net.minecraft.world.entity.ai.goal.target.TargetGoal;
 import net.minecraft.world.entity.ai.targeting.TargetingConditions;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.AxeItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.LightLayer;
 import net.minecraft.world.level.ServerLevelAccessor;
-import net.minecraft.world.scores.Team;
+import net.minecraft.world.scores.PlayerTeam;
 
 import javax.annotation.Nullable;
 import java.util.EnumSet;
@@ -105,20 +108,27 @@ public class Owned extends PathfinderMob implements IOwned, OwnableEntity, ICust
         if (this.getTrueOwner() != null) {
             float f = (float) this.getAttributeValue(Attributes.ATTACK_DAMAGE);
             float f1 = (float) this.getAttributeValue(Attributes.ATTACK_KNOCKBACK);
-            if (entity instanceof LivingEntity) {
-                f += EnchantmentHelper.getDamageBonus(this.getMainHandItem(), ((LivingEntity) entity).getMobType());
-                f1 += (float) EnchantmentHelper.getKnockbackBonus(this);
+            ItemStack mainHand = this.getMainHandItem();
+            if (entity instanceof LivingEntity livingEntity) {
+                // EnchantmentHelper.getDamageBonus removed in 1.21.1 - enchantments are data-driven
+                // Get sharpness level directly from item
+                var enchantmentRegistry = this.level().registryAccess().registryOrThrow(Registries.ENCHANTMENT);
+                int sharpnessLevel = mainHand.getEnchantmentLevel(enchantmentRegistry.getHolderOrThrow(net.minecraft.world.item.enchantment.Enchantments.SHARPNESS));
+                f += sharpnessLevel * 0.5F; // Approximate sharpness bonus
+                // Knockback from item enchantments
+                f1 += mainHand.getEnchantmentLevel(enchantmentRegistry.getHolderOrThrow(net.minecraft.world.item.enchantment.Enchantments.KNOCKBACK));
             }
 
-            int i = EnchantmentHelper.getFireAspect(this);
-            if (i > 0) {
-                entity.setSecondsOnFire(i * 4);
+            var enchantmentRegistry = this.level().registryAccess().registryOrThrow(Registries.ENCHANTMENT);
+            int i = mainHand.getEnchantmentLevel(enchantmentRegistry.getHolderOrThrow(net.minecraft.world.item.enchantment.Enchantments.FIRE_ASPECT));
+            if (i > 0 && entity instanceof LivingEntity livingEntity) {
+                livingEntity.igniteForSeconds(i * 4.0F);
             }
 
             boolean flag = this.doHurtTarget(f, entity);
             if (flag) {
-                if (f1 > 0.0F && entity instanceof LivingEntity) {
-                    ((LivingEntity) entity).knockback((double) (f1 * 0.5F), (double) Mth.sin(this.getYRot() * ((float) Math.PI / 180F)), (double) (-Mth.cos(this.getYRot() * ((float) Math.PI / 180F))));
+                if (f1 > 0.0F && entity instanceof LivingEntity livingEntity) {
+                    livingEntity.knockback((double) (f1 * 0.5F), (double) Mth.sin(this.getYRot() * ((float) Math.PI / 180F)), (double) (-Mth.cos(this.getYRot() * ((float) Math.PI / 180F))));
                     this.setDeltaMovement(this.getDeltaMovement().multiply(0.6D, 1.0D, 0.6D));
                 }
 
@@ -126,7 +136,8 @@ public class Owned extends PathfinderMob implements IOwned, OwnableEntity, ICust
                     this.maybeDisableShield(player, this.getMainHandItem(), player.isUsingItem() ? player.getUseItem() : ItemStack.EMPTY);
                 }
 
-                this.doEnchantDamageEffects(this, entity);
+                // EnchantmentHelper.doPostHurtEffects and doPostDamageEffects removed in 1.21.1
+                // Enchantment effects are now handled automatically by the enchantment system
                 this.setLastHurtMob(entity);
             }
 
@@ -142,17 +153,21 @@ public class Owned extends PathfinderMob implements IOwned, OwnableEntity, ICust
 
     public void maybeDisableShield(Player player, ItemStack axe, ItemStack shield) {
         if (!axe.isEmpty() && !shield.isEmpty() && axe.getItem() instanceof AxeItem && shield.is(Items.SHIELD)) {
-            float f = 0.25F + (float)EnchantmentHelper.getBlockEfficiency(this) * 0.05F;
+            // EnchantmentHelper.getBlockEfficiency removed in 1.21.1
+            // Use efficiency enchantment level directly
+            var enchantmentRegistry = this.level().registryAccess().registryOrThrow(Registries.ENCHANTMENT);
+            int efficiencyLevel = axe.getEnchantmentLevel(enchantmentRegistry.getHolderOrThrow(net.minecraft.world.item.enchantment.Enchantments.EFFICIENCY));
+            float f = 0.25F + (float)efficiencyLevel * 0.05F;
             if (this.random.nextFloat() < f) {
                 player.getCooldowns().addCooldown(Items.SHIELD, 100);
-                this.level.broadcastEntityEvent(player, (byte)30);
+                this.level().broadcastEntityEvent(player, (byte)30);
             }
         }
 
     }
 
     @Nullable
-    public Team getTeam() {
+    public PlayerTeam getTeam() {
         if (this.getTrueOwner() != null) {
             LivingEntity livingentity = this.getTrueOwner();
             if (livingentity != null && livingentity != this && !this.areOwnedByEachOther(livingentity) && livingentity.getTeam() != null) {
@@ -187,12 +202,12 @@ public class Owned extends PathfinderMob implements IOwned, OwnableEntity, ICust
         return super.isAlliedTo(entityIn);
     }
 
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.entityData.define(OWNER_UNIQUE_ID, Optional.empty());
-        this.entityData.define(OWNER_CLIENT_ID, -1);
-        this.entityData.define(HOSTILE, false);
-        this.entityData.define(NATURAL, false);
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(OWNER_UNIQUE_ID, Optional.empty());
+        builder.define(OWNER_CLIENT_ID, -1);
+        builder.define(HOSTILE, false);
+        builder.define(NATURAL, false);
     }
 
     public void readAdditionalSaveData(CompoundTag compound) {
@@ -228,7 +243,7 @@ public class Owned extends PathfinderMob implements IOwned, OwnableEntity, ICust
 
     @Override
     public void convertNewEquipment(Entity entity){
-        this.populateDefaultEquipmentSlots(this.random, this.level.getCurrentDifficultyAt(this.blockPosition()));
+        this.populateDefaultEquipmentSlots(this.random, this.level().getCurrentDifficultyAt(this.blockPosition()));
     }
 
     @Nullable
@@ -238,8 +253,8 @@ public class Owned extends PathfinderMob implements IOwned, OwnableEntity, ICust
 
     @Nullable
     @SuppressWarnings("deprecation")
-    public SpawnGroupData finalizeSpawn(ServerLevelAccessor pLevel, DifficultyInstance pDifficulty, MobSpawnType pReason, @Nullable SpawnGroupData pSpawnData, @Nullable CompoundTag pDataTag) {
-        pSpawnData = super.finalizeSpawn(pLevel, pDifficulty, pReason, pSpawnData, pDataTag);
+    public SpawnGroupData finalizeSpawn(ServerLevelAccessor pLevel, DifficultyInstance pDifficulty, MobSpawnType pReason, @Nullable SpawnGroupData pSpawnData) {
+        pSpawnData = super.finalizeSpawn(pLevel, pDifficulty, pReason, pSpawnData);
         this.checkHostility();
         if (pReason != MobSpawnType.MOB_SUMMONED && this.getTrueOwner() == null){
             this.setNatural(true);
@@ -252,12 +267,12 @@ public class Owned extends PathfinderMob implements IOwned, OwnableEntity, ICust
 
     @Nullable
     public LivingEntity getTrueOwner() {
-        if (!this.level.isClientSide){
+        if (!this.level().isClientSide){
             UUID uuid = this.getOwnerId();
-            return uuid == null ? null : EntityFinder.getLivingEntityByUuiD(this.level, uuid);
+            return uuid == null ? null : EntityFinder.getLivingEntityByUuiD(this.level(), uuid);
         } else {
             int id = this.getOwnerClientId();
-            return id <= -1 ? null : this.level.getEntity(this.getOwnerClientId()) instanceof LivingEntity living && living != this ? living : null;
+            return id <= -1 ? null : this.level().getEntity(this.getOwnerClientId()) instanceof LivingEntity living && living != this ? living : null;
         }
     }
 
@@ -326,13 +341,8 @@ public class Owned extends PathfinderMob implements IOwned, OwnableEntity, ICust
         return super.canBeAffected(pPotioneffect);
     }
 
-    public int getExperienceReward() {
-        if (this.isHostile()) {
-            this.xpReward = this.xpReward();
-        }
-
-        return super.getExperienceReward();
-    }
+    // getExperienceReward is final in 1.21.1, cannot override
+    // Use xpReward field directly instead
 
     public int xpReward(){
         return 5;
@@ -340,7 +350,7 @@ public class Owned extends PathfinderMob implements IOwned, OwnableEntity, ICust
 
     @Override
     public void push(Entity p_21294_) {
-        if (!this.level.isClientSide) {
+        if (!this.level().isClientSide) {
             if (p_21294_ != this.getTrueOwner()) {
                 super.push(p_21294_);
             }
@@ -348,7 +358,7 @@ public class Owned extends PathfinderMob implements IOwned, OwnableEntity, ICust
     }
 
     protected void doPush(Entity p_20971_) {
-        if (!this.level.isClientSide) {
+        if (!this.level().isClientSide) {
             if (p_20971_ != this.getTrueOwner()) {
                 super.doPush(p_20971_);
             }

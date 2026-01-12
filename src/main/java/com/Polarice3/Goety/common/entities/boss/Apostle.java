@@ -90,13 +90,13 @@ import net.minecraft.world.level.block.LiquidBlock;
 import net.minecraft.world.level.block.piston.MovingPistonBlock;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.material.FluidState;
-import net.minecraft.world.level.pathfinder.BlockPathTypes;
+import net.minecraft.world.level.pathfinder.PathType;
 import net.minecraft.world.level.pathfinder.PathFinder;
 import net.minecraft.world.level.pathfinder.WalkNodeEvaluator;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
-import net.minecraftforge.common.ForgeMod;
-import net.minecraftforge.event.ForgeEventFactory;
+import net.neoforged.neoforge.common.NeoForgeMod;
+
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
@@ -157,10 +157,10 @@ public class Apostle extends SpellCastingCultist implements RangedAttackMob {
     public Apostle(EntityType<? extends SpellCastingCultist> type, Level worldIn) {
         super(type, worldIn);
         this.bossInfo = new ModServerBossInfo(this, BossEvent.BossBarColor.RED, true, true);
-        this.setPathfindingMalus(BlockPathTypes.WATER, -1.0F);
-        this.setPathfindingMalus(BlockPathTypes.LAVA, 0.0F);
-        this.setPathfindingMalus(BlockPathTypes.DANGER_FIRE, 0.0F);
-        this.setPathfindingMalus(BlockPathTypes.DAMAGE_FIRE, 0.0F);
+        this.setPathfindingMalus(PathType.WATER, -1.0F);
+        this.setPathfindingMalus(PathType.LAVA, 0.0F);
+        this.setPathfindingMalus(PathType.DANGER_FIRE, 0.0F);
+        this.setPathfindingMalus(PathType.DAMAGE_FIRE, 0.0F);
         this.xpReward = 1000;
         this.coolDown = 100;
         this.spellCycle = 0;
@@ -198,7 +198,7 @@ public class Apostle extends SpellCastingCultist implements RangedAttackMob {
                 .add(Attributes.ARMOR_TOUGHNESS, AttributesConfig.ApostleToughness.get())
                 .add(Attributes.KNOCKBACK_RESISTANCE, 0.75D)
                 .add(Attributes.FOLLOW_RANGE, 40.0D)
-                .add(ForgeMod.STEP_HEIGHT_ADDITION.get(), 1.0F)
+                .add(NeoForgeMod.STEP_HEIGHT_ADDITION.get(), 1.0F)
                 .add(Attributes.ATTACK_DAMAGE, 3.0D);
     }
 
@@ -279,10 +279,6 @@ public class Apostle extends SpellCastingCultist implements RangedAttackMob {
 
     protected SoundEvent getTrueDeathSound() {
         return ModSounds.APOSTLE_DEATH.get();
-    }
-
-    public MobType getMobType() {
-        return MobType.UNDEAD;
     }
 
     public boolean canBeAffected(MobEffectInstance pPotioneffect) {
@@ -1219,7 +1215,7 @@ public class Apostle extends SpellCastingCultist implements RangedAttackMob {
                 }
                 if (blockPos.getY() > this.getY() + 32.0D) {
                     NetherMeteor fireball = this.getNetherMeteor();
-                    fireball.setDangerous(ForgeEventFactory.getMobGriefingEvent(this.level, this) && MobsConfig.ApocalypseMode.get());
+                    fireball.setDangerous(this.level.getGameRules().getBoolean(GameRules.RULE_MOB_GRIEFING) && MobsConfig.ApocalypseMode.get());
                     fireball.setPos(blockPos.getX(), blockPos.getY(), blockPos.getZ());
                     this.level.addFreshEntity(fireball);
                 }
@@ -1279,7 +1275,7 @@ public class Apostle extends SpellCastingCultist implements RangedAttackMob {
                                 }
                                 if (mob != null) {
                                     mob.moveTo(villager.getX(), villager.getY(), villager.getZ(), villager.getYRot(), villager.getXRot());
-                                    ForgeEventFactory.onFinalizeSpawn(mob, serverLevel, serverLevel.getCurrentDifficultyAt(mob.blockPosition()), MobSpawnType.CONVERSION, null, null);
+                                    net.neoforged.neoforge.event.EventHooks.onFinalizeSpawn(mob, serverLevel, serverLevel.getCurrentDifficultyAt(mob.blockPosition()), MobSpawnType.CONVERSION, null, null);
                                     mob.setNoAi(villager.isNoAi());
                                     if (villager.hasCustomName()) {
                                         mob.setCustomName(villager.getCustomName());
@@ -1287,7 +1283,7 @@ public class Apostle extends SpellCastingCultist implements RangedAttackMob {
                                     }
 
                                     mob.setPersistenceRequired();
-                                    net.minecraftforge.event.ForgeEventFactory.onLivingConvert(villager, mob);
+                                    net.neoforged.event.net.neoforged.neoforge.event.EventHooks.onLivingConvert(villager, mob);
                                     serverLevel.addFreshEntityWithPassengers(mob);
                                     if (villager instanceof Villager villager1) {
                                         MobUtil.releaseAllPois(villager1);
@@ -1601,7 +1597,7 @@ public class Apostle extends SpellCastingCultist implements RangedAttackMob {
                     fireballEntity = new Lavaball(Apostle.this.level, Apostle.this, d1, d2, d3);
                 }
                 if (fireballEntity instanceof ExplosiveProjectile fireball) {
-                    fireball.setDangerous(ForgeEventFactory.getMobGriefingEvent(Apostle.this.level, Apostle.this));
+                    fireball.setDangerous(Apostle.this.level.getGameRules().getBoolean(GameRules.RULE_MOB_GRIEFING));
                 }
                 fireballEntity.setPos(fireballEntity.getX(), Apostle.this.getY(0.5), fireballEntity.getZ());
                 Apostle.this.level.addFreshEntity(fireballEntity);
@@ -2175,8 +2171,8 @@ public class Apostle extends SpellCastingCultist implements RangedAttackMob {
             return new PathFinder(this.nodeEvaluator, p_33972_);
         }
 
-        protected boolean hasValidPathType(BlockPathTypes p_33974_) {
-            return p_33974_ == BlockPathTypes.LAVA || p_33974_ == BlockPathTypes.DAMAGE_FIRE || p_33974_ == BlockPathTypes.DANGER_FIRE || super.hasValidPathType(p_33974_);
+        protected boolean hasValidPathType(PathType p_33974_) {
+            return p_33974_ == PathType.LAVA || p_33974_ == PathType.DAMAGE_FIRE || p_33974_ == PathType.DANGER_FIRE || super.hasValidPathType(p_33974_);
         }
 
         public boolean isStableDestination(BlockPos p_33976_) {
@@ -2189,3 +2185,4 @@ public class Apostle extends SpellCastingCultist implements RangedAttackMob {
     }
 
 }
+;

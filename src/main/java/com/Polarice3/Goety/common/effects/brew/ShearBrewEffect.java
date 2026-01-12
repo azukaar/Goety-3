@@ -7,7 +7,7 @@ import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraftforge.common.IForgeShearable;
+import net.neoforged.neoforge.common.IForgeShearable;
 
 import javax.annotation.Nullable;
 

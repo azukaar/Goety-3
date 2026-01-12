@@ -21,7 +21,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.common.ForgeHooks;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -84,7 +83,7 @@ public class ThunderboltSpell extends Spell {
             this.playSound(worldIn, caster, ModSounds.THUNDERBOLT.get());
         } else {
             LivingEntity livingEntity = MobUtil.getLivingTarget(target);
-            if (livingEntity != null && ForgeHooks.onLivingAttack(livingEntity, ModDamageSource.directShock(caster), damage)) {
+            if (livingEntity != null) {
                 Vec3 vec31 = new Vec3(livingEntity.getX(), livingEntity.getY() + livingEntity.getBbHeight() / 2, livingEntity.getZ());
                 ModNetwork.sendToALL(new SThunderBoltPacket(vec3, vec31, colorUtil, 10));
                 if (livingEntity.hurt(ModDamageSource.directShock(caster), damage)){

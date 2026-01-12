@@ -4,7 +4,7 @@ import com.Polarice3.Goety.Goety;
 import com.Polarice3.Goety.common.items.ModItems;
 import net.minecraft.Util;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.data.worldgen.BootstapContext;
+import net.minecraft.data.worldgen.BootstrapContext;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceKey;
@@ -20,7 +20,7 @@ public class ModTrimMaterials {
     public static final ResourceKey<TrimMaterial> ECTO = registerKey("ecto");
     public static final ResourceKey<TrimMaterial> JADE = registerKey("jade");
 
-    public static void bootstrap(BootstapContext<TrimMaterial> context) {
+    public static void bootstrap(BootstrapContext<TrimMaterial> context) {
         register(context, CURSED, ModItems.CURSED_METAL_INGOT.get(), Style.EMPTY.withColor(0x1c303a), 0.9F);
         register(context, DARK, ModItems.DARK_ALLOY_INGOT.get(), Style.EMPTY.withColor(0x1f1f1f), 0.3F);
         register(context, ECTO, ModItems.ECTOPLASM.get(), Style.EMPTY.withColor(0x00c2d6), 0.8F);
@@ -31,11 +31,11 @@ public class ModTrimMaterials {
         return ResourceKey.create(Registries.TRIM_MATERIAL, Goety.location(name));
     }
 
-    private static void register(BootstapContext<TrimMaterial> p_268176_, ResourceKey<TrimMaterial> p_268293_, Item p_268156_, Style p_268174_, float p_268274_) {
+    private static void register(BootstrapContext<TrimMaterial> p_268176_, ResourceKey<TrimMaterial> p_268293_, Item p_268156_, Style p_268174_, float p_268274_) {
         register(p_268176_, p_268293_, p_268156_, p_268174_, p_268274_, Map.of());
     }
 
-    private static void register(BootstapContext<TrimMaterial> p_268244_, ResourceKey<TrimMaterial> p_268139_, Item p_268311_, Style p_268232_, float p_268197_, Map<ArmorMaterials, String> p_268352_) {
+    private static void register(BootstrapContext<TrimMaterial> p_268244_, ResourceKey<TrimMaterial> p_268139_, Item p_268311_, Style p_268232_, float p_268197_, Map<ArmorMaterials, String> p_268352_) {
         TrimMaterial trimmaterial = TrimMaterial.create(p_268139_.location().getPath(), p_268311_, p_268197_, Component.translatable(Util.makeDescriptionId("trim_material", p_268139_.location())).withStyle(p_268232_), p_268352_);
         p_268244_.register(p_268139_, trimmaterial);
     }

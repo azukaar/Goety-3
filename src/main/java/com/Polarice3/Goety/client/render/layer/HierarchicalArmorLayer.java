@@ -72,7 +72,7 @@ public class HierarchicalArmorLayer<T extends LivingEntity, M extends EntityMode
         }
         String s1 = String.format("%s:textures/models/armor/%s_layer_%d%s.png", domain, texture, (usesInnerModel(slot) ? 2 : 1), type == null ? "" : String.format("_%s", type));
 
-        s1 = net.minecraftforge.client.ForgeHooksClient.getArmorTexture(entity, stack, s1, slot, type);
+        s1 = net.neoforged.client.ForgeHooksClient.getArmorTexture(entity, stack, s1, slot, type);
         return new ResourceLocation(s1);
     }
 
@@ -424,7 +424,7 @@ public class HierarchicalArmorLayer<T extends LivingEntity, M extends EntityMode
     }
 
     protected HumanoidModel<?> getArmorModelHook(LivingEntity entity, ItemStack itemStack, EquipmentSlot slot, HumanoidModel model) {
-        Model basicModel = net.minecraftforge.client.ForgeHooksClient.getArmorModel(entity, itemStack, slot, model);
+        Model basicModel = net.neoforged.client.ForgeHooksClient.getArmorModel(entity, itemStack, slot, model);
         return basicModel instanceof HumanoidModel ? (HumanoidModel<?>) basicModel : model;
     }
 }

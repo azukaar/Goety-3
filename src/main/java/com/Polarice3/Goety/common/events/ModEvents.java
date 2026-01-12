@@ -58,7 +58,6 @@ import com.Polarice3.Goety.compat.patchouli.PatchouliLoaded;
 import com.Polarice3.Goety.config.MainConfig;
 import com.Polarice3.Goety.config.MobsConfig;
 import com.Polarice3.Goety.config.SpellConfig;
-import com.Polarice3.Goety.init.ModMobType;
 import com.Polarice3.Goety.init.ModSounds;
 import com.Polarice3.Goety.init.ModTags;
 import com.Polarice3.Goety.init.RaidAdditions;
@@ -116,45 +115,34 @@ import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.event.ForgeEventFactory;
-import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.event.entity.EntityJoinLevelEvent;
-import net.minecraftforge.event.entity.EntityStruckByLightningEvent;
-import net.minecraftforge.event.entity.ProjectileImpactEvent;
-import net.minecraftforge.event.entity.living.*;
-import net.minecraftforge.event.entity.player.PlayerEvent;
-import net.minecraftforge.event.entity.player.PlayerSleepInBedEvent;
-import net.minecraftforge.event.furnace.FurnaceFuelBurnTimeEvent;
-import net.minecraftforge.event.level.BlockEvent;
-import net.minecraftforge.event.level.ExplosionEvent;
-import net.minecraftforge.event.level.LevelEvent;
-import net.minecraftforge.event.village.VillagerTradesEvent;
-import net.minecraftforge.event.village.WandererTradesEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.MissingMappingsEvent;
+
+import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
+import net.neoforged.neoforge.event.entity.EntityStruckByLightningEvent;
+import net.neoforged.neoforge.event.entity.ProjectileImpactEvent;
+import net.neoforged.neoforge.event.entity.living.*;
+import net.neoforged.neoforge.event.entity.player.PlayerEvent;
+import net.neoforged.neoforge.event.entity.player.CanPlayerSleepEvent;
+import net.neoforged.neoforge.event.furnace.FurnaceFuelBurnTimeEvent;
+import net.neoforged.neoforge.event.level.BlockEvent;
+import net.neoforged.neoforge.event.level.ExplosionEvent;
+import net.neoforged.neoforge.event.level.LevelEvent;
+import net.neoforged.neoforge.event.tick.EntityTickEvent;
+import net.neoforged.neoforge.event.tick.LevelTickEvent;
+import net.neoforged.neoforge.event.tick.PlayerTickEvent;
+import net.neoforged.neoforge.event.village.VillagerTradesEvent;
+import net.neoforged.neoforge.event.village.WandererTradesEvent;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import org.apache.commons.lang3.ArrayUtils;
-import vazkii.patchouli.api.PatchouliAPI;
 
 import java.util.*;
 
-import static net.minecraftforge.event.entity.living.LivingChangeTargetEvent.LivingTargetType.MOB_TARGET;
+import static net.neoforged.neoforge.event.entity.living.LivingChangeTargetEvent.LivingTargetType.MOB_TARGET;
 
-@Mod.EventBusSubscriber(modid = Goety.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE)
+@EventBusSubscriber(modid = Goety.MOD_ID, bus = EventBusSubscriber.Bus.GAME)
 public class ModEvents {
-
-    //Need to test this.
-    @SubscribeEvent
-    public static void onMissingMappings(MissingMappingsEvent event) {
-        event.getAllMappings(ForgeRegistries.Keys.ENTITY_TYPES).forEach(missingMapping -> {
-            switch (missingMapping.getKey().toString()) {
-                case "goety:ally_vex" -> missingMapping.remap(ModEntityType.VEX_SERVANT.get());
-                case "goety:ally_irk" -> missingMapping.remap(ModEntityType.IRK_SERVANT.get());
-                case "goety:ally_trampler" -> missingMapping.remap(ModEntityType.TRAMPLER_SERVANT.get());
-            }
-        });
-    }
 
     @SubscribeEvent
     public static void onPlayerClone(PlayerEvent.Clone event) {
@@ -390,24 +378,7 @@ public class ModEvents {
                     playerData.put(Player.PERSISTED_NBT_TAG, data);
                 }
             }
-            if (PatchouliLoaded.PATCHOULI.isLoaded()){
-                if (MainConfig.StarterBook.get()){
-                    if (!data.getBoolean("goety:starterBook")) {
-                        ItemStack book = PatchouliAPI.get().getBookStack(Goety.location("black_book"));
-                        event.getEntity().addItem(book);
-                        data.putBoolean("goety:starterBook", true);
-                        playerData.put(Player.PERSISTED_NBT_TAG, data);
-                    }
-                }
-                if (MainConfig.StarterWitchBook.get()){
-                    if (!data.getBoolean("goety:witchBook")) {
-                        ItemStack book = PatchouliAPI.get().getBookStack(Goety.location("witches_brew"));
-                        event.getEntity().addItem(book);
-                        data.putBoolean("goety:witchBook", true);
-                        playerData.put(Player.PERSISTED_NBT_TAG, data);
-                    }
-                }
-            }
+            // TODO(1.21): Patchouli dependency is currently disabled for 1.21.1; starter book logic will be re-enabled when Patchouli updates.
         }
 
     }
@@ -439,8 +410,9 @@ public class ModEvents {
     }
 
     @SubscribeEvent
-    public static void onServerTick(TickEvent.LevelTickEvent tick){
-        if(!tick.level.isClientSide && tick.level instanceof ServerLevel serverWorld){
+    public static void onServerTick(LevelTickEvent.Post tick){
+        Level level = tick.getLevel();
+        if(!level.isClientSide() && level instanceof ServerLevel serverWorld){
             IllagerSpawner illagerSpawner = ILLAGER_SPAWN_MAP.get(serverWorld);
             if (illagerSpawner != null){
                 illagerSpawner.tick(serverWorld);
@@ -454,7 +426,7 @@ public class ModEvents {
     }
 
     @SubscribeEvent
-    public static void CheckSpawnEvents(MobSpawnEvent.FinalizeSpawn event){
+    public static void CheckSpawnEvents(FinalizeSpawnEvent event){
         if (event.getEntity() instanceof SpellcasterIllager || event.getEntity() instanceof Witch || event.getEntity() instanceof Cultist){
             if (event.getSpawnType() == MobSpawnType.STRUCTURE){
                 event.getEntity().addTag(ConstantPaths.structureMob());
@@ -546,8 +518,8 @@ public class ModEvents {
     }
 
     @SubscribeEvent
-    public static void PlayerTick(TickEvent.PlayerTickEvent event){
-        Player player = event.player;
+    public static void PlayerTick(PlayerTickEvent.Post event){
+        Player player = event.getEntity();
         Level world = player.level;
         if (world instanceof ServerLevel serverLevel){
             if (player.tickCount % 20 == 0) {
@@ -586,8 +558,10 @@ public class ModEvents {
     }
 
     @SubscribeEvent
-    public static void LivingEffects(LivingEvent.LivingTickEvent event){
-        LivingEntity livingEntity = event.getEntity();
+    public static void LivingEffects(EntityTickEvent.Post event){
+        if (!(event.getEntity() instanceof LivingEntity livingEntity)) {
+            return;
+        }
         if (livingEntity != null && livingEntity.isAlive()){
             if (!MobUtil.isSpellCasting(livingEntity)){
                 if (MiscCapHelper.getClientTargetID(livingEntity) != 0){
@@ -707,7 +681,7 @@ public class ModEvents {
                         if (MobsConfig.VillagerConvertWarlock.get()) {
                             if (BlockFinder.getVerticalBlock(serverLevel, villager.blockPosition(), Blocks.CRYING_OBSIDIAN.defaultBlockState(), 16, true)) {
                                 if (villager.getRandom().nextFloat() < 7.5E-4F && serverLevel.getDifficulty() != Difficulty.PEACEFUL) {
-                                    if (ForgeEventFactory.canLivingConvert(villager, ModEntityType.WARLOCK.get(), (timer) -> {
+                                    if (net.neoforged.neoforge.event.EventHooks.canLivingConvert(villager, ModEntityType.WARLOCK.get(), (timer) -> {
                                     })) {
                                         serverLevel.explode(villager, villager.getX(), villager.getY(), villager.getZ(), 0.1F, Level.ExplosionInteraction.NONE);
                                         Warlock warlock = ModEntityType.WARLOCK.get().create(serverLevel);
@@ -721,7 +695,7 @@ public class ModEvents {
                                             }
 
                                             warlock.setPersistenceRequired();
-                                            ForgeEventFactory.onLivingConvert(villager, warlock);
+                                            net.neoforged.neoforge.event.EventHooks.onLivingConvert(villager, warlock);
                                             serverLevel.addFreshEntityWithPassengers(warlock);
                                             MobUtil.releaseAllPois(villager);
                                             villager.discard();
@@ -733,7 +707,7 @@ public class ModEvents {
                         if (MobsConfig.VillagerConvertHeretic.get()) {
                             if (villager.getRandom().nextFloat() < 7.5E-4F && villager.isSleeping() && serverLevel.getDifficulty() != Difficulty.PEACEFUL) {
                                 if (BlockFinder.findNetherPortal(serverLevel, villager.blockPosition(), 8).isPresent()){
-                                    if (ForgeEventFactory.canLivingConvert(villager, ModEntityType.HERETIC.get(), (timer) -> {
+                                    if (net.neoforged.neoforge.event.EventHooks.canLivingConvert(villager, ModEntityType.HERETIC.get(), (timer) -> {
                                     })) {
                                         serverLevel.explode(villager, villager.getX(), villager.getY(), villager.getZ(), 0.1F, Level.ExplosionInteraction.NONE);
                                         Heretic heretic = ModEntityType.HERETIC.get().create(serverLevel);
@@ -747,7 +721,7 @@ public class ModEvents {
                                             }
 
                                             heretic.setPersistenceRequired();
-                                            ForgeEventFactory.onLivingConvert(villager, heretic);
+                                            net.neoforged.neoforge.event.EventHooks.onLivingConvert(villager, heretic);
                                             serverLevel.addFreshEntityWithPassengers(heretic);
                                             MobUtil.releaseAllPois(villager);
                                             villager.discard();
@@ -870,7 +844,7 @@ public class ModEvents {
     }
 
     @SubscribeEvent
-    public static void AttackEvent(LivingAttackEvent event){
+    public static void AttackEvent(LivingIncomingDamageEvent event){
         LivingEntity victim = event.getEntity();
         Entity source = event.getSource().getEntity();
         Entity direct = event.getSource().getDirectEntity();
@@ -954,7 +928,7 @@ public class ModEvents {
     }
 
     @SubscribeEvent
-    public static void HurtEvent(LivingHurtEvent event){
+    public static void HurtEvent(LivingIncomingDamageEvent event){
         LivingEntity victim = event.getEntity();
         if (ModDamageSource.shockAttacks(event.getSource())){
             if (victim.level instanceof ServerLevel serverLevel){
@@ -1141,7 +1115,7 @@ public class ModEvents {
                         zombievillager.setGossips(villager.getGossips().store(NbtOps.INSTANCE));
                         zombievillager.setTradeOffers(villager.getOffers().createTag());
                         zombievillager.setVillagerXp(villager.getVillagerXp());
-                        ForgeEventFactory.onLivingConvert(villager, zombievillager);
+                        net.neoforged.neoforge.event.EventHooks.onLivingConvert(villager, zombievillager);
                         if (!zombievillager.isSilent()) {
                             serverLevel.levelEvent((Player) null, 1026, zombievillager.blockPosition(), 0);
                         }
@@ -1258,49 +1232,8 @@ public class ModEvents {
     }
 
     @SubscribeEvent
-    public static void SpellLoot(LootingLevelEvent event){
-        if (event.getDamageSource() != null) {
-            if (event.getEntity() != null) {
-                if (!event.getEntity().level.isClientSide) {
-                    int looting = 0;
-                    Player player = null;
-                    Entity owner = event.getDamageSource().getEntity();
-                    Entity direct = event.getDamageSource().getDirectEntity();
-                    if (event.getDamageSource() instanceof NoKnockBackDamageSource damageSource) {
-                        owner = damageSource.getOwner();
-                    }
-                    if (owner instanceof Player player1) {
-                        player = player1;
-                    } else if (MobUtil.getOwner(owner) instanceof Player player1) {
-                        player = player1;
-                    } else if (event.getEntity().lastHurtByPlayer != null) {
-                        player = event.getEntity().lastHurtByPlayer;
-                    }
-                    if (player != null) {
-                        if (CuriosFinder.findRing(player).getItem() == ModItems.RING_OF_WANT.get()) {
-                            if (CuriosFinder.findRing(player).isEnchanted()) {
-                                looting = CuriosFinder.findRing(player).getEnchantmentLevel(ModEnchantments.WANTING.get());
-                            }
-                        }
-                        if (looting > event.getLootingLevel()) {
-                            int looting2 = 0;
-                            if (owner == null || MobUtil.getOwner(owner) == player) {
-                                looting2 = looting;
-                            } else if (direct != null) {
-                                if (direct.getType().is(ModTags.EntityTypes.WANTING_ENTITIES)) {
-                                    looting2 = looting;
-                                } else if (MobUtil.getOwner(direct) == player) {
-                                    looting2 = looting;
-                                }
-                            } else if (ModDamageSource.wantingAttacks(event.getDamageSource())){
-                                looting2 = looting;
-                            }
-                            event.setLootingLevel(looting2);
-                        }
-                    }
-                }
-            }
-        }
+    public static void SpellLoot(/* LootingLevelEvent event */){
+        // TODO(1.21): LootingLevelEvent no longer exists. If still needed, port this to LivingDropsEvent / loot context hooks.
     }
 
     @SubscribeEvent
@@ -1405,7 +1338,7 @@ public class ModEvents {
                             }
 
                             maverick.setPersistenceRequired();
-                            net.minecraftforge.event.ForgeEventFactory.onLivingConvert(trader, maverick);
+                            net.neoforged.event.net.neoforged.neoforge.event.EventHooks.onLivingConvert(trader, maverick);
                             serverLevel.addFreshEntityWithPassengers(maverick);
                             hasConverted = true;
                             trader.discard();
@@ -1414,7 +1347,7 @@ public class ModEvents {
                 }
                 if (!hasConverted) {
                     if (MobsConfig.TraderConvertMaverick.get()) {
-                        if (serverLevel.getDifficulty() != Difficulty.PEACEFUL && net.minecraftforge.event.ForgeEventFactory.canLivingConvert(trader, ModEntityType.MAVERICK.get(), (timer) -> {
+                        if (serverLevel.getDifficulty() != Difficulty.PEACEFUL && net.neoforged.event.net.neoforged.neoforge.event.EventHooks.canLivingConvert(trader, ModEntityType.MAVERICK.get(), (timer) -> {
                         })) {
                             Maverick maverick = ModEntityType.MAVERICK.get().create(serverLevel);
                             if (maverick != null) {
@@ -1427,7 +1360,7 @@ public class ModEvents {
                                 }
 
                                 maverick.setPersistenceRequired();
-                                net.minecraftforge.event.ForgeEventFactory.onLivingConvert(trader, maverick);
+                                net.neoforged.event.net.neoforged.neoforge.event.EventHooks.onLivingConvert(trader, maverick);
                                 serverLevel.addFreshEntityWithPassengers(maverick);
                                 trader.discard();
                             }
@@ -1469,18 +1402,18 @@ public class ModEvents {
     }
 
     @SubscribeEvent
-    public static void SleepEvents(PlayerSleepInBedEvent event){
+    public static void SleepEvents(CanPlayerSleepEvent event){
         if (event.getEntity() != null) {
             if (!event.getEntity().isCreative()) {
                 double d0 = 8.0D;
                 double d1 = 5.0D;
                 Vec3 vec3 = Vec3.atBottomCenterOf(event.getPos());
-                List<LivingEntity> list = event.getEntity().level.getEntitiesOfClass(LivingEntity.class, new AABB(vec3.x() - d0, vec3.y() - d1, vec3.z() - d0, vec3.x() + d0, vec3.y() + d1, vec3.z() + d0), (p_9062_) -> {
+                List<LivingEntity> list = event.getLevel().getEntitiesOfClass(LivingEntity.class, new AABB(vec3.x() - d0, vec3.y() - d1, vec3.z() - d0, vec3.x() + d0, vec3.y() + d1, vec3.z() + d0), (p_9062_) -> {
                     return p_9062_ instanceof IOwned owned
                             && owned.preventsSleep(event.getEntity());
                 });
                 if (!list.isEmpty()) {
-                    event.setResult(Player.BedSleepingProblem.NOT_SAFE);
+                    event.setProblem(Player.BedSleepingProblem.NOT_SAFE);
                 }
             }
         }

@@ -13,14 +13,19 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.LayeredDraw;
+import net.minecraft.client.DeltaTracker;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.GameType;
-import net.minecraftforge.client.gui.overlay.ForgeGui;
-import net.minecraftforge.client.gui.overlay.IGuiOverlay;
 
 public class SoulEnergyGui {
-    public static final IGuiOverlay OVERLAY = SoulEnergyGui::drawHUD;
+    public static final ResourceLocation LAYER_ID = Goety.location("soul_energy_hud");
+    public static final LayeredDraw.Layer LAYER = (guiGraphics, partialTick) -> {
+        int screenWidth = minecraft.getWindow().getGuiScaledWidth();
+        int screenHeight = minecraft.getWindow().getGuiScaledHeight();
+        drawHUD(guiGraphics, partialTick, screenWidth, screenHeight);
+    };
     private static final Minecraft minecraft = Minecraft.getInstance();
 
     public static boolean shouldDisplayBar(){
@@ -31,7 +36,7 @@ public class SoulEnergyGui {
         return minecraft.font;
     }
 
-    public static void drawHUD(ForgeGui gui, GuiGraphics guiGraphics, float partialTicks, int screenWidth, int screenHeight) {
+    public static void drawHUD(GuiGraphics guiGraphics, DeltaTracker partialTick, int screenWidth, int screenHeight) {
         if(!shouldDisplayBar()) {
             return;
         }
@@ -57,7 +62,7 @@ public class SoulEnergyGui {
 
         int height = screenHeight + (MainConfig.SoulGuiVertical.get());
 
-        int offset = (int) ((minecraft.player.tickCount + partialTicks) % 234);
+        int offset = (int) ((minecraft.player.tickCount + partialTick.getGameTimeDeltaPartialTick(false)) % 234);
 
         if (SEHelper.getSEActive(minecraft.player)){
             guiGraphics.blit(Goety.location("textures/gui/soul_energy.png"), i, height - 9, 0, 9, 128, 9, 128, 90);

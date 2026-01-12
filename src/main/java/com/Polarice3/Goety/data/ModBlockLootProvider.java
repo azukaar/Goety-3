@@ -27,8 +27,8 @@ import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 import net.minecraft.world.level.storage.loot.predicates.MatchTool;
 import net.minecraft.world.level.storage.loot.providers.number.ConstantValue;
 import net.minecraft.world.level.storage.loot.providers.number.UniformGenerator;
-import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.RegistryObject;
+import net.neoforged.neoforge.registries.NeoForgeRegistries;
+import net.neoforged.neoforge.registries.RegistryObject;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -61,7 +61,7 @@ public class ModBlockLootProvider extends BlockLootSubProvider {
         Collection<Block> blocks = new ArrayList<>();
         ModBlocks.BLOCKS.getEntries().stream().map(RegistryObject::get).forEach(block ->
         {
-            ModBlocks.BlockLootSetting setting = ModBlocks.BLOCK_LOOT.get(ForgeRegistries.BLOCKS.getKey(block));
+            ModBlocks.BlockLootSetting setting = ModBlocks.BLOCK_LOOT.get(NeoForgeRegistries.BLOCKS.getKey(block));
             if (setting.lootTableType == ModBlocks.LootTableType.DROP){
                 blocks.add(block);
             }

@@ -51,7 +51,7 @@ public interface ILooter extends InventoryCarrier {
     }
 
     default ResourceKey<Level> getChestLevel() {
-        ResourceLocation resourcelocation = new ResourceLocation(this.getChestDim());
+        ResourceLocation resourcelocation = ResourceLocation.parse(this.getChestDim());
         return ResourceKey.create(Registries.DIMENSION, resourcelocation);
     }
 
@@ -75,7 +75,7 @@ public interface ILooter extends InventoryCarrier {
     }
 
     default ResourceKey<Level> getDumpChestLevel() {
-        ResourceLocation resourcelocation = new ResourceLocation(this.getDumpChestDim());
+        ResourceLocation resourcelocation = ResourceLocation.parse(this.getDumpChestDim());
         return ResourceKey.create(Registries.DIMENSION, resourcelocation);
     }
 
@@ -92,13 +92,13 @@ public interface ILooter extends InventoryCarrier {
 
     default void readLooterData(CompoundTag compound){
         if (compound.contains("ChestPos")){
-            this.setChestPos(NbtUtils.readBlockPos(compound.getCompound("ChestPos")));
+            NbtUtils.readBlockPos(compound, "ChestPos").ifPresent(this::setChestPos);
             if (compound.contains("ChestDim")){
                 this.setChestDim(compound.getString("ChestDim"));
             }
         }
         if (compound.contains("DumpChestPos")){
-            this.setDumpChestPos(NbtUtils.readBlockPos(compound.getCompound("DumpChestPos")));
+            NbtUtils.readBlockPos(compound, "DumpChestPos").ifPresent(this::setDumpChestPos);
             if (compound.contains("DumpChestDim")){
                 this.setDumpChestDim(compound.getString("DumpChestDim"));
             }

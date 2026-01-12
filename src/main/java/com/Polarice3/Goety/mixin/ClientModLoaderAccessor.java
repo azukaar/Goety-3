@@ -1,7 +1,7 @@
 package com.Polarice3.Goety.mixin;
 
-import net.minecraftforge.client.loading.ClientModLoader;
-import net.minecraftforge.fml.LoadingFailedException;
+import net.neoforged.neoforge.client.loading.ClientModLoader;
+import net.neoforged.fml.ModLoadingException;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
 
@@ -9,7 +9,7 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 public interface ClientModLoaderAccessor {
 
     @Accessor(value = "error", remap = false)
-    static LoadingFailedException getError() {
+    static ModLoadingException getError() {
         throw new IllegalStateException("Failed to inject Accessor");
     }
 }

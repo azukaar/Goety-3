@@ -7,25 +7,30 @@ import com.mojang.blaze3d.vertex.BufferBuilder;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.blaze3d.vertex.VertexFormat;
+import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.LayeredDraw;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
-import net.minecraftforge.client.gui.overlay.ForgeGui;
-import net.minecraftforge.client.gui.overlay.IGuiOverlay;
 
 public class DreadOverlay {
-    public static final IGuiOverlay OVERLAY = DreadOverlay::drawOverlay;
+    public static final ResourceLocation LAYER_ID = Goety.location("static_overlay");
+    public static final LayeredDraw.Layer LAYER = (guiGraphics, partialTick) -> {
+        int screenWidth = minecraft.getWindow().getGuiScaledWidth();
+        int screenHeight = minecraft.getWindow().getGuiScaledHeight();
+        drawOverlay(guiGraphics, partialTick, screenWidth, screenHeight);
+    };
     private static final Minecraft minecraft = Minecraft.getInstance();
 
-    public static void drawOverlay(ForgeGui gui, GuiGraphics ms, float partialTicks, int screenWidth, int screenHeight) {
+    public static void drawOverlay(GuiGraphics ms, DeltaTracker partialTick, int screenWidth, int screenHeight) {
         if (minecraft.player != null){
             Player player = minecraft.player;
             Wight wight = Wight.findWight(player);
             if (wight != null) {
                 ResourceLocation overlay;
-                int frame = gui.getGuiTicks() % 16;
+                int frame = minecraft.gui.getGuiTicks() % 16;
 
                 overlay = switch (frame) {
                     default -> Goety.location("textures/gui/dread/dread_overlay_0.png");
@@ -34,7 +39,6 @@ public class DreadOverlay {
                     case 12, 13, 14, 15 -> Goety.location("textures/gui/dread/dread_overlay_3.png");
                 };
 
-                gui.setupOverlayRenderState(true, false);
                 float alpha = 1.0F - (Math.min(1.0F, wight.distanceTo(player) / 48.0F));
                 renderOverlay(overlay, alpha, screenWidth, screenHeight);
             }

@@ -2,7 +2,7 @@ package com.Polarice3.Goety.compat.iron;
 
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attribute;
-import net.minecraftforge.fml.ModList;
+import net.neoforged.fml.ModList;
 
 public enum IronLoaded {
     IRON_SPELLBOOKS("irons_spellbooks");

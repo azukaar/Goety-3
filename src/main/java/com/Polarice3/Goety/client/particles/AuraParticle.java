@@ -1,20 +1,17 @@
 package com.Polarice3.Goety.client.particles;
 
 import com.Polarice3.Goety.utils.ColorUtil;
-import com.mojang.brigadier.StringReader;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.*;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleType;
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.Vec3;
-
-import java.util.Locale;
+import org.jetbrains.annotations.NotNull;
 
 public class AuraParticle extends TextureSheetParticle {
     private final float rotSpeed;
@@ -80,32 +77,23 @@ public class AuraParticle extends TextureSheetParticle {
     }
 
     public static class Option implements ParticleOptions {
-        public static final Codec<Option> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-                Codec.INT.fieldOf("ownerId").forGetter(d -> d.ownerId),
-                Codec.FLOAT.fieldOf("size").forGetter(d -> d.size),
-                Codec.FLOAT.fieldOf("red").forGetter(d -> d.red),
-                Codec.FLOAT.fieldOf("green").forGetter(d -> d.green),
-                Codec.FLOAT.fieldOf("blue").forGetter(d -> d.blue)
+        public static final MapCodec<Option> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
+                com.mojang.serialization.Codec.INT.fieldOf("ownerId").forGetter(d -> d.ownerId),
+                com.mojang.serialization.Codec.FLOAT.fieldOf("size").forGetter(d -> d.size),
+                com.mojang.serialization.Codec.FLOAT.fieldOf("red").forGetter(d -> d.red),
+                com.mojang.serialization.Codec.FLOAT.fieldOf("green").forGetter(d -> d.green),
+                com.mojang.serialization.Codec.FLOAT.fieldOf("blue").forGetter(d -> d.blue)
         ).apply(instance, Option::new));
-        public static final Deserializer<Option> DESERIALIZER = new Deserializer<Option>() {
-            public Option fromCommand(ParticleType<Option> particleTypeIn, StringReader reader) throws CommandSyntaxException {
-                reader.expect(' ');
-                int ownerId = reader.readInt();
-                reader.expect(' ');
-                float size = reader.readFloat();
-                reader.expect(' ');
-                float red = reader.readFloat();
-                reader.expect(' ');
-                float green = reader.readFloat();
-                reader.expect(' ');
-                float blue = reader.readFloat();
-                return new Option(ownerId, size, red, green, blue);
-            }
-
-            public Option fromNetwork(ParticleType<Option> particleTypeIn, FriendlyByteBuf buffer) {
-                return new Option(buffer.readInt(), buffer.readFloat(), buffer.readFloat(), buffer.readFloat(), buffer.readFloat());
-            }
-        };
+        public static final StreamCodec<RegistryFriendlyByteBuf, Option> STREAM_CODEC = StreamCodec.of(
+                (buf, value) -> {
+                    buf.writeInt(value.ownerId);
+                    buf.writeFloat(value.size);
+                    buf.writeFloat(value.red);
+                    buf.writeFloat(value.green);
+                    buf.writeFloat(value.blue);
+                },
+                buf -> new Option(buf.readInt(), buf.readFloat(), buf.readFloat(), buf.readFloat(), buf.readFloat())
+        );
         private final int ownerId;
         private final float size;
         private final float red;
@@ -128,19 +116,8 @@ public class AuraParticle extends TextureSheetParticle {
             this.blue = blue;
         }
 
-        public void writeToNetwork(FriendlyByteBuf buffer) {
-            buffer.writeInt(this.ownerId);
-            buffer.writeFloat(this.size);
-            buffer.writeFloat(this.red);
-            buffer.writeFloat(this.green);
-            buffer.writeFloat(this.blue);
-        }
-
-        public String writeToString() {
-            return String.format(Locale.ROOT, "%s %d %f %f %f %f",
-                    BuiltInRegistries.PARTICLE_TYPE.getKey(this.getType()), this.ownerId, this.size, this.red, this.green, this.blue);
-        }
-
+        @NotNull
+        @Override
         public ParticleType<Option> getType() {
             return ModParticleTypes.AURA.get();
         }

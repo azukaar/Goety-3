@@ -3,7 +3,7 @@ package com.Polarice3.Goety.config;
 import com.electronwill.nightconfig.core.file.CommentedFileConfig;
 import com.electronwill.nightconfig.core.io.WritingMode;
 import com.google.common.collect.Lists;
-import net.minecraftforge.common.ForgeConfigSpec;
+import net.neoforged.neoforge.common.ModConfigSpec;
 
 import java.io.File;
 import java.util.List;
@@ -13,94 +13,94 @@ import java.util.List;
  */
 public class MainConfig {
 
-    public static final ForgeConfigSpec.Builder BUILDER = new ForgeConfigSpec.Builder();
-    public static final ForgeConfigSpec SPEC;
+    public static final ModConfigSpec.Builder BUILDER = new ModConfigSpec.Builder();
+    public static final ModConfigSpec SPEC;
 
-    public static final ForgeConfigSpec.ConfigValue<Integer> MaxSouls;
-    public static final ForgeConfigSpec.ConfigValue<Integer> MaxArcaSouls;
-    public static final ForgeConfigSpec.ConfigValue<Integer> SoulGuiHorizontal;
-    public static final ForgeConfigSpec.ConfigValue<Integer> SoulGuiVertical;
-    public static final ForgeConfigSpec.ConfigValue<Integer> FocusGuiHorizontal;
-    public static final ForgeConfigSpec.ConfigValue<Integer> FocusGuiVertical;
+    public static final ModConfigSpec.ConfigValue<Integer> MaxSouls;
+    public static final ModConfigSpec.ConfigValue<Integer> MaxArcaSouls;
+    public static final ModConfigSpec.ConfigValue<Integer> SoulGuiHorizontal;
+    public static final ModConfigSpec.ConfigValue<Integer> SoulGuiVertical;
+    public static final ModConfigSpec.ConfigValue<Integer> FocusGuiHorizontal;
+    public static final ModConfigSpec.ConfigValue<Integer> FocusGuiVertical;
 
-    public static final ForgeConfigSpec.ConfigValue<Integer> SoulTakenMultiplier;
-    public static final ForgeConfigSpec.ConfigValue<Integer> UndeadSouls;
-    public static final ForgeConfigSpec.ConfigValue<Integer> AnthropodSouls;
-    public static final ForgeConfigSpec.ConfigValue<Integer> AnimalSouls;
-    public static final ForgeConfigSpec.ConfigValue<Integer> IllagerSouls;
-    public static final ForgeConfigSpec.ConfigValue<Integer> VillagerSouls;
-    public static final ForgeConfigSpec.ConfigValue<Integer> PiglinSouls;
-    public static final ForgeConfigSpec.ConfigValue<Integer> EndermanSouls;
-    public static final ForgeConfigSpec.ConfigValue<Integer> PlayerSouls;
-    public static final ForgeConfigSpec.ConfigValue<Integer> DefaultSouls;
+    public static final ModConfigSpec.ConfigValue<Integer> SoulTakenMultiplier;
+    public static final ModConfigSpec.ConfigValue<Integer> UndeadSouls;
+    public static final ModConfigSpec.ConfigValue<Integer> AnthropodSouls;
+    public static final ModConfigSpec.ConfigValue<Integer> AnimalSouls;
+    public static final ModConfigSpec.ConfigValue<Integer> IllagerSouls;
+    public static final ModConfigSpec.ConfigValue<Integer> VillagerSouls;
+    public static final ModConfigSpec.ConfigValue<Integer> PiglinSouls;
+    public static final ModConfigSpec.ConfigValue<Integer> EndermanSouls;
+    public static final ModConfigSpec.ConfigValue<Integer> PlayerSouls;
+    public static final ModConfigSpec.ConfigValue<Integer> DefaultSouls;
 
-    public static final ForgeConfigSpec.ConfigValue<Integer> RitualRange;
-    public static final ForgeConfigSpec.ConfigValue<Integer> LichHealCost;
-    public static final ForgeConfigSpec.ConfigValue<Integer> LichHealSeconds;
-    public static final ForgeConfigSpec.ConfigValue<Integer> DarkAnvilRepairCost;
-    public static final ForgeConfigSpec.ConfigValue<Integer> DarkAnvilSoulCost;
-    public static final ForgeConfigSpec.ConfigValue<Integer> SoulMenderCost;
-    public static final ForgeConfigSpec.ConfigValue<Integer> SculkGrowerCost;
-    public static final ForgeConfigSpec.ConfigValue<Integer> SculkGrowerCharge;
-    public static final ForgeConfigSpec.ConfigValue<Integer> ShriekObeliskCost;
-    public static final ForgeConfigSpec.ConfigValue<Integer> AnimatorCost;
-    public static final ForgeConfigSpec.ConfigValue<Integer> OminousIdolReviveCost;
-    public static final ForgeConfigSpec.ConfigValue<Integer> OminousIdolLimit;
-    public static final ForgeConfigSpec.ConfigValue<Double> SoulMenderSeconds;
-    public static final ForgeConfigSpec.ConfigValue<Double> LichHealAmount;
-    public static final ForgeConfigSpec.ConfigValue<Double> LichPowerfulFoesHealth;
+    public static final ModConfigSpec.ConfigValue<Integer> RitualRange;
+    public static final ModConfigSpec.ConfigValue<Integer> LichHealCost;
+    public static final ModConfigSpec.ConfigValue<Integer> LichHealSeconds;
+    public static final ModConfigSpec.ConfigValue<Integer> DarkAnvilRepairCost;
+    public static final ModConfigSpec.ConfigValue<Integer> DarkAnvilSoulCost;
+    public static final ModConfigSpec.ConfigValue<Integer> SoulMenderCost;
+    public static final ModConfigSpec.ConfigValue<Integer> SculkGrowerCost;
+    public static final ModConfigSpec.ConfigValue<Integer> SculkGrowerCharge;
+    public static final ModConfigSpec.ConfigValue<Integer> ShriekObeliskCost;
+    public static final ModConfigSpec.ConfigValue<Integer> AnimatorCost;
+    public static final ModConfigSpec.ConfigValue<Integer> OminousIdolReviveCost;
+    public static final ModConfigSpec.ConfigValue<Integer> OminousIdolLimit;
+    public static final ModConfigSpec.ConfigValue<Double> SoulMenderSeconds;
+    public static final ModConfigSpec.ConfigValue<Double> LichHealAmount;
+    public static final ModConfigSpec.ConfigValue<Double> LichPowerfulFoesHealth;
 
-    public static final ForgeConfigSpec.ConfigValue<Boolean> SpecialBossBar;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> BossMusic;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> CameraShake;
+    public static final ModConfigSpec.ConfigValue<Boolean> SpecialBossBar;
+    public static final ModConfigSpec.ConfigValue<Boolean> BossMusic;
+    public static final ModConfigSpec.ConfigValue<Boolean> CameraShake;
 
-    public static final ForgeConfigSpec.ConfigValue<Boolean> TotemUndying;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> ArcaUndying;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> WandCoolItemUse;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> StarterTotem;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> StarterBook;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> StarterWitchBook;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> GoodwillNoDamage;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> GoodwillFullAlly;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> SoulGuiShow;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> FocusGuiShow;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> ShowWandCooldown;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> WheelGuiMovement;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> ShowNum;
+    public static final ModConfigSpec.ConfigValue<Boolean> TotemUndying;
+    public static final ModConfigSpec.ConfigValue<Boolean> ArcaUndying;
+    public static final ModConfigSpec.ConfigValue<Boolean> WandCoolItemUse;
+    public static final ModConfigSpec.ConfigValue<Boolean> StarterTotem;
+    public static final ModConfigSpec.ConfigValue<Boolean> StarterBook;
+    public static final ModConfigSpec.ConfigValue<Boolean> StarterWitchBook;
+    public static final ModConfigSpec.ConfigValue<Boolean> GoodwillNoDamage;
+    public static final ModConfigSpec.ConfigValue<Boolean> GoodwillFullAlly;
+    public static final ModConfigSpec.ConfigValue<Boolean> SoulGuiShow;
+    public static final ModConfigSpec.ConfigValue<Boolean> FocusGuiShow;
+    public static final ModConfigSpec.ConfigValue<Boolean> ShowWandCooldown;
+    public static final ModConfigSpec.ConfigValue<Boolean> WheelGuiMovement;
+    public static final ModConfigSpec.ConfigValue<Boolean> ShowNum;
 
-    public static final ForgeConfigSpec.ConfigValue<Boolean> BetterDragonFireball;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> RobesIronResist;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> IronBuff;
+    public static final ModConfigSpec.ConfigValue<Boolean> BetterDragonFireball;
+    public static final ModConfigSpec.ConfigValue<Boolean> RobesIronResist;
+    public static final ModConfigSpec.ConfigValue<Boolean> IronBuff;
 
-    public static final ForgeConfigSpec.ConfigValue<Boolean> EnableNightBeacon;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> RitualEnchants;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> RitualCraftEnchant;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> RitualCraftDamage;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> DarkAnvilCap;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> DarkAnvilTakePoints;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> DarkAnvilIgnoreMaxLevels;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> SculkGrowerContinue;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> SculkGrowerPotency;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> ShriekObeliskRaid;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> OminousIdolRevive;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> PithosRespawn;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> CrystalBallRespawn;
-    public static ForgeConfigSpec.ConfigValue<List<? extends String>> HookBellBlackList;
+    public static final ModConfigSpec.ConfigValue<Boolean> EnableNightBeacon;
+    public static final ModConfigSpec.ConfigValue<Boolean> RitualEnchants;
+    public static final ModConfigSpec.ConfigValue<Boolean> RitualCraftEnchant;
+    public static final ModConfigSpec.ConfigValue<Boolean> RitualCraftDamage;
+    public static final ModConfigSpec.ConfigValue<Boolean> DarkAnvilCap;
+    public static final ModConfigSpec.ConfigValue<Boolean> DarkAnvilTakePoints;
+    public static final ModConfigSpec.ConfigValue<Boolean> DarkAnvilIgnoreMaxLevels;
+    public static final ModConfigSpec.ConfigValue<Boolean> SculkGrowerContinue;
+    public static final ModConfigSpec.ConfigValue<Boolean> SculkGrowerPotency;
+    public static final ModConfigSpec.ConfigValue<Boolean> ShriekObeliskRaid;
+    public static final ModConfigSpec.ConfigValue<Boolean> OminousIdolRevive;
+    public static final ModConfigSpec.ConfigValue<Boolean> PithosRespawn;
+    public static final ModConfigSpec.ConfigValue<Boolean> CrystalBallRespawn;
+    public static ModConfigSpec.ConfigValue<List<? extends String>> HookBellBlackList;
 
-    public static final ForgeConfigSpec.ConfigValue<Boolean> LichEnable;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> LichSoulHeal;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> LichSmite;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> LichArcaRemove;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> LichNoSERemove;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> LichNightVision;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> LichDamageHelmet;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> LichUndeadFriends;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> LichMagicResist;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> LichPowerfulFoes;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> LichVillagerHate;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> LichTouch;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> LichScrollRequirement;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> LichModeSounds;
+    public static final ModConfigSpec.ConfigValue<Boolean> LichEnable;
+    public static final ModConfigSpec.ConfigValue<Boolean> LichSoulHeal;
+    public static final ModConfigSpec.ConfigValue<Boolean> LichSmite;
+    public static final ModConfigSpec.ConfigValue<Boolean> LichArcaRemove;
+    public static final ModConfigSpec.ConfigValue<Boolean> LichNoSERemove;
+    public static final ModConfigSpec.ConfigValue<Boolean> LichNightVision;
+    public static final ModConfigSpec.ConfigValue<Boolean> LichDamageHelmet;
+    public static final ModConfigSpec.ConfigValue<Boolean> LichUndeadFriends;
+    public static final ModConfigSpec.ConfigValue<Boolean> LichMagicResist;
+    public static final ModConfigSpec.ConfigValue<Boolean> LichPowerfulFoes;
+    public static final ModConfigSpec.ConfigValue<Boolean> LichVillagerHate;
+    public static final ModConfigSpec.ConfigValue<Boolean> LichTouch;
+    public static final ModConfigSpec.ConfigValue<Boolean> LichScrollRequirement;
+    public static final ModConfigSpec.ConfigValue<Boolean> LichModeSounds;
 
     static {
         BUILDER.push("General");
@@ -275,7 +275,7 @@ public class MainConfig {
         SPEC = BUILDER.build();
     }
 
-    public static void loadConfig(ForgeConfigSpec config, String path) {
+    public static void loadConfig(ModConfigSpec config, String path) {
         final CommentedFileConfig file = CommentedFileConfig.builder(new File(path))
                 .sync()
                 .autosave()
@@ -284,5 +284,4 @@ public class MainConfig {
         file.load();
         config.setConfig(file);
     }
-
 }

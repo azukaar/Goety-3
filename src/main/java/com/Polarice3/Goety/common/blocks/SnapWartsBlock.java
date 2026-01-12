@@ -52,9 +52,9 @@ public class SnapWartsBlock extends Block implements BonemealableBlock {
 
    public void randomTick(BlockState p_221000_, ServerLevel p_221001_, BlockPos p_221002_, RandomSource p_221003_) {
       int i = p_221000_.getValue(AGE);
-      if (i < 2 && net.minecraftforge.common.ForgeHooks.onCropsGrowPre(p_221001_, p_221002_, p_221000_, p_221001_.random.nextInt(5) == 0)) {
+      if (i < 2 && net.neoforged.common.ForgeHooks.onCropsGrowPre(p_221001_, p_221002_, p_221000_, p_221001_.random.nextInt(5) == 0)) {
          p_221001_.setBlock(p_221002_, p_221000_.setValue(AGE, i + 1), 2);
-         net.minecraftforge.common.ForgeHooks.onCropsGrowPost(p_221001_, p_221002_, p_221000_);
+         net.neoforged.common.ForgeHooks.onCropsGrowPost(p_221001_, p_221002_, p_221000_);
       }
 
    }

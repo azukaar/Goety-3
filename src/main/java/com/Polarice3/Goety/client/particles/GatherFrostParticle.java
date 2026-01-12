@@ -6,22 +6,18 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.Util;
-import net.minecraft.client.Timer;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.*;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleType;
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.util.FastColor;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Locale;
-
 public class GatherFrostParticle extends TextureSheetParticle {
-    public Timer timer;
     public final Vec3 origin;
     public final Vec3 end;
 
@@ -45,7 +41,6 @@ public class GatherFrostParticle extends TextureSheetParticle {
         this.bCol = colorUtil.blue();
         this.hasPhysics = false;
         this.lifetime = (int)(Math.random() * 10.0D) + 30;
-        this.timer = new Timer(this.lifetime + 1, 0);
     }
 
     public void tick() {
@@ -57,8 +52,7 @@ public class GatherFrostParticle extends TextureSheetParticle {
         } else {
             this.move(this.xd * 0.05D, this.yd * 0.05D, this.zd * 0.05D);
 
-            this.timer.advanceTime(Util.getMillis());
-            float lerp = (this.age + this.timer.partialTick) / this.lifetime;
+            float lerp = (float) this.age / (float) this.lifetime;
             int newColor = FastColor.ARGB32.lerp(lerp, 11141290, 16733695);
             ColorUtil colorUtil = new ColorUtil(newColor);
             this.rCol = colorUtil.red();
@@ -115,26 +109,19 @@ public class GatherFrostParticle extends TextureSheetParticle {
     }
 
     public static class Option implements ParticleOptions {
-        public static final Codec<Option> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+        public static final com.mojang.serialization.MapCodec<Option> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
                 Codec.FLOAT.fieldOf("endX").forGetter(d -> d.endX),
                 Codec.FLOAT.fieldOf("endY").forGetter(d -> d.endY),
                 Codec.FLOAT.fieldOf("endZ").forGetter(d -> d.endZ)
         ).apply(instance, Option::new));
-        public static final Deserializer<Option> DESERIALIZER = new Deserializer<Option>() {
-            public Option fromCommand(ParticleType<Option> particleTypeIn, StringReader reader) throws CommandSyntaxException {
-                reader.expect(' ');
-                float endX = reader.readFloat();
-                reader.expect(' ');
-                float endY = reader.readFloat();
-                reader.expect(' ');
-                float endZ = reader.readFloat();
-                return new Option(endX, endY, endZ);
-            }
-
-            public Option fromNetwork(ParticleType<Option> particleTypeIn, FriendlyByteBuf buffer) {
-                return new Option(buffer.readFloat(), buffer.readFloat(), buffer.readFloat());
-            }
-        };
+        public static final StreamCodec<RegistryFriendlyByteBuf, Option> STREAM_CODEC = StreamCodec.of(
+                (buf, value) -> {
+                    buf.writeFloat(value.endX);
+                    buf.writeFloat(value.endY);
+                    buf.writeFloat(value.endZ);
+                },
+                buf -> new Option(buf.readFloat(), buf.readFloat(), buf.readFloat())
+        );
         private final float endX;
         private final float endY;
         private final float endZ;
@@ -149,17 +136,6 @@ public class GatherFrostParticle extends TextureSheetParticle {
             this.endX = endX;
             this.endY = endY;
             this.endZ = endZ;
-        }
-
-        public void writeToNetwork(FriendlyByteBuf buffer) {
-            buffer.writeFloat(this.endX);
-            buffer.writeFloat(this.endY);
-            buffer.writeFloat(this.endZ);
-        }
-
-        public String writeToString() {
-            return String.format(Locale.ROOT, "%s %.2f %.2f %.2f",
-                    BuiltInRegistries.PARTICLE_TYPE.getKey(this.getType()), this.endX, this.endY, this.endZ);
         }
 
         public ParticleType<Option> getType() {

@@ -2,11 +2,11 @@ package com.Polarice3.Goety.common.items;
 
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.common.extensions.IForgeItem;
+import net.neoforged.neoforge.common.extensions.IItemExtension;
 
 import javax.annotation.Nonnull;
 
-public class RepeatCraftItem extends Item implements IForgeItem {
+public class RepeatCraftItem extends Item implements IItemExtension {
     public RepeatCraftItem(Properties properties){
         super(properties);
     }

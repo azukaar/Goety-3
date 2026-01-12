@@ -8,7 +8,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.common.MinecraftForge;
+import net.neoforged.neoforge.common.NeoForge;
 
 import javax.annotation.Nullable;
 
@@ -16,7 +16,7 @@ public class GoetyEventFactory {
 
     public static ISpell onStartSpell(LivingEntity livingEntity, ItemStack useItem, ISpell spell){
         StartMagicEvent event = new StartMagicEvent(livingEntity, useItem, spell);
-        MinecraftForge.EVENT_BUS.post(event);
+        NeoForge.EVENT_BUS.post(event);
         if (event.isCanceled()) {
             return null;
         }
@@ -25,7 +25,7 @@ public class GoetyEventFactory {
 
     public static ISpell onCastingSpell(LivingEntity livingEntity, ItemStack useItem, ISpell spell, int castTime){
         CastingMagicEvent event = new CastingMagicEvent(livingEntity, useItem, spell, castTime);
-        MinecraftForge.EVENT_BUS.post(event);
+        NeoForge.EVENT_BUS.post(event);
         if (event.isCanceled()) {
             return null;
         }
@@ -34,7 +34,7 @@ public class GoetyEventFactory {
 
     public static ISpell onBlockBasedSpell(LevelAccessor level, BlockPos pos, BlockState state, ISpell spell, @Nullable Direction direction, LivingEntity caster){
         BlockMagicEvent event = new BlockMagicEvent(level, pos, state, spell, direction, caster);
-        MinecraftForge.EVENT_BUS.post(event);
+        NeoForge.EVENT_BUS.post(event);
         if (event.isCanceled()) {
             return null;
         }
@@ -43,7 +43,7 @@ public class GoetyEventFactory {
 
     public static ISpell onTouchBasedSpell(LivingEntity livingEntity, ItemStack useItem, ISpell spell){
         TouchMagicEvent event = new TouchMagicEvent(livingEntity, useItem, spell);
-        MinecraftForge.EVENT_BUS.post(event);
+        NeoForge.EVENT_BUS.post(event);
         if (event.isCanceled()) {
             return null;
         }
@@ -52,7 +52,7 @@ public class GoetyEventFactory {
 
     public static ISpell onCastSpell(LivingEntity livingEntity, ISpell spell){
         CastMagicEvent event = new CastMagicEvent(livingEntity, spell);
-        MinecraftForge.EVENT_BUS.post(event);
+        NeoForge.EVENT_BUS.post(event);
         if (event.isCanceled()) {
             return null;
         }
@@ -61,7 +61,7 @@ public class GoetyEventFactory {
 
     public static ISpell onStopSpell(LivingEntity livingEntity, ItemStack useItem, ISpell spell, int castTime, int timeRemaining){
         StopMagicEvent event = new StopMagicEvent(livingEntity, useItem, spell, castTime, timeRemaining);
-        MinecraftForge.EVENT_BUS.post(event);
+        NeoForge.EVENT_BUS.post(event);
         if (event.isCanceled()) {
             return null;
         }
@@ -70,7 +70,7 @@ public class GoetyEventFactory {
 
     public static int onSoulEnergyGain(Player player, int soulChange){
         ChangeSoulEnergyEvent event = new ChangeSoulEnergyEvent.Gain(player, soulChange);
-        MinecraftForge.EVENT_BUS.post(event);
+        NeoForge.EVENT_BUS.post(event);
         if (event.isCanceled()) {
             return 0;
         }
@@ -79,7 +79,7 @@ public class GoetyEventFactory {
 
     public static int onSoulEnergyLoss(Player player, int soulChange){
         ChangeSoulEnergyEvent event = new ChangeSoulEnergyEvent.Loss(player, soulChange);
-        MinecraftForge.EVENT_BUS.post(event);
+        NeoForge.EVENT_BUS.post(event);
         if (event.isCanceled()) {
             return 0;
         }

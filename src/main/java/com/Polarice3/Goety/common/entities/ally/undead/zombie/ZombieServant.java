@@ -6,8 +6,6 @@ import com.Polarice3.Goety.common.entities.ModEntityType;
 import com.Polarice3.Goety.common.entities.ai.NeutralZombieAttackGoal;
 import com.Polarice3.Goety.common.entities.ally.Summoned;
 import com.Polarice3.Goety.common.entities.ally.illager.Prisoner;
-import com.Polarice3.Goety.compat.serene_seasons.SSeasonsIntegration;
-import com.Polarice3.Goety.compat.serene_seasons.SSeasonsLoaded;
 import com.Polarice3.Goety.config.AttributesConfig;
 import com.Polarice3.Goety.config.MobsConfig;
 import com.Polarice3.Goety.config.SpellConfig;
@@ -47,7 +45,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.common.Tags;
+import net.neoforged.neoforge.common.Tags;
 
 import javax.annotation.Nullable;
 import java.time.LocalDate;
@@ -212,10 +210,6 @@ public class ZombieServant extends Summoned {
         this.playSound(this.getStepSound(), 0.15F, 1.0F);
     }
 
-    public MobType getMobType() {
-        return MobType.UNDEAD;
-    }
-
     protected boolean convertsInWater() {
         return true;
     }
@@ -225,7 +219,7 @@ public class ZombieServant extends Summoned {
             if (this.isUnderWaterConverting()) {
                 --this.conversionTime;
 
-                if (this.conversionTime < 0 && net.minecraftforge.event.ForgeEventFactory.canLivingConvert(this, ModEntityType.ZOMBIE_SERVANT.get(), (timer) -> this.conversionTime = timer)) {
+                if (this.conversionTime < 0 && net.neoforged.event.net.neoforged.neoforge.event.EventHooks.canLivingConvert(this, ModEntityType.ZOMBIE_SERVANT.get(), (timer) -> this.conversionTime = timer)) {
                     this.doUnderWaterConversion();
                 }
             } else if (this.convertsInWater()) {
@@ -277,10 +271,8 @@ public class ZombieServant extends Summoned {
             } else if (level.getBiome(blockPos).is(BiomeTags.IS_JUNGLE) && level.random.nextBoolean()) {
                 entityType = ModEntityType.JUNGLE_ZOMBIE_SERVANT.get();
             }
-            if (SSeasonsLoaded.SERENE_SEASONS.isLoaded()){
-                if (SSeasonsIntegration.summonSnowVariant(level, blockPos)){
-                    entityType = ModEntityType.FROZEN_ZOMBIE_SERVANT.get();
-                }
+            if (level.getBiome(blockPos).is(BiomeTags.IS_SNOWY)){
+                entityType = ModEntityType.FROZEN_ZOMBIE_SERVANT.get();
             }
         }
         return entityType;
@@ -332,7 +324,7 @@ public class ZombieServant extends Summoned {
                 ServantUtil.infect(mob, this.getTrueOwner(), true, true);
             }
         }
-        return flag;
+        return false;
     }
 
     private void startUnderWaterConversion(int p_204704_1_) {
@@ -358,7 +350,7 @@ public class ZombieServant extends Summoned {
             if (this.limitedLifeTicks > 0){
                 zombieentity.setLimitedLife(this.limitedLifeTicks);
             }
-            net.minecraftforge.event.ForgeEventFactory.onLivingConvert(this, zombieentity);
+            net.neoforged.event.net.neoforged.neoforge.event.EventHooks.onLivingConvert(this, zombieentity);
         }
 
     }

@@ -13,19 +13,15 @@ import com.Polarice3.Goety.common.items.handler.BrewBagItemHandler;
 import com.Polarice3.Goety.compat.curios.CuriosLoaded;
 import com.Polarice3.Goety.config.ItemConfig;
 import com.Polarice3.Goety.config.MobsConfig;
-import com.Polarice3.Goety.init.ModMobType;
 import com.Polarice3.Goety.init.ModTags;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.MobType;
 import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.entity.monster.*;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
-import top.theillusivec4.curios.api.CuriosApi;
-import top.theillusivec4.curios.api.SlotResult;
 
 import java.util.Optional;
 import java.util.function.Predicate;
@@ -33,18 +29,8 @@ import java.util.function.Predicate;
 public class CuriosFinder {
 
     public static ItemStack findCurio(LivingEntity livingEntity, Predicate<ItemStack> filter){
-        ItemStack foundStack = ItemStack.EMPTY;
-        if (livingEntity instanceof Player) {
-            if (CuriosLoaded.CURIOS.isLoaded()) {
-                Optional<SlotResult> slotResult = CuriosApi.getCuriosInventory(livingEntity).map(inv -> inv.findFirstCurio(filter))
-                        .orElse(Optional.empty());
-                if (slotResult.isPresent()) {
-                    foundStack = slotResult.get().stack();
-                }
-            }
-        }
-
-        return foundStack;
+        // Curios integration disabled for now (no Curios dependency pinned for 1.21.1 yet).
+        return ItemStack.EMPTY;
     }
 
     public static boolean hasCurio(LivingEntity livingEntity, Predicate<ItemStack> filter){

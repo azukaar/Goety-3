@@ -9,7 +9,6 @@ import com.Polarice3.Goety.common.entities.neutral.AbstractMonolith;
 import com.Polarice3.Goety.common.entities.neutral.Owned;
 import com.Polarice3.Goety.common.entities.projectiles.EntangleVines;
 import com.Polarice3.Goety.config.AttributesConfig;
-import com.Polarice3.Goety.init.ModMobType;
 import com.Polarice3.Goety.init.ModSounds;
 import com.Polarice3.Goety.utils.*;
 import net.minecraft.core.BlockPos;
@@ -36,7 +35,7 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.common.ForgeMod;
+import net.neoforged.neoforge.common.NeoForgeMod;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -148,7 +147,7 @@ public class Whisperer extends Summoned{
             if (this.limitedLifeTicks > 0){
                 wavewhisperer.setLimitedLife(this.limitedLifeTicks);
             }
-            net.minecraftforge.event.ForgeEventFactory.onLivingConvert(this, wavewhisperer);
+            net.neoforged.event.net.neoforged.neoforge.event.EventHooks.onLivingConvert(this, wavewhisperer);
         }
 
     }
@@ -369,11 +368,11 @@ public class Whisperer extends Summoned{
                     if (this.isUnderWaterConverting()) {
                         --this.conversionTime;
 
-                        if (this.conversionTime < 0 && net.minecraftforge.event.ForgeEventFactory.canLivingConvert(this, ModEntityType.ZOMBIE_SERVANT.get(), (timer) -> this.conversionTime = timer)) {
+                        if (this.conversionTime < 0 && net.neoforged.event.net.neoforged.neoforge.event.EventHooks.canLivingConvert(this, ModEntityType.ZOMBIE_SERVANT.get(), (timer) -> this.conversionTime = timer)) {
                             this.doUnderWaterConversion();
                         }
                     } else if (this.convertsInWater()) {
-                        if (this.isEyeInFluidType(ForgeMod.WATER_TYPE.get())) {
+                        if (this.isEyeInFluidType(NeoForgeMod.WATER_TYPE.get())) {
                             ++this.inWaterTime;
                             if (this.inWaterTime >= 600) {
                                 this.startUnderWaterConversion(300);

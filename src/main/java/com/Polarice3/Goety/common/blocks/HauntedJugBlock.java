@@ -35,9 +35,9 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.fluids.FluidUtil;
-import net.minecraftforge.fluids.capability.IFluidHandler;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.fluids.FluidUtil;
+import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import org.jetbrains.annotations.Nullable;
 
 public class HauntedJugBlock extends BaseEntityBlock implements SimpleWaterloggedBlock {
@@ -77,7 +77,7 @@ public class HauntedJugBlock extends BaseEntityBlock implements SimpleWaterlogge
         ItemStack itemStack = pPlayer.getItemInHand(pHand);
         if (!pLevel.isClientSide){
             if (pLevel.getBlockEntity(pPos) instanceof HauntedJugBlockEntity jugBlockEntity){
-                IFluidHandler handler = jugBlockEntity.getCapability(ForgeCapabilities.FLUID_HANDLER, pHit.getDirection()).orElse(null);
+                IFluidHandler handler = jugBlockEntity.getCapability(Capabilities.FLUID_HANDLER, pHit.getDirection()).orElse(null);
                 if (handler != null) {
                     if (FluidUtil.interactWithFluidHandler(pPlayer, pHand, handler)) {
                         pLevel.playSound(null, pPos, SoundEvents.BUCKET_FILL, SoundSource.BLOCKS, 1.0F, 1.0F);

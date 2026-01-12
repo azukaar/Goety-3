@@ -1,50 +1,74 @@
 package com.Polarice3.Goety.common.enchantments;
 
 import com.Polarice3.Goety.Goety;
-import com.Polarice3.Goety.api.items.magic.IFocus;
-import com.Polarice3.Goety.common.items.curios.RingItem;
-import net.minecraft.world.entity.EquipmentSlot;
+import com.Polarice3.Goety.config.SpellConfig;
+import net.minecraft.core.HolderSet;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.ItemTags;
+import net.minecraft.world.entity.EquipmentSlotGroup;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.enchantment.Enchantment;
-import net.minecraft.world.item.enchantment.EnchantmentCategory;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.RegistryObject;
+import net.neoforged.neoforge.registries.DeferredRegister;
+import net.neoforged.neoforge.registries.DeferredHolder;
 
-@Mod.EventBusSubscriber(modid = Goety.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class ModEnchantments {
-    public static DeferredRegister<Enchantment> ENCHANTMENTS = DeferredRegister.create(ForgeRegistries.ENCHANTMENTS, Goety.MOD_ID);
+    public static final DeferredRegister<Enchantment> ENCHANTMENTS = DeferredRegister.create(Registries.ENCHANTMENT, Goety.MOD_ID);
 
-    public static final EnchantmentCategory RINGS = EnchantmentCategory.create("rings", (item) -> (item instanceof RingItem));
-    public static final EnchantmentCategory FOCUS = EnchantmentCategory.create("focus", (item) -> (item instanceof IFocus));
+    private static Enchantment simple(ResourceLocation id,
+                                      HolderSet<Item> supportedItems,
+                                      int weight,
+                                      int maxLevel,
+                                      int minCostBase,
+                                      int minCostPerLevel,
+                                      int maxCostBase,
+                                      int maxCostPerLevel,
+                                      int anvilCost,
+                                      EquipmentSlotGroup... slots) {
+        Enchantment.EnchantmentDefinition def = Enchantment.definition(
+                supportedItems,
+                weight,
+                maxLevel,
+                Enchantment.dynamicCost(minCostBase, minCostPerLevel),
+                Enchantment.dynamicCost(maxCostBase, maxCostPerLevel),
+                anvilCost,
+                slots
+        );
+        return Enchantment.enchantment(def).build(id);
+    }
 
-    public static final RegistryObject<Enchantment> SOUL_EATER = ENCHANTMENTS.register("soul_eater",
-            () -> new SoulEaterEnchantment(Enchantment.Rarity.UNCOMMON, EnchantmentCategory.WEAPON, EquipmentSlot.MAINHAND));
+    private static HolderSet<Item> tag(net.minecraft.tags.TagKey<Item> tag) {
+        return BuiltInRegistries.ITEM.getOrCreateTag(tag);
+    }
 
-    public static final RegistryObject<Enchantment> WANTING = ENCHANTMENTS.register("wanting",
-            () -> new LootingEnchantment(Enchantment.Rarity.RARE, RINGS, EquipmentSlot.MAINHAND));
+    public static final DeferredHolder<Enchantment, Enchantment> SOUL_EATER = ENCHANTMENTS.register("soul_eater",
+            id -> simple(id, tag(ItemTags.WEAPON_ENCHANTABLE), 5, SpellConfig.MaxSoulEaterLevel.get(), 5, 9, 20, 9, 1, EquipmentSlotGroup.MAINHAND));
 
-    public static final RegistryObject<Enchantment> POTENCY = ENCHANTMENTS.register("potency",
-            () -> new PotencyEnchantment(Enchantment.Rarity.RARE, EquipmentSlot.MAINHAND));
+    public static final DeferredHolder<Enchantment, Enchantment> WANTING = ENCHANTMENTS.register("wanting",
+            id -> simple(id, tag(ItemTags.DURABILITY_ENCHANTABLE), 2, SpellConfig.MaxWantingLevel.get(), 1, 10, 16, 10, 1, EquipmentSlotGroup.MAINHAND));
 
-    public static final RegistryObject<Enchantment> RADIUS = ENCHANTMENTS.register("radius",
-            () -> new RadiusEnchantment(Enchantment.Rarity.RARE, EquipmentSlot.MAINHAND));
+    public static final DeferredHolder<Enchantment, Enchantment> POTENCY = ENCHANTMENTS.register("potency",
+            id -> simple(id, tag(ItemTags.WEAPON_ENCHANTABLE), 2, SpellConfig.MaxPotencyLevel.get(), 15, 9, 65, 9, 1, EquipmentSlotGroup.MAINHAND));
 
-    public static final RegistryObject<Enchantment> BURNING = ENCHANTMENTS.register("burning",
-            () -> new BurningEnchantment(Enchantment.Rarity.VERY_RARE, EquipmentSlot.MAINHAND));
+    public static final DeferredHolder<Enchantment, Enchantment> RADIUS = ENCHANTMENTS.register("radius",
+            id -> simple(id, tag(ItemTags.WEAPON_ENCHANTABLE), 2, SpellConfig.MaxRadiusLevel.get(), 12, 20, 37, 20, 1, EquipmentSlotGroup.MAINHAND));
 
-    public static final RegistryObject<Enchantment> RANGE = ENCHANTMENTS.register("range",
-            () -> new RangeEnchantment(Enchantment.Rarity.COMMON, EquipmentSlot.MAINHAND));
+    public static final DeferredHolder<Enchantment, Enchantment> BURNING = ENCHANTMENTS.register("burning",
+            id -> simple(id, tag(ItemTags.WEAPON_ENCHANTABLE), 1, SpellConfig.MaxBurningLevel.get(), 10, 10, 30, 10, 1, EquipmentSlotGroup.MAINHAND));
 
-    public static final RegistryObject<Enchantment> ABSORB = ENCHANTMENTS.register("absorb",
-            () -> new AbsorbEnchantment(Enchantment.Rarity.VERY_RARE, EquipmentSlot.MAINHAND));
+    public static final DeferredHolder<Enchantment, Enchantment> RANGE = ENCHANTMENTS.register("range",
+            id -> simple(id, tag(ItemTags.WEAPON_ENCHANTABLE), 10, SpellConfig.MaxRangeLevel.get(), 1, 10, 16, 10, 1, EquipmentSlotGroup.MAINHAND));
 
-    public static final RegistryObject<Enchantment> MAGNET = ENCHANTMENTS.register("magnet",
-            () -> new MagnetEnchantment(Enchantment.Rarity.VERY_RARE, EquipmentSlot.MAINHAND));
+    public static final DeferredHolder<Enchantment, Enchantment> ABSORB = ENCHANTMENTS.register("absorb",
+            id -> simple(id, tag(ItemTags.WEAPON_ENCHANTABLE), 1, 1, 25, 25, 75, 25, 1, EquipmentSlotGroup.MAINHAND));
 
-    public static final RegistryObject<Enchantment> DURATION = ENCHANTMENTS.register("duration",
-            () -> new DurationEnchantment(Enchantment.Rarity.UNCOMMON, EquipmentSlot.MAINHAND));
+    public static final DeferredHolder<Enchantment, Enchantment> MAGNET = ENCHANTMENTS.register("magnet",
+            id -> simple(id, tag(ItemTags.WEAPON_ENCHANTABLE), 1, SpellConfig.MaxMagnetLevel.get(), 10, 8, 30, 8, 1, EquipmentSlotGroup.MAINHAND));
 
-    public static final RegistryObject<Enchantment> VELOCITY = ENCHANTMENTS.register("velocity",
-            () -> new VelocityEnchantment(Enchantment.Rarity.UNCOMMON, EquipmentSlot.MAINHAND));
+    public static final DeferredHolder<Enchantment, Enchantment> DURATION = ENCHANTMENTS.register("duration",
+            id -> simple(id, tag(ItemTags.WEAPON_ENCHANTABLE), 5, SpellConfig.MaxDurationLevel.get(), 10, 8, 30, 8, 1, EquipmentSlotGroup.MAINHAND));
+
+    public static final DeferredHolder<Enchantment, Enchantment> VELOCITY = ENCHANTMENTS.register("velocity",
+            id -> simple(id, tag(ItemTags.WEAPON_ENCHANTABLE), 5, SpellConfig.MaxVelocityLevel.get(), 10, 8, 30, 8, 1, EquipmentSlotGroup.MAINHAND));
 }

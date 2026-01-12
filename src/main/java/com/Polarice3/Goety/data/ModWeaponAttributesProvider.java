@@ -11,9 +11,9 @@ import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.world.item.Item;
-import net.minecraftforge.common.data.ExistingFileHelper;
-import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.RegistryObject;
+import net.neoforged.neoforge.common.data.ExistingFileHelper;
+import net.neoforged.neoforge.registries.NeoForgeRegistries;
+import net.neoforged.neoforge.registries.RegistryObject;
 import org.apache.commons.compress.utils.Lists;
 
 import java.nio.file.Path;
@@ -35,7 +35,7 @@ public class ModWeaponAttributesProvider implements DataProvider {
     }
 
     public void addData(Item item, String attribute) {
-        this.datas.computeIfAbsent(ForgeRegistries.ITEMS.getKey(item), loc->{
+        this.datas.computeIfAbsent(NeoForgeRegistries.ITEMS.getKey(item), loc->{
             if (loc != null) {
                 existingFileHelper.trackGenerated(loc, resourceType);
             }

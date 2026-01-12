@@ -54,7 +54,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.material.LavaFluid;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -800,7 +800,7 @@ public class BrewCauldronBlockEntity extends BlockEntity implements Container {
             EntityType<?> entityType = p_18978_.get(i);
             if (entityType != null) {
                 CompoundTag compoundtag = new CompoundTag();
-                ResourceLocation resourceLocation = ForgeRegistries.ENTITY_TYPES.getKey(entityType);
+                ResourceLocation resourceLocation = NeoForgeRegistries.ENTITY_TYPES.getKey(entityType);
                 if (resourceLocation != null) {
                     compoundtag.putInt("Slot", i);
                     compoundtag.putString("Type", resourceLocation.toString());
@@ -822,7 +822,7 @@ public class BrewCauldronBlockEntity extends BlockEntity implements Container {
         for(int i = 0; i < listtag.size(); ++i) {
             CompoundTag compoundtag = listtag.getCompound(i);
             ResourceLocation resourceLocation = new ResourceLocation(compoundtag.getString("Type"));
-            EntityType<?> entityType = ForgeRegistries.ENTITY_TYPES.getValue(resourceLocation);
+            EntityType<?> entityType = NeoForgeRegistries.ENTITY_TYPES.getValue(resourceLocation);
             int j = compoundtag.getInt("Slot");
             if (entityType != null) {
                 p_18982_.put(j, entityType);

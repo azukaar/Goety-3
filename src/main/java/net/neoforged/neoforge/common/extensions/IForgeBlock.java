@@ -1,0 +1,11 @@
+package net.neoforged.neoforge.common.extensions;
+
+/**
+ * Compatibility shim for older NeoForge/Forge code that implemented {@code IForgeBlock}.
+ * <p>
+ * NeoForge 1.21+ replaced many Forge extension interfaces with fine-grained *Extension types.
+ * This interface exists only to keep legacy block classes compiling during the port.
+ */
+public interface IForgeBlock extends IBlockExtension {
+}
+

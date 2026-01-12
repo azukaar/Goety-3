@@ -40,7 +40,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.RespawnAnchorBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.gameevent.GameEvent;
-import net.minecraft.world.level.pathfinder.BlockPathTypes;
+import net.minecraft.world.level.pathfinder.PathType;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.List;
@@ -56,7 +56,7 @@ public abstract class AbstractEnderling extends Summoned implements IHiding {
 
     public AbstractEnderling(EntityType<? extends Owned> type, Level worldIn) {
         super(type, worldIn);
-        this.setPathfindingMalus(BlockPathTypes.WATER, -1.0F);
+        this.setPathfindingMalus(PathType.WATER, -1.0F);
     }
 
     @Override
@@ -388,7 +388,7 @@ public abstract class AbstractEnderling extends Summoned implements IHiding {
         boolean flag = blockstate.blocksMotion();
         boolean flag1 = blockstate.getFluidState().is(FluidTags.WATER);
         if (flag && !flag1) {
-            net.minecraftforge.event.entity.EntityTeleportEvent.EnderEntity event = net.minecraftforge.event.ForgeEventFactory.onEnderTeleport(this, x, y, z);
+            net.neoforged.event.entity.EntityTeleportEvent.EnderEntity event = new net.neoforged.event.entity.EntityTeleportEvent.EnderEntity(this, this.getX(), this.getY(), this.getZ()); net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(event);
             if (event.isCanceled()) return false;
             Vec3 vec3 = this.position();
             boolean flag2 = this.randomTeleport(event.getTargetX(), event.getTargetY(), event.getTargetZ(), false);
@@ -423,7 +423,8 @@ public abstract class AbstractEnderling extends Summoned implements IHiding {
                     double d1 = this.getX() + (this.getRandom().nextDouble() - 0.5D) * (range / 2.0D) - vector3d.x * range;
                     double d2 = this.getY() + (RandomUtil.nextInt(this.getRandom(), Mth.floor(range)) - (range / 2.0D)) - vector3d.y * range;
                     double d3 = this.getZ() + (this.getRandom().nextDouble() - 0.5D) * (range / 2.0D) - vector3d.z * range;
-                    net.minecraftforge.event.entity.EntityTeleportEvent.EnderEntity event = net.minecraftforge.event.ForgeEventFactory.onEnderTeleport(this, d1, d2, d3);
+                    net.neoforged.event.entity.EntityTeleportEvent.EnderEntity event = new net.neoforged.event.entity.EntityTeleportEvent.EnderEntity(this, d1, d2, d3);
+                    net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(event);
                     if (event.isCanceled()) {
                         if (this.getHidingDuration() > 0) {
                             this.teleportIn();

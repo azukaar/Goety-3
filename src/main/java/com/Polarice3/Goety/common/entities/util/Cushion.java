@@ -14,8 +14,6 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.network.NetworkHooks;
-
 public class Cushion extends Entity {
     private static final EntityDataAccessor<Integer> DATA_RADIUS = SynchedEntityData.defineId(Cushion.class, EntityDataSerializers.INT);
     public float initialRadius = 3.0F;
@@ -102,6 +100,6 @@ public class Cushion extends Entity {
 
     @Override
     public Packet<ClientGamePacketListener> getAddEntityPacket() {
-        return NetworkHooks.getEntitySpawningPacket(this);
+        return new net.minecraft.network.protocol.game.ClientboundAddEntityPacket(this);
     }
 }

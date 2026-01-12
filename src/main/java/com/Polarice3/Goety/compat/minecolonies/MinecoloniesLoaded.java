@@ -1,6 +1,6 @@
 package com.Polarice3.Goety.compat.minecolonies;
 
-import net.minecraftforge.fml.ModList;
+import net.neoforged.fml.ModList;
 
 public enum MinecoloniesLoaded {
     MINECOLONIES("minecolonies");
@@ -13,5 +13,4 @@ public enum MinecoloniesLoaded {
     public boolean isLoaded() {
         return this.loaded;
     }
-
 }

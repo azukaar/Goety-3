@@ -1,17 +1,23 @@
 package com.Polarice3.Goety.client.gui.overlay;
 
 import com.Polarice3.Goety.Goety;
+import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.LayeredDraw;
 import net.minecraft.stats.Stats;
 import net.minecraft.stats.StatsCounter;
 import net.minecraft.util.Mth;
 import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraftforge.client.gui.overlay.ForgeGui;
-import net.minecraftforge.client.gui.overlay.IGuiOverlay;
+import net.minecraft.resources.ResourceLocation;
 
 public class InsomniaGui {
-    public static final IGuiOverlay OVERLAY = InsomniaGui::drawHUD;
+    public static final ResourceLocation LAYER_ID = Goety.location("insomnia_hud");
+    public static final LayeredDraw.Layer LAYER = (guiGraphics, partialTick) -> {
+        int screenWidth = minecraft.getWindow().getGuiScaledWidth();
+        int screenHeight = minecraft.getWindow().getGuiScaledHeight();
+        drawHUD(guiGraphics, partialTick, screenWidth, screenHeight);
+    };
     private static final Minecraft minecraft = Minecraft.getInstance();
 
     public static boolean shouldDisplayBar(){
@@ -19,7 +25,7 @@ public class InsomniaGui {
         return false;
     }
 
-    public static void drawHUD(ForgeGui gui, GuiGraphics guiGraphics, float partialTicks, int screenWidth, int screenHeight) {
+    public static void drawHUD(GuiGraphics guiGraphics, DeltaTracker partialTick, int screenWidth, int screenHeight) {
         if (minecraft.player == null){
             return;
         }
@@ -31,7 +37,8 @@ public class InsomniaGui {
         int i = Mth.clamp(stats.getValue(Stats.CUSTOM.get(Stats.TIME_SINCE_REST)), 1, Integer.MAX_VALUE);
         int xOffset = 10;
         int yOffset = 10;
-        int bossBars = gui.getBossOverlay().events.size();
+        // Boss overlay stack management changed in 1.21; we simply don't offset for it here.
+        int bossBars = 0;
         if (bossBars > 0) {
             yOffset += Math.min(screenHeight / 3, 12 + 19 * bossBars);
         }

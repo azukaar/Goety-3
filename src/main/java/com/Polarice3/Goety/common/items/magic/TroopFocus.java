@@ -28,7 +28,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.neoforge.registries.NeoForgeRegistries;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -114,7 +114,8 @@ public class TroopFocus extends MagicFocus{
                                 }
                             }
                             if (livingEntity1.level.dimension() == player.level.dimension()) {
-                                net.minecraftforge.event.entity.EntityTeleportEvent.EnderEntity event = net.minecraftforge.event.ForgeEventFactory.onEnderTeleport(livingEntity1, blockPos.getX(), blockPos.getY(), blockPos.getZ());
+                                net.neoforged.event.entity.EntityTeleportEvent.EnderEntity event = new net.neoforged.event.entity.EntityTeleportEvent.EnderEntity(livingEntity1, blockPos.getX(), blockPos.getY(), blockPos.getZ());
+                                net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(event);
                                 if (event.isCanceled()) {
                                     break;
                                 }
@@ -133,11 +134,12 @@ public class TroopFocus extends MagicFocus{
                                 if (serverWorld != null) {
                                     blockPos = BlockFinder.SummonRadius(player.blockPosition(), livingEntity1, serverWorld);
                                     Vec3 vec3 = new Vec3(blockPos.getX(), blockPos.getY(), blockPos.getZ());
-                                    net.minecraftforge.event.entity.EntityTeleportEvent.EnderEntity event = net.minecraftforge.event.ForgeEventFactory.onEnderTeleport(livingEntity1, blockPos.getX(), blockPos.getY(), blockPos.getZ());
+                                    net.neoforged.neoforge.event.entity.EntityTeleportEvent.EnderEntity event = new net.neoforged.neoforge.event.entity.EntityTeleportEvent.EnderEntity(livingEntity1, blockPos.getX(), blockPos.getY(), blockPos.getZ());
+                                    net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(event);
                                     if (event.isCanceled()) {
                                         break;
                                     }
-                                    livingEntity1.changeDimension(serverWorld, new ArcaTeleporter(vec3));
+                                    livingEntity1.changeDimension(ArcaTeleporter.transition(serverWorld, livingEntity1, vec3));
                                     livingEntity1.teleportTo(event.getTargetX(), event.getTargetY(), event.getTargetZ());
                                     MobUtil.moveDownToGround(livingEntity1);
                                     ModNetwork.sendToALL(new SPlayWorldSoundPacket(player.blockPosition(), SoundEvents.ENDERMAN_TELEPORT, 1.0F, 1.0F));
@@ -164,7 +166,7 @@ public class TroopFocus extends MagicFocus{
     public static void setSummonType(CompoundTag compoundTag, EntityType<?> entityType){
         if (compoundTag != null) {
             if (entityType != null) {
-                ResourceLocation name = ForgeRegistries.ENTITY_TYPES.getKey(entityType);
+                ResourceLocation name = NeoForgeRegistries.ENTITY_TYPES.getKey(entityType);
                 if (name != null) {
                     compoundTag.putString(TAG_ENTITY_TYPE, name.toString());
                 }
@@ -177,7 +179,7 @@ public class TroopFocus extends MagicFocus{
         if (compoundTag != null) {
             boolean flag = compoundTag.contains(TAG_ENTITY_TYPE);
             if (flag) {
-                return ForgeRegistries.ENTITY_TYPES.getValue(new ResourceLocation(compoundTag.getString(TAG_ENTITY_TYPE)));
+                return NeoForgeRegistries.ENTITY_TYPES.getValue(new ResourceLocation(compoundTag.getString(TAG_ENTITY_TYPE)));
             }
         }
         return null;
@@ -186,7 +188,7 @@ public class TroopFocus extends MagicFocus{
     public static EntityType<?> getSummonType(CompoundTag compoundTag){
         boolean flag = compoundTag.contains(TAG_ENTITY_TYPE);
         if (flag){
-            return ForgeRegistries.ENTITY_TYPES.getValue(new ResourceLocation(compoundTag.getString(TAG_ENTITY_TYPE)));
+            return NeoForgeRegistries.ENTITY_TYPES.getValue(new ResourceLocation(compoundTag.getString(TAG_ENTITY_TYPE)));
         }
         return null;
     }

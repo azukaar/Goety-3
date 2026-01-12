@@ -16,7 +16,7 @@ import java.util.concurrent.CompletableFuture;
 
 public class ModStructureTagsProvider extends TagsProvider<Structure> {
 
-    public ModStructureTagsProvider(PackOutput p_256522_, CompletableFuture<HolderLookup.Provider> p_256661_, @org.jetbrains.annotations.Nullable net.minecraftforge.common.data.ExistingFileHelper existingFileHelper) {
+    public ModStructureTagsProvider(PackOutput p_256522_, CompletableFuture<HolderLookup.Provider> p_256661_, @org.jetbrains.annotations.Nullable net.neoforged.common.data.ExistingFileHelper existingFileHelper) {
         super(p_256522_, Registries.STRUCTURE, p_256661_, Goety.MOD_ID, existingFileHelper);
     }
 

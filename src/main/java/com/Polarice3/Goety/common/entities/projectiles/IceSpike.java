@@ -31,8 +31,6 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.network.NetworkHooks;
-
 public class IceSpike extends AbstractArrow {
     public static final EntityDataAccessor<Boolean> DATA_RAIN = SynchedEntityData.defineId(IceSpike.class, EntityDataSerializers.BOOLEAN);
     public static final EntityDataAccessor<Float> DATA_EXTRA_DAMAGE = SynchedEntityData.defineId(IceSpike.class, EntityDataSerializers.FLOAT);
@@ -206,6 +204,6 @@ public class IceSpike extends AbstractArrow {
 
     @Override
     public Packet<ClientGamePacketListener> getAddEntityPacket() {
-        return NetworkHooks.getEntitySpawningPacket(this);
+        return new net.minecraft.network.protocol.game.ClientboundAddEntityPacket(this);
     }
 }

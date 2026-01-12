@@ -22,6 +22,8 @@ import com.Polarice3.Goety.utils.SEHelper;
 import com.Polarice3.Goety.utils.ServerParticleUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.Holder;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -41,6 +43,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.SoulFireBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -50,11 +53,8 @@ import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.gameevent.GameEventListener;
 import net.minecraft.world.level.gameevent.PositionSource;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.ItemStackHandler;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.ItemStackHandler;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -65,8 +65,7 @@ import java.util.UUID;
 
 public class DarkAltarBlockEntity extends PedestalBlockEntity implements GameEventListener {
     public long lastChangeTime;
-    public LazyOptional<ItemStackHandler> itemStackHandler = LazyOptional.of(
-            () -> new ItemStackHandler(1) {
+    public ItemStackHandler itemStackHandler = new ItemStackHandler(1) {
                 @Override
                 public int getSlotLimit(int slot) {
                     return 64;
@@ -85,7 +84,7 @@ public class DarkAltarBlockEntity extends PedestalBlockEntity implements GameEve
                         }
                     }
                 }
-            });
+    };
     private CursedCageBlockEntity cursedCageTile;
     private final BlockPositionSource blockPosSource = new BlockPositionSource(this.worldPosition);
     public RitualRecipe currentRitualRecipe;
@@ -109,8 +108,8 @@ public class DarkAltarBlockEntity extends PedestalBlockEntity implements GameEve
     public RitualRecipe getCurrentRitualRecipe(){
         if(this.currentRitualRecipeId != null){
             if(this.level != null) {
-                Optional<? extends Recipe<?>> recipe = this.level.getRecipeManager().byKey(this.currentRitualRecipeId);
-                recipe.map(r -> (RitualRecipe) r).ifPresent(r -> this.currentRitualRecipe = r);
+                Optional<RecipeHolder<?>> recipe = this.level.getRecipeManager().byKey(this.currentRitualRecipeId);
+                recipe.map(RecipeHolder::value).map(r -> (RitualRecipe) r).ifPresent(r -> this.currentRitualRecipe = r);
                 this.currentRitualRecipeId = null;
             }
         }
@@ -118,15 +117,15 @@ public class DarkAltarBlockEntity extends PedestalBlockEntity implements GameEve
     }
 
     @Override
-    public void load(CompoundTag compound) {
-        super.load(compound);
+    protected void loadAdditional(CompoundTag compound, HolderLookup.Provider provider) {
+        super.loadAdditional(compound, provider);
 
         this.consumedIngredients.clear();
         if (this.currentRitualRecipeId != null || this.getCurrentRitualRecipe() != null) {
             if (compound.contains("consumedIngredients")) {
                 ListTag list = compound.getList("consumedIngredients", Tag.TAG_COMPOUND);
                 for (int i = 0; i < list.size(); i++) {
-                    ItemStack stack = ItemStack.of(list.getCompound(i));
+                    ItemStack stack = ItemStack.parseOptional(provider, list.getCompound(i));
                     this.consumedIngredients.add(stack);
                 }
             }
@@ -138,26 +137,28 @@ public class DarkAltarBlockEntity extends PedestalBlockEntity implements GameEve
     }
 
     @Override
-    public void saveAdditional(CompoundTag compound) {
+    protected void saveAdditional(CompoundTag compound, HolderLookup.Provider provider) {
         if (this.getCurrentRitualRecipe() != null) {
             if (this.consumedIngredients.size() > 0) {
                 ListTag list = new ListTag();
                 for (ItemStack stack : this.consumedIngredients) {
-                    list.add(stack.serializeNBT());
+                    list.add(stack.save(provider, new CompoundTag()));
                 }
                 compound.put("consumedIngredients", list);
             }
             compound.putBoolean("sacrificeProvided", this.sacrificeProvided);
         }
-        super.saveAdditional(compound);
+        super.saveAdditional(compound, provider);
     }
 
     @Override
     public void readNetwork(CompoundTag compound) {
-        this.itemStackHandler.ifPresent((handler) -> handler.deserializeNBT(compound.getCompound("inventory")));
+        if (this.level != null) {
+            this.itemStackHandler.deserializeNBT(this.level.registryAccess(), compound.getCompound("inventory"));
+        }
         this.lastChangeTime = compound.getLong("lastChangeTime");
         if (compound.contains("currentRitual")) {
-            this.currentRitualRecipeId = new ResourceLocation(compound.getString("currentRitual"));
+            this.currentRitualRecipeId = ResourceLocation.parse(compound.getString("currentRitual"));
         }
 
         if (compound.contains("castingPlayerId")) {
@@ -177,11 +178,16 @@ public class DarkAltarBlockEntity extends PedestalBlockEntity implements GameEve
 
     @Override
     public CompoundTag writeNetwork(CompoundTag compound) {
-        this.itemStackHandler.ifPresent(handler -> compound.put("inventory", handler.serializeNBT()));
+        if (this.level != null) {
+            compound.put("inventory", this.itemStackHandler.serializeNBT(this.level.registryAccess()));
+        }
         compound.putLong("lastChangeTime", this.lastChangeTime);
         RitualRecipe recipe = this.getCurrentRitualRecipe();
         if (recipe != null) {
-            compound.putString("currentRitual", recipe.getId().toString());
+            // 1.21+: recipe IDs live on RecipeHolder; we only persist the resolved id when available.
+            if (this.currentRitualRecipeId != null) {
+                compound.putString("currentRitual", this.currentRitualRecipeId.toString());
+            }
         }
         if (this.castingPlayerId != null) {
             compound.putUUID("castingPlayerId", this.castingPlayerId);
@@ -238,7 +244,7 @@ public class DarkAltarBlockEntity extends PedestalBlockEntity implements GameEve
                             }
                         }
 
-                        IItemHandler handler = this.itemStackHandler.orElseThrow(RuntimeException::new);
+                        IItemHandler handler = this.itemStackHandler;
                         if (!recipe.getRitual().isValid(this.level, this.worldPosition, this, this.castingPlayer,
                                 handler.getStackInSlot(0), this.remainingAdditionalIngredients)) {
                             this.stopRitual(false);
@@ -380,9 +386,13 @@ public class DarkAltarBlockEntity extends PedestalBlockEntity implements GameEve
 
                 if (this.getCurrentRitualRecipe() == null) {
 
-                    RitualRecipe ritualRecipe = world.getRecipeManager().getAllRecipesFor(ModRecipeSerializer.RITUAL_TYPE.get()).stream().filter(
-                            r -> r.matches(world, pos, player, activationItem)
-                    ).findFirst().orElse(null);
+                    RitualRecipe ritualRecipe = world.getRecipeManager()
+                            .getAllRecipesFor(ModRecipeSerializer.RITUAL_TYPE.get())
+                            .stream()
+                            .map(net.minecraft.world.item.crafting.RecipeHolder::value)
+                            .filter(r -> r.matches(world, pos, player, activationItem))
+                            .findFirst()
+                            .orElse(null);
 
                     if (ritualRecipe != null) {
                         if (ritualRecipe.getRitual() instanceof EnchantItemRitual && !MainConfig.RitualEnchants.get()){
@@ -464,7 +474,7 @@ public class DarkAltarBlockEntity extends PedestalBlockEntity implements GameEve
     }
 
     public void removeItem(@Nullable LivingEntity livingEntity){
-        IItemHandler handler = this.itemStackHandler.orElseThrow(RuntimeException::new);
+        IItemHandler handler = this.itemStackHandler;
         ItemStack itemStack = handler.getStackInSlot(0);
         if (itemStack != ItemStack.EMPTY){
             boolean flag = false;
@@ -480,7 +490,7 @@ public class DarkAltarBlockEntity extends PedestalBlockEntity implements GameEve
                     flag = true;
                 }
                 if (!flag) {
-                    livingEntity.level.playSound(null, livingEntity.getX(), livingEntity.getY(), livingEntity.getZ(), SoundEvents.ITEM_PICKUP, livingEntity.getSoundSource(), 1.0F, 1.0F);
+                    livingEntity.level().playSound(null, livingEntity.getX(), livingEntity.getY(), livingEntity.getZ(), SoundEvents.ITEM_PICKUP, livingEntity.getSoundSource(), 1.0F, 1.0F);
                 }
             } else {
                 flag = true;
@@ -512,7 +522,7 @@ public class DarkAltarBlockEntity extends PedestalBlockEntity implements GameEve
             this.sacrificeProvided = false;
             this.consumedIngredients.clear();
             this.remainingAdditionalIngredients = new ArrayList<>(this.currentRitualRecipe.getIngredients());
-            IItemHandler handler = this.itemStackHandler.orElseThrow(RuntimeException::new);
+            IItemHandler handler = this.itemStackHandler;
             handler.insertItem(0, activationItem.split(1), false);
             this.currentRitualRecipe.getRitual().start(this.level, this.worldPosition, this, player, handler.getStackInSlot(0));
             this.structureTime = 40;
@@ -525,13 +535,13 @@ public class DarkAltarBlockEntity extends PedestalBlockEntity implements GameEve
         if (!this.level.isClientSide) {
             RitualRecipe recipe = this.getCurrentRitualRecipe();
             if (recipe != null && this.castingPlayer != null) {
-                IItemHandler handler = this.itemStackHandler.orElseThrow(RuntimeException::new);
+                IItemHandler handler = this.itemStackHandler;
                 if (finished) {
                     ItemStack activationItem = handler.getStackInSlot(0);
                     recipe.getRitual().finish(this.level, this.worldPosition, this, this.castingPlayer, activationItem);
                     if (recipe.getEntityToSummon() == ModEntityType.SUMMON_APOSTLE.get()){
                         if (this.level instanceof ServerLevel serverLevel) {
-                            ModNetwork.sendToALL(new SPlayWorldSoundPacket(this.worldPosition, SoundEvents.AMBIENT_SOUL_SAND_VALLEY_MOOD.get(), 1.0F, 1.0F));
+                            ModNetwork.sendToALL(new SPlayWorldSoundPacket(this.worldPosition, SoundEvents.AMBIENT_SOUL_SAND_VALLEY_MOOD.value(), 1.0F, 1.0F));
                             Warden.applyDarknessAround(serverLevel, Vec3.atCenterOf(this.worldPosition), (Entity)null, 32);
                         }
                         for (int i = -8; i <= 8; ++i) {
@@ -590,9 +600,9 @@ public class DarkAltarBlockEntity extends PedestalBlockEntity implements GameEve
         return GameEventListener.DeliveryMode.BY_DISTANCE;
     }
 
-    public boolean handleGameEvent(ServerLevel serverLevel, GameEvent p_282184_, GameEvent.Context p_283014_, Vec3 p_282350_) {
+    public boolean handleGameEvent(ServerLevel serverLevel, Holder<GameEvent> p_282184_, GameEvent.Context p_283014_, Vec3 p_282350_) {
         if (!this.isRemoved()) {
-            if (p_282184_ == GameEvent.ENTITY_DIE) {
+            if (p_282184_.is(GameEvent.ENTITY_DIE)) {
                 Entity sourceEntity = p_283014_.sourceEntity();
                 if (sourceEntity instanceof LivingEntity livingEntity) {
                     if (this.getCurrentRitualRecipe() != null && this.getCurrentRitualRecipe().getRitual().isValidSacrifice(livingEntity)) {
@@ -639,20 +649,6 @@ public class DarkAltarBlockEntity extends PedestalBlockEntity implements GameEve
         }
     }
 
-    @Nonnull
-    @Override
-    public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction direction) {
-        if (cap == ForgeCapabilities.ITEM_HANDLER) {
-            return this.itemStackHandler.cast();
-        }
-        return super.getCapability(cap, direction);
-    }
-
-    @Override
-    public void invalidateCaps() {
-        super.invalidateCaps();
-        this.itemStackHandler.invalidate();
-    }
 
 }
 

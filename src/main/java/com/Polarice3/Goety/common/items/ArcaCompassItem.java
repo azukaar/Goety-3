@@ -15,14 +15,13 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.item.Vanishable;
 import net.minecraft.world.level.Level;
 
 import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Optional;
 
-public class ArcaCompassItem extends Item implements Vanishable {
+public class ArcaCompassItem extends Item {
     public static final String TAG_PLAYER = "TrackedPlayer";
     public static final String TAG_PLAYER_NAME = "TrackedPlayerName";
     public static final String TAG_ARCA_POS = "ArcaPos";

@@ -4,14 +4,16 @@ import com.Polarice3.Goety.api.items.magic.ITotem;
 import com.Polarice3.Goety.common.items.ModItems;
 import com.Polarice3.Goety.utils.SEHelper;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.Connection;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.Clearable;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 
@@ -26,15 +28,15 @@ public class CursedCageBlockEntity extends BlockEntity implements Clearable {
     }
 
     @Override
-    public void load(CompoundTag compound) {
+    protected void loadAdditional(CompoundTag compound, HolderLookup.Provider provider) {
         this.readNetwork(compound);
-        super.load(compound);
+        super.loadAdditional(compound, provider);
     }
 
     @Override
-    public void saveAdditional(CompoundTag compound) {
+    protected void saveAdditional(CompoundTag compound, HolderLookup.Provider provider) {
         this.writeNetwork(compound);
-        super.saveAdditional(compound);
+        super.saveAdditional(compound, provider);
     }
 
     @Override
@@ -52,9 +54,10 @@ public class CursedCageBlockEntity extends BlockEntity implements Clearable {
     }
 
     public Player getOwner(){
-        if (this.item.getItem() == ModItems.SOUL_TRANSFER.get() && this.item.getTag() != null) {
-            if (this.item.getTag().contains("owner")) {
-                UUID owner = this.item.getTag().getUUID("owner");
+        if (this.level != null && this.item.getItem() == ModItems.SOUL_TRANSFER.get()) {
+            CustomData data = this.item.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY);
+            if (!data.isEmpty() && data.contains("owner")) {
+                UUID owner = data.copyTag().getUUID("owner");
                 return this.level.getPlayerByUUID(owner);
             }
         }
@@ -70,9 +73,7 @@ public class CursedCageBlockEntity extends BlockEntity implements Clearable {
                 }
             }
             if (this.item.getItem() instanceof ITotem) {
-                if (this.item.getTag() != null) {
-                    return this.item.getTag().getInt(ITotem.SOULS_AMOUNT);
-                }
+                return ITotem.currentSouls(this.item);
             }
         }
         return 0;
@@ -80,16 +81,8 @@ public class CursedCageBlockEntity extends BlockEntity implements Clearable {
 
     public void decreaseSouls(int souls) {
         if (this.item.getItem() instanceof ITotem) {
-            if (this.item.getTag() != null) {
-                int Soulcount = this.item.getTag().getInt(ITotem.SOULS_AMOUNT);
-                if (!this.item.isEmpty()) {
-                    if (Soulcount > 0) {
-                        Soulcount -= souls;
-                        this.item.getTag().putInt(ITotem.SOULS_AMOUNT, Soulcount);
-                        this.generateParticles();
-                    }
-                }
-            }
+            ITotem.decreaseSouls(this.item, souls);
+            this.generateParticles();
         }
         if (this.level != null) {
             Player player = this.getOwner();
@@ -155,27 +148,20 @@ public class CursedCageBlockEntity extends BlockEntity implements Clearable {
     }
 
     @Override
-    public CompoundTag getUpdateTag() {
-        return this.writeNetwork(super.getUpdateTag());
-    }
-
-    @Override
-    public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt) {
-        this.readNetwork(pkt.getTag());
-    }
-
-    @Override
-    public void handleUpdateTag(CompoundTag tag) {
-        super.load(tag);
-        this.readNetwork(tag);
+    public CompoundTag getUpdateTag(HolderLookup.Provider provider) {
+        return this.writeNetwork(super.getUpdateTag(provider));
     }
 
     public void readNetwork(CompoundTag tag) {
-        item = ItemStack.of(tag.getCompound("item"));
+        if (this.level != null) {
+            item = ItemStack.parseOptional(this.level.registryAccess(), tag.getCompound("item"));
+        }
     }
 
     public CompoundTag writeNetwork(CompoundTag tag) {
-        tag.put("item", item.save(new CompoundTag()));
+        if (this.level != null) {
+            tag.put("item", item.save(this.level.registryAccess(), new CompoundTag()));
+        }
         return tag;
     }
 

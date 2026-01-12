@@ -1,53 +1,42 @@
 package com.Polarice3.Goety.client.particles;
 
 import com.Polarice3.Goety.utils.ColorUtil;
-import com.mojang.brigadier.StringReader;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleType;
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.network.FriendlyByteBuf;
-
-import java.util.Locale;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 
 public class ShockwaveParticleOption implements ParticleOptions {
-   public static final Codec<ShockwaveParticleOption> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-           Codec.FLOAT.fieldOf("red").forGetter(d -> d.red),
-           Codec.FLOAT.fieldOf("green").forGetter(d -> d.green),
-           Codec.FLOAT.fieldOf("blue").forGetter(d -> d.blue),
-           Codec.FLOAT.fieldOf("originSize").forGetter(d -> d.originSize),
-           Codec.FLOAT.fieldOf("size").forGetter(d -> d.size),
-           Codec.INT.fieldOf("speed").forGetter(d -> d.speed),
-           Codec.INT.fieldOf("life").forGetter(d -> d.speed),
-           Codec.BOOL.fieldOf("fade").forGetter(d -> d.fade)
+   public static final MapCodec<ShockwaveParticleOption> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
+           com.mojang.serialization.Codec.FLOAT.fieldOf("red").forGetter(d -> d.red),
+           com.mojang.serialization.Codec.FLOAT.fieldOf("green").forGetter(d -> d.green),
+           com.mojang.serialization.Codec.FLOAT.fieldOf("blue").forGetter(d -> d.blue),
+           com.mojang.serialization.Codec.FLOAT.fieldOf("originSize").forGetter(d -> d.originSize),
+           com.mojang.serialization.Codec.FLOAT.fieldOf("size").forGetter(d -> d.size),
+           com.mojang.serialization.Codec.INT.fieldOf("speed").forGetter(d -> d.speed),
+           com.mojang.serialization.Codec.INT.fieldOf("life").forGetter(d -> d.life),
+           com.mojang.serialization.Codec.BOOL.fieldOf("fade").forGetter(d -> d.fade)
    ).apply(instance, ShockwaveParticleOption::new));
-   public static final Deserializer<ShockwaveParticleOption> DESERIALIZER = new Deserializer<>() {
-      public ShockwaveParticleOption fromCommand(ParticleType<ShockwaveParticleOption> p_235961_, StringReader p_235962_) throws CommandSyntaxException {
-         p_235962_.expect(' ');
-         float r = p_235962_.readFloat();
-         p_235962_.expect(' ');
-         float g = p_235962_.readFloat();
-         p_235962_.expect(' ');
-         float b = p_235962_.readFloat();
-         p_235962_.expect(' ');
-         float s0 = p_235962_.readFloat();
-         p_235962_.expect(' ');
-         float s = p_235962_.readFloat();
-         p_235962_.expect(' ');
-         int s2 = p_235962_.readInt();
-         p_235962_.expect(' ');
-         int s3 = p_235962_.readInt();
-         p_235962_.expect(' ');
-         boolean f = p_235962_.readBoolean();
-         return new ShockwaveParticleOption(r, g, b, s0, s, s2, s3, f);
-      }
-
-      public ShockwaveParticleOption fromNetwork(ParticleType<ShockwaveParticleOption> p_235964_, FriendlyByteBuf p_235965_) {
-         return new ShockwaveParticleOption(p_235965_.readFloat(), p_235965_.readFloat(), p_235965_.readFloat(), p_235965_.readFloat(), p_235965_.readFloat(), p_235965_.readInt(), p_235965_.readInt(), p_235965_.readBoolean());
-      }
-   };
+   public static final StreamCodec<RegistryFriendlyByteBuf, ShockwaveParticleOption> STREAM_CODEC = StreamCodec.of(
+           (buf, value) -> {
+              buf.writeFloat(value.red);
+              buf.writeFloat(value.green);
+              buf.writeFloat(value.blue);
+              buf.writeFloat(value.originSize);
+              buf.writeFloat(value.size);
+              buf.writeInt(value.speed);
+              buf.writeInt(value.life);
+              buf.writeBoolean(value.fade);
+           },
+           buf -> new ShockwaveParticleOption(
+                   buf.readFloat(), buf.readFloat(), buf.readFloat(),
+                   buf.readFloat(), buf.readFloat(),
+                   buf.readInt(), buf.readInt(),
+                   buf.readBoolean()
+           )
+   );
    private final float red;
    private final float green;
    private final float blue;
@@ -143,22 +132,6 @@ public class ShockwaveParticleOption implements ParticleOptions {
       this.speed = speed;
       this.life = life;
       this.fade = fade;
-   }
-
-   public void writeToNetwork(FriendlyByteBuf p_235956_) {
-      p_235956_.writeFloat(this.red);
-      p_235956_.writeFloat(this.green);
-      p_235956_.writeFloat(this.blue);
-      p_235956_.writeFloat(this.originSize);
-      p_235956_.writeFloat(this.size);
-      p_235956_.writeInt(this.speed);
-      p_235956_.writeInt(this.life);
-      p_235956_.writeBoolean(this.fade);
-   }
-
-   public String writeToString() {
-      return String.format(Locale.ROOT, "%s %.2f %.2f %.2f %.2f %.2f %s %s %s",
-              BuiltInRegistries.PARTICLE_TYPE.getKey(this.getType()), this.red, this.green, this.blue, this.originSize, this.size, this.speed, this.life, this.fade);
    }
 
    public ParticleType<ShockwaveParticleOption> getType() {

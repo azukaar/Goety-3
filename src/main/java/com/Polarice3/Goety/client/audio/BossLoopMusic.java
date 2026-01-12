@@ -67,7 +67,7 @@ public class BossLoopMusic extends AbstractTickableSoundInstance {
                 || !this.mobEntity.isAlive()){
             if (this.mobEntity.isDeadOrDying()){
                 this.timeUntilFade = 0;
-                if (this.mobEntity.level.isClientSide){
+                if (this.mobEntity.level().isClientSide){
                     Minecraft minecraft = Minecraft.getInstance();
                     SoundManager soundHandler = minecraft.getSoundManager();
                     if (!this.isStopped()){

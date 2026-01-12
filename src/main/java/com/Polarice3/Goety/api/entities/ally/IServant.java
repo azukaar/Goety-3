@@ -3,7 +3,6 @@ package com.Polarice3.Goety.api.entities.ally;
 import com.Polarice3.Goety.api.entities.IGolem;
 import com.Polarice3.Goety.api.entities.IOwned;
 import com.Polarice3.Goety.config.MobsConfig;
-import com.Polarice3.Goety.init.ModMobType;
 import com.Polarice3.Goety.init.ModTags;
 import com.Polarice3.Goety.utils.*;
 import net.minecraft.core.BlockPos;
@@ -50,7 +49,7 @@ public interface IServant extends IOwned {
 
     default boolean isGuardingArea(){
         if (this instanceof Entity entity) {
-            if (entity.level.dimension() != this.getBoundLevel()){
+            if (entity.level().dimension() != this.getBoundLevel()){
                 return false;
             }
         }
@@ -71,12 +70,15 @@ public interface IServant extends IOwned {
 
     default void setBoundPos(BlockPos blockPos){
         if (this instanceof Entity entity) {
-            this.setBoundDim(entity.level.dimension());
+            this.setBoundDim(entity.level().dimension());
         }
     }
 
     default ResourceKey<Level> getBoundLevel() {
-        ResourceLocation resourcelocation = new ResourceLocation(this.getBoundDim());
+        ResourceLocation resourcelocation = ResourceLocation.tryParse(this.getBoundDim());
+        if (resourcelocation == null) {
+            return Level.OVERWORLD;
+        }
         return ResourceKey.create(Registries.DIMENSION, resourcelocation);
     }
 
@@ -174,13 +176,13 @@ public interface IServant extends IOwned {
             if (MobsConfig.ServantOwnedServantPlayerBenefit.get()) {
                 owner = this.getMasterOwner();
             }
-            if (mob.getMobType() == MobType.UNDEAD) {
+            if (mob.getType().is(net.minecraft.tags.EntityTypeTags.UNDEAD)) {
                 this.setUpgraded(CuriosFinder.hasUndeadCape(owner));
-            } else if (mob.getMobType() == ModMobType.NATURAL || mob.getMobType() == MobType.ARTHROPOD) {
+            } else if (mob.getType().is(ModTags.EntityTypes.WILD_HEAL) || mob.getType().is(net.minecraft.tags.EntityTypeTags.ARTHROPOD)) {
                 this.setUpgraded(CuriosFinder.hasWildRobe(owner));
-            } else if (mob.getMobType() == ModMobType.FROST) {
+            } else if (mob.getType().is(ModTags.EntityTypes.FROST_HEAL)) {
                 this.setUpgraded(CuriosFinder.hasFrostRobes(owner));
-            } else if (mob.getMobType() == MobType.WATER) {
+            } else if (mob.getType().is(net.minecraft.tags.EntityTypeTags.AQUATIC)) {
                 this.setUpgraded(CuriosFinder.hasAbyssRobes(owner));
             }
         }
@@ -296,11 +298,11 @@ public interface IServant extends IOwned {
 
     default boolean burnSunTick() {
         if (this instanceof LivingEntity living) {
-            if (living.level.isDay() && !living.level.isClientSide) {
+            if (living.level().isDay() && !living.level().isClientSide) {
                 float f = living.getLightLevelDependentMagicValue();
                 BlockPos blockpos = BlockPos.containing(living.getX(), living.getEyeY(), living.getZ());
                 boolean flag = living.isInWaterRainOrBubble() || living.isInPowderSnow || living.wasInPowderSnow;
-                return f > 0.5F && living.getRandom().nextFloat() * 30.0F < (f - 0.4F) * 2.0F && !flag && living.level.canSeeSky(blockpos);
+                return f > 0.5F && living.getRandom().nextFloat() * 30.0F < (f - 0.4F) * 2.0F && !flag && living.level().canSeeSky(blockpos);
             }
         }
 
@@ -410,7 +412,7 @@ public interface IServant extends IOwned {
 
     default void chunkLoad() {
         if (this instanceof Mob owned){
-            if (owned.level instanceof ServerLevel serverLevel) {
+            if (owned.level() instanceof ServerLevel serverLevel) {
                 if (this.shouldChunkLoad()) {
                     if (this.getTrueOwner() instanceof Player) {
                         int i = SectionPos.blockToSectionCoord(owned.position().x());
@@ -431,7 +433,7 @@ public interface IServant extends IOwned {
 
     default void forceChunkLoadSelf() {
         if (this instanceof Mob owned){
-            if (owned.level instanceof ServerLevel serverLevel) {
+            if (owned.level() instanceof ServerLevel serverLevel) {
                 serverLevel.getChunkSource().addRegionTicket(ModTicketTypes.SERVANT, owned.chunkPosition(), 5, owned.blockPosition());
                 serverLevel.resetEmptyTime();
             }
@@ -441,7 +443,7 @@ public interface IServant extends IOwned {
     default void chunkLoadTarget(BlockPos blockPos) {
         if (blockPos != null) {
             if (this instanceof Mob owned) {
-                if (owned.level instanceof ServerLevel serverLevel) {
+                if (owned.level() instanceof ServerLevel serverLevel) {
                     if (this.shouldChunkLoad()) {
                         if (this.getTrueOwner() instanceof Player) {
                             int i = SectionPos.blockToSectionCoord(blockPos.getX());
@@ -477,7 +479,7 @@ public interface IServant extends IOwned {
                 } else {
                     this.setHasLifespan(false);
                 }
-                if (!self.level.isClientSide) {
+                if (!self.level().isClientSide) {
                     if (!this.hasLifespan() || this.getLifespan() > 20) {
                         ServantUtil.healServant(owner, self);
                     }
@@ -494,7 +496,6 @@ public interface IServant extends IOwned {
                 if (itemstack.isDamageableItem() && MobsConfig.UndeadServantSunlightHelmet.get()) {
                     itemstack.setDamageValue(itemstack.getDamageValue() + livingEntity.getRandom().nextInt(2));
                     if (itemstack.getDamageValue() >= itemstack.getMaxDamage()) {
-                        livingEntity.broadcastBreakEvent(EquipmentSlot.HEAD);
                         livingEntity.setItemSlot(EquipmentSlot.HEAD, ItemStack.EMPTY);
                     }
                 }
@@ -503,7 +504,7 @@ public interface IServant extends IOwned {
             }
 
             if (flag) {
-                livingEntity.setSecondsOnFire(8);
+                livingEntity.igniteForSeconds(8.0F);
             }
         }
     }
@@ -564,7 +565,7 @@ public interface IServant extends IOwned {
                         owned.getNavigation().stop();
                     }
                     if (owned.getAttribute(Attributes.MOVEMENT_SPEED) != null) {
-                        modifiableattributeinstance.removeModifier(SPEED_MODIFIER);
+                        modifiableattributeinstance.removeModifier(SPEED_MODIFIER_ID);
                         modifiableattributeinstance.addTransientModifier(SPEED_MODIFIER);
                     }
                     this.stayingPosition();
@@ -572,8 +573,8 @@ public interface IServant extends IOwned {
                         this.setWandering(false);
                     }
                 } else {
-                    if (modifiableattributeinstance.hasModifier(SPEED_MODIFIER)) {
-                        modifiableattributeinstance.removeModifier(SPEED_MODIFIER);
+                    if (modifiableattributeinstance.hasModifier(SPEED_MODIFIER_ID)) {
+                        modifiableattributeinstance.removeModifier(SPEED_MODIFIER_ID);
                     }
                 }
             }
@@ -602,22 +603,18 @@ public interface IServant extends IOwned {
         if (compound.contains("staying")) {
             this.setStaying(compound.getBoolean("staying"));
         }
-        if (compound.contains("commandPos")){
-            this.setCommandPos(NbtUtils.readBlockPos(compound.getCompound("commandPos")));
-        }
+        NbtUtils.readBlockPos(compound, "commandPos").ifPresent(this::setCommandPos);
         if (compound.contains("commandPosEntity")){
             if (EntityFinder.getLivingEntityByUuiD(compound.getUUID("commandPosEntity")) != null) {
                 this.setCommandPosEntity(EntityFinder.getLivingEntityByUuiD(compound.getUUID("commandPosEntity")));
             }
         }
-        if (compound.contains("boundPos")){
-            this.setBoundPos(NbtUtils.readBlockPos(compound.getCompound("boundPos")));
+        NbtUtils.readBlockPos(compound, "boundPos").ifPresent(this::setBoundPos);
+        if (compound.contains("boundPos")) {
             if (compound.contains("boundDim")){
                 this.setBoundDim(compound.getString("boundDim"));
-            } else {
-                if (this instanceof Entity entity) {
-                    this.setBoundDim(entity.level.dimension());
-                }
+            } else if (this instanceof Entity entity) {
+                this.setBoundDim(entity.level().dimension());
             }
         }
         if (compound.contains("noHealTime")){
@@ -626,9 +623,7 @@ public interface IServant extends IOwned {
         if (compound.contains("priorityTargetTime")){
             this.setPriorityTime(compound.getInt("priorityTargetTime"));
         }
-        if (compound.contains("priorityPos")){
-            this.setPriorityPos(NbtUtils.readBlockPos(compound.getCompound("priorityPos")));
-        }
+        NbtUtils.readBlockPos(compound, "priorityPos").ifPresent(this::setPriorityPos);
     }
 
     default void saveServantData(CompoundTag compound){

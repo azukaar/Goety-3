@@ -19,14 +19,14 @@ import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.pathfinder.BlockPathTypes;
+import net.minecraft.world.level.pathfinder.PathType;
 
 import javax.annotation.Nullable;
 
 public class WitherSkeletonServant extends AbstractSkeletonServant {
    public WitherSkeletonServant(EntityType<? extends WitherSkeletonServant> p_34166_, Level p_34167_) {
       super(p_34166_, p_34167_);
-      this.setPathfindingMalus(BlockPathTypes.LAVA, 8.0F);
+      this.setPathfindingMalus(PathType.LAVA, 8.0F);
    }
 
    public static AttributeSupplier.Builder setCustomAttributes() {

@@ -4,8 +4,6 @@ import com.Polarice3.Goety.common.effects.GoetyEffects;
 import com.Polarice3.Goety.common.items.ModItems;
 import com.Polarice3.Goety.common.items.curios.MagicRobeItem;
 import com.Polarice3.Goety.common.magic.SpellStat;
-import com.Polarice3.Goety.compat.serene_seasons.SSeasonsIntegration;
-import com.Polarice3.Goety.compat.serene_seasons.SSeasonsLoaded;
 import com.Polarice3.Goety.config.SpellConfig;
 import com.Polarice3.Goety.init.ModAttributes;
 import com.Polarice3.Goety.init.ModTags;
@@ -31,8 +29,8 @@ import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.phys.*;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -52,7 +50,7 @@ public interface ISpell {
     default int SoulCalculation(LivingEntity caster){
         float cost = defaultSoulCost() * SoulCostUp(caster);
         BlockPos blockPos = caster.blockPosition();
-        Level level = caster.level;
+        Level level = caster.level();
         Holder<Biome> biomeHolder = level.getBiome(blockPos);
         boolean enable = SpellConfig.EnvironmentalCost.get();
         if (SoulDiscount(caster)){
@@ -63,14 +61,10 @@ public interface ISpell {
                 cost /= 2;
             }
             if (enable) {
-                if (biomeHolder.get().coldEnoughToSnow(blockPos) || biomeHolder.is(ModTags.Biomes.FROST_DISCOUNT) || (level.isRainingAt(blockPos) && biomeHolder.get().coldEnoughToSnow(blockPos))) {
+                if (biomeHolder.value().coldEnoughToSnow(blockPos) || biomeHolder.is(ModTags.Biomes.FROST_DISCOUNT) || (level.isRainingAt(blockPos) && biomeHolder.value().coldEnoughToSnow(blockPos))) {
                     cost /= 1.5F;
                 } else if (biomeHolder.is(ModTags.Biomes.FROST_MARKUP)) {
                     cost *= 1.5F;
-                } else if (SSeasonsLoaded.SERENE_SEASONS.isLoaded()){
-                    if (SSeasonsIntegration.summonSnowVariant(level, blockPos)){
-                        cost /= 1.5F;
-                    }
                 }
             }
         }
@@ -144,10 +138,6 @@ public interface ISpell {
                     cost /= 1.5F;
                 } else if (biomeHolder.is(ModTags.Biomes.WILD_MARKUP)) {
                     cost *= 1.5F;
-                } else if (SSeasonsLoaded.SERENE_SEASONS.isLoaded()){
-                    if (SSeasonsIntegration.summonSnowVariant(level, blockPos)){
-                        cost *= 1.5F;
-                    }
                 }
             }
         }
@@ -259,7 +249,12 @@ public interface ISpell {
 
     @Nullable
     default ParticleOptions getParticle(LivingEntity caster){
-        return ParticleTypes.ENTITY_EFFECT;
+        return net.minecraft.core.particles.ColorParticleOption.create(
+                ParticleTypes.ENTITY_EFFECT,
+                (float) this.particleColors(caster).red(),
+                (float) this.particleColors(caster).green(),
+                (float) this.particleColors(caster).blue()
+        );
     }
 
     default void useParticle(Level worldIn, LivingEntity caster, ItemStack stack){
@@ -332,7 +327,7 @@ public interface ISpell {
 
     @Nullable
     default MobEffectInstance summonDownEffect(LivingEntity caster){
-        return caster.getEffect(GoetyEffects.SUMMON_DOWN.get());
+        return caster.getEffect(GoetyEffects.SUMMON_DOWN.getHolder());
     }
 
     default int SoulCostUp(LivingEntity caster){

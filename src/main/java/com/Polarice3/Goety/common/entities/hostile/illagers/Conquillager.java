@@ -44,7 +44,7 @@ import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.pathfinder.BlockPathTypes;
+import net.minecraft.world.level.pathfinder.PathType;
 import net.minecraft.world.level.pathfinder.NodeEvaluator;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Vector3f;
@@ -363,7 +363,7 @@ public class Conquillager extends HuntingIllagerEntity implements CrossbowAttack
         private boolean isWalkable() {
             PathNavigation pathnavigator = this.mob.getNavigation();
             NodeEvaluator nodeprocessor = pathnavigator.getNodeEvaluator();
-            return nodeprocessor.getBlockPathType(this.mob.level(), Mth.floor(this.mob.getX() + 1.0D), Mth.floor(this.mob.getY()), Mth.floor(this.mob.getZ() + 1.0D)) == BlockPathTypes.WALKABLE;
+            return nodeprocessor.getBlockPathType(this.mob.level(), Mth.floor(this.mob.getX() + 1.0D), Mth.floor(this.mob.getY()), Mth.floor(this.mob.getZ() + 1.0D)) == PathType.WALKABLE;
         }
 
         private boolean isCrossbowUncharged() {

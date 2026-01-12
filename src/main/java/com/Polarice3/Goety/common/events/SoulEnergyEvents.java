@@ -44,62 +44,60 @@ import net.minecraft.world.item.trading.Merchant;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.common.util.FakePlayer;
-import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.event.entity.living.LivingAttackEvent;
-import net.minecraftforge.event.entity.living.LivingDeathEvent;
-import net.minecraftforge.event.entity.living.LivingHurtEvent;
-import net.minecraftforge.event.entity.player.PlayerEvent;
-import net.minecraftforge.event.entity.player.PlayerInteractEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.neoforge.common.util.FakePlayer;
+import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
+import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.neoforge.event.tick.PlayerTickEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.fml.common.Mod;
 
-@Mod.EventBusSubscriber(modid = Goety.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE)
+@EventBusSubscriber(modid = Goety.MOD_ID, bus = EventBusSubscriber.Bus.GAME)
 public class SoulEnergyEvents {
 
     @SubscribeEvent
-    public static void onPlayerTick(TickEvent.PlayerTickEvent event){
-        Player player = event.player;
+    public static void onPlayerTick(PlayerTickEvent.Post event){
+        Player player = event.getEntity();
         Level world = player.level;
         ISoulEnergy soulEnergy = SEHelper.getCapability(player);
-        if (event.phase == TickEvent.Phase.END) {
-            SEHelper.getFocusCoolDown(player).tick(player, world);
-            if (player.onGround()){
-                if (SEHelper.getTicksInAir(player) > 0) {
-                    SEHelper.setTicksInAir(player, 0);
-                }
-                if (SEHelper.getAirJumps(player) > 0) {
-                    SEHelper.setAirJumps(player, 0);
-                }
-                if (SEHelper.getAirJumpCooldown(player) > 0) {
-                    SEHelper.setAirJumpCooldown(player, 0);
-                }
-            } else {
-                SEHelper.setTicksInAir(player, SEHelper.getTicksInAir(player) + 1);
+        SEHelper.getFocusCoolDown(player).tick(player, world);
+        if (player.onGround()){
+            if (SEHelper.getTicksInAir(player) > 0) {
+                SEHelper.setTicksInAir(player, 0);
+            }
+            if (SEHelper.getAirJumps(player) > 0) {
+                SEHelper.setAirJumps(player, 0);
             }
             if (SEHelper.getAirJumpCooldown(player) > 0) {
-                SEHelper.setAirJumpCooldown(player, SEHelper.getAirJumpCooldown(player) - 1);
+                SEHelper.setAirJumpCooldown(player, 0);
             }
-            if (SEHelper.getRestPeriod(player) > 0) {
-                SEHelper.decreaseRestPeriod(player, 1);
+        } else {
+            SEHelper.setTicksInAir(player, SEHelper.getTicksInAir(player) + 1);
+        }
+        if (SEHelper.getAirJumpCooldown(player) > 0) {
+            SEHelper.setAirJumpCooldown(player, SEHelper.getAirJumpCooldown(player) - 1);
+        }
+        if (SEHelper.getRestPeriod(player) > 0) {
+            SEHelper.decreaseRestPeriod(player, 1);
+        }
+        if (SEHelper.hasResearch(player, ResearchList.FORBIDDEN)){
+            if (!SEHelper.hasResearch(player, ResearchList.BURIED)){
+                SEHelper.addResearch(player, ResearchList.BURIED);
             }
-            if (SEHelper.hasResearch(player, ResearchList.FORBIDDEN)){
-                if (!SEHelper.hasResearch(player, ResearchList.BURIED)){
-                    SEHelper.addResearch(player, ResearchList.BURIED);
+        }
+        if (!soulEnergy.getSEActive() && soulEnergy.getSoulEnergy() > 0) {
+            if (!world.isClientSide){
+                player.addEffect(new MobEffectInstance(GoetyEffects.SOUL_HUNGER.get(), 60));
+                if (player.tickCount % 5 == 0) {
+                    SEHelper.decreaseSESouls(player, 1);
+                    SEHelper.sendSEUpdatePacket(player);
                 }
             }
-            if (!soulEnergy.getSEActive() && soulEnergy.getSoulEnergy() > 0) {
-                if (!world.isClientSide){
-                    player.addEffect(new MobEffectInstance(GoetyEffects.SOUL_HUNGER.get(), 60));
-                    if (player.tickCount % 5 == 0) {
-                        SEHelper.decreaseSESouls(player, 1);
-                        SEHelper.sendSEUpdatePacket(player);
-                    }
-                }
-            }
-            if (!player.isUsingItem() || !(WandUtil.getSpell(player) instanceof BurrowingSpell)) {
-                BurrowingSpell.resetMiningProgress(world, player);
-            }
+        }
+        if (!player.isUsingItem() || !(WandUtil.getSpell(player) instanceof BurrowingSpell)) {
+            BurrowingSpell.resetMiningProgress(world, player);
         }
         if (soulEnergy.getArcaBlock() != null){
             if (soulEnergy.getArcaBlockDimension() == world.dimension()) {
@@ -192,7 +190,7 @@ public class SoulEnergyEvents {
     }
 
     @SubscribeEvent
-    public static void onLivingAttack(LivingAttackEvent event){
+    public static void onLivingAttack(LivingIncomingDamageEvent event){
         LivingEntity livingEntity = event.getEntity();
         if (livingEntity instanceof Player player){
             if (SEHelper.getWardingLeft(player) > 0){
@@ -205,7 +203,7 @@ public class SoulEnergyEvents {
     }
 
     @SubscribeEvent
-    public static void onLivingHurt(LivingHurtEvent event){
+    public static void onLivingHurt(LivingIncomingDamageEvent event){
         LivingEntity livingEntity = event.getEntity();
         if (livingEntity instanceof Player player){
             if (SEHelper.getWardingLeft(player) > 0){

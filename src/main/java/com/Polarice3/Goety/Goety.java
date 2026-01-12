@@ -65,10 +65,9 @@ import com.mojang.logging.LogUtils;
 import com.mojang.serialization.Codec;
 import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.BlockSource;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Position;
-import net.minecraft.core.dispenser.AbstractProjectileDispenseBehavior;
+import net.minecraft.core.dispenser.BlockSource;
 import net.minecraft.core.dispenser.DefaultDispenseItemBehavior;
 import net.minecraft.core.dispenser.DispenseItemBehavior;
 import net.minecraft.core.dispenser.OptionalDispenseItemBehavior;
@@ -91,32 +90,30 @@ import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.brewing.BrewingRecipeRegistry;
-import net.minecraftforge.common.world.BiomeModifier;
-import net.minecraftforge.common.world.StructureModifier;
-import net.minecraftforge.event.entity.EntityAttributeCreationEvent;
-import net.minecraftforge.event.entity.SpawnPlacementRegisterEvent;
-import net.minecraftforge.event.server.ServerStartingEvent;
-import net.minecraftforge.event.server.ServerStoppedEvent;
-import net.minecraftforge.eventbus.api.EventPriority;
-import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.InterModComms;
-import net.minecraftforge.fml.ModLoadingContext;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.config.ModConfig;
-import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.minecraftforge.fml.event.lifecycle.FMLLoadCompleteEvent;
-import net.minecraftforge.fml.event.lifecycle.InterModEnqueueEvent;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.minecraftforge.fml.loading.FMLPaths;
-import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.RegistryObject;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.common.brewing.BrewingRecipeRegistry;
+import net.neoforged.neoforge.common.world.BiomeModifier;
+import net.neoforged.neoforge.common.world.StructureModifier;
+import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
+import net.neoforged.neoforge.event.entity.RegisterSpawnPlacementsEvent;
+import net.neoforged.neoforge.event.server.ServerStartingEvent;
+import net.neoforged.neoforge.event.server.ServerStoppedEvent;
+import net.neoforged.bus.api.EventPriority;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.InterModComms;
+import net.neoforged.fml.ModLoadingContext;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.config.ModConfig;
+import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.neoforged.fml.event.lifecycle.FMLLoadCompleteEvent;
+import net.neoforged.fml.event.lifecycle.InterModEnqueueEvent;
+import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.neoforged.fml.loading.FMLPaths;
+import net.neoforged.neoforge.registries.DeferredRegister;
+import net.neoforged.neoforge.registries.NeoForgeRegistries;
+import net.neoforged.neoforge.registries.RegistryObject;
 import org.slf4j.Logger;
-import top.theillusivec4.curios.api.CuriosApi;
-
 import java.io.IOException;
 import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
@@ -125,16 +122,16 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import static net.minecraftforge.fml.loading.LogMarkers.CORE;
+import static net.neoforged.fml.loading.LogMarkers.CORE;
 
 @Mod(Goety.MOD_ID)
 public class Goety {
     public static final String MOD_ID = "goety";
     public static final Logger LOGGER = LogUtils.getLogger();
     @SuppressWarnings("removal")
-    public static ModProxy PROXY = net.minecraftforge.fml.DistExecutor.unsafeRunForDist(() -> ClientProxy::new, () -> CommonProxy::new);
+    public static ModProxy PROXY = net.neoforged.fml.util.DistExecutor.unsafeRunForDist(() -> ClientProxy::new, () -> CommonProxy::new);
     @SuppressWarnings("removal")
-    public static SidedInit SIDED_INIT = net.minecraftforge.fml.DistExecutor.unsafeRunForDist(() -> ClientSideInit::new, () -> SidedInit::new);
+    public static SidedInit SIDED_INIT = net.neoforged.fml.util.DistExecutor.unsafeRunForDist(() -> ClientSideInit::new, () -> SidedInit::new);
 
     public static ResourceLocation location(String path) {
         return new ResourceLocation(MOD_ID, path);
@@ -162,6 +159,7 @@ public class Goety {
         modEventBus.addListener(this::SpawnPlacementEvent);
         modEventBus.addListener(this::enqueueIMC);
         modEventBus.addListener(EventPriority.LOWEST, this::finalLoad);
+        modEventBus.addListener(ModNetwork::registerPayloadHandlers);
 
         getOrCreateDirectory(FMLPaths.CONFIGDIR.get().resolve("goety"), "goety");
         ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, MainConfig.SPEC, "goety/goety.toml");
@@ -182,14 +180,14 @@ public class Goety {
         ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, ItemConfig.SPEC, "goety/goety-items.toml");
         ItemConfig.loadConfig(ItemConfig.SPEC, FMLPaths.CONFIGDIR.get().resolve("goety/goety-items.toml").toString());
 
-        final DeferredRegister<Codec<? extends BiomeModifier>> biomeModifiers = DeferredRegister.create(ForgeRegistries.Keys.BIOME_MODIFIER_SERIALIZERS, Goety.MOD_ID);
+        final DeferredRegister<Codec<? extends BiomeModifier>> biomeModifiers = DeferredRegister.create(NeoForgeRegistries.Keys.BIOME_MODIFIER_SERIALIZERS, Goety.MOD_ID);
         biomeModifiers.register(modEventBus);
         biomeModifiers.register("mob_spawns", ModMobSpawnBiomeModifier::makeCodec);
-        final DeferredRegister<Codec<? extends StructureModifier>> structureModifiers = DeferredRegister.create(ForgeRegistries.Keys.STRUCTURE_MODIFIER_SERIALIZERS, Goety.MOD_ID);
+        final DeferredRegister<Codec<? extends StructureModifier>> structureModifiers = DeferredRegister.create(NeoForgeRegistries.Keys.STRUCTURE_MODIFIER_SERIALIZERS, Goety.MOD_ID);
         structureModifiers.register(modEventBus);
         structureModifiers.register("mob_structure_spawns", ModMobSpawnStructureModifier::makeCodec);
 
-        MinecraftForge.EVENT_BUS.register(this);
+        NeoForge.EVENT_BUS.register(this);
         ModItems.init();
         ModAttributes.init();
         ModBlocks.init();
@@ -232,8 +230,6 @@ public class Goety {
     }
 
     private void commonSetup(final FMLCommonSetupEvent event) {
-        ModNetwork.init();
-
         OtherModCompat.setup(event);
         event.enqueueWork(() -> {
             ModCauldronInteraction.init();
@@ -261,83 +257,14 @@ public class Goety {
                     return stack;
                 }
             });
-            DispenserBlock.registerBehavior(ModItems.ILL_BOMB.get(), new AbstractProjectileDispenseBehavior() {
-                protected Projectile getProjectile(Level p_123468_, Position p_123469_, ItemStack p_123470_) {
-                    return new IllBomb(p_123469_.x(), p_123469_.y(), p_123469_.z(), p_123468_);
-                }
-            });
-            DispenserBlock.registerBehavior(ModItems.SNAP_FUNGUS.get(), new AbstractProjectileDispenseBehavior() {
-                protected Projectile getProjectile(Level p_123468_, Position p_123469_, ItemStack p_123470_) {
-                    return new SnapFungus(p_123469_.x(), p_123469_.y(), p_123469_.z(), p_123468_);
-                }
-            });
-            DispenserBlock.registerBehavior(ModItems.BLAST_FUNGUS.get(), new AbstractProjectileDispenseBehavior() {
-                protected Projectile getProjectile(Level p_123468_, Position p_123469_, ItemStack p_123470_) {
-                    return new BlastFungus(p_123469_.x(), p_123469_.y(), p_123469_.z(), p_123468_);
-                }
-            });
-            DispenserBlock.registerBehavior(ModItems.BERSERK_FUNGUS.get(), new AbstractProjectileDispenseBehavior() {
-                protected Projectile getProjectile(Level p_123468_, Position p_123469_, ItemStack p_123470_) {
-                    return new BerserkFungus(p_123469_.x(), p_123469_.y(), p_123469_.z(), p_123468_);
-                }
-            });
-            DispenserBlock.registerBehavior(ModItems.SPLASH_BREW.get(), new DispenseItemBehavior() {
-                public ItemStack dispense(BlockSource p_123491_, ItemStack p_123492_) {
-                    return (new AbstractProjectileDispenseBehavior() {
-                        protected Projectile getProjectile(Level p_123501_, Position p_123502_, ItemStack p_123503_) {
-                            return Util.make(new ThrownBrew(p_123501_, p_123502_.x(), p_123502_.y(), p_123502_.z()), (p_123499_) -> {
-                                p_123499_.setItem(p_123503_);
-                            });
-                        }
-
-                        protected float getUncertainty() {
-                            return super.getUncertainty() * 0.5F;
-                        }
-
-                        protected float getPower() {
-                            return super.getPower() * 1.25F;
-                        }
-                    }).dispense(p_123491_, p_123492_);
-                }
-            });
-            DispenserBlock.registerBehavior(ModItems.LINGERING_BREW.get(), new DispenseItemBehavior() {
-                public ItemStack dispense(BlockSource p_123507_, ItemStack p_123508_) {
-                    return (new AbstractProjectileDispenseBehavior() {
-                        protected Projectile getProjectile(Level p_123517_, Position p_123518_, ItemStack p_123519_) {
-                            return Util.make(new ThrownBrew(p_123517_, p_123518_.x(), p_123518_.y(), p_123518_.z()), (p_123515_) -> {
-                                p_123515_.setItem(p_123519_);
-                            });
-                        }
-
-                        protected float getUncertainty() {
-                            return super.getUncertainty() * 0.5F;
-                        }
-
-                        protected float getPower() {
-                            return super.getPower() * 1.25F;
-                        }
-                    }).dispense(p_123507_, p_123508_);
-                }
-            });
-            DispenserBlock.registerBehavior(ModItems.GAS_BREW.get(), new DispenseItemBehavior() {
-                public ItemStack dispense(BlockSource p_123507_, ItemStack p_123508_) {
-                    return (new AbstractProjectileDispenseBehavior() {
-                        protected Projectile getProjectile(Level p_123517_, Position p_123518_, ItemStack p_123519_) {
-                            return Util.make(new ThrownBrew(p_123517_, p_123518_.x(), p_123518_.y(), p_123518_.z()), (p_123515_) -> {
-                                p_123515_.setItem(p_123519_);
-                            });
-                        }
-
-                        protected float getUncertainty() {
-                            return super.getUncertainty() * 0.5F;
-                        }
-
-                        protected float getPower() {
-                            return super.getPower() * 1.25F;
-                        }
-                    }).dispense(p_123507_, p_123508_);
-                }
-            });
+            // TODO (NeoForge 1.21): re-implement custom projectile dispense behaviors (old AbstractProjectileDispenseBehavior no longer exists).
+            DispenserBlock.registerBehavior(ModItems.ILL_BOMB.get(), new DefaultDispenseItemBehavior());
+            DispenserBlock.registerBehavior(ModItems.SNAP_FUNGUS.get(), new DefaultDispenseItemBehavior());
+            DispenserBlock.registerBehavior(ModItems.BLAST_FUNGUS.get(), new DefaultDispenseItemBehavior());
+            DispenserBlock.registerBehavior(ModItems.BERSERK_FUNGUS.get(), new DefaultDispenseItemBehavior());
+            DispenserBlock.registerBehavior(ModItems.SPLASH_BREW.get(), new DefaultDispenseItemBehavior());
+            DispenserBlock.registerBehavior(ModItems.LINGERING_BREW.get(), new DefaultDispenseItemBehavior());
+            DispenserBlock.registerBehavior(ModItems.GAS_BREW.get(), new DefaultDispenseItemBehavior());
             DispenserBlock.registerBehavior(ModItems.HAUNTED_ARMOR_STAND.get(), new DefaultDispenseItemBehavior() {
                 public ItemStack execute(BlockSource p_123461_, ItemStack p_123462_) {
                     Direction direction = p_123461_.getBlockState().getValue(DispenserBlock.FACING);
@@ -719,36 +646,29 @@ public class Goety {
         event.put(ModEntityType.HAUNTED_ARMOR_STAND.get(), LivingEntity.createLivingAttributes().build());
     }
 
-    private void SpawnPlacementEvent(SpawnPlacementRegisterEvent event){
-        event.register(ModEntityType.WARLOCK.get(), SpawnPlacements.Type.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Monster::checkMonsterSpawnRules, SpawnPlacementRegisterEvent.Operation.AND);
-        event.register(ModEntityType.HERETIC.get(), SpawnPlacements.Type.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Monster::checkMonsterSpawnRules, SpawnPlacementRegisterEvent.Operation.AND);
-        event.register(ModEntityType.MAVERICK.get(), SpawnPlacements.Type.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Monster::checkMonsterSpawnRules, SpawnPlacementRegisterEvent.Operation.AND);
-        event.register(ModEntityType.OBSIDIAN_MONOLITH.get(), SpawnPlacements.Type.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, ObsidianMonolith::checkOMSpawnRules, SpawnPlacementRegisterEvent.Operation.AND);
-        event.register(ModEntityType.HOSTILE_BLACK_WOLF.get(), SpawnPlacements.Type.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Owned::checkDayMonsterSpawnRules, SpawnPlacementRegisterEvent.Operation.AND);
-        event.register(ModEntityType.REAPER.get(), SpawnPlacements.Type.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Owned::checkHostileSpawnRules, SpawnPlacementRegisterEvent.Operation.AND);
-        event.register(ModEntityType.WRAITH.get(), SpawnPlacements.Type.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Owned::checkHostileSpawnRules, SpawnPlacementRegisterEvent.Operation.AND);
-        event.register(ModEntityType.BORDER_WRAITH.get(), SpawnPlacements.Type.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Owned::checkHostileSpawnRules, SpawnPlacementRegisterEvent.Operation.AND);
-        event.register(ModEntityType.MUCK_WRAITH.get(), SpawnPlacements.Type.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Owned::checkHostileSpawnRules, SpawnPlacementRegisterEvent.Operation.AND);
-        event.register(ModEntityType.CRYPT_SLIME.get(), SpawnPlacements.Type.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, CryptSlime::checkMonsterSpawnRules, SpawnPlacementRegisterEvent.Operation.AND);
-        event.register(ModEntityType.WEB_SPIDER.get(), SpawnPlacements.Type.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Monster::checkMonsterSpawnRules, SpawnPlacementRegisterEvent.Operation.AND);
-        event.register(ModEntityType.ICY_SPIDER.get(), SpawnPlacements.Type.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Monster::checkMonsterSpawnRules, SpawnPlacementRegisterEvent.Operation.AND);
-        event.register(ModEntityType.BONE_SPIDER.get(), SpawnPlacements.Type.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Monster::checkMonsterSpawnRules, SpawnPlacementRegisterEvent.Operation.AND);
-        event.register(ModEntityType.NECROMANCER.get(), SpawnPlacements.Type.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Owned::checkHostileSpawnRules, SpawnPlacementRegisterEvent.Operation.AND);
-        event.register(ModEntityType.CAIRN_NECROMANCER.get(), SpawnPlacements.Type.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Owned::checkHostileSpawnRules, SpawnPlacementRegisterEvent.Operation.AND);
-        event.register(ModEntityType.MOSSY_NECROMANCER.get(), SpawnPlacements.Type.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Owned::checkHostileSpawnRules, SpawnPlacementRegisterEvent.Operation.AND);
-        event.register(ModEntityType.HAUNTED_ARMOR.get(), SpawnPlacements.Type.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Owned::checkHostileSpawnRules, SpawnPlacementRegisterEvent.Operation.AND);
+    private void SpawnPlacementEvent(RegisterSpawnPlacementsEvent event){
+        event.register(ModEntityType.WARLOCK.get(), SpawnPlacements.Type.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Monster::checkMonsterSpawnRules, RegisterSpawnPlacementsEvent.Operation.AND);
+        event.register(ModEntityType.HERETIC.get(), SpawnPlacements.Type.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Monster::checkMonsterSpawnRules, RegisterSpawnPlacementsEvent.Operation.AND);
+        event.register(ModEntityType.MAVERICK.get(), SpawnPlacements.Type.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Monster::checkMonsterSpawnRules, RegisterSpawnPlacementsEvent.Operation.AND);
+        event.register(ModEntityType.OBSIDIAN_MONOLITH.get(), SpawnPlacements.Type.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, ObsidianMonolith::checkOMSpawnRules, RegisterSpawnPlacementsEvent.Operation.AND);
+        event.register(ModEntityType.HOSTILE_BLACK_WOLF.get(), SpawnPlacements.Type.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Owned::checkDayMonsterSpawnRules, RegisterSpawnPlacementsEvent.Operation.AND);
+        event.register(ModEntityType.REAPER.get(), SpawnPlacements.Type.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Owned::checkHostileSpawnRules, RegisterSpawnPlacementsEvent.Operation.AND);
+        event.register(ModEntityType.WRAITH.get(), SpawnPlacements.Type.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Owned::checkHostileSpawnRules, RegisterSpawnPlacementsEvent.Operation.AND);
+        event.register(ModEntityType.BORDER_WRAITH.get(), SpawnPlacements.Type.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Owned::checkHostileSpawnRules, RegisterSpawnPlacementsEvent.Operation.AND);
+        event.register(ModEntityType.MUCK_WRAITH.get(), SpawnPlacements.Type.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Owned::checkHostileSpawnRules, RegisterSpawnPlacementsEvent.Operation.AND);
+        event.register(ModEntityType.CRYPT_SLIME.get(), SpawnPlacements.Type.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, CryptSlime::checkMonsterSpawnRules, RegisterSpawnPlacementsEvent.Operation.AND);
+        event.register(ModEntityType.WEB_SPIDER.get(), SpawnPlacements.Type.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Monster::checkMonsterSpawnRules, RegisterSpawnPlacementsEvent.Operation.AND);
+        event.register(ModEntityType.ICY_SPIDER.get(), SpawnPlacements.Type.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Monster::checkMonsterSpawnRules, RegisterSpawnPlacementsEvent.Operation.AND);
+        event.register(ModEntityType.BONE_SPIDER.get(), SpawnPlacements.Type.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Monster::checkMonsterSpawnRules, RegisterSpawnPlacementsEvent.Operation.AND);
+        event.register(ModEntityType.NECROMANCER.get(), SpawnPlacements.Type.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Owned::checkHostileSpawnRules, RegisterSpawnPlacementsEvent.Operation.AND);
+        event.register(ModEntityType.CAIRN_NECROMANCER.get(), SpawnPlacements.Type.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Owned::checkHostileSpawnRules, RegisterSpawnPlacementsEvent.Operation.AND);
+        event.register(ModEntityType.MOSSY_NECROMANCER.get(), SpawnPlacements.Type.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Owned::checkHostileSpawnRules, RegisterSpawnPlacementsEvent.Operation.AND);
+        event.register(ModEntityType.HAUNTED_ARMOR.get(), SpawnPlacements.Type.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Owned::checkHostileSpawnRules, RegisterSpawnPlacementsEvent.Operation.AND);
     }
 
     @SuppressWarnings("all")
     private void enqueueIMC(final InterModEnqueueEvent event) {
-        InterModComms.sendTo(CuriosApi.MODID, top.theillusivec4.curios.api.SlotTypeMessage.REGISTER_TYPE, () -> top.theillusivec4.curios.api.SlotTypePreset.BELT.getMessageBuilder().build());
-        InterModComms.sendTo(CuriosApi.MODID, top.theillusivec4.curios.api.SlotTypeMessage.REGISTER_TYPE, () -> top.theillusivec4.curios.api.SlotTypePreset.BODY.getMessageBuilder().build());
-        InterModComms.sendTo(CuriosApi.MODID, top.theillusivec4.curios.api.SlotTypeMessage.REGISTER_TYPE, () -> top.theillusivec4.curios.api.SlotTypePreset.BACK.getMessageBuilder().build());
-        InterModComms.sendTo(CuriosApi.MODID, top.theillusivec4.curios.api.SlotTypeMessage.REGISTER_TYPE, () -> top.theillusivec4.curios.api.SlotTypePreset.CHARM.getMessageBuilder().build());
-        InterModComms.sendTo(CuriosApi.MODID, top.theillusivec4.curios.api.SlotTypeMessage.REGISTER_TYPE, () -> top.theillusivec4.curios.api.SlotTypePreset.HEAD.getMessageBuilder().build());
-        InterModComms.sendTo(CuriosApi.MODID, top.theillusivec4.curios.api.SlotTypeMessage.REGISTER_TYPE, () -> top.theillusivec4.curios.api.SlotTypePreset.NECKLACE.getMessageBuilder().build());
-        InterModComms.sendTo(CuriosApi.MODID, top.theillusivec4.curios.api.SlotTypeMessage.REGISTER_TYPE, () -> top.theillusivec4.curios.api.SlotTypePreset.HANDS.getMessageBuilder().build());
-        InterModComms.sendTo(CuriosApi.MODID, top.theillusivec4.curios.api.SlotTypeMessage.REGISTER_TYPE, () -> top.theillusivec4.curios.api.SlotTypePreset.RING.getMessageBuilder().build());
+        // Curios IMC disabled for now (Curios dependency not pinned for 1.21.1 yet).
     }
 
     @SubscribeEvent

@@ -16,8 +16,7 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.*;
 import net.minecraft.world.level.block.InfestedBlock;
 import net.minecraft.world.level.block.SaplingBlock;
-import net.minecraftforge.common.ForgeSpawnEggItem;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.neoforge.registries.NeoForgeRegistries;
 
 import javax.annotation.Nullable;
 import java.util.Map;
@@ -176,7 +175,7 @@ public class BrewEffects {
         this.register(new ThornTrapBrewEffect(BrewConfig.ThornTrapCost.get()), Items.ROSE_BUSH);
         this.register(new TransposeBrewEffect(), Items.POPPED_CHORUS_FRUIT);
         this.register(new WebbedBrewEffect(BrewConfig.WebbedCost.get(), BrewConfig.WebbedCapacity.get()), ModBlocks.SPIDER_NEST.get().asItem());
-        for (Item item : ForgeRegistries.ITEMS.getValues()){
+        for (Item item : NeoForgeRegistries.ITEMS.getValues()){
             if (item instanceof BlockItem blockItem){
                 if (blockItem.getBlock() instanceof InfestedBlock){
                     this.register(new InfestBlockEffect(BrewConfig.InfestCost.get()), blockItem);
@@ -187,9 +186,9 @@ public class BrewEffects {
                 this.register(new BrewColorEffect(dyeItem), dyeItem);
             }
         }
-        for (EntityType<?> entityType : ForgeRegistries.ENTITY_TYPES.getValues()){
+        for (EntityType<?> entityType : NeoForgeRegistries.ENTITY_TYPES.getValues()){
             BrewEffect brewEffect = null;
-            Item item = ForgeSpawnEggItem.fromEntityType(entityType);
+            Item item = SpawnEggItem.byId(entityType);
             if (entityType.getDescriptionId().contains("endermite")){
                 brewEffect = new PotionBrewEffect(GoetyEffects.ENDER_FLUX.get(), BrewConfig.EnderFluxCost.get(), 900);
             }

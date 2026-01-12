@@ -13,8 +13,8 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.stats.Stats;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.network.NetworkEvent;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.network.NetworkEvent;
+import net.neoforged.neoforge.registries.NeoForgeRegistries;
 
 import java.util.function.Supplier;
 
@@ -60,7 +60,7 @@ public class CThrowBrewKeyPacket {
                 bagFocus.shrink(1);
             }
             if (player instanceof ServerPlayer serverPlayer) {
-                serverPlayer.connection.send(new ClientboundSoundPacket(ForgeRegistries.SOUND_EVENTS.getHolder(SoundEvents.SPLASH_POTION_THROW).get(), SoundSource.PLAYERS, serverPlayer.position().x, serverPlayer.position().y, serverPlayer.position().z, 1.0F, 1.0F, serverPlayer.level().getRandom().nextLong()));
+                serverPlayer.connection.send(new ClientboundSoundPacket(NeoForgeRegistries.SOUND_EVENTS.getHolder(SoundEvents.SPLASH_POTION_THROW).get(), SoundSource.PLAYERS, serverPlayer.position().x, serverPlayer.position().y, serverPlayer.position().z, 1.0F, 1.0F, serverPlayer.level().getRandom().nextLong()));
             }
         }
     }

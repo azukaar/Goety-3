@@ -13,7 +13,7 @@ import net.minecraft.world.level.block.BaseFireBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
-import net.minecraftforge.event.ForgeEventFactory;
+
 
 import java.util.ConcurrentModificationException;
 import java.util.List;
@@ -81,7 +81,7 @@ public class ForbiddenGrassBlockEntity extends BlockEntity {
                                                 if (entity instanceof Mob mob) {
                                                     mob.setPos(above.getX() + 0.5F, above.getY(), above.getZ() + 0.5F);
                                                     if (serverLevel.noCollision(entity) && serverLevel.isUnobstructed(entity, serverLevel.getBlockState(above).getShape(serverLevel, above))) {
-                                                        ForgeEventFactory.onFinalizeSpawn(mob, serverLevel, serverLevel.getCurrentDifficultyAt(this.worldPosition), MobSpawnType.SPAWNER, null, null);
+                                                        net.neoforged.neoforge.event.EventHooks.onFinalizeSpawn(mob, serverLevel, serverLevel.getCurrentDifficultyAt(this.worldPosition), MobSpawnType.SPAWNER, null, null);
                                                         serverLevel.addFreshEntity(mob);
                                                     }
                                                 }

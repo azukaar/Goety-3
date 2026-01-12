@@ -6,7 +6,7 @@ import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.neoforge.registries.NeoForgeRegistries;
 
 import javax.annotation.Nullable;
 
@@ -30,7 +30,7 @@ public class PurifyBrewEffect extends BrewEffect{
 
     public void applyEntityEffect(LivingEntity pTarget, @Nullable Entity pSource, @Nullable Entity pIndirectSource, int pAmplifier){
         if (!pTarget.level.isClientSide) {
-            for (MobEffect mobEffect : ForgeRegistries.MOB_EFFECTS){
+            for (MobEffect mobEffect : NeoForgeRegistries.MOB_EFFECTS){
                 boolean flag;
                 if (this.removeDebuff) {
                     flag = !mobEffect.isBeneficial();

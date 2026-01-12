@@ -3,7 +3,7 @@ package com.Polarice3.Goety.common.world.features;
 import com.Polarice3.Goety.common.blocks.ModBlocks;
 import com.Polarice3.Goety.common.world.features.configs.ModTreeFeatureConfig;
 import com.Polarice3.Goety.common.world.features.trees.trunkplacers.ChorusTrunkPlacer;
-import net.minecraft.data.worldgen.BootstapContext;
+import net.minecraft.data.worldgen.BootstrapContext;
 import net.minecraft.data.worldgen.features.FeatureUtils;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.util.random.SimpleWeightedRandomList;
@@ -46,7 +46,7 @@ public class ConfiguredFeatures {
     public static final ResourceKey<ConfiguredFeature<?, ?>> END_VEGETATION_BONEMEAL = FeatureUtils.createKey("goety:end_vegetation_bonemeal");
     public static final ResourceKey<ConfiguredFeature<?, ?>> END_SOIL_BONEMEAL = FeatureUtils.createKey("goety:end_soil_bonemeal");
 
-    public static void bootstrap(BootstapContext<ConfiguredFeature<?, ?>> p_256171_) {
+    public static void bootstrap(BootstrapContext<ConfiguredFeature<?, ?>> p_256171_) {
         FeatureUtils.register(p_256171_, SAPLING_HAUNTED_TREE, Feature.TREE, createHaunted().ignoreVines().build());
         FeatureUtils.register(p_256171_, SAPLING_ROTTEN_TREE, Feature.TREE, createRotten().ignoreVines().build());
         FeatureUtils.register(p_256171_, SAPLING_FANCY_ROTTEN_TREE, Feature.TREE, createFancyRotten().build());

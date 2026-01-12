@@ -2,15 +2,16 @@ package com.Polarice3.Goety.client.audio;
 
 import net.minecraft.client.resources.sounds.AbstractTickableSoundInstance;
 import net.minecraft.client.resources.sounds.SoundInstance;
+import net.minecraft.core.Holder;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.entity.LivingEntity;
 
 public class EffectLoopSound extends AbstractTickableSoundInstance {
     protected final LivingEntity entity;
-    protected final MobEffect effect;
+    protected final Holder<MobEffect> effect;
 
-    public EffectLoopSound(SoundEvent soundEvent, float volume, float pitch, MobEffect mobEffect, LivingEntity entity) {
+    public EffectLoopSound(SoundEvent soundEvent, float volume, float pitch, Holder<MobEffect> mobEffect, LivingEntity entity) {
         super(soundEvent, entity.getSoundSource(), SoundInstance.createUnseededRandom());
         this.effect = mobEffect;
         this.entity = entity;
@@ -23,7 +24,7 @@ public class EffectLoopSound extends AbstractTickableSoundInstance {
         this.pitch = pitch;
     }
 
-    public EffectLoopSound(SoundEvent soundEvent, MobEffect mobEffect, LivingEntity entity) {
+    public EffectLoopSound(SoundEvent soundEvent, Holder<MobEffect> mobEffect, LivingEntity entity) {
         this(soundEvent, 1.0F, 1.0F, mobEffect, entity);
     }
 

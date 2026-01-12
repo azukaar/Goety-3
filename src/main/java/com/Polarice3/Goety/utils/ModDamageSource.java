@@ -4,7 +4,7 @@ import com.Polarice3.Goety.Goety;
 import com.Polarice3.Goety.init.ModTags;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.data.worldgen.BootstapContext;
+import net.minecraft.data.worldgen.BootstrapContext;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.damagesource.*;
@@ -299,7 +299,7 @@ public class ModDamageSource extends DamageSource {
         }
     }
 
-    public static void bootstrap(BootstapContext<DamageType> context) {
+    public static void bootstrap(BootstrapContext<DamageType> context) {
         context.register(SUMMON, new DamageType("goety.summon", 0.1F));
         context.register(SHOCK, new DamageType("goety.shock", 0.0F));
         context.register(DIRECT_SHOCK, new DamageType("goety.directShock", 0.0F));

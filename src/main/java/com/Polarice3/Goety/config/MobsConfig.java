@@ -2,311 +2,311 @@ package com.Polarice3.Goety.config;
 
 import com.electronwill.nightconfig.core.file.CommentedFileConfig;
 import com.electronwill.nightconfig.core.io.WritingMode;
-import net.minecraftforge.common.ForgeConfigSpec;
+import net.neoforged.neoforge.common.ModConfigSpec;
 
 import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 
 public class MobsConfig {
-    public static final ForgeConfigSpec.Builder BUILDER = new ForgeConfigSpec.Builder();
-    public static final ForgeConfigSpec SPEC;
+    public static final ModConfigSpec.Builder BUILDER = new ModConfigSpec.Builder();
+    public static final ModConfigSpec SPEC;
 
-    public static final ForgeConfigSpec.ConfigValue<Integer> RavagerRoarCooldown;
-    public static final ForgeConfigSpec.ConfigValue<Integer> ServantGuardingRange;
-    public static final ForgeConfigSpec.ConfigValue<Integer> ServantHealHalt;
+    public static final ModConfigSpec.ConfigValue<Integer> RavagerRoarCooldown;
+    public static final ModConfigSpec.ConfigValue<Integer> ServantGuardingRange;
+    public static final ModConfigSpec.ConfigValue<Integer> ServantHealHalt;
 
-    public static final ForgeConfigSpec.ConfigValue<Integer> UndeadMinionHealCost;
-    public static final ForgeConfigSpec.ConfigValue<Integer> UndeadMinionHealTime;
-    public static final ForgeConfigSpec.ConfigValue<Double> UndeadMinionHealAmount;
-    public static final ForgeConfigSpec.ConfigValue<Double> ZombieServantBabyChance;
+    public static final ModConfigSpec.ConfigValue<Integer> UndeadMinionHealCost;
+    public static final ModConfigSpec.ConfigValue<Integer> UndeadMinionHealTime;
+    public static final ModConfigSpec.ConfigValue<Double> UndeadMinionHealAmount;
+    public static final ModConfigSpec.ConfigValue<Double> ZombieServantBabyChance;
 
-    public static final ForgeConfigSpec.ConfigValue<Integer> WaterMinionHealCost;
-    public static final ForgeConfigSpec.ConfigValue<Integer> WaterMinionHealTime;
-    public static final ForgeConfigSpec.ConfigValue<Double> WaterMinionHealAmount;
+    public static final ModConfigSpec.ConfigValue<Integer> WaterMinionHealCost;
+    public static final ModConfigSpec.ConfigValue<Integer> WaterMinionHealTime;
+    public static final ModConfigSpec.ConfigValue<Double> WaterMinionHealAmount;
 
-    public static final ForgeConfigSpec.ConfigValue<Integer> NaturalMinionHealCost;
-    public static final ForgeConfigSpec.ConfigValue<Integer> NaturalMinionHealTime;
-    public static final ForgeConfigSpec.ConfigValue<Double> NaturalMinionHealAmount;
+    public static final ModConfigSpec.ConfigValue<Integer> NaturalMinionHealCost;
+    public static final ModConfigSpec.ConfigValue<Integer> NaturalMinionHealTime;
+    public static final ModConfigSpec.ConfigValue<Double> NaturalMinionHealAmount;
 
-    public static final ForgeConfigSpec.ConfigValue<Integer> FrostMinionHealCost;
-    public static final ForgeConfigSpec.ConfigValue<Integer> FrostMinionHealTime;
-    public static final ForgeConfigSpec.ConfigValue<Double> FrostMinionHealAmount;
+    public static final ModConfigSpec.ConfigValue<Integer> FrostMinionHealCost;
+    public static final ModConfigSpec.ConfigValue<Integer> FrostMinionHealTime;
+    public static final ModConfigSpec.ConfigValue<Double> FrostMinionHealAmount;
 
-    public static final ForgeConfigSpec.ConfigValue<Integer> NetherMinionHealCost;
-    public static final ForgeConfigSpec.ConfigValue<Integer> NetherMinionHealTime;
-    public static final ForgeConfigSpec.ConfigValue<Double> NetherMinionHealAmount;
+    public static final ModConfigSpec.ConfigValue<Integer> NetherMinionHealCost;
+    public static final ModConfigSpec.ConfigValue<Integer> NetherMinionHealTime;
+    public static final ModConfigSpec.ConfigValue<Double> NetherMinionHealAmount;
 
-    public static final ForgeConfigSpec.ConfigValue<Integer> VoidMinionHealCost;
-    public static final ForgeConfigSpec.ConfigValue<Integer> VoidMinionHealTime;
-    public static final ForgeConfigSpec.ConfigValue<Double> VoidMinionHealAmount;
+    public static final ModConfigSpec.ConfigValue<Integer> VoidMinionHealCost;
+    public static final ModConfigSpec.ConfigValue<Integer> VoidMinionHealTime;
+    public static final ModConfigSpec.ConfigValue<Double> VoidMinionHealAmount;
 
-    public static final ForgeConfigSpec.ConfigValue<Integer> IllagerServantTrainTime;
-    public static final ForgeConfigSpec.ConfigValue<Integer> IllagerServantMaxMentors;
-    public static final ForgeConfigSpec.ConfigValue<Integer> IllagerServantChestRange;
-    public static final ForgeConfigSpec.ConfigValue<Integer> EvokerServantRavagedCooldown;
+    public static final ModConfigSpec.ConfigValue<Integer> IllagerServantTrainTime;
+    public static final ModConfigSpec.ConfigValue<Integer> IllagerServantMaxMentors;
+    public static final ModConfigSpec.ConfigValue<Integer> IllagerServantChestRange;
+    public static final ModConfigSpec.ConfigValue<Integer> EvokerServantRavagedCooldown;
 
-    public static final ForgeConfigSpec.ConfigValue<Integer> PrisonerMiningSwings;
-    public static final ForgeConfigSpec.ConfigValue<Integer> PrisonerMiningRange;
-    public static final ForgeConfigSpec.ConfigValue<Integer> PrisonerMiningDurability;
-    public static final ForgeConfigSpec.ConfigValue<Integer> PrisonerMiningChance;
-    public static final ForgeConfigSpec.ConfigValue<Integer> PrisonerMiningRareChance;
+    public static final ModConfigSpec.ConfigValue<Integer> PrisonerMiningSwings;
+    public static final ModConfigSpec.ConfigValue<Integer> PrisonerMiningRange;
+    public static final ModConfigSpec.ConfigValue<Integer> PrisonerMiningDurability;
+    public static final ModConfigSpec.ConfigValue<Integer> PrisonerMiningChance;
+    public static final ModConfigSpec.ConfigValue<Integer> PrisonerMiningRareChance;
 
-    public static final ForgeConfigSpec.ConfigValue<Integer> IllagerAssaultSpawnFreq;
-    public static final ForgeConfigSpec.ConfigValue<Integer> IllagerAssaultSpawnChance;
-    public static final ForgeConfigSpec.ConfigValue<Integer> IllagerAssaultSEThreshold;
-    public static final ForgeConfigSpec.ConfigValue<Integer> IllagerAssaultSELimit;
-    public static final ForgeConfigSpec.ConfigValue<Integer> IllagerAssaultRestDeath;
-    public static final ForgeConfigSpec.ConfigValue<Integer> IllagerAssaultRestMinister;
+    public static final ModConfigSpec.ConfigValue<Integer> IllagerAssaultSpawnFreq;
+    public static final ModConfigSpec.ConfigValue<Integer> IllagerAssaultSpawnChance;
+    public static final ModConfigSpec.ConfigValue<Integer> IllagerAssaultSEThreshold;
+    public static final ModConfigSpec.ConfigValue<Integer> IllagerAssaultSELimit;
+    public static final ModConfigSpec.ConfigValue<Integer> IllagerAssaultRestDeath;
+    public static final ModConfigSpec.ConfigValue<Integer> IllagerAssaultRestMinister;
 
-    public static final ForgeConfigSpec.ConfigValue<Integer> WightSpawnFreq;
-    public static final ForgeConfigSpec.ConfigValue<Integer> WightSpawnChance;
+    public static final ModConfigSpec.ConfigValue<Integer> WightSpawnFreq;
+    public static final ModConfigSpec.ConfigValue<Integer> WightSpawnChance;
 
-    public static final ForgeConfigSpec.ConfigValue<Integer> ObsidianMonolithStartUpTime;
+    public static final ModConfigSpec.ConfigValue<Integer> ObsidianMonolithStartUpTime;
 
-    public static final ForgeConfigSpec.ConfigValue<Integer> VillagerHateSpells;
+    public static final ModConfigSpec.ConfigValue<Integer> VillagerHateSpells;
 
-    public static final ForgeConfigSpec.ConfigValue<Integer> MaxSlimeSize;
+    public static final ModConfigSpec.ConfigValue<Integer> MaxSlimeSize;
 
-    public static final ForgeConfigSpec.ConfigValue<Integer> WarlockSpawnWeight;
-    public static final ForgeConfigSpec.ConfigValue<Integer> WarlockSpawnMinCount;
-    public static final ForgeConfigSpec.ConfigValue<Integer> WarlockSpawnMaxCount;
-    public static final ForgeConfigSpec.ConfigValue<Integer> ReaperSpawnWeight;
-    public static final ForgeConfigSpec.ConfigValue<Integer> ReaperSpawnMinCount;
-    public static final ForgeConfigSpec.ConfigValue<Integer> ReaperSpawnMaxCount;
-    public static final ForgeConfigSpec.ConfigValue<Integer> WraithSpawnWeight;
-    public static final ForgeConfigSpec.ConfigValue<Integer> WraithSpawnMinCount;
-    public static final ForgeConfigSpec.ConfigValue<Integer> WraithSpawnMaxCount;
-    public static final ForgeConfigSpec.ConfigValue<Integer> MuckWraithSpawnWeight;
-    public static final ForgeConfigSpec.ConfigValue<Integer> MuckWraithSpawnMinCount;
-    public static final ForgeConfigSpec.ConfigValue<Integer> MuckWraithSpawnMaxCount;
-    public static final ForgeConfigSpec.ConfigValue<Integer> WebSpiderSpawnWeight;
-    public static final ForgeConfigSpec.ConfigValue<Integer> WebSpiderSpawnMinCount;
-    public static final ForgeConfigSpec.ConfigValue<Integer> WebSpiderSpawnMaxCount;
-    public static final ForgeConfigSpec.ConfigValue<Integer> IcySpiderSpawnWeight;
-    public static final ForgeConfigSpec.ConfigValue<Integer> IcySpiderSpawnMinCount;
-    public static final ForgeConfigSpec.ConfigValue<Integer> IcySpiderSpawnMaxCount;
-    public static final ForgeConfigSpec.ConfigValue<Integer> NecromancerSpawnWeight;
-    public static final ForgeConfigSpec.ConfigValue<Integer> NecromancerSpawnMinCount;
-    public static final ForgeConfigSpec.ConfigValue<Integer> NecromancerSpawnMaxCount;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> NecromancerSpawnStructure;
-    public static final ForgeConfigSpec.ConfigValue<Integer> HereticSpawnWeight;
-    public static final ForgeConfigSpec.ConfigValue<Integer> HereticSpawnMinCount;
-    public static final ForgeConfigSpec.ConfigValue<Integer> HereticSpawnMaxCount;
-    public static final ForgeConfigSpec.ConfigValue<Integer> MaverickSpawnWeight;
-    public static final ForgeConfigSpec.ConfigValue<Integer> MaverickSpawnMinCount;
-    public static final ForgeConfigSpec.ConfigValue<Integer> MaverickSpawnMaxCount;
+    public static final ModConfigSpec.ConfigValue<Integer> WarlockSpawnWeight;
+    public static final ModConfigSpec.ConfigValue<Integer> WarlockSpawnMinCount;
+    public static final ModConfigSpec.ConfigValue<Integer> WarlockSpawnMaxCount;
+    public static final ModConfigSpec.ConfigValue<Integer> ReaperSpawnWeight;
+    public static final ModConfigSpec.ConfigValue<Integer> ReaperSpawnMinCount;
+    public static final ModConfigSpec.ConfigValue<Integer> ReaperSpawnMaxCount;
+    public static final ModConfigSpec.ConfigValue<Integer> WraithSpawnWeight;
+    public static final ModConfigSpec.ConfigValue<Integer> WraithSpawnMinCount;
+    public static final ModConfigSpec.ConfigValue<Integer> WraithSpawnMaxCount;
+    public static final ModConfigSpec.ConfigValue<Integer> MuckWraithSpawnWeight;
+    public static final ModConfigSpec.ConfigValue<Integer> MuckWraithSpawnMinCount;
+    public static final ModConfigSpec.ConfigValue<Integer> MuckWraithSpawnMaxCount;
+    public static final ModConfigSpec.ConfigValue<Integer> WebSpiderSpawnWeight;
+    public static final ModConfigSpec.ConfigValue<Integer> WebSpiderSpawnMinCount;
+    public static final ModConfigSpec.ConfigValue<Integer> WebSpiderSpawnMaxCount;
+    public static final ModConfigSpec.ConfigValue<Integer> IcySpiderSpawnWeight;
+    public static final ModConfigSpec.ConfigValue<Integer> IcySpiderSpawnMinCount;
+    public static final ModConfigSpec.ConfigValue<Integer> IcySpiderSpawnMaxCount;
+    public static final ModConfigSpec.ConfigValue<Integer> NecromancerSpawnWeight;
+    public static final ModConfigSpec.ConfigValue<Integer> NecromancerSpawnMinCount;
+    public static final ModConfigSpec.ConfigValue<Integer> NecromancerSpawnMaxCount;
+    public static final ModConfigSpec.ConfigValue<Boolean> NecromancerSpawnStructure;
+    public static final ModConfigSpec.ConfigValue<Integer> HereticSpawnWeight;
+    public static final ModConfigSpec.ConfigValue<Integer> HereticSpawnMinCount;
+    public static final ModConfigSpec.ConfigValue<Integer> HereticSpawnMaxCount;
+    public static final ModConfigSpec.ConfigValue<Integer> MaverickSpawnWeight;
+    public static final ModConfigSpec.ConfigValue<Integer> MaverickSpawnMinCount;
+    public static final ModConfigSpec.ConfigValue<Integer> MaverickSpawnMaxCount;
 
-    public static final ForgeConfigSpec.ConfigValue<Integer> BossInvulnerabilityTime;
+    public static final ModConfigSpec.ConfigValue<Integer> BossInvulnerabilityTime;
 
-    public static final ForgeConfigSpec.ConfigValue<Boolean> ZombieServantTexture;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> DrownedServantTexture;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> HuskServantTexture;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> FrozenZombieServantTexture;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> JungleZombieServantTexture;
+    public static final ModConfigSpec.ConfigValue<Boolean> ZombieServantTexture;
+    public static final ModConfigSpec.ConfigValue<Boolean> DrownedServantTexture;
+    public static final ModConfigSpec.ConfigValue<Boolean> HuskServantTexture;
+    public static final ModConfigSpec.ConfigValue<Boolean> FrozenZombieServantTexture;
+    public static final ModConfigSpec.ConfigValue<Boolean> JungleZombieServantTexture;
 
-    public static final ForgeConfigSpec.ConfigValue<Boolean> SkeletonServantTexture;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> StrayServantTexture;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> WitherSkeletonServantTexture;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> MossySkeletonServantTexture;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> SunkenSkeletonServantTexture;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> NecromancerServantTexture;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> VanguardServantTexture;
+    public static final ModConfigSpec.ConfigValue<Boolean> SkeletonServantTexture;
+    public static final ModConfigSpec.ConfigValue<Boolean> StrayServantTexture;
+    public static final ModConfigSpec.ConfigValue<Boolean> WitherSkeletonServantTexture;
+    public static final ModConfigSpec.ConfigValue<Boolean> MossySkeletonServantTexture;
+    public static final ModConfigSpec.ConfigValue<Boolean> SunkenSkeletonServantTexture;
+    public static final ModConfigSpec.ConfigValue<Boolean> NecromancerServantTexture;
+    public static final ModConfigSpec.ConfigValue<Boolean> VanguardServantTexture;
 
-    public static final ForgeConfigSpec.ConfigValue<Boolean> WraithServantTexture;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> ReaperServantTexture;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> PhantomServantTexture;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> PhantomServantTranslucent;
+    public static final ModConfigSpec.ConfigValue<Boolean> WraithServantTexture;
+    public static final ModConfigSpec.ConfigValue<Boolean> ReaperServantTexture;
+    public static final ModConfigSpec.ConfigValue<Boolean> PhantomServantTexture;
+    public static final ModConfigSpec.ConfigValue<Boolean> PhantomServantTranslucent;
 
-    public static final ForgeConfigSpec.ConfigValue<Boolean> ZPiglinServantTexture;
+    public static final ModConfigSpec.ConfigValue<Boolean> ZPiglinServantTexture;
 
-    public static final ForgeConfigSpec.ConfigValue<Boolean> GhastServantTexture;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> BlazeServantTexture;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> WildfireTexture;
+    public static final ModConfigSpec.ConfigValue<Boolean> GhastServantTexture;
+    public static final ModConfigSpec.ConfigValue<Boolean> BlazeServantTexture;
+    public static final ModConfigSpec.ConfigValue<Boolean> WildfireTexture;
 
-    public static final ForgeConfigSpec.ConfigValue<Boolean> VexTexture;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> PillagerServantTexture;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> PikerServantTexture;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> VindicatorServantTexture;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> MountaineerServantTexture;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> CrusherServantTexture;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> EvokerServantTexture;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> GeomancerServantTexture;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> IceologerServantTexture;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> CryologerServantTexture;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> WindCallerServantTexture;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> StormCasterServantTexture;
+    public static final ModConfigSpec.ConfigValue<Boolean> VexTexture;
+    public static final ModConfigSpec.ConfigValue<Boolean> PillagerServantTexture;
+    public static final ModConfigSpec.ConfigValue<Boolean> PikerServantTexture;
+    public static final ModConfigSpec.ConfigValue<Boolean> VindicatorServantTexture;
+    public static final ModConfigSpec.ConfigValue<Boolean> MountaineerServantTexture;
+    public static final ModConfigSpec.ConfigValue<Boolean> CrusherServantTexture;
+    public static final ModConfigSpec.ConfigValue<Boolean> EvokerServantTexture;
+    public static final ModConfigSpec.ConfigValue<Boolean> GeomancerServantTexture;
+    public static final ModConfigSpec.ConfigValue<Boolean> IceologerServantTexture;
+    public static final ModConfigSpec.ConfigValue<Boolean> CryologerServantTexture;
+    public static final ModConfigSpec.ConfigValue<Boolean> WindCallerServantTexture;
+    public static final ModConfigSpec.ConfigValue<Boolean> StormCasterServantTexture;
 
-    public static final ForgeConfigSpec.ConfigValue<Boolean> WitchServantTexture;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> WarlockServantTexture;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> MaverickServantTexture;
+    public static final ModConfigSpec.ConfigValue<Boolean> WitchServantTexture;
+    public static final ModConfigSpec.ConfigValue<Boolean> WarlockServantTexture;
+    public static final ModConfigSpec.ConfigValue<Boolean> MaverickServantTexture;
 
-    public static final ForgeConfigSpec.ConfigValue<Boolean> SpiderServantTexture;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> CaveSpiderServantTexture;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> WebSpiderServantTexture;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> IcySpiderServantTexture;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> BoneSpiderServantTexture;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> BroodMotherOldTexture;
+    public static final ModConfigSpec.ConfigValue<Boolean> SpiderServantTexture;
+    public static final ModConfigSpec.ConfigValue<Boolean> CaveSpiderServantTexture;
+    public static final ModConfigSpec.ConfigValue<Boolean> WebSpiderServantTexture;
+    public static final ModConfigSpec.ConfigValue<Boolean> IcySpiderServantTexture;
+    public static final ModConfigSpec.ConfigValue<Boolean> BoneSpiderServantTexture;
+    public static final ModConfigSpec.ConfigValue<Boolean> BroodMotherOldTexture;
 
-    public static final ForgeConfigSpec.ConfigValue<Boolean> SlimeServantTexture;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> MagmaCubeServantTexture;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> CryptSlimeServantTexture;
+    public static final ModConfigSpec.ConfigValue<Boolean> SlimeServantTexture;
+    public static final ModConfigSpec.ConfigValue<Boolean> MagmaCubeServantTexture;
+    public static final ModConfigSpec.ConfigValue<Boolean> CryptSlimeServantTexture;
 
-    public static final ForgeConfigSpec.ConfigValue<Boolean> GuardianServantTexture;
+    public static final ModConfigSpec.ConfigValue<Boolean> GuardianServantTexture;
 
-    public static final ForgeConfigSpec.ConfigValue<Boolean> QuickGrowingVineTexture;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> PoisonQuillVineTexture;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> WhispererTexture;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> LeapleafTexture;
+    public static final ModConfigSpec.ConfigValue<Boolean> QuickGrowingVineTexture;
+    public static final ModConfigSpec.ConfigValue<Boolean> PoisonQuillVineTexture;
+    public static final ModConfigSpec.ConfigValue<Boolean> WhispererTexture;
+    public static final ModConfigSpec.ConfigValue<Boolean> LeapleafTexture;
 
-    public static final ForgeConfigSpec.ConfigValue<Boolean> WatchlingServantTexture;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> BlastlingServantTexture;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> SnarelingServantTexture;
+    public static final ModConfigSpec.ConfigValue<Boolean> WatchlingServantTexture;
+    public static final ModConfigSpec.ConfigValue<Boolean> BlastlingServantTexture;
+    public static final ModConfigSpec.ConfigValue<Boolean> SnarelingServantTexture;
 
-    public static final ForgeConfigSpec.ConfigValue<Boolean> SquallGolemTexture;
+    public static final ModConfigSpec.ConfigValue<Boolean> SquallGolemTexture;
 
-    public static final ForgeConfigSpec.ConfigValue<Boolean> RedstoneGolemCrack;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> RedstoneGolemTexture;
+    public static final ModConfigSpec.ConfigValue<Boolean> RedstoneGolemCrack;
+    public static final ModConfigSpec.ConfigValue<Boolean> RedstoneGolemTexture;
 
-    public static final ForgeConfigSpec.ConfigValue<Boolean> RedstoneMonstrosityTexture;
+    public static final ModConfigSpec.ConfigValue<Boolean> RedstoneMonstrosityTexture;
 
-    public static final ForgeConfigSpec.ConfigValue<Boolean> HolidaySkins;
+    public static final ModConfigSpec.ConfigValue<Boolean> HolidaySkins;
 
-    public static final ForgeConfigSpec.ConfigValue<Boolean> ServantTeleport;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> VexTeleport;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> ServantRideAutonomous;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> ServantsAttackCreepers;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> ServantsCanWearPumpkin;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> NecroRobeUndead;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> NecroSetDebuff;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> NamelessSetDebuff;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> VariousRobeWitch;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> ServantsMasterImmune;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> OwnerAttackCancel;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> MobSense;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> ServantsHarmEffectApply;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> UndeadMinionHeal;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> WaterMinionHeal;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> NaturalMinionHeal;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> FrostMinionHeal;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> NetherMinionHeal;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> VoidMinionHeal;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> CompatMinionHeal;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> CompatNightmareStalker;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> ServantOwnedServantPlayerBenefit;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> NecromancerSoulJar;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> NecromancerSummonsLife;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> WildfireBlazingHelm;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> WildfireSummonsLife;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> BlackBeastDayStrength;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> BlackBeastChunkLoad;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> BlackBeastHowlingSoul;
+    public static final ModConfigSpec.ConfigValue<Boolean> ServantTeleport;
+    public static final ModConfigSpec.ConfigValue<Boolean> VexTeleport;
+    public static final ModConfigSpec.ConfigValue<Boolean> ServantRideAutonomous;
+    public static final ModConfigSpec.ConfigValue<Boolean> ServantsAttackCreepers;
+    public static final ModConfigSpec.ConfigValue<Boolean> ServantsCanWearPumpkin;
+    public static final ModConfigSpec.ConfigValue<Boolean> NecroRobeUndead;
+    public static final ModConfigSpec.ConfigValue<Boolean> NecroSetDebuff;
+    public static final ModConfigSpec.ConfigValue<Boolean> NamelessSetDebuff;
+    public static final ModConfigSpec.ConfigValue<Boolean> VariousRobeWitch;
+    public static final ModConfigSpec.ConfigValue<Boolean> ServantsMasterImmune;
+    public static final ModConfigSpec.ConfigValue<Boolean> OwnerAttackCancel;
+    public static final ModConfigSpec.ConfigValue<Boolean> MobSense;
+    public static final ModConfigSpec.ConfigValue<Boolean> ServantsHarmEffectApply;
+    public static final ModConfigSpec.ConfigValue<Boolean> UndeadMinionHeal;
+    public static final ModConfigSpec.ConfigValue<Boolean> WaterMinionHeal;
+    public static final ModConfigSpec.ConfigValue<Boolean> NaturalMinionHeal;
+    public static final ModConfigSpec.ConfigValue<Boolean> FrostMinionHeal;
+    public static final ModConfigSpec.ConfigValue<Boolean> NetherMinionHeal;
+    public static final ModConfigSpec.ConfigValue<Boolean> VoidMinionHeal;
+    public static final ModConfigSpec.ConfigValue<Boolean> CompatMinionHeal;
+    public static final ModConfigSpec.ConfigValue<Boolean> CompatNightmareStalker;
+    public static final ModConfigSpec.ConfigValue<Boolean> ServantOwnedServantPlayerBenefit;
+    public static final ModConfigSpec.ConfigValue<Boolean> NecromancerSoulJar;
+    public static final ModConfigSpec.ConfigValue<Boolean> NecromancerSummonsLife;
+    public static final ModConfigSpec.ConfigValue<Boolean> WildfireBlazingHelm;
+    public static final ModConfigSpec.ConfigValue<Boolean> WildfireSummonsLife;
+    public static final ModConfigSpec.ConfigValue<Boolean> BlackBeastDayStrength;
+    public static final ModConfigSpec.ConfigValue<Boolean> BlackBeastChunkLoad;
+    public static final ModConfigSpec.ConfigValue<Boolean> BlackBeastHowlingSoul;
 
-    public static final ForgeConfigSpec.ConfigValue<Boolean> VillagerHate;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> VillagerHateRavager;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> VillagerConvertWarlock;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> VillagerConvertHeretic;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> TraderConvertMaverick;
+    public static final ModConfigSpec.ConfigValue<Boolean> VillagerHate;
+    public static final ModConfigSpec.ConfigValue<Boolean> VillagerHateRavager;
+    public static final ModConfigSpec.ConfigValue<Boolean> VillagerConvertWarlock;
+    public static final ModConfigSpec.ConfigValue<Boolean> VillagerConvertHeretic;
+    public static final ModConfigSpec.ConfigValue<Boolean> TraderConvertMaverick;
 
-    public static final ForgeConfigSpec.ConfigValue<Boolean> IllagerAssault;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> SoulEnergyBadOmen;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> IllagueSpread;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> IllagerSteal;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> IllagerRaid;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> PikerRaid;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> RipperRaid;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> CrusherRaid;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> StormCasterRaid;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> CryologerRaid;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> PreacherRaid;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> ConquillagerRaid;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> InquillagerRaid;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> EnviokerRaid;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> SorcererRaid;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> MinisterRaid;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> HostileRedstoneGolemRaid;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> HostileRedstoneMonstrosityRaid;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> HRMSpawnNoRaiders;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> ArmoredRavagerRaid;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> ArmoredTramplerRaid;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> WarlockRaid;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> MaverickRaid;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> HereticRaid;
+    public static final ModConfigSpec.ConfigValue<Boolean> IllagerAssault;
+    public static final ModConfigSpec.ConfigValue<Boolean> SoulEnergyBadOmen;
+    public static final ModConfigSpec.ConfigValue<Boolean> IllagueSpread;
+    public static final ModConfigSpec.ConfigValue<Boolean> IllagerSteal;
+    public static final ModConfigSpec.ConfigValue<Boolean> IllagerRaid;
+    public static final ModConfigSpec.ConfigValue<Boolean> PikerRaid;
+    public static final ModConfigSpec.ConfigValue<Boolean> RipperRaid;
+    public static final ModConfigSpec.ConfigValue<Boolean> CrusherRaid;
+    public static final ModConfigSpec.ConfigValue<Boolean> StormCasterRaid;
+    public static final ModConfigSpec.ConfigValue<Boolean> CryologerRaid;
+    public static final ModConfigSpec.ConfigValue<Boolean> PreacherRaid;
+    public static final ModConfigSpec.ConfigValue<Boolean> ConquillagerRaid;
+    public static final ModConfigSpec.ConfigValue<Boolean> InquillagerRaid;
+    public static final ModConfigSpec.ConfigValue<Boolean> EnviokerRaid;
+    public static final ModConfigSpec.ConfigValue<Boolean> SorcererRaid;
+    public static final ModConfigSpec.ConfigValue<Boolean> MinisterRaid;
+    public static final ModConfigSpec.ConfigValue<Boolean> HostileRedstoneGolemRaid;
+    public static final ModConfigSpec.ConfigValue<Boolean> HostileRedstoneMonstrosityRaid;
+    public static final ModConfigSpec.ConfigValue<Boolean> HRMSpawnNoRaiders;
+    public static final ModConfigSpec.ConfigValue<Boolean> ArmoredRavagerRaid;
+    public static final ModConfigSpec.ConfigValue<Boolean> ArmoredTramplerRaid;
+    public static final ModConfigSpec.ConfigValue<Boolean> WarlockRaid;
+    public static final ModConfigSpec.ConfigValue<Boolean> MaverickRaid;
+    public static final ModConfigSpec.ConfigValue<Boolean> HereticRaid;
 
-    public static ForgeConfigSpec.ConfigValue<List<? extends Integer>> PikerRaidCount;
-    public static ForgeConfigSpec.ConfigValue<List<? extends Integer>> RipperRaidCount;
-    public static ForgeConfigSpec.ConfigValue<List<? extends Integer>> CrusherRaidCount;
-    public static ForgeConfigSpec.ConfigValue<List<? extends Integer>> StormCasterRaidCount;
-    public static ForgeConfigSpec.ConfigValue<List<? extends Integer>> CryologerRaidCount;
-    public static ForgeConfigSpec.ConfigValue<List<? extends Integer>> PreacherRaidCount;
-    public static ForgeConfigSpec.ConfigValue<List<? extends Integer>> ConquillagerRaidCount;
-    public static ForgeConfigSpec.ConfigValue<List<? extends Integer>> InquillagerRaidCount;
-    public static ForgeConfigSpec.ConfigValue<List<? extends Integer>> EnviokerRaidCount;
-    public static ForgeConfigSpec.ConfigValue<List<? extends Integer>> SorcererRaidCount;
-    public static ForgeConfigSpec.ConfigValue<List<? extends Integer>> MinisterRaidCount;
-    public static ForgeConfigSpec.ConfigValue<List<? extends Integer>> HostileRedstoneGolemRaidCount;
-    public static ForgeConfigSpec.ConfigValue<List<? extends Integer>> HostileRedstoneMonstrosityRaidCount;
-    public static ForgeConfigSpec.ConfigValue<List<? extends Integer>> WarlockRaidCount;
-    public static ForgeConfigSpec.ConfigValue<List<? extends Integer>> MaverickRaidCount;
-    public static ForgeConfigSpec.ConfigValue<List<? extends Integer>> HereticRaidCount;
+    public static ModConfigSpec.ConfigValue<List<? extends Integer>> PikerRaidCount;
+    public static ModConfigSpec.ConfigValue<List<? extends Integer>> RipperRaidCount;
+    public static ModConfigSpec.ConfigValue<List<? extends Integer>> CrusherRaidCount;
+    public static ModConfigSpec.ConfigValue<List<? extends Integer>> StormCasterRaidCount;
+    public static ModConfigSpec.ConfigValue<List<? extends Integer>> CryologerRaidCount;
+    public static ModConfigSpec.ConfigValue<List<? extends Integer>> PreacherRaidCount;
+    public static ModConfigSpec.ConfigValue<List<? extends Integer>> ConquillagerRaidCount;
+    public static ModConfigSpec.ConfigValue<List<? extends Integer>> InquillagerRaidCount;
+    public static ModConfigSpec.ConfigValue<List<? extends Integer>> EnviokerRaidCount;
+    public static ModConfigSpec.ConfigValue<List<? extends Integer>> SorcererRaidCount;
+    public static ModConfigSpec.ConfigValue<List<? extends Integer>> MinisterRaidCount;
+    public static ModConfigSpec.ConfigValue<List<? extends Integer>> HostileRedstoneGolemRaidCount;
+    public static ModConfigSpec.ConfigValue<List<? extends Integer>> HostileRedstoneMonstrosityRaidCount;
+    public static ModConfigSpec.ConfigValue<List<? extends Integer>> WarlockRaidCount;
+    public static ModConfigSpec.ConfigValue<List<? extends Integer>> MaverickRaidCount;
+    public static ModConfigSpec.ConfigValue<List<? extends Integer>> HereticRaidCount;
 
-    public static final ForgeConfigSpec.ConfigValue<Boolean> CryologerIceChunk;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> SorcererHPIncrease;
+    public static final ModConfigSpec.ConfigValue<Boolean> CryologerIceChunk;
+    public static final ModConfigSpec.ConfigValue<Boolean> SorcererHPIncrease;
 
-    public static final ForgeConfigSpec.ConfigValue<Boolean> IllagerServantAutoTrain;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> IllagerServantAllBreed;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> IllagerServantLootVillagers;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> IllagerServantLootTraders;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> IllagerServantPickUpDrops;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> IllagerServantCollectLoot;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> IllagerServantAllOpenDoors;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> IllagerServantGhostArrows;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> IllagerServantTrainArmor;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> IllagerServantChunkLoadMark;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> IllagerServantChunkLoadRaid;
+    public static final ModConfigSpec.ConfigValue<Boolean> IllagerServantAutoTrain;
+    public static final ModConfigSpec.ConfigValue<Boolean> IllagerServantAllBreed;
+    public static final ModConfigSpec.ConfigValue<Boolean> IllagerServantLootVillagers;
+    public static final ModConfigSpec.ConfigValue<Boolean> IllagerServantLootTraders;
+    public static final ModConfigSpec.ConfigValue<Boolean> IllagerServantPickUpDrops;
+    public static final ModConfigSpec.ConfigValue<Boolean> IllagerServantCollectLoot;
+    public static final ModConfigSpec.ConfigValue<Boolean> IllagerServantAllOpenDoors;
+    public static final ModConfigSpec.ConfigValue<Boolean> IllagerServantGhostArrows;
+    public static final ModConfigSpec.ConfigValue<Boolean> IllagerServantTrainArmor;
+    public static final ModConfigSpec.ConfigValue<Boolean> IllagerServantChunkLoadMark;
+    public static final ModConfigSpec.ConfigValue<Boolean> IllagerServantChunkLoadRaid;
 
-    public static final ForgeConfigSpec.ConfigValue<Boolean> MountaineerClimb;
+    public static final ModConfigSpec.ConfigValue<Boolean> MountaineerClimb;
 
-    public static final ForgeConfigSpec.ConfigValue<Boolean> PrisonerMining;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> PrisonerMiningSeeBlocks;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> PrisonerMiningBreakBlocks;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> PrisonerUnshackleDamage;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> PrisonerPickUpPickaxe;
+    public static final ModConfigSpec.ConfigValue<Boolean> PrisonerMining;
+    public static final ModConfigSpec.ConfigValue<Boolean> PrisonerMiningSeeBlocks;
+    public static final ModConfigSpec.ConfigValue<Boolean> PrisonerMiningBreakBlocks;
+    public static final ModConfigSpec.ConfigValue<Boolean> PrisonerUnshackleDamage;
+    public static final ModConfigSpec.ConfigValue<Boolean> PrisonerPickUpPickaxe;
 
-    public static final ForgeConfigSpec.ConfigValue<Boolean> RaiderServantWearArmor;
+    public static final ModConfigSpec.ConfigValue<Boolean> RaiderServantWearArmor;
 
-    public static final ForgeConfigSpec.ConfigValue<Boolean> WightSpawn;
+    public static final ModConfigSpec.ConfigValue<Boolean> WightSpawn;
 
-    public static final ForgeConfigSpec.ConfigValue<Boolean> TallSkullDrops;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> WraithAggressiveTeleport;
+    public static final ModConfigSpec.ConfigValue<Boolean> TallSkullDrops;
+    public static final ModConfigSpec.ConfigValue<Boolean> WraithAggressiveTeleport;
 
-    public static final ForgeConfigSpec.ConfigValue<Boolean> StayingServantChunkLoad;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> GuardingServantChunkLoad;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> FollowingServantChunkLoad;
+    public static final ModConfigSpec.ConfigValue<Boolean> StayingServantChunkLoad;
+    public static final ModConfigSpec.ConfigValue<Boolean> GuardingServantChunkLoad;
+    public static final ModConfigSpec.ConfigValue<Boolean> FollowingServantChunkLoad;
 
-    public static final ForgeConfigSpec.ConfigValue<Boolean> UndeadServantSunlightBurn;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> UndeadServantSunlightHelmet;
+    public static final ModConfigSpec.ConfigValue<Boolean> UndeadServantSunlightBurn;
+    public static final ModConfigSpec.ConfigValue<Boolean> UndeadServantSunlightHelmet;
 
-    public static final ForgeConfigSpec.ConfigValue<Boolean> VizierPersistent;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> VizierMinion;
+    public static final ModConfigSpec.ConfigValue<Boolean> VizierPersistent;
+    public static final ModConfigSpec.ConfigValue<Boolean> VizierMinion;
 
-    public static final ForgeConfigSpec.ConfigValue<Boolean> ApocalypseMode;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> ApostlePersistent;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> ApostleBoilsWater;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> ApostleConvertsVillagers;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> FancierApostleDeath;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> ObsidianMonolithSpread;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> ObsidianMonolithBiome;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> ObsidianMonolithSpawner;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> HellfireFireImmune;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> HellfireFireProtection;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> RedstoneMonstrosityLeafBreak;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> RedstoneCubeBlockFind;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> PlayerRavagerArmorDrop;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> CroneThornDefense;
+    public static final ModConfigSpec.ConfigValue<Boolean> ApocalypseMode;
+    public static final ModConfigSpec.ConfigValue<Boolean> ApostlePersistent;
+    public static final ModConfigSpec.ConfigValue<Boolean> ApostleBoilsWater;
+    public static final ModConfigSpec.ConfigValue<Boolean> ApostleConvertsVillagers;
+    public static final ModConfigSpec.ConfigValue<Boolean> FancierApostleDeath;
+    public static final ModConfigSpec.ConfigValue<Boolean> ObsidianMonolithSpread;
+    public static final ModConfigSpec.ConfigValue<Boolean> ObsidianMonolithBiome;
+    public static final ModConfigSpec.ConfigValue<Boolean> ObsidianMonolithSpawner;
+    public static final ModConfigSpec.ConfigValue<Boolean> HellfireFireImmune;
+    public static final ModConfigSpec.ConfigValue<Boolean> HellfireFireProtection;
+    public static final ModConfigSpec.ConfigValue<Boolean> RedstoneMonstrosityLeafBreak;
+    public static final ModConfigSpec.ConfigValue<Boolean> RedstoneCubeBlockFind;
+    public static final ModConfigSpec.ConfigValue<Boolean> PlayerRavagerArmorDrop;
+    public static final ModConfigSpec.ConfigValue<Boolean> CroneThornDefense;
 
-    public static final ForgeConfigSpec.ConfigValue<Boolean> HostileCryptUndead;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> HostileTerminalEnder;
+    public static final ModConfigSpec.ConfigValue<Boolean> HostileCryptUndead;
+    public static final ModConfigSpec.ConfigValue<Boolean> HostileTerminalEnder;
 
     static {
         BUILDER.push("Textures");
@@ -973,7 +973,7 @@ public class MobsConfig {
         SPEC = BUILDER.build();
     }
 
-    public static void loadConfig(ForgeConfigSpec config, String path) {
+    public static void loadConfig(ModConfigSpec config, String path) {
         final CommentedFileConfig file = CommentedFileConfig.builder(new File(path))
                 .sync()
                 .autosave()

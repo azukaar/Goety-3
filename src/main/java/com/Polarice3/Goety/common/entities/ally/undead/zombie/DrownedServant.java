@@ -27,7 +27,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
-import net.minecraft.world.level.pathfinder.BlockPathTypes;
+import net.minecraft.world.level.pathfinder.PathType;
 import net.minecraft.world.level.pathfinder.Path;
 import net.minecraft.world.phys.Vec3;
 
@@ -40,8 +40,8 @@ public class DrownedServant extends ZombieServant implements RangedAttackMob {
         super(type, worldIn);
         this.setMaxUpStep(1.0F);
         this.moveControl = new MoveHelperController(this);
-        this.setPathfindingMalus(BlockPathTypes.WATER, 0.0F);
-        this.setPathfindingMalus(BlockPathTypes.WATER_BORDER, 0.0F);
+        this.setPathfindingMalus(PathType.WATER, 0.0F);
+        this.setPathfindingMalus(PathType.WATER_BORDER, 0.0F);
         this.waterNavigation = new ModWaterPathNavigation(this, worldIn);
         this.groundNavigation = new GroundPathNavigation(this, worldIn);
     }

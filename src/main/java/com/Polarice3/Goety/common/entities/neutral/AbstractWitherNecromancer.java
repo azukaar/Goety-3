@@ -39,7 +39,7 @@ import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.pathfinder.BlockPathTypes;
+import net.minecraft.world.level.pathfinder.PathType;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 
@@ -50,7 +50,7 @@ public class AbstractWitherNecromancer extends AbstractNecromancer {
 
     public AbstractWitherNecromancer(EntityType<? extends AbstractNecromancer> type, Level level) {
         super(type, level);
-        this.setPathfindingMalus(BlockPathTypes.LAVA, 8.0F);
+        this.setPathfindingMalus(PathType.LAVA, 8.0F);
     }
 
     public void projectileGoal(int priority){

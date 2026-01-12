@@ -38,10 +38,9 @@ import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
-import net.minecraft.world.level.pathfinder.BlockPathTypes;
+import net.minecraft.world.level.pathfinder.PathType;
 import net.minecraft.world.level.pathfinder.Path;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.fluids.FluidType;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3f;
 
@@ -55,8 +54,8 @@ public class SunkenSkeletonServant extends AbstractSkeletonServant implements Cr
     public SunkenSkeletonServant(EntityType<? extends Summoned> type, Level worldIn) {
         super(type, worldIn);
         this.moveControl = new MoveHelperController(this);
-        this.setPathfindingMalus(BlockPathTypes.WATER, 0.0F);
-        this.setPathfindingMalus(BlockPathTypes.WATER_BORDER, 0.0F);
+        this.setPathfindingMalus(PathType.WATER, 0.0F);
+        this.setPathfindingMalus(PathType.WATER_BORDER, 0.0F);
         this.waterNavigation = new ModWaterPathNavigation(this, worldIn);
         this.groundNavigation = new GroundPathNavigation(this, worldIn);
     }
@@ -130,10 +129,6 @@ public class SunkenSkeletonServant extends AbstractSkeletonServant implements Cr
     @Override
     protected SoundEvent getStepSound() {
         return this.isInWater() ? ModSounds.SUNKEN_SKELETON_STEP.get() : SoundEvents.SKELETON_STEP;
-    }
-
-    public boolean isPushedByFluid(FluidType type) {
-        return !this.isSwimming();
     }
 
     public boolean checkSpawnObstruction(LevelReader pLevel) {

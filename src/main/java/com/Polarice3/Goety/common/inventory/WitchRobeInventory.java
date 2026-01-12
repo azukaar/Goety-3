@@ -31,7 +31,7 @@ import net.minecraft.world.level.Level;
 import javax.annotation.Nullable;
 import java.util.Arrays;
 
-import static net.minecraftforge.common.brewing.BrewingRecipeRegistry.canBrew;
+// NeoForge 1.21+ no longer exposes the old static BrewingRecipeRegistry helpers used by Forge-era code.
 
 /**
  * Code based from @cnlimiter's Portable-Craft mod
@@ -203,47 +203,12 @@ public class WitchRobeInventory extends SimpleContainer implements MenuProvider 
     }
 
     public boolean isBrewable() {
-        ItemStack itemstack = this.items.get(3);
-        if (!itemstack.isEmpty())
-            return canBrew(items, itemstack, SLOTS_FOR_SIDES);
-        if (itemstack.isEmpty()) {
-            return false;
-        } else if (!PotionBrewing.isIngredient(itemstack)) {
-            return false;
-        } else {
-            for (int i = 0; i < 3; ++i) {
-                ItemStack itemstack1 = this.items.get(i);
-                if (!itemstack1.isEmpty() && PotionBrewing.hasMix(itemstack1, itemstack)) {
-                    return true;
-                }
-            }
-
-            return false;
-        }
+        // TODO(1.21): Port brewing logic to the new PotionBrewing/BrewingRecipeRegistry APIs.
+        return false;
     }
 
     private void doBrew() {
-        if (net.minecraftforge.event.ForgeEventFactory.onPotionAttemptBrew(items)) {
-            return;
-        }
-        ItemStack itemstack = this.items.get(3);
-
-        net.minecraftforge.common.brewing.BrewingRecipeRegistry.brewPotions(items, itemstack, SLOTS_FOR_SIDES);
-        net.minecraftforge.event.ForgeEventFactory.onPotionBrewed(items);
-        if (itemstack.hasCraftingRemainingItem()) {
-            ItemStack itemstack1 = itemstack.getCraftingRemainingItem();
-            itemstack.shrink(1);
-            if (itemstack.isEmpty()) {
-                itemstack = itemstack1;
-            }
-
-        } else {
-            itemstack.shrink(1);
-        }
-
-        this.playSound(SoundEvents.BREWING_STAND_BREW);
-
-        this.items.set(3, itemstack);
+        // TODO(1.21): Port brewing logic to the new PotionBrewing/BrewingRecipeRegistry APIs.
     }
 
     public static boolean isAirOrEmpty(ItemStack itemStack){
@@ -407,13 +372,13 @@ public class WitchRobeInventory extends SimpleContainer implements MenuProvider 
     @Override
     public boolean canPlaceItem(int pIndex, ItemStack pStack) {
         if (pIndex == 3) {
-            return net.minecraftforge.common.brewing.BrewingRecipeRegistry.isValidIngredient(pStack);
+            return net.neoforged.common.brewing.BrewingRecipeRegistry.isValidIngredient(pStack);
         } else {
             Item item = pStack.getItem();
             if (pIndex == 4) {
                 return item == Items.BLAZE_POWDER;
             } else {
-                return net.minecraftforge.common.brewing.BrewingRecipeRegistry.isValidInput(pStack) && this.getItem(pIndex).isEmpty();
+                return net.neoforged.common.brewing.BrewingRecipeRegistry.isValidInput(pStack) && this.getItem(pIndex).isEmpty();
             }
         }
     }

@@ -7,14 +7,12 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.*;
 import net.minecraft.client.renderer.LightTexture;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleType;
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.Vec3;
-
-import java.util.Locale;
 
 public class FollowFireParticle extends TextureSheetParticle {
    public final int ownerId;
@@ -80,34 +78,15 @@ public class FollowFireParticle extends TextureSheetParticle {
    }
 
    public static class Option implements ParticleOptions {
-      public static final Codec<Option> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+      public static final com.mojang.serialization.MapCodec<Option> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
               Codec.INT.fieldOf("ownerId").forGetter(d -> d.ownerId)
       ).apply(instance, Option::new));
-
-      public static final Deserializer<Option> DESERIALIZER = new Deserializer<Option>() {
-         public Option fromCommand(ParticleType<Option> particleTypeIn, StringReader reader) throws CommandSyntaxException {
-            reader.expect(' ');
-            int ownerId = reader.readInt();
-            return new Option(ownerId);
-         }
-
-         public Option fromNetwork(ParticleType<Option> particleTypeIn, FriendlyByteBuf buffer) {
-            return new Option(buffer.readInt());
-         }
-      };
+      public static final StreamCodec<RegistryFriendlyByteBuf, Option> STREAM_CODEC =
+              StreamCodec.of((buf, value) -> buf.writeInt(value.ownerId), buf -> new Option(buf.readInt()));
       private final int ownerId;
 
       public Option(int ownerId) {
          this.ownerId = ownerId;
-      }
-
-      public void writeToNetwork(FriendlyByteBuf buffer) {
-         buffer.writeInt(this.ownerId);
-      }
-
-      public String writeToString() {
-         return String.format(Locale.ROOT, "%s %d",
-                 BuiltInRegistries.PARTICLE_TYPE.getKey(this.getType()), this.ownerId);
       }
 
       public ParticleType<Option> getType() {

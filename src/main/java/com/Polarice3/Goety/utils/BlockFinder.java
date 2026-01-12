@@ -56,10 +56,10 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.minecraftforge.common.Tags;
-import net.minecraftforge.common.UsernameCache;
-import net.minecraftforge.common.util.FakePlayer;
-import net.minecraftforge.common.util.FakePlayerFactory;
+import net.neoforged.neoforge.common.Tags;
+import net.neoforged.neoforge.common.UsernameCache;
+import net.neoforged.neoforge.common.util.FakePlayer;
+import net.neoforged.neoforge.common.util.FakePlayerFactory;
 
 import javax.annotation.Nullable;
 import java.util.*;
@@ -1009,7 +1009,7 @@ public class BlockFinder {
 
             if (flag1) {
                 AABB aabb = entity.getBoundingBox().move(x, d3, z);
-                net.minecraftforge.event.entity.EntityTeleportEvent.EnderEntity event = net.minecraftforge.event.ForgeEventFactory.onEnderTeleport(entity, x, d3, z);
+                net.neoforged.event.entity.EntityTeleportEvent.EnderEntity event = new net.neoforged.event.entity.EntityTeleportEvent.EnderEntity(this, this.getX(), this.getY(), this.getZ()); net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(event);
                 if (event.isCanceled()) return false;
                 if (level.noCollision(aabb) && !level.containsAnyLiquid(aabb)) {
                     flag = true;
@@ -1091,7 +1091,7 @@ public class BlockFinder {
             }
 
             GameType type = player.getAbilities().instabuild ? GameType.CREATIVE : GameType.SURVIVAL;
-            int exp = net.minecraftforge.common.ForgeHooks.onBlockBreakEvent(world, type, player, pos);
+            int exp = net.neoforged.common.ForgeHooks.onBlockBreakEvent(world, type, player, pos);
             if (exp == -1) {
                 return false;
             } else {
@@ -1109,7 +1109,7 @@ public class BlockFinder {
                     boolean canHarvest = blockstate.canHarvestBlock(world, pos, player);
                     mainhand.mineBlock(world, blockstate, pos, player);
                     if (mainhand.isEmpty() && !itemstack1.isEmpty()) {
-                        net.minecraftforge.event.ForgeEventFactory.onPlayerDestroyItem(player, itemstack1, InteractionHand.MAIN_HAND);
+                        net.neoforged.event.EventFactory.onPlayerDestroyItem(player, itemstack1, InteractionHand.MAIN_HAND);
                     }
 
                     boolean removed = removeBlock(world, player, pos, canHarvest);

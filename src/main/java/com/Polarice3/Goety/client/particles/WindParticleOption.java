@@ -1,50 +1,39 @@
 package com.Polarice3.Goety.client.particles;
 
 import com.Polarice3.Goety.utils.ColorUtil;
-import com.mojang.brigadier.StringReader;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleType;
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.network.FriendlyByteBuf;
-
-import java.util.Locale;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 
 public class WindParticleOption implements ParticleOptions {
-    public static final Codec<WindParticleOption> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-            Codec.FLOAT.fieldOf("red").forGetter(d -> d.red),
-            Codec.FLOAT.fieldOf("green").forGetter(d -> d.green),
-            Codec.FLOAT.fieldOf("blue").forGetter(d -> d.blue),
-            Codec.FLOAT.fieldOf("width").forGetter(d -> d.width),
-            Codec.FLOAT.fieldOf("height").forGetter(d -> d.height),
-            Codec.INT.fieldOf("life").forGetter(d -> d.life),
-            Codec.INT.fieldOf("ownerId").forGetter(d -> d.ownerId)
+    public static final MapCodec<WindParticleOption> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
+            com.mojang.serialization.Codec.FLOAT.fieldOf("red").forGetter(d -> d.red),
+            com.mojang.serialization.Codec.FLOAT.fieldOf("green").forGetter(d -> d.green),
+            com.mojang.serialization.Codec.FLOAT.fieldOf("blue").forGetter(d -> d.blue),
+            com.mojang.serialization.Codec.FLOAT.fieldOf("width").forGetter(d -> d.width),
+            com.mojang.serialization.Codec.FLOAT.fieldOf("height").forGetter(d -> d.height),
+            com.mojang.serialization.Codec.INT.fieldOf("life").forGetter(d -> d.life),
+            com.mojang.serialization.Codec.INT.fieldOf("ownerId").forGetter(d -> d.ownerId)
     ).apply(instance, WindParticleOption::new));
-    public static final Deserializer<WindParticleOption> DESERIALIZER = new Deserializer<WindParticleOption>() {
-        public WindParticleOption fromCommand(ParticleType<WindParticleOption> particleTypeIn, StringReader reader) throws CommandSyntaxException {
-            reader.expect(' ');
-            float red = reader.readFloat();
-            reader.expect(' ');
-            float green = reader.readFloat();
-            reader.expect(' ');
-            float blue = reader.readFloat();
-            reader.expect(' ');
-            float width = reader.readFloat();
-            reader.expect(' ');
-            float height = reader.readFloat();
-            reader.expect(' ');
-            int life = reader.readInt();
-            reader.expect(' ');
-            int ownerId = reader.readInt();
-            return new WindParticleOption(red, green, blue, width, height, life, ownerId);
-        }
-
-        public WindParticleOption fromNetwork(ParticleType<WindParticleOption> particleTypeIn, FriendlyByteBuf buffer) {
-            return new WindParticleOption(buffer.readFloat(), buffer.readFloat(), buffer.readFloat(), buffer.readFloat(), buffer.readFloat(), buffer.readInt(), buffer.readInt());
-        }
-    };
+    public static final StreamCodec<RegistryFriendlyByteBuf, WindParticleOption> STREAM_CODEC = StreamCodec.of(
+            (buf, value) -> {
+                buf.writeFloat(value.red);
+                buf.writeFloat(value.green);
+                buf.writeFloat(value.blue);
+                buf.writeFloat(value.width);
+                buf.writeFloat(value.height);
+                buf.writeInt(value.life);
+                buf.writeInt(value.ownerId);
+            },
+            buf -> new WindParticleOption(
+                    buf.readFloat(), buf.readFloat(), buf.readFloat(),
+                    buf.readFloat(), buf.readFloat(),
+                    buf.readInt(), buf.readInt()
+            )
+    );
     private final float red;
     private final float green;
     private final float blue;
@@ -91,21 +80,6 @@ public class WindParticleOption implements ParticleOptions {
         this.height = height;
         this.life = 0;
         this.ownerId = ownerId;
-    }
-
-    public void writeToNetwork(FriendlyByteBuf buffer) {
-        buffer.writeFloat(this.red);
-        buffer.writeFloat(this.green);
-        buffer.writeFloat(this.blue);
-        buffer.writeFloat(this.width);
-        buffer.writeFloat(this.height);
-        buffer.writeInt(this.life);
-        buffer.writeInt(this.ownerId);
-    }
-
-    public String writeToString() {
-        return String.format(Locale.ROOT, "%s %.2f %.2f %.2f %.2f %.2f %d %d",
-                BuiltInRegistries.PARTICLE_TYPE.getKey(this.getType()), this.red, this.green, this.blue, this.width, this.height, this.life, this.ownerId);
     }
 
     public ParticleType<WindParticleOption> getType() {

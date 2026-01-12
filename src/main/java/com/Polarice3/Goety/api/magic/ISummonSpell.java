@@ -19,16 +19,16 @@ public interface ISummonSpell extends ISpell{
     void commonResult(ServerLevel worldIn, LivingEntity entityLiving);
 
     default boolean hasSummonDown(LivingEntity caster){
-        return caster.hasEffect(GoetyEffects.SUMMON_DOWN.get());
+        return caster.hasEffect(GoetyEffects.SUMMON_DOWN.getHolder());
     }
 
     default void SummonSap(LivingEntity owner, LivingEntity summonedEntity){
         if (owner != null && summonedEntity != null) {
             if (this.hasSummonDown(owner)) {
-                MobEffectInstance effectinstance = owner.getEffect(GoetyEffects.SUMMON_DOWN.get());
+                MobEffectInstance effectinstance = owner.getEffect(GoetyEffects.SUMMON_DOWN.getHolder());
                 if (effectinstance != null) {
                     summonedEntity.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, EffectsUtil.infiniteEffect(), effectinstance.getAmplifier()));
-                    summonedEntity.addEffect(new MobEffectInstance(GoetyEffects.SAPPED.get(), EffectsUtil.infiniteEffect(), effectinstance.getAmplifier() + 4));
+                    summonedEntity.addEffect(new MobEffectInstance(GoetyEffects.SAPPED.getHolder(), EffectsUtil.infiniteEffect(), effectinstance.getAmplifier() + 4));
                 }
                 for (ItemStack itemStack : summonedEntity.getAllSlots()){
                     if (itemStack.isDamageableItem()){
@@ -41,11 +41,11 @@ public interface ISummonSpell extends ISpell{
     }
 
     default void SummonDown(LivingEntity entityLiving){
-        MobEffectInstance effectinstance1 = entityLiving.getEffect(GoetyEffects.SUMMON_DOWN.get());
+        MobEffectInstance effectinstance1 = entityLiving.getEffect(GoetyEffects.SUMMON_DOWN.getHolder());
         int i = 1;
         if (effectinstance1 != null) {
             i += effectinstance1.getAmplifier();
-            entityLiving.removeEffectNoUpdate(GoetyEffects.SUMMON_DOWN.get());
+            entityLiving.removeEffectNoUpdate(GoetyEffects.SUMMON_DOWN.getHolder());
         } else {
             --i;
         }
@@ -57,7 +57,7 @@ public interface ISummonSpell extends ISpell{
                 s = (int) (SummonDownDuration() * 1.5);
             }
         }
-        MobEffectInstance effectinstance = new MobEffectInstance(GoetyEffects.SUMMON_DOWN.get(), s, i, false, false, true);
+        MobEffectInstance effectinstance = new MobEffectInstance(GoetyEffects.SUMMON_DOWN.getHolder(), s, i, false, false, true);
         entityLiving.addEffect(effectinstance);
     }
 

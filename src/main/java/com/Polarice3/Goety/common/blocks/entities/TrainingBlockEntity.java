@@ -33,8 +33,8 @@ import net.minecraft.world.level.gameevent.GameEventListener;
 import net.minecraft.world.level.gameevent.PositionSource;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.event.ForgeEventFactory;
-import net.minecraftforge.registries.ForgeRegistries;
+
+import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -118,7 +118,7 @@ public abstract class TrainingBlockEntity extends OwnedBlockEntity implements IT
                                             mob.yHeadRot = mob.getYRot();
                                             mob.yBodyRot = mob.getYRot();
                                             mob.spawnAnim();
-                                            ForgeEventFactory.onFinalizeSpawn(mob, serverLevel, serverLevel.getCurrentDifficultyAt(blockPos), MobSpawnType.MOB_SUMMONED, null, null);
+                                            net.neoforged.neoforge.event.EventHooks.onFinalizeSpawn(mob, serverLevel, serverLevel.getCurrentDifficultyAt(blockPos), MobSpawnType.MOB_SUMMONED, null, null);
                                         }
                                         if (entity instanceof IServant servant){
                                             if (this.isGuarding()) {
@@ -200,7 +200,7 @@ public abstract class TrainingBlockEntity extends OwnedBlockEntity implements IT
     }
 
     public void setEntityType(EntityType<?> p_45463_) {
-        ResourceLocation location = ForgeRegistries.ENTITY_TYPES.getKey(p_45463_);
+        ResourceLocation location = NeoForgeRegistries.ENTITY_TYPES.getKey(p_45463_);
         this.entityToSpawn.putString("id", location != null ? location.toString() : "minecraft:pig");
     }
 

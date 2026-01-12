@@ -9,7 +9,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import java.util.Map;
 import java.util.function.Supplier;
 
-public enum GolemType implements net.minecraftforge.common.IExtensibleEnum {
+public enum GolemType {
     NONE(null, null),
     WHISPERER(Blocks.MOSS_BLOCK::defaultBlockState, new WhispererMold()),
     LEAPLEAF(ModBlocks.OVERGROWN_ROOTS.get()::defaultBlockState, new LeapleafMold()),
@@ -49,3 +49,4 @@ public enum GolemType implements net.minecraftforge.common.IExtensibleEnum {
         return list;
     }
 }
+

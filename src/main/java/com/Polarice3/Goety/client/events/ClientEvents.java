@@ -103,25 +103,22 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.*;
-import net.minecraftforge.client.gui.overlay.ForgeGui;
-import net.minecraftforge.client.gui.overlay.VanillaGuiOverlay;
-import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.event.entity.EntityJoinLevelEvent;
-import net.minecraftforge.event.entity.living.LivingEntityUseItemEvent;
-import net.minecraftforge.event.entity.living.LivingEvent;
-import net.minecraftforge.eventbus.api.EventPriority;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.network.PacketDistributor;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.neoforge.client.event.*;
+import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
+import net.neoforged.neoforge.event.tick.EntityTickEvent;
+import net.neoforged.neoforge.event.tick.PlayerTickEvent;
+import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
+import net.neoforged.neoforge.event.entity.living.LivingEntityUseItemEvent;
+import net.neoforged.neoforge.event.entity.living.LivingEvent;
+import net.neoforged.bus.api.EventPriority;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.neoforge.network.PacketDistributor;
 import org.lwjgl.glfw.GLFW;
-import top.theillusivec4.curios.api.CuriosApi;
-import top.theillusivec4.curios.api.SlotResult;
 
 import java.util.*;
 
-@Mod.EventBusSubscriber(modid = Goety.MOD_ID, value = Dist.CLIENT)
 public class ClientEvents {
 
     @SubscribeEvent
@@ -190,19 +187,18 @@ public class ClientEvents {
     public static float PARTIAL_TICK = 0;
 
     @SubscribeEvent
-    public static void renderTick(TickEvent.RenderTickEvent event){
-        if (event.phase == TickEvent.Phase.START){
-            PARTIAL_TICK = event.renderTickTime;
-        }
+    public static void renderTick(RenderFrameEvent.Pre event){
+        PARTIAL_TICK = event.getPartialTick().getGameTimeDeltaPartialTick(false);
     }
 
     @SubscribeEvent
-    public static void onPlayerTick(TickEvent.PlayerTickEvent event){
-        if (SEHelper.hasCamera(event.player)){
-            event.player.turn(0.0F, 0.0F);
-            event.player.xxa = 0.0F;
-            event.player.zza = 0.0F;
-            event.player.setJumping(false);
+    public static void onPlayerTick(PlayerTickEvent.Pre event){
+        Player player = event.getEntity();
+        if (SEHelper.hasCamera(player)){
+            player.turn(0.0F, 0.0F);
+            player.xxa = 0.0F;
+            player.zza = 0.0F;
+            player.setJumping(false);
         }
     }
 
@@ -237,7 +233,7 @@ public class ClientEvents {
     }
 
     @SubscribeEvent
-    public static void onEntityTick(LivingEvent.LivingTickEvent event){
+    public static void onEntityTick(EntityTickEvent.Post event){
         Entity entity = event.getEntity();
         if (entity.level instanceof ClientLevel){
             Minecraft minecraft = Minecraft.getInstance();
@@ -358,17 +354,8 @@ public class ClientEvents {
             return;
         }
 
-        Optional<SlotResult> slotResult = CuriosApi.getCuriosInventory(event.getPlayer()).map(inv -> inv.findFirstCurio(itemStack -> itemStack.getItem() instanceof GloveItem))
-                .orElse(Optional.empty());
-        if (slotResult.isPresent()) {
-            ItemStack itemStack = slotResult.get().stack();
-            if (slotResult.get().slotContext().visible()) {
-                WearRenderer renderer = WearRenderer.getRenderer(itemStack);
-                if (renderer != null) {
-                    renderer.renderFirstPersonArm(event.getPoseStack(), event.getMultiBufferSource(), event.getPackedLight(), event.getPlayer(), event.getArm(), itemStack.hasFoil());
-                }
-            }
-        }
+        // Curios is currently not on the compile classpath for the 1.21.1 NeoForge port.
+        // TODO: Restore via optional (reflection) integration when Curios 1.21.1 is available.
     }
 
     @SubscribeEvent
@@ -423,23 +410,23 @@ public class ClientEvents {
     }
 
     @SubscribeEvent
-    public static void renderLichHUD(final RenderGuiOverlayEvent.Pre event) {
+    public static void renderLichHUD(final RenderGuiLayerEvent.Pre event) {
         Minecraft minecraft = Minecraft.getInstance();
         final Player player = minecraft.player;
 
         if (LichdomHelper.isLich(player)){
-            if (event.getOverlay().id() == VanillaGuiOverlay.FOOD_LEVEL.id()){
+            if (event.getName().equals(VanillaGuiLayers.FOOD_LEVEL)){
                 event.setCanceled(true);
             }
         }
     }
 
     @SubscribeEvent
-    public static void renderArcaAmount(final RenderGuiOverlayEvent.Post event) {
+    public static void renderArcaAmount(final RenderGuiLayerEvent.Post event) {
         Minecraft minecraft = Minecraft.getInstance();
         final Player player = minecraft.player;
 
-        if (player != null && event.getOverlay().id().equals(VanillaGuiOverlay.CROSSHAIR.id())) {
+        if (player != null && event.getName().equals(VanillaGuiLayers.CROSSHAIR)) {
             HitResult hitResult = minecraft.hitResult;
             Font fontRenderer = minecraft.font;
             PoseStack poseStack = event.getGuiGraphics().pose();
@@ -733,175 +720,44 @@ public class ClientEvents {
         }
     }
 
-    @SubscribeEvent
-    public static void RenderHealthBarPre(RenderGuiOverlayEvent.Pre event) {
-        if (event.getOverlay().id() != VanillaGuiOverlay.PLAYER_HEALTH.id()) {
-            return;
-        }
-        Minecraft minecraft = Minecraft.getInstance();
-        Player player = minecraft.player;
-        if (player == null){
-            return;
-        }
-
-        if (minecraft.gui instanceof ForgeGui gui) {
-            if (!minecraft.options.hideGui && gui.shouldDrawSurvivalElements()
-                    && (player.hasEffect(GoetyEffects.SPASMS.get())
-                    || player.hasEffect(GoetyEffects.CURSED.get())
-                    || player.hasEffect(GoetyEffects.ACID_VENOM.get()))) {
-                setHearts(event);
-            }
-        }
-
-    }
-
-    private static final ResourceLocation CUSTOM_HEARTS = Goety.location("textures/gui/custom_hearts.png");
-
-    private static int lastHealth;
-    private static int displayHealth;
-    private static long lastHealthTime;
-    private static long healthBlinkTime;
-
-    private static void setHearts(RenderGuiOverlayEvent.Pre event) {
-        Player player = Minecraft.getInstance().player;
-        Minecraft mc = Minecraft.getInstance();
-        if (player == null){
-            return;
-        }
-        ForgeGui gui = (ForgeGui)mc.gui;
-        GuiGraphics stack = event.getGuiGraphics();
-        gui.setupOverlayRenderState(true, false);
-        int width = event.getWindow().getGuiScaledWidth();
-        int height = event.getWindow().getGuiScaledHeight();
-        event.setCanceled(true);
-        RenderSystem.setShaderTexture(0, CUSTOM_HEARTS);
-        RenderSystem.enableBlend();
-        int health = Mth.ceil(player.getHealth());
-        int tickCount = gui.getGuiTicks();
-        boolean highlight = healthBlinkTime > (long)tickCount && (healthBlinkTime - (long)tickCount) / 3L % 2L == 1L;
-        if (health < lastHealth && player.invulnerableTime > 0) {
-            lastHealthTime = Util.getMillis();
-            healthBlinkTime = (long)(tickCount + 20);
-        } else if (health > lastHealth && player.invulnerableTime > 0) {
-            lastHealthTime = Util.getMillis();
-            healthBlinkTime = (long)(tickCount + 10);
-        }
-
-        if (Util.getMillis() - lastHealthTime > 1000L) {
-            lastHealth = health;
-            displayHealth = health;
-            lastHealthTime = Util.getMillis();
-        }
-
-        lastHealth = health;
-        int healthLast = displayHealth;
-        float healthMax = (float) player.getAttributeValue(Attributes.MAX_HEALTH);
-        int absorption = Mth.ceil(player.getAbsorptionAmount());
-        int healthRows = Mth.ceil((healthMax + (float)absorption) / 2.0F / 10.0F);
-        int rowHeight = Math.max(10 - (healthRows - 2), 3);
-        Random random = new Random();
-        random.setSeed((long)tickCount * 312871L);
-        int left = width / 2 - 91;
-        int top = height - gui.leftHeight;
-        gui.leftHeight += healthRows * rowHeight;
-        if (rowHeight != 10) {
-            gui.leftHeight += 10 - rowHeight;
-        }
-
-        int regen = -1;
-        if (player.hasEffect(MobEffects.REGENERATION)) {
-            regen = tickCount % Mth.ceil(healthMax + 5.0F);
-        }
-
-        int TOP = player.level().getLevelData().isHardcore() ? 9 : 0;
-        if (highlight){
-            TOP = player.level().getLevelData().isHardcore() ? 27 : 18;
-        }
-        int BACKGROUND = highlight ? 25 : 16;
-        int heartX = 0;
-        if (player.hasEffect(GoetyEffects.CURSED.get())){
-            heartX = 52;
-        } else if (player.hasEffect(GoetyEffects.ACID_VENOM.get())){
-            heartX = 70;
-        } else if (player.hasEffect(GoetyEffects.SPASMS.get())){
-            heartX = 34;
-        }
-        float absorptionRemaining = (float)absorption;
-
-        for(int i = Mth.ceil((healthMax + (float)absorption) / 2.0F) - 1; i >= 0; --i) {
-            int row = Mth.ceil((float)(i + 1) / 10.0F) - 1;
-            int x = left + i % 10 * 8;
-            int y = top - row * rowHeight;
-            if (health <= 4) {
-                y += random.nextInt(2);
-            }
-
-            if (i == regen) {
-                y -= 2;
-            }
-
-            stack.blit(CUSTOM_HEARTS, x, y, BACKGROUND, TOP, 9, 9);
-            if (highlight) {
-                if (i * 2 + 1 < healthLast) {
-                    stack.blit(CUSTOM_HEARTS, x, y, heartX, TOP, 9, 9);
-                } else if (i * 2 + 1 == healthLast) {
-                    stack.blit(CUSTOM_HEARTS, x, y, heartX + 9, TOP, 9, 9);
-                }
-            }
-
-            if (absorptionRemaining > 0.0F) {
-                if (absorptionRemaining == (float)absorption && (float)absorption % 2.0F == 1.0F) {
-                    stack.blit(CUSTOM_HEARTS, x, y, heartX + 9, TOP, 9, 9);
-                    --absorptionRemaining;
-                } else {
-                    stack.blit(CUSTOM_HEARTS, x, y, heartX, TOP, 9, 9);
-                    absorptionRemaining -= 2.0F;
-                }
-            } else if (i * 2 + 1 < health) {
-                stack.blit(CUSTOM_HEARTS, x, y, heartX, TOP, 9, 9);
-            } else if (i * 2 + 1 == health) {
-                stack.blit(CUSTOM_HEARTS, x, y, heartX + 9, TOP, 9, 9);
-            }
-        }
-
-        RenderSystem.disableBlend();
-        RenderSystem.setShaderTexture(0, CUSTOM_HEARTS);
-    }
-
+    // Custom heart rendering used the pre-1.21 overlay API (RenderGuiOverlayEvent/NeoForgeGui).
+    // NeoForge 21.1+ uses GUI layers (RegisterGuiLayersEvent/RenderGuiLayerEvent) and vanilla GUI internals.
+    // TODO(1.21): port if needed.
     private static boolean prevJumpBindState = false;
 
     @SubscribeEvent
-    public static void TickEvents(TickEvent.ClientTickEvent event) {
-        if (event.phase == TickEvent.Phase.START){
-            CustomItemsRenderer.incrementTick();
-        } else {
-            Minecraft minecraft = Minecraft.getInstance();
+    public static void TickEventsPre(ClientTickEvent.Pre event) {
+        CustomItemsRenderer.incrementTick();
+    }
 
-            if (minecraft.player != null){
-                Player player = minecraft.player;
-                Wight wight = Wight.findWight(player);
-                if (wight != null) {
-                    if (MobUtil.isPlayerLookingTowards(player, minecraft.options.fov().get().floatValue(), wight)){
-                        wight.lookTime += 1;
+    @SubscribeEvent
+    public static void TickEventsPost(ClientTickEvent.Post event) {
+        Minecraft minecraft = Minecraft.getInstance();
 
-                        if (wight.lookTime >= MathHelper.secondsToTicks(3)){
-                            if (wight.lookTime % 20 == 0 && wight.getRandom().nextInt(8) == 0) {
-                                wight.lookTime = 0;
-                                ModNetwork.INSTANCE.send(PacketDistributor.SERVER.noArg(), new CTargetPlayerPacket(wight));
-                            }
-                        }
-                    } else {
-                        if (wight.lookTime > 0){
-                            wight.lookTime -= 1;
+        if (minecraft.player != null){
+            Player player = minecraft.player;
+            Wight wight = Wight.findWight(player);
+            if (wight != null) {
+                if (MobUtil.isPlayerLookingTowards(player, minecraft.options.fov().get().floatValue(), wight)){
+                    wight.lookTime += 1;
+
+                    if (wight.lookTime >= MathHelper.secondsToTicks(3)){
+                        if (wight.lookTime % 20 == 0 && wight.getRandom().nextInt(8) == 0) {
+                            wight.lookTime = 0;
+                            ModNetwork.INSTANCE.send(PacketDistributor.SERVER.noArg(), new CTargetPlayerPacket(wight));
                         }
                     }
+                } else {
+                    if (wight.lookTime > 0){
+                        wight.lookTime -= 1;
+                    }
                 }
-                if (minecraft.options.keyJump.isDown() && !prevJumpBindState && !player.isInWater() && SEHelper.getTicksInAir(player) > 2 && !player.isCreative() && !player.isSpectator() && !player.isPassenger()) {
-                    ModNetwork.sendToServer(new CMultiJumpPacket());
-                    SEHelper.doubleJump(player);
-                }
-                prevJumpBindState = minecraft.options.keyJump.isDown();
             }
+            if (minecraft.options.keyJump.isDown() && !prevJumpBindState && !player.isInWater() && SEHelper.getTicksInAir(player) > 2 && !player.isCreative() && !player.isSpectator() && !player.isPassenger()) {
+                ModNetwork.sendToServer(new CMultiJumpPacket());
+                SEHelper.doubleJump(player);
+            }
+            prevJumpBindState = minecraft.options.keyJump.isDown();
         }
     }
 
@@ -937,11 +793,7 @@ public class ClientEvents {
     private static boolean toolMenuKeyWasDown = false;
 
     @SubscribeEvent
-    public static void handleKeys(TickEvent.ClientTickEvent event) {
-        if (event.phase != TickEvent.Phase.START) {
-            return;
-        }
-
+    public static void handleKeys(ClientTickEvent.Pre event) {
         Minecraft minecraft = Minecraft.getInstance();
 
         if (minecraft.screen == null && ModKeybindings.wandCircle() != null && ModKeybindings.brewCircle() != null) {

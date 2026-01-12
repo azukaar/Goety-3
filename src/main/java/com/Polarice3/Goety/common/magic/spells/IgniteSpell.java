@@ -18,7 +18,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.item.enchantment.Enchantment;
-import net.minecraftforge.common.ForgeMod;
+import net.neoforged.neoforge.common.NeoForgeMod;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,8 +47,8 @@ public class IgniteSpell extends BlockSpell implements ITouchSpell {
     }
 
     public InteractionResult interact(ServerLevel worldIn, LivingEntity caster){
-        double d0 = caster.getAttributeValue(ForgeMod.BLOCK_REACH.get());
-        double entityReach = caster.getAttributeValue(ForgeMod.ENTITY_REACH.get());
+        double d0 = caster.getAttributeValue(NeoForgeMod.BLOCK_REACH.get());
+        double entityReach = caster.getAttributeValue(NeoForgeMod.ENTITY_REACH.get());
         return Items.FIRE_CHARGE.useOn(new UseOnContext(worldIn, null, caster.getUsedItemHand(), new ItemStack(Items.FIRE_CHARGE), MobUtil.rayTrace(caster, Math.max(d0, entityReach), false)));
     }
 

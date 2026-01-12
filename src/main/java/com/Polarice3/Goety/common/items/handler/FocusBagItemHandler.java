@@ -6,9 +6,9 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.ItemStackHandler;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.ItemStackHandler;
 
 import javax.annotation.Nonnull;
 
@@ -79,7 +79,7 @@ public class FocusBagItemHandler extends ItemStackHandler {
     }
 
     public static FocusBagItemHandler get(ItemStack stack) {
-        IItemHandler handler = stack.getCapability(ForgeCapabilities.ITEM_HANDLER)
+        IItemHandler handler = stack.getCapability(Capabilities.ITEM_HANDLER)
                 .orElseThrow(() -> new IllegalArgumentException("ItemStack is missing item capability"));
         return (FocusBagItemHandler) handler;
     }

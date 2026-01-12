@@ -14,6 +14,7 @@ import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.stats.Stats;
 import net.minecraft.tags.DamageTypeTags;
+import net.minecraft.tags.EntityTypeTags;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.*;
@@ -28,25 +29,26 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.event.entity.living.LivingChangeTargetEvent;
-import net.minecraftforge.event.entity.living.LivingDeathEvent;
-import net.minecraftforge.event.entity.living.LivingHurtEvent;
-import net.minecraftforge.event.entity.living.MobEffectEvent;
-import net.minecraftforge.eventbus.api.Event;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.neoforge.event.entity.living.LivingChangeTargetEvent;
+import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
+import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
+import net.neoforged.neoforge.event.entity.living.MobEffectEvent;
+import net.neoforged.neoforge.event.tick.PlayerTickEvent;
+import net.neoforged.bus.api.Event;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.fml.common.Mod;
 
 import java.util.UUID;
 
-import static net.minecraftforge.event.entity.living.LivingChangeTargetEvent.LivingTargetType.MOB_TARGET;
+import static net.neoforged.neoforge.event.entity.living.LivingChangeTargetEvent.LivingTargetType.MOB_TARGET;
 
-@Mod.EventBusSubscriber(modid = Goety.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE)
+@EventBusSubscriber(modid = Goety.MOD_ID, bus = EventBusSubscriber.Bus.GAME)
 public class LichEvents {
 
     @SubscribeEvent
-    public static void onPlayerLichdom(TickEvent.PlayerTickEvent event){
-        Player player = event.player;
+    public static void onPlayerLichdom(PlayerTickEvent.Post event){
+        Player player = event.getEntity();
         Level world = player.level;
         if (LichdomHelper.isLich(player)){
             player.getFoodData().setFoodLevel(17);
@@ -116,13 +118,11 @@ public class LichEvents {
                     }
                 }
                 if (MainConfig.LichModeSounds.get()) {
-                    if (event.phase == TickEvent.Phase.END) {
-                        if (player.isAlive()) {
-                            MiscCapHelper.doAmbientSoundTime(player);
-                            if (MiscCapHelper.getAmbientSoundTime(player) > player.getRandom().nextInt(1000)) {
-                                MiscCapHelper.setAmbientSoundTime(player, -MathHelper.secondsToTicks(4));
-                                player.playSound(ModSounds.LICH_AMBIENT.get(), 1.0F, player.getVoicePitch());
-                            }
+                    if (player.isAlive()) {
+                        MiscCapHelper.doAmbientSoundTime(player);
+                        if (MiscCapHelper.getAmbientSoundTime(player) > player.getRandom().nextInt(1000)) {
+                            MiscCapHelper.setAmbientSoundTime(player, -MathHelper.secondsToTicks(4));
+                            player.playSound(ModSounds.LICH_AMBIENT.get(), 1.0F, player.getVoicePitch());
                         }
                     }
                 }
@@ -233,7 +233,7 @@ public class LichEvents {
     }
 
     @SubscribeEvent
-    public static void HurtEvent(LivingHurtEvent event){
+    public static void HurtEvent(LivingIncomingDamageEvent event){
         if (event.getEntity() instanceof Player player) {
             if (LichdomHelper.isLich(player)){
                 if (MainConfig.LichMagicResist.get()) {
@@ -249,7 +249,7 @@ public class LichEvents {
                         if (event.getSource().getEntity() instanceof LivingEntity attacker && attacker.isAlive()) {
                             for (Mob undead : player.level.getEntitiesOfClass(Mob.class, player.getBoundingBox().inflate(16))) {
                                 if (undead != attacker) {
-                                    if (undead.getMobType() == MobType.UNDEAD) {
+                                    if (undead.getType().is(EntityTypeTags.UNDEAD)) {
                                         if (undead.getTarget() != player) {
                                             if (MainConfig.LichPowerfulFoes.get()) {
                                                 if (undead.getMaxHealth() <= MainConfig.LichPowerfulFoesHealth.get()) {
@@ -287,7 +287,7 @@ public class LichEvents {
                     if (player.getMainHandItem().isEmpty()) {
                         event.getEntity().addEffect(new MobEffectInstance(GoetyEffects.FREEZING.get(), 900));
                     }
-                    if (event.getEntity().getMobType() != MobType.UNDEAD && player.getMainHandItem().is(ModTags.Items.LICH_WITHER_ITEMS)){
+                    if (!event.getEntity().getType().is(EntityTypeTags.UNDEAD) && player.getMainHandItem().is(ModTags.Items.LICH_WITHER_ITEMS)){
                         event.getEntity().addEffect(new MobEffectInstance(MobEffects.WITHER, MathHelper.secondsToTicks(5)));
                     }
                 }

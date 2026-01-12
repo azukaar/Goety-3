@@ -3,21 +3,27 @@ package com.Polarice3.Goety.client.gui.overlay;
 import com.Polarice3.Goety.client.gui.screen.inventory.FocusRadialMenuScreen;
 import com.Polarice3.Goety.config.MainConfig;
 import com.Polarice3.Goety.utils.WandUtil;
+import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.LayeredDraw;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.GameType;
-import net.minecraftforge.client.gui.overlay.ForgeGui;
-import net.minecraftforge.client.gui.overlay.IGuiOverlay;
 
 public class CurrentFocusGui {
-    public static final IGuiOverlay OVERLAY = CurrentFocusGui::drawHUD;
+    public static final ResourceLocation LAYER_ID = new ResourceLocation("goety", "current_focus_hud");
+    public static final LayeredDraw.Layer LAYER = (guiGraphics, partialTick) -> {
+        int screenWidth = minecraft.getWindow().getGuiScaledWidth();
+        int screenHeight = minecraft.getWindow().getGuiScaledHeight();
+        drawHUD(guiGraphics, partialTick, screenWidth, screenHeight);
+    };
     private static final Minecraft minecraft = Minecraft.getInstance();
 
     public static boolean shouldDisplayBar(){
         return !WandUtil.findFocus(minecraft.player).isEmpty() && (minecraft.gameMode != null && minecraft.gameMode.getPlayerMode() != GameType.SPECTATOR) && !(minecraft.screen instanceof FocusRadialMenuScreen) && MainConfig.FocusGuiShow.get();
     }
 
-    public static void drawHUD(ForgeGui gui, GuiGraphics guiGraphics, float partialTicks, int screenWidth, int screenHeight) {
+    public static void drawHUD(GuiGraphics guiGraphics, DeltaTracker partialTick, int screenWidth, int screenHeight) {
         if(!shouldDisplayBar()) {
             return;
         }

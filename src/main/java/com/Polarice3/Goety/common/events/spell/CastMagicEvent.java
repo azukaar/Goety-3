@@ -2,9 +2,8 @@ package com.Polarice3.Goety.common.events.spell;
 
 import com.Polarice3.Goety.api.magic.ISpell;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.entity.living.LivingEvent;
-import net.minecraftforge.eventbus.api.Cancelable;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.entity.living.LivingEvent;
 
 /**
  * CastMagicEvent is fired when finished using {@link com.Polarice3.Goety.common.items.magic.DarkWand} to cast spell. <br>
@@ -16,9 +15,8 @@ import net.minecraftforge.eventbus.api.Cancelable;
  * <br>
  * This event does not have a result. {@link HasResult}<br>
  * <br>
- * This event is fired on the {@link MinecraftForge#EVENT_BUS}.
+ * This event is fired on the {@link NeoForge#EVENT_BUS}.
  **/
-@Cancelable
 public class CastMagicEvent extends LivingEvent {
     private ISpell spell;
 

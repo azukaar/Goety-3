@@ -1,8 +1,8 @@
 package com.Polarice3.Goety.common.blocks.entities;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.Connection;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -14,15 +14,15 @@ public class RitualBlockEntity extends BlockEntity {
     }
 
     @Override
-    public void load( CompoundTag compound) {
+    protected void loadAdditional(CompoundTag compound, HolderLookup.Provider provider) {
         this.readNetwork(compound);
-        super.load(compound);
+        super.loadAdditional(compound, provider);
     }
 
     @Override
-    public void saveAdditional(CompoundTag compound) {
+    protected void saveAdditional(CompoundTag compound, HolderLookup.Provider provider) {
         this.writeNetwork(compound);
-        super.saveAdditional(compound);
+        super.saveAdditional(compound, provider);
     }
 
     @Override
@@ -31,19 +31,8 @@ public class RitualBlockEntity extends BlockEntity {
     }
 
     @Override
-    public CompoundTag getUpdateTag() {
-        return this.writeNetwork(super.getUpdateTag());
-    }
-
-    @Override
-    public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt) {
-        this.readNetwork(pkt.getTag());
-    }
-
-    @Override
-    public void handleUpdateTag(CompoundTag tag) {
-        super.load(tag);
-        this.readNetwork(tag);
+    public CompoundTag getUpdateTag(HolderLookup.Provider provider) {
+        return this.writeNetwork(super.getUpdateTag(provider));
     }
 
     public void readNetwork(CompoundTag compound) {

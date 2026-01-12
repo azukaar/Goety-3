@@ -16,8 +16,6 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.network.NetworkHooks;
-
 /**
  * Based on @cerbon's Spikes codes: <a href="https://github.com/CERBON-MODS/Bosses-of-Mass-Destruction-FORGE/blob/1.20.1/src/main/java/com/cerbon/bosses_of_mass_destruction/entity/custom/void_blossom/Spikes.java">...</a>
  */
@@ -143,6 +141,6 @@ public class BlossomThorn extends GroundProjectile {
 
     @Override
     public Packet<ClientGamePacketListener> getAddEntityPacket() {
-        return NetworkHooks.getEntitySpawningPacket(this);
+        return new net.minecraft.network.protocol.game.ClientboundAddEntityPacket(this);
     }
 }

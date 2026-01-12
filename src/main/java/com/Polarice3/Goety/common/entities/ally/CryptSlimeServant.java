@@ -13,7 +13,6 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.MobType;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.monster.Monster;
@@ -57,11 +56,6 @@ public class CryptSlimeServant extends SlimeServant{
             LootParams lootparams = lootparams$builder.create(LootContextParamSets.ENTITY);
             loottable.getRandomItems(lootparams, this.getLootTableSeed(), this::spawnAtLocation);
         }
-    }
-
-    @Override
-    public MobType getMobType() {
-        return MobType.UNDEAD;
     }
 
     public boolean causeFallDamage(float p_149717_, float p_149718_, DamageSource p_149719_) {

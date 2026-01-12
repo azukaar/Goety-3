@@ -13,7 +13,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
@@ -31,7 +31,7 @@ public class ReviveServantItem extends Item {
         entity.ejectPassengers();
 
         CompoundTag entityTag = new CompoundTag();
-        ResourceLocation typesKey = ForgeRegistries.ENTITY_TYPES.getKey(entity.getType());
+        ResourceLocation typesKey = NeoForgeRegistries.ENTITY_TYPES.getKey(entity.getType());
 
         if (typesKey != null) {
             entityTag.putString("entity", typesKey.toString());
@@ -49,7 +49,7 @@ public class ReviveServantItem extends Item {
 
         if (itemTag != null) {
             CompoundTag entityTag = itemTag.getCompound("entity");
-            EntityType<?> entityType = ForgeRegistries.ENTITY_TYPES.getValue(new ResourceLocation(entityTag.getString("entity")));
+            EntityType<?> entityType = NeoForgeRegistries.ENTITY_TYPES.getValue(new ResourceLocation(entityTag.getString("entity")));
             if (entityType != null) {
                 Entity entity = entityType.create(level);
                 if (level instanceof ServerLevel && entity != null) {

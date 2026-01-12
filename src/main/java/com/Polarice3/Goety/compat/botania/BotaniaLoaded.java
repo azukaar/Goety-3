@@ -1,6 +1,6 @@
 package com.Polarice3.Goety.compat.botania;
 
-import net.minecraftforge.fml.ModList;
+import net.neoforged.fml.ModList;
 
 public enum BotaniaLoaded {
     BOTANIA("botania");
@@ -13,5 +13,4 @@ public enum BotaniaLoaded {
     public boolean isLoaded() {
         return this.loaded;
     }
-
 }

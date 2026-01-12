@@ -26,7 +26,6 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.entity.PartEntity;
 import org.joml.Vector3f;
 
 import java.util.ArrayList;
@@ -205,9 +204,7 @@ public class VoidShock extends SpellEntity {
                             List<LivingEntity> list = new ArrayList<>();
                             for (Entity entity1 : this.level().getEntitiesOfClass(Entity.class, this.getBoundingBox().inflate(16.0F))) {
                                 LivingEntity livingEntity = null;
-                                if (entity1 instanceof PartEntity<?> partEntity && partEntity.getParent() instanceof LivingEntity living) {
-                                    livingEntity = living;
-                                } else if (entity1 instanceof LivingEntity living) {
+                                if (entity1 instanceof LivingEntity living) {
                                     livingEntity = living;
                                 }
                                 if (livingEntity != null) {

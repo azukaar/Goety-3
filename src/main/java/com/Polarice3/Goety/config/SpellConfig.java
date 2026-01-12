@@ -3,647 +3,647 @@ package com.Polarice3.Goety.config;
 import com.electronwill.nightconfig.core.file.CommentedFileConfig;
 import com.electronwill.nightconfig.core.io.WritingMode;
 import com.google.common.collect.Lists;
-import net.minecraftforge.common.ForgeConfigSpec;
+import net.neoforged.neoforge.common.ModConfigSpec;
 
 import java.io.File;
 import java.util.List;
 
 public class SpellConfig {
 
-    public static final ForgeConfigSpec.Builder BUILDER = new ForgeConfigSpec.Builder();
-    public static final ForgeConfigSpec SPEC;
-
-    public static final ForgeConfigSpec.ConfigValue<Integer> SpellDamageMultiplier;
-    public static final ForgeConfigSpec.ConfigValue<Double> SpellDamageMultiplierDecimal;
-
-    public static final ForgeConfigSpec.ConfigValue<Integer> VexCost;
-    public static final ForgeConfigSpec.ConfigValue<Integer> VexDuration;
-    public static final ForgeConfigSpec.ConfigValue<Integer> VexCoolDown;
-    public static final ForgeConfigSpec.ConfigValue<Integer> VexSummonDown;
-    public static final ForgeConfigSpec.ConfigValue<Integer> VexLimit;
-
-    public static final ForgeConfigSpec.ConfigValue<Integer> FangCost;
-    public static final ForgeConfigSpec.ConfigValue<Integer> FangDuration;
-    public static final ForgeConfigSpec.ConfigValue<Integer> FangCoolDown;
-    public static final ForgeConfigSpec.ConfigValue<Double> FangDamage;
-    public static final ForgeConfigSpec.ConfigValue<Integer> FangGainSouls;
-
-    public static final ForgeConfigSpec.ConfigValue<Integer> SpikeCost;
-    public static final ForgeConfigSpec.ConfigValue<Integer> SpikeDuration;
-    public static final ForgeConfigSpec.ConfigValue<Integer> SpikeCoolDown;
-    public static final ForgeConfigSpec.ConfigValue<Double> SpikeDamage;
-    public static final ForgeConfigSpec.ConfigValue<Integer> SpikeGainSouls;
-
-    public static final ForgeConfigSpec.ConfigValue<Integer> ZombieCost;
-    public static final ForgeConfigSpec.ConfigValue<Integer> ZombieDuration;
-    public static final ForgeConfigSpec.ConfigValue<Integer> ZombieCoolDown;
-    public static final ForgeConfigSpec.ConfigValue<Integer> ZombieSummonDown;
-    public static final ForgeConfigSpec.ConfigValue<Integer> ZombieLimit;
-
-    public static final ForgeConfigSpec.ConfigValue<Integer> SkeletonCost;
-    public static final ForgeConfigSpec.ConfigValue<Integer> SkeletonDuration;
-    public static final ForgeConfigSpec.ConfigValue<Integer> SkeletonCoolDown;
-    public static final ForgeConfigSpec.ConfigValue<Integer> SkeletonSummonDown;
-    public static final ForgeConfigSpec.ConfigValue<Integer> SkeletonLimit;
-
-    public static final ForgeConfigSpec.ConfigValue<Integer> ReaperCost;
-    public static final ForgeConfigSpec.ConfigValue<Integer> ReaperDuration;
-    public static final ForgeConfigSpec.ConfigValue<Integer> ReaperCoolDown;
-    public static final ForgeConfigSpec.ConfigValue<Integer> ReaperSummonDown;
-    public static final ForgeConfigSpec.ConfigValue<Integer> ReaperLimit;
-
-    public static final ForgeConfigSpec.ConfigValue<Integer> WraithCost;
-    public static final ForgeConfigSpec.ConfigValue<Integer> WraithDuration;
-    public static final ForgeConfigSpec.ConfigValue<Integer> WraithCoolDown;
-    public static final ForgeConfigSpec.ConfigValue<Integer> WraithSummonDown;
-    public static final ForgeConfigSpec.ConfigValue<Integer> WraithLimit;
-
-    public static final ForgeConfigSpec.ConfigValue<Integer> PhantomCost;
-    public static final ForgeConfigSpec.ConfigValue<Integer> PhantomDuration;
-    public static final ForgeConfigSpec.ConfigValue<Integer> PhantomCoolDown;
-    public static final ForgeConfigSpec.ConfigValue<Integer> PhantomSummonDown;
-    public static final ForgeConfigSpec.ConfigValue<Integer> PhantomLimit;
-
-    public static final ForgeConfigSpec.ConfigValue<Integer> VanguardCost;
-    public static final ForgeConfigSpec.ConfigValue<Integer> VanguardDuration;
-    public static final ForgeConfigSpec.ConfigValue<Integer> VanguardCoolDown;
-    public static final ForgeConfigSpec.ConfigValue<Integer> VanguardSummonDown;
-    public static final ForgeConfigSpec.ConfigValue<Integer> VanguardLimit;
-
-    public static final ForgeConfigSpec.ConfigValue<Integer> BlackguardCost;
-    public static final ForgeConfigSpec.ConfigValue<Integer> BlackguardDuration;
-    public static final ForgeConfigSpec.ConfigValue<Integer> BlackguardCoolDown;
-    public static final ForgeConfigSpec.ConfigValue<Integer> BlackguardSummonDown;
-    public static final ForgeConfigSpec.ConfigValue<Integer> BlackguardLimit;
-
-    public static final ForgeConfigSpec.ConfigValue<Integer> GhostFireCost;
-    public static final ForgeConfigSpec.ConfigValue<Integer> GhostFireDuration;
-    public static final ForgeConfigSpec.ConfigValue<Integer> GhostFireCoolDown;
-
-    public static final ForgeConfigSpec.ConfigValue<Integer> LeechingCost;
-    public static final ForgeConfigSpec.ConfigValue<Integer> LeechingChargeUp;
-    public static final ForgeConfigSpec.ConfigValue<Integer> LeechingDuration;
-    public static final ForgeConfigSpec.ConfigValue<Integer> LeechingCoolDown;
-    public static final ForgeConfigSpec.ConfigValue<Integer> LeechingPercent;
-    public static final ForgeConfigSpec.ConfigValue<Double> LeechingDamage;
-
-    public static final ForgeConfigSpec.ConfigValue<Integer> KillingCost;
-    public static final ForgeConfigSpec.ConfigValue<Integer> KillingDuration;
-    public static final ForgeConfigSpec.ConfigValue<Integer> KillingCoolDown;
-    public static final ForgeConfigSpec.ConfigValue<Double> KillingFeedback;
-
-    public static final ForgeConfigSpec.ConfigValue<Integer> HauntedSkullCost;
-    public static final ForgeConfigSpec.ConfigValue<Integer> HauntedSkullDuration;
-    public static final ForgeConfigSpec.ConfigValue<Integer> HauntedSkullCoolDown;
-    public static final ForgeConfigSpec.ConfigValue<Integer> HauntedSkullSummonDown;
-    public static final ForgeConfigSpec.ConfigValue<Double> HauntedSkullDamage;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> HauntedSkullGriefing;
-    public static final ForgeConfigSpec.ConfigValue<Integer> SkullLimit;
-
-    public static final ForgeConfigSpec.ConfigValue<Integer> WitherSkullCost;
-    public static final ForgeConfigSpec.ConfigValue<Integer> WitherSkullDuration;
-    public static final ForgeConfigSpec.ConfigValue<Integer> WitherSkullCoolDown;
-    public static final ForgeConfigSpec.ConfigValue<Double> WitherSkullDamage;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> WitherSkullGriefing;
-
-    public static final ForgeConfigSpec.ConfigValue<Integer> GhastCost;
-    public static final ForgeConfigSpec.ConfigValue<Integer> GhastDuration;
-    public static final ForgeConfigSpec.ConfigValue<Integer> GhastCoolDown;
-    public static final ForgeConfigSpec.ConfigValue<Integer> GhastSummonDown;
-    public static final ForgeConfigSpec.ConfigValue<Integer> GhastLimit;
-
-    public static final ForgeConfigSpec.ConfigValue<Integer> BlazeCost;
-    public static final ForgeConfigSpec.ConfigValue<Integer> BlazeDuration;
-    public static final ForgeConfigSpec.ConfigValue<Integer> BlazeCoolDown;
-    public static final ForgeConfigSpec.ConfigValue<Integer> BlazeSummonDown;
-    public static final ForgeConfigSpec.ConfigValue<Integer> BlazeLimit;
-
-    public static final ForgeConfigSpec.ConfigValue<Integer> FeastCost;
-    public static final ForgeConfigSpec.ConfigValue<Integer> FeastChargeUp;
-    public static final ForgeConfigSpec.ConfigValue<Integer> FeastDuration;
-
-    public static final ForgeConfigSpec.ConfigValue<Integer> TeethCost;
-    public static final ForgeConfigSpec.ConfigValue<Integer> TeethDuration;
-    public static final ForgeConfigSpec.ConfigValue<Integer> TeethCoolDown;
-    public static final ForgeConfigSpec.ConfigValue<Double> ViciousToothDamage;
-
-    public static final ForgeConfigSpec.ConfigValue<Integer> FireballCost;
-    public static final ForgeConfigSpec.ConfigValue<Integer> FireballDuration;
-    public static final ForgeConfigSpec.ConfigValue<Integer> FireballCoolDown;
-    public static final ForgeConfigSpec.ConfigValue<Double> FireballDamage;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> FireballGriefing;
-
-    public static final ForgeConfigSpec.ConfigValue<Integer> LavaballCost;
-    public static final ForgeConfigSpec.ConfigValue<Integer> LavaballDuration;
-    public static final ForgeConfigSpec.ConfigValue<Integer> LavaballCoolDown;
-    public static final ForgeConfigSpec.ConfigValue<Double> LavaballDamage;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> LavaballGriefing;
-
-    public static final ForgeConfigSpec.ConfigValue<Integer> BombardmentCost;
-    public static final ForgeConfigSpec.ConfigValue<Integer> BombardmentChargeUp;
-    public static final ForgeConfigSpec.ConfigValue<Integer> BombardmentShots;
-    public static final ForgeConfigSpec.ConfigValue<Integer> BombardmentDuration;
-    public static final ForgeConfigSpec.ConfigValue<Integer> BombardmentCoolDown;
-
-    public static final ForgeConfigSpec.ConfigValue<Integer> MeteorShowerCost;
-    public static final ForgeConfigSpec.ConfigValue<Integer> MeteorShowerChargeUp;
-    public static final ForgeConfigSpec.ConfigValue<Integer> MeteorShowerShots;
-    public static final ForgeConfigSpec.ConfigValue<Integer> MeteorShowerDuration;
-    public static final ForgeConfigSpec.ConfigValue<Integer> MeteorShowerCoolDown;
-
-    public static final ForgeConfigSpec.ConfigValue<Integer> MagmaBombCost;
-    public static final ForgeConfigSpec.ConfigValue<Integer> MagmaBombDuration;
-    public static final ForgeConfigSpec.ConfigValue<Integer> MagmaBombCoolDown;
-
-    public static final ForgeConfigSpec.ConfigValue<Integer> FireBlastCost;
-    public static final ForgeConfigSpec.ConfigValue<Integer> FireBlastDuration;
-    public static final ForgeConfigSpec.ConfigValue<Integer> FireBlastCoolDown;
-    public static final ForgeConfigSpec.ConfigValue<Double> FireBlastDamage;
-    public static final ForgeConfigSpec.ConfigValue<Double> FireBlastMaxDamage;
-
-    public static final ForgeConfigSpec.ConfigValue<Integer> FlameStrikeCost;
-    public static final ForgeConfigSpec.ConfigValue<Integer> FlameStrikeDuration;
-    public static final ForgeConfigSpec.ConfigValue<Integer> FlameStrikeCoolDown;
-    public static final ForgeConfigSpec.ConfigValue<Double> FlameStrikeDamage;
-
-    public static final ForgeConfigSpec.ConfigValue<Integer> SoulBoltCost;
-    public static final ForgeConfigSpec.ConfigValue<Integer> SoulBoltDuration;
-    public static final ForgeConfigSpec.ConfigValue<Integer> SoulBoltCoolDown;
-    public static final ForgeConfigSpec.ConfigValue<Double> SoulBoltDamage;
-    public static final ForgeConfigSpec.ConfigValue<Double> NecroBoltDamage;
-
-    public static final ForgeConfigSpec.ConfigValue<Integer> MagicBoltCost;
-    public static final ForgeConfigSpec.ConfigValue<Integer> MagicBoltDuration;
-    public static final ForgeConfigSpec.ConfigValue<Integer> MagicBoltCoolDown;
-    public static final ForgeConfigSpec.ConfigValue<Double> MagicBoltDamage;
-
-    public static final ForgeConfigSpec.ConfigValue<Integer> SwordCost;
-    public static final ForgeConfigSpec.ConfigValue<Integer> SwordDuration;
-    public static final ForgeConfigSpec.ConfigValue<Integer> SwordCoolDown;
-
-    public static final ForgeConfigSpec.ConfigValue<Integer> IceSpikeCost;
-    public static final ForgeConfigSpec.ConfigValue<Integer> IceSpikeDuration;
-    public static final ForgeConfigSpec.ConfigValue<Integer> IceSpikeCoolDown;
-    public static final ForgeConfigSpec.ConfigValue<Double> IceSpikeDamage;
-
-    public static final ForgeConfigSpec.ConfigValue<Integer> IceStormCost;
-    public static final ForgeConfigSpec.ConfigValue<Integer> IceStormDuration;
-    public static final ForgeConfigSpec.ConfigValue<Integer> IceStormCoolDown;
-    public static final ForgeConfigSpec.ConfigValue<Double> IceStormDamage;
-
-    public static final ForgeConfigSpec.ConfigValue<Integer> ChargeCost;
-    public static final ForgeConfigSpec.ConfigValue<Integer> ChargeCoolDown;
-    public static final ForgeConfigSpec.ConfigValue<Double> ChargeDamage;
-
-    public static final ForgeConfigSpec.ConfigValue<Integer> IllusionCost;
-    public static final ForgeConfigSpec.ConfigValue<Integer> IllusionDuration;
-    public static final ForgeConfigSpec.ConfigValue<Integer> IllusionCoolDown;
-
-    public static final ForgeConfigSpec.ConfigValue<Integer> IgniteCost;
-    public static final ForgeConfigSpec.ConfigValue<Integer> IgniteCoolDown;
-    public static final ForgeConfigSpec.ConfigValue<Integer> IgniteFireSeconds;
-
-    public static final ForgeConfigSpec.ConfigValue<Integer> FireBreathCost;
-    public static final ForgeConfigSpec.ConfigValue<Integer> FireBreathChargeUp;
-    public static final ForgeConfigSpec.ConfigValue<Integer> FireBreathDuration;
-    public static final ForgeConfigSpec.ConfigValue<Integer> FireBreathCoolDown;
-    public static final ForgeConfigSpec.ConfigValue<Double> FireBreathDamage;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> DragonFireGriefing;
-
-    public static final ForgeConfigSpec.ConfigValue<Integer> FrostBreathCost;
-    public static final ForgeConfigSpec.ConfigValue<Integer> FrostBreathChargeUp;
-    public static final ForgeConfigSpec.ConfigValue<Integer> FrostBreathDuration;
-    public static final ForgeConfigSpec.ConfigValue<Integer> FrostBreathCoolDown;
-    public static final ForgeConfigSpec.ConfigValue<Double> FrostBreathDamage;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> DragonFrostGriefing;
-
-    public static final ForgeConfigSpec.ConfigValue<Integer> ShockingCost;
-    public static final ForgeConfigSpec.ConfigValue<Integer> ShockingChargeUp;
-    public static final ForgeConfigSpec.ConfigValue<Integer> ShockingDuration;
-    public static final ForgeConfigSpec.ConfigValue<Integer> ShockingCoolDown;
-    public static final ForgeConfigSpec.ConfigValue<Double> ShockingDamage;
-
-    public static final ForgeConfigSpec.ConfigValue<Integer> BubbleStreamCost;
-    public static final ForgeConfigSpec.ConfigValue<Integer> BubbleStreamChargeUp;
-    public static final ForgeConfigSpec.ConfigValue<Integer> BubbleStreamDuration;
-    public static final ForgeConfigSpec.ConfigValue<Integer> BubbleStreamCoolDown;
-    public static final ForgeConfigSpec.ConfigValue<Double> BubbleStreamDamage;
-
-    public static final ForgeConfigSpec.ConfigValue<Integer> SoulLightCost;
-    public static final ForgeConfigSpec.ConfigValue<Integer> SoulLightDuration;
-    public static final ForgeConfigSpec.ConfigValue<Integer> SoulLightCoolDown;
-
-    public static final ForgeConfigSpec.ConfigValue<Integer> GlowLightCost;
-    public static final ForgeConfigSpec.ConfigValue<Integer> GlowLightDuration;
-    public static final ForgeConfigSpec.ConfigValue<Integer> GlowLightCoolDown;
-
-    public static final ForgeConfigSpec.ConfigValue<Integer> IlluminateCost;
-    public static final ForgeConfigSpec.ConfigValue<Integer> IlluminateChargeUp;
-    public static final ForgeConfigSpec.ConfigValue<Integer> IlluminateDuration;
-    public static final ForgeConfigSpec.ConfigValue<Integer> IlluminateMinLightLevel;
-
-    public static final ForgeConfigSpec.ConfigValue<Integer> IceChunkCost;
-    public static final ForgeConfigSpec.ConfigValue<Integer> IceChunkDuration;
-    public static final ForgeConfigSpec.ConfigValue<Integer> IceChunkCoolDown;
-    public static final ForgeConfigSpec.ConfigValue<Double> IceChunkDamage;
-
-    public static final ForgeConfigSpec.ConfigValue<Integer> HailCost;
-    public static final ForgeConfigSpec.ConfigValue<Integer> HailDuration;
-    public static final ForgeConfigSpec.ConfigValue<Integer> HailCoolDown;
-    public static final ForgeConfigSpec.ConfigValue<Double> HailDamage;
-
-    public static final ForgeConfigSpec.ConfigValue<Integer> BlizzardCost;
-    public static final ForgeConfigSpec.ConfigValue<Integer> BlizzardChargeUp;
-    public static final ForgeConfigSpec.ConfigValue<Integer> BlizzardDuration;
-    public static final ForgeConfigSpec.ConfigValue<Integer> BlizzardCoolDown;
-
-    public static final ForgeConfigSpec.ConfigValue<Integer> ChillingCost;
-    public static final ForgeConfigSpec.ConfigValue<Integer> ChillingDuration;
-    public static final ForgeConfigSpec.ConfigValue<Integer> ChillingCoolDown;
-
-    public static final ForgeConfigSpec.ConfigValue<Integer> FrostNovaCost;
-    public static final ForgeConfigSpec.ConfigValue<Integer> FrostNovaDuration;
-    public static final ForgeConfigSpec.ConfigValue<Integer> FrostNovaCoolDown;
-    public static final ForgeConfigSpec.ConfigValue<Double> FrostNovaDamage;
-    public static final ForgeConfigSpec.ConfigValue<Double> FrostNovaMaxDamage;
-
-    public static final ForgeConfigSpec.ConfigValue<Integer> FrostbornCost;
-    public static final ForgeConfigSpec.ConfigValue<Integer> FrostbornDuration;
-    public static final ForgeConfigSpec.ConfigValue<Integer> FrostbornCoolDown;
-    public static final ForgeConfigSpec.ConfigValue<Integer> FrostbornSummonDown;
-    public static final ForgeConfigSpec.ConfigValue<Integer> IceGolemLimit;
-
-    public static final ForgeConfigSpec.ConfigValue<Integer> BarricadeCost;
-    public static final ForgeConfigSpec.ConfigValue<Integer> BarricadeDuration;
-    public static final ForgeConfigSpec.ConfigValue<Integer> BarricadeCoolDown;
-
-    public static final ForgeConfigSpec.ConfigValue<Integer> QuakingCost;
-    public static final ForgeConfigSpec.ConfigValue<Integer> QuakingDuration;
-    public static final ForgeConfigSpec.ConfigValue<Integer> QuakingCoolDown;
-    public static final ForgeConfigSpec.ConfigValue<Double> QuakingDamage;
-
-    public static final ForgeConfigSpec.ConfigValue<Integer> EarthFistCost;
-    public static final ForgeConfigSpec.ConfigValue<Integer> EarthFistDuration;
-    public static final ForgeConfigSpec.ConfigValue<Integer> EarthFistCoolDown;
-    public static final ForgeConfigSpec.ConfigValue<Double> EarthFistDamage;
-
-    public static final ForgeConfigSpec.ConfigValue<Integer> PulverizeCost;
-    public static final ForgeConfigSpec.ConfigValue<Integer> PulverizeCoolDown;
-
-    public static final ForgeConfigSpec.ConfigValue<Integer> RotationCost;
-    public static final ForgeConfigSpec.ConfigValue<Integer> RotationCoolDown;
-
-    public static final ForgeConfigSpec.ConfigValue<Integer> BurrowingCost;
-    public static final ForgeConfigSpec.ConfigValue<Integer> BurrowingChargeUp;
-    public static final ForgeConfigSpec.ConfigValue<Integer> BurrowingInitialSpeed;
-
-    public static final ForgeConfigSpec.ConfigValue<Integer> SensingCost;
-    public static final ForgeConfigSpec.ConfigValue<Integer> SensingDuration;
-    public static final ForgeConfigSpec.ConfigValue<Integer> SensingCoolDown;
-
-    public static final ForgeConfigSpec.ConfigValue<Integer> EruptionCost;
-    public static final ForgeConfigSpec.ConfigValue<Integer> EruptionDuration;
-    public static final ForgeConfigSpec.ConfigValue<Integer> EruptionCoolDown;
-    public static final ForgeConfigSpec.ConfigValue<Double> PyroclastDamage;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> PyroclastGriefing;
-
-    public static final ForgeConfigSpec.ConfigValue<Integer> ScatterCost;
-    public static final ForgeConfigSpec.ConfigValue<Integer> ScatterDuration;
-    public static final ForgeConfigSpec.ConfigValue<Integer> ScatterCoolDown;
-    public static final ForgeConfigSpec.ConfigValue<Double> ScatterMineDamage;
-
-    public static final ForgeConfigSpec.ConfigValue<Integer> LaunchCost;
-    public static final ForgeConfigSpec.ConfigValue<Integer> LaunchDuration;
-    public static final ForgeConfigSpec.ConfigValue<Integer> LaunchCoolDown;
-
-    public static final ForgeConfigSpec.ConfigValue<Integer> FlyingCost;
-    public static final ForgeConfigSpec.ConfigValue<Integer> FlyingChargeUp;
-
-    public static final ForgeConfigSpec.ConfigValue<Integer> WhirlwindCost;
-    public static final ForgeConfigSpec.ConfigValue<Integer> WhirlwindChargeUp;
-    public static final ForgeConfigSpec.ConfigValue<Integer> WhirlwindDuration;
-    public static final ForgeConfigSpec.ConfigValue<Integer> WhirlwindCoolDown;
-
-    public static final ForgeConfigSpec.ConfigValue<Integer> CushionCost;
-    public static final ForgeConfigSpec.ConfigValue<Integer> CushionDuration;
-    public static final ForgeConfigSpec.ConfigValue<Integer> CushionCoolDown;
-
-    public static final ForgeConfigSpec.ConfigValue<Integer> CycloneCost;
-    public static final ForgeConfigSpec.ConfigValue<Integer> CycloneDuration;
-    public static final ForgeConfigSpec.ConfigValue<Integer> CycloneCoolDown;
-
-    public static final ForgeConfigSpec.ConfigValue<Integer> UpdraftCost;
-    public static final ForgeConfigSpec.ConfigValue<Integer> UpdraftDuration;
-    public static final ForgeConfigSpec.ConfigValue<Integer> UpdraftCoolDown;
-    public static final ForgeConfigSpec.ConfigValue<Double> UpdraftBlastDamage;
-
-    public static final ForgeConfigSpec.ConfigValue<Integer> WindBlastCost;
-    public static final ForgeConfigSpec.ConfigValue<Integer> WindBlastDuration;
-    public static final ForgeConfigSpec.ConfigValue<Integer> WindBlastCoolDown;
-
-    public static final ForgeConfigSpec.ConfigValue<Integer> RazorWindCost;
-    public static final ForgeConfigSpec.ConfigValue<Integer> RazorWindDuration;
-    public static final ForgeConfigSpec.ConfigValue<Integer> RazorWindCoolDown;
-    public static final ForgeConfigSpec.ConfigValue<Double> RazorWindDamage;
-
-    public static final ForgeConfigSpec.ConfigValue<Integer> TremblingCost;
-    public static final ForgeConfigSpec.ConfigValue<Integer> TremblingDuration;
-    public static final ForgeConfigSpec.ConfigValue<Integer> TremblingCoolDown;
-
-    public static final ForgeConfigSpec.ConfigValue<Integer> SwarmCost;
-    public static final ForgeConfigSpec.ConfigValue<Integer> SwarmChargeUp;
-    public static final ForgeConfigSpec.ConfigValue<Integer> SwarmDuration;
-    public static final ForgeConfigSpec.ConfigValue<Integer> SwarmCoolDown;
-    public static final ForgeConfigSpec.ConfigValue<Double> SwarmDamage;
-
-    public static final ForgeConfigSpec.ConfigValue<Integer> PoisonDartCost;
-    public static final ForgeConfigSpec.ConfigValue<Integer> PoisonDartDuration;
-    public static final ForgeConfigSpec.ConfigValue<Integer> PoisonDartCoolDown;
-    public static final ForgeConfigSpec.ConfigValue<Double> PoisonDartDamage;
-
-    public static final ForgeConfigSpec.ConfigValue<Integer> BlossomCost;
-    public static final ForgeConfigSpec.ConfigValue<Integer> BlossomDuration;
-    public static final ForgeConfigSpec.ConfigValue<Integer> BlossomCoolDown;
-    public static final ForgeConfigSpec.ConfigValue<Double> BlossomDamage;
-
-    public static final ForgeConfigSpec.ConfigValue<Integer> GrappleCost;
-    public static final ForgeConfigSpec.ConfigValue<Integer> GrappleDuration;
-    public static final ForgeConfigSpec.ConfigValue<Integer> GrappleCoolDown;
-
-    public static final ForgeConfigSpec.ConfigValue<Integer> HuntingCost;
-    public static final ForgeConfigSpec.ConfigValue<Integer> HuntingDuration;
-    public static final ForgeConfigSpec.ConfigValue<Integer> HuntingCoolDown;
-    public static final ForgeConfigSpec.ConfigValue<Integer> HuntingSummonDown;
-    public static final ForgeConfigSpec.ConfigValue<Integer> HuntingLimit;
-
-    public static final ForgeConfigSpec.ConfigValue<Integer> MaulingCost;
-    public static final ForgeConfigSpec.ConfigValue<Integer> MaulingDuration;
-    public static final ForgeConfigSpec.ConfigValue<Integer> MaulingCoolDown;
-    public static final ForgeConfigSpec.ConfigValue<Integer> MaulingSummonDown;
-    public static final ForgeConfigSpec.ConfigValue<Integer> MaulingLimit;
-
-    public static final ForgeConfigSpec.ConfigValue<Integer> SlimyCost;
-    public static final ForgeConfigSpec.ConfigValue<Integer> SlimyDuration;
-    public static final ForgeConfigSpec.ConfigValue<Integer> SlimyCoolDown;
-    public static final ForgeConfigSpec.ConfigValue<Integer> SlimySummonDown;
-    public static final ForgeConfigSpec.ConfigValue<Integer> SlimyLimit;
-
-    public static final ForgeConfigSpec.ConfigValue<Integer> CarrionCost;
-    public static final ForgeConfigSpec.ConfigValue<Integer> CarrionDuration;
-    public static final ForgeConfigSpec.ConfigValue<Integer> CarrionCoolDown;
-    public static final ForgeConfigSpec.ConfigValue<Integer> CarrionSummonDown;
-    public static final ForgeConfigSpec.ConfigValue<Integer> CarrionLimit;
-
-    public static final ForgeConfigSpec.ConfigValue<Integer> OvergrowthCost;
-    public static final ForgeConfigSpec.ConfigValue<Integer> OvergrowthDuration;
-    public static final ForgeConfigSpec.ConfigValue<Integer> OvergrowthCoolDown;
-
-    public static final ForgeConfigSpec.ConfigValue<Integer> EntanglingCost;
-    public static final ForgeConfigSpec.ConfigValue<Integer> EntanglingDuration;
-    public static final ForgeConfigSpec.ConfigValue<Integer> EntanglingCoolDown;
-    public static final ForgeConfigSpec.ConfigValue<Integer> EntanglingStaffAmount;
-
-    public static final ForgeConfigSpec.ConfigValue<Integer> WhisperCost;
-    public static final ForgeConfigSpec.ConfigValue<Integer> WhisperDuration;
-    public static final ForgeConfigSpec.ConfigValue<Integer> WhisperCoolDown;
-    public static final ForgeConfigSpec.ConfigValue<Integer> WhisperSummonDown;
-    public static final ForgeConfigSpec.ConfigValue<Integer> WhisperLimit;
-
-    public static final ForgeConfigSpec.ConfigValue<Integer> LeapingCost;
-    public static final ForgeConfigSpec.ConfigValue<Integer> LeapingDuration;
-    public static final ForgeConfigSpec.ConfigValue<Integer> LeapingCoolDown;
-    public static final ForgeConfigSpec.ConfigValue<Integer> LeapingSummonDown;
-    public static final ForgeConfigSpec.ConfigValue<Integer> LeapleafLimit;
-
-    public static final ForgeConfigSpec.ConfigValue<Integer> ThunderboltCost;
-    public static final ForgeConfigSpec.ConfigValue<Integer> ThunderboltDuration;
-    public static final ForgeConfigSpec.ConfigValue<Integer> ThunderboltCoolDown;
-    public static final ForgeConfigSpec.ConfigValue<Double> ThunderboltDamage;
-
-    public static final ForgeConfigSpec.ConfigValue<Integer> ElectroOrbCost;
-    public static final ForgeConfigSpec.ConfigValue<Integer> ElectroOrbDuration;
-    public static final ForgeConfigSpec.ConfigValue<Integer> ElectroOrbCoolDown;
-    public static final ForgeConfigSpec.ConfigValue<Double> ElectroOrbDamage;
-
-    public static final ForgeConfigSpec.ConfigValue<Integer> MonsoonCost;
-    public static final ForgeConfigSpec.ConfigValue<Integer> MonsoonDuration;
-    public static final ForgeConfigSpec.ConfigValue<Integer> MonsoonCoolDown;
-
-    public static final ForgeConfigSpec.ConfigValue<Integer> DischargeCost;
-    public static final ForgeConfigSpec.ConfigValue<Integer> DischargeDuration;
-    public static final ForgeConfigSpec.ConfigValue<Integer> DischargeCoolDown;
-    public static final ForgeConfigSpec.ConfigValue<Double> DischargeDamage;
-    public static final ForgeConfigSpec.ConfigValue<Double> DischargeMaxDamage;
-
-    public static final ForgeConfigSpec.ConfigValue<Integer> BoltingCost;
-    public static final ForgeConfigSpec.ConfigValue<Integer> BoltingDuration;
-    public static final ForgeConfigSpec.ConfigValue<Integer> BoltingCoolDown;
-    public static final ForgeConfigSpec.ConfigValue<Double> BoltingDamage;
-
-    public static final ForgeConfigSpec.ConfigValue<Integer> LightningCost;
-    public static final ForgeConfigSpec.ConfigValue<Integer> LightningDuration;
-    public static final ForgeConfigSpec.ConfigValue<Integer> LightningCoolDown;
-    public static final ForgeConfigSpec.ConfigValue<Double> LightningDamage;
-
-    public static final ForgeConfigSpec.ConfigValue<Integer> ThunderstormCost;
-    public static final ForgeConfigSpec.ConfigValue<Integer> ThunderstormDuration;
-    public static final ForgeConfigSpec.ConfigValue<Integer> ThunderstormCoolDown;
-    public static final ForgeConfigSpec.ConfigValue<Double> ThunderstormDamage;
-
-    public static final ForgeConfigSpec.ConfigValue<Integer> BouncyBubbleCost;
-    public static final ForgeConfigSpec.ConfigValue<Integer> BouncyBubbleDuration;
-    public static final ForgeConfigSpec.ConfigValue<Integer> BouncyBubbleCoolDown;
-    public static final ForgeConfigSpec.ConfigValue<Double> BouncyBubbleDamage;
-
-    public static final ForgeConfigSpec.ConfigValue<Integer> SteamingCost;
-    public static final ForgeConfigSpec.ConfigValue<Integer> SteamingDuration;
-    public static final ForgeConfigSpec.ConfigValue<Integer> SteamingCoolDown;
-    public static final ForgeConfigSpec.ConfigValue<Double> SteamingDamage;
-
-    public static final ForgeConfigSpec.ConfigValue<Integer> TridentStormCost;
-    public static final ForgeConfigSpec.ConfigValue<Integer> TridentStormCoolDown;
-    public static final ForgeConfigSpec.ConfigValue<Double> TridentStormDamage;
-
-    public static final ForgeConfigSpec.ConfigValue<Integer> PrismaBeamCost;
-    public static final ForgeConfigSpec.ConfigValue<Integer> PrismaBeamDuration;
-    public static final ForgeConfigSpec.ConfigValue<Integer> PrismaBeamCoolDown;
-    public static final ForgeConfigSpec.ConfigValue<Double> PrismaBeamDamage;
-
-    public static final ForgeConfigSpec.ConfigValue<Integer> GuardianCost;
-    public static final ForgeConfigSpec.ConfigValue<Integer> GuardianDuration;
-    public static final ForgeConfigSpec.ConfigValue<Integer> GuardianCoolDown;
-    public static final ForgeConfigSpec.ConfigValue<Integer> GuardianSummonDown;
-    public static final ForgeConfigSpec.ConfigValue<Integer> GuardianLimit;
-
-    public static final ForgeConfigSpec.ConfigValue<Integer> BiomineCost;
-    public static final ForgeConfigSpec.ConfigValue<Integer> BiomineDuration;
-    public static final ForgeConfigSpec.ConfigValue<Integer> BiomineCoolDown;
-    public static final ForgeConfigSpec.ConfigValue<Double> BiomineDamage;
-    public static final ForgeConfigSpec.ConfigValue<Double> BiomineAcidDamage;
-
-    public static final ForgeConfigSpec.ConfigValue<Integer> WaterWhipCost;
-    public static final ForgeConfigSpec.ConfigValue<Integer> WaterWhipDuration;
-    public static final ForgeConfigSpec.ConfigValue<Integer> WaterWhipCoolDown;
-    public static final ForgeConfigSpec.ConfigValue<Double> WaterWhipDamage;
-
-    public static final ForgeConfigSpec.ConfigValue<Integer> TidalCost;
-    public static final ForgeConfigSpec.ConfigValue<Integer> TidalDuration;
-    public static final ForgeConfigSpec.ConfigValue<Integer> TidalCoolDown;
-    public static final ForgeConfigSpec.ConfigValue<Double> TidalBaseDamage;
-
-    public static final ForgeConfigSpec.ConfigValue<Integer> CallCost;
-    public static final ForgeConfigSpec.ConfigValue<Integer> CallDuration;
-    public static final ForgeConfigSpec.ConfigValue<Integer> CallCoolDown;
-
-    public static final ForgeConfigSpec.ConfigValue<Integer> TroopCost;
-    public static final ForgeConfigSpec.ConfigValue<Integer> TroopDuration;
-    public static final ForgeConfigSpec.ConfigValue<Integer> TroopCoolDown;
-
-    public static final ForgeConfigSpec.ConfigValue<Integer> RecallCost;
-    public static final ForgeConfigSpec.ConfigValue<Integer> RecallDuration;
-    public static final ForgeConfigSpec.ConfigValue<Integer> RecallCoolDown;
-
-    public static final ForgeConfigSpec.ConfigValue<Integer> EnderChestCost;
-    public static final ForgeConfigSpec.ConfigValue<Integer> EnderChestDuration;
-    public static final ForgeConfigSpec.ConfigValue<Integer> EnderChestCoolDown;
-
-    public static final ForgeConfigSpec.ConfigValue<Integer> BanishCost;
-    public static final ForgeConfigSpec.ConfigValue<Integer> BanishCoolDown;
-    public static final ForgeConfigSpec.ConfigValue<Integer> BanishMaxHealth;
-
-    public static final ForgeConfigSpec.ConfigValue<Integer> BlinkCost;
-    public static final ForgeConfigSpec.ConfigValue<Integer> BlinkDuration;
-    public static final ForgeConfigSpec.ConfigValue<Integer> BlinkCoolDown;
-
-    public static final ForgeConfigSpec.ConfigValue<Integer> EndWalkCost;
-    public static final ForgeConfigSpec.ConfigValue<Integer> EndWalkDuration;
-    public static final ForgeConfigSpec.ConfigValue<Integer> EndWalkCoolDown;
-    public static final ForgeConfigSpec.ConfigValue<Integer> EndWalkEffectDuration;
-
-    public static final ForgeConfigSpec.ConfigValue<Integer> TunnelCost;
-    public static final ForgeConfigSpec.ConfigValue<Integer> TunnelCoolDown;
-    public static final ForgeConfigSpec.ConfigValue<Integer> TunnelDefaultLifespan;
-    public static final ForgeConfigSpec.ConfigValue<Integer> TunnelDefaultDistance;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> TunnelHaveBlacklist;
-
-    public static final ForgeConfigSpec.ConfigValue<Integer> RuptureCost;
-    public static final ForgeConfigSpec.ConfigValue<Integer> RuptureDuration;
-    public static final ForgeConfigSpec.ConfigValue<Integer> RuptureCoolDown;
-    public static final ForgeConfigSpec.ConfigValue<Double> RuptureDamage;
-
-    public static final ForgeConfigSpec.ConfigValue<Integer> VoidShockCost;
-    public static final ForgeConfigSpec.ConfigValue<Integer> VoidShockDuration;
-    public static final ForgeConfigSpec.ConfigValue<Integer> VoidShockCoolDown;
-    public static final ForgeConfigSpec.ConfigValue<Double> VoidShockDamage;
-
-    public static final ForgeConfigSpec.ConfigValue<Integer> VoidBombCost;
-    public static final ForgeConfigSpec.ConfigValue<Integer> VoidBombDuration;
-    public static final ForgeConfigSpec.ConfigValue<Integer> VoidBombCoolDown;
-    public static final ForgeConfigSpec.ConfigValue<Double> VoidBombDamage;
-
-    public static final ForgeConfigSpec.ConfigValue<Integer> WatchlingCost;
-    public static final ForgeConfigSpec.ConfigValue<Integer> WatchlingDuration;
-    public static final ForgeConfigSpec.ConfigValue<Integer> WatchlingCoolDown;
-    public static final ForgeConfigSpec.ConfigValue<Integer> WatchlingSummonDown;
-    public static final ForgeConfigSpec.ConfigValue<Integer> WatchlingLimit;
-
-    public static final ForgeConfigSpec.ConfigValue<Integer> BlastlingCost;
-    public static final ForgeConfigSpec.ConfigValue<Integer> BlastlingDuration;
-    public static final ForgeConfigSpec.ConfigValue<Integer> BlastlingCoolDown;
-    public static final ForgeConfigSpec.ConfigValue<Integer> BlastlingSummonDown;
-    public static final ForgeConfigSpec.ConfigValue<Integer> BlastlingLimit;
-
-    public static final ForgeConfigSpec.ConfigValue<Integer> SnarelingCost;
-    public static final ForgeConfigSpec.ConfigValue<Integer> SnarelingDuration;
-    public static final ForgeConfigSpec.ConfigValue<Integer> SnarelingCoolDown;
-    public static final ForgeConfigSpec.ConfigValue<Integer> SnarelingSummonDown;
-    public static final ForgeConfigSpec.ConfigValue<Integer> SnarelingLimit;
-
-    public static final ForgeConfigSpec.ConfigValue<Integer> CraftingCost;
-    public static final ForgeConfigSpec.ConfigValue<Integer> CraftingDuration;
-    public static final ForgeConfigSpec.ConfigValue<Integer> CraftingCoolDown;
-
-    public static final ForgeConfigSpec.ConfigValue<Integer> ShockwaveCost;
-    public static final ForgeConfigSpec.ConfigValue<Integer> ShockwaveDuration;
-    public static final ForgeConfigSpec.ConfigValue<Integer> ShockwaveCoolDown;
-    public static final ForgeConfigSpec.ConfigValue<Double> ShockwaveDamage;
-    public static final ForgeConfigSpec.ConfigValue<Double> ShockwaveMaxDamage;
-
-    public static final ForgeConfigSpec.ConfigValue<Integer> IronHideCost;
-    public static final ForgeConfigSpec.ConfigValue<Integer> IronHideDuration;
-    public static final ForgeConfigSpec.ConfigValue<Integer> IronHideCoolDown;
-
-    public static final ForgeConfigSpec.ConfigValue<Integer> BulwarkCost;
-    public static final ForgeConfigSpec.ConfigValue<Integer> BulwarkDuration;
-    public static final ForgeConfigSpec.ConfigValue<Integer> BulwarkCoolDown;
-    public static final ForgeConfigSpec.ConfigValue<Integer> BulwarkShieldAmount;
-    public static final ForgeConfigSpec.ConfigValue<Integer> BulwarkShieldTime;
-
-    public static final ForgeConfigSpec.ConfigValue<Integer> SoulHealCost;
-    public static final ForgeConfigSpec.ConfigValue<Integer> SoulHealDuration;
-    public static final ForgeConfigSpec.ConfigValue<Integer> SoulHealCoolDown;
-    public static final ForgeConfigSpec.ConfigValue<Integer> SoulHealAmount;
-
-    public static final ForgeConfigSpec.ConfigValue<Integer> WeakeningCost;
-    public static final ForgeConfigSpec.ConfigValue<Integer> WeakeningDuration;
-    public static final ForgeConfigSpec.ConfigValue<Integer> WeakeningCoolDown;
-
-    public static final ForgeConfigSpec.ConfigValue<Integer> ArrowRainCost;
-    public static final ForgeConfigSpec.ConfigValue<Integer> ArrowRainChargeUp;
-    public static final ForgeConfigSpec.ConfigValue<Integer> ArrowRainDuration;
-    public static final ForgeConfigSpec.ConfigValue<Integer> ArrowRainCoolDown;
-    public static final ForgeConfigSpec.ConfigValue<Double> ArrowRainExtraDamage;
-
-    public static final ForgeConfigSpec.ConfigValue<Integer> TelekinesisCost;
-    public static final ForgeConfigSpec.ConfigValue<Integer> TelekinesisChargeUp;
-    public static final ForgeConfigSpec.ConfigValue<Integer> TelekinesisMaxHealth;
-
-    public static final ForgeConfigSpec.ConfigValue<Integer> SonicBoomCost;
-    public static final ForgeConfigSpec.ConfigValue<Integer> SonicBoomDuration;
-    public static final ForgeConfigSpec.ConfigValue<Integer> SonicBoomCoolDown;
-    public static final ForgeConfigSpec.ConfigValue<Double> SonicBoomDamage;
-
-    public static final ForgeConfigSpec.ConfigValue<Integer> CorruptionCost;
-    public static final ForgeConfigSpec.ConfigValue<Integer> CorruptionChargeUp;
-    public static final ForgeConfigSpec.ConfigValue<Integer> CorruptionDuration;
-    public static final ForgeConfigSpec.ConfigValue<Integer> CorruptionCoolDown;
-    public static final ForgeConfigSpec.ConfigValue<Double> CorruptedBeamDamage;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> CorruptionImmobile;
-
-    public static final ForgeConfigSpec.ConfigValue<Integer> SpiderLimit;
-    public static final ForgeConfigSpec.ConfigValue<Integer> BroodMotherLimit;
-    public static final ForgeConfigSpec.ConfigValue<Integer> NecromancerLimit;
-    public static final ForgeConfigSpec.ConfigValue<Integer> DrownedNecromancerLimit;
-    public static final ForgeConfigSpec.ConfigValue<Integer> WitherNecromancerLimit;
-    public static final ForgeConfigSpec.ConfigValue<Integer> BoundIllagerLimit;
-    public static final ForgeConfigSpec.ConfigValue<Integer> BlackBeastLimit;
-    public static final ForgeConfigSpec.ConfigValue<Integer> WildfireLimit;
-    public static final ForgeConfigSpec.ConfigValue<Integer> RedstoneGolemLimit;
-    public static final ForgeConfigSpec.ConfigValue<Integer> GraveGolemLimit;
-    public static final ForgeConfigSpec.ConfigValue<Integer> RedstoneMonstrosityGlobalLimit;
-    public static final ForgeConfigSpec.ConfigValue<Integer> RedstoneMonstrosityPlayerLimit;
-
-    public static final ForgeConfigSpec.ConfigValue<Integer> MaxSoulEaterLevel;
-    public static final ForgeConfigSpec.ConfigValue<Integer> MaxWantingLevel;
-    public static final ForgeConfigSpec.ConfigValue<Integer> MaxPotencyLevel;
-    public static final ForgeConfigSpec.ConfigValue<Integer> MaxRadiusLevel;
-    public static final ForgeConfigSpec.ConfigValue<Integer> MaxRangeLevel;
-    public static final ForgeConfigSpec.ConfigValue<Integer> MaxDurationLevel;
-    public static final ForgeConfigSpec.ConfigValue<Integer> MaxBurningLevel;
-    public static final ForgeConfigSpec.ConfigValue<Integer> MaxVelocityLevel;
-    public static final ForgeConfigSpec.ConfigValue<Integer> PotencyPower;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> FocusEnchantsTrades;
-
-    public static final ForgeConfigSpec.ConfigValue<Boolean> OwnerHitCommand;
-    public static final ForgeConfigSpec.ConfigValue<Integer> OwnerHitKill;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> EnvironmentalCost;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> EnchantMultiCost;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> SummonDown;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> SpellDamageEnderDragon;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> FullStopCast;
-
-    public static ForgeConfigSpec.ConfigValue<List<? extends String>> TelekinesisBlackList;
-    public static ForgeConfigSpec.ConfigValue<List<? extends String>> BanishBlackList;
+    public static final ModConfigSpec.Builder BUILDER = new ModConfigSpec.Builder();
+    public static final ModConfigSpec SPEC;
+
+    public static final ModConfigSpec.ConfigValue<Integer> SpellDamageMultiplier;
+    public static final ModConfigSpec.ConfigValue<Double> SpellDamageMultiplierDecimal;
+
+    public static final ModConfigSpec.ConfigValue<Integer> VexCost;
+    public static final ModConfigSpec.ConfigValue<Integer> VexDuration;
+    public static final ModConfigSpec.ConfigValue<Integer> VexCoolDown;
+    public static final ModConfigSpec.ConfigValue<Integer> VexSummonDown;
+    public static final ModConfigSpec.ConfigValue<Integer> VexLimit;
+
+    public static final ModConfigSpec.ConfigValue<Integer> FangCost;
+    public static final ModConfigSpec.ConfigValue<Integer> FangDuration;
+    public static final ModConfigSpec.ConfigValue<Integer> FangCoolDown;
+    public static final ModConfigSpec.ConfigValue<Double> FangDamage;
+    public static final ModConfigSpec.ConfigValue<Integer> FangGainSouls;
+
+    public static final ModConfigSpec.ConfigValue<Integer> SpikeCost;
+    public static final ModConfigSpec.ConfigValue<Integer> SpikeDuration;
+    public static final ModConfigSpec.ConfigValue<Integer> SpikeCoolDown;
+    public static final ModConfigSpec.ConfigValue<Double> SpikeDamage;
+    public static final ModConfigSpec.ConfigValue<Integer> SpikeGainSouls;
+
+    public static final ModConfigSpec.ConfigValue<Integer> ZombieCost;
+    public static final ModConfigSpec.ConfigValue<Integer> ZombieDuration;
+    public static final ModConfigSpec.ConfigValue<Integer> ZombieCoolDown;
+    public static final ModConfigSpec.ConfigValue<Integer> ZombieSummonDown;
+    public static final ModConfigSpec.ConfigValue<Integer> ZombieLimit;
+
+    public static final ModConfigSpec.ConfigValue<Integer> SkeletonCost;
+    public static final ModConfigSpec.ConfigValue<Integer> SkeletonDuration;
+    public static final ModConfigSpec.ConfigValue<Integer> SkeletonCoolDown;
+    public static final ModConfigSpec.ConfigValue<Integer> SkeletonSummonDown;
+    public static final ModConfigSpec.ConfigValue<Integer> SkeletonLimit;
+
+    public static final ModConfigSpec.ConfigValue<Integer> ReaperCost;
+    public static final ModConfigSpec.ConfigValue<Integer> ReaperDuration;
+    public static final ModConfigSpec.ConfigValue<Integer> ReaperCoolDown;
+    public static final ModConfigSpec.ConfigValue<Integer> ReaperSummonDown;
+    public static final ModConfigSpec.ConfigValue<Integer> ReaperLimit;
+
+    public static final ModConfigSpec.ConfigValue<Integer> WraithCost;
+    public static final ModConfigSpec.ConfigValue<Integer> WraithDuration;
+    public static final ModConfigSpec.ConfigValue<Integer> WraithCoolDown;
+    public static final ModConfigSpec.ConfigValue<Integer> WraithSummonDown;
+    public static final ModConfigSpec.ConfigValue<Integer> WraithLimit;
+
+    public static final ModConfigSpec.ConfigValue<Integer> PhantomCost;
+    public static final ModConfigSpec.ConfigValue<Integer> PhantomDuration;
+    public static final ModConfigSpec.ConfigValue<Integer> PhantomCoolDown;
+    public static final ModConfigSpec.ConfigValue<Integer> PhantomSummonDown;
+    public static final ModConfigSpec.ConfigValue<Integer> PhantomLimit;
+
+    public static final ModConfigSpec.ConfigValue<Integer> VanguardCost;
+    public static final ModConfigSpec.ConfigValue<Integer> VanguardDuration;
+    public static final ModConfigSpec.ConfigValue<Integer> VanguardCoolDown;
+    public static final ModConfigSpec.ConfigValue<Integer> VanguardSummonDown;
+    public static final ModConfigSpec.ConfigValue<Integer> VanguardLimit;
+
+    public static final ModConfigSpec.ConfigValue<Integer> BlackguardCost;
+    public static final ModConfigSpec.ConfigValue<Integer> BlackguardDuration;
+    public static final ModConfigSpec.ConfigValue<Integer> BlackguardCoolDown;
+    public static final ModConfigSpec.ConfigValue<Integer> BlackguardSummonDown;
+    public static final ModConfigSpec.ConfigValue<Integer> BlackguardLimit;
+
+    public static final ModConfigSpec.ConfigValue<Integer> GhostFireCost;
+    public static final ModConfigSpec.ConfigValue<Integer> GhostFireDuration;
+    public static final ModConfigSpec.ConfigValue<Integer> GhostFireCoolDown;
+
+    public static final ModConfigSpec.ConfigValue<Integer> LeechingCost;
+    public static final ModConfigSpec.ConfigValue<Integer> LeechingChargeUp;
+    public static final ModConfigSpec.ConfigValue<Integer> LeechingDuration;
+    public static final ModConfigSpec.ConfigValue<Integer> LeechingCoolDown;
+    public static final ModConfigSpec.ConfigValue<Integer> LeechingPercent;
+    public static final ModConfigSpec.ConfigValue<Double> LeechingDamage;
+
+    public static final ModConfigSpec.ConfigValue<Integer> KillingCost;
+    public static final ModConfigSpec.ConfigValue<Integer> KillingDuration;
+    public static final ModConfigSpec.ConfigValue<Integer> KillingCoolDown;
+    public static final ModConfigSpec.ConfigValue<Double> KillingFeedback;
+
+    public static final ModConfigSpec.ConfigValue<Integer> HauntedSkullCost;
+    public static final ModConfigSpec.ConfigValue<Integer> HauntedSkullDuration;
+    public static final ModConfigSpec.ConfigValue<Integer> HauntedSkullCoolDown;
+    public static final ModConfigSpec.ConfigValue<Integer> HauntedSkullSummonDown;
+    public static final ModConfigSpec.ConfigValue<Double> HauntedSkullDamage;
+    public static final ModConfigSpec.ConfigValue<Boolean> HauntedSkullGriefing;
+    public static final ModConfigSpec.ConfigValue<Integer> SkullLimit;
+
+    public static final ModConfigSpec.ConfigValue<Integer> WitherSkullCost;
+    public static final ModConfigSpec.ConfigValue<Integer> WitherSkullDuration;
+    public static final ModConfigSpec.ConfigValue<Integer> WitherSkullCoolDown;
+    public static final ModConfigSpec.ConfigValue<Double> WitherSkullDamage;
+    public static final ModConfigSpec.ConfigValue<Boolean> WitherSkullGriefing;
+
+    public static final ModConfigSpec.ConfigValue<Integer> GhastCost;
+    public static final ModConfigSpec.ConfigValue<Integer> GhastDuration;
+    public static final ModConfigSpec.ConfigValue<Integer> GhastCoolDown;
+    public static final ModConfigSpec.ConfigValue<Integer> GhastSummonDown;
+    public static final ModConfigSpec.ConfigValue<Integer> GhastLimit;
+
+    public static final ModConfigSpec.ConfigValue<Integer> BlazeCost;
+    public static final ModConfigSpec.ConfigValue<Integer> BlazeDuration;
+    public static final ModConfigSpec.ConfigValue<Integer> BlazeCoolDown;
+    public static final ModConfigSpec.ConfigValue<Integer> BlazeSummonDown;
+    public static final ModConfigSpec.ConfigValue<Integer> BlazeLimit;
+
+    public static final ModConfigSpec.ConfigValue<Integer> FeastCost;
+    public static final ModConfigSpec.ConfigValue<Integer> FeastChargeUp;
+    public static final ModConfigSpec.ConfigValue<Integer> FeastDuration;
+
+    public static final ModConfigSpec.ConfigValue<Integer> TeethCost;
+    public static final ModConfigSpec.ConfigValue<Integer> TeethDuration;
+    public static final ModConfigSpec.ConfigValue<Integer> TeethCoolDown;
+    public static final ModConfigSpec.ConfigValue<Double> ViciousToothDamage;
+
+    public static final ModConfigSpec.ConfigValue<Integer> FireballCost;
+    public static final ModConfigSpec.ConfigValue<Integer> FireballDuration;
+    public static final ModConfigSpec.ConfigValue<Integer> FireballCoolDown;
+    public static final ModConfigSpec.ConfigValue<Double> FireballDamage;
+    public static final ModConfigSpec.ConfigValue<Boolean> FireballGriefing;
+
+    public static final ModConfigSpec.ConfigValue<Integer> LavaballCost;
+    public static final ModConfigSpec.ConfigValue<Integer> LavaballDuration;
+    public static final ModConfigSpec.ConfigValue<Integer> LavaballCoolDown;
+    public static final ModConfigSpec.ConfigValue<Double> LavaballDamage;
+    public static final ModConfigSpec.ConfigValue<Boolean> LavaballGriefing;
+
+    public static final ModConfigSpec.ConfigValue<Integer> BombardmentCost;
+    public static final ModConfigSpec.ConfigValue<Integer> BombardmentChargeUp;
+    public static final ModConfigSpec.ConfigValue<Integer> BombardmentShots;
+    public static final ModConfigSpec.ConfigValue<Integer> BombardmentDuration;
+    public static final ModConfigSpec.ConfigValue<Integer> BombardmentCoolDown;
+
+    public static final ModConfigSpec.ConfigValue<Integer> MeteorShowerCost;
+    public static final ModConfigSpec.ConfigValue<Integer> MeteorShowerChargeUp;
+    public static final ModConfigSpec.ConfigValue<Integer> MeteorShowerShots;
+    public static final ModConfigSpec.ConfigValue<Integer> MeteorShowerDuration;
+    public static final ModConfigSpec.ConfigValue<Integer> MeteorShowerCoolDown;
+
+    public static final ModConfigSpec.ConfigValue<Integer> MagmaBombCost;
+    public static final ModConfigSpec.ConfigValue<Integer> MagmaBombDuration;
+    public static final ModConfigSpec.ConfigValue<Integer> MagmaBombCoolDown;
+
+    public static final ModConfigSpec.ConfigValue<Integer> FireBlastCost;
+    public static final ModConfigSpec.ConfigValue<Integer> FireBlastDuration;
+    public static final ModConfigSpec.ConfigValue<Integer> FireBlastCoolDown;
+    public static final ModConfigSpec.ConfigValue<Double> FireBlastDamage;
+    public static final ModConfigSpec.ConfigValue<Double> FireBlastMaxDamage;
+
+    public static final ModConfigSpec.ConfigValue<Integer> FlameStrikeCost;
+    public static final ModConfigSpec.ConfigValue<Integer> FlameStrikeDuration;
+    public static final ModConfigSpec.ConfigValue<Integer> FlameStrikeCoolDown;
+    public static final ModConfigSpec.ConfigValue<Double> FlameStrikeDamage;
+
+    public static final ModConfigSpec.ConfigValue<Integer> SoulBoltCost;
+    public static final ModConfigSpec.ConfigValue<Integer> SoulBoltDuration;
+    public static final ModConfigSpec.ConfigValue<Integer> SoulBoltCoolDown;
+    public static final ModConfigSpec.ConfigValue<Double> SoulBoltDamage;
+    public static final ModConfigSpec.ConfigValue<Double> NecroBoltDamage;
+
+    public static final ModConfigSpec.ConfigValue<Integer> MagicBoltCost;
+    public static final ModConfigSpec.ConfigValue<Integer> MagicBoltDuration;
+    public static final ModConfigSpec.ConfigValue<Integer> MagicBoltCoolDown;
+    public static final ModConfigSpec.ConfigValue<Double> MagicBoltDamage;
+
+    public static final ModConfigSpec.ConfigValue<Integer> SwordCost;
+    public static final ModConfigSpec.ConfigValue<Integer> SwordDuration;
+    public static final ModConfigSpec.ConfigValue<Integer> SwordCoolDown;
+
+    public static final ModConfigSpec.ConfigValue<Integer> IceSpikeCost;
+    public static final ModConfigSpec.ConfigValue<Integer> IceSpikeDuration;
+    public static final ModConfigSpec.ConfigValue<Integer> IceSpikeCoolDown;
+    public static final ModConfigSpec.ConfigValue<Double> IceSpikeDamage;
+
+    public static final ModConfigSpec.ConfigValue<Integer> IceStormCost;
+    public static final ModConfigSpec.ConfigValue<Integer> IceStormDuration;
+    public static final ModConfigSpec.ConfigValue<Integer> IceStormCoolDown;
+    public static final ModConfigSpec.ConfigValue<Double> IceStormDamage;
+
+    public static final ModConfigSpec.ConfigValue<Integer> ChargeCost;
+    public static final ModConfigSpec.ConfigValue<Integer> ChargeCoolDown;
+    public static final ModConfigSpec.ConfigValue<Double> ChargeDamage;
+
+    public static final ModConfigSpec.ConfigValue<Integer> IllusionCost;
+    public static final ModConfigSpec.ConfigValue<Integer> IllusionDuration;
+    public static final ModConfigSpec.ConfigValue<Integer> IllusionCoolDown;
+
+    public static final ModConfigSpec.ConfigValue<Integer> IgniteCost;
+    public static final ModConfigSpec.ConfigValue<Integer> IgniteCoolDown;
+    public static final ModConfigSpec.ConfigValue<Integer> IgniteFireSeconds;
+
+    public static final ModConfigSpec.ConfigValue<Integer> FireBreathCost;
+    public static final ModConfigSpec.ConfigValue<Integer> FireBreathChargeUp;
+    public static final ModConfigSpec.ConfigValue<Integer> FireBreathDuration;
+    public static final ModConfigSpec.ConfigValue<Integer> FireBreathCoolDown;
+    public static final ModConfigSpec.ConfigValue<Double> FireBreathDamage;
+    public static final ModConfigSpec.ConfigValue<Boolean> DragonFireGriefing;
+
+    public static final ModConfigSpec.ConfigValue<Integer> FrostBreathCost;
+    public static final ModConfigSpec.ConfigValue<Integer> FrostBreathChargeUp;
+    public static final ModConfigSpec.ConfigValue<Integer> FrostBreathDuration;
+    public static final ModConfigSpec.ConfigValue<Integer> FrostBreathCoolDown;
+    public static final ModConfigSpec.ConfigValue<Double> FrostBreathDamage;
+    public static final ModConfigSpec.ConfigValue<Boolean> DragonFrostGriefing;
+
+    public static final ModConfigSpec.ConfigValue<Integer> ShockingCost;
+    public static final ModConfigSpec.ConfigValue<Integer> ShockingChargeUp;
+    public static final ModConfigSpec.ConfigValue<Integer> ShockingDuration;
+    public static final ModConfigSpec.ConfigValue<Integer> ShockingCoolDown;
+    public static final ModConfigSpec.ConfigValue<Double> ShockingDamage;
+
+    public static final ModConfigSpec.ConfigValue<Integer> BubbleStreamCost;
+    public static final ModConfigSpec.ConfigValue<Integer> BubbleStreamChargeUp;
+    public static final ModConfigSpec.ConfigValue<Integer> BubbleStreamDuration;
+    public static final ModConfigSpec.ConfigValue<Integer> BubbleStreamCoolDown;
+    public static final ModConfigSpec.ConfigValue<Double> BubbleStreamDamage;
+
+    public static final ModConfigSpec.ConfigValue<Integer> SoulLightCost;
+    public static final ModConfigSpec.ConfigValue<Integer> SoulLightDuration;
+    public static final ModConfigSpec.ConfigValue<Integer> SoulLightCoolDown;
+
+    public static final ModConfigSpec.ConfigValue<Integer> GlowLightCost;
+    public static final ModConfigSpec.ConfigValue<Integer> GlowLightDuration;
+    public static final ModConfigSpec.ConfigValue<Integer> GlowLightCoolDown;
+
+    public static final ModConfigSpec.ConfigValue<Integer> IlluminateCost;
+    public static final ModConfigSpec.ConfigValue<Integer> IlluminateChargeUp;
+    public static final ModConfigSpec.ConfigValue<Integer> IlluminateDuration;
+    public static final ModConfigSpec.ConfigValue<Integer> IlluminateMinLightLevel;
+
+    public static final ModConfigSpec.ConfigValue<Integer> IceChunkCost;
+    public static final ModConfigSpec.ConfigValue<Integer> IceChunkDuration;
+    public static final ModConfigSpec.ConfigValue<Integer> IceChunkCoolDown;
+    public static final ModConfigSpec.ConfigValue<Double> IceChunkDamage;
+
+    public static final ModConfigSpec.ConfigValue<Integer> HailCost;
+    public static final ModConfigSpec.ConfigValue<Integer> HailDuration;
+    public static final ModConfigSpec.ConfigValue<Integer> HailCoolDown;
+    public static final ModConfigSpec.ConfigValue<Double> HailDamage;
+
+    public static final ModConfigSpec.ConfigValue<Integer> BlizzardCost;
+    public static final ModConfigSpec.ConfigValue<Integer> BlizzardChargeUp;
+    public static final ModConfigSpec.ConfigValue<Integer> BlizzardDuration;
+    public static final ModConfigSpec.ConfigValue<Integer> BlizzardCoolDown;
+
+    public static final ModConfigSpec.ConfigValue<Integer> ChillingCost;
+    public static final ModConfigSpec.ConfigValue<Integer> ChillingDuration;
+    public static final ModConfigSpec.ConfigValue<Integer> ChillingCoolDown;
+
+    public static final ModConfigSpec.ConfigValue<Integer> FrostNovaCost;
+    public static final ModConfigSpec.ConfigValue<Integer> FrostNovaDuration;
+    public static final ModConfigSpec.ConfigValue<Integer> FrostNovaCoolDown;
+    public static final ModConfigSpec.ConfigValue<Double> FrostNovaDamage;
+    public static final ModConfigSpec.ConfigValue<Double> FrostNovaMaxDamage;
+
+    public static final ModConfigSpec.ConfigValue<Integer> FrostbornCost;
+    public static final ModConfigSpec.ConfigValue<Integer> FrostbornDuration;
+    public static final ModConfigSpec.ConfigValue<Integer> FrostbornCoolDown;
+    public static final ModConfigSpec.ConfigValue<Integer> FrostbornSummonDown;
+    public static final ModConfigSpec.ConfigValue<Integer> IceGolemLimit;
+
+    public static final ModConfigSpec.ConfigValue<Integer> BarricadeCost;
+    public static final ModConfigSpec.ConfigValue<Integer> BarricadeDuration;
+    public static final ModConfigSpec.ConfigValue<Integer> BarricadeCoolDown;
+
+    public static final ModConfigSpec.ConfigValue<Integer> QuakingCost;
+    public static final ModConfigSpec.ConfigValue<Integer> QuakingDuration;
+    public static final ModConfigSpec.ConfigValue<Integer> QuakingCoolDown;
+    public static final ModConfigSpec.ConfigValue<Double> QuakingDamage;
+
+    public static final ModConfigSpec.ConfigValue<Integer> EarthFistCost;
+    public static final ModConfigSpec.ConfigValue<Integer> EarthFistDuration;
+    public static final ModConfigSpec.ConfigValue<Integer> EarthFistCoolDown;
+    public static final ModConfigSpec.ConfigValue<Double> EarthFistDamage;
+
+    public static final ModConfigSpec.ConfigValue<Integer> PulverizeCost;
+    public static final ModConfigSpec.ConfigValue<Integer> PulverizeCoolDown;
+
+    public static final ModConfigSpec.ConfigValue<Integer> RotationCost;
+    public static final ModConfigSpec.ConfigValue<Integer> RotationCoolDown;
+
+    public static final ModConfigSpec.ConfigValue<Integer> BurrowingCost;
+    public static final ModConfigSpec.ConfigValue<Integer> BurrowingChargeUp;
+    public static final ModConfigSpec.ConfigValue<Integer> BurrowingInitialSpeed;
+
+    public static final ModConfigSpec.ConfigValue<Integer> SensingCost;
+    public static final ModConfigSpec.ConfigValue<Integer> SensingDuration;
+    public static final ModConfigSpec.ConfigValue<Integer> SensingCoolDown;
+
+    public static final ModConfigSpec.ConfigValue<Integer> EruptionCost;
+    public static final ModConfigSpec.ConfigValue<Integer> EruptionDuration;
+    public static final ModConfigSpec.ConfigValue<Integer> EruptionCoolDown;
+    public static final ModConfigSpec.ConfigValue<Double> PyroclastDamage;
+    public static final ModConfigSpec.ConfigValue<Boolean> PyroclastGriefing;
+
+    public static final ModConfigSpec.ConfigValue<Integer> ScatterCost;
+    public static final ModConfigSpec.ConfigValue<Integer> ScatterDuration;
+    public static final ModConfigSpec.ConfigValue<Integer> ScatterCoolDown;
+    public static final ModConfigSpec.ConfigValue<Double> ScatterMineDamage;
+
+    public static final ModConfigSpec.ConfigValue<Integer> LaunchCost;
+    public static final ModConfigSpec.ConfigValue<Integer> LaunchDuration;
+    public static final ModConfigSpec.ConfigValue<Integer> LaunchCoolDown;
+
+    public static final ModConfigSpec.ConfigValue<Integer> FlyingCost;
+    public static final ModConfigSpec.ConfigValue<Integer> FlyingChargeUp;
+
+    public static final ModConfigSpec.ConfigValue<Integer> WhirlwindCost;
+    public static final ModConfigSpec.ConfigValue<Integer> WhirlwindChargeUp;
+    public static final ModConfigSpec.ConfigValue<Integer> WhirlwindDuration;
+    public static final ModConfigSpec.ConfigValue<Integer> WhirlwindCoolDown;
+
+    public static final ModConfigSpec.ConfigValue<Integer> CushionCost;
+    public static final ModConfigSpec.ConfigValue<Integer> CushionDuration;
+    public static final ModConfigSpec.ConfigValue<Integer> CushionCoolDown;
+
+    public static final ModConfigSpec.ConfigValue<Integer> CycloneCost;
+    public static final ModConfigSpec.ConfigValue<Integer> CycloneDuration;
+    public static final ModConfigSpec.ConfigValue<Integer> CycloneCoolDown;
+
+    public static final ModConfigSpec.ConfigValue<Integer> UpdraftCost;
+    public static final ModConfigSpec.ConfigValue<Integer> UpdraftDuration;
+    public static final ModConfigSpec.ConfigValue<Integer> UpdraftCoolDown;
+    public static final ModConfigSpec.ConfigValue<Double> UpdraftBlastDamage;
+
+    public static final ModConfigSpec.ConfigValue<Integer> WindBlastCost;
+    public static final ModConfigSpec.ConfigValue<Integer> WindBlastDuration;
+    public static final ModConfigSpec.ConfigValue<Integer> WindBlastCoolDown;
+
+    public static final ModConfigSpec.ConfigValue<Integer> RazorWindCost;
+    public static final ModConfigSpec.ConfigValue<Integer> RazorWindDuration;
+    public static final ModConfigSpec.ConfigValue<Integer> RazorWindCoolDown;
+    public static final ModConfigSpec.ConfigValue<Double> RazorWindDamage;
+
+    public static final ModConfigSpec.ConfigValue<Integer> TremblingCost;
+    public static final ModConfigSpec.ConfigValue<Integer> TremblingDuration;
+    public static final ModConfigSpec.ConfigValue<Integer> TremblingCoolDown;
+
+    public static final ModConfigSpec.ConfigValue<Integer> SwarmCost;
+    public static final ModConfigSpec.ConfigValue<Integer> SwarmChargeUp;
+    public static final ModConfigSpec.ConfigValue<Integer> SwarmDuration;
+    public static final ModConfigSpec.ConfigValue<Integer> SwarmCoolDown;
+    public static final ModConfigSpec.ConfigValue<Double> SwarmDamage;
+
+    public static final ModConfigSpec.ConfigValue<Integer> PoisonDartCost;
+    public static final ModConfigSpec.ConfigValue<Integer> PoisonDartDuration;
+    public static final ModConfigSpec.ConfigValue<Integer> PoisonDartCoolDown;
+    public static final ModConfigSpec.ConfigValue<Double> PoisonDartDamage;
+
+    public static final ModConfigSpec.ConfigValue<Integer> BlossomCost;
+    public static final ModConfigSpec.ConfigValue<Integer> BlossomDuration;
+    public static final ModConfigSpec.ConfigValue<Integer> BlossomCoolDown;
+    public static final ModConfigSpec.ConfigValue<Double> BlossomDamage;
+
+    public static final ModConfigSpec.ConfigValue<Integer> GrappleCost;
+    public static final ModConfigSpec.ConfigValue<Integer> GrappleDuration;
+    public static final ModConfigSpec.ConfigValue<Integer> GrappleCoolDown;
+
+    public static final ModConfigSpec.ConfigValue<Integer> HuntingCost;
+    public static final ModConfigSpec.ConfigValue<Integer> HuntingDuration;
+    public static final ModConfigSpec.ConfigValue<Integer> HuntingCoolDown;
+    public static final ModConfigSpec.ConfigValue<Integer> HuntingSummonDown;
+    public static final ModConfigSpec.ConfigValue<Integer> HuntingLimit;
+
+    public static final ModConfigSpec.ConfigValue<Integer> MaulingCost;
+    public static final ModConfigSpec.ConfigValue<Integer> MaulingDuration;
+    public static final ModConfigSpec.ConfigValue<Integer> MaulingCoolDown;
+    public static final ModConfigSpec.ConfigValue<Integer> MaulingSummonDown;
+    public static final ModConfigSpec.ConfigValue<Integer> MaulingLimit;
+
+    public static final ModConfigSpec.ConfigValue<Integer> SlimyCost;
+    public static final ModConfigSpec.ConfigValue<Integer> SlimyDuration;
+    public static final ModConfigSpec.ConfigValue<Integer> SlimyCoolDown;
+    public static final ModConfigSpec.ConfigValue<Integer> SlimySummonDown;
+    public static final ModConfigSpec.ConfigValue<Integer> SlimyLimit;
+
+    public static final ModConfigSpec.ConfigValue<Integer> CarrionCost;
+    public static final ModConfigSpec.ConfigValue<Integer> CarrionDuration;
+    public static final ModConfigSpec.ConfigValue<Integer> CarrionCoolDown;
+    public static final ModConfigSpec.ConfigValue<Integer> CarrionSummonDown;
+    public static final ModConfigSpec.ConfigValue<Integer> CarrionLimit;
+
+    public static final ModConfigSpec.ConfigValue<Integer> OvergrowthCost;
+    public static final ModConfigSpec.ConfigValue<Integer> OvergrowthDuration;
+    public static final ModConfigSpec.ConfigValue<Integer> OvergrowthCoolDown;
+
+    public static final ModConfigSpec.ConfigValue<Integer> EntanglingCost;
+    public static final ModConfigSpec.ConfigValue<Integer> EntanglingDuration;
+    public static final ModConfigSpec.ConfigValue<Integer> EntanglingCoolDown;
+    public static final ModConfigSpec.ConfigValue<Integer> EntanglingStaffAmount;
+
+    public static final ModConfigSpec.ConfigValue<Integer> WhisperCost;
+    public static final ModConfigSpec.ConfigValue<Integer> WhisperDuration;
+    public static final ModConfigSpec.ConfigValue<Integer> WhisperCoolDown;
+    public static final ModConfigSpec.ConfigValue<Integer> WhisperSummonDown;
+    public static final ModConfigSpec.ConfigValue<Integer> WhisperLimit;
+
+    public static final ModConfigSpec.ConfigValue<Integer> LeapingCost;
+    public static final ModConfigSpec.ConfigValue<Integer> LeapingDuration;
+    public static final ModConfigSpec.ConfigValue<Integer> LeapingCoolDown;
+    public static final ModConfigSpec.ConfigValue<Integer> LeapingSummonDown;
+    public static final ModConfigSpec.ConfigValue<Integer> LeapleafLimit;
+
+    public static final ModConfigSpec.ConfigValue<Integer> ThunderboltCost;
+    public static final ModConfigSpec.ConfigValue<Integer> ThunderboltDuration;
+    public static final ModConfigSpec.ConfigValue<Integer> ThunderboltCoolDown;
+    public static final ModConfigSpec.ConfigValue<Double> ThunderboltDamage;
+
+    public static final ModConfigSpec.ConfigValue<Integer> ElectroOrbCost;
+    public static final ModConfigSpec.ConfigValue<Integer> ElectroOrbDuration;
+    public static final ModConfigSpec.ConfigValue<Integer> ElectroOrbCoolDown;
+    public static final ModConfigSpec.ConfigValue<Double> ElectroOrbDamage;
+
+    public static final ModConfigSpec.ConfigValue<Integer> MonsoonCost;
+    public static final ModConfigSpec.ConfigValue<Integer> MonsoonDuration;
+    public static final ModConfigSpec.ConfigValue<Integer> MonsoonCoolDown;
+
+    public static final ModConfigSpec.ConfigValue<Integer> DischargeCost;
+    public static final ModConfigSpec.ConfigValue<Integer> DischargeDuration;
+    public static final ModConfigSpec.ConfigValue<Integer> DischargeCoolDown;
+    public static final ModConfigSpec.ConfigValue<Double> DischargeDamage;
+    public static final ModConfigSpec.ConfigValue<Double> DischargeMaxDamage;
+
+    public static final ModConfigSpec.ConfigValue<Integer> BoltingCost;
+    public static final ModConfigSpec.ConfigValue<Integer> BoltingDuration;
+    public static final ModConfigSpec.ConfigValue<Integer> BoltingCoolDown;
+    public static final ModConfigSpec.ConfigValue<Double> BoltingDamage;
+
+    public static final ModConfigSpec.ConfigValue<Integer> LightningCost;
+    public static final ModConfigSpec.ConfigValue<Integer> LightningDuration;
+    public static final ModConfigSpec.ConfigValue<Integer> LightningCoolDown;
+    public static final ModConfigSpec.ConfigValue<Double> LightningDamage;
+
+    public static final ModConfigSpec.ConfigValue<Integer> ThunderstormCost;
+    public static final ModConfigSpec.ConfigValue<Integer> ThunderstormDuration;
+    public static final ModConfigSpec.ConfigValue<Integer> ThunderstormCoolDown;
+    public static final ModConfigSpec.ConfigValue<Double> ThunderstormDamage;
+
+    public static final ModConfigSpec.ConfigValue<Integer> BouncyBubbleCost;
+    public static final ModConfigSpec.ConfigValue<Integer> BouncyBubbleDuration;
+    public static final ModConfigSpec.ConfigValue<Integer> BouncyBubbleCoolDown;
+    public static final ModConfigSpec.ConfigValue<Double> BouncyBubbleDamage;
+
+    public static final ModConfigSpec.ConfigValue<Integer> SteamingCost;
+    public static final ModConfigSpec.ConfigValue<Integer> SteamingDuration;
+    public static final ModConfigSpec.ConfigValue<Integer> SteamingCoolDown;
+    public static final ModConfigSpec.ConfigValue<Double> SteamingDamage;
+
+    public static final ModConfigSpec.ConfigValue<Integer> TridentStormCost;
+    public static final ModConfigSpec.ConfigValue<Integer> TridentStormCoolDown;
+    public static final ModConfigSpec.ConfigValue<Double> TridentStormDamage;
+
+    public static final ModConfigSpec.ConfigValue<Integer> PrismaBeamCost;
+    public static final ModConfigSpec.ConfigValue<Integer> PrismaBeamDuration;
+    public static final ModConfigSpec.ConfigValue<Integer> PrismaBeamCoolDown;
+    public static final ModConfigSpec.ConfigValue<Double> PrismaBeamDamage;
+
+    public static final ModConfigSpec.ConfigValue<Integer> GuardianCost;
+    public static final ModConfigSpec.ConfigValue<Integer> GuardianDuration;
+    public static final ModConfigSpec.ConfigValue<Integer> GuardianCoolDown;
+    public static final ModConfigSpec.ConfigValue<Integer> GuardianSummonDown;
+    public static final ModConfigSpec.ConfigValue<Integer> GuardianLimit;
+
+    public static final ModConfigSpec.ConfigValue<Integer> BiomineCost;
+    public static final ModConfigSpec.ConfigValue<Integer> BiomineDuration;
+    public static final ModConfigSpec.ConfigValue<Integer> BiomineCoolDown;
+    public static final ModConfigSpec.ConfigValue<Double> BiomineDamage;
+    public static final ModConfigSpec.ConfigValue<Double> BiomineAcidDamage;
+
+    public static final ModConfigSpec.ConfigValue<Integer> WaterWhipCost;
+    public static final ModConfigSpec.ConfigValue<Integer> WaterWhipDuration;
+    public static final ModConfigSpec.ConfigValue<Integer> WaterWhipCoolDown;
+    public static final ModConfigSpec.ConfigValue<Double> WaterWhipDamage;
+
+    public static final ModConfigSpec.ConfigValue<Integer> TidalCost;
+    public static final ModConfigSpec.ConfigValue<Integer> TidalDuration;
+    public static final ModConfigSpec.ConfigValue<Integer> TidalCoolDown;
+    public static final ModConfigSpec.ConfigValue<Double> TidalBaseDamage;
+
+    public static final ModConfigSpec.ConfigValue<Integer> CallCost;
+    public static final ModConfigSpec.ConfigValue<Integer> CallDuration;
+    public static final ModConfigSpec.ConfigValue<Integer> CallCoolDown;
+
+    public static final ModConfigSpec.ConfigValue<Integer> TroopCost;
+    public static final ModConfigSpec.ConfigValue<Integer> TroopDuration;
+    public static final ModConfigSpec.ConfigValue<Integer> TroopCoolDown;
+
+    public static final ModConfigSpec.ConfigValue<Integer> RecallCost;
+    public static final ModConfigSpec.ConfigValue<Integer> RecallDuration;
+    public static final ModConfigSpec.ConfigValue<Integer> RecallCoolDown;
+
+    public static final ModConfigSpec.ConfigValue<Integer> EnderChestCost;
+    public static final ModConfigSpec.ConfigValue<Integer> EnderChestDuration;
+    public static final ModConfigSpec.ConfigValue<Integer> EnderChestCoolDown;
+
+    public static final ModConfigSpec.ConfigValue<Integer> BanishCost;
+    public static final ModConfigSpec.ConfigValue<Integer> BanishCoolDown;
+    public static final ModConfigSpec.ConfigValue<Integer> BanishMaxHealth;
+
+    public static final ModConfigSpec.ConfigValue<Integer> BlinkCost;
+    public static final ModConfigSpec.ConfigValue<Integer> BlinkDuration;
+    public static final ModConfigSpec.ConfigValue<Integer> BlinkCoolDown;
+
+    public static final ModConfigSpec.ConfigValue<Integer> EndWalkCost;
+    public static final ModConfigSpec.ConfigValue<Integer> EndWalkDuration;
+    public static final ModConfigSpec.ConfigValue<Integer> EndWalkCoolDown;
+    public static final ModConfigSpec.ConfigValue<Integer> EndWalkEffectDuration;
+
+    public static final ModConfigSpec.ConfigValue<Integer> TunnelCost;
+    public static final ModConfigSpec.ConfigValue<Integer> TunnelCoolDown;
+    public static final ModConfigSpec.ConfigValue<Integer> TunnelDefaultLifespan;
+    public static final ModConfigSpec.ConfigValue<Integer> TunnelDefaultDistance;
+    public static final ModConfigSpec.ConfigValue<Boolean> TunnelHaveBlacklist;
+
+    public static final ModConfigSpec.ConfigValue<Integer> RuptureCost;
+    public static final ModConfigSpec.ConfigValue<Integer> RuptureDuration;
+    public static final ModConfigSpec.ConfigValue<Integer> RuptureCoolDown;
+    public static final ModConfigSpec.ConfigValue<Double> RuptureDamage;
+
+    public static final ModConfigSpec.ConfigValue<Integer> VoidShockCost;
+    public static final ModConfigSpec.ConfigValue<Integer> VoidShockDuration;
+    public static final ModConfigSpec.ConfigValue<Integer> VoidShockCoolDown;
+    public static final ModConfigSpec.ConfigValue<Double> VoidShockDamage;
+
+    public static final ModConfigSpec.ConfigValue<Integer> VoidBombCost;
+    public static final ModConfigSpec.ConfigValue<Integer> VoidBombDuration;
+    public static final ModConfigSpec.ConfigValue<Integer> VoidBombCoolDown;
+    public static final ModConfigSpec.ConfigValue<Double> VoidBombDamage;
+
+    public static final ModConfigSpec.ConfigValue<Integer> WatchlingCost;
+    public static final ModConfigSpec.ConfigValue<Integer> WatchlingDuration;
+    public static final ModConfigSpec.ConfigValue<Integer> WatchlingCoolDown;
+    public static final ModConfigSpec.ConfigValue<Integer> WatchlingSummonDown;
+    public static final ModConfigSpec.ConfigValue<Integer> WatchlingLimit;
+
+    public static final ModConfigSpec.ConfigValue<Integer> BlastlingCost;
+    public static final ModConfigSpec.ConfigValue<Integer> BlastlingDuration;
+    public static final ModConfigSpec.ConfigValue<Integer> BlastlingCoolDown;
+    public static final ModConfigSpec.ConfigValue<Integer> BlastlingSummonDown;
+    public static final ModConfigSpec.ConfigValue<Integer> BlastlingLimit;
+
+    public static final ModConfigSpec.ConfigValue<Integer> SnarelingCost;
+    public static final ModConfigSpec.ConfigValue<Integer> SnarelingDuration;
+    public static final ModConfigSpec.ConfigValue<Integer> SnarelingCoolDown;
+    public static final ModConfigSpec.ConfigValue<Integer> SnarelingSummonDown;
+    public static final ModConfigSpec.ConfigValue<Integer> SnarelingLimit;
+
+    public static final ModConfigSpec.ConfigValue<Integer> CraftingCost;
+    public static final ModConfigSpec.ConfigValue<Integer> CraftingDuration;
+    public static final ModConfigSpec.ConfigValue<Integer> CraftingCoolDown;
+
+    public static final ModConfigSpec.ConfigValue<Integer> ShockwaveCost;
+    public static final ModConfigSpec.ConfigValue<Integer> ShockwaveDuration;
+    public static final ModConfigSpec.ConfigValue<Integer> ShockwaveCoolDown;
+    public static final ModConfigSpec.ConfigValue<Double> ShockwaveDamage;
+    public static final ModConfigSpec.ConfigValue<Double> ShockwaveMaxDamage;
+
+    public static final ModConfigSpec.ConfigValue<Integer> IronHideCost;
+    public static final ModConfigSpec.ConfigValue<Integer> IronHideDuration;
+    public static final ModConfigSpec.ConfigValue<Integer> IronHideCoolDown;
+
+    public static final ModConfigSpec.ConfigValue<Integer> BulwarkCost;
+    public static final ModConfigSpec.ConfigValue<Integer> BulwarkDuration;
+    public static final ModConfigSpec.ConfigValue<Integer> BulwarkCoolDown;
+    public static final ModConfigSpec.ConfigValue<Integer> BulwarkShieldAmount;
+    public static final ModConfigSpec.ConfigValue<Integer> BulwarkShieldTime;
+
+    public static final ModConfigSpec.ConfigValue<Integer> SoulHealCost;
+    public static final ModConfigSpec.ConfigValue<Integer> SoulHealDuration;
+    public static final ModConfigSpec.ConfigValue<Integer> SoulHealCoolDown;
+    public static final ModConfigSpec.ConfigValue<Integer> SoulHealAmount;
+
+    public static final ModConfigSpec.ConfigValue<Integer> WeakeningCost;
+    public static final ModConfigSpec.ConfigValue<Integer> WeakeningDuration;
+    public static final ModConfigSpec.ConfigValue<Integer> WeakeningCoolDown;
+
+    public static final ModConfigSpec.ConfigValue<Integer> ArrowRainCost;
+    public static final ModConfigSpec.ConfigValue<Integer> ArrowRainChargeUp;
+    public static final ModConfigSpec.ConfigValue<Integer> ArrowRainDuration;
+    public static final ModConfigSpec.ConfigValue<Integer> ArrowRainCoolDown;
+    public static final ModConfigSpec.ConfigValue<Double> ArrowRainExtraDamage;
+
+    public static final ModConfigSpec.ConfigValue<Integer> TelekinesisCost;
+    public static final ModConfigSpec.ConfigValue<Integer> TelekinesisChargeUp;
+    public static final ModConfigSpec.ConfigValue<Integer> TelekinesisMaxHealth;
+
+    public static final ModConfigSpec.ConfigValue<Integer> SonicBoomCost;
+    public static final ModConfigSpec.ConfigValue<Integer> SonicBoomDuration;
+    public static final ModConfigSpec.ConfigValue<Integer> SonicBoomCoolDown;
+    public static final ModConfigSpec.ConfigValue<Double> SonicBoomDamage;
+
+    public static final ModConfigSpec.ConfigValue<Integer> CorruptionCost;
+    public static final ModConfigSpec.ConfigValue<Integer> CorruptionChargeUp;
+    public static final ModConfigSpec.ConfigValue<Integer> CorruptionDuration;
+    public static final ModConfigSpec.ConfigValue<Integer> CorruptionCoolDown;
+    public static final ModConfigSpec.ConfigValue<Double> CorruptedBeamDamage;
+    public static final ModConfigSpec.ConfigValue<Boolean> CorruptionImmobile;
+
+    public static final ModConfigSpec.ConfigValue<Integer> SpiderLimit;
+    public static final ModConfigSpec.ConfigValue<Integer> BroodMotherLimit;
+    public static final ModConfigSpec.ConfigValue<Integer> NecromancerLimit;
+    public static final ModConfigSpec.ConfigValue<Integer> DrownedNecromancerLimit;
+    public static final ModConfigSpec.ConfigValue<Integer> WitherNecromancerLimit;
+    public static final ModConfigSpec.ConfigValue<Integer> BoundIllagerLimit;
+    public static final ModConfigSpec.ConfigValue<Integer> BlackBeastLimit;
+    public static final ModConfigSpec.ConfigValue<Integer> WildfireLimit;
+    public static final ModConfigSpec.ConfigValue<Integer> RedstoneGolemLimit;
+    public static final ModConfigSpec.ConfigValue<Integer> GraveGolemLimit;
+    public static final ModConfigSpec.ConfigValue<Integer> RedstoneMonstrosityGlobalLimit;
+    public static final ModConfigSpec.ConfigValue<Integer> RedstoneMonstrosityPlayerLimit;
+
+    public static final ModConfigSpec.ConfigValue<Integer> MaxSoulEaterLevel;
+    public static final ModConfigSpec.ConfigValue<Integer> MaxWantingLevel;
+    public static final ModConfigSpec.ConfigValue<Integer> MaxPotencyLevel;
+    public static final ModConfigSpec.ConfigValue<Integer> MaxRadiusLevel;
+    public static final ModConfigSpec.ConfigValue<Integer> MaxRangeLevel;
+    public static final ModConfigSpec.ConfigValue<Integer> MaxDurationLevel;
+    public static final ModConfigSpec.ConfigValue<Integer> MaxBurningLevel;
+    public static final ModConfigSpec.ConfigValue<Integer> MaxVelocityLevel;
+    public static final ModConfigSpec.ConfigValue<Integer> PotencyPower;
+    public static final ModConfigSpec.ConfigValue<Boolean> FocusEnchantsTrades;
+
+    public static final ModConfigSpec.ConfigValue<Boolean> OwnerHitCommand;
+    public static final ModConfigSpec.ConfigValue<Integer> OwnerHitKill;
+    public static final ModConfigSpec.ConfigValue<Boolean> EnvironmentalCost;
+    public static final ModConfigSpec.ConfigValue<Boolean> EnchantMultiCost;
+    public static final ModConfigSpec.ConfigValue<Boolean> SummonDown;
+    public static final ModConfigSpec.ConfigValue<Boolean> SpellDamageEnderDragon;
+    public static final ModConfigSpec.ConfigValue<Boolean> FullStopCast;
+
+    public static ModConfigSpec.ConfigValue<List<? extends String>> TelekinesisBlackList;
+    public static ModConfigSpec.ConfigValue<List<? extends String>> BanishBlackList;
 
     static {
         BUILDER.push("General");
@@ -1917,7 +1917,7 @@ public class SpellConfig {
         SPEC = BUILDER.build();
     }
 
-    public static void loadConfig(ForgeConfigSpec config, String path) {
+    public static void loadConfig(ModConfigSpec config, String path) {
         final CommentedFileConfig file = CommentedFileConfig.builder(new File(path))
                 .sync()
                 .autosave()

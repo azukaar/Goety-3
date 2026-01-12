@@ -48,7 +48,7 @@ import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.common.ForgeMod;
+import net.neoforged.neoforge.common.NeoForgeMod;
 
 import javax.annotation.Nullable;
 import java.util.EnumSet;
@@ -370,7 +370,7 @@ public abstract class AbstractHauntedArmor extends Summoned implements CrossbowA
             }
         }
 
-        if (!this.isInLava() && !this.isInFluidType(ForgeMod.LAVA_TYPE.get())){
+        if (!this.isInLava() && !this.isInFluidType(NeoForgeMod.LAVA_TYPE.get())){
             this.clearFire();
         }
 
@@ -395,7 +395,7 @@ public abstract class AbstractHauntedArmor extends Summoned implements CrossbowA
     public boolean hurt(DamageSource source, float amount) {
         boolean flag = false;
         if (amount > 0.0F && this.isDamageSourceBlocked(source)) {
-            net.minecraftforge.event.entity.living.ShieldBlockEvent ev = net.minecraftforge.common.ForgeHooks.onShieldBlock(this, source, amount);
+            net.neoforged.event.entity.living.ShieldBlockEvent ev = net.neoforged.common.ForgeHooks.onShieldBlock(this, source, amount);
             if(!ev.isCanceled()) {
                 if(ev.shieldTakesDamage()) {
                     this.hurtCurrentlyUsedShield(amount);
@@ -469,7 +469,7 @@ public abstract class AbstractHauntedArmor extends Summoned implements CrossbowA
     }
 
     protected void hurtCurrentlyUsedShield(float p_36383_) {
-        if (this.useItem.canPerformAction(net.minecraftforge.common.ToolActions.SHIELD_BLOCK)) {
+        if (this.useItem.canPerformAction(net.neoforged.common.ToolActions.SHIELD_BLOCK)) {
             if (p_36383_ >= 3.0F) {
                 int i = 1 + Mth.floor(p_36383_);
                 InteractionHand interactionhand = this.getUsedItemHand();

@@ -10,7 +10,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.phys.AABB;
-import net.minecraftforge.event.ForgeEventFactory;
+
 
 public class SpiderMotherDenBlockEntity extends ModBlockEntity{
     private int spawnDelay = 20;
@@ -61,7 +61,7 @@ public class SpiderMotherDenBlockEntity extends ModBlockEntity{
                                     }
                                     entity.moveTo(blockpos.getX(), blockpos.getY(), blockpos.getZ(), serverLevel.getRandom().nextFloat() * 360.0F, 0.0F);
                                     if (entity instanceof Mob mob) {
-                                        ForgeEventFactory.onFinalizeSpawn(mob, serverLevel, serverLevel.getCurrentDifficultyAt(this.worldPosition), MobSpawnType.SPAWNER, null, null);
+                                        net.neoforged.neoforge.event.EventHooks.onFinalizeSpawn(mob, serverLevel, serverLevel.getCurrentDifficultyAt(this.worldPosition), MobSpawnType.SPAWNER, null, null);
                                         mob.spawnAnim();
                                     }
                                     if (!serverLevel.tryAddFreshEntityWithPassengers(entity)) {

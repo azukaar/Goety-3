@@ -1,6 +1,6 @@
 package com.Polarice3.Goety.compat.cataclysm;
 
-import net.minecraftforge.fml.ModList;
+import net.neoforged.fml.ModList;
 
 public enum CataclysmLoaded {
     CATACLYSM("cataclysm");
@@ -13,5 +13,4 @@ public enum CataclysmLoaded {
     public boolean isLoaded() {
         return this.loaded;
     }
-
 }

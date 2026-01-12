@@ -59,8 +59,8 @@ public class SculkDevourerBlockEntity extends OwnedBlockEntity implements GameEv
     public boolean handleGameEvent(ServerLevel p_222777_, GameEvent p_282184_, GameEvent.Context p_283014_, Vec3 p_282350_) {
         if (!this.isRemoved()) {
             if (p_282184_ == GameEvent.ENTITY_DIE) {
-                Entity $$4 = p_283014_.sourceEntity();
-                if ($$4 instanceof LivingEntity livingentity) {
+                Entity $ = p_283014_.sourceEntity();
+                if ($ instanceof LivingEntity livingentity) {
                     if (!livingentity.wasExperienceConsumed() && this.getPlayer() != null && SEHelper.getSoulsContainer(this.getPlayer())) {
                         int i = livingentity.getExperienceReward();
                         if (livingentity.shouldDropExperience() && i > 0) {

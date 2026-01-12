@@ -30,7 +30,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.neoforge.registries.NeoForgeRegistries;
 
 import java.util.Objects;
 
@@ -191,7 +191,7 @@ public class SoulJar extends ReviveServantItem {
         necromancer.ejectPassengers();
 
         CompoundTag entityTag = new CompoundTag();
-        ResourceLocation typesKey = ForgeRegistries.ENTITY_TYPES.getKey(necromancer.getType());
+        ResourceLocation typesKey = NeoForgeRegistries.ENTITY_TYPES.getKey(necromancer.getType());
 
         if (typesKey != null) {
             entityTag.putString("entity", typesKey.toString());
@@ -209,7 +209,7 @@ public class SoulJar extends ReviveServantItem {
 
         if (itemTag != null) {
             CompoundTag entityTag = itemTag.getCompound("entity");
-            EntityType<?> entityType = ForgeRegistries.ENTITY_TYPES.getValue(new ResourceLocation(entityTag.getString("entity")));
+            EntityType<?> entityType = NeoForgeRegistries.ENTITY_TYPES.getValue(new ResourceLocation(entityTag.getString("entity")));
             if (entityType != null) {
                 Entity entity = entityType.create(level);
                 if (level instanceof ServerLevel && entity != null) {

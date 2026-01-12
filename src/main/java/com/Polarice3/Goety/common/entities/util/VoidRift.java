@@ -278,7 +278,7 @@ public class VoidRift extends CastSpellTrap {
         int MthY = Mth.floor(this.getY());
         int MthZ = Mth.floor(this.getZ());
         if (!this.level.isClientSide) {
-            if (net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(this.level, this)) {
+            if (this.level.getGameRules().getBoolean(GameRules.RULE_MOB_GRIEFING)) {
                 for (int i = -x; i <= x; ++i) {
                     for (int j = -y; j <= y; ++j) {
                         for (int k = -z; k <= z; ++k) {

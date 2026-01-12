@@ -3,8 +3,7 @@ plugins {
     id 'eclipse'
     id 'idea'
     id 'maven-publish'
-    id 'net.neoforged.gradle' version '[6.0.18,6.2)'
-    id 'org.spongepowered.mixin' version '0.7.+'
+    id 'net.neoforged.moddev' version '2.0.137'
 }
 
 version = mod_version
@@ -14,60 +13,37 @@ base {
     archivesName = mod_id
 }
 
-java.toolchain.languageVersion = JavaLanguageVersion.of(17)
+java.toolchain.languageVersion = JavaLanguageVersion.of(21)
 
 println "Java: ${System.getProperty 'java.version'}, JVM: ${System.getProperty 'java.vm.version'} (${System.getProperty 'java.vendor'}), Arch: ${System.getProperty 'os.arch'}"
-minecraft {
-    mappings channel: mapping_channel, version: mapping_version
 
-    accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
-
-    copyIdeResources = true
-
+neoForge {
+    version = "${neo_version}"
+    validateAccessTransformers = false
+    
     runs {
-        configureEach {
-            workingDirectory project.file("run")
-
-            property 'mixin.env.disableRefMap', 'true'
-
-            property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
-
-            property 'forge.logging.console.level', 'debug'
-
-            property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
-
-            arg '-mixin.config=goety.mixins.json'
-
-            mods {
-                "${mod_id}" {
-                    source sourceSets.main
-                }
-            }
-        }
-
         client {
-            property 'forge.enabledGameTestNamespaces', mod_id
+            client()
         }
-
         server {
-            property 'forge.enabledGameTestNamespaces', mod_id
-            args '--nogui'
+            server()
         }
-
-        gameTestServer {
-            property 'forge.enabledGameTestNamespaces', mod_id
-        }
-
         data {
-            args '--mod', mod_id, '--all', '--output', file('src/generated/resources/'), '--existing', file('src/main/resources/')
+            data()
+        }
+    }
+    
+    mods {
+        "${mod_id}" {
+            sourceSet sourceSets.main
         }
     }
 }
 
 sourceSets.main.resources { srcDir 'src/generated/resources' }
-
-mixin {
-    add sourceSets.main, "goety.refmap.json"
+sourceSets.main.java {
+    exclude 'com/Polarice3/Goety/data/**'
+    exclude 'com/Polarice3/Goety/init/ModLootInject.java'
 }
 
 repositories {
@@ -103,56 +79,57 @@ repositories {
 }
 
 dependencies {
-    minecraft "net.neoforged:forge:${minecraft_version}-${neo_version}"
+    // Mixin is provided by the NeoForge runtime; we only need the annotations on the compile classpath.
+    // The Mixin annotation processor currently fails to remap targets under the NeoForge moddev setup,
+    // which blocks compilation. We'll re-enable proper AP/remapping once the mod builds cleanly.
+    compileOnly 'org.spongepowered:mixin:0.8.5'
 
-    annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
+    //JEI - Commented out until 1.21.1 version is available
+    //compileOnly("mezz.jei:jei-${minecraft_version}-common-api:${jei_version}")
+    //compileOnly("mezz.jei:jei-${minecraft_version}-neoforge-api:${jei_version}")
+    //runtimeOnly("mezz.jei:jei-${minecraft_version}-neoforge:${jei_version}")
 
-    //JEI
-    compileOnly fg.deobf("mezz.jei:jei-${minecraft_version}-common-api:${jei_version}")
-    compileOnly fg.deobf("mezz.jei:jei-${minecraft_version}-forge-api:${jei_version}")
-    runtimeOnly fg.deobf("mezz.jei:jei-${minecraft_version}-forge:${jei_version}")
+    //Curios - Commented out until 1.21.1 version is available
+    //compileOnly("top.theillusivec4.curios:curios-neoforge:${curio_version}+${minecraft_version}:api")
+    //runtimeOnly("top.theillusivec4.curios:curios-neoforge:${curio_version}+${minecraft_version}")
 
-    //Curios
-    compileOnly fg.deobf("top.theillusivec4.curios:curios-forge:${curio_version}+${minecraft_version}:api")
-    runtimeOnly fg.deobf("top.theillusivec4.curios:curios-forge:${curio_version}+${minecraft_version}")
-
-    //Patchouli
-    compileOnly fg.deobf("vazkii.patchouli:Patchouli:${minecraft_version}-${patchouli_version}:api")
-    runtimeOnly fg.deobf("vazkii.patchouli:Patchouli:${minecraft_version}-${patchouli_version}")
+    //Patchouli - Commented out until 1.21.1 version is available
+    //compileOnly("vazkii.patchouli:Patchouli:${minecraft_version}-${patchouli_version}:api")
+    //runtimeOnly("vazkii.patchouli:Patchouli:${minecraft_version}-${patchouli_version}")
 
     //Jade
-    implementation fg.deobf("curse.maven:jade-324717:6855440")
+    //implementation("curse.maven:jade-324717:6855440")
 
-    //Botania
-    compileOnly fg.deobf("vazkii.botania:Botania:1.20.1-445-FORGE-SNAPSHOT")
+    //Botania - Commented out until 1.21.1 version is available
+    //compileOnly("vazkii.botania:Botania:${minecraft_version}-NEOFORGE-SNAPSHOT")
 
-    //Serene Seasons
-    compileOnly fg.deobf("curse.maven:serene-seasons-291874:5790653")
+    //Serene Seasons - Commented out until 1.21.1 version is available
+    //compileOnly("curse.maven:serene-seasons-291874:5790653")
 
     //Testing Only
-    runtimeOnly fg.deobf("curse.maven:yeetus-635427:4680832")
-    runtimeOnly fg.deobf("curse.maven:jeed-532286:4599236")
-    runtimeOnly fg.deobf("curse.maven:worldedit-225608:4586218")
-    runtimeOnly fg.deobf("curse.maven:mob-battle-mod-268746:6596542")
-    runtimeOnly fg.deobf("curse.maven:lionfish-api-1001614:5922047")
-    runtimeOnly fg.deobf("maven.modrinth:l_enders-cataclysm:NvvXful4")
-    runtimeOnly fg.deobf("curse.maven:retro-damage-indicators-1003431:5268035")
-    runtimeOnly fg.deobf("curse.maven:kiwi-303657:4688568")
-    runtimeOnly fg.deobf("curse.maven:wiki-zoomer-383277:4576732")
-    runtimeOnly fg.deobf("curse.maven:geckolib-388172:5414523")
-    runtimeOnly fg.deobf("curse.maven:born-in-chaos-686437:6833957")
-    runtimeOnly fg.deobf("curse.maven:framework-549225:5180972")
-    runtimeOnly fg.deobf("curse.maven:configured-457570:5180900")
-    runtimeOnly fg.deobf("curse.maven:spark-361579:4738952")
-    runtimeOnly fg.deobf("curse.maven:illage-and-spillage-finally-ported-1079714:6156035")
-    runtimeOnly fg.deobf("curse.maven:free-cam-557076:4643128")
-    runtimeOnly fg.deobf("curse.maven:mob-battle-extra-853296:4810120")
-    runtimeOnly fg.deobf("curse.maven:puzzles-lib-495476:6918565")
-    runtimeOnly fg.deobf("curse.maven:illager-invasion-891324:6192869")
-    runtimeOnly fg.deobf("curse.maven:citadel-331936:6702068")
-    runtimeOnly fg.deobf("curse.maven:domestication-innovation-591149:4911955")
-    runtimeOnly fg.deobf("curse.maven:huge-structure-blocks-474114:4803547")
-    runtimeOnly fg.deobf("curse.maven:guard-villagers-360203:6793945")
+    runtimeOnly("curse.maven:yeetus-635427:4680832")
+    runtimeOnly("curse.maven:jeed-532286:4599236")
+    runtimeOnly("curse.maven:worldedit-225608:4586218")
+    runtimeOnly("curse.maven:mob-battle-mod-268746:6596542")
+    runtimeOnly("curse.maven:lionfish-api-1001614:5922047")
+    runtimeOnly("maven.modrinth:l_enders-cataclysm:NvvXful4")
+    runtimeOnly("curse.maven:retro-damage-indicators-1003431:5268035")
+    runtimeOnly("curse.maven:kiwi-303657:4688568")
+    runtimeOnly("curse.maven:wiki-zoomer-383277:4576732")
+    runtimeOnly("curse.maven:geckolib-388172:5414523")
+    runtimeOnly("curse.maven:born-in-chaos-686437:6833957")
+    runtimeOnly("curse.maven:framework-549225:5180972")
+    runtimeOnly("curse.maven:configured-457570:5180900")
+    runtimeOnly("curse.maven:spark-361579:4738952")
+    runtimeOnly("curse.maven:illage-and-spillage-finally-ported-1079714:6156035")
+    runtimeOnly("curse.maven:free-cam-557076:4643128")
+    runtimeOnly("curse.maven:mob-battle-extra-853296:4810120")
+    runtimeOnly("curse.maven:puzzles-lib-495476:6918565")
+    runtimeOnly("curse.maven:illager-invasion-891324:6192869")
+    runtimeOnly("curse.maven:citadel-331936:6702068")
+    runtimeOnly("curse.maven:domestication-innovation-591149:4911955")
+    runtimeOnly("curse.maven:huge-structure-blocks-474114:4803547")
+    runtimeOnly("curse.maven:guard-villagers-360203:6793945")
 }
 
 tasks.named('jar', Jar).configure {
@@ -170,7 +147,6 @@ tasks.named('jar', Jar).configure {
     }
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 
-    finalizedBy 'reobfJar'
 }
 
 publishing {

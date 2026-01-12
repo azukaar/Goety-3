@@ -16,17 +16,21 @@ import net.minecraft.world.entity.monster.Witch;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.raid.Raider;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.event.entity.living.LivingEvent;
-import net.minecraftforge.event.entity.player.PlayerInteractEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.neoforge.event.entity.living.LivingEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.neoforge.event.tick.EntityTickEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.fml.common.Mod;
 
-@Mod.EventBusSubscriber(modid = Goety.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE)
+@EventBusSubscriber(modid = Goety.MOD_ID, bus = EventBusSubscriber.Bus.GAME)
 public class WitchBarterEvents {
 
     @SubscribeEvent
-    public static void LivingEffects(LivingEvent.LivingTickEvent event){
-        LivingEntity livingEntity = event.getEntity();
+    public static void LivingEffects(EntityTickEvent.Post event){
+        if (!(event.getEntity() instanceof LivingEntity livingEntity)) {
+            return;
+        }
         if (livingEntity != null && livingEntity.isAlive()){
             if (livingEntity instanceof Raider raider) {
                 if (raider instanceof Cultist || raider instanceof Witch) {

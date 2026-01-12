@@ -36,7 +36,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.gameevent.GameEvent;
-import net.minecraft.world.level.pathfinder.BlockPathTypes;
+import net.minecraft.world.level.pathfinder.PathType;
 import net.minecraft.world.phys.Vec3;
 
 import javax.annotation.Nullable;
@@ -62,7 +62,7 @@ public class GuardianServant extends Summoned{
 
     public GuardianServant(EntityType<? extends Owned> type, Level worldIn) {
         super(type, worldIn);
-        this.setPathfindingMalus(BlockPathTypes.WATER, 0.0F);
+        this.setPathfindingMalus(PathType.WATER, 0.0F);
         this.moveControl = new GuardianMoveControl(this);
         this.clientSideTailAnimation = this.random.nextFloat();
         this.clientSideTailAnimationO = this.clientSideTailAnimation;
@@ -107,10 +107,6 @@ public class GuardianServant extends Summoned{
 
     public boolean canBreatheUnderwater() {
         return true;
-    }
-
-    public MobType getMobType() {
-        return MobType.WATER;
     }
 
     @Override

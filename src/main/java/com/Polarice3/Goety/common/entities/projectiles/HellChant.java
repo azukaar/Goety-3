@@ -11,7 +11,6 @@ import net.minecraft.world.entity.*;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.network.PlayMessages;
 
 /**
  * Based on SonarWave code from Upgrade Aquatic:<a href="https://github.com/team-abnormals/upgrade-aquatic/blob/1.19.x/src/main/java/com/teamabnormals/upgrade_aquatic/common/entity/projectile/SonarWave.java">...</a>;
@@ -32,10 +31,6 @@ public class HellChant extends SpellEntity{
         this.xo = x;
         this.yo = y;
         this.zo = z;
-    }
-
-    public HellChant(PlayMessages.SpawnEntity spawnEntity, Level world) {
-        this(ModEntityType.HELL_CHANT.get(), world);
     }
 
     @Override

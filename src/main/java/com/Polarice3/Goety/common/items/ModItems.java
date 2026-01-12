@@ -45,13 +45,13 @@ import com.Polarice3.Goety.init.ModSounds;
 import com.Polarice3.Goety.init.ModTags;
 import net.minecraft.world.food.Foods;
 import net.minecraft.world.item.*;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.RegistryObject;
+import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.neoforged.neoforge.registries.DeferredRegister;
+import net.neoforged.neoforge.registries.NeoForgeRegistries;
+import net.neoforged.neoforge.registries.RegistryObject;
 
 public class ModItems {
-    public static DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, Goety.MOD_ID);
+    public static DeferredRegister<Item> ITEMS = DeferredRegister.create(NeoForgeRegistries.ITEMS, Goety.MOD_ID);
 
     public static void init(){
         ModItems.ITEMS.register(FMLJavaModLoadingContext.get().getModEventBus());

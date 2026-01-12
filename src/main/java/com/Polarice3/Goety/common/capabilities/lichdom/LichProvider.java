@@ -3,8 +3,8 @@ package com.Polarice3.Goety.common.capabilities.lichdom;
 import com.Polarice3.Goety.utils.LichdomHelper;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraftforge.common.capabilities.*;
-import net.minecraftforge.common.util.LazyOptional;
+import net.neoforged.neoforge.capabilities.*;
+import net.neoforged.neoforge.common.util.LazyOptional;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;

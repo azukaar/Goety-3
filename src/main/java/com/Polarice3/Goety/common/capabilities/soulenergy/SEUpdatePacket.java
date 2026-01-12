@@ -5,8 +5,8 @@ import com.Polarice3.Goety.utils.SEHelper;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Player;
-import net.minecraftforge.network.NetworkDirection;
-import net.minecraftforge.network.NetworkEvent;
+import net.neoforged.network.NetworkDirection;
+import net.neoforged.network.NetworkEvent;
 
 import java.util.UUID;
 import java.util.function.Supplier;

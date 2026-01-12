@@ -102,7 +102,8 @@ public class CallFocus extends MagicFocus{
                     if (!livingEntity.isDeadOrDying()) {
                         BlockPos blockPos = BlockFinder.SummonRadius(player.blockPosition(), livingEntity, serverLevel);
                         if (livingEntity.level.dimension() == player.level.dimension()) {
-                            net.minecraftforge.event.entity.EntityTeleportEvent.EnderEntity event = net.minecraftforge.event.ForgeEventFactory.onEnderTeleport(livingEntity, blockPos.getX(), blockPos.getY(), blockPos.getZ());
+                            net.neoforged.event.entity.EntityTeleportEvent.EnderEntity event = new net.neoforged.event.entity.EntityTeleportEvent.EnderEntity(livingEntity, blockPos.getX(), blockPos.getY(), blockPos.getZ());
+                            net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(event);
                             if (event.isCanceled()) {
                                 return;
                             }
@@ -121,11 +122,12 @@ public class CallFocus extends MagicFocus{
                             if (serverWorld != null) {
                                 blockPos = BlockFinder.SummonRadius(player.blockPosition(), livingEntity, serverWorld);
                                 Vec3 vec3 = new Vec3(blockPos.getX(), blockPos.getY(), blockPos.getZ());
-                                net.minecraftforge.event.entity.EntityTeleportEvent.EnderEntity event = net.minecraftforge.event.ForgeEventFactory.onEnderTeleport(livingEntity, blockPos.getX(), blockPos.getY(), blockPos.getZ());
+                                net.neoforged.neoforge.event.entity.EntityTeleportEvent.EnderEntity event = new net.neoforged.neoforge.event.entity.EntityTeleportEvent.EnderEntity(livingEntity, blockPos.getX(), blockPos.getY(), blockPos.getZ());
+                                net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(event);
                                 if (event.isCanceled()) {
                                     return;
                                 }
-                                livingEntity.changeDimension(serverWorld, new ArcaTeleporter(vec3));
+                                livingEntity.changeDimension(ArcaTeleporter.transition(serverWorld, livingEntity, vec3));
                                 livingEntity.teleportTo(event.getTargetX(), event.getTargetY(), event.getTargetZ());
                                 MobUtil.moveDownToGround(livingEntity);
                                 ModNetwork.sendToALL(new SPlayWorldSoundPacket(player.blockPosition(), SoundEvents.ENDERMAN_TELEPORT, 1.0F, 1.0F));

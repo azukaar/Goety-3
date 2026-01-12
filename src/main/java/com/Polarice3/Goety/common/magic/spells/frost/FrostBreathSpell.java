@@ -129,7 +129,7 @@ public class FrostBreathSpell extends BreathingSpell {
                                 worldIn.setBlockAndUpdate(blockPos, Blocks.SNOW.defaultBlockState());
                             }
                             BlockState blockstate = Blocks.FROSTED_ICE.defaultBlockState();
-                            if (worldIn.getBlockState(blockPos) == FrostedIceBlock.meltsInto() && blockstate.canSurvive(worldIn, blockPos) && worldIn.isUnobstructed(blockstate, blockPos, CollisionContext.empty()) && !net.minecraftforge.event.ForgeEventFactory.onBlockPlace(caster, net.minecraftforge.common.util.BlockSnapshot.create(worldIn.dimension(), worldIn, blockPos), net.minecraft.core.Direction.UP)) {
+                            if (worldIn.getBlockState(blockPos) == FrostedIceBlock.meltsInto() && blockstate.canSurvive(worldIn, blockPos) && worldIn.isUnobstructed(blockstate, blockPos, CollisionContext.empty()) && !net.neoforged.event.EventFactory.onBlockPlace(caster, net.neoforged.common.util.BlockSnapshot.create(worldIn.dimension(), worldIn, blockPos), net.minecraft.core.Direction.UP)) {
                                 worldIn.setBlockAndUpdate(blockPos, blockstate);
                                 worldIn.scheduleTick(blockPos, Blocks.FROSTED_ICE, Mth.nextInt(caster.getRandom(), 60, 120));
                             }

@@ -33,8 +33,6 @@ import javax.annotation.Nullable;
 public abstract class LivingEntityMixin extends Entity {
     @Shadow public abstract boolean hasEffect(MobEffect p_21024_);
 
-    @Shadow public abstract MobType getMobType();
-
     @Shadow public abstract float getMaxHealth();
 
     @Shadow public abstract boolean wasExperienceConsumed();
@@ -51,20 +49,13 @@ public abstract class LivingEntityMixin extends Entity {
         super(p_20966_, p_20967_);
     }
 
-    @Inject(method = "getMobType()Lnet/minecraft/world/entity/MobType;", at = @At("HEAD"), cancellable = true)
-    public void getMobType(CallbackInfoReturnable<MobType> cir){
-        if (LichdomHelper.isLich(this)) {
-            cir.setReturnValue(MobType.UNDEAD);
-        }
-    }
-
     @Inject(method = "dropExperience", at = @At("HEAD"))
     public void dropExperience(CallbackInfo callbackInfo) {
         if (this.level instanceof ServerLevel serverLevel) {
             if (this.lastHurtByPlayerTime <= 0 && !this.isAlwaysExperienceDropper()) {
                 if (this.lastHurtByMob instanceof IOwned owned && !this.wasExperienceConsumed() && this.level.getGameRules().getBoolean(GameRules.RULE_DOMOBLOOT)) {
                     if (owned.getMasterOwner() instanceof Player player) {
-                        int reward = net.minecraftforge.event.ForgeEventFactory.getExperienceDrop((LivingEntity) (Object) this, player, this.getExperienceReward());
+                        int reward = this.getExperienceReward();
                         ExperienceOrb.award(serverLevel, this.position(), reward);
                     }
                 }
@@ -75,7 +66,7 @@ public abstract class LivingEntityMixin extends Entity {
     @Inject(method = "canAttack(Lnet/minecraft/world/entity/LivingEntity;)Z", at = @At("HEAD"), cancellable = true)
     public void canAttack(LivingEntity target, CallbackInfoReturnable<Boolean> callbackInfoReturnable) {
         if (MainConfig.LichUndeadFriends.get()) {
-            if (this.getMobType() == MobType.UNDEAD || this.getType().is(ModTags.EntityTypes.LICH_NEUTRAL)) {
+            if (this.getType().is(ModTags.EntityTypes.LICH_NEUTRAL)) {
                 if (LichdomHelper.isLich(target)) {
                     if (MainConfig.LichPowerfulFoes.get()) {
                         if (this.getMaxHealth() <= MainConfig.LichPowerfulFoesHealth.get()){

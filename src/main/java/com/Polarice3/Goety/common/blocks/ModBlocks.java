@@ -18,7 +18,7 @@ import net.minecraft.world.item.*;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.*;
-import net.minecraft.world.level.block.grower.AbstractTreeGrower;
+import net.minecraft.world.level.block.grower.TreeGrower;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
@@ -27,11 +27,11 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.NoteBlockInstrument;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.material.PushReaction;
-import net.minecraftforge.client.extensions.common.IClientItemExtensions;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.RegistryObject;
+import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
+import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.neoforged.neoforge.registries.DeferredRegister;
+import net.neoforged.neoforge.registries.NeoForgeRegistries;
+import net.neoforged.neoforge.registries.RegistryObject;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -40,11 +40,11 @@ import java.util.function.Supplier;
 import java.util.function.ToIntFunction;
 
 public class ModBlocks {
-    public static DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, Goety.MOD_ID);
+    public static DeferredRegister<Block> BLOCKS = DeferredRegister.create(NeoForgeRegistries.BLOCKS, Goety.MOD_ID);
     public static final Map<ResourceLocation, BlockLootSetting> BLOCK_LOOT = new HashMap<>();
 
     public static void init(){
-        ModBlocks.BLOCKS.register(FMLJavaModLoadingContext.get().getModEventBus());
+        // TODO(1.21.1): register via the injected mod event bus in `Goety` instead of FMLJavaModLoadingContext.
     }
 
     public static final RegistryObject<Block> ARCA_BLOCK = register("arca", ArcaBlock::new);
@@ -158,10 +158,10 @@ public class ModBlocks {
     public static final RegistryObject<Block> LARGE_CHORUS_FERN = register("large_chorus_fern", LargeChorusFernBlock::new, true, LootTableType.EMPTY);
 
     public static final RegistryObject<Block> POTTED_CHORUS_STALK = register("potted_chorus_stalk", () ->
-            new FlowerPotBlock(() -> (FlowerPotBlock) ForgeRegistries.BLOCKS.getDelegateOrThrow(Blocks.FLOWER_POT).get(), ModBlocks.CHORUS_STALK, Block.Properties.of().pushReaction(PushReaction.DESTROY).lightLevel(l -> 4).noOcclusion().instabreak()), false, LootTableType.EMPTY);
+            new FlowerPotBlock(() -> (FlowerPotBlock) NeoForgeRegistries.BLOCKS.getDelegateOrThrow(Blocks.FLOWER_POT).get(), ModBlocks.CHORUS_STALK, Block.Properties.of().pushReaction(PushReaction.DESTROY).lightLevel(l -> 4).noOcclusion().instabreak()), false, LootTableType.EMPTY);
 
     public static final RegistryObject<Block> POTTED_CHORUS_FERN = register("potted_chorus_fern", () ->
-            new FlowerPotBlock(() -> (FlowerPotBlock) ForgeRegistries.BLOCKS.getDelegateOrThrow(Blocks.FLOWER_POT).get(), ModBlocks.CHORUS_FERN, Block.Properties.of().pushReaction(PushReaction.DESTROY).noOcclusion().instabreak()), false, LootTableType.EMPTY);
+            new FlowerPotBlock(() -> (FlowerPotBlock) NeoForgeRegistries.BLOCKS.getDelegateOrThrow(Blocks.FLOWER_POT).get(), ModBlocks.CHORUS_FERN, Block.Properties.of().pushReaction(PushReaction.DESTROY).noOcclusion().instabreak()), false, LootTableType.EMPTY);
 
     //Deco
     public static final RegistryObject<Block> AWAKENED_EMERALD_BLOCK = register("awakened_emerald_block", () -> new Block(BlockBehaviour.Properties.of()
@@ -409,9 +409,9 @@ public class ModBlocks {
             () -> new ModHangingSignBlock(BlockBehaviour.Properties.of().mapColor(HAUNTED_LOG.get().defaultMapColor()).forceSolidOn().instrument(NoteBlockInstrument.BASS).noCollission().strength(1.0F), ModWoodType.HAUNTED), false);
     public static final RegistryObject<Block> HAUNTED_WALL_HANGING_SIGN = register("haunted_wall_hanging_sign",
             () -> new ModWallHangingSignBlock(BlockBehaviour.Properties.of().mapColor(HAUNTED_LOG.get().defaultMapColor()).forceSolidOn().instrument(NoteBlockInstrument.BASS).noCollission().strength(1.0F).lootFrom(HAUNTED_HANGING_SIGN), ModWoodType.HAUNTED), false);
-    public static final RegistryObject<Block> HAUNTED_SAPLING = register("haunted_sapling", () -> sapling(new HauntedTree()));
+    public static final RegistryObject<Block> HAUNTED_SAPLING = register("haunted_sapling", () -> sapling(HauntedTree.GROWER));
     public static final RegistryObject<Block> POTTED_HAUNTED_SAPLING = register("potted_haunted_sapling", () ->
-            new FlowerPotBlock(() -> (FlowerPotBlock) ForgeRegistries.BLOCKS.getDelegateOrThrow(Blocks.FLOWER_POT).get(), ModBlocks.HAUNTED_SAPLING, Block.Properties.of().pushReaction(PushReaction.DESTROY).noOcclusion().instabreak()), false, LootTableType.DROP);
+            new FlowerPotBlock(() -> (FlowerPotBlock) NeoForgeRegistries.BLOCKS.getDelegateOrThrow(Blocks.FLOWER_POT).get(), ModBlocks.HAUNTED_SAPLING, Block.Properties.of().pushReaction(PushReaction.DESTROY).noOcclusion().instabreak()), false, LootTableType.DROP);
     public static final RegistryObject<Block> HAUNTED_LAMP = register("haunted_lamp",
             () -> new LampBlock(Block.Properties.copy(HAUNTED_WOOD.get())));
     public static final RegistryObject<Block> DARK_PRESSURE_PLATE = register("dark_pressure_plate",
@@ -457,9 +457,9 @@ public class ModBlocks {
             () -> new ModHangingSignBlock(BlockBehaviour.Properties.of().mapColor(ROTTEN_LOG.get().defaultMapColor()).forceSolidOn().instrument(NoteBlockInstrument.BASS).noCollission().strength(1.0F).ignitedByLava(), ModWoodType.ROTTEN), false);
     public static final RegistryObject<Block> ROTTEN_WALL_HANGING_SIGN = register("rotten_wall_hanging_sign",
             () -> new ModWallHangingSignBlock(BlockBehaviour.Properties.of().mapColor(ROTTEN_LOG.get().defaultMapColor()).forceSolidOn().instrument(NoteBlockInstrument.BASS).noCollission().strength(1.0F).lootFrom(ROTTEN_HANGING_SIGN).ignitedByLava(), ModWoodType.ROTTEN), false);
-    public static final RegistryObject<Block> ROTTEN_SAPLING = register("rotten_sapling", () -> sapling(new RottenTree()));
+    public static final RegistryObject<Block> ROTTEN_SAPLING = register("rotten_sapling", () -> sapling(RottenTree.GROWER));
     public static final RegistryObject<Block> POTTED_ROTTEN_SAPLING = register("potted_rotten_sapling", () ->
-            new FlowerPotBlock(() -> (FlowerPotBlock) ForgeRegistries.BLOCKS.getDelegateOrThrow(Blocks.FLOWER_POT).get(), ModBlocks.ROTTEN_SAPLING, Block.Properties.of().pushReaction(PushReaction.DESTROY).noOcclusion().instabreak()), false, LootTableType.EMPTY);
+            new FlowerPotBlock(() -> (FlowerPotBlock) NeoForgeRegistries.BLOCKS.getDelegateOrThrow(Blocks.FLOWER_POT).get(), ModBlocks.ROTTEN_SAPLING, Block.Properties.of().pushReaction(PushReaction.DESTROY).noOcclusion().instabreak()), false, LootTableType.EMPTY);
 
     //Windswept
     public static final RegistryObject<Block> WINDSWEPT_PLANKS = register("windswept_planks",
@@ -503,9 +503,9 @@ public class ModBlocks {
             () -> new ModHangingSignBlock(BlockBehaviour.Properties.of().mapColor(WINDSWEPT_LOG.get().defaultMapColor()).forceSolidOn().instrument(NoteBlockInstrument.BASS).noCollission().strength(1.0F).ignitedByLava(), ModWoodType.WINDSWEPT), false);
     public static final RegistryObject<Block> WINDSWEPT_WALL_HANGING_SIGN = register("windswept_wall_hanging_sign",
             () -> new ModWallHangingSignBlock(BlockBehaviour.Properties.of().mapColor(WINDSWEPT_LOG.get().defaultMapColor()).forceSolidOn().instrument(NoteBlockInstrument.BASS).noCollission().strength(1.0F).lootFrom(WINDSWEPT_HANGING_SIGN).ignitedByLava(), ModWoodType.WINDSWEPT), false);
-    public static final RegistryObject<Block> WINDSWEPT_SAPLING = register("windswept_sapling", () -> sapling(new WindsweptTree()));
+    public static final RegistryObject<Block> WINDSWEPT_SAPLING = register("windswept_sapling", () -> sapling(WindsweptTree.GROWER));
     public static final RegistryObject<Block> POTTED_WINDSWEPT_SAPLING = register("potted_windswept_sapling", () ->
-            new FlowerPotBlock(() -> (FlowerPotBlock) ForgeRegistries.BLOCKS.getDelegateOrThrow(Blocks.FLOWER_POT).get(), ModBlocks.WINDSWEPT_SAPLING, Block.Properties.of().pushReaction(PushReaction.DESTROY).noOcclusion().instabreak()), false, LootTableType.EMPTY);
+            new FlowerPotBlock(() -> (FlowerPotBlock) NeoForgeRegistries.BLOCKS.getDelegateOrThrow(Blocks.FLOWER_POT).get(), ModBlocks.WINDSWEPT_SAPLING, Block.Properties.of().pushReaction(PushReaction.DESTROY).noOcclusion().instabreak()), false, LootTableType.EMPTY);
     public static final RegistryObject<Block> WINDSWEPT_PLANK_WALL_BLOCK = registerWalls("windswept_plank_wall", WINDSWEPT_PLANKS);
     public static final RegistryObject<Block> SNOWY_WINDSWEPT_PLANK_WALL_BLOCK = registerWalls("snowy_windswept_plank_wall", WINDSWEPT_PLANKS);
     public static final RegistryObject<Block> WINDSWEPT_LAMP = register("windswept_lamp",
@@ -555,9 +555,9 @@ public class ModBlocks {
             () -> new ModHangingSignBlock(BlockBehaviour.Properties.of().mapColor(PINE_LOG.get().defaultMapColor()).forceSolidOn().instrument(NoteBlockInstrument.BASS).noCollission().strength(1.0F).ignitedByLava(), ModWoodType.PINE), false);
     public static final RegistryObject<Block> PINE_WALL_HANGING_SIGN = register("pine_wall_hanging_sign",
             () -> new ModWallHangingSignBlock(BlockBehaviour.Properties.of().mapColor(PINE_LOG.get().defaultMapColor()).forceSolidOn().instrument(NoteBlockInstrument.BASS).noCollission().strength(1.0F).lootFrom(PINE_HANGING_SIGN).ignitedByLava(), ModWoodType.PINE), false);
-    public static final RegistryObject<Block> PINE_SAPLING = register("pine_sapling", () -> sapling(new PineTree()));
+    public static final RegistryObject<Block> PINE_SAPLING = register("pine_sapling", () -> sapling(PineTree.GROWER));
     public static final RegistryObject<Block> POTTED_PINE_SAPLING = register("potted_pine_sapling", () ->
-            new FlowerPotBlock(() -> (FlowerPotBlock) ForgeRegistries.BLOCKS.getDelegateOrThrow(Blocks.FLOWER_POT).get(), ModBlocks.PINE_SAPLING, Block.Properties.of().pushReaction(PushReaction.DESTROY).noOcclusion().instabreak().ignitedByLava()), false, LootTableType.EMPTY);
+            new FlowerPotBlock(() -> (FlowerPotBlock) NeoForgeRegistries.BLOCKS.getDelegateOrThrow(Blocks.FLOWER_POT).get(), ModBlocks.PINE_SAPLING, Block.Properties.of().pushReaction(PushReaction.DESTROY).noOcclusion().instabreak().ignitedByLava()), false, LootTableType.EMPTY);
 
     //Steep
     public static final RegistryObject<Block> STEEP_PLANKS = register("steep_planks",
@@ -643,9 +643,9 @@ public class ModBlocks {
             () -> new ModHangingSignBlock(BlockBehaviour.Properties.of().mapColor(CHORUS_LOG.get().defaultMapColor()).forceSolidOn().instrument(NoteBlockInstrument.BASS).noCollission().strength(1.0F), ModWoodType.CHORUS), false);
     public static final RegistryObject<Block> CHORUS_WALL_HANGING_SIGN = register("chorus_wall_hanging_sign",
             () -> new ModWallHangingSignBlock(BlockBehaviour.Properties.of().mapColor(CHORUS_LOG.get().defaultMapColor()).forceSolidOn().instrument(NoteBlockInstrument.BASS).noCollission().strength(1.0F).lootFrom(CHORUS_HANGING_SIGN), ModWoodType.CHORUS), false);
-    public static final RegistryObject<SaplingBlock> CHORUS_SAPLING = register("chorus_sapling", () -> endSapling(new ChorusTree()));
+    public static final RegistryObject<SaplingBlock> CHORUS_SAPLING = register("chorus_sapling", () -> endSapling(ChorusTree.GROWER));
     public static final RegistryObject<Block> POTTED_CHORUS_SAPLING = register("potted_chorus_sapling", () ->
-            new FlowerPotBlock(() -> (FlowerPotBlock) ForgeRegistries.BLOCKS.getDelegateOrThrow(Blocks.FLOWER_POT).get(), ModBlocks.CHORUS_SAPLING, Block.Properties.of().pushReaction(PushReaction.DESTROY).noOcclusion().instabreak()), false, LootTableType.EMPTY);
+            new FlowerPotBlock(() -> (FlowerPotBlock) NeoForgeRegistries.BLOCKS.getDelegateOrThrow(Blocks.FLOWER_POT).get(), ModBlocks.CHORUS_SAPLING, Block.Properties.of().pushReaction(PushReaction.DESTROY).noOcclusion().instabreak()), false, LootTableType.EMPTY);
 
     //Corrupt Chorus
     public static final RegistryObject<Block> CORRUPT_CHORUS_PLANKS = register("corrupt_chorus_planks",
@@ -1112,11 +1112,11 @@ public class ModBlocks {
                 }
             });
 
-    private static SaplingBlock sapling(AbstractTreeGrower tree){
+    private static SaplingBlock sapling(TreeGrower tree){
         return new SaplingBlock(tree, BlockBehaviour.Properties.of().mapColor(MapColor.PLANT).noCollission().randomTicks().instabreak().sound(SoundType.GRASS).pushReaction(PushReaction.DESTROY));
     }
 
-    private static EndSaplingBlock endSapling(AbstractTreeGrower tree){
+    private static EndSaplingBlock endSapling(TreeGrower tree){
         return new EndSaplingBlock(tree, BlockBehaviour.Properties.of().mapColor(MapColor.PLANT).noCollission().randomTicks().instabreak().sound(SoundType.GRASS).pushReaction(PushReaction.DESTROY));
     }
 
@@ -1232,7 +1232,7 @@ public class ModBlocks {
             blockbehaviour$properties = blockbehaviour$properties.requiredFeatures(p_278229_);
         }
 
-        return new ButtonBlock(blockbehaviour$properties, p_278239_, 30, true);
+        return new ButtonBlock(p_278239_, 30, blockbehaviour$properties);
     }
 
     public static BlockBehaviour.Properties ShadeStoneProperties(){

@@ -69,7 +69,8 @@ public class BanishSpell extends TouchSpell {
                     this.playSound(worldIn, caster, ModSounds.SPELL_FAIL.get(), 1.0F, 1.0F);
                     return false;
                 }
-                net.minecraftforge.event.entity.EntityTeleportEvent.EnderEntity event = net.minecraftforge.event.ForgeEventFactory.onEnderTeleport(living, caster.getX(), caster.getY(), caster.getZ());
+                net.neoforged.event.entity.EntityTeleportEvent.EnderEntity event = new net.neoforged.event.entity.EntityTeleportEvent.EnderEntity(caster, blockPos.getX(), blockPos.getY(), blockPos.getZ());
+                net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(event);
                 if (event.isCanceled()) {
                     return false;
                 }

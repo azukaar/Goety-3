@@ -86,7 +86,7 @@ public class AbstractZombieVindicator extends ZombieServant {
         if (this.level instanceof ServerLevel serverLevel && this.isAlive() && this.isConverting()) {
             int i = this.getConversionProgress();
             this.villagerConversionTime -= i;
-            if (this.villagerConversionTime <= 0 && net.minecraftforge.event.ForgeEventFactory.canLivingConvert(this, ModEntityType.VINDICATOR_SERVANT.get(), (timer) -> this.villagerConversionTime = timer)) {
+            if (this.villagerConversionTime <= 0 && net.neoforged.event.net.neoforged.neoforge.event.EventHooks.canLivingConvert(this, ModEntityType.VINDICATOR_SERVANT.get(), (timer) -> this.villagerConversionTime = timer)) {
                 this.finishConversion(serverLevel);
             }
         }
@@ -185,7 +185,7 @@ public class AbstractZombieVindicator extends ZombieServant {
             if (!this.isSilent()) {
                 serverLevel.levelEvent((Player)null, 1027, this.blockPosition(), 0);
             }
-            net.minecraftforge.event.ForgeEventFactory.onLivingConvert(this, vindicator);
+            net.neoforged.event.net.neoforged.neoforge.event.EventHooks.onLivingConvert(this, vindicator);
         }
     }
 

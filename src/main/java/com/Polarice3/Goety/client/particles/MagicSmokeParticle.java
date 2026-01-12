@@ -6,22 +6,18 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.Util;
-import net.minecraft.client.Timer;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.*;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleType;
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.util.ExtraCodecs;
 import net.minecraft.util.FastColor;
 import net.minecraft.util.Mth;
 
-import java.util.Locale;
-
 public class MagicSmokeParticle extends TextureSheetParticle {
-    public Timer timer;
     public int colorFrom;
     public int colorTo;
 
@@ -43,7 +39,6 @@ public class MagicSmokeParticle extends TextureSheetParticle {
         this.colorTo = colorTo;
         this.quadSize = size;
         this.lifetime = duration;
-        this.timer = new Timer(duration + 1, 0);
         this.hasPhysics = true;
     }
 
@@ -79,8 +74,7 @@ public class MagicSmokeParticle extends TextureSheetParticle {
                 this.zd *= (double)0.7F;
             }
 
-            this.timer.advanceTime(Util.getMillis());
-            float lerp = (this.age + this.timer.partialTick) / this.lifetime;
+            float lerp = (float) this.age / (float) this.lifetime;
             int newColor = FastColor.ARGB32.lerp(lerp, this.colorFrom, this.colorTo);
             ColorUtil colorUtil = new ColorUtil(newColor);
             this.rCol = colorUtil.red();
@@ -109,7 +103,7 @@ public class MagicSmokeParticle extends TextureSheetParticle {
     }
 
     public static class Option implements ParticleOptions {
-        public static final Codec<Option> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+        public static final com.mojang.serialization.MapCodec<Option> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
                 Codec.INT.fieldOf("colorFrom").forGetter(Option::getColorFrom),
                 Codec.INT.fieldOf("colorTo").forGetter(Option::getColorTo),
                 ExtraCodecs.POSITIVE_INT.fieldOf("duration").forGetter(Option::getDuration),
@@ -117,25 +111,16 @@ public class MagicSmokeParticle extends TextureSheetParticle {
                 Codec.FLOAT.fieldOf("gravity").forGetter(Option::getGravity)
         ).apply(instance, Option::new));
 
-        public static final ParticleOptions.Deserializer<Option> DESERIALIZER = new ParticleOptions.Deserializer<>() {
-            public Option fromCommand(ParticleType<Option> p_235961_, StringReader p_235962_) throws CommandSyntaxException {
-                p_235962_.expect(' ');
-                int colorFrom = p_235962_.readInt();
-                p_235962_.expect(' ');
-                int colorTo = p_235962_.readInt();
-                p_235962_.expect(' ');
-                int duration = p_235962_.readInt();
-                p_235962_.expect(' ');
-                float size = p_235962_.readFloat();
-                p_235962_.expect(' ');
-                float gravity = p_235962_.readFloat();
-                return new Option(colorFrom, colorTo, duration, size, gravity);
-            }
-
-            public Option fromNetwork(ParticleType<Option> p_235964_, FriendlyByteBuf p_235965_) {
-                return new Option(p_235965_.readInt(), p_235965_.readInt(), p_235965_.readInt(), p_235965_.readFloat(), p_235965_.readFloat());
-            }
-        };
+        public static final StreamCodec<RegistryFriendlyByteBuf, Option> STREAM_CODEC = StreamCodec.of(
+                (buf, value) -> {
+                    buf.writeInt(value.getColorFrom());
+                    buf.writeInt(value.getColorTo());
+                    buf.writeInt(value.getDuration());
+                    buf.writeFloat(value.getSize());
+                    buf.writeFloat(value.getGravity());
+                },
+                buf -> new Option(buf.readInt(), buf.readInt(), buf.readInt(), buf.readFloat(), buf.readFloat())
+        );
         public int colorFrom;
         public int colorTo;
         public int duration;
@@ -156,21 +141,6 @@ public class MagicSmokeParticle extends TextureSheetParticle {
 
         public ParticleType<Option> getType() {
             return ModParticleTypes.MAGIC_SMOKE.get();
-        }
-
-        @Override
-        public void writeToNetwork(FriendlyByteBuf p_123732_) {
-            p_123732_.writeInt(this.getColorFrom());
-            p_123732_.writeInt(this.getColorTo());
-            p_123732_.writeInt(this.getDuration());
-            p_123732_.writeFloat(this.getSize());
-            p_123732_.writeFloat(this.getGravity());
-        }
-
-        @Override
-        public String writeToString() {
-            return String.format(Locale.ROOT, "%s %s %s %s %.2f %.2f",
-                    BuiltInRegistries.PARTICLE_TYPE.getKey(this.getType()), this.colorFrom, this.colorTo, this.duration, this.size, this.gravity);
         }
 
         public int getColorFrom() {

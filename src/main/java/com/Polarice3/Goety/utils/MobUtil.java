@@ -84,8 +84,8 @@ import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.phys.*;
-import net.minecraftforge.entity.PartEntity;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.neoforge.entity.PartEntity;
+import net.neoforged.neoforge.registries.NeoForgeRegistries;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -261,7 +261,7 @@ public class MobUtil {
     }
 
     public static void forcefulKnockBack(LivingEntity knocked, double strength, double ratioX, double ratioZ, double reduction) {
-        net.minecraftforge.event.entity.living.LivingKnockBackEvent event = net.minecraftforge.common.ForgeHooks.onLivingKnockBack(knocked, (float) strength, ratioX, ratioZ);
+        net.neoforged.event.entity.living.LivingKnockBackEvent event = net.neoforged.common.ForgeHooks.onLivingKnockBack(knocked, (float) strength, ratioX, ratioZ);
         if(event.isCanceled()) return;
         strength = event.getStrength();
         ratioX = event.getRatioX();
@@ -363,7 +363,7 @@ public class MobUtil {
         List<EntityType<?>> list = new ArrayList<>();
         if (!config.isEmpty()){
             for (String id : config){
-                EntityType<?> entityType = ForgeRegistries.ENTITY_TYPES.getValue(new ResourceLocation(id));
+                EntityType<?> entityType = NeoForgeRegistries.ENTITY_TYPES.getValue(new ResourceLocation(id));
                 if (entityType != null){
                     list.add(entityType);
                 }
@@ -1106,7 +1106,7 @@ public class MobUtil {
     }
 
     public static void hurtUsedShield(LivingEntity living, float p_36383_) {
-        if (living.getUseItem().canPerformAction(net.minecraftforge.common.ToolActions.SHIELD_BLOCK)) {
+        if (living.getUseItem().canPerformAction(net.neoforged.common.ToolActions.SHIELD_BLOCK)) {
             if (!living.level.isClientSide && living instanceof ServerPlayer player) {
                 player.awardStat(Stats.ITEM_USED.get(player.getUseItem().getItem()));
             }
@@ -1117,7 +1117,7 @@ public class MobUtil {
                 living.getUseItem().hurtAndBreak(i, living, (p_219739_) -> {
                     p_219739_.broadcastBreakEvent(interactionhand);
                     if (living instanceof Player player) {
-                        net.minecraftforge.event.ForgeEventFactory.onPlayerDestroyItem(player, living.getUseItem(), interactionhand);
+                        net.neoforged.event.EventFactory.onPlayerDestroyItem(player, living.getUseItem(), interactionhand);
                     }
                 });
                 if (living.getUseItem().isEmpty()) {
@@ -1200,7 +1200,7 @@ public class MobUtil {
     */
 
     public static WeightedRandomList<MobSpawnSettings.SpawnerData> mobsAt(ServerLevel p_220444_, StructureManager p_220445_, ChunkGenerator p_220446_, MobCategory p_220447_, BlockPos p_220448_, @Nullable Holder<Biome> p_220449_) {
-        return net.minecraftforge.event.ForgeEventFactory.getPotentialSpawns(p_220444_, p_220447_, p_220448_, NaturalSpawner.isInNetherFortressBounds(p_220448_, p_220444_, p_220447_, p_220445_) ? p_220445_.registryAccess().registryOrThrow(Registries.STRUCTURE).getOrThrow(BuiltinStructures.FORTRESS).spawnOverrides().get(MobCategory.MONSTER).spawns() : p_220446_.getMobsAt(p_220449_ != null ? p_220449_ : p_220444_.getBiome(p_220448_), p_220445_, p_220447_, p_220448_));
+        return net.neoforged.event.EventFactory.getPotentialSpawns(p_220444_, p_220447_, p_220448_, NaturalSpawner.isInNetherFortressBounds(p_220448_, p_220444_, p_220447_, p_220445_) ? p_220445_.registryAccess().registryOrThrow(Registries.STRUCTURE).getOrThrow(BuiltinStructures.FORTRESS).spawnOverrides().get(MobCategory.MONSTER).spawns() : p_220446_.getMobsAt(p_220449_ != null ? p_220449_ : p_220444_.getBiome(p_220448_), p_220445_, p_220447_, p_220448_));
     }
 
     public static Vec3 calculateViewVector(float p_20172_, float p_20173_) {
@@ -1350,7 +1350,7 @@ public class MobUtil {
         boolean flag = blockstate.blocksMotion();
         boolean flag1 = blockstate.getFluidState().is(FluidTags.WATER);
         if (flag && !flag1) {
-            net.minecraftforge.event.entity.EntityTeleportEvent.EnderEntity event = net.minecraftforge.event.ForgeEventFactory.onEnderTeleport(livingEntity, x, y, z);
+            net.neoforged.event.entity.EntityTeleportEvent.EnderEntity event = new net.neoforged.event.entity.EntityTeleportEvent.EnderEntity(this, this.getX(), this.getY(), this.getZ()); net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(event);
             if (event.isCanceled()) return false;
             Vec3 vec3 = livingEntity.position();
             boolean flag2 = livingEntity.randomTeleport(event.getTargetX(), event.getTargetY(), event.getTargetZ(), true);
@@ -1468,7 +1468,7 @@ public class MobUtil {
     public static void createBlockUponDeath(LivingEntity target, @Nullable LivingEntity killer, Block block) {
         if (!target.level.isClientSide) {
             boolean flag = false;
-            if (net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(target.level, killer)) {
+            if (net.neoforged.event.target.level.getGameRules().getBoolean(GameRules.RULE_MOB_GRIEFING)) {
                 BlockPos blockpos = target.blockPosition();
                 BlockState blockstate = block.defaultBlockState();
                 if (target.level.isEmptyBlock(blockpos) && blockstate.canSurvive(target.level, blockpos)) {
@@ -1502,11 +1502,11 @@ public class MobUtil {
     }
 
     public static float hurtCalculation(LivingEntity livingEntity, DamageSource damageSource, float amount) {
-        amount = net.minecraftforge.common.ForgeHooks.onLivingHurt(livingEntity, damageSource, amount);
+        amount = net.neoforged.common.ForgeHooks.onLivingHurt(livingEntity, damageSource, amount);
         amount = getDamageAfterArmorAbsorb(livingEntity, damageSource, amount);
         amount = getDamageAfterMagicAbsorb(livingEntity, damageSource, amount);
         float f1 = Math.max(amount - livingEntity.getAbsorptionAmount(), 0.0F);
-        f1 = net.minecraftforge.common.ForgeHooks.onLivingDamage(livingEntity, damageSource, f1);
+        f1 = net.neoforged.common.ForgeHooks.onLivingDamage(livingEntity, damageSource, f1);
         return f1;
     }
 
@@ -1636,7 +1636,7 @@ public class MobUtil {
         if (target instanceof AbstractHauntedArmor hauntedArmor && hauntedArmor.isBlocking()){
             hauntedArmor.disableShield(true);
         } else if (target.getType().is(ModTags.EntityTypes.BIC_SHIELDED_MOBS) && target instanceof LivingEntity target1) {
-            MobEffect mobEffect = ForgeRegistries.MOB_EFFECTS.getValue(new ResourceLocation("born_in_chaos_v1", "block_break"));
+            MobEffect mobEffect = NeoForgeRegistries.MOB_EFFECTS.getValue(new ResourceLocation("born_in_chaos_v1", "block_break"));
             if (mobEffect != null) {
                 if (!target1.hasEffect(mobEffect)) {
                     target1.addEffect(new MobEffectInstance(mobEffect, 120, 0, false, false));

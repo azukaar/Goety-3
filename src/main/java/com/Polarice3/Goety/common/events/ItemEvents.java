@@ -57,58 +57,58 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.event.entity.living.*;
-import net.minecraftforge.event.entity.player.AttackEntityEvent;
-import net.minecraftforge.event.entity.player.PlayerInteractEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.neoforge.event.entity.living.*;
+import net.neoforged.neoforge.event.entity.player.AttackEntityEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
+import net.neoforged.neoforge.event.tick.EntityTickEvent;
+import net.neoforged.neoforge.event.tick.PlayerTickEvent;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.fml.common.Mod;
 
 import java.util.List;
 import java.util.UUID;
 
-@Mod.EventBusSubscriber(modid = Goety.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE)
+@EventBusSubscriber(modid = Goety.MOD_ID, bus = EventBusSubscriber.Bus.GAME)
 public class ItemEvents {
 
     @SubscribeEvent
-    public static void PlayerTick(TickEvent.PlayerTickEvent event){
-        Player player = event.player;
-        if (event.phase == TickEvent.Phase.END) {
-            if (ItemHelper.findHelmet(player, ModItems.DARK_HELMET.get())){
-                if (ItemConfig.DarkHelmetDarkness.get()) {
-                    if (player.getEffect(MobEffects.DARKNESS) != null) {
-                        player.removeEffect(MobEffects.DARKNESS);
-                    }
+    public static void PlayerTick(PlayerTickEvent.Post event){
+        Player player = event.getEntity();
+        if (ItemHelper.findHelmet(player, ModItems.DARK_HELMET.get())){
+            if (ItemConfig.DarkHelmetDarkness.get()) {
+                if (player.getEffect(MobEffects.DARKNESS) != null) {
+                    player.removeEffect(MobEffects.DARKNESS);
                 }
-                if (ItemConfig.DarkHelmetBlindness.get()) {
-                    if (player.getEffect(MobEffects.BLINDNESS) != null) {
-                        player.removeEffect(MobEffects.BLINDNESS);
+            }
+            if (ItemConfig.DarkHelmetBlindness.get()) {
+                if (player.getEffect(MobEffects.BLINDNESS) != null) {
+                    player.removeEffect(MobEffects.BLINDNESS);
+                }
+            }
+        }
+
+        Inventory inventory = player.getInventory();
+
+        List<NonNullList<ItemStack>> compartments = ImmutableList.of(inventory.items, inventory.armor, inventory.offhand);
+
+        for (NonNullList<ItemStack> nonnulllist : compartments) {
+            for (int i = 0; i < nonnulllist.size(); ++i) {
+                if (!nonnulllist.get(i).isEmpty()) {
+                    ItemStack itemStack = nonnulllist.get(i);
+                    if (itemStack.getItem() instanceof ISoulRepair soulRepair) {
+                        soulRepair.repairTick(nonnulllist.get(i), player, inventory.selected == i);
+                    } else if (itemStack.getItem() instanceof TieredItem item && item.getTier() == ModTiers.DARK){
+                        ItemHelper.repairTick(itemStack, player, inventory.selected == i);
                     }
                 }
             }
+        }
 
-            Inventory inventory = player.getInventory();
-
-            List<NonNullList<ItemStack>> compartments = ImmutableList.of(inventory.items, inventory.armor, inventory.offhand);
-
-            for (NonNullList<ItemStack> nonnulllist : compartments) {
-                for (int i = 0; i < nonnulllist.size(); ++i) {
-                    if (!nonnulllist.get(i).isEmpty()) {
-                        ItemStack itemStack = nonnulllist.get(i);
-                        if (itemStack.getItem() instanceof ISoulRepair soulRepair) {
-                            soulRepair.repairTick(nonnulllist.get(i), player, inventory.selected == i);
-                        } else if (itemStack.getItem() instanceof TieredItem item && item.getTier() == ModTiers.DARK){
-                            ItemHelper.repairTick(itemStack, player, inventory.selected == i);
-                        }
-                    }
-                }
-            }
-
-            if (ItemHelper.armorSet(player, ModArmorMaterials.DARK)){
-                if (player.getFoodData().needsFood()){
-                    if (player.tickCount % 40 == 0){
-                        player.heal(1.0F);
-                    }
+        if (ItemHelper.armorSet(player, ModArmorMaterials.DARK)){
+            if (player.getFoodData().needsFood()){
+                if (player.tickCount % 40 == 0){
+                    player.heal(1.0F);
                 }
             }
         }
@@ -200,8 +200,10 @@ public class ItemEvents {
     }
 
     @SubscribeEvent
-    public static void LivingEffects(LivingEvent.LivingTickEvent event){
-        LivingEntity livingEntity = event.getEntity();
+    public static void LivingEffects(EntityTickEvent.Post event){
+        if (!(event.getEntity() instanceof LivingEntity livingEntity)) {
+            return;
+        }
         if (livingEntity != null && livingEntity.isAlive()){
             AttributeModifier attributemodifier = new AttributeModifier(UUID.fromString("17cb060f-0465-412e-abe7-a9c397b2e548"), "Increase Armor", 4.0D, AttributeModifier.Operation.ADDITION);
             AttributeInstance armor = livingEntity.getAttribute(Attributes.ARMOR);
@@ -233,10 +235,10 @@ public class ItemEvents {
     }
 
     @SubscribeEvent
-    public static void HurtEvent(LivingHurtEvent event){
+    public static void HurtEvent(LivingDamageEvent.Post event){
         LivingEntity victim = event.getEntity();
         Entity directEntity = event.getSource().getDirectEntity();
-        if (event.getAmount() > 0.0F) {
+        if (event.getNewDamage() > 0.0F) {
             if (directEntity instanceof LivingEntity livingAttacker) {
                 if (ModDamageSource.physicalAttacks(event.getSource())) {
                     ItemHelper.setItemEffect(livingAttacker.getMainHandItem(), victim);
@@ -254,7 +256,7 @@ public class ItemEvents {
                         }
                         if (weapon == ModItems.HUNGRY_DAGGER.get()){
                             int soulEat = EnchantmentHelper.getEnchantmentLevel(ModEnchantments.SOUL_EATER.get(), livingAttacker) + 1;
-                            livingAttacker.heal(event.getAmount() * (0.05F * soulEat));
+                            livingAttacker.heal(event.getNewDamage() * (0.05F * soulEat));
                         }
                         if (weapon instanceof BladeOfEnderItem) {
                             MobEffect effect = GoetyEffects.VOID_TOUCHED.get();
@@ -452,22 +454,9 @@ public class ItemEvents {
     }
 
     @SubscribeEvent
-    public static void HunterLoot(LootingLevelEvent event){
-        if (event.getDamageSource() != null) {
-            if (event.getEntity() != null) {
-                if (!event.getEntity().level.isClientSide) {
-                    if (event.getDamageSource().getEntity() != null && event.getDamageSource().getEntity() instanceof LivingEntity livingEntity) {
-                        if (livingEntity.getMainHandItem().getItem() instanceof HuntersBowItem) {
-                            if (event.getDamageSource().getDirectEntity() instanceof AbstractArrow) {
-                                if (event.getEntity() instanceof Animal){
-                                    event.setLootingLevel(event.getLootingLevel() + 4);
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
+    public static void HunterLoot(/* LootingLevelEvent event */){
+        // TODO(1.21): LootingLevelEvent no longer exists. If this behavior is still desired,
+        // port it to LivingDropsEvent / loot context hooks.
     }
 
     @SubscribeEvent

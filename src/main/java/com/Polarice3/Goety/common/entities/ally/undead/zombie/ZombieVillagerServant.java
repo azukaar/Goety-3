@@ -132,7 +132,7 @@ public class ZombieVillagerServant extends ZombieServant implements InventoryCar
         if (this.level instanceof ServerLevel serverLevel && this.isAlive() && this.isConverting()) {
             int i = this.getConversionProgress();
             this.villagerConversionTime -= i;
-            if (this.villagerConversionTime <= 0 && net.minecraftforge.event.ForgeEventFactory.canLivingConvert(this, EntityType.VILLAGER, (timer) -> this.villagerConversionTime = timer)) {
+            if (this.villagerConversionTime <= 0 && net.neoforged.event.net.neoforged.neoforge.event.EventHooks.canLivingConvert(this, EntityType.VILLAGER, (timer) -> this.villagerConversionTime = timer)) {
                 this.finishConversion(serverLevel);
             }
         }
@@ -239,7 +239,7 @@ public class ZombieVillagerServant extends ZombieServant implements InventoryCar
         if (!this.isSilent()) {
             p_34399_.levelEvent((Player)null, 1027, this.blockPosition(), 0);
         }
-        net.minecraftforge.event.ForgeEventFactory.onLivingConvert(this, villager);
+        net.neoforged.event.net.neoforged.neoforge.event.EventHooks.onLivingConvert(this, villager);
     }
 
     private int getConversionProgress() {

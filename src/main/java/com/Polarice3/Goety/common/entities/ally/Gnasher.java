@@ -50,10 +50,9 @@ import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.gameevent.GameEvent;
-import net.minecraft.world.level.pathfinder.BlockPathTypes;
+import net.minecraft.world.level.pathfinder.PathType;
 import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.fluids.FluidType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -68,7 +67,7 @@ public class Gnasher extends AnimalSummon implements PlayerRideable, IAutoRideab
         super(type, worldIn);
         this.moveControl = new GnasherMoveController(this);
         this.lookControl = new GnasherLookController(this);
-        this.setPathfindingMalus(BlockPathTypes.WATER, 0.0F);
+        this.setPathfindingMalus(PathType.WATER, 0.0F);
     }
 
     protected void registerGoals() {
@@ -118,18 +117,6 @@ public class Gnasher extends AnimalSummon implements PlayerRideable, IAutoRideab
     @Override
     public boolean canUpdateMove() {
         return true;
-    }
-
-    public MobType getMobType() {
-        return MobType.WATER;
-    }
-
-    public boolean canDrownInFluidType(FluidType type){
-        return false;
-    }
-
-    public boolean isPushedByFluid(FluidType type) {
-        return false;
     }
 
     public boolean checkSpawnObstruction(LevelReader p_32829_) {

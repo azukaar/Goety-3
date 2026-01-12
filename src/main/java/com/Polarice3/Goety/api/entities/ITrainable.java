@@ -19,7 +19,7 @@ import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.event.ForgeEventFactory;
+
 
 import javax.annotation.Nullable;
 import java.util.Objects;
@@ -103,13 +103,13 @@ public interface ITrainable {
             if (livingEntity instanceof Mob mob) {
                 if (this.isTraining() && this.getTrainPos().isPresent()) {
                     int range = 8;
-                    if (mob.level.getBlockEntity(this.getTrainPos().get()) instanceof IBarrack barrack){
+                    if (mob.level().getBlockEntity(this.getTrainPos().get()) instanceof IBarrack barrack){
                         range = barrack.getRange();
                     }
                     try {
                         if (this.vec3TrainPos() != null) {
                             if (mob.distanceToSqr(this.vec3TrainPos()) > Mth.square(range + 2)) {
-                                if (mob.level instanceof ServerLevel serverLevel) {
+                                if (mob.level() instanceof ServerLevel serverLevel) {
                                     ServerParticleUtil.addParticlesAroundMiddleSelf(serverLevel, ParticleTypes.ANGRY_VILLAGER, mob);
                                 }
                                 this.setTrainPos(null);
@@ -128,16 +128,16 @@ public interface ITrainable {
                     }
                 }
                 if (this.getStoredTrainPos().isPresent()) {
-                    if (mob.level.getBlockEntity(this.getStoredTrainPos().get()) instanceof IBarrack barrack) {
+                    if (mob.level().getBlockEntity(this.getStoredTrainPos().get()) instanceof IBarrack barrack) {
                         if (barrack instanceof OwnedBlockEntity ownedBlock && mob instanceof IServant owned) {
                             if (ownedBlock.getTrueOwner() != owned.getTrueOwner()) {
                                 this.setStoredTrainPos(null);
                             }
                         }
                         if (this.getStoredTrainPos().isPresent()) {
-                            if (!barrack.getTrainableList(mob.level, this.getStoredTrainPos().get()).contains(this)) {
-                                if (barrack.checkEligibility(mob, mob.level, this.getStoredTrainPos().get())) {
-                                    barrack.addTrainable(mob, mob.level, this.getStoredTrainPos().get());
+                            if (!barrack.getTrainableList(mob.level(), this.getStoredTrainPos().get()).contains(this)) {
+                                if (barrack.checkEligibility(mob, mob.level(), this.getStoredTrainPos().get())) {
+                                    barrack.addTrainable(mob, mob.level(), this.getStoredTrainPos().get());
                                 }
                             } else {
                                 if (mob.distanceToSqr(Vec3.atBottomCenterOf(this.getStoredTrainPos().get())) > Mth.square(barrack.getRange() + 2)){
@@ -177,7 +177,7 @@ public interface ITrainable {
 
     default void completeTraining(EntityType<? extends Mob> entityType){
         if (this instanceof Mob mob){
-            if (ForgeEventFactory.canLivingConvert(mob, entityType, (timer) -> {})) {
+            if (net.neoforged.neoforge.event.EventHooks.canLivingConvert(mob, entityType, (timer) -> {})) {
                 Mob converted = mob.convertTo(entityType, true);
                 if (converted != null){
                     if (mob instanceof IOwned ownable && converted instanceof IOwned ownable1){
@@ -189,8 +189,8 @@ public interface ITrainable {
                             }
                         }
                     }
-                    if (mob.level instanceof ServerLevel serverLevel) {
-                        ForgeEventFactory.onFinalizeSpawn(converted, serverLevel, serverLevel.getCurrentDifficultyAt(converted.blockPosition()), MobSpawnType.CONVERSION, null, null);
+                    if (mob.level() instanceof ServerLevel serverLevel) {
+                        converted.finalizeSpawn(serverLevel, serverLevel.getCurrentDifficultyAt(converted.blockPosition()), MobSpawnType.CONVERSION, null);
                     }
                     if (mob instanceof IServant servant && converted instanceof IServant servant1){
                         if (servant.isWandering() && !servant.isStaying() && !servant.isGuardingArea() && servant1.canWander()) {
@@ -212,7 +212,7 @@ public interface ITrainable {
                         }
                     }
                     converted.playAmbientSound();
-                    ForgeEventFactory.onLivingConvert(mob, converted);
+                    net.neoforged.neoforge.event.EventHooks.onLivingConvert(mob, converted);
                 }
             }
         }
@@ -223,10 +223,10 @@ public interface ITrainable {
             this.setTrainTime(compound.getInt("TrainTime"));
         }
         if (compound.contains("TrainPos")){
-            this.setTrainPos(NbtUtils.readBlockPos(compound.getCompound("TrainPos")));
+            NbtUtils.readBlockPos(compound, "TrainPos").ifPresent(this::setTrainPos);
         }
         if (compound.contains("StoredTrainPos")) {
-            this.setStoredTrainPos(NbtUtils.readBlockPos(compound.getCompound("StoredTrainPos")));
+            NbtUtils.readBlockPos(compound, "StoredTrainPos").ifPresent(this::setStoredTrainPos);
         }
         if (compound.contains("CurrentTrain")){
             this.setCurrentTrain(compound.getString("CurrentTrain"));
@@ -244,3 +244,4 @@ public interface ITrainable {
         compound.putString("CurrentTrain", this.getCurrentTrain());
     }
 }
+

@@ -1,6 +1,6 @@
 package com.Polarice3.Goety.compat.serene_seasons;
 
-import net.minecraftforge.fml.ModList;
+import net.neoforged.fml.ModList;
 
 public enum SSeasonsLoaded {
     SERENE_SEASONS("sereneseasons");
@@ -13,5 +13,4 @@ public enum SSeasonsLoaded {
     public boolean isLoaded() {
         return this.loaded;
     }
-
 }

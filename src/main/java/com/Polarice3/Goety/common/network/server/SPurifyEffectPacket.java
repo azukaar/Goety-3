@@ -7,8 +7,8 @@ import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.network.NetworkEvent;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.network.NetworkEvent;
+import net.neoforged.neoforge.registries.NeoForgeRegistries;
 
 import java.util.function.Supplier;
 
@@ -36,7 +36,7 @@ public class SPurifyEffectPacket {
             if (level instanceof ClientLevel clientWorld) {
                 Entity entity = clientWorld.getEntity(packet.mob);
                 if (entity instanceof LivingEntity livingEntity) {
-                    for (MobEffect mobEffect : ForgeRegistries.MOB_EFFECTS){
+                    for (MobEffect mobEffect : NeoForgeRegistries.MOB_EFFECTS){
                         boolean flag;
                         if (packet.removeDebuff) {
                             flag = !mobEffect.isBeneficial();

@@ -44,28 +44,32 @@ import net.minecraft.world.item.trading.MerchantOffer;
 import net.minecraft.world.level.GameRules;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
-import net.minecraftforge.event.entity.EntityTravelToDimensionEvent;
-import net.minecraftforge.event.entity.ProjectileImpactEvent;
-import net.minecraftforge.event.entity.living.*;
-import net.minecraftforge.event.entity.player.AttackEntityEvent;
-import net.minecraftforge.event.entity.player.PlayerInteractEvent;
-import net.minecraftforge.event.level.ExplosionEvent;
-import net.minecraftforge.eventbus.api.EventPriority;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.neoforge.event.entity.EntityTravelToDimensionEvent;
+import net.neoforged.neoforge.event.entity.ProjectileImpactEvent;
+import net.neoforged.neoforge.event.entity.living.*;
+import net.neoforged.neoforge.event.entity.player.AttackEntityEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
+import net.neoforged.neoforge.event.level.ExplosionEvent;
+import net.neoforged.neoforge.event.tick.EntityTickEvent;
+import net.neoforged.bus.api.EventPriority;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.neoforge.registries.NeoForgeRegistries;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static net.minecraftforge.event.entity.living.LivingChangeTargetEvent.LivingTargetType.MOB_TARGET;
+import static net.neoforged.neoforge.event.entity.living.LivingChangeTargetEvent.LivingTargetType.MOB_TARGET;
 
-@Mod.EventBusSubscriber(modid = Goety.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE)
+@EventBusSubscriber(modid = Goety.MOD_ID, bus = EventBusSubscriber.Bus.GAME)
 public class ServantEvents {
 
     @SubscribeEvent
-    public static void LivingEffects(LivingEvent.LivingTickEvent event){
-        LivingEntity livingEntity = event.getEntity();
+    public static void LivingEffects(EntityTickEvent.Post event){
+        if (!(event.getEntity() instanceof LivingEntity livingEntity)) {
+            return;
+        }
         if (livingEntity instanceof Mob mob){
             if (mob instanceof IOwned && mob.getTarget() != null) {
                 if (mob.getTarget().isDeadOrDying() || !EntitySelector.NO_CREATIVE_OR_SPECTATOR.test(mob.getTarget())){
@@ -162,7 +166,7 @@ public class ServantEvents {
     }
 
     @SubscribeEvent
-    public static void AttackEvent(LivingAttackEvent event){
+    public static void AttackEvent(LivingIncomingDamageEvent event){
         LivingEntity victim = event.getEntity();
         Entity attacker = event.getSource().getEntity();
         if (attacker instanceof IOwned owned){
@@ -174,7 +178,7 @@ public class ServantEvents {
             if (attacker instanceof Mob mob) {
                 if (mob.getMainHandItem().getItem() instanceof AxeItem) {
                     if (victim.getType().is(ModTags.EntityTypes.BIC_SHIELDED_MOBS)) {
-                        MobEffect mobEffect = ForgeRegistries.MOB_EFFECTS.getValue(new ResourceLocation("born_in_chaos_v1", "block_break"));
+                        MobEffect mobEffect = NeoForgeRegistries.MOB_EFFECTS.getValue(new ResourceLocation("born_in_chaos_v1", "block_break"));
                         if (mobEffect != null) {
                             victim.addEffect(new MobEffectInstance(mobEffect, 120, 0, false, false));
                             if (!victim.level.isClientSide()) {
@@ -236,7 +240,7 @@ public class ServantEvents {
     }
 
     @SubscribeEvent
-    public static void HurtEvent(LivingHurtEvent event){
+    public static void HurtEvent(LivingIncomingDamageEvent event){
         LivingEntity target = event.getEntity();
         Entity attacker = event.getSource().getEntity();
         if (MobsConfig.CompatMinionHeal.get()) {
@@ -353,7 +357,7 @@ public class ServantEvents {
                             } else {
                                 prisoner.setTrueOwner(raider);
                             }
-                            net.minecraftforge.event.ForgeEventFactory.onLivingConvert(villager, prisoner);
+                            net.neoforged.event.net.neoforged.neoforge.event.EventHooks.onLivingConvert(villager, prisoner);
                             if (!prisoner.isSilent()) {
                                 prisoner.playSound(SoundEvents.IRON_TRAPDOOR_CLOSE);
                             }

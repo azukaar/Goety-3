@@ -21,14 +21,13 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.monster.Witch;
 import net.minecraft.world.entity.player.Player;
-import net.minecraftforge.common.capabilities.RegisterCapabilitiesEvent;
-import net.minecraftforge.event.AddReloadListenerEvent;
-import net.minecraftforge.event.AttachCapabilitiesEvent;
-import net.minecraftforge.event.RegisterCommandsEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
+import net.neoforged.neoforge.event.AddReloadListenerEvent;
+import net.neoforged.neoforge.event.RegisterCommandsEvent;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
 
-@Mod.EventBusSubscriber(modid = Goety.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE)
+@EventBusSubscriber(modid = Goety.MOD_ID, bus = EventBusSubscriber.Bus.GAME)
 public class InitEvents {
 
     @SubscribeEvent
@@ -47,22 +46,8 @@ public class InitEvents {
     }
 
     @SubscribeEvent
-    public static void attachCapabilities(AttachCapabilitiesEvent<Entity> event) {
-        if (event.getObject() instanceof LivingEntity){
-            event.addCapability(Goety.location("misc"), new MiscProvider());
-        }
-        if (event.getObject() instanceof Player) {
-            event.addCapability(new ResourceLocation(Goety.MOD_ID, "soulenergy"), new SEProvider());
-            event.addCapability(new ResourceLocation(Goety.MOD_ID, "lichdom"), new LichProvider());
-        }
-        if (event.getObject() instanceof Witch || event.getObject() instanceof Cultist){
-            event.addCapability(Goety.location("witchbarter"), new WitchBarterProvider());
-        }
-    }
-
-    @SubscribeEvent
     public static void registerListeners(AddReloadListenerEvent event) {
-        event.addListener(new IllagerAssaultListener(event.getConditionContext()));
-        event.addListener(new SoulTakenListener(event.getConditionContext()));
+        event.addListener(new IllagerAssaultListener());
+        event.addListener(new SoulTakenListener());
     }
 }

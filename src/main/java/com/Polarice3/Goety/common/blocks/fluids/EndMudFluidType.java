@@ -12,10 +12,10 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.level.pathfinder.BlockPathTypes;
-import net.minecraftforge.client.extensions.common.IClientFluidTypeExtensions;
-import net.minecraftforge.common.SoundActions;
-import net.minecraftforge.fluids.FluidType;
+import net.minecraft.world.level.pathfinder.PathType;
+import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions;
+import net.neoforged.neoforge.common.SoundActions;
+import net.neoforged.neoforge.fluids.FluidType;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3f;
 
@@ -37,8 +37,8 @@ public class EndMudFluidType extends FluidType {
                 .motionScale(0.005F)
                 .sound(SoundActions.BUCKET_FILL, SoundEvents.BUCKET_FILL)
                 .sound(SoundActions.BUCKET_EMPTY, SoundEvents.BUCKET_EMPTY)
-                .pathType(BlockPathTypes.OPEN)
-                .adjacentPathType(BlockPathTypes.OPEN)
+                .pathType(PathType.OPEN)
+                .adjacentPathType(PathType.OPEN)
                 .fallDistanceModifier(0.0F)
                 .viscosity(1400));
     }

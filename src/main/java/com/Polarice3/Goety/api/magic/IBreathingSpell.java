@@ -30,11 +30,11 @@ public interface IBreathingSpell extends IChargingSpell{
     }
 
     default List<Entity> getBreathTarget(LivingEntity livingEntity, double range) {
-        return MobUtil.getTargets(livingEntity.level, livingEntity, range, 3.0D);
+        return MobUtil.getTargets(livingEntity.level(), livingEntity, range, 3.0D);
     }
 
     default List<Entity> getBreathTarget(LivingEntity livingEntity, double range, Predicate<? super Entity> predicate) {
-        return MobUtil.getTargets(livingEntity.level, livingEntity, range, 3.0D, predicate);
+        return MobUtil.getTargets(livingEntity.level(), livingEntity, range, 3.0D, predicate);
     }
 
     @Deprecated
@@ -84,10 +84,10 @@ public interface IBreathingSpell extends IChargingSpell{
             if (spreadOut){
                 pos = pos.add(entityLiving.getRandom().nextGaussian() / 2, entityLiving.getRandom().nextGaussian() / 2, entityLiving.getRandom().nextGaussian() / 2);
             }
-            if (entityLiving.level instanceof ServerLevel serverLevel){
+            if (entityLiving.level() instanceof ServerLevel serverLevel){
                 serverLevel.sendParticles(particleOptions, pos.x, pos.y, pos.z, 0, vec3.x, vec3.y, vec3.z, 1.0F);
             } else {
-                entityLiving.level.addAlwaysVisibleParticle(particleOptions, pos.x, pos.y, pos.z, vec3.x, vec3.y, vec3.z);
+                entityLiving.level().addAlwaysVisibleParticle(particleOptions, pos.x, pos.y, pos.z, vec3.x, vec3.y, vec3.z);
             }
         }
     }
@@ -117,10 +117,10 @@ public interface IBreathingSpell extends IChargingSpell{
 
             Vec3 randomVec = new Vec3(entityLiving.getRandom().nextDouble() * 2.0D * angle - angle, entityLiving.getRandom().nextDouble() * 2.0D * angle - angle, entityLiving.getRandom().nextDouble() * 2.0D * angle - angle).normalize();
             Vec3 result = (look.normalize().scale(3.0D).add(randomVec)).normalize().scale(velocity);
-            if (entityLiving.level instanceof ServerLevel serverLevel){
+            if (entityLiving.level() instanceof ServerLevel serverLevel){
                 serverLevel.sendParticles(particleOptions, px + dx, py + dy, pz + dz, 0, result.x, result.y, result.z, 1.0F);
             } else {
-                entityLiving.level.addAlwaysVisibleParticle(particleOptions, px + dx, py + dy, pz + dz, result.x, result.y, result.z);
+                entityLiving.level().addAlwaysVisibleParticle(particleOptions, px + dx, py + dy, pz + dz, result.x, result.y, result.z);
             }
         }
     }

@@ -28,7 +28,6 @@ import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.minecraftforge.common.ToolActions;
 
 public class ReedBlock extends Block implements BonemealableBlock {
     public static final IntegerProperty AGE = BlockStateProperties.AGE_25;
@@ -48,7 +47,7 @@ public class ReedBlock extends Block implements BonemealableBlock {
                                  InteractionHand hand, BlockHitResult hit) {
         ItemStack itemStack = player.getItemInHand(hand);
         if (state.is(ModBlocks.CHORUS_BLOSSOM_VINES.get())) {
-            if (itemStack.canPerformAction(ToolActions.SHEARS_CARVE)) {
+            if (itemStack.is(Items.SHEARS)) {
                 if (!world.isClientSide) {
                     world.playSound(null, pos, SoundEvents.PUMPKIN_CARVE, SoundSource.BLOCKS, 1.0F, 1.0F);
                     world.setBlock(pos, ModBlocks.CHORUS_BLOSSOM_VINES_PRUNED.get().defaultBlockState().setValue(ReedBlock.AGE, 0), 11);
@@ -92,11 +91,11 @@ public class ReedBlock extends Block implements BonemealableBlock {
     }
 
     public void randomTick(BlockState p_221350_, ServerLevel p_221351_, BlockPos p_221352_, RandomSource p_221353_) {
-        if (p_221350_.getValue(AGE) < 25 && net.minecraftforge.common.ForgeHooks.onCropsGrowPre(p_221351_, p_221352_.relative(Direction.UP), p_221351_.getBlockState(p_221352_.relative(Direction.UP)),p_221353_.nextDouble() < 0.1D)) {
+        if (p_221350_.getValue(AGE) < 25 && net.neoforged.common.ForgeHooks.onCropsGrowPre(p_221351_, p_221352_.relative(Direction.UP), p_221351_.getBlockState(p_221352_.relative(Direction.UP)),p_221353_.nextDouble() < 0.1D)) {
             BlockPos blockpos = p_221352_.relative(Direction.UP);
             if (this.canGrowInto(p_221351_.getBlockState(blockpos))) {
                 p_221351_.setBlockAndUpdate(blockpos, this.getGrowIntoState(p_221350_, p_221351_.random));
-                net.minecraftforge.common.ForgeHooks.onCropsGrowPost(p_221351_, blockpos, p_221351_.getBlockState(blockpos));
+                net.neoforged.common.ForgeHooks.onCropsGrowPost(p_221351_, blockpos, p_221351_.getBlockState(blockpos));
             }
         }
 

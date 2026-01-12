@@ -17,7 +17,6 @@ import com.Polarice3.Goety.common.network.server.SPlayPlayerSoundPacket;
 import com.Polarice3.Goety.config.AttributesConfig;
 import com.Polarice3.Goety.config.MobsConfig;
 import com.Polarice3.Goety.config.SpellConfig;
-import com.Polarice3.Goety.init.ModMobType;
 import com.Polarice3.Goety.init.ModSounds;
 import com.Polarice3.Goety.utils.*;
 import net.minecraft.ChatFormatting;
@@ -60,13 +59,12 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.PathNavigationRegion;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.gameevent.GameEvent;
-import net.minecraft.world.level.pathfinder.BlockPathTypes;
+import net.minecraft.world.level.pathfinder.PathType;
 import net.minecraft.world.level.pathfinder.Path;
 import net.minecraft.world.level.pathfinder.PathFinder;
 import net.minecraft.world.level.pathfinder.WalkNodeEvaluator;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.common.ForgeMod;
-import net.minecraftforge.fluids.FluidType;
+import net.neoforged.neoforge.common.NeoForgeMod;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -112,9 +110,9 @@ public class BlackBeast extends Summoned{
 
     public BlackBeast(EntityType<? extends Owned> type, Level worldIn) {
         super(type, worldIn);
-        this.setPathfindingMalus(BlockPathTypes.WATER, 0.0F);
-        this.setPathfindingMalus(BlockPathTypes.POWDER_SNOW, -1.0F);
-        this.setPathfindingMalus(BlockPathTypes.DANGER_POWDER_SNOW, -1.0F);
+        this.setPathfindingMalus(PathType.WATER, 0.0F);
+        this.setPathfindingMalus(PathType.POWDER_SNOW, -1.0F);
+        this.setPathfindingMalus(PathType.DANGER_POWDER_SNOW, -1.0F);
     }
 
     protected void registerGoals() {
@@ -143,7 +141,7 @@ public class BlackBeast extends Summoned{
         return Mob.createMobAttributes()
                 .add(Attributes.MOVEMENT_SPEED, 0.28D)
                 .add(Attributes.FOLLOW_RANGE, 64.0D)
-                .add(ForgeMod.STEP_HEIGHT_ADDITION.get(), 2.0D)
+                .add(NeoForgeMod.STEP_HEIGHT_ADDITION.get(), 2.0D)
                 .add(Attributes.KNOCKBACK_RESISTANCE, 0.75D)
                 .add(Attributes.ATTACK_KNOCKBACK, 1.5D)
                 .add(Attributes.MAX_HEALTH, AttributesConfig.BlackBeastHealth.get())
@@ -340,16 +338,11 @@ public class BlackBeast extends Summoned{
         return animationStates;
     }
 
-    @Override
-    public MobType getMobType() {
-        return ModMobType.NATURAL;
-    }
-
     protected float getWaterSlowDown() {
         return 0.98F;
     }
 
-    public boolean isPushedByFluid(FluidType type) {
+    public boolean isPushedByFluid() {
         return !this.isSwimming();
     }
 

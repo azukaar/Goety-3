@@ -44,7 +44,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.event.ForgeEventFactory;
+
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -392,7 +392,7 @@ public class GoetyCommand {
                     mob.setNoAi(true);
                     mob.setPersistenceRequired();
                     if (pRandomizeProperties){
-                        ForgeEventFactory.onFinalizeSpawn(mob, pSource.getLevel(), pSource.getLevel().getCurrentDifficultyAt(entity.blockPosition()), MobSpawnType.COMMAND, null, null);
+                        net.neoforged.neoforge.event.EventHooks.onFinalizeSpawn(mob, pSource.getLevel(), pSource.getLevel().getCurrentDifficultyAt(entity.blockPosition()), MobSpawnType.COMMAND, null, null);
                     }
                 }
 
@@ -424,7 +424,7 @@ public class GoetyCommand {
                 if (entity instanceof Mob mob){
                     mob.setPersistenceRequired();
                     if (pRandomizeProperties){
-                        ForgeEventFactory.onFinalizeSpawn(mob, pSource.getLevel(), pSource.getLevel().getCurrentDifficultyAt(entity.blockPosition()), MobSpawnType.COMMAND, null, null);
+                        net.neoforged.neoforge.event.EventHooks.onFinalizeSpawn(mob, pSource.getLevel(), pSource.getLevel().getCurrentDifficultyAt(entity.blockPosition()), MobSpawnType.COMMAND, null, null);
                     }
                 }
 
@@ -456,7 +456,7 @@ public class GoetyCommand {
                 if (entity instanceof Mob mob){
                     MobUtil.summonTame(mob, pSource.getPlayerOrException());
                     if (pRandomizeProperties){
-                        ForgeEventFactory.onFinalizeSpawn(mob, pSource.getLevel(), pSource.getLevel().getCurrentDifficultyAt(entity.blockPosition()), MobSpawnType.COMMAND, null, null);
+                        net.neoforged.neoforge.event.EventHooks.onFinalizeSpawn(mob, pSource.getLevel(), pSource.getLevel().getCurrentDifficultyAt(entity.blockPosition()), MobSpawnType.COMMAND, null, null);
                     }
                 }
 
@@ -495,7 +495,7 @@ public class GoetyCommand {
                         }
                     }
                     if (pRandomizeProperties){
-                        ForgeEventFactory.onFinalizeSpawn(mob, pSource.getLevel(), pSource.getLevel().getCurrentDifficultyAt(entity.blockPosition()), MobSpawnType.COMMAND, null, null);
+                        net.neoforged.neoforge.event.EventHooks.onFinalizeSpawn(mob, pSource.getLevel(), pSource.getLevel().getCurrentDifficultyAt(entity.blockPosition()), MobSpawnType.COMMAND, null, null);
                     }
                 }
 

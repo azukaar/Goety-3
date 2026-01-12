@@ -3,7 +3,7 @@ package com.Polarice3.Goety.common.network.client;
 import com.Polarice3.Goety.api.entities.IAutoRideable;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraftforge.network.NetworkEvent;
+import net.neoforged.network.NetworkEvent;
 
 import java.util.function.Supplier;
 

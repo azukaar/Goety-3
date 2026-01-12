@@ -12,12 +12,10 @@ import net.minecraft.client.particle.ParticleRenderType;
 import net.minecraft.client.particle.SpriteSet;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleType;
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.Vec3;
-
-import java.util.Locale;
 
 public class GroundAuraParticle extends GroundCircleParticle {
     private final float rotSpeed;
@@ -83,32 +81,23 @@ public class GroundAuraParticle extends GroundCircleParticle {
     }
 
     public static class Option implements ParticleOptions {
-        public static final Codec<GroundAuraParticle.Option> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+        public static final com.mojang.serialization.MapCodec<GroundAuraParticle.Option> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
                 Codec.INT.fieldOf("ownerId").forGetter(d -> d.ownerId),
                 Codec.FLOAT.fieldOf("size").forGetter(d -> d.size),
                 Codec.FLOAT.fieldOf("red").forGetter(d -> d.red),
                 Codec.FLOAT.fieldOf("green").forGetter(d -> d.green),
                 Codec.FLOAT.fieldOf("blue").forGetter(d -> d.blue)
         ).apply(instance, GroundAuraParticle.Option::new));
-        public static final Deserializer<GroundAuraParticle.Option> DESERIALIZER = new Deserializer<GroundAuraParticle.Option>() {
-            public GroundAuraParticle.Option fromCommand(ParticleType<GroundAuraParticle.Option> particleTypeIn, StringReader reader) throws CommandSyntaxException {
-                reader.expect(' ');
-                int ownerId = reader.readInt();
-                reader.expect(' ');
-                float size = reader.readFloat();
-                reader.expect(' ');
-                float red = reader.readFloat();
-                reader.expect(' ');
-                float green = reader.readFloat();
-                reader.expect(' ');
-                float blue = reader.readFloat();
-                return new GroundAuraParticle.Option(ownerId, size, red, green, blue);
-            }
-
-            public GroundAuraParticle.Option fromNetwork(ParticleType<GroundAuraParticle.Option> particleTypeIn, FriendlyByteBuf buffer) {
-                return new GroundAuraParticle.Option(buffer.readInt(), buffer.readFloat(), buffer.readFloat(), buffer.readFloat(), buffer.readFloat());
-            }
-        };
+        public static final StreamCodec<RegistryFriendlyByteBuf, GroundAuraParticle.Option> STREAM_CODEC = StreamCodec.of(
+                (buf, value) -> {
+                    buf.writeInt(value.ownerId);
+                    buf.writeFloat(value.size);
+                    buf.writeFloat(value.red);
+                    buf.writeFloat(value.green);
+                    buf.writeFloat(value.blue);
+                },
+                buf -> new GroundAuraParticle.Option(buf.readInt(), buf.readFloat(), buf.readFloat(), buf.readFloat(), buf.readFloat())
+        );
         private final int ownerId;
         private final float size;
         private final float red;
@@ -129,19 +118,6 @@ public class GroundAuraParticle extends GroundCircleParticle {
             this.red = red;
             this.green = green;
             this.blue = blue;
-        }
-
-        public void writeToNetwork(FriendlyByteBuf buffer) {
-            buffer.writeInt(this.ownerId);
-            buffer.writeFloat(this.size);
-            buffer.writeFloat(this.red);
-            buffer.writeFloat(this.green);
-            buffer.writeFloat(this.blue);
-        }
-
-        public String writeToString() {
-            return String.format(Locale.ROOT, "%s %d %f %f %f %f",
-                    BuiltInRegistries.PARTICLE_TYPE.getKey(this.getType()), this.ownerId, this.size, this.red, this.green, this.blue);
         }
 
         public ParticleType<GroundAuraParticle.Option> getType() {

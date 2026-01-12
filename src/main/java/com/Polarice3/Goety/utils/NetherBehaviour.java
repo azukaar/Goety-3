@@ -16,10 +16,9 @@ import net.minecraft.world.level.biome.Biomes;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.ChunkAccess;
-import net.minecraft.world.level.chunk.ChunkStatus;
+import net.minecraft.world.level.chunk.status.ChunkStatus;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
-import net.minecraftforge.common.IPlantable;
-import net.minecraftforge.common.Tags;
+import net.neoforged.neoforge.common.Tags;
 import org.apache.commons.lang3.mutable.MutableInt;
 
 import javax.annotation.Nullable;
@@ -96,7 +95,7 @@ public interface NetherBehaviour {
 
         if (accessor instanceof Level level) {
             if (BlockFinder.canBeReplaced(level, blockPos) && !originalState.isAir() && !(originalState.getBlock() instanceof LiquidBlock) && !(originalState.getBlock() instanceof BaseFireBlock)) {
-                if ((level.random.nextFloat() <= 0.15F && !(originalState.getBlock() instanceof IPlantable)) || (originalState.getBlock() instanceof IPlantable plantable && !Blocks.NETHERRACK.defaultBlockState().canSustainPlant(accessor, blockPos.below(), Direction.UP, plantable))){
+                if (level.random.nextFloat() <= 0.15F){
                     BlockState fire = BaseFireBlock.getState(accessor, blockPos);
                     accessor.setBlock(blockPos, fire, 3);
                     accessor.levelEvent(2001, blockPos, Block.getId(fire));
@@ -126,11 +125,6 @@ public interface NetherBehaviour {
             }
             accessor.setBlock(blockPos, blockstate, 3);
             accessor.levelEvent(2001, blockPos, Block.getId(blockstate));
-            if (above.getBlock() instanceof IPlantable plantable && !blockstate.canSustainPlant(accessor, blockPos, Direction.UP, plantable)){
-                BlockState fire = BaseFireBlock.getState(accessor, blockPos.above());
-                accessor.setBlock(blockPos.above(), fire, 3);
-                accessor.levelEvent(2001, blockPos.above(), Block.getId(fire));
-            }
             changeBiome(accessor, blockPos);
             return true;
         } else if (originalState.is(Tags.Blocks.STONE)) {
@@ -143,33 +137,18 @@ public interface NetherBehaviour {
             BlockState blockstate = Blocks.SOUL_SAND.defaultBlockState();
             accessor.setBlock(blockPos, blockstate, 3);
             accessor.levelEvent(2001, blockPos, Block.getId(blockstate));
-            if (above.getBlock() instanceof IPlantable plantable && !blockstate.canSustainPlant(accessor, blockPos, Direction.UP, plantable)){
-                BlockState fire = BaseFireBlock.getState(accessor, blockPos.above());
-                accessor.setBlock(blockPos.above(), fire, 3);
-                accessor.levelEvent(2001, blockPos.above(), Block.getId(fire));
-            }
             changeBiome(accessor, blockPos);
             return true;
         } else if (originalState.is(Tags.Blocks.SANDSTONE)) {
             BlockState blockstate = Blocks.SOUL_SOIL.defaultBlockState();
             accessor.setBlock(blockPos, blockstate, 3);
             accessor.levelEvent(2001, blockPos, Block.getId(blockstate));
-            if (above.getBlock() instanceof IPlantable plantable && !blockstate.canSustainPlant(accessor, blockPos, Direction.UP, plantable)){
-                BlockState fire = BaseFireBlock.getState(accessor, blockPos.above());
-                accessor.setBlock(blockPos.above(), fire, 3);
-                accessor.levelEvent(2001, blockPos.above(), Block.getId(fire));
-            }
             changeBiome(accessor, blockPos);
             return true;
         } else if (originalState.is(ModTags.Blocks.NETHER_SPREAD_REPLACEABLE)) {
             BlockState blockstate = Blocks.NETHERRACK.defaultBlockState();
             accessor.setBlock(blockPos, blockstate, 3);
             accessor.levelEvent(2001, blockPos, Block.getId(blockstate));
-            if (above.getBlock() instanceof IPlantable plantable && !blockstate.canSustainPlant(accessor, blockPos, Direction.UP, plantable)){
-                BlockState fire = BaseFireBlock.getState(accessor, blockPos.above());
-                accessor.setBlock(blockPos.above(), fire, 3);
-                accessor.levelEvent(2001, blockPos.above(), Block.getId(fire));
-            }
             changeBiome(accessor, blockPos);
             return true;
         }

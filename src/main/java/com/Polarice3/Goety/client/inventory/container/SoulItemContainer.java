@@ -1,20 +1,20 @@
 package com.Polarice3.Goety.client.inventory.container;
 
 import com.Polarice3.Goety.common.items.handler.SoulUsingItemHandler;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.items.SlotItemHandler;
+import net.neoforged.neoforge.items.SlotItemHandler;
 
 public class SoulItemContainer extends AbstractContainerMenu {
     private final ItemStack stack;
     private final InteractionHand hand;
 
-    public static SoulItemContainer createContainerClientSide(int id, Inventory inventory, FriendlyByteBuf buffer) {
+    public static SoulItemContainer createContainerClientSide(int id, Inventory inventory, RegistryFriendlyByteBuf buffer) {
         InteractionHand hand = buffer.readBoolean() ? InteractionHand.MAIN_HAND : InteractionHand.OFF_HAND;
         return new SoulItemContainer(id, inventory, new SoulUsingItemHandler(ItemStack.EMPTY), ItemStack.EMPTY, hand);
     }
@@ -83,5 +83,8 @@ public class SoulItemContainer extends AbstractContainerMenu {
         return itemstack;
     }
 }
+
+
+
 
 

@@ -6,7 +6,6 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.Util;
-import net.minecraft.client.Timer;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.BaseAshSmokeParticle;
 import net.minecraft.client.particle.Particle;
@@ -15,14 +14,11 @@ import net.minecraft.client.particle.SpriteSet;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleType;
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.util.FastColor;
 
-import java.util.Locale;
-
 public class MagicAshSmokeParticle extends BaseAshSmokeParticle {
-    public Timer timer;
     public int colorFrom;
     public int colorTo;
     private final SpriteSet sprites;
@@ -36,7 +32,6 @@ public class MagicAshSmokeParticle extends BaseAshSmokeParticle {
         this.bCol = colorUtil.blue();
         this.colorFrom = colorFrom;
         this.colorTo = colorTo;
-        this.timer = new Timer(this.lifetime + 1, 0);
     }
 
     @Override
@@ -64,8 +59,7 @@ public class MagicAshSmokeParticle extends BaseAshSmokeParticle {
                 this.zd *= 0.7F;
             }
 
-            this.timer.advanceTime(Util.getMillis());
-            float lerp = (this.age + this.timer.partialTick) / this.lifetime;
+            float lerp = (float) this.age / (float) this.lifetime;
             int newColor = FastColor.ARGB32.lerp(lerp, this.colorFrom, this.colorTo);
             ColorUtil colorUtil = new ColorUtil(newColor);
             this.rCol = colorUtil.red();
@@ -94,24 +88,18 @@ public class MagicAshSmokeParticle extends BaseAshSmokeParticle {
     }
 
     public static class Option implements ParticleOptions {
-        public static final Codec<Option> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+        public static final com.mojang.serialization.MapCodec<Option> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
                 Codec.INT.fieldOf("colorFrom").forGetter(Option::getColorFrom),
                 Codec.INT.fieldOf("colorTo").forGetter(Option::getColorTo)
         ).apply(instance, Option::new));
 
-        public static final Deserializer<Option> DESERIALIZER = new Deserializer<>() {
-            public Option fromCommand(ParticleType<Option> p_235961_, StringReader p_235962_) throws CommandSyntaxException {
-                p_235962_.expect(' ');
-                int colorFrom = p_235962_.readInt();
-                p_235962_.expect(' ');
-                int colorTo = p_235962_.readInt();
-                return new Option(colorFrom, colorTo);
-            }
-
-            public Option fromNetwork(ParticleType<Option> p_235964_, FriendlyByteBuf p_235965_) {
-                return new Option(p_235965_.readInt(), p_235965_.readInt());
-            }
-        };
+        public static final StreamCodec<RegistryFriendlyByteBuf, Option> STREAM_CODEC = StreamCodec.of(
+                (buf, value) -> {
+                    buf.writeInt(value.getColorFrom());
+                    buf.writeInt(value.getColorTo());
+                },
+                buf -> new Option(buf.readInt(), buf.readInt())
+        );
         public int colorFrom;
         public int colorTo;
 
@@ -127,18 +115,6 @@ public class MagicAshSmokeParticle extends BaseAshSmokeParticle {
 
         public ParticleType<Option> getType() {
             return ModParticleTypes.MAGIC_ASH_SMOKE.get();
-        }
-
-        @Override
-        public void writeToNetwork(FriendlyByteBuf p_123732_) {
-            p_123732_.writeInt(this.getColorFrom());
-            p_123732_.writeInt(this.getColorTo());
-        }
-
-        @Override
-        public String writeToString() {
-            return String.format(Locale.ROOT, "%s %s %s",
-                    BuiltInRegistries.PARTICLE_TYPE.getKey(this.getType()), this.colorFrom, this.colorTo);
         }
 
         public int getColorFrom() {

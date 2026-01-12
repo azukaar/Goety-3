@@ -18,6 +18,7 @@ import com.Polarice3.Goety.init.ModTags;
 import com.Polarice3.Goety.utils.*;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.DamageTypeTags;
+import net.minecraft.tags.EntityTypeTags;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -30,21 +31,25 @@ import net.minecraft.world.entity.monster.MagmaCube;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
-import net.minecraftforge.event.entity.living.*;
-import net.minecraftforge.event.level.BlockEvent;
-import net.minecraftforge.eventbus.api.Event;
-import net.minecraftforge.eventbus.api.EventPriority;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.neoforge.event.entity.living.*;
+import net.neoforged.neoforge.event.level.BlockEvent;
+import net.neoforged.neoforge.event.tick.EntityTickEvent;
+import net.neoforged.bus.api.Event;
+import net.neoforged.bus.api.EventPriority;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.fml.common.Mod;
 
-import static net.minecraftforge.event.entity.living.LivingChangeTargetEvent.LivingTargetType.MOB_TARGET;
+import static net.neoforged.neoforge.event.entity.living.LivingChangeTargetEvent.LivingTargetType.MOB_TARGET;
 
-@Mod.EventBusSubscriber(modid = Goety.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE)
+@EventBusSubscriber(modid = Goety.MOD_ID, bus = EventBusSubscriber.Bus.GAME)
 public class RobeEvents {
 
     @SubscribeEvent
-    public static void LivingEffects(LivingEvent.LivingTickEvent event){
-        LivingEntity livingEntity = event.getEntity();
+    public static void LivingEffects(EntityTickEvent.Post event){
+        if (!(event.getEntity() instanceof LivingEntity livingEntity)) {
+            return;
+        }
         if (livingEntity != null) {
             if (!livingEntity.level.isClientSide) {
                 if (MobsConfig.CompatMinionHeal.get()) {
@@ -59,7 +64,7 @@ public class RobeEvents {
                 }
                 if (MobsConfig.NecroSetDebuff.get() || MobsConfig.NamelessSetDebuff.get()) {
                     if (MobUtil.getOwner(livingEntity) != null){
-                        if (livingEntity.getMobType() != MobType.UNDEAD
+                        if (!livingEntity.getType().is(EntityTypeTags.UNDEAD)
                                 && !(livingEntity instanceof AbstractGolem)
                                 && !(livingEntity instanceof IGolem)
                                 && !livingEntity.getType().is(ModTags.EntityTypes.NECRO_NO_DEBUFF)) {
@@ -109,7 +114,7 @@ public class RobeEvents {
     }
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
-    public static void HurtEvent(LivingHurtEvent event){
+    public static void HurtEvent(LivingIncomingDamageEvent event){
         LivingEntity victim = event.getEntity();
         if (CuriosFinder.hasFrostRobes(victim)){
             if (ModDamageSource.freezeAttacks(event.getSource()) || event.getSource().is(DamageTypeTags.IS_FREEZING)){
@@ -201,7 +206,7 @@ public class RobeEvents {
     }
 
     @SubscribeEvent
-    public static void AttackEvent(LivingAttackEvent event){
+    public static void AttackEvent(LivingIncomingDamageEvent event){
         LivingEntity victim = event.getEntity();
         Entity source = event.getSource().getEntity();
         Entity direct = event.getSource().getDirectEntity();

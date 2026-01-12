@@ -3,7 +3,7 @@ package com.Polarice3.Goety.client.inventory.container;
 import com.Polarice3.Goety.Goety;
 import com.Polarice3.Goety.common.items.handler.BrewBagItemHandler;
 import com.mojang.datafixers.util.Pair;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -11,13 +11,13 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.items.SlotItemHandler;
+import net.neoforged.neoforge.items.SlotItemHandler;
 import org.jetbrains.annotations.NotNull;
 
 public class BrewBagContainer extends AbstractContainerMenu {
     private final ItemStack stack;
 
-    public static BrewBagContainer createContainerClientSide(int id, Inventory inventory, FriendlyByteBuf buffer) {
+    public static BrewBagContainer createContainerClientSide(int id, Inventory inventory, RegistryFriendlyByteBuf buffer) {
         return new BrewBagContainer(id, inventory, new BrewBagItemHandler(ItemStack.EMPTY), ItemStack.EMPTY);
     }
 
@@ -79,3 +79,4 @@ public class BrewBagContainer extends AbstractContainerMenu {
         return !stack.isEmpty();
     }
 }
+

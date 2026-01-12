@@ -38,7 +38,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.gameevent.GameEvent;
-import net.minecraftforge.fluids.FluidType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -139,11 +138,6 @@ public class CarrionFly extends Summoned {
 
     private void jumpInLiquidInternal() {
         this.setDeltaMovement(this.getDeltaMovement().add(0.0D, 0.01D, 0.0D));
-    }
-
-    @Override
-    public void jumpInFluid(@NotNull FluidType type) {
-        this.jumpInLiquidInternal();
     }
 
     @Override

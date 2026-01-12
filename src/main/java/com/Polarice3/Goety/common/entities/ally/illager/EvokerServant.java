@@ -109,7 +109,7 @@ public class EvokerServant extends SpellcasterIllagerServant{
                         BoundEvoker servant = this.convertTo(ModEntityType.BOUND_EVOKER.get(), true);
                         if (servant != null) {
                             servant.setTrueOwner(this.getTrueOwner());
-                            net.minecraftforge.event.ForgeEventFactory.onLivingConvert(this, servant);
+                            net.neoforged.event.net.neoforged.neoforge.event.EventHooks.onLivingConvert(this, servant);
                             if (!this.isSilent()) {
                                 this.level.levelEvent((Player)null, 1026, this.blockPosition(), 0);
                             }
@@ -333,7 +333,7 @@ public class EvokerServant extends SpellcasterIllagerServant{
                 return false;
             } else if (EvokerServant.this.tickCount < this.nextAttackTickCount) {
                 return false;
-            } else if (!net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(EvokerServant.this.level, EvokerServant.this)) {
+            } else if (!net.neoforged.event.EvokerServant.this.level.getGameRules().getBoolean(GameRules.RULE_MOB_GRIEFING)) {
                 return false;
             } else {
                 List<Sheep> list = EvokerServant.this.level.getNearbyEntities(Sheep.class, this.wololoTargeting, EvokerServant.this, EvokerServant.this.getBoundingBox().inflate(16.0D, 4.0D, 16.0D));

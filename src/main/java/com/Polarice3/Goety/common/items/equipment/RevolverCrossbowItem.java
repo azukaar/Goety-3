@@ -181,7 +181,7 @@ public class RevolverCrossbowItem extends CrossbowItem {
     }
 
     public static void performShooting(Level p_40888_, LivingEntity p_40889_, InteractionHand p_40890_, ItemStack crossbow, float p_40892_, float p_40893_) {
-        if (p_40889_ instanceof Player player && net.minecraftforge.event.ForgeEventFactory.onArrowLoose(crossbow, p_40889_.level(), player, 1, true) < 0) return;
+        if (p_40889_ instanceof Player player && net.neoforged.event.EventFactory.onArrowLoose(crossbow, p_40889_.level(), player, 1, true) < 0) return;
         List<ItemStack> list = getChargedProjectiles(crossbow);
         float[] afloat = getShotPitches(p_40889_.getRandom());
 

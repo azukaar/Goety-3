@@ -76,7 +76,7 @@ public abstract class LightProjectile extends Arrow {
             }
         }
 
-        if (raytraceresult != null && raytraceresult.getType() != HitResult.Type.MISS  && !net.minecraftforge.event.ForgeEventFactory.onProjectileImpact(this, raytraceresult)) {
+        if (raytraceresult != null && raytraceresult.getType() != HitResult.Type.MISS  && !net.neoforged.event.EventFactory.onProjectileImpact(this, raytraceresult)) {
             this.onHit(raytraceresult);
             this.hasImpulse = true;
         }

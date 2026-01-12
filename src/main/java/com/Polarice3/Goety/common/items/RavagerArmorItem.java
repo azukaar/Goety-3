@@ -5,7 +5,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantment;
-import net.minecraft.world.item.enchantment.EnchantmentCategory;
 
 public class RavagerArmorItem extends Item {
    private final int protection;
@@ -40,6 +39,6 @@ public class RavagerArmorItem extends Item {
 
    @Override
    public boolean canApplyAtEnchantingTable(ItemStack stack, Enchantment enchantment) {
-      return super.canApplyAtEnchantingTable(stack, enchantment) && enchantment.category == EnchantmentCategory.ARMOR;
+      return super.canApplyAtEnchantingTable(stack, enchantment);
    }
 }

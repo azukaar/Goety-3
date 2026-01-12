@@ -10,8 +10,8 @@ import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.material.PushReaction;
-import net.minecraftforge.common.IForgeShearable;
-import net.minecraftforge.common.IPlantable;
+import net.neoforged.neoforge.common.IForgeShearable;
+import net.neoforged.neoforge.common.IPlantable;
 
 public class LargeChorusStalkBlock extends DoublePlantBlock implements IForgeShearable {
 

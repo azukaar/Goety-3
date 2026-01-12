@@ -28,8 +28,8 @@ import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.*;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.common.Tags;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.neoforge.common.Tags;
+import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -176,7 +176,7 @@ public class EsotericTesseract extends Item implements IPersist {
             tag = new CompoundTag();
         }
         CompoundTag servantTag = new CompoundTag();
-        ResourceLocation typesKey = ForgeRegistries.ENTITY_TYPES.getKey(mob.getType());
+        ResourceLocation typesKey = NeoForgeRegistries.ENTITY_TYPES.getKey(mob.getType());
 
         if (typesKey != null) {
             servantTag.putString("ServantType", typesKey.toString());
@@ -272,7 +272,7 @@ public class EsotericTesseract extends Item implements IPersist {
                     } else {
                         servantCount++;
                     }
-                    EntityType<?> entityType = ForgeRegistries.ENTITY_TYPES.getValue(new ResourceLocation(servantTag.getString("ServantType")));
+                    EntityType<?> entityType = NeoForgeRegistries.ENTITY_TYPES.getValue(new ResourceLocation(servantTag.getString("ServantType")));
                     if (entityType != null) {
                         Entity entity = entityType.create(level);
                         if (entity instanceof Mob servant && entity instanceof OwnableEntity) {
@@ -332,7 +332,7 @@ public class EsotericTesseract extends Item implements IPersist {
                 if (tagInfo.contains("Servant")) {
                     servantCount++;
                     CompoundTag servantTag = stack.getTag().getCompound(tagInfo);
-                    EntityType<?> entityType = ForgeRegistries.ENTITY_TYPES.getValue(new ResourceLocation(servantTag.getString("ServantType")));
+                    EntityType<?> entityType = NeoForgeRegistries.ENTITY_TYPES.getValue(new ResourceLocation(servantTag.getString("ServantType")));
                     if (entityType != null) {
                         Entity entity = entityType.create(level);
                         if (entity instanceof Mob servant && entity instanceof OwnableEntity) {
@@ -418,7 +418,7 @@ public class EsotericTesseract extends Item implements IPersist {
                     } else {
                         servantCount++;
                     }
-                    EntityType<?> entityType = ForgeRegistries.ENTITY_TYPES.getValue(new ResourceLocation(servantTag.getString("ServantType")));
+                    EntityType<?> entityType = NeoForgeRegistries.ENTITY_TYPES.getValue(new ResourceLocation(servantTag.getString("ServantType")));
                     String servantName = Component.translatable("info.goety.servant").toString();
                     if (entityType != null) {
                         servantName = I18n.get(entityType.getDescriptionId());

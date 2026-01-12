@@ -52,10 +52,9 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
-import net.minecraft.world.level.pathfinder.BlockPathTypes;
+import net.minecraft.world.level.pathfinder.PathType;
 import net.minecraft.world.level.pathfinder.Path;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.fluids.FluidType;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
@@ -78,8 +77,8 @@ public class DrownedNecromancer extends AbstractNecromancer {
         super(type, level);
         this.setMaxUpStep(1.25F);
         this.moveControl = new MoveHelperController(this, 2.0F);
-        this.setPathfindingMalus(BlockPathTypes.WATER, 0.0F);
-        this.setPathfindingMalus(BlockPathTypes.WATER_BORDER, 0.0F);
+        this.setPathfindingMalus(PathType.WATER, 0.0F);
+        this.setPathfindingMalus(PathType.WATER_BORDER, 0.0F);
         this.waterNavigation = new ModWaterPathNavigation(this, level);
         this.groundNavigation = new GroundPathNavigatorFat(this, level);
     }
@@ -214,10 +213,6 @@ public class DrownedNecromancer extends AbstractNecromancer {
 
     protected SoundEvent getStepSound() {
         return SoundEvents.DROWNED_STEP;
-    }
-
-    public boolean isPushedByFluid(FluidType type) {
-        return !this.isSwimming();
     }
 
     public boolean checkSpawnObstruction(LevelReader pLevel) {

@@ -36,9 +36,9 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.ItemHandlerHelper;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.ItemHandlerHelper;
 
 import javax.annotation.Nullable;
 
@@ -80,7 +80,7 @@ public class VoidShrineBlock extends BaseEntityBlock {
             ItemStack heldItem = player.getItemInHand(hand);
             BlockEntity blockEntity = world.getBlockEntity(pos);
             if (blockEntity instanceof VoidShrineBlockEntity pedestal) {
-                pedestal.getCapability(ForgeCapabilities.ITEM_HANDLER, hit.getDirection()).ifPresent(handler -> {
+                pedestal.getCapability(Capabilities.ITEM_HANDLER, hit.getDirection()).ifPresent(handler -> {
                     ItemStack itemStack = handler.getStackInSlot(0);
                     if (!player.isShiftKeyDown() && !player.isCrouching() && !itemStack.isEmpty()) {
                         if (heldItem.isEmpty()) {
@@ -104,7 +104,7 @@ public class VoidShrineBlock extends BaseEntityBlock {
         if (!pState.is(pNewState.getBlock())) {
             BlockEntity tileentity = pLevel.getBlockEntity(pPos);
             if (tileentity instanceof VoidShrineBlockEntity) {
-                tileentity.getCapability(ForgeCapabilities.ITEM_HANDLER).ifPresent(handler -> {
+                tileentity.getCapability(Capabilities.ITEM_HANDLER).ifPresent(handler -> {
                     dropInventoryItems(tileentity.getLevel(), tileentity.getBlockPos(), handler);
                 });
             }

@@ -18,7 +18,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.PickaxeItem;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.common.ForgeMod;
+import net.neoforged.neoforge.common.NeoForgeMod;
 
 import java.util.UUID;
 
@@ -74,7 +74,7 @@ public class EeriePickaxeItem extends PickaxeItem {
 
     public Multimap<Attribute, AttributeModifier> getAttributeModifiers(EquipmentSlot slot, ItemStack stack) {
         Multimap<Attribute, AttributeModifier> map = MultimapBuilder.hashKeys().hashSetValues().build(super.getAttributeModifiers(slot, stack));
-        map.put(ForgeMod.BLOCK_REACH.get(), new AttributeModifier(UUID.fromString("36907ccf-728b-4ae4-abf1-eaf3283838b5"), "Tool Modifier", 3, AttributeModifier.Operation.ADDITION));
+        map.put(NeoForgeMod.BLOCK_REACH.get(), new AttributeModifier(UUID.fromString("36907ccf-728b-4ae4-abf1-eaf3283838b5"), "Tool Modifier", 3, AttributeModifier.Operation.ADDITION));
         return slot == EquipmentSlot.MAINHAND ? map : super.getAttributeModifiers(slot, stack);
     }
 }

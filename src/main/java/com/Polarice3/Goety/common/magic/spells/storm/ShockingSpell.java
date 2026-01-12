@@ -22,7 +22,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.common.ForgeHooks;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -113,7 +112,7 @@ public class ShockingSpell extends EverChargeSpell {
             worldIn.playSound(null, caster.getX(), caster.getY(), caster.getZ(), ModSounds.ZAP.get(), this.getSoundSource(), 1.0F, 1.0F);
         } else {
             LivingEntity livingEntity = MobUtil.getLivingTarget(target);
-            if (livingEntity != null && ForgeHooks.onLivingAttack(livingEntity, ModDamageSource.directShock(caster), damage)) {
+            if (livingEntity != null) {
                 Vec3 vec31 = new Vec3(livingEntity.getX(), livingEntity.getY() + livingEntity.getBbHeight() / 2, livingEntity.getZ());
                 ModNetwork.sendToALL(new SLightningPacket(vec3, vec31, colorUtil, 5));
                 if (livingEntity.hurt(ModDamageSource.directShock(caster), damage)){

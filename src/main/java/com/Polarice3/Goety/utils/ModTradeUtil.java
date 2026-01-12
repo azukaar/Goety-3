@@ -1,6 +1,7 @@
 package com.Polarice3.Goety.utils;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Holder;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.TagKey;
@@ -17,7 +18,8 @@ import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.levelgen.structure.Structure;
 import net.minecraft.world.level.saveddata.maps.MapDecoration;
 import net.minecraft.world.level.saveddata.maps.MapItemSavedData;
-import net.minecraftforge.event.village.VillagerTradesEvent;
+import net.minecraft.world.level.saveddata.maps.MapDecorationType;
+import net.neoforged.neoforge.event.village.VillagerTradesEvent;
 
 import javax.annotation.Nullable;
 
@@ -70,11 +72,11 @@ public class ModTradeUtil {
         private final int emeraldCost;
         private final TagKey<Structure> destination;
         private final String displayName;
-        private final MapDecoration.Type destinationType;
+        private final Holder<MapDecorationType> destinationType;
         private final int maxUses;
         private final int villagerXp;
 
-        public TreasureMapForEmeralds(int emeraldCost, TagKey<Structure> destination, String displayName, MapDecoration.Type mapMarker, int maxUses, int villagerXp) {
+        public TreasureMapForEmeralds(int emeraldCost, TagKey<Structure> destination, String displayName, Holder<MapDecorationType> mapMarker, int maxUses, int villagerXp) {
             this.emeraldCost = emeraldCost;
             this.destination = destination;
             this.displayName = displayName;
@@ -85,7 +87,7 @@ public class ModTradeUtil {
 
         @Nullable
         public MerchantOffer getOffer(Entity entity, RandomSource randomSource) {
-            if (!(entity.level instanceof ServerLevel serverlevel)) {
+            if (!(entity.level() instanceof ServerLevel serverlevel)) {
                 return null;
             } else {
                 BlockPos blockpos = serverlevel.findNearestMapStructure(this.destination, entity.blockPosition(), 100, true);

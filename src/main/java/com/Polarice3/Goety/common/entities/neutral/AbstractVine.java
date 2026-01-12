@@ -4,7 +4,6 @@ import com.Polarice3.Goety.client.particles.DustCloudParticleOption;
 import com.Polarice3.Goety.client.particles.ModParticleTypes;
 import com.Polarice3.Goety.common.entities.ai.SummonTargetGoal;
 import com.Polarice3.Goety.config.MobsConfig;
-import com.Polarice3.Goety.init.ModMobType;
 import com.Polarice3.Goety.utils.*;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.BlockParticleOption;
@@ -22,7 +21,6 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.MobType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -31,8 +29,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.common.ForgeMod;
-import net.minecraftforge.fluids.FluidType;
+import net.neoforged.neoforge.common.NeoForgeMod;
 import org.joml.Vector3f;
 
 public abstract class AbstractVine extends AbstractMonolith{
@@ -72,11 +69,6 @@ public abstract class AbstractVine extends AbstractMonolith{
         if (p_31474_.contains("Perpetual")){
             this.setPerpetual(p_31474_.getBoolean("Perpetual"));
         }
-    }
-
-    @Override
-    public MobType getMobType() {
-        return ModMobType.NATURAL;
     }
 
     public boolean isPerpetual(){
@@ -167,18 +159,6 @@ public abstract class AbstractVine extends AbstractMonolith{
         if (this.isAquatic()) {
             this.handleAirSupply(i);
         }
-    }
-
-    public boolean canDrownInFluidType(FluidType type) {
-        if (this.isAquatic()) {
-            return type != ForgeMod.WATER_TYPE.get();
-        } else {
-            return super.canDrownInFluidType(type);
-        }
-    }
-
-    public boolean isPushedByFluid(FluidType type) {
-        return false;
     }
 
     @Override

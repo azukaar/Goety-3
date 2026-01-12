@@ -9,7 +9,7 @@ import net.minecraft.world.level.Level;
 import java.util.ArrayList;
 import java.util.List;
 
-public enum IllagerType implements net.minecraftforge.common.IExtensibleEnum{
+public enum IllagerType {
     NONE(null),
     NORMAL(new ModIllagerType());
 
@@ -48,3 +48,4 @@ public enum IllagerType implements net.minecraftforge.common.IExtensibleEnum{
         return list;
     }
 }
+

@@ -62,7 +62,7 @@ import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.pathfinder.Path;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.scores.Team;
-import net.minecraftforge.event.ForgeEventFactory;
+
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -631,7 +631,7 @@ public abstract class AbstractIllagerServant extends RaiderServant implements IT
     public AbstractIllagerServant getBreedOffspring(ServerLevel serverLevel, AbstractIllagerServant illager) {
         Neollager neollager = new Neollager(ModEntityType.NEOLLAGER.get(), serverLevel);
         neollager.copyTrueOwner(this);
-        ForgeEventFactory.onFinalizeSpawn(neollager, serverLevel, serverLevel.getCurrentDifficultyAt(this.blockPosition()), MobSpawnType.BREEDING, null, null);
+        net.neoforged.neoforge.event.EventHooks.onFinalizeSpawn(neollager, serverLevel, serverLevel.getCurrentDifficultyAt(this.blockPosition()), MobSpawnType.BREEDING, null, null);
         if (illager.isGuardingArea()) {
             neollager.setBoundPos(illager.getBoundPos());
             neollager.setBoundDim(illager.getBoundLevel());

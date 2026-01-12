@@ -115,7 +115,7 @@ public class CryologerServant extends SpellcasterIllagerServant implements IBrea
                         BoundCryologer servant = this.convertTo(ModEntityType.BOUND_CRYOLOGER.get(), true);
                         if (servant != null) {
                             servant.setTrueOwner(this.getTrueOwner());
-                            net.minecraftforge.event.ForgeEventFactory.onLivingConvert(this, servant);
+                            net.neoforged.event.net.neoforged.neoforge.event.EventHooks.onLivingConvert(this, servant);
                             if (!this.isSilent()) {
                                 this.level.levelEvent((Player)null, 1026, this.blockPosition(), 0);
                             }

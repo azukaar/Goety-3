@@ -114,15 +114,15 @@ public class HarvestGoal extends Goal {
                             ItemStack itemstack = simplecontainer.getItem(i);
                             boolean flag = false;
                             if (!itemstack.isEmpty() && itemstack.is(ItemTags.VILLAGER_PLANTABLE_SEEDS)) {
-                                Item $$11 = itemstack.getItem();
-                                if ($$11 instanceof BlockItem blockitem) {
+                                Item $1 = itemstack.getItem();
+                                if ($1 instanceof BlockItem blockitem) {
                                     BlockState blockstate1 = blockitem.getBlock().defaultBlockState();
                                     this.servant.level.setBlockAndUpdate(this.aboveFarmlandPos, blockstate1);
                                     this.servant.level.gameEvent(GameEvent.BLOCK_PLACE, this.aboveFarmlandPos, GameEvent.Context.of(this.servant, blockstate1));
                                     flag = true;
-                                } else if (itemstack.getItem() instanceof net.minecraftforge.common.IPlantable) {
-                                    if (((net.minecraftforge.common.IPlantable)itemstack.getItem()).getPlantType(this.servant.level, aboveFarmlandPos) == net.minecraftforge.common.PlantType.CROP) {
-                                        this.servant.level.setBlock(aboveFarmlandPos, ((net.minecraftforge.common.IPlantable)itemstack.getItem()).getPlant(this.servant.level, aboveFarmlandPos), 3);
+                                } else if (itemstack.getItem() instanceof net.neoforged.common.IPlantable) {
+                                    if (((net.neoforged.common.IPlantable)itemstack.getItem()).getPlantType(this.servant.level, aboveFarmlandPos) == net.neoforged.common.PlantType.CROP) {
+                                        this.servant.level.setBlock(aboveFarmlandPos, ((net.neoforged.common.IPlantable)itemstack.getItem()).getPlant(this.servant.level, aboveFarmlandPos), 3);
                                         flag = true;
                                     }
                                 }

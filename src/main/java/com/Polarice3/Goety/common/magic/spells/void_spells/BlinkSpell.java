@@ -126,7 +126,8 @@ public class BlinkSpell extends Spell {
 
     public static void enderTeleportEvent(LivingEntity player, BlockPos target) {
         BlockPos blockPos = BlockFinder.SummonPosition(player, target);
-        net.minecraftforge.event.entity.EntityTeleportEvent.EnderEntity event = net.minecraftforge.event.ForgeEventFactory.onEnderTeleport(player, blockPos.getX(), blockPos.getY(), blockPos.getZ());
+        net.neoforged.event.entity.EntityTeleportEvent.EnderEntity event = new net.neoforged.event.entity.EntityTeleportEvent.EnderEntity(player, blockPos.getX(), blockPos.getY(), blockPos.getZ());
+        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(event);
         if (!event.isCanceled()) {
             player.teleportTo(event.getTargetX(), event.getTargetY(), event.getTargetZ());
             player.resetFallDistance();

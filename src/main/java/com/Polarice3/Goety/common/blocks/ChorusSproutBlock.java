@@ -18,8 +18,8 @@ import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.material.PushReaction;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.minecraftforge.common.IForgeShearable;
-import net.minecraftforge.common.IPlantable;
+import net.neoforged.neoforge.common.IForgeShearable;
+import net.neoforged.neoforge.common.IPlantable;
 
 public class ChorusSproutBlock extends BushBlock implements BonemealableBlock, IForgeShearable {
    protected static final VoxelShape SHAPE = Block.box(4.0D, 0.0D, 4.0D, 12.0D, 10.0D, 12.0D);

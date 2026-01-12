@@ -1,6 +1,6 @@
 package com.Polarice3.Goety.compat.jade;
 
-import net.minecraftforge.fml.ModList;
+import net.neoforged.fml.ModList;
 
 public enum JadeLoaded {
     JADE("jade");
@@ -13,5 +13,4 @@ public enum JadeLoaded {
     public boolean isLoaded() {
         return this.loaded;
     }
-
 }

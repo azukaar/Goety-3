@@ -7,14 +7,14 @@ import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
-import net.minecraftforge.common.ForgeMod;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.RegistryObject;
+import net.neoforged.neoforge.common.NeoForgeMod;
+import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.neoforged.neoforge.registries.DeferredRegister;
+import net.neoforged.neoforge.registries.NeoForgeRegistries;
+import net.neoforged.neoforge.registries.RegistryObject;
 
 public class GoetyEffects {
-    public static final DeferredRegister<MobEffect> EFFECTS = DeferredRegister.create(ForgeRegistries.MOB_EFFECTS, Goety.MOD_ID);
+    public static final DeferredRegister<MobEffect> EFFECTS = DeferredRegister.create(NeoForgeRegistries.MOB_EFFECTS, Goety.MOD_ID);
 
     public static void init(){
         EFFECTS.register(FMLJavaModLoadingContext.get().getModEventBus());
@@ -127,14 +127,14 @@ public class GoetyEffects {
 
     public static final RegistryObject<MobEffect> STUNNED = EFFECTS.register("stunned",
             () -> new GoetyBaseEffect(MobEffectCategory.HARMFUL, 0xffbc2e)
-                    .addAttributeModifier(ForgeMod.SWIM_SPEED.get(), "e4669259-9b6f-40d2-b253-46e65b1f3363",
+                    .addAttributeModifier(NeoForgeMod.SWIM_SPEED.get(), "e4669259-9b6f-40d2-b253-46e65b1f3363",
                             -1.0D, AttributeModifier.Operation.MULTIPLY_TOTAL)
                     .addAttributeModifier(Attributes.MOVEMENT_SPEED, "963d8748-941f-4f75-b4a6-a9c85013f27f",
                             -1.0D, AttributeModifier.Operation.MULTIPLY_TOTAL));
 
     public static final RegistryObject<MobEffect> TANGLED = EFFECTS.register("tangled",
             () -> new GoetyBaseEffect(MobEffectCategory.HARMFUL, 0)
-                    .addAttributeModifier(ForgeMod.SWIM_SPEED.get(), "862219f1-18f4-483a-94db-0d4c6c4fdef2",
+                    .addAttributeModifier(NeoForgeMod.SWIM_SPEED.get(), "862219f1-18f4-483a-94db-0d4c6c4fdef2",
                             -1.0D, AttributeModifier.Operation.MULTIPLY_TOTAL)
                     .addAttributeModifier(Attributes.MOVEMENT_SPEED, "8246d3de-e765-487d-adda-18a1deb3e4a9",
                             -1.0D, AttributeModifier.Operation.MULTIPLY_TOTAL));
@@ -189,7 +189,7 @@ public class GoetyEffects {
 
     public static final RegistryObject<MobEffect> SWIFT_SWIM = EFFECTS.register("swift_swim",
             () -> new GoetyBaseEffect(MobEffectCategory.BENEFICIAL, 0xbead6a)
-                    .addAttributeModifier(ForgeMod.SWIM_SPEED.get(), "15c1a19c-b4f8-4d84-ab37-a9036ac1885f",
+                    .addAttributeModifier(NeoForgeMod.SWIM_SPEED.get(), "15c1a19c-b4f8-4d84-ab37-a9036ac1885f",
                             1.0D, AttributeModifier.Operation.ADDITION));
 
     public static final RegistryObject<MobEffect> FROG_LEG = EFFECTS.register("frog_leg",

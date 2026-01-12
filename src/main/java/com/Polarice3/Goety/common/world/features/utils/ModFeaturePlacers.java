@@ -14,7 +14,7 @@ import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraft.world.level.levelgen.feature.TreeFeature;
 import net.minecraft.world.level.levelgen.feature.foliageplacers.FoliagePlacer;
 import net.minecraft.world.level.levelgen.feature.stateproviders.BlockStateProvider;
-import net.minecraftforge.event.ForgeEventFactory;
+
 
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
@@ -32,7 +32,7 @@ public final class ModFeaturePlacers {
 
         mob.setPersistenceRequired();
         mob.moveTo(pos, 0.0F, 0.0F);
-        ForgeEventFactory.onFinalizeSpawn(mob, levelAccessor, levelAccessor.getCurrentDifficultyAt(pos), MobSpawnType.STRUCTURE, null, null);
+        net.neoforged.neoforge.event.EventHooks.onFinalizeSpawn(mob, levelAccessor, levelAccessor.getCurrentDifficultyAt(pos), MobSpawnType.STRUCTURE, null, null);
         levelAccessor.addFreshEntityWithPassengers(mob);
         levelAccessor.setBlock(pos, Blocks.AIR.defaultBlockState(), 2);
     }
@@ -355,3 +355,4 @@ public final class ModFeaturePlacers {
         return false;
     }
 }
+

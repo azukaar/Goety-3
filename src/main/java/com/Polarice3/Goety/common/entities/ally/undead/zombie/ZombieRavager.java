@@ -157,7 +157,7 @@ public class ZombieRavager extends ModRavager {
         if (!this.level.isClientSide && this.isAlive() && this.isConverting()) {
             int i = this.getConversionProgress();
             this.villagerConversionTime -= i;
-            if (this.villagerConversionTime <= 0 && net.minecraftforge.event.ForgeEventFactory.canLivingConvert(this, EntityType.VILLAGER, (timer) -> this.villagerConversionTime = timer)) {
+            if (this.villagerConversionTime <= 0 && net.neoforged.event.net.neoforged.neoforge.event.EventHooks.canLivingConvert(this, EntityType.VILLAGER, (timer) -> this.villagerConversionTime = timer)) {
                 this.finishConversion((ServerLevel)this.level);
             }
         }
@@ -231,7 +231,7 @@ public class ZombieRavager extends ModRavager {
             if (!this.isSilent()) {
                 p_34399_.levelEvent((Player) null, 1027, this.blockPosition(), 0);
             }
-            net.minecraftforge.event.ForgeEventFactory.onLivingConvert(this, modRavager);
+            net.neoforged.event.net.neoforged.neoforge.event.EventHooks.onLivingConvert(this, modRavager);
         }
     }
 

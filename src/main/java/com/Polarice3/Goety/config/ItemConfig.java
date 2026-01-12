@@ -2,147 +2,147 @@ package com.Polarice3.Goety.config;
 
 import com.electronwill.nightconfig.core.file.CommentedFileConfig;
 import com.electronwill.nightconfig.core.io.WritingMode;
-import net.minecraftforge.common.ForgeConfigSpec;
+import net.neoforged.neoforge.common.ModConfigSpec;
 
 import java.io.File;
 
 public class ItemConfig {
 
-    public static final ForgeConfigSpec.Builder BUILDER = new ForgeConfigSpec.Builder();
-    public static final ForgeConfigSpec SPEC;
+    public static final ModConfigSpec.Builder BUILDER = new ModConfigSpec.Builder();
+    public static final ModConfigSpec SPEC;
 
-    public static final ForgeConfigSpec.ConfigValue<Integer> CraftingSouls;
-    public static final ForgeConfigSpec.ConfigValue<Integer> DarkScytheSouls;
-    public static final ForgeConfigSpec.ConfigValue<Integer> PendantOfHungerLimit;
-    public static final ForgeConfigSpec.ConfigValue<Integer> SeaAmuletChargeConsume;
-    public static final ForgeConfigSpec.ConfigValue<Integer> SeaAmuletMax;
-    public static final ForgeConfigSpec.ConfigValue<Integer> WindRobeSouls;
-    public static final ForgeConfigSpec.ConfigValue<Integer> ItemsRepairAmount;
-    public static final ForgeConfigSpec.ConfigValue<Integer> SpitefulBeltUseAmount;
-    public static final ForgeConfigSpec.ConfigValue<Integer> TesseractCapacity;
-    public static final ForgeConfigSpec.ConfigValue<Integer> TesseractDurability;
+    public static final ModConfigSpec.ConfigValue<Integer> CraftingSouls;
+    public static final ModConfigSpec.ConfigValue<Integer> DarkScytheSouls;
+    public static final ModConfigSpec.ConfigValue<Integer> PendantOfHungerLimit;
+    public static final ModConfigSpec.ConfigValue<Integer> SeaAmuletChargeConsume;
+    public static final ModConfigSpec.ConfigValue<Integer> SeaAmuletMax;
+    public static final ModConfigSpec.ConfigValue<Integer> WindRobeSouls;
+    public static final ModConfigSpec.ConfigValue<Integer> ItemsRepairAmount;
+    public static final ModConfigSpec.ConfigValue<Integer> SpitefulBeltUseAmount;
+    public static final ModConfigSpec.ConfigValue<Integer> TesseractCapacity;
+    public static final ModConfigSpec.ConfigValue<Integer> TesseractDurability;
 
-    public static final ForgeConfigSpec.ConfigValue<Integer> WitchRobeResistance;
-    public static final ForgeConfigSpec.ConfigValue<Integer> WarlockRobeResistance;
-    public static final ForgeConfigSpec.ConfigValue<Integer> FrostRobeResistance;
-    public static final ForgeConfigSpec.ConfigValue<Integer> StormRobeResistance;
-    public static final ForgeConfigSpec.ConfigValue<Integer> VoidRobeWaterSapped;
-    public static final ForgeConfigSpec.ConfigValue<Integer> VoidRobeTeleportChance;
-    public static final ForgeConfigSpec.ConfigValue<Integer> VoidRobeTeleportDistance;
-    public static final ForgeConfigSpec.ConfigValue<Integer> NetherRobeResistance;
+    public static final ModConfigSpec.ConfigValue<Integer> WitchRobeResistance;
+    public static final ModConfigSpec.ConfigValue<Integer> WarlockRobeResistance;
+    public static final ModConfigSpec.ConfigValue<Integer> FrostRobeResistance;
+    public static final ModConfigSpec.ConfigValue<Integer> StormRobeResistance;
+    public static final ModConfigSpec.ConfigValue<Integer> VoidRobeWaterSapped;
+    public static final ModConfigSpec.ConfigValue<Integer> VoidRobeTeleportChance;
+    public static final ModConfigSpec.ConfigValue<Integer> VoidRobeTeleportDistance;
+    public static final ModConfigSpec.ConfigValue<Integer> NetherRobeResistance;
 
-    public static final ForgeConfigSpec.ConfigValue<Boolean> StaffOffhandBuff;
-    public static final ForgeConfigSpec.ConfigValue<Double> OminousStaffDamage;
-    public static final ForgeConfigSpec.ConfigValue<Double> NecroStaffDamage;
-    public static final ForgeConfigSpec.ConfigValue<Double> GeoStaffDamage;
-    public static final ForgeConfigSpec.ConfigValue<Double> WindStaffDamage;
-    public static final ForgeConfigSpec.ConfigValue<Double> StormStaffDamage;
-    public static final ForgeConfigSpec.ConfigValue<Double> FrostStaffDamage;
-    public static final ForgeConfigSpec.ConfigValue<Double> WildStaffDamage;
-    public static final ForgeConfigSpec.ConfigValue<Double> AbyssStaffDamage;
-    public static final ForgeConfigSpec.ConfigValue<Double> VoidStaffDamage;
-    public static final ForgeConfigSpec.ConfigValue<Double> NetherStaffDamage;
-    public static final ForgeConfigSpec.ConfigValue<Double> NamelessStaffDamage;
+    public static final ModConfigSpec.ConfigValue<Boolean> StaffOffhandBuff;
+    public static final ModConfigSpec.ConfigValue<Double> OminousStaffDamage;
+    public static final ModConfigSpec.ConfigValue<Double> NecroStaffDamage;
+    public static final ModConfigSpec.ConfigValue<Double> GeoStaffDamage;
+    public static final ModConfigSpec.ConfigValue<Double> WindStaffDamage;
+    public static final ModConfigSpec.ConfigValue<Double> StormStaffDamage;
+    public static final ModConfigSpec.ConfigValue<Double> FrostStaffDamage;
+    public static final ModConfigSpec.ConfigValue<Double> WildStaffDamage;
+    public static final ModConfigSpec.ConfigValue<Double> AbyssStaffDamage;
+    public static final ModConfigSpec.ConfigValue<Double> VoidStaffDamage;
+    public static final ModConfigSpec.ConfigValue<Double> NetherStaffDamage;
+    public static final ModConfigSpec.ConfigValue<Double> NamelessStaffDamage;
 
-    public static final ForgeConfigSpec.ConfigValue<Double> ScytheBaseDamage;
-    public static final ForgeConfigSpec.ConfigValue<Double> ScytheAttackSpeed;
+    public static final ModConfigSpec.ConfigValue<Double> ScytheBaseDamage;
+    public static final ModConfigSpec.ConfigValue<Double> ScytheAttackSpeed;
 
-    public static final ForgeConfigSpec.ConfigValue<Double> HammerBaseDamage;
-    public static final ForgeConfigSpec.ConfigValue<Double> HammerAttackSpeed;
-    public static final ForgeConfigSpec.ConfigValue<Integer> HammerDurability;
+    public static final ModConfigSpec.ConfigValue<Double> HammerBaseDamage;
+    public static final ModConfigSpec.ConfigValue<Double> HammerAttackSpeed;
+    public static final ModConfigSpec.ConfigValue<Integer> HammerDurability;
 
-    public static final ForgeConfigSpec.ConfigValue<Double> DarkToolsDamage;
-    public static final ForgeConfigSpec.ConfigValue<Double> DarkToolsBreakSpeed;
-    public static final ForgeConfigSpec.ConfigValue<Integer> DarkToolsDurability;
-    public static final ForgeConfigSpec.ConfigValue<Integer> DarkToolsEnchantability;
-    public static final ForgeConfigSpec.ConfigValue<Integer> DarkToolsMiningLevel;
+    public static final ModConfigSpec.ConfigValue<Double> DarkToolsDamage;
+    public static final ModConfigSpec.ConfigValue<Double> DarkToolsBreakSpeed;
+    public static final ModConfigSpec.ConfigValue<Integer> DarkToolsDurability;
+    public static final ModConfigSpec.ConfigValue<Integer> DarkToolsEnchantability;
+    public static final ModConfigSpec.ConfigValue<Integer> DarkToolsMiningLevel;
 
-    public static final ForgeConfigSpec.ConfigValue<Double> DeathScytheDamage;
-    public static final ForgeConfigSpec.ConfigValue<Integer> DeathScytheDurability;
-    public static final ForgeConfigSpec.ConfigValue<Integer> DeathScytheEnchantability;
+    public static final ModConfigSpec.ConfigValue<Double> DeathScytheDamage;
+    public static final ModConfigSpec.ConfigValue<Integer> DeathScytheDurability;
+    public static final ModConfigSpec.ConfigValue<Integer> DeathScytheEnchantability;
 
-    public static final ForgeConfigSpec.ConfigValue<Double> SpecialToolsDamage;
-    public static final ForgeConfigSpec.ConfigValue<Double> SpecialToolsBreakSpeed;
-    public static final ForgeConfigSpec.ConfigValue<Integer> SpecialToolsDurability;
-    public static final ForgeConfigSpec.ConfigValue<Integer> SpecialToolsMiningLevel;
-    public static final ForgeConfigSpec.ConfigValue<Integer> HuntersBowDurability;
-    public static final ForgeConfigSpec.ConfigValue<Integer> SpecialToolsEnchantability;
-    public static final ForgeConfigSpec.ConfigValue<Integer> RampagingAxeDuration;
+    public static final ModConfigSpec.ConfigValue<Double> SpecialToolsDamage;
+    public static final ModConfigSpec.ConfigValue<Double> SpecialToolsBreakSpeed;
+    public static final ModConfigSpec.ConfigValue<Integer> SpecialToolsDurability;
+    public static final ModConfigSpec.ConfigValue<Integer> SpecialToolsMiningLevel;
+    public static final ModConfigSpec.ConfigValue<Integer> HuntersBowDurability;
+    public static final ModConfigSpec.ConfigValue<Integer> SpecialToolsEnchantability;
+    public static final ModConfigSpec.ConfigValue<Integer> RampagingAxeDuration;
 
-    public static final ForgeConfigSpec.ConfigValue<Double> PhilosophersMaceDamage;
-    public static final ForgeConfigSpec.ConfigValue<Integer> PhilosophersMaceDurability;
-    public static final ForgeConfigSpec.ConfigValue<Integer> PhilosophersMaceEnchantability;
+    public static final ModConfigSpec.ConfigValue<Double> PhilosophersMaceDamage;
+    public static final ModConfigSpec.ConfigValue<Integer> PhilosophersMaceDurability;
+    public static final ModConfigSpec.ConfigValue<Integer> PhilosophersMaceEnchantability;
 
-    public static final ForgeConfigSpec.ConfigValue<Integer> CursedKnightDurability;
-    public static final ForgeConfigSpec.ConfigValue<Integer> CursedKnightFeet;
-    public static final ForgeConfigSpec.ConfigValue<Integer> CursedKnightLegs;
-    public static final ForgeConfigSpec.ConfigValue<Integer> CursedKnightChest;
-    public static final ForgeConfigSpec.ConfigValue<Integer> CursedKnightHead;
-    public static final ForgeConfigSpec.ConfigValue<Integer> CursedKnightEnchantability;
-    public static final ForgeConfigSpec.ConfigValue<Double> CursedKnightToughness;
-    public static final ForgeConfigSpec.ConfigValue<Double> CursedKnightKnockResist;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> CursedKnightPersist;
+    public static final ModConfigSpec.ConfigValue<Integer> CursedKnightDurability;
+    public static final ModConfigSpec.ConfigValue<Integer> CursedKnightFeet;
+    public static final ModConfigSpec.ConfigValue<Integer> CursedKnightLegs;
+    public static final ModConfigSpec.ConfigValue<Integer> CursedKnightChest;
+    public static final ModConfigSpec.ConfigValue<Integer> CursedKnightHead;
+    public static final ModConfigSpec.ConfigValue<Integer> CursedKnightEnchantability;
+    public static final ModConfigSpec.ConfigValue<Double> CursedKnightToughness;
+    public static final ModConfigSpec.ConfigValue<Double> CursedKnightKnockResist;
+    public static final ModConfigSpec.ConfigValue<Boolean> CursedKnightPersist;
 
-    public static final ForgeConfigSpec.ConfigValue<Integer> CursedPaladinDurability;
-    public static final ForgeConfigSpec.ConfigValue<Integer> CursedPaladinFeet;
-    public static final ForgeConfigSpec.ConfigValue<Integer> CursedPaladinLegs;
-    public static final ForgeConfigSpec.ConfigValue<Integer> CursedPaladinChest;
-    public static final ForgeConfigSpec.ConfigValue<Integer> CursedPaladinHead;
-    public static final ForgeConfigSpec.ConfigValue<Integer> CursedPaladinEnchantability;
-    public static final ForgeConfigSpec.ConfigValue<Double> CursedPaladinToughness;
-    public static final ForgeConfigSpec.ConfigValue<Double> CursedPaladinKnockResist;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> CursedPaladinPersist;
+    public static final ModConfigSpec.ConfigValue<Integer> CursedPaladinDurability;
+    public static final ModConfigSpec.ConfigValue<Integer> CursedPaladinFeet;
+    public static final ModConfigSpec.ConfigValue<Integer> CursedPaladinLegs;
+    public static final ModConfigSpec.ConfigValue<Integer> CursedPaladinChest;
+    public static final ModConfigSpec.ConfigValue<Integer> CursedPaladinHead;
+    public static final ModConfigSpec.ConfigValue<Integer> CursedPaladinEnchantability;
+    public static final ModConfigSpec.ConfigValue<Double> CursedPaladinToughness;
+    public static final ModConfigSpec.ConfigValue<Double> CursedPaladinKnockResist;
+    public static final ModConfigSpec.ConfigValue<Boolean> CursedPaladinPersist;
 
-    public static final ForgeConfigSpec.ConfigValue<Integer> BlackIronDurability;
-    public static final ForgeConfigSpec.ConfigValue<Integer> BlackIronFeet;
-    public static final ForgeConfigSpec.ConfigValue<Integer> BlackIronLegs;
-    public static final ForgeConfigSpec.ConfigValue<Integer> BlackIronChest;
-    public static final ForgeConfigSpec.ConfigValue<Integer> BlackIronHead;
-    public static final ForgeConfigSpec.ConfigValue<Integer> BlackIronEnchantability;
-    public static final ForgeConfigSpec.ConfigValue<Double> BlackIronToughness;
-    public static final ForgeConfigSpec.ConfigValue<Double> BlackIronKnockResist;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> BlackIronPersist;
+    public static final ModConfigSpec.ConfigValue<Integer> BlackIronDurability;
+    public static final ModConfigSpec.ConfigValue<Integer> BlackIronFeet;
+    public static final ModConfigSpec.ConfigValue<Integer> BlackIronLegs;
+    public static final ModConfigSpec.ConfigValue<Integer> BlackIronChest;
+    public static final ModConfigSpec.ConfigValue<Integer> BlackIronHead;
+    public static final ModConfigSpec.ConfigValue<Integer> BlackIronEnchantability;
+    public static final ModConfigSpec.ConfigValue<Double> BlackIronToughness;
+    public static final ModConfigSpec.ConfigValue<Double> BlackIronKnockResist;
+    public static final ModConfigSpec.ConfigValue<Boolean> BlackIronPersist;
 
-    public static final ForgeConfigSpec.ConfigValue<Integer> DarkArmorDurability;
-    public static final ForgeConfigSpec.ConfigValue<Integer> DarkArmorFeet;
-    public static final ForgeConfigSpec.ConfigValue<Integer> DarkArmorLegs;
-    public static final ForgeConfigSpec.ConfigValue<Integer> DarkArmorChest;
-    public static final ForgeConfigSpec.ConfigValue<Integer> DarkArmorHead;
-    public static final ForgeConfigSpec.ConfigValue<Integer> DarkArmorEnchantability;
-    public static final ForgeConfigSpec.ConfigValue<Double> DarkArmorToughness;
-    public static final ForgeConfigSpec.ConfigValue<Double> DarkArmorKnockResist;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> DarkHelmetBlindness;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> DarkHelmetDarkness;
+    public static final ModConfigSpec.ConfigValue<Integer> DarkArmorDurability;
+    public static final ModConfigSpec.ConfigValue<Integer> DarkArmorFeet;
+    public static final ModConfigSpec.ConfigValue<Integer> DarkArmorLegs;
+    public static final ModConfigSpec.ConfigValue<Integer> DarkArmorChest;
+    public static final ModConfigSpec.ConfigValue<Integer> DarkArmorHead;
+    public static final ModConfigSpec.ConfigValue<Integer> DarkArmorEnchantability;
+    public static final ModConfigSpec.ConfigValue<Double> DarkArmorToughness;
+    public static final ModConfigSpec.ConfigValue<Double> DarkArmorKnockResist;
+    public static final ModConfigSpec.ConfigValue<Boolean> DarkHelmetBlindness;
+    public static final ModConfigSpec.ConfigValue<Boolean> DarkHelmetDarkness;
 
-    public static final ForgeConfigSpec.ConfigValue<Boolean> RobeCape;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> AbyssSetMobNeutral;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> FrostSetMobNeutral;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> VoidSetMobNeutral;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> VoidRobeTeleportDamageCancel;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> WildSetMobNeutral;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> NetherSetMobNeutral;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> NecroSetUndeadNeutral;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> NecroCrownWeakness;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> NecroCapeHunger;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> NecroCapeChangeTexture;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> NamelessSetUndeadNeutral;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> WitchSetWitchNeutral;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> WarlockRobeWitchNeutral;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> NetherRobeWitchNeutral;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> SoulRepair;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> SoulRepairEnchant;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> FirstPersonGloves;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> ShowRobeHoods;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> FireSpawnCage;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> ScytheSlashBreaks;
+    public static final ModConfigSpec.ConfigValue<Boolean> RobeCape;
+    public static final ModConfigSpec.ConfigValue<Boolean> AbyssSetMobNeutral;
+    public static final ModConfigSpec.ConfigValue<Boolean> FrostSetMobNeutral;
+    public static final ModConfigSpec.ConfigValue<Boolean> VoidSetMobNeutral;
+    public static final ModConfigSpec.ConfigValue<Boolean> VoidRobeTeleportDamageCancel;
+    public static final ModConfigSpec.ConfigValue<Boolean> WildSetMobNeutral;
+    public static final ModConfigSpec.ConfigValue<Boolean> NetherSetMobNeutral;
+    public static final ModConfigSpec.ConfigValue<Boolean> NecroSetUndeadNeutral;
+    public static final ModConfigSpec.ConfigValue<Boolean> NecroCrownWeakness;
+    public static final ModConfigSpec.ConfigValue<Boolean> NecroCapeHunger;
+    public static final ModConfigSpec.ConfigValue<Boolean> NecroCapeChangeTexture;
+    public static final ModConfigSpec.ConfigValue<Boolean> NamelessSetUndeadNeutral;
+    public static final ModConfigSpec.ConfigValue<Boolean> WitchSetWitchNeutral;
+    public static final ModConfigSpec.ConfigValue<Boolean> WarlockRobeWitchNeutral;
+    public static final ModConfigSpec.ConfigValue<Boolean> NetherRobeWitchNeutral;
+    public static final ModConfigSpec.ConfigValue<Boolean> SoulRepair;
+    public static final ModConfigSpec.ConfigValue<Boolean> SoulRepairEnchant;
+    public static final ModConfigSpec.ConfigValue<Boolean> FirstPersonGloves;
+    public static final ModConfigSpec.ConfigValue<Boolean> ShowRobeHoods;
+    public static final ModConfigSpec.ConfigValue<Boolean> FireSpawnCage;
+    public static final ModConfigSpec.ConfigValue<Boolean> ScytheSlashBreaks;
 
-    public static final ForgeConfigSpec.ConfigValue<Double> AbyssSetMobNeutralHealth;
-    public static final ForgeConfigSpec.ConfigValue<Double> FrostSetMobNeutralHealth;
-    public static final ForgeConfigSpec.ConfigValue<Double> VoidSetMobNeutralHealth;
-    public static final ForgeConfigSpec.ConfigValue<Double> WildSetMobNeutralHealth;
-    public static final ForgeConfigSpec.ConfigValue<Double> NetherSetMobNeutralHealth;
-    public static final ForgeConfigSpec.ConfigValue<Double> NecroSetUndeadNeutralHealth;
-    public static final ForgeConfigSpec.ConfigValue<Double> NamelessSetUndeadNeutralHealth;
+    public static final ModConfigSpec.ConfigValue<Double> AbyssSetMobNeutralHealth;
+    public static final ModConfigSpec.ConfigValue<Double> FrostSetMobNeutralHealth;
+    public static final ModConfigSpec.ConfigValue<Double> VoidSetMobNeutralHealth;
+    public static final ModConfigSpec.ConfigValue<Double> WildSetMobNeutralHealth;
+    public static final ModConfigSpec.ConfigValue<Double> NetherSetMobNeutralHealth;
+    public static final ModConfigSpec.ConfigValue<Double> NecroSetUndeadNeutralHealth;
+    public static final ModConfigSpec.ConfigValue<Double> NamelessSetUndeadNeutralHealth;
 
     static {
         BUILDER.push("General");
@@ -422,7 +422,7 @@ public class ItemConfig {
         SPEC = BUILDER.build();
     }
 
-    public static void loadConfig(ForgeConfigSpec config, String path) {
+    public static void loadConfig(ModConfigSpec config, String path) {
         final CommentedFileConfig file = CommentedFileConfig.builder(new File(path))
                 .sync()
                 .autosave()

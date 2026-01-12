@@ -4,11 +4,11 @@ import com.Polarice3.Goety.api.items.ISoulRepair;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraftforge.common.extensions.IForgeItem;
+import net.neoforged.neoforge.common.extensions.IItemExtension;
 
 import javax.annotation.Nonnull;
 
-public class PhilosophersStone extends Item implements IForgeItem, ISoulRepair {
+public class PhilosophersStone extends Item implements IItemExtension, ISoulRepair {
     public PhilosophersStone(){
         super(new Properties().durability(64));
     }

@@ -10,8 +10,6 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
-import net.minecraftforge.network.NetworkHooks;
-
 public class SoulLight extends LightProjectile {
 
     public SoulLight(EntityType<? extends SoulLight> p_i50147_1_, Level p_i50147_2_) {
@@ -48,6 +46,6 @@ public class SoulLight extends LightProjectile {
 
     @Override
     public Packet<ClientGamePacketListener> getAddEntityPacket() {
-        return NetworkHooks.getEntitySpawningPacket(this);
+        return new net.minecraft.network.protocol.game.ClientboundAddEntityPacket(this);
     }
 }

@@ -93,7 +93,7 @@ public class SkeletonServant extends AbstractSkeletonServant {
             if (this.limitedLifeTicks > 0){
                 skeletonServant.setLimitedLife(this.limitedLifeTicks);
             }
-            net.minecraftforge.event.ForgeEventFactory.onLivingConvert(this, skeletonServant);
+            net.neoforged.event.net.neoforged.neoforge.event.EventHooks.onLivingConvert(this, skeletonServant);
         }
     }
 

@@ -57,22 +57,22 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.alchemy.PotionUtils;
 import net.minecraft.world.level.FoliageColor;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.*;
-import net.minecraftforge.client.gui.overlay.VanillaGuiOverlay;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.neoforge.client.event.*;
+import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
+import net.neoforged.neoforge.registries.NeoForgeRegistries;
 
 import javax.annotation.Nullable;
 import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Map;
 
-@Mod.EventBusSubscriber(modid = Goety.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
+@EventBusSubscriber(modid = Goety.MOD_ID, bus = EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
 public class ClientInitEvents {
 
     @SubscribeEvent
@@ -85,7 +85,7 @@ public class ClientInitEvents {
         MenuScreens.register(ModContainerType.CRAFTING_FOCUS.get(), CraftingScreen::new);
         CuriosRenderer.register();
         ModKeybindings.init();
-        IEventBus forgeBus = MinecraftForge.EVENT_BUS;
+        IEventBus forgeBus = NeoForge.EVENT_BUS;
         forgeBus.addListener(BossBarEvent::renderBossBar);
         event.enqueueWork(() -> {
             Sheets.addWoodType(ModWoodType.HAUNTED);
@@ -234,11 +234,11 @@ public class ClientInitEvents {
     }
 
     @SubscribeEvent
-    public static void registerGUI(final RegisterGuiOverlaysEvent event){
-        event.registerAbove(VanillaGuiOverlay.PLAYER_LIST.id(), "static_overlay", DreadOverlay.OVERLAY);
-        event.registerAbove(VanillaGuiOverlay.HOTBAR.id(), "soul_energy_hud", SoulEnergyGui.OVERLAY);
-        event.registerAbove(VanillaGuiOverlay.HOTBAR.id(), "ravager_roar_hud", RavagerRoarGui.OVERLAY);
-        event.registerAbove(VanillaGuiOverlay.EXPERIENCE_BAR.id(), "current_focus_hud", CurrentFocusGui.OVERLAY);
+    public static void registerGuiLayers(final RegisterGuiLayersEvent event){
+        event.registerAbove(VanillaGuiLayers.TAB_LIST, DreadOverlay.LAYER_ID, DreadOverlay.LAYER);
+        event.registerAbove(VanillaGuiLayers.HOTBAR, SoulEnergyGui.LAYER_ID, SoulEnergyGui.LAYER);
+        event.registerAbove(VanillaGuiLayers.HOTBAR, RavagerRoarGui.LAYER_ID, RavagerRoarGui.LAYER);
+        event.registerAbove(VanillaGuiLayers.EXPERIENCE_BAR, CurrentFocusGui.LAYER_ID, CurrentFocusGui.LAYER);
     }
 
     @SubscribeEvent
@@ -802,7 +802,7 @@ public class ClientInitEvents {
 
     @SubscribeEvent
     public static void registerItemDecorators(RegisterItemDecorationsEvent event) {
-        for (Item item : ForgeRegistries.ITEMS.getValues()) {
+        for (Item item : NeoForgeRegistries.ITEMS.getValues()) {
             if (item instanceof IPersist) {
                 event.register(item, new IPersistDecorator());
             }

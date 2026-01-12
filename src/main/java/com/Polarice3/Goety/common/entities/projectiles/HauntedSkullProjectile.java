@@ -177,7 +177,7 @@ public class HauntedSkullProjectile extends ExplosiveProjectile{
             if (this.getOwner() instanceof Player) {
                 damaging = SpellConfig.HauntedSkullGriefing.get();
             } else {
-                damaging = net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(this.level, this);
+                damaging = this.level.getGameRules().getBoolean(GameRules.RULE_MOB_GRIEFING);
             }
             if (!damaging) {
                 flaming = false;
