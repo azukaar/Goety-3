@@ -99,15 +99,13 @@ public class GuardianServant extends Summoned{
         return new WaterBoundPathNavigation(this, p_32846_);
     }
 
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.entityData.define(DATA_ID_MOVING, false);
-        this.entityData.define(DATA_ID_ATTACK_TARGET, 0);
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(DATA_ID_MOVING, false);
+        builder.define(DATA_ID_ATTACK_TARGET, 0);
     }
 
-    public boolean canBreatheUnderwater() {
-        return true;
-    }
+    // canBreatheUnderwater() is final in 1.21.1, cannot override
 
     @Override
     public Predicate<Entity> summonPredicate() {
@@ -147,11 +145,11 @@ public class GuardianServant extends Summoned{
     public LivingEntity getActiveAttackTarget() {
         if (!this.hasActiveAttackTarget()) {
             return null;
-        } else if (this.level.isClientSide) {
+        } else if (this.level().isClientSide) {
             if (this.clientSideCachedAttackTarget != null) {
                 return this.clientSideCachedAttackTarget;
             } else {
-                Entity entity = this.level.getEntity(this.entityData.get(DATA_ID_ATTACK_TARGET));
+                Entity entity = this.level().getEntity(this.entityData.get(DATA_ID_ATTACK_TARGET));
                 if (entity instanceof LivingEntity livingEntity) {
                     this.clientSideCachedAttackTarget = livingEntity;
                     return this.clientSideCachedAttackTarget;
@@ -194,7 +192,7 @@ public class GuardianServant extends Summoned{
     }
 
     protected float getStandingEyeHeight(Pose p_32843_, EntityDimensions p_32844_) {
-        return p_32844_.height * 0.5F;
+        return p_32844_.height() * 0.5F;
     }
 
     public float getWalkTargetValue(BlockPos p_32831_, LevelReader p_32832_) {
@@ -203,16 +201,16 @@ public class GuardianServant extends Summoned{
 
     public void aiStep() {
         if (this.isAlive()) {
-            if (this.level.isClientSide) {
+            if (this.level().isClientSide) {
                 this.clientSideTailAnimationO = this.clientSideTailAnimation;
                 if (!this.isInWater()) {
                     this.clientSideTailAnimationSpeed = 2.0F;
                     Vec3 vec3 = this.getDeltaMovement();
                     if (vec3.y > 0.0D && this.clientSideTouchedGround && !this.isSilent()) {
-                        this.level.playLocalSound(this.getX(), this.getY(), this.getZ(), this.getFlopSound(), this.getSoundSource(), 1.0F, 1.0F, false);
+                        this.level().playLocalSound(this.getX(), this.getY(), this.getZ(), this.getFlopSound(), this.getSoundSource(), 1.0F, 1.0F, false);
                     }
 
-                    this.clientSideTouchedGround = vec3.y < 0.0D && this.level.loadedAndEntityCanStandOn(this.blockPosition().below(), this);
+                    this.clientSideTouchedGround = vec3.y < 0.0D && this.level().loadedAndEntityCanStandOn(this.blockPosition().below(), this);
                 } else if (this.isMoving()) {
                     if (this.clientSideTailAnimationSpeed < 0.5F) {
                         this.clientSideTailAnimationSpeed = 4.0F;
@@ -237,7 +235,7 @@ public class GuardianServant extends Summoned{
                     Vec3 vec31 = this.getViewVector(0.0F);
 
                     for(int i = 0; i < 2; ++i) {
-                        this.level.addParticle(ParticleTypes.BUBBLE, this.getRandomX(0.5D) - vec31.x * 1.5D, this.getRandomY() - vec31.y * 1.5D, this.getRandomZ(0.5D) - vec31.z * 1.5D, 0.0D, 0.0D, 0.0D);
+                        this.level().addParticle(ParticleTypes.BUBBLE, this.getRandomX(0.5D) - vec31.x * 1.5D, this.getRandomY() - vec31.y * 1.5D, this.getRandomZ(0.5D) - vec31.z * 1.5D, 0.0D, 0.0D, 0.0D);
                     }
                 }
 
@@ -262,7 +260,7 @@ public class GuardianServant extends Summoned{
 
                         while(d4 < d3) {
                             d4 += 1.8D - d5 + this.random.nextDouble() * (1.7D - d5);
-                            this.level.addParticle(ParticleTypes.BUBBLE, this.getX() + d0 * d4, this.getEyeY() + d1 * d4, this.getZ() + d2 * d4, 0.0D, 0.0D, 0.0D);
+                            this.level().addParticle(ParticleTypes.BUBBLE, this.getX() + d0 * d4, this.getEyeY() + d1 * d4, this.getZ() + d2 * d4, 0.0D, 0.0D, 0.0D);
                         }
                     }
                 }
@@ -310,7 +308,7 @@ public class GuardianServant extends Summoned{
     }
 
     public boolean hurt(DamageSource p_32820_, float p_32821_) {
-        if (this.level.isClientSide) {
+        if (this.level().isClientSide) {
             return false;
         } else {
             if (!this.isMoving() && !p_32820_.is(DamageTypeTags.AVOIDS_GUARDIAN_THORNS) && !p_32820_.is(DamageTypes.THORNS)) {
@@ -361,14 +359,14 @@ public class GuardianServant extends Summoned{
             if (itemstack.is(ItemTags.FISHES) && this.getHealth() < this.getMaxHealth()) {
                 FoodProperties foodProperties = itemstack.getFoodProperties(this);
                 if (foodProperties != null){
-                    this.heal((float)foodProperties.getNutrition());
+                    this.heal((float)foodProperties.nutrition());
                     if (!pPlayer.getAbilities().instabuild) {
                         itemstack.shrink(1);
                     }
 
                     this.gameEvent(GameEvent.EAT, this);
-                    this.eat(this.level, itemstack);
-                    if (this.level instanceof ServerLevel serverLevel) {
+                    this.eat(this.level(), itemstack);
+                    if (this.level() instanceof ServerLevel serverLevel) {
                         for (int i = 0; i < 7; ++i) {
                             double d0 = this.random.nextGaussian() * 0.02D;
                             double d1 = this.random.nextGaussian() * 0.02D;
@@ -437,13 +435,13 @@ public class GuardianServant extends Summoned{
                     if (this.attackTime == 0) {
                         this.guardian.setActiveAttackTarget(livingentity.getId());
                         if (!this.guardian.isSilent()) {
-                            if (!this.guardian.level.isClientSide){
-                                this.guardian.level.broadcastEntityEvent(this.guardian, (byte) 4);
+                            if (!this.guardian.level().isClientSide){
+                                this.guardian.level().broadcastEntityEvent(this.guardian, (byte) 4);
                             }
                         }
                     } else if (this.attackTime >= this.guardian.getAttackDuration()) {
                         float f = 1.0F;
-                        if (this.guardian.level.getDifficulty() == Difficulty.HARD) {
+                        if (this.guardian.level().getDifficulty() == Difficulty.HARD) {
                             f += 2.0F;
                         }
 

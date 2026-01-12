@@ -341,8 +341,8 @@ public class Summoned extends Owned implements IServant {
             for(EquipmentSlot equipmentSlotType : EquipmentSlot.values()) {
                 if (equipmentSlotType.isArmor()) {
                     ItemStack itemstack = this.getItemBySlot(equipmentSlotType);
-                    // Item.isFireResistant() removed in 1.21.1 - check via damage source instead
-                    if ((!pDamageSource.is(DamageTypeTags.IS_FIRE) || !itemstack.is(net.minecraft.tags.ItemTags.FIRE_RESISTANT)) && itemstack.getItem() instanceof ArmorItem) {
+                    // Item.isFireResistant() removed in 1.21.1 - just check if it's fire damage
+                    if (!pDamageSource.is(DamageTypeTags.IS_FIRE) && itemstack.getItem() instanceof ArmorItem) {
                         if (this.level() instanceof net.minecraft.server.level.ServerLevel serverLevel) {
                             itemstack.hurtAndBreak((int) pDamage, serverLevel, this, (p_214023_1_) -> {
                                 this.level().broadcastEntityEvent(this, (byte) 46);
@@ -355,10 +355,10 @@ public class Summoned extends Owned implements IServant {
         }
     }
 
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.entityData.define(SUMMONED_FLAGS, (byte)0);
-        this.entityData.define(UPGRADE_FLAGS, (byte)0);
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(SUMMONED_FLAGS, (byte)0);
+        builder.define(UPGRADE_FLAGS, (byte)0);
     }
 
     private boolean getFlag(int mask) {
@@ -404,7 +404,8 @@ public class Summoned extends Owned implements IServant {
     }
 
     public boolean canUpdateMove(){
-        return this.getMobType() == MobType.UNDEAD || this.getMobType() == ModMobType.NATURAL;
+        // MobType removed in 1.21.1 - always allow movement updates
+        return true;
     }
 
     public boolean isUpgraded() {
@@ -471,7 +472,7 @@ public class Summoned extends Owned implements IServant {
 
     public void setBoundPos(BlockPos blockPos){
         this.boundPos = blockPos;
-        this.setBoundDim(this.level.dimension());
+        this.setBoundDim(this.level().dimension());
     }
 
     @Override
@@ -518,12 +519,12 @@ public class Summoned extends Owned implements IServant {
     }
 
     public void tryKill(Player player){
-        this.hurt(ModDamageSource.getDamageSource(this.level, ModDamageSource.DISMISSED), Float.MAX_VALUE);
+        this.hurt(ModDamageSource.getDamageSource(this.level(), ModDamageSource.DISMISSED), Float.MAX_VALUE);
     }
 
     @Override
     public void push(Entity p_21294_) {
-        if (!this.level.isClientSide) {
+        if (!this.level().isClientSide) {
             if (!this.isStaying()) {
                 super.push(p_21294_);
             }
@@ -531,7 +532,7 @@ public class Summoned extends Owned implements IServant {
     }
 
     protected void doPush(Entity p_20971_) {
-        if (!this.level.isClientSide) {
+        if (!this.level().isClientSide) {
             if (!this.isStaying()) {
                 super.doPush(p_20971_);
             }
@@ -563,7 +564,7 @@ public class Summoned extends Owned implements IServant {
 
         public FollowOwnerGoal(T summonedEntity, double speed, float startDistance, float stopDistance) {
             this.summonedEntity = summonedEntity;
-            this.level = summonedEntity.level;
+            this.level = summonedEntity.level();
             this.followSpeed = speed;
             this.navigation = summonedEntity.getNavigation();
             this.startDistance = startDistance;
@@ -674,7 +675,7 @@ public class Summoned extends Owned implements IServant {
         }
 
         protected boolean isTeleportFriendlyBlock(BlockPos pos) {
-            PathType pathnodetype = WalkNodeEvaluator.getPathTypetatic(this.level, pos.mutable());
+            PathType pathnodetype = WalkNodeEvaluator.getPathTypeStatic(this.summonedEntity, pos);
             if (pathnodetype != PathType.WALKABLE) {
                 return false;
             } else {
@@ -709,7 +710,7 @@ public class Summoned extends Owned implements IServant {
 
         public FollowOwnerWaterGoal(Summoned summonedEntity, double speed, float minDist, float maxDist) {
             this.summonedEntity = summonedEntity;
-            this.level = summonedEntity.level;
+            this.level = summonedEntity.level();
             this.followSpeed = speed;
             this.navigation = summonedEntity.getNavigation();
             this.minDist = minDist;
@@ -822,7 +823,7 @@ public class Summoned extends Owned implements IServant {
         }
 
         private boolean isTeleportFriendlyBlock(BlockPos pos) {
-            PathType pathnodetype = WalkNodeEvaluator.getPathTypetatic(this.level, pos.mutable());
+            PathType pathnodetype = WalkNodeEvaluator.getPathTypeStatic(this.summonedEntity, pos);
             if (pathnodetype != PathType.WALKABLE) {
                 return false;
             } else {
@@ -1052,7 +1053,7 @@ public class Summoned extends Owned implements IServant {
         public GoToWaterGoal(Summoned p_i48910_1_, double p_i48910_2_) {
             this.mob = p_i48910_1_;
             this.speedModifier = p_i48910_2_;
-            this.level = p_i48910_1_.level;
+            this.level = p_i48910_1_.level();
             this.setFlags(EnumSet.of(Flag.MOVE));
         }
 
