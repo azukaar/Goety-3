@@ -37,7 +37,7 @@ public class BossBarEvent {
                 event.setCanceled(true);
                 int k = i / 2 - 100;
                 RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-                drawBar(event.getGuiGraphics(), k, event.getY(), event.getPartialTick(), boss);
+                drawBar(event.getGuiGraphics(), k, event.getY(), event.getPartialTick().getGameTimeDeltaPartialTick(false), boss);
                 Component itextcomponent = boss.getDisplayName();
                 int l = minecraft.font.width(itextcomponent);
                 int i1 = i / 2 - l / 2;

@@ -12,13 +12,13 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.resources.ResourceLocation;
 
 public class InsomniaGui {
+    private static final Minecraft minecraft = Minecraft.getInstance();
     public static final ResourceLocation LAYER_ID = Goety.location("insomnia_hud");
     public static final LayeredDraw.Layer LAYER = (guiGraphics, partialTick) -> {
         int screenWidth = minecraft.getWindow().getGuiScaledWidth();
         int screenHeight = minecraft.getWindow().getGuiScaledHeight();
         drawHUD(guiGraphics, partialTick, screenWidth, screenHeight);
     };
-    private static final Minecraft minecraft = Minecraft.getInstance();
 
     public static boolean shouldDisplayBar(){
 //        return minecraft.player != null && (minecraft.gameMode != null && minecraft.gameMode.getPlayerMode() != GameType.SPECTATOR);

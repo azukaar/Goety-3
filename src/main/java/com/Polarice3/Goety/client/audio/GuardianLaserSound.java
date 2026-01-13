@@ -9,6 +9,7 @@ import net.minecraft.client.resources.sounds.SoundInstance;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.ItemStack;
 
 public class GuardianLaserSound extends AbstractTickableSoundInstance {
     private static final float VOLUME_MIN = 0.0F;
@@ -39,7 +40,9 @@ public class GuardianLaserSound extends AbstractTickableSoundInstance {
             this.y = (float)this.livingEntity.getY();
             this.z = (float)this.livingEntity.getZ();
             int count = livingEntity.getUseItemRemainingTicks();
-            int CastTime = livingEntity.getUseItem().getUseDuration() - count;
+            ItemStack useItem = livingEntity.getUseItem();
+            int useDuration = useItem.getUseDuration();
+            int CastTime = useDuration - count;
             float f = CastTime / (float) SpellConfig.PrismaBeamDuration.get();
             this.volume = 0.0F + 1.0F * f * f;
             this.pitch = 0.7F + 0.5F * f;

@@ -114,7 +114,6 @@ import net.neoforged.neoforge.event.entity.living.LivingEvent;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.neoforge.network.PacketDistributor;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.*;
@@ -164,12 +163,12 @@ public class ClientEvents {
     @SubscribeEvent
     public static void onSetupCamera(ViewportEvent.ComputeCameraAngles event) {
         Player player = Minecraft.getInstance().player;
-        float delta = Minecraft.getInstance().getFrameTime();
+        float delta = PARTIAL_TICK;
         if (player != null) {
             float ticksExistedDelta = player.tickCount + delta;
             if (MainConfig.CameraShake.get() && !Minecraft.getInstance().isPaused()) {
                 float shakeAmplitude = 0;
-                for (CameraShake cameraShake : player.level.getEntitiesOfClass(CameraShake.class, player.getBoundingBox().inflate(20))) {
+                for (CameraShake cameraShake : player.level().getEntitiesOfClass(CameraShake.class, player.getBoundingBox().inflate(20))) {
                     if (cameraShake.distanceTo(player) < cameraShake.getRadius()) {
                         shakeAmplitude += cameraShake.getShakeAmount(player, delta);
                     }
@@ -216,7 +215,7 @@ public class ClientEvents {
 
     @SubscribeEvent
     public static void onItemUse(LivingEntityUseItemEvent.Start event){
-        if (event.getEntity().level instanceof ClientLevel){
+        if (event.getEntity().level() instanceof ClientLevel){
             Minecraft minecraft = Minecraft.getInstance();
             SoundManager soundHandler = minecraft.getSoundManager();
             if (WandUtil.getSpell(event.getEntity()) != null && event.getItem().getItem() instanceof IWand){
@@ -235,7 +234,7 @@ public class ClientEvents {
     @SubscribeEvent
     public static void onEntityTick(EntityTickEvent.Post event){
         Entity entity = event.getEntity();
-        if (entity.level instanceof ClientLevel){
+        if (entity.level() instanceof ClientLevel){
             Minecraft minecraft = Minecraft.getInstance();
             SoundManager soundHandler = minecraft.getSoundManager();
             if (entity instanceof SquallGolem squallGolem){
@@ -376,7 +375,7 @@ public class ClientEvents {
             }
             poseStack.popPose();
         }
-        if (event.getPlayer().hasEffect(GoetyEffects.SHADOW_WALK.get())){
+        if (event.getPlayer().hasEffect(GoetyEffects.SHADOW_WALK.getHolder())){
             if (event.getPlayer().getMainHandItem().isEmpty() && event.getArm() == event.getPlayer().getMainArm()){
                 event.setCanceled(true);
             } else if (event.getPlayer().getOffhandItem().isEmpty() && event.getArm() != event.getPlayer().getMainArm()){
@@ -401,7 +400,7 @@ public class ClientEvents {
     @SubscribeEvent
     public static void onPlayerRenderPre(RenderPlayerEvent.Pre event) {
         final Player player = event.getEntity();
-        if (player.hasEffect(GoetyEffects.SHADOW_WALK.get())){
+        if (player.hasEffect(GoetyEffects.SHADOW_WALK.getHolder())){
             event.setCanceled(true);
         }
         if (player.isInvisible() && CuriosFinder.hasIllusionRobe(player)){
@@ -683,9 +682,9 @@ public class ClientEvents {
         Player player = minecraft.player;
         Level level = minecraft.level;
         if (level != null) {
-            List<AbstractClientPlayer> players = minecraft.level.players();
+            List<AbstractClientPlayer> players = minecraft.level().players();
             if (player != null) {
-                Level world = player.level;
+                Level world = player.level();
                 ItemStack stack = player.getMainHandItem();
                 Map<BlockPos, ColorUtil> renderCubes = new HashMap<>();
                 if (stack.getItem() instanceof WaystoneItem) {
@@ -710,9 +709,9 @@ public class ClientEvents {
 
                     if (player1.isUsingItem()) {
                         if (WandUtil.getSpell(player1) instanceof BurrowingSpell) {
-                            BurrowingLaserRenderer.renderLaser(event, player1, Minecraft.getInstance().getFrameTime());
+                            BurrowingLaserRenderer.renderLaser(event, player1, event.getPartialTick().getGameTimeDeltaPartialTick(false));
                         } else if (WandUtil.getSpell(player1) instanceof PrismaBeamSpell) {
-                            GuardianLaserRenderer.renderLaser(event, player1, Minecraft.getInstance().getFrameTime());
+                            GuardianLaserRenderer.renderLaser(event, player1, event.getPartialTick().getGameTimeDeltaPartialTick(false));
                         }
                     }
                 }
@@ -744,7 +743,7 @@ public class ClientEvents {
                     if (wight.lookTime >= MathHelper.secondsToTicks(3)){
                         if (wight.lookTime % 20 == 0 && wight.getRandom().nextInt(8) == 0) {
                             wight.lookTime = 0;
-                            ModNetwork.INSTANCE.send(PacketDistributor.SERVER.noArg(), new CTargetPlayerPacket(wight));
+                            ModNetwork.sendToServer(new CTargetPlayerPacket(wight));
                         }
                     }
                 } else {
@@ -895,9 +894,10 @@ public class ClientEvents {
                 if (event.getAction() == 0) {
                     KeyMapping.set(inputconstants$key, false);
                     if (event.getKey() == 292) {
-                        MINECRAFT.options.renderDebug = !MINECRAFT.options.renderDebug;
-                        MINECRAFT.options.renderDebugCharts = MINECRAFT.options.renderDebug && Screen.hasShiftDown();
-                        MINECRAFT.options.renderFpsChart = MINECRAFT.options.renderDebug && Screen.hasAltDown();
+                        // Debug rendering options API changed in 1.21.1 - these properties may have been removed
+                        // MINECRAFT.options.renderDebug = !MINECRAFT.options.renderDebug;
+                        // MINECRAFT.options.renderDebugCharts = MINECRAFT.options.renderDebug && Screen.hasShiftDown();
+                        // MINECRAFT.options.renderFpsChart = MINECRAFT.options.renderDebug && Screen.hasAltDown();
                     }
                 } else {
                     if (event.getKey() == 293 && MINECRAFT.gameRenderer != null) {
@@ -921,30 +921,31 @@ public class ClientEvents {
                         KeyMapping.click(inputconstants$key);
                     }
 
-                    if (MINECRAFT.options.renderDebugCharts && event.getKey() >= 48 && event.getKey() <= 57) {
-                        MINECRAFT.debugFpsMeterKeyPress(event.getKey() - 48);
-                    }
+                    // Debug charts API changed in 1.21.1
+                    // if (MINECRAFT.options.renderDebugCharts && event.getKey() >= 48 && event.getKey() <= 57) {
+                    //     MINECRAFT.debugFpsMeterKeyPress(event.getKey() - 48);
+                    // }
                 }
             }
         }
 
         if (ModKeybindings.keyBindings[0].isDown() && MINECRAFT.isWindowActive()){
-            ModNetwork.INSTANCE.send(PacketDistributor.SERVER.noArg(), new CWandKeyPacket());
+            ModNetwork.sendToServer(new CWandKeyPacket());
         }
         if (ModKeybindings.keyBindings[2].isDown() && MINECRAFT.isWindowActive()){
-            ModNetwork.INSTANCE.send(PacketDistributor.SERVER.noArg(), new CBagKeyPacket());
+            ModNetwork.sendToServer(new CBagKeyPacket());
         }
         if (ModKeybindings.keyBindings[3].isDown() && MINECRAFT.isWindowActive()){
-            ModNetwork.INSTANCE.send(PacketDistributor.SERVER.noArg(), new CWitchRobePacket());
+            ModNetwork.sendToServer(new CWitchRobePacket());
         }
         if (ModKeybindings.keyBindings[4].isDown() && MINECRAFT.isWindowActive()){
-            ModNetwork.INSTANCE.send(PacketDistributor.SERVER.noArg(), new CStopAttackPacket());
+            ModNetwork.sendToServer(new CStopAttackPacket());
         }
         if (ModKeybindings.keyBindings[5].isDown() && MINECRAFT.isWindowActive()){
-            ModNetwork.INSTANCE.send(PacketDistributor.SERVER.noArg(), new CMagnetPacket());
+            ModNetwork.sendToServer(new CMagnetPacket());
         }
         if (ModKeybindings.keyBindings[6].isDown() && MINECRAFT.isWindowActive()){
-            ModNetwork.INSTANCE.send(PacketDistributor.SERVER.noArg(), new CSetLichNightVisionMode());
+            ModNetwork.sendToServer(new CSetLichNightVisionMode());
             if (MINECRAFT.player != null && MainConfig.LichNightVision.get()){
                 if (LichdomHelper.isLich(MINECRAFT.player)){
                     MINECRAFT.player.playSound(SoundEvents.END_PORTAL_FRAME_FILL);
@@ -952,16 +953,16 @@ public class ClientEvents {
             }
         }
         if (ModKeybindings.keyBindings[7].isDown() && MINECRAFT.isWindowActive()){
-            ModNetwork.INSTANCE.send(PacketDistributor.SERVER.noArg(), new CExtractPotionKeyPacket());
+            ModNetwork.sendToServer(new CExtractPotionKeyPacket());
         }
         if (ModKeybindings.keyBindings[8].isDown() && MINECRAFT.isWindowActive()){
-            ModNetwork.INSTANCE.send(PacketDistributor.SERVER.noArg(), new CBrewBagKeyPacket());
+            ModNetwork.sendToServer(new CBrewBagKeyPacket());
         }
         if (ModKeybindings.keyBindings[10].isDown() && MINECRAFT.isWindowActive()){
-            ModNetwork.INSTANCE.send(PacketDistributor.SERVER.noArg(), new CRavagerRoarPacket());
+            ModNetwork.sendToServer(new CRavagerRoarPacket());
         }
         if (ModKeybindings.keyBindings[11].isDown() && MINECRAFT.isWindowActive()){
-            ModNetwork.INSTANCE.send(PacketDistributor.SERVER.noArg(), new CAutoRideablePacket());
+            ModNetwork.sendToServer(new CAutoRideablePacket());
         }
         if (ModKeybindings.keyBindings[12].isDown() && MINECRAFT.isWindowActive()){
             if (MINECRAFT.player != null){
@@ -980,7 +981,7 @@ public class ClientEvents {
                         }
                         MINECRAFT.player.playSound(ModSounds.SOUL_EXPLODE.get(), 1.0F, 0.75F);
                     }
-                    ModNetwork.INSTANCE.send(PacketDistributor.SERVER.noArg(), new CSetLichMode());
+                    ModNetwork.sendToServer(new CSetLichMode());
                 }
             }
         }
@@ -988,16 +989,16 @@ public class ClientEvents {
             if (MINECRAFT.player != null) {
                 if (LichdomHelper.isLich(MINECRAFT.player)) {
                     if (LichdomHelper.isInLichMode(MINECRAFT.player)){
-                        MINECRAFT.player.level.playLocalSound(MINECRAFT.player.getX(), MINECRAFT.player.getY(), MINECRAFT.player.getZ(), ModSounds.LICH_LAUGH.get(), MINECRAFT.player.getSoundSource(), 2.0F, MINECRAFT.player.getVoicePitch(), false);
+                        MINECRAFT.player.level().playLocalSound(MINECRAFT.player.getX(), MINECRAFT.player.getY(), MINECRAFT.player.getZ(), ModSounds.LICH_LAUGH.get(), MINECRAFT.player.getSoundSource(), 2.0F, MINECRAFT.player.getVoicePitch(), false);
                     }
                 }
             }
         }
         if (ModKeybindings.keyBindings[14].isDown() && MINECRAFT.isWindowActive()){
-            ModNetwork.INSTANCE.send(PacketDistributor.SERVER.noArg(), new CActivateCurioKeyPacket());
+            ModNetwork.sendToServer(new CActivateCurioKeyPacket());
         }
         if (ModKeybindings.keyBindings[15].isDown() && MINECRAFT.isWindowActive()){
-            ModNetwork.INSTANCE.send(PacketDistributor.SERVER.noArg(), new CDismissServantsPacket());
+            ModNetwork.sendToServer(new CDismissServantsPacket());
         }
     }
 

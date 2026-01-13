@@ -3,26 +3,21 @@ package com.Polarice3.Goety.client.gui.overlay;
 import com.Polarice3.Goety.Goety;
 import com.Polarice3.Goety.common.entities.hostile.Wight;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.BufferBuilder;
-import com.mojang.blaze3d.vertex.DefaultVertexFormat;
-import com.mojang.blaze3d.vertex.Tesselator;
-import com.mojang.blaze3d.vertex.VertexFormat;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.LayeredDraw;
-import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 
 public class DreadOverlay {
+    private static final Minecraft minecraft = Minecraft.getInstance();
     public static final ResourceLocation LAYER_ID = Goety.location("static_overlay");
     public static final LayeredDraw.Layer LAYER = (guiGraphics, partialTick) -> {
         int screenWidth = minecraft.getWindow().getGuiScaledWidth();
         int screenHeight = minecraft.getWindow().getGuiScaledHeight();
         drawOverlay(guiGraphics, partialTick, screenWidth, screenHeight);
     };
-    private static final Minecraft minecraft = Minecraft.getInstance();
 
     public static void drawOverlay(GuiGraphics ms, DeltaTracker partialTick, int screenWidth, int screenHeight) {
         if (minecraft.player != null){
@@ -40,28 +35,19 @@ public class DreadOverlay {
                 };
 
                 float alpha = 1.0F - (Math.min(1.0F, wight.distanceTo(player) / 48.0F));
-                renderOverlay(overlay, alpha, screenWidth, screenHeight);
+                renderOverlay(ms, overlay, alpha, screenWidth, screenHeight);
             }
         }
     }
 
-    public static void renderOverlay(ResourceLocation location, float alpha, int screenWidth, int screenHeight) {
-        RenderSystem.disableDepthTest();
-        RenderSystem.depthMask(false);
+    public static void renderOverlay(GuiGraphics guiGraphics, ResourceLocation location, float alpha, int screenWidth, int screenHeight) {
+        // Using GuiGraphics for rendering in 1.21.1
+        guiGraphics.pose().pushPose();
+        RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
-        RenderSystem.setShader(GameRenderer::getPositionTexShader);
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, alpha);
-        RenderSystem.setShaderTexture(0, location);
-        Tesselator tesselator = Tesselator.getInstance();
-        BufferBuilder bufferbuilder = tesselator.getBuilder();
-        bufferbuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
-        bufferbuilder.vertex(0.0, (double)screenHeight, -90.0).uv(0.0F, 1.0F).endVertex();
-        bufferbuilder.vertex((double)screenWidth, (double)screenHeight, -90.0).uv(1.0F, 1.0F).endVertex();
-        bufferbuilder.vertex((double)screenWidth, 0.0, -90.0).uv(1.0F, 0.0F).endVertex();
-        bufferbuilder.vertex(0.0, 0.0, -90.0).uv(0.0F, 0.0F).endVertex();
-        tesselator.end();
-        RenderSystem.depthMask(true);
-        RenderSystem.enableDepthTest();
+        guiGraphics.blit(location, 0, 0, 0, 0, screenWidth, screenHeight, screenWidth, screenHeight);
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+        guiGraphics.pose().popPose();
     }
 }

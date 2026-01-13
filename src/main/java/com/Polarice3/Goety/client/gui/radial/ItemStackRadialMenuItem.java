@@ -27,7 +27,7 @@ public class ItemStackRadialMenuItem extends TextRadialMenuItem {
     @Override
     public void draw(DrawingContext context) {
         if (stack.getCount() > 0) {
-            PoseStack viewModelPose = RenderSystem.getModelViewStack();
+            com.mojang.math.Matrix4fStack viewModelPose = RenderSystem.getModelViewStack();
             viewModelPose.pushPose();
             viewModelPose.mulPoseMatrix(context.guiGraphics().pose().last().pose());
             viewModelPose.translate(-8, -8, context.z());

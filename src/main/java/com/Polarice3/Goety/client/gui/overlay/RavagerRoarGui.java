@@ -10,13 +10,13 @@ import net.minecraft.client.gui.LayeredDraw;
 import net.minecraft.resources.ResourceLocation;
 
 public class RavagerRoarGui {
+    private static final Minecraft minecraft = Minecraft.getInstance();
     public static final ResourceLocation LAYER_ID = Goety.location("ravager_roar_hud");
     public static final LayeredDraw.Layer LAYER = (guiGraphics, partialTick) -> {
         int screenWidth = minecraft.getWindow().getGuiScaledWidth();
         int screenHeight = minecraft.getWindow().getGuiScaledHeight();
         drawHUD(guiGraphics, partialTick, screenWidth, screenHeight);
     };
-    private static final Minecraft minecraft = Minecraft.getInstance();
 
     public static boolean shouldDisplayBar(){
         return minecraft.player != null && minecraft.player.getVehicle() instanceof IRavager ravager && ravager.getRoarCool() > 0;

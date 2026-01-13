@@ -20,13 +20,13 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.GameType;
 
 public class SoulEnergyGui {
+    private static final Minecraft minecraft = Minecraft.getInstance();
     public static final ResourceLocation LAYER_ID = Goety.location("soul_energy_hud");
     public static final LayeredDraw.Layer LAYER = (guiGraphics, partialTick) -> {
         int screenWidth = minecraft.getWindow().getGuiScaledWidth();
         int screenHeight = minecraft.getWindow().getGuiScaledHeight();
         drawHUD(guiGraphics, partialTick, screenWidth, screenHeight);
     };
-    private static final Minecraft minecraft = Minecraft.getInstance();
 
     public static boolean shouldDisplayBar(){
         return SEHelper.getSoulsContainer(minecraft.player) && MainConfig.SoulGuiShow.get() && (minecraft.gameMode != null && minecraft.gameMode.getPlayerMode() != GameType.SPECTATOR);
@@ -71,11 +71,12 @@ public class SoulEnergyGui {
             int height1 = stack.getItem() instanceof FullSpentTotem ? 36 : 0;
             guiGraphics.blit(Goety.location("textures/gui/soul_energy.png"), i, height - 9, 0, height1, 128, 9, 128, 90);
         }
-        RenderSystem.setShaderTexture(0, new ResourceLocation(Goety.MOD_ID, "textures/gui/soul_energy_bar.png"));
+        RenderSystem.setShaderTexture(0, Goety.location("textures/gui/soul_energy_bar.png"));
         guiGraphics.blit(Goety.location("textures/gui/soul_energy_bar.png"), i + 9, height - 7, offset, 0, energylength, 5, 234, 5);
 
         if (MobUtil.isSpellCasting(minecraft.player)){
-            int useDuration = minecraft.player.getUseItem().getUseDuration();
+            ItemStack useItem = minecraft.player.getUseItem();
+            int useDuration = useItem.getUseDuration();
             float remain = minecraft.player.getUseItemRemainingTicks();
             float useTime0 = (useDuration - remain) / useDuration;
             int bar = 27;
@@ -87,7 +88,7 @@ public class SoulEnergyGui {
                     bar = 45;
                 } else if (spell.castUp(minecraft.player, minecraft.player.getUseItem()) > 0) {
                     useDuration = spell.castUp(minecraft.player, minecraft.player.getUseItem());
-                    remain = minecraft.player.getUseItem().getUseDuration() - minecraft.player.getUseItemRemainingTicks();
+                    remain = useItem.getUseDuration() - minecraft.player.getUseItemRemainingTicks();
                     useTime0 = remain / useDuration;
                 }
             }

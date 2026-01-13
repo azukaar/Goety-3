@@ -69,9 +69,9 @@ public class HammerItem extends TieredItem {
     }
 
     public void smash(ItemStack pStack, LivingEntity pTarget, Player player){
-        player.level.playSound(null, player.getX(), player.getY(), player.getZ(), ModSounds.HAMMER_SWING.get(), player.getSoundSource(), 1.0F, 1.0F);
+        player.level().playSound(null, player.getX(), player.getY(), player.getZ(), ModSounds.HAMMER_SWING.get(), player.getSoundSource(), 1.0F, 1.0F);
         if (pTarget.onGround()) {
-            player.level.playSound(null, pTarget.getX(), pTarget.getY(), pTarget.getZ(), ModSounds.DIRT_DEBRIS.get(), player.getSoundSource(), 1.0F, 1.0F);
+            player.level().playSound(null, pTarget.getX(), pTarget.getY(), pTarget.getZ(), ModSounds.DIRT_DEBRIS.get(), player.getSoundSource(), 1.0F, 1.0F);
         }
         if (player.level instanceof ServerLevel serverLevel){
             BlockPos blockPos = BlockPos.containing(pTarget.getX(), pTarget.getY() - 1.0F, pTarget.getZ());

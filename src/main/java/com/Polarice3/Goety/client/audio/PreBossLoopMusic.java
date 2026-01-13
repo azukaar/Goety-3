@@ -70,7 +70,7 @@ public class PreBossLoopMusic extends AbstractTickableSoundInstance {
 
         if (this.mobEntity.isAggressive() || this.mobEntity.isRemoved() || this.mobEntity.isDeadOrDying() || !this.mobEntity.isAlive()){
             if (this.mobEntity.isDeadOrDying()){
-                if (this.mobEntity.level.isClientSide){
+                if (this.mobEntity.level().isClientSide){
                     Minecraft minecraft = Minecraft.getInstance();
                     SoundManager soundHandler = minecraft.getSoundManager();
                     if (!this.isStopped()){

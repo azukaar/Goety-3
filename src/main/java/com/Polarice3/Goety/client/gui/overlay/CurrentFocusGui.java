@@ -11,13 +11,13 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.GameType;
 
 public class CurrentFocusGui {
-    public static final ResourceLocation LAYER_ID = new ResourceLocation("goety", "current_focus_hud");
+    private static final Minecraft minecraft = Minecraft.getInstance();
+    public static final ResourceLocation LAYER_ID = com.Polarice3.Goety.Goety.location("current_focus_hud");
     public static final LayeredDraw.Layer LAYER = (guiGraphics, partialTick) -> {
         int screenWidth = minecraft.getWindow().getGuiScaledWidth();
         int screenHeight = minecraft.getWindow().getGuiScaledHeight();
         drawHUD(guiGraphics, partialTick, screenWidth, screenHeight);
     };
-    private static final Minecraft minecraft = Minecraft.getInstance();
 
     public static boolean shouldDisplayBar(){
         return !WandUtil.findFocus(minecraft.player).isEmpty() && (minecraft.gameMode != null && minecraft.gameMode.getPlayerMode() != GameType.SPECTATOR) && !(minecraft.screen instanceof FocusRadialMenuScreen) && MainConfig.FocusGuiShow.get();

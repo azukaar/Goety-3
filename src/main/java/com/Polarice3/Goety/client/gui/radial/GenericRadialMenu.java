@@ -4,6 +4,8 @@ import com.google.common.collect.Lists;
 import com.mojang.blaze3d.platform.Window;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
+import com.mojang.math.Matrix4fStack;
+import com.Polarice3.Goety.client.events.ClientEvents;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
@@ -144,14 +146,14 @@ public class GenericRadialMenu {
 
     public void close() {
         state = State.CLOSING;
-        startAnimation = minecraft.level.getGameTime() + (double) minecraft.getFrameTime();
+        startAnimation = minecraft.level().getGameTime() + (double) ClientEvents.PARTIAL_TICK;
         animProgress = 1.0f;
         setHovered(-1);
     }
 
     public void tick() {
         if (state == State.INITIALIZING) {
-            startAnimation = minecraft.level.getGameTime() + (double) minecraft.getFrameTime();
+            startAnimation = minecraft.level().getGameTime() + (double) PARTIAL_TICK;
             state = State.OPENING;
             animProgress = 0;
         }
@@ -210,7 +212,7 @@ public class GenericRadialMenu {
             if (!this.getCentralItem().isEmpty()) {
                 int textX = (owner.width - 16) / 2;
                 int textY = (owner.height - 16) / 2;
-                PoseStack viewModelPose = RenderSystem.getModelViewStack();
+                Matrix4fStack viewModelPose = RenderSystem.getModelViewStack();
                 viewModelPose.pushPose();
                 viewModelPose.mulPoseMatrix(guiGraphics.pose().last().pose());
                 viewModelPose.translate(0.0D, 0.0D, 0.0D);
