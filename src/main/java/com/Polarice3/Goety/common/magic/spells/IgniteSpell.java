@@ -46,24 +46,29 @@ public class IgniteSpell extends BlockSpell implements ITouchSpell {
         return list;
     }
 
-    public InteractionResult interact(ServerLevel worldIn, LivingEntity caster){
+    public InteractionResult interact(ServerLevel worldIn, LivingEntity caster) {
         double d0 = caster.getAttributeValue(NeoForgeMod.BLOCK_REACH.get());
         double entityReach = caster.getAttributeValue(NeoForgeMod.ENTITY_REACH.get());
-        return Items.FIRE_CHARGE.useOn(new UseOnContext(worldIn, null, caster.getUsedItemHand(), new ItemStack(Items.FIRE_CHARGE), MobUtil.rayTrace(caster, Math.max(d0, entityReach), false)));
+        return Items.FIRE_CHARGE.useOn(new UseOnContext(worldIn, null, caster.getUsedItemHand(),
+                new ItemStack(Items.FIRE_CHARGE), MobUtil.rayTrace(caster, Math.max(d0, entityReach), false)));
     }
 
     @Override
-    public boolean rightBlock(ServerLevel worldIn, LivingEntity caster, BlockPos target, Direction direction, SpellStat spellStat) {
+    public boolean rightBlock(ServerLevel worldIn, LivingEntity caster, BlockPos target, Direction direction,
+            SpellStat spellStat) {
         return interact(worldIn, caster) != InteractionResult.FAIL;
     }
 
     @Override
-    public void blockResult(ServerLevel worldIn, LivingEntity caster, ItemStack staff, BlockPos target, Direction direction, SpellStat spellStat) {
+    public void blockResult(ServerLevel worldIn, LivingEntity caster, ItemStack staff, BlockPos target,
+            Direction direction, SpellStat spellStat) {
     }
 
     @Override
-    public void touchResult(ServerLevel worldIn, LivingEntity caster, LivingEntity target, ItemStack staff, SpellStat spellStat) {
+    public void touchResult(ServerLevel worldIn, LivingEntity caster, LivingEntity target, ItemStack staff,
+            SpellStat spellStat) {
         this.playSound(worldIn, target, SoundEvents.FIRECHARGE_USE);
-        target.setSecondsOnFire(SpellConfig.IgniteFireSeconds.get() + spellStat.getBurning() + WandUtil.getLevels(ModEnchantments.BURNING.get(), caster));
+        target.igniteForSeconds(SpellConfig.IgniteFireSeconds.get() + spellStat.getBurning()
+                + WandUtil.getLevels(ModEnchantments.BURNING.get(), caster));
     }
 }

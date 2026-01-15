@@ -47,8 +47,10 @@ import java.util.Objects;
 import java.util.function.Predicate;
 
 public class AbstractReaper extends Summoned {
-    protected static final EntityDataAccessor<Byte> DATA_FLAGS_ID = SynchedEntityData.defineId(AbstractReaper.class, EntityDataSerializers.BYTE);
-    private static final EntityDataAccessor<Integer> ANIM_STATE = SynchedEntityData.defineId(AbstractReaper.class, EntityDataSerializers.INT);
+    protected static final EntityDataAccessor<Byte> DATA_FLAGS_ID = SynchedEntityData.defineId(AbstractReaper.class,
+            EntityDataSerializers.BYTE);
+    private static final EntityDataAccessor<Integer> ANIM_STATE = SynchedEntityData.defineId(AbstractReaper.class,
+            EntityDataSerializers.INT);
     public int attackTick;
     public int deathTime = 0;
     public float fly;
@@ -90,7 +92,7 @@ public class AbstractReaper extends Summoned {
                 .add(Attributes.FOLLOW_RANGE, 32.0D);
     }
 
-    public void setConfigurableAttributes(){
+    public void setConfigurableAttributes() {
         MobUtil.setBaseAttributes(this.getAttribute(Attributes.MAX_HEALTH), AttributesConfig.ReaperHealth.get());
         MobUtil.setBaseAttributes(this.getAttribute(Attributes.ARMOR), AttributesConfig.ReaperArmor.get());
         MobUtil.setBaseAttributes(this.getAttribute(Attributes.ATTACK_DAMAGE), AttributesConfig.ReaperDamage.get());
@@ -98,7 +100,7 @@ public class AbstractReaper extends Summoned {
 
     protected void defineSynchedData() {
         super.defineSynchedData();
-        this.entityData.define(DATA_FLAGS_ID, (byte)0);
+        this.entityData.define(DATA_FLAGS_ID, (byte) 0);
         this.entityData.define(ANIM_STATE, 0);
     }
 
@@ -159,7 +161,7 @@ public class AbstractReaper extends Summoned {
     private void calculateFlapping() {
         this.oFly = this.fly;
         this.oFlySpeed = this.flySpeed;
-        this.flySpeed += (float)(!this.onGround() && !this.isPassenger() ? 4 : -1) * 0.3F;
+        this.flySpeed += (float) (!this.onGround() && !this.isPassenger() ? 4 : -1) * 0.3F;
         this.flySpeed = Mth.clamp(this.flySpeed, 0.0F, 1.0F);
         if (!this.onGround() && this.flying < 1.0F) {
             this.flying = 1.0F;
@@ -197,18 +199,18 @@ public class AbstractReaper extends Summoned {
     }
 
     public int getAnimationState(String animation) {
-        if (Objects.equals(animation, "idle")){
+        if (Objects.equals(animation, "idle")) {
             return 1;
-        } else if (Objects.equals(animation, "attack")){
+        } else if (Objects.equals(animation, "attack")) {
             return 2;
-        } else if (Objects.equals(animation, "death")){
+        } else if (Objects.equals(animation, "death")) {
             return 3;
         } else {
             return 0;
         }
     }
 
-    public List<AnimationState> getAllAnimations(){
+    public List<AnimationState> getAllAnimations() {
         List<AnimationState> list = new ArrayList<>();
         list.add(this.idleAnimationState);
         list.add(this.attackAnimationState);
@@ -216,22 +218,22 @@ public class AbstractReaper extends Summoned {
         return list;
     }
 
-    public void stopMostAnimation(AnimationState exception){
-        for (AnimationState state : this.getAllAnimations()){
-            if (state != exception){
+    public void stopMostAnimation(AnimationState exception) {
+        for (AnimationState state : this.getAllAnimations()) {
+            if (state != exception) {
                 state.stop();
             }
         }
     }
 
-    public int getCurrentAnimation(){
+    public int getCurrentAnimation() {
         return this.entityData.get(ANIM_STATE);
     }
 
     public void onSyncedDataUpdated(EntityDataAccessor<?> accessor) {
         if (ANIM_STATE.equals(accessor)) {
-            if (this.level.isClientSide){
-                switch (this.entityData.get(ANIM_STATE)){
+            if (this.level.isClientSide) {
+                switch (this.entityData.get(ANIM_STATE)) {
                     case 0:
                         break;
                     case 1:
@@ -265,7 +267,7 @@ public class AbstractReaper extends Summoned {
             i = i & ~mask;
         }
 
-        this.entityData.set(DATA_FLAGS_ID, (byte)(i & 255));
+        this.entityData.set(DATA_FLAGS_ID, (byte) (i & 255));
     }
 
     public boolean isMeleeAttacking() {
@@ -279,7 +281,7 @@ public class AbstractReaper extends Summoned {
     }
 
     public void handleEntityEvent(byte pId) {
-        if (pId == 5){
+        if (pId == 5) {
             this.attackTick = 0;
         } else {
             super.handleEntityEvent(pId);
@@ -315,7 +317,7 @@ public class AbstractReaper extends Summoned {
     @Override
     public void tick() {
         super.tick();
-        if (!this.level.isClientSide){
+        if (!this.level.isClientSide) {
             if (this.isMeleeAttacking()) {
                 ++this.attackTick;
             } else if (!this.isDeadOrDying()) {
@@ -340,7 +342,7 @@ public class AbstractReaper extends Summoned {
     public InteractionResult mobInteract(Player pPlayer, InteractionHand pHand) {
         ItemStack itemstack = pPlayer.getItemInHand(pHand);
         if (this.getTrueOwner() != null && pPlayer == this.getTrueOwner()) {
-            if (itemstack.is(ModItems.ECTOPLASM.get()) && this.getHealth() < this.getMaxHealth()){
+            if (itemstack.is(ModItems.ECTOPLASM.get()) && this.getHealth() < this.getMaxHealth()) {
                 if (!pPlayer.getAbilities().instabuild) {
                     itemstack.shrink(1);
                 }
@@ -351,7 +353,8 @@ public class AbstractReaper extends Summoned {
                         double d0 = this.random.nextGaussian() * 0.02D;
                         double d1 = this.random.nextGaussian() * 0.02D;
                         double d2 = this.random.nextGaussian() * 0.02D;
-                        serverLevel.sendParticles(ModParticleTypes.HEAL_EFFECT.get(), this.getRandomX(1.0D), this.getRandomY() + 0.5D, this.getRandomZ(1.0D), 0, d0, d1, d2, 0.5F);
+                        serverLevel.sendParticles(ModParticleTypes.HEAL_EFFECT.get(), this.getRandomX(1.0D),
+                                this.getRandomY() + 0.5D, this.getRandomZ(1.0D), 0, d0, d1, d2, 0.5F);
                     }
                 }
                 pPlayer.swing(pHand);
@@ -410,7 +413,7 @@ public class AbstractReaper extends Summoned {
 
         @Nullable
         protected Vec3 getPosition() {
-            if (this.summonedEntity.isGuardingArea()){
+            if (this.summonedEntity.isGuardingArea()) {
                 return randomBoundPos();
             } else {
                 return this.getFlyingPosition();
@@ -418,9 +421,12 @@ public class AbstractReaper extends Summoned {
         }
 
         protected Vec3 getFlyingPosition() {
-            double xd = this.summonedEntity.getX() + (double)((this.summonedEntity.getRandom().nextFloat() * 2.0F - 1.0F) * 16.0F);
-            double yd = this.summonedEntity.getY() + (double)((this.summonedEntity.getRandom().nextFloat() * 2.0F - 1.0F) * 16.0F);
-            double zd = this.summonedEntity.getZ() + (double)((this.summonedEntity.getRandom().nextFloat() * 2.0F - 1.0F) * 16.0F);
+            double xd = this.summonedEntity.getX()
+                    + (double) ((this.summonedEntity.getRandom().nextFloat() * 2.0F - 1.0F) * 16.0F);
+            double yd = this.summonedEntity.getY()
+                    + (double) ((this.summonedEntity.getRandom().nextFloat() * 2.0F - 1.0F) * 16.0F);
+            double zd = this.summonedEntity.getZ()
+                    + (double) ((this.summonedEntity.getRandom().nextFloat() * 2.0F - 1.0F) * 16.0F);
             return new Vec3(xd, yd, zd);
         }
     }
@@ -441,7 +447,9 @@ public class AbstractReaper extends Summoned {
         @Override
         public void tick() {
             if (this.reaper.getTarget() == null) {
-                this.reaper.setYRot(-((float) Mth.atan2(this.reaper.getDeltaMovement().x(), this.reaper.getDeltaMovement().z())) * (180F / (float) Math.PI));
+                this.reaper.setYRot(
+                        -((float) Mth.atan2(this.reaper.getDeltaMovement().x(), this.reaper.getDeltaMovement().z()))
+                                * (180F / (float) Math.PI));
                 this.reaper.setYBodyRot(this.reaper.getYRot());
             } else {
                 LivingEntity target = this.reaper.getTarget();
@@ -465,7 +473,8 @@ public class AbstractReaper extends Summoned {
 
         @Override
         public boolean canUse() {
-            return this.reaper.getTarget() != null && this.reaper.getTarget().isAlive() && this.reaper.isWithinMeleeAttackRange(this.reaper.getTarget());
+            return this.reaper.getTarget() != null && this.reaper.getTarget().isAlive()
+                    && this.reaper.isWithinMeleeAttackRange(this.reaper.getTarget());
         }
 
         @Override
@@ -474,7 +483,8 @@ public class AbstractReaper extends Summoned {
             if (livingentity == null) {
                 return;
             }
-            this.checkAndPerformAttack(livingentity, this.reaper.distanceToSqr(livingentity.getX(), livingentity.getY(), livingentity.getZ()));
+            this.checkAndPerformAttack(livingentity,
+                    this.reaper.distanceToSqr(livingentity.getX(), livingentity.getY(), livingentity.getZ()));
         }
 
         @Override
@@ -523,7 +533,8 @@ public class AbstractReaper extends Summoned {
                 MobUtil.instaLook(this.reaper, livingentity);
                 this.reaper.setYBodyRot(this.reaper.getYHeadRot());
                 if (this.reaper.attackTick == 1) {
-                    this.reaper.playSound(ModSounds.REAPER_SWING.get(), this.reaper.getSoundVolume(), this.reaper.getVoicePitch());
+                    this.reaper.playSound(ModSounds.REAPER_SWING.get(), this.reaper.getSoundVolume(),
+                            this.reaper.getVoicePitch());
                     this.reaper.setAnimationState(ATTACK);
                 }
                 if (this.reaper.attackTick == 12) {
@@ -536,11 +547,11 @@ public class AbstractReaper extends Summoned {
             return this.reaper.calculateViewVector(0, this.reaper.getYRot());
         }
 
-        public void attackMobs(LivingEntity pTarget, AbstractReaper reaper){
+        public void attackMobs(LivingEntity pTarget, AbstractReaper reaper) {
             if (reaper.getTrueOwner() instanceof Player player) {
                 SEHelper.increaseSouls(player, ItemConfig.DarkScytheSouls.get() * 5);
             }
-            float f = (float)reaper.getAttributeValue(Attributes.ATTACK_DAMAGE);
+            float f = (float) reaper.getAttributeValue(Attributes.ATTACK_DAMAGE);
             float f1 = EnchantmentHelper.getDamageBonus(reaper.getMainHandItem(), pTarget.getMobType());
             float f2 = 1.0F;
             f = f * (0.2F + f2 * f2 * 0.8F);
@@ -550,12 +561,16 @@ public class AbstractReaper extends Summoned {
             float f3 = 1.0F;
             int j = EnchantmentHelper.getFireAspect(reaper);
             double area = 2.0D;
-            for (LivingEntity livingentity : reaper.level.getEntitiesOfClass(LivingEntity.class, this.reaper.getBoundingBox().move(this.getHorizontalLookAngle().scale(2.0D)).inflate(area, area, area))) {
-                if (livingentity != reaper && !MobUtil.areAllies(reaper, livingentity) && (!(livingentity instanceof ArmorStand) || !((ArmorStand) livingentity).isMarker()) && reaper.distanceToSqr(livingentity) < 16.0D && livingentity != reaper.getVehicle()) {
-                    livingentity.knockback(0.4F, (double) Mth.sin(reaper.getYRot() * ((float) Math.PI / 180F)), (double) (-Mth.cos(reaper.getYRot() * ((float) Math.PI / 180F))));
+            for (LivingEntity livingentity : reaper.level.getEntitiesOfClass(LivingEntity.class, this.reaper
+                    .getBoundingBox().move(this.getHorizontalLookAngle().scale(2.0D)).inflate(area, area, area))) {
+                if (livingentity != reaper && !MobUtil.areAllies(reaper, livingentity)
+                        && (!(livingentity instanceof ArmorStand) || !((ArmorStand) livingentity).isMarker())
+                        && reaper.distanceToSqr(livingentity) < 16.0D && livingentity != reaper.getVehicle()) {
+                    livingentity.knockback(0.4F, (double) Mth.sin(reaper.getYRot() * ((float) Math.PI / 180F)),
+                            (double) (-Mth.cos(reaper.getYRot() * ((float) Math.PI / 180F))));
                     if (livingentity.hurt(this.reaper.getServantAttack(), f3)) {
                         if (j > 0) {
-                            livingentity.setSecondsOnFire(j * 4);
+                            livingentity.igniteForSeconds(j * 4);
                         }
                         if (reaper.getTrueOwner() instanceof Player player) {
                             if (livingentity instanceof IOwned owned) {
@@ -572,11 +587,13 @@ public class AbstractReaper extends Summoned {
                 }
             }
 
-            reaper.level.playSound(null, reaper.getX(), reaper.getY(), reaper.getZ(), ModSounds.SCYTHE_SWING.get(), reaper.getSoundSource(), 1.0F, 1.0F);
-            double d0 = -Mth.sin(reaper.getYRot() * ((float)Math.PI / 180F));
-            double d1 = Mth.cos(reaper.getYRot() * ((float)Math.PI / 180F));
+            reaper.level.playSound(null, reaper.getX(), reaper.getY(), reaper.getZ(), ModSounds.SCYTHE_SWING.get(),
+                    reaper.getSoundSource(), 1.0F, 1.0F);
+            double d0 = -Mth.sin(reaper.getYRot() * ((float) Math.PI / 180F));
+            double d1 = Mth.cos(reaper.getYRot() * ((float) Math.PI / 180F));
             if (reaper.level instanceof ServerLevel serverLevel) {
-                serverLevel.sendParticles(ParticleTypes.SWEEP_ATTACK, reaper.getX() + d0, reaper.getY(0.5D), reaper.getZ() + d1, 0, d0, 0.0D, d1, 0.0D);
+                serverLevel.sendParticles(ParticleTypes.SWEEP_ATTACK, reaper.getX() + d0, reaper.getY(0.5D),
+                        reaper.getZ() + d1, 0, d0, 0.0D, d1, 0.0D);
             }
         }
 

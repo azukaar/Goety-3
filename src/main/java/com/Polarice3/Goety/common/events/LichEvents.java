@@ -47,16 +47,16 @@ import static net.neoforged.neoforge.event.entity.living.LivingChangeTargetEvent
 public class LichEvents {
 
     @SubscribeEvent
-    public static void onPlayerLichdom(PlayerTickEvent.Post event){
+    public static void onPlayerLichdom(PlayerTickEvent.Post event) {
         Player player = event.getEntity();
         Level world = player.level;
-        if (LichdomHelper.isLich(player)){
+        if (LichdomHelper.isLich(player)) {
             player.getFoodData().setFoodLevel(17);
             player.resetStat(Stats.CUSTOM.get(Stats.TIME_SINCE_REST));
             boolean burn = MobUtil.isInSunlight(player) && !world.isRaining();
 
             if (!player.level.isClientSide) {
-                if (burn){
+                if (burn) {
                     ItemStack helmet = player.getItemBySlot(EquipmentSlot.HEAD);
                     if (!helmet.isEmpty()) {
                         if (!player.isCreative()) {
@@ -70,29 +70,32 @@ public class LichEvents {
                         }
                         burn = false;
                     }
-                    if (burn){
-                        if (!MobUtil.isFireImmune(player)){
-                            player.setSecondsOnFire(8);
+                    if (burn) {
+                        if (!MobUtil.isFireImmune(player)) {
+                            player.igniteForSeconds(8);
                         }
                     }
                 }
             }
 
             player.getActiveEffects().removeIf(effectInstance -> !EffectsUtil.canAffectLich(effectInstance, world));
-            if (player.hasEffect(GoetyEffects.SOUL_HUNGER.get())){
-                if (SEHelper.getSoulsAmount(player, MainConfig.MaxSouls.get())){
+            if (player.hasEffect(GoetyEffects.SOUL_HUNGER.get())) {
+                if (SEHelper.getSoulsAmount(player, MainConfig.MaxSouls.get())) {
                     player.removeEffect(GoetyEffects.SOUL_HUNGER.get());
                 }
             }
             if (MainConfig.LichSoulHeal.get()) {
                 if (!(player.isOnFire() && !MobUtil.isFireImmune(player)) && LichdomHelper.smited(player) <= 0) {
                     if (player.getHealth() < player.getMaxHealth()) {
-                        if (player.tickCount % (MathHelper.secondsToTicks(MainConfig.LichHealSeconds.get()) + 1) == 0 && SEHelper.getSoulsAmount(player, MainConfig.LichHealCost.get())) {
+                        if (player.tickCount % (MathHelper.secondsToTicks(MainConfig.LichHealSeconds.get()) + 1) == 0
+                                && SEHelper.getSoulsAmount(player, MainConfig.LichHealCost.get())) {
                             player.heal(MainConfig.LichHealAmount.get().floatValue());
                             Vec3 vector3d = player.getDeltaMovement();
                             if (!player.level.isClientSide) {
                                 ServerLevel serverWorld = (ServerLevel) player.level;
-                                serverWorld.sendParticles(ParticleTypes.SCULK_SOUL, player.getRandomX(0.5D), player.getRandomY(), player.getRandomZ(0.5D), 0, vector3d.x * -0.2D, 0.1D, vector3d.z * -0.2D, 0.5F);
+                                serverWorld.sendParticles(ParticleTypes.SCULK_SOUL, player.getRandomX(0.5D),
+                                        player.getRandomY(), player.getRandomZ(0.5D), 0, vector3d.x * -0.2D, 0.1D,
+                                        vector3d.z * -0.2D, 0.5F);
                             }
                             SEHelper.decreaseSouls(player, MainConfig.LichHealCost.get());
                         }
@@ -100,13 +103,16 @@ public class LichEvents {
                 }
             }
             if (MainConfig.LichVillagerHate.get() && player.tickCount % 20 == 0) {
-                for (Villager villager : player.level.getEntitiesOfClass(Villager.class, player.getBoundingBox().inflate(16.0D))) {
+                for (Villager villager : player.level.getEntitiesOfClass(Villager.class,
+                        player.getBoundingBox().inflate(16.0D))) {
                     if (villager.getPlayerReputation(player) > -200 && villager.getPlayerReputation(player) < 100) {
                         villager.getGossips().add(player.getUUID(), GossipType.MAJOR_NEGATIVE, 25);
                     }
                 }
-                for (IronGolem ironGolem : player.level.getEntitiesOfClass(IronGolem.class, player.getBoundingBox().inflate(16.0D))) {
-                    if (!ironGolem.isPlayerCreated() && ironGolem.getTarget() != player && TargetingConditions.forCombat().range(16.0F).test(ironGolem, player)) {
+                for (IronGolem ironGolem : player.level.getEntitiesOfClass(IronGolem.class,
+                        player.getBoundingBox().inflate(16.0D))) {
+                    if (!ironGolem.isPlayerCreated() && ironGolem.getTarget() != player
+                            && TargetingConditions.forCombat().range(16.0F).test(ironGolem, player)) {
                         ironGolem.setTarget(player);
                     }
                 }
@@ -114,7 +120,8 @@ public class LichEvents {
             if (LichdomHelper.isInLichMode(player)) {
                 if (player.tickCount % 5 == 0) {
                     if (world.isClientSide) {
-                        world.addParticle(ModParticleTypes.LICH.get(), player.getRandomX(0.5D), player.getY(), player.getRandomZ(0.5D), 0.0D, 0.0D, 0.0D);
+                        world.addParticle(ModParticleTypes.LICH.get(), player.getRandomX(0.5D), player.getY(),
+                                player.getRandomZ(0.5D), 0.0D, 0.0D, 0.0D);
                     }
                 }
                 if (MainConfig.LichModeSounds.get()) {
@@ -127,11 +134,12 @@ public class LichEvents {
                     }
                 }
             }
-            if (player.isAlive()){
+            if (player.isAlive()) {
                 if (!player.level.isClientSide) {
                     if (LichdomHelper.nightVision(player) && MainConfig.LichNightVision.get()) {
                         if (!player.hasEffect(MobEffects.NIGHT_VISION)) {
-                            player.addEffect(new MobEffectInstance(MobEffects.NIGHT_VISION, -1, 0, false, false, false));
+                            player.addEffect(
+                                    new MobEffectInstance(MobEffects.NIGHT_VISION, -1, 0, false, false, false));
                         }
                     } else {
                         if (player.hasEffect(MobEffects.NIGHT_VISION)) {
@@ -140,7 +148,7 @@ public class LichEvents {
                     }
                 }
             }
-            if (LichdomHelper.smited(player) > 0){
+            if (LichdomHelper.smited(player) > 0) {
                 LichdomHelper.setSmited(player, LichdomHelper.smited(player) - 1);
             }
         } else {
@@ -152,30 +160,34 @@ public class LichEvents {
             }
         }
 
-        if (IronLoaded.IRON_SPELLBOOKS.isLoaded()){
+        if (IronLoaded.IRON_SPELLBOOKS.isLoaded()) {
             AttributeInstance bloodResist = player.getAttribute(IronAttributes.BLOOD_MAGIC_RESIST);
-            AttributeModifier attributemodifier = new AttributeModifier(UUID.fromString("1d0bd7da-03e8-4b25-be6d-014d73689417"), "Lich Blood Resistance", 0.5F, AttributeModifier.Operation.ADDITION);
-            if (bloodResist != null){
-                if (LichdomHelper.isLich(player)){
-                    if (!bloodResist.hasModifier(attributemodifier)){
+            AttributeModifier attributemodifier = new AttributeModifier(
+                    UUID.fromString("1d0bd7da-03e8-4b25-be6d-014d73689417"), "Lich Blood Resistance", 0.5F,
+                    AttributeModifier.Operation.ADDITION);
+            if (bloodResist != null) {
+                if (LichdomHelper.isLich(player)) {
+                    if (!bloodResist.hasModifier(attributemodifier)) {
                         bloodResist.addPermanentModifier(attributemodifier);
                     }
                 } else {
-                    if (bloodResist.hasModifier(attributemodifier)){
+                    if (bloodResist.hasModifier(attributemodifier)) {
                         bloodResist.removeModifier(attributemodifier);
                     }
                 }
             }
 
             AttributeInstance holyResist = player.getAttribute(IronAttributes.HOLY_MAGIC_RESIST);
-            AttributeModifier attributemodifier1 = new AttributeModifier(UUID.fromString("5290681e-7020-4de5-bba2-a659242d45a9"), "Lich Holy Weakness", -0.5F, AttributeModifier.Operation.ADDITION);
-            if (holyResist != null){
-                if (LichdomHelper.isLich(player)){
-                    if (!holyResist.hasModifier(attributemodifier1)){
+            AttributeModifier attributemodifier1 = new AttributeModifier(
+                    UUID.fromString("5290681e-7020-4de5-bba2-a659242d45a9"), "Lich Holy Weakness", -0.5F,
+                    AttributeModifier.Operation.ADDITION);
+            if (holyResist != null) {
+                if (LichdomHelper.isLich(player)) {
+                    if (!holyResist.hasModifier(attributemodifier1)) {
                         holyResist.addPermanentModifier(attributemodifier1);
                     }
                 } else {
-                    if (holyResist.hasModifier(attributemodifier1)){
+                    if (holyResist.hasModifier(attributemodifier1)) {
                         holyResist.removeModifier(attributemodifier1);
                     }
                 }
@@ -184,9 +196,9 @@ public class LichEvents {
     }
 
     @SubscribeEvent
-    public static void SpecialPotionEffects(MobEffectEvent.Applicable event){
-        if (event.getEntity() instanceof Player player){
-            if (LichdomHelper.isLich(player)){
+    public static void SpecialPotionEffects(MobEffectEvent.Applicable event) {
+        if (event.getEntity() instanceof Player player) {
+            if (LichdomHelper.isLich(player)) {
                 if (!EffectsUtil.canAffectLich(event.getEffectInstance(), player.level)) {
                     event.setResult(Event.Result.DENY);
                 }
@@ -195,7 +207,7 @@ public class LichEvents {
     }
 
     @SubscribeEvent
-    public static void UndeadFriendly(LivingChangeTargetEvent event){
+    public static void UndeadFriendly(LivingChangeTargetEvent event) {
         if (MainConfig.LichUndeadFriends.get()) {
             if (event.getEntity() instanceof Enemy) {
                 if (event.getEntity().getMobType() == MobType.UNDEAD
@@ -207,7 +219,7 @@ public class LichEvents {
                                     if (event.getEntity().getMaxHealth() <= MainConfig.LichPowerfulFoesHealth.get()) {
                                         if (event.getTargetType() == MOB_TARGET) {
                                             event.setNewTarget(null);
-                                            if (event.getEntity() instanceof NeutralMob){
+                                            if (event.getEntity() instanceof NeutralMob) {
                                                 event.setNewTarget(null);
                                             }
                                         } else {
@@ -217,7 +229,7 @@ public class LichEvents {
                                 } else {
                                     if (event.getTargetType() == MOB_TARGET) {
                                         event.setNewTarget(null);
-                                        if (event.getEntity() instanceof NeutralMob){
+                                        if (event.getEntity() instanceof NeutralMob) {
                                             event.setNewTarget(null);
                                         }
                                     } else {
@@ -233,21 +245,23 @@ public class LichEvents {
     }
 
     @SubscribeEvent
-    public static void HurtEvent(LivingIncomingDamageEvent event){
+    public static void HurtEvent(LivingIncomingDamageEvent event) {
         if (event.getEntity() instanceof Player player) {
-            if (LichdomHelper.isLich(player)){
+            if (LichdomHelper.isLich(player)) {
                 if (MainConfig.LichMagicResist.get()) {
                     if (event.getSource().is(DamageTypeTags.WITCH_RESISTANT_TO)) {
                         event.setAmount(event.getAmount() * 0.15F);
                     }
                 }
-                if (ModDamageSource.freezeAttacks(event.getSource()) || event.getSource().is(DamageTypeTags.IS_FREEZING)){
-                    event.setAmount(event.getAmount()/2);
+                if (ModDamageSource.freezeAttacks(event.getSource())
+                        || event.getSource().is(DamageTypeTags.IS_FREEZING)) {
+                    event.setAmount(event.getAmount() / 2);
                 }
                 if (MainConfig.LichUndeadFriends.get()) {
                     if (CuriosFinder.hasUndeadSet(player) && event.getSource().getEntity() != null) {
                         if (event.getSource().getEntity() instanceof LivingEntity attacker && attacker.isAlive()) {
-                            for (Mob undead : player.level.getEntitiesOfClass(Mob.class, player.getBoundingBox().inflate(16))) {
+                            for (Mob undead : player.level.getEntitiesOfClass(Mob.class,
+                                    player.getBoundingBox().inflate(16))) {
                                 if (undead != attacker) {
                                     if (undead.getType().is(EntityTypeTags.UNDEAD)) {
                                         if (undead.getTarget() != player) {
@@ -267,12 +281,14 @@ public class LichEvents {
                         }
                     }
                 }
-                if (LichdomHelper.isInLichMode(player)){
+                if (LichdomHelper.isInLichMode(player)) {
                     if (MainConfig.LichModeSounds.get()) {
                         if (player.isAlive()) {
                             if (event.getAmount() > 0.0F) {
                                 if (!player.level.isClientSide) {
-                                    player.level.playSound(null, player.getX(), player.getY(), player.getZ(), ModSounds.LICH_HURT.get(), player.getSoundSource(), 1.0F, player.getVoicePitch());
+                                    player.level.playSound(null, player.getX(), player.getY(), player.getZ(),
+                                            ModSounds.LICH_HURT.get(), player.getSoundSource(), 1.0F,
+                                            player.getVoicePitch());
                                     MiscCapHelper.setAmbientSoundTime(player, -MathHelper.secondsToTicks(4));
                                 }
                             }
@@ -281,14 +297,16 @@ public class LichEvents {
                 }
             }
         }
-        if (event.getSource().getDirectEntity() instanceof Player player){
-            if (LichdomHelper.isLich(player) && MainConfig.LichTouch.get()){
-                if (ModDamageSource.physicalAttacks(event.getSource()) && event.getEntity() != player){
+        if (event.getSource().getDirectEntity() instanceof Player player) {
+            if (LichdomHelper.isLich(player) && MainConfig.LichTouch.get()) {
+                if (ModDamageSource.physicalAttacks(event.getSource()) && event.getEntity() != player) {
                     if (player.getMainHandItem().isEmpty()) {
                         event.getEntity().addEffect(new MobEffectInstance(GoetyEffects.FREEZING.get(), 900));
                     }
-                    if (!event.getEntity().getType().is(EntityTypeTags.UNDEAD) && player.getMainHandItem().is(ModTags.Items.LICH_WITHER_ITEMS)){
-                        event.getEntity().addEffect(new MobEffectInstance(MobEffects.WITHER, MathHelper.secondsToTicks(5)));
+                    if (!event.getEntity().getType().is(EntityTypeTags.UNDEAD)
+                            && player.getMainHandItem().is(ModTags.Items.LICH_WITHER_ITEMS)) {
+                        event.getEntity()
+                                .addEffect(new MobEffectInstance(MobEffects.WITHER, MathHelper.secondsToTicks(5)));
                     }
                 }
             }
@@ -298,16 +316,18 @@ public class LichEvents {
     @SubscribeEvent
     public static void onLivingDeathEvent(LivingDeathEvent event) {
         LivingEntity livingEntity = event.getEntity();
-        if (LichdomHelper.isLich(livingEntity)){
-            if (LichdomHelper.isInLichMode(livingEntity)){
-                if (!event.isCanceled()){
+        if (LichdomHelper.isLich(livingEntity)) {
+            if (LichdomHelper.isInLichMode(livingEntity)) {
+                if (!event.isCanceled()) {
                     if (MainConfig.LichModeSounds.get()) {
                         Vec3 vec3 = livingEntity.position();
-                        livingEntity.level.playSound(null, vec3.x, vec3.y, vec3.z, ModSounds.LICH_DEATH.get(), livingEntity.getSoundSource(), 1.0F, livingEntity.getVoicePitch());
+                        livingEntity.level.playSound(null, vec3.x, vec3.y, vec3.z, ModSounds.LICH_DEATH.get(),
+                                livingEntity.getSoundSource(), 1.0F, livingEntity.getVoicePitch());
                     }
-                    if (livingEntity.level instanceof ServerLevel serverLevel){
+                    if (livingEntity.level instanceof ServerLevel serverLevel) {
                         ColorUtil colorUtil = new ColorUtil(0x36e416);
-                        serverLevel.sendParticles(new LichShockwaveParticleOption(colorUtil, 40, 20, 1, 100), livingEntity.getX(), livingEntity.getY() + 0.5F, livingEntity.getZ(), 0, 0, 0, 0, 0.5F);
+                        serverLevel.sendParticles(new LichShockwaveParticleOption(colorUtil, 40, 20, 1, 100),
+                                livingEntity.getX(), livingEntity.getY() + 0.5F, livingEntity.getZ(), 0, 0, 0, 0, 0.5F);
                     }
                 }
             }

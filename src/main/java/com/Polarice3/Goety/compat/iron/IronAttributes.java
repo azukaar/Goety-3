@@ -37,22 +37,25 @@ public class IronAttributes {
     public static final Attribute SPELL_RESIST = getAttribute("spell_resist");
 
     private static Attribute getAttribute(String id) {
-        return NeoForgeRegistries.ATTRIBUTES.getValue(new ResourceLocation("irons_spellbooks", id));
+        return NeoForgeRegistries.ATTRIBUTES.getValue(ResourceLocation.fromNamespaceAndPath("irons_spellbooks", id));
     }
 
     private static Attribute getResistanceAttribute(String id) {
-        return NeoForgeRegistries.ATTRIBUTES.getValue(new ResourceLocation("irons_spellbooks", id + "_magic_resist"));
+        return NeoForgeRegistries.ATTRIBUTES
+                .getValue(ResourceLocation.fromNamespaceAndPath("irons_spellbooks", id + "_magic_resist"));
     }
 
-    private static Attribute getPowerAttribute(String id){
-        return NeoForgeRegistries.ATTRIBUTES.getValue(new ResourceLocation("irons_spellbooks", id + "_spell_power"));
+    private static Attribute getPowerAttribute(String id) {
+        return NeoForgeRegistries.ATTRIBUTES
+                .getValue(ResourceLocation.fromNamespaceAndPath("irons_spellbooks", id + "_spell_power"));
     }
 
-    public static List<AttributeInstance> power(Mob mob){
+    public static List<AttributeInstance> power(Mob mob) {
         List<AttributeInstance> list = new ArrayList<>();
-        for (Attribute attribute : NeoForgeRegistries.ATTRIBUTES){
-            if (attribute.getDescriptionId().contains("irons_spellbooks") && attribute.getDescriptionId().contains("_spell_power")){
-                if (mob.getAttribute(attribute) != null){
+        for (Attribute attribute : NeoForgeRegistries.ATTRIBUTES) {
+            if (attribute.getDescriptionId().contains("irons_spellbooks")
+                    && attribute.getDescriptionId().contains("_spell_power")) {
+                if (mob.getAttribute(attribute) != null) {
                     list.add(mob.getAttribute(attribute));
                 }
             }
@@ -60,11 +63,12 @@ public class IronAttributes {
         return list;
     }
 
-    public static List<AttributeInstance> resistances(Mob mob){
+    public static List<AttributeInstance> resistances(Mob mob) {
         List<AttributeInstance> list = new ArrayList<>();
-        for (Attribute attribute : NeoForgeRegistries.ATTRIBUTES){
-            if (attribute.getDescriptionId().contains("irons_spellbooks") && attribute.getDescriptionId().contains("_magic_resist")){
-                if (mob.getAttribute(attribute) != null){
+        for (Attribute attribute : NeoForgeRegistries.ATTRIBUTES) {
+            if (attribute.getDescriptionId().contains("irons_spellbooks")
+                    && attribute.getDescriptionId().contains("_magic_resist")) {
+                if (mob.getAttribute(attribute) != null) {
                     list.add(mob.getAttribute(attribute));
                 }
             }

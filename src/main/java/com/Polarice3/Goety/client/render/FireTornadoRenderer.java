@@ -14,7 +14,8 @@ import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
 
 public class FireTornadoRenderer extends EntityRenderer<FireTornado> {
-    private static final ResourceLocation TEXTURES = new ResourceLocation(Goety.MOD_ID,"textures/entity/projectiles/fire_tornado.png");
+    private static final ResourceLocation TEXTURES = new ResourceLocation(Goety.MOD_ID,
+            "textures/entity/projectiles/fire_tornado.png");
     private final CycloneModel<FireTornado> model;
 
     public FireTornadoRenderer(EntityRendererProvider.Context p_i46179_1_) {
@@ -22,7 +23,8 @@ public class FireTornadoRenderer extends EntityRenderer<FireTornado> {
         this.model = new CycloneModel<>(p_i46179_1_.bakeLayer(ModModelLayer.FIRE_TORNADO));
     }
 
-    public void render(FireTornado entityIn, float entityYaw, float partialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn, int packedLightIn) {
+    public void render(FireTornado entityIn, float entityYaw, float partialTicks, PoseStack matrixStackIn,
+            MultiBufferSource bufferIn, int packedLightIn) {
         matrixStackIn.pushPose();
         VertexConsumer ivertexbuilder = bufferIn.getBuffer(getRenderType(entityIn));
         this.model.setupAnim(entityIn, 0.0F, 0.0F, entityIn.tickCount + partialTicks, 0, 0);
@@ -30,7 +32,8 @@ public class FireTornadoRenderer extends EntityRenderer<FireTornado> {
         matrixStackIn.mulPose(Axis.ZP.rotationDegrees(180.0F));
         float size = entityIn.getSize();
         matrixStackIn.scale(size, size, size);
-        this.model.renderToBuffer(matrixStackIn, ivertexbuilder, packedLightIn, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 0.15F);
+        this.model.renderToBuffer(matrixStackIn, ivertexbuilder, packedLightIn, OverlayTexture.NO_OVERLAY,
+                net.minecraft.util.FastColor.ARGB32.color((int) (0.15F * 255), 255, 255, 255));
         matrixStackIn.popPose();
         super.render(entityIn, entityYaw, partialTicks, matrixStackIn, bufferIn, packedLightIn);
     }

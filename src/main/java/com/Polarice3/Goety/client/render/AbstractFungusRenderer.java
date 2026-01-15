@@ -23,17 +23,20 @@ public abstract class AbstractFungusRenderer<T extends Projectile> extends Entit
         this.shadowRadius = 0.5F;
     }
 
-    public void render(T pEntity, float pYaw, float pPartialTicks, PoseStack pPoseStack, MultiBufferSource pBuffer, int pPackedLight) {
+    public void render(T pEntity, float pYaw, float pPartialTicks, PoseStack pPoseStack, MultiBufferSource pBuffer,
+            int pPackedLight) {
         pPoseStack.pushPose();
         pPoseStack.translate(0, pEntity.getBoundingBox().getYsize() * 0.5F, 0);
         this.scale(pEntity, pPoseStack, 1.0F);
         Vec3 vec3 = pEntity.getDeltaMovement();
-        float xRot = -((float) (Mth.atan2(vec3.horizontalDistance(), vec3.y) * (double) (180F / (float) Math.PI)) - 90.0F);
+        float xRot = -((float) (Mth.atan2(vec3.horizontalDistance(), vec3.y) * (double) (180F / (float) Math.PI))
+                - 90.0F);
         float yRot = -((float) (Mth.atan2(vec3.z, vec3.x) * (double) (180.0F / (float) Math.PI)) + 90.0F);
         pPoseStack.mulPose(Axis.YP.rotationDegrees(yRot));
         pPoseStack.mulPose(Axis.XP.rotationDegrees(xRot));
         VertexConsumer consumer = pBuffer.getBuffer(RenderType.entityCutoutNoCull(getTextureLocation(pEntity)));
-        this.model.renderToBuffer(pPoseStack, consumer, LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 0.5F);
+        this.model.renderToBuffer(pPoseStack, consumer, LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY,
+                0x80FFFFFF);
         pPoseStack.popPose();
 
         super.render(pEntity, pYaw, pPartialTicks, pPoseStack, pBuffer, pPackedLight);

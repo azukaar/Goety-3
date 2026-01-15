@@ -24,11 +24,10 @@ public class SculkBubbleParticleOption implements ParticleOptions {
     });
     public static final StreamCodec<RegistryFriendlyByteBuf, SculkBubbleParticleOption> STREAM_CODEC = StreamCodec.of(
             (buf, value) -> {
-                PositionSourceType.toNetwork(value.destination, buf);
+                PositionSource.STREAM_CODEC.encode(buf, value.destination);
                 buf.writeVarInt(value.arrivalInTicks);
             },
-            buf -> new SculkBubbleParticleOption(PositionSourceType.fromNetwork(buf), buf.readVarInt())
-    );
+            buf -> new SculkBubbleParticleOption(PositionSource.STREAM_CODEC.decode(buf), buf.readVarInt()));
     private final PositionSource destination;
     private final int arrivalInTicks;
 

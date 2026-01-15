@@ -32,8 +32,7 @@ public class UndeathPotionItem extends Item {
                 .rarity(Rarity.EPIC)
                 .craftRemainder(Items.GLASS_BOTTLE)
                 .setNoRepair()
-                .stacksTo(1)
-        );
+                .stacksTo(1));
     }
 
     public ItemStack finishUsingItem(ItemStack pStack, Level pLevel, LivingEntity pEntityLiving) {
@@ -79,13 +78,14 @@ public class UndeathPotionItem extends Item {
                     }
                 }
             } else {
-                player.displayClientMessage(Component.translatable("info.goety.lichdom.disable").withStyle(ChatFormatting.DARK_RED), false);
+                player.displayClientMessage(
+                        Component.translatable("info.goety.lichdom.disable").withStyle(ChatFormatting.DARK_RED), false);
             }
         }
         return pStack.isEmpty() ? new ItemStack(Items.GLASS_BOTTLE) : pStack;
     }
 
-    public int getUseDuration(ItemStack pStack) {
+    public int getUseDuration(ItemStack pStack, LivingEntity livingEntity) {
         return 40;
     }
 
@@ -102,20 +102,22 @@ public class UndeathPotionItem extends Item {
     }
 
     public InteractionResultHolder<ItemStack> use(Level pLevel, Player pPlayer, InteractionHand pHand) {
-        if (!pLevel.isClientSide){
+        if (!pLevel.isClientSide) {
             ServerLevel serverWorld = (ServerLevel) pLevel;
             for (int i = 0; i < pLevel.random.nextInt(35) + 10; ++i) {
                 double d = pLevel.random.nextGaussian() * 0.2D;
-                serverWorld.sendParticles(ParticleTypes.SMOKE, pPlayer.getX(), pPlayer.getEyeY(), pPlayer.getZ(), 0, d, d, d, 0.5F);
+                serverWorld.sendParticles(ParticleTypes.SMOKE, pPlayer.getX(), pPlayer.getEyeY(), pPlayer.getZ(), 0, d,
+                        d, d, 0.5F);
             }
         }
         return ItemUtils.startUsingInstantly(pLevel, pPlayer, pHand);
     }
 
     @Override
-    public void appendHoverText(ItemStack p_41421_, @Nullable Level p_41422_, List<Component> p_41423_, TooltipFlag p_41424_) {
+    public void appendHoverText(ItemStack p_41421_, @Nullable Level p_41422_, List<Component> p_41423_,
+            TooltipFlag p_41424_) {
         super.appendHoverText(p_41421_, p_41422_, p_41423_, p_41424_);
-        if (!MainConfig.LichEnable.get()){
+        if (!MainConfig.LichEnable.get()) {
             p_41423_.add(Component.translatable("info.goety.lichdom.disable").withStyle(ChatFormatting.DARK_RED));
         }
     }

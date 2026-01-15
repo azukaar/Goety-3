@@ -53,8 +53,10 @@ import javax.annotation.Nullable;
 import java.util.EnumSet;
 
 public class Doppelganger extends Summoned implements RangedAttackMob {
-    private static final EntityDataAccessor<Byte> DOPPELGANGER_FLAGS = SynchedEntityData.defineId(Doppelganger.class, EntityDataSerializers.BYTE);
-    protected static final EntityDataAccessor<Byte> DATA_PLAYER_MODE_CUSTOMISATION = SynchedEntityData.defineId(Doppelganger.class, EntityDataSerializers.BYTE);
+    private static final EntityDataAccessor<Byte> DOPPELGANGER_FLAGS = SynchedEntityData.defineId(Doppelganger.class,
+            EntityDataSerializers.BYTE);
+    protected static final EntityDataAccessor<Byte> DATA_PLAYER_MODE_CUSTOMISATION = SynchedEntityData
+            .defineId(Doppelganger.class, EntityDataSerializers.BYTE);
     public float oBob;
     public float bob;
     public double xCloakO;
@@ -71,9 +73,9 @@ public class Doppelganger extends Summoned implements RangedAttackMob {
     }
 
     public void tick() {
-        for (Mob mob: this.level.getEntitiesOfClass(Mob.class, this.getBoundingBox().inflate(16.0F))) {
-            if (this.getTrueOwner() != null){
-                if (mob.getTarget() == this.getTrueOwner()){
+        for (Mob mob : this.level.getEntitiesOfClass(Mob.class, this.getBoundingBox().inflate(16.0F))) {
+            if (this.getTrueOwner() != null) {
+                if (mob.getTarget() == this.getTrueOwner()) {
                     if (this.getTarget() != mob) {
                         this.setTarget(mob);
                     }
@@ -90,40 +92,41 @@ public class Doppelganger extends Summoned implements RangedAttackMob {
 
         this.moveCloak();
 
-        if (this.getTrueOwner() != null){
-            if (!this.isUndeadClone()){
-                if (this.getTrueOwner().hurtTime == this.getTrueOwner().hurtDuration - 1){
+        if (this.getTrueOwner() != null) {
+            if (!this.isUndeadClone()) {
+                if (this.getTrueOwner().hurtTime == this.getTrueOwner().hurtDuration - 1) {
                     this.die(this.damageSources().starve());
                 }
             }
             this.setCustomName(this.getTrueOwner().getDisplayName());
-            if (this.getTrueOwner().getMaxHealth() != this.getMaxHealth()){
+            if (this.getTrueOwner().getMaxHealth() != this.getMaxHealth()) {
                 AttributeInstance attributeInstance = this.getAttribute(Attributes.MAX_HEALTH);
-                if (attributeInstance != null){
+                if (attributeInstance != null) {
                     attributeInstance.setBaseValue(this.getTrueOwner().getMaxHealth());
                 }
             }
         }
 
-        if (this.isUndeadClone()){
+        if (this.isUndeadClone()) {
             this.getNavigation().stop();
-            if (this.getTarget() != null){
+            if (this.getTarget() != null) {
                 this.getLookControl().setLookAt(this.getTarget());
             }
-            if (this.getTrueOwner() == null || (this.getTrueOwner() != null && this.getTrueOwner().isDeadOrDying())){
+            if (this.getTrueOwner() == null || (this.getTrueOwner() != null && this.getTrueOwner().isDeadOrDying())) {
                 this.die(this.damageSources().starve());
             }
         }
 
-        if (this.hasShot()){
-            if ((this.tickCount % 40 == 0 && this.random.nextFloat() <= 0.25F) || this.tickCount % 100 == 0){
+        if (this.hasShot()) {
+            if ((this.tickCount % 40 == 0 && this.random.nextFloat() <= 0.25F) || this.tickCount % 100 == 0) {
                 this.die(this.damageSources().starve());
             }
         }
         if (LichdomHelper.isInLichMode(this.getTrueOwner())) {
             if (this.tickCount % 5 == 0) {
                 if (this.level.isClientSide) {
-                    this.level.addParticle(ModParticleTypes.LICH.get(), this.getRandomX(0.5D), this.getY(), this.getRandomZ(0.5D), 0.0D, 0.0D, 0.0D);
+                    this.level.addParticle(ModParticleTypes.LICH.get(), this.getRandomX(0.5D), this.getY(),
+                            this.getRandomZ(0.5D), 0.0D, 0.0D, 0.0D);
                 }
             }
         }
@@ -219,8 +222,8 @@ public class Doppelganger extends Summoned implements RangedAttackMob {
 
     protected void defineSynchedData() {
         super.defineSynchedData();
-        this.entityData.define(DOPPELGANGER_FLAGS, (byte)0);
-        this.entityData.define(DATA_PLAYER_MODE_CUSTOMISATION, (byte)0);
+        this.entityData.define(DOPPELGANGER_FLAGS, (byte) 0);
+        this.entityData.define(DATA_PLAYER_MODE_CUSTOMISATION, (byte) 0);
     }
 
     public void readAdditionalSaveData(CompoundTag compound) {
@@ -231,7 +234,7 @@ public class Doppelganger extends Summoned implements RangedAttackMob {
         if (compound.contains("Shot")) {
             this.setShot(compound.getBoolean("Shot"));
         }
-        if (compound.contains("TickCount")){
+        if (compound.contains("TickCount")) {
             this.tickCount = compound.getInt("TickCount");
         }
     }
@@ -256,22 +259,22 @@ public class Doppelganger extends Summoned implements RangedAttackMob {
             i = i & ~mask;
         }
 
-        this.entityData.set(DOPPELGANGER_FLAGS, (byte)(i & 255));
+        this.entityData.set(DOPPELGANGER_FLAGS, (byte) (i & 255));
     }
 
-    public boolean isUndeadClone(){
+    public boolean isUndeadClone() {
         return this.getDoppelgangerFlags(1);
     }
 
-    public void setUndeadClone(boolean undeadClone){
+    public void setUndeadClone(boolean undeadClone) {
         this.setDoppelgangerFlags(1, undeadClone);
     }
 
-    public boolean hasShot(){
+    public boolean hasShot() {
         return this.getDoppelgangerFlags(2);
     }
 
-    public void setShot(boolean undeadClone){
+    public void setShot(boolean undeadClone) {
         this.setDoppelgangerFlags(2, undeadClone);
     }
 
@@ -290,7 +293,8 @@ public class Doppelganger extends Summoned implements RangedAttackMob {
 
     public String getModelName() {
         PlayerInfo playerinfo = this.getPlayerInfo();
-        return playerinfo == null ? DefaultPlayerSkin.getSkinModelName(this.getUUID()) : playerinfo.getModelName();
+        return playerinfo == null ? DefaultPlayerSkin.getSkinModelName(this.getUUID())
+                : playerinfo.getSkin().model().id();
     }
 
     @Nullable
@@ -312,7 +316,7 @@ public class Doppelganger extends Summoned implements RangedAttackMob {
 
     @Override
     public boolean isLeftHanded() {
-        if (this.getTrueOwner() instanceof Player player){
+        if (this.getTrueOwner() instanceof Player player) {
             return player.getMainArm() == HumanoidArm.RIGHT;
         }
         return super.isLeftHanded();
@@ -320,10 +324,10 @@ public class Doppelganger extends Summoned implements RangedAttackMob {
 
     public boolean hurt(DamageSource source, float amount) {
         boolean flag = super.hurt(source, amount);
-        if (this.isUndeadClone()){
+        if (this.isUndeadClone()) {
             return source.is(DamageTypeTags.BYPASSES_INVULNERABILITY)
                     || (source.is(DamageTypeTags.BYPASSES_ARMOR)
-                    && source.is(DamageTypeTags.BYPASSES_EFFECTS));
+                            && source.is(DamageTypeTags.BYPASSES_EFFECTS));
         } else if (flag) {
             if (!this.level.isClientSide) {
                 this.die(source);
@@ -336,14 +340,14 @@ public class Doppelganger extends Summoned implements RangedAttackMob {
         if (!this.level.isClientSide) {
             for (int i = 0; i < this.level.random.nextInt(10) + 10; ++i) {
                 ParticleOptions particleOptions = ParticleTypes.POOF;
-                if (this.isUndeadClone()){
+                if (this.isUndeadClone()) {
                     particleOptions = ModParticleTypes.LICH.get();
                 }
                 ServerParticleUtil.smokeParticles(particleOptions, this.getX(), this.getY(), this.getZ(), this.level);
             }
         }
         SoundEvent soundEvent = SoundEvents.ILLUSIONER_MIRROR_MOVE;
-        if (this.isUndeadClone()){
+        if (this.isUndeadClone()) {
             soundEvent = ModSounds.LICH_TELEPORT_OUT.get();
         }
         this.playSound(soundEvent, 1.0F, 1.0F);
@@ -351,15 +355,15 @@ public class Doppelganger extends Summoned implements RangedAttackMob {
     }
 
     protected void populateDefaultEquipmentSlots(RandomSource randomSource, DifficultyInstance difficulty) {
-        if (this.getTrueOwner() != null){
-            for (EquipmentSlot equipmentSlotType: EquipmentSlot.values()){
+        if (this.getTrueOwner() != null) {
+            for (EquipmentSlot equipmentSlotType : EquipmentSlot.values()) {
                 if (equipmentSlotType != EquipmentSlot.MAINHAND) {
                     this.setItemSlot(equipmentSlotType, this.getTrueOwner().getItemBySlot(equipmentSlotType).copy());
                     this.setDropChance(equipmentSlotType, 0.0F);
                 }
             }
         }
-        if (this.isUndeadClone()){
+        if (this.isUndeadClone()) {
             this.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(ModItems.NAMELESS_STAFF.get()));
         } else {
             this.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.BOW));
@@ -376,7 +380,8 @@ public class Doppelganger extends Summoned implements RangedAttackMob {
         return potioneffectIn.getEffect() == MobEffects.GLOWING;
     }
 
-    public SpawnGroupData finalizeSpawn(ServerLevelAccessor pLevel, DifficultyInstance pDifficulty, MobSpawnType pReason, @Nullable SpawnGroupData pSpawnData, @Nullable CompoundTag pDataTag) {
+    public SpawnGroupData finalizeSpawn(ServerLevelAccessor pLevel, DifficultyInstance pDifficulty,
+            MobSpawnType pReason, @Nullable SpawnGroupData pSpawnData, @Nullable CompoundTag pDataTag) {
         pSpawnData = super.finalizeSpawn(pLevel, pDifficulty, pReason, pSpawnData, pDataTag);
         this.populateDefaultEquipmentSlots(pLevel.getRandom(), pDifficulty);
         this.populateDefaultEquipmentEnchantments(pLevel.getRandom(), pDifficulty);
@@ -385,14 +390,16 @@ public class Doppelganger extends Summoned implements RangedAttackMob {
 
     public void performRangedAttack(LivingEntity target, float distanceFactor) {
         if (!this.isUndeadClone()) {
-            ItemStack itemstack = this.getProjectile(this.getItemInHand(ProjectileUtil.getWeaponHoldingHand(this, item -> item instanceof BowItem)));
+            ItemStack itemstack = this.getProjectile(
+                    this.getItemInHand(ProjectileUtil.getWeaponHoldingHand(this, item -> item instanceof BowItem)));
             AbstractArrow abstractarrowentity = this.getMobArrow(itemstack, distanceFactor);
             abstractarrowentity = ((BowItem) this.getMainHandItem().getItem()).customArrow(abstractarrowentity);
             double d0 = target.getX() - this.getX();
             double d1 = target.getY(0.3333333333333333D) - abstractarrowentity.getY();
             double d2 = target.getZ() - this.getZ();
             double d3 = Mth.sqrt((float) (d0 * d0 + d2 * d2));
-            abstractarrowentity.shoot(d0, d1 + d3 * (double) 0.2F, d2, 1.6F, (float) (14 - this.level.getDifficulty().getId() * 4));
+            abstractarrowentity.shoot(d0, d1 + d3 * (double) 0.2F, d2, 1.6F,
+                    (float) (14 - this.level.getDifficulty().getId() * 4));
             this.playSound(SoundEvents.ARROW_SHOOT, 1.0F, 1.0F / (this.getRandom().nextFloat() * 0.4F + 0.8F));
             this.level.addFreshEntity(abstractarrowentity);
         } else {
@@ -445,7 +452,8 @@ public class Doppelganger extends Summoned implements RangedAttackMob {
         }
 
         public boolean canContinueToUse() {
-            return (this.canUse()) || (this.target != null && this.target.isAlive() && !this.rangedAttackMob.getNavigation().isDone() && !this.rangedAttackMob.hasShot());
+            return (this.canUse()) || (this.target != null && this.target.isAlive()
+                    && !this.rangedAttackMob.getNavigation().isDone() && !this.rangedAttackMob.hasShot());
         }
 
         public void stop() {

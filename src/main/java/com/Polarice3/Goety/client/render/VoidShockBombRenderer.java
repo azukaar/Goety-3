@@ -22,8 +22,10 @@ import org.joml.Matrix4f;
 import org.joml.Quaternionf;
 
 public class VoidShockBombRenderer extends EntityRenderer<VoidShockBomb> {
-    private static final ResourceLocation OUTER_TEXTURES = Goety.location("textures/entity/projectiles/void_shock_bomb_outer.png");
-    private static final ResourceLocation INNER_TEXTURES = Goety.location("textures/entity/projectiles/void_shock_bomb_inner.png");
+    private static final ResourceLocation OUTER_TEXTURES = Goety
+            .location("textures/entity/projectiles/void_shock_bomb_outer.png");
+    private static final ResourceLocation INNER_TEXTURES = Goety
+            .location("textures/entity/projectiles/void_shock_bomb_inner.png");
     private static final ResourceLocation TRAIL_TEXTURE = Goety.location("textures/entity/projectiles/trail.png");
     private final VoidShockBombModel<VoidShockBomb> model;
     private final RandomSource random = RandomSource.create();
@@ -34,15 +36,16 @@ public class VoidShockBombRenderer extends EntityRenderer<VoidShockBomb> {
     }
 
     @Override
-    public void render(VoidShockBomb entityIn, float entityYaw, float partialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn, int packedLightIn) {
+    public void render(VoidShockBomb entityIn, float entityYaw, float partialTicks, PoseStack matrixStackIn,
+            MultiBufferSource bufferIn, int packedLightIn) {
         if (entityIn.growTick <= 0) {
             matrixStackIn.pushPose();
-            matrixStackIn.mulPose((new Quaternionf()).setAngleAxis(entityYaw * ((float)Math.PI / 180F), 0, -1.0F, 0));
+            matrixStackIn.mulPose((new Quaternionf()).setAngleAxis(entityYaw * ((float) Math.PI / 180F), 0, -1.0F, 0));
             VertexConsumer VertexConsumer = bufferIn.getBuffer(RenderType.eyes(this.getTextureLocation(entityIn)));
             model.setupAnim(entityIn, 0, 0, entityIn.tickCount + partialTicks, 0, 0);
-            model.renderToBuffer(matrixStackIn, VertexConsumer, packedLightIn, OverlayTexture.NO_OVERLAY, 1, 1, 1, 1);
+            model.renderToBuffer(matrixStackIn, VertexConsumer, packedLightIn, OverlayTexture.NO_OVERLAY, -1);
             VertexConsumer VertexConsumer2 = bufferIn.getBuffer(RenderType.eyes(OUTER_TEXTURES));
-            model.renderToBuffer(matrixStackIn, VertexConsumer2, packedLightIn, OverlayTexture.NO_OVERLAY, 1, 1, 1, 0.4F);
+            model.renderToBuffer(matrixStackIn, VertexConsumer2, packedLightIn, OverlayTexture.NO_OVERLAY, 0x66FFFFFF);
             matrixStackIn.popPose();
             if (entityIn.hasTrail()) {
                 double x = Mth.lerp(partialTicks, entityIn.xOld, entityIn.getX());
@@ -60,18 +63,20 @@ public class VoidShockBombRenderer extends EntityRenderer<VoidShockBomb> {
             }
         } else {
             matrixStackIn.pushPose();
-            matrixStackIn.mulPose((new Quaternionf()).setAngleAxis(entityYaw * ((float)Math.PI / 180F), 0, -1.0F, 0));
+            matrixStackIn.mulPose((new Quaternionf()).setAngleAxis(entityYaw * ((float) Math.PI / 180F), 0, -1.0F, 0));
             float scale2 = entityIn.size;
             matrixStackIn.translate(0, scale2 / 4.0D, 0);
             matrixStackIn.scale(-scale2, -scale2, scale2);
             VertexConsumer VertexConsumer = bufferIn.getBuffer(RenderType.eyes(this.getTextureLocation(entityIn)));
             model.setupAnim(entityIn, 0, 0, entityIn.tickCount + partialTicks, 0, 0);
-            model.renderToBuffer(matrixStackIn, VertexConsumer, packedLightIn, OverlayTexture.NO_OVERLAY, 1, 1, 1, entityIn.alpha);
+            model.renderToBuffer(matrixStackIn, VertexConsumer, packedLightIn, OverlayTexture.NO_OVERLAY,
+                    net.minecraft.util.FastColor.ARGB32.color((int) (entityIn.alpha * 255), 255, 255, 255));
             matrixStackIn.popPose();
         }
     }
 
-    private void renderTrail(VoidShockBomb entityIn, float partialTicks, PoseStack poseStack, MultiBufferSource bufferIn, float trailR, float trailG, float trailB, float trailA, int packedLightIn) {
+    private void renderTrail(VoidShockBomb entityIn, float partialTicks, PoseStack poseStack,
+            MultiBufferSource bufferIn, float trailR, float trailG, float trailB, float trailA, int packedLightIn) {
         int sampleSize = 10;
         float trailHeight = 0.5F;
         float trailYRot = 0;
@@ -89,27 +94,31 @@ public class VoidShockBombRenderer extends EntityRenderer<VoidShockBomb> {
             float u1 = samples / (float) sampleSize;
             float u2 = u1 + 1 / (float) sampleSize;
 
-            addVertex(vertexconsumer, matrix4f, matrix3f, drawFrom, bottomAngleVec, trailR, trailG, trailB, u1, 1F, packedLightIn);
-            addVertex(vertexconsumer, matrix4f, matrix3f, sample, bottomAngleVec,  trailR, trailG, trailB, u2, 1F, packedLightIn);
-            addVertex(vertexconsumer, matrix4f, matrix3f, sample, topAngleVec, trailR, trailG, trailB, u2, 0F, packedLightIn);
-            addVertex(vertexconsumer, matrix4f, matrix3f, drawFrom, topAngleVec, trailR, trailG, trailB,  u1, 0F, packedLightIn);
+            addVertex(vertexconsumer, matrix4f, matrix3f, drawFrom, bottomAngleVec, trailR, trailG, trailB, u1, 1F,
+                    packedLightIn);
+            addVertex(vertexconsumer, matrix4f, matrix3f, sample, bottomAngleVec, trailR, trailG, trailB, u2, 1F,
+                    packedLightIn);
+            addVertex(vertexconsumer, matrix4f, matrix3f, sample, topAngleVec, trailR, trailG, trailB, u2, 0F,
+                    packedLightIn);
+            addVertex(vertexconsumer, matrix4f, matrix3f, drawFrom, topAngleVec, trailR, trailG, trailB, u1, 0F,
+                    packedLightIn);
 
             drawFrom = sample;
         }
 
-
     }
 
-    private void addVertex(VertexConsumer consumer, Matrix4f matrix,Matrix3f matrix3, Vec3 pos, Vec3 offset,float r,float g,float b, float u, float v, int light) {
+    private void addVertex(VertexConsumer consumer, Matrix4f matrix, Matrix3f matrix3, Vec3 pos, Vec3 offset, float r,
+            float g, float b, float u, float v, int light) {
         consumer.vertex(matrix,
-                        (float) (pos.x + offset.x),
-                        (float) (pos.y + offset.y),
-                        (float) (pos.z + offset.z))
+                (float) (pos.x + offset.x),
+                (float) (pos.y + offset.y),
+                (float) (pos.z + offset.z))
                 .color(r, g, b, 1.0F)
                 .uv(u, v)
                 .overlayCoords(OverlayTexture.NO_OVERLAY)
                 .uv2(light)
-                .normal(matrix3,0.0F, 1.0F, 0.0F).endVertex();
+                .normal(matrix3, 0.0F, 1.0F, 0.0F).endVertex();
     }
 
     protected int getBlockLightLevel(VoidShockBomb entityIn, BlockPos pos) {

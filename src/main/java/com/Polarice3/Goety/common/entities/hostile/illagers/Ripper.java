@@ -46,8 +46,9 @@ import net.minecraft.world.phys.Vec3;
 import javax.annotation.Nullable;
 
 public class Ripper extends Raider {
-    private static final EntityDataAccessor<Integer> ID_SIZE = SynchedEntityData.defineId(Ripper.class, EntityDataSerializers.INT);
-    private static final String[] TAG_BABY_KILLER = new String[]{"Princess", "Cupcake"};
+    private static final EntityDataAccessor<Integer> ID_SIZE = SynchedEntityData.defineId(Ripper.class,
+            EntityDataSerializers.INT);
+    private static final String[] TAG_BABY_KILLER = new String[] { "Princess", "Cupcake" };
     private boolean isWet;
     private boolean isShaking;
     private boolean isBabyKiller;
@@ -64,8 +65,9 @@ public class Ripper extends Raider {
     protected void registerGoals() {
         super.registerGoals();
         this.goalSelector.addGoal(1, new FloatGoal(this));
-        this.goalSelector.addGoal(3, new FollowMobClassGoal(this, 1.0F, 4.0F,32.0F, (p_25278_) -> {
-            return p_25278_ instanceof AbstractIllager && !(p_25278_ instanceof Tormentor) && this.getTarget() == null && this.random.nextFloat() <= 0.05F;
+        this.goalSelector.addGoal(3, new FollowMobClassGoal(this, 1.0F, 4.0F, 32.0F, (p_25278_) -> {
+            return p_25278_ instanceof AbstractIllager && !(p_25278_ instanceof Tormentor) && this.getTarget() == null
+                    && this.random.nextFloat() <= 0.05F;
         }));
         this.goalSelector.addGoal(4, new LeapAtTargetGoal(this, 0.4F));
         this.goalSelector.addGoal(5, new MeleeAttackGoal(this, 1.0D, true));
@@ -73,14 +75,16 @@ public class Ripper extends Raider {
         this.goalSelector.addGoal(9, new LookAtPlayerGoal(this, Player.class, 3.0F, 1.0F));
         this.goalSelector.addGoal(10, new LookAtPlayerGoal(this, Mob.class, 8.0F));
         this.targetSelector.addGoal(1, (new HurtByTargetGoal(this, Raider.class)).setAlertOthers());
-        this.targetSelector.addGoal(2, (new NearestAttackableTargetGoal<>(this, Player.class, true)).setUnseenMemoryTicks(300));
-        this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, AbstractVillager.class, true, (p_199899_) -> {
-            if (!this.isBabyKiller) {
-                return !p_199899_.isBaby();
-            } else {
-                return true;
-            }
-        }));
+        this.targetSelector.addGoal(2,
+                (new NearestAttackableTargetGoal<>(this, Player.class, true)).setUnseenMemoryTicks(300));
+        this.targetSelector.addGoal(3,
+                new NearestAttackableTargetGoal<>(this, AbstractVillager.class, true, (p_199899_) -> {
+                    if (!this.isBabyKiller) {
+                        return !p_199899_.isBaby();
+                    } else {
+                        return true;
+                    }
+                }));
         this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, IronGolem.class, false));
     }
 
@@ -167,7 +171,7 @@ public class Ripper extends Raider {
         this.refreshDimensions();
         AttributeInstance attack = this.getAttribute(Attributes.ATTACK_DAMAGE);
         if (attack != null) {
-            if (this.getRipperSize() < -1){
+            if (this.getRipperSize() < -1) {
                 attack.setBaseValue(0.5F);
             } else {
                 attack.setBaseValue(AttributesConfig.RipperDamage.get() + this.getRipperSize());
@@ -175,7 +179,7 @@ public class Ripper extends Raider {
         }
         AttributeInstance health = this.getAttribute(Attributes.MAX_HEALTH);
         if (health != null) {
-            if (this.getRipperSize() < 0){
+            if (this.getRipperSize() < 0) {
                 health.setBaseValue(AttributesConfig.RipperHealth.get() + (this.getRipperSize() * 4));
             } else {
                 health.setBaseValue(AttributesConfig.RipperHealth.get() + (this.getRipperSize() * 2));
@@ -225,7 +229,7 @@ public class Ripper extends Raider {
 
     public void aiStep() {
         super.aiStep();
-        if (this.isAlive()){
+        if (this.isAlive()) {
             if (this.bitingTick > 0) {
                 --this.bitingTick;
             }
@@ -234,7 +238,7 @@ public class Ripper extends Raider {
             this.isShaking = true;
             this.shakeAnim = 0.0F;
             this.shakeAnimO = 0.0F;
-            this.level.broadcastEntityEvent(this, (byte)8);
+            this.level.broadcastEntityEvent(this, (byte) 8);
         }
     }
 
@@ -244,12 +248,13 @@ public class Ripper extends Raider {
             if (this.isInWaterRainOrBubble()) {
                 this.isWet = true;
                 if (this.isShaking && !this.level.isClientSide) {
-                    this.level.broadcastEntityEvent(this, (byte)56);
+                    this.level.broadcastEntityEvent(this, (byte) 56);
                     this.cancelShake();
                 }
             } else if ((this.isWet || this.isShaking) && this.isShaking) {
                 if (this.shakeAnim == 0.0F) {
-                    this.playSound(SoundEvents.WOLF_SHAKE, this.getSoundVolume(), (this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 1.0F);
+                    this.playSound(SoundEvents.WOLF_SHAKE, this.getSoundVolume(),
+                            (this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 1.0F);
                     this.gameEvent(GameEvent.ENTITY_SHAKE);
                 }
 
@@ -263,14 +268,15 @@ public class Ripper extends Raider {
                 }
 
                 if (this.shakeAnim > 0.4F) {
-                    float f = (float)this.getY();
-                    int i = (int)(Mth.sin((this.shakeAnim - 0.4F) * (float)Math.PI) * 7.0F);
+                    float f = (float) this.getY();
+                    int i = (int) (Mth.sin((this.shakeAnim - 0.4F) * (float) Math.PI) * 7.0F);
                     Vec3 vec3 = this.getDeltaMovement();
 
-                    for(int j = 0; j < i; ++j) {
+                    for (int j = 0; j < i; ++j) {
                         float f1 = (this.random.nextFloat() * 2.0F - 1.0F) * this.getBbWidth() * 0.5F;
                         float f2 = (this.random.nextFloat() * 2.0F - 1.0F) * this.getBbWidth() * 0.5F;
-                        this.level.addParticle(ParticleTypes.SPLASH, this.getX() + (double)f1, (double)(f + 0.8F), this.getZ() + (double)f2, vec3.x, vec3.y, vec3.z);
+                        this.level.addParticle(ParticleTypes.SPLASH, this.getX() + (double) f1, (double) (f + 0.8F),
+                                this.getZ() + (double) f2, vec3.x, vec3.y, vec3.z);
                     }
                 }
             }
@@ -296,7 +302,7 @@ public class Ripper extends Raider {
         return this.bitingTick;
     }
 
-    public int attackTotalTick(){
+    public int attackTotalTick() {
         return 10;
     }
 
@@ -304,11 +310,11 @@ public class Ripper extends Raider {
         boolean flag = super.doHurtTarget(entityIn);
         if (flag) {
             this.bitingTick = attackTotalTick();
-            this.level.broadcastEntityEvent(this, (byte)4);
+            this.level.broadcastEntityEvent(this, (byte) 4);
             this.playSound(SoundEvents.FOX_BITE, this.getSoundVolume(), this.getVoicePitch());
             float f = this.level.getCurrentDifficultyAt(this.blockPosition()).getEffectiveDifficulty();
             if (this.isOnFire() && this.random.nextFloat() < f * 0.3F) {
-                entityIn.setSecondsOnFire(2 * (int)f);
+                entityIn.igniteForSeconds(2 * (int) f);
             }
         }
 
@@ -331,7 +337,7 @@ public class Ripper extends Raider {
             f = 1.0F;
         }
 
-        return Mth.sin(f * (float)Math.PI) * Mth.sin(f * (float)Math.PI * 11.0F) * 0.15F * (float)Math.PI;
+        return Mth.sin(f * (float) Math.PI) * Mth.sin(f * (float) Math.PI * 11.0F) * 0.15F * (float) Math.PI;
     }
 
     public float getTailAngle() {
@@ -370,7 +376,7 @@ public class Ripper extends Raider {
         } else {
             LivingEntity livingentity = this.getTarget();
             if (livingentity == null && p_34288_.getEntity() instanceof LivingEntity) {
-                livingentity = (LivingEntity)p_34288_.getEntity();
+                livingentity = (LivingEntity) p_34288_.getEntity();
             }
 
             AttributeInstance spawnChance = this.getAttribute(Attributes.SPAWN_REINFORCEMENTS_CHANCE);
@@ -391,16 +397,25 @@ public class Ripper extends Raider {
                             BlockPos blockpos = new BlockPos(i1, j1, k1);
                             EntityType<?> entitytype = ripper.getType();
                             SpawnPlacements.Type spawnplacements$type = SpawnPlacements.getPlacementType(entitytype);
-                            if (NaturalSpawner.isSpawnPositionOk(spawnplacements$type, this.level, blockpos, entitytype) && SpawnPlacements.checkSpawnRules(entitytype, serverlevel, MobSpawnType.REINFORCEMENT, blockpos, this.level.random)) {
+                            if (NaturalSpawner.isSpawnPositionOk(spawnplacements$type, this.level, blockpos, entitytype)
+                                    && SpawnPlacements.checkSpawnRules(entitytype, serverlevel,
+                                            MobSpawnType.REINFORCEMENT, blockpos, this.level.random)) {
                                 ripper.setPos((double) i1, (double) j1, (double) k1);
-                                if (!this.level.hasNearbyAlivePlayer((double) i1, (double) j1, (double) k1, 7.0D) && this.level.isUnobstructed(ripper) && this.level.noCollision(ripper) && !this.level.containsAnyLiquid(ripper.getBoundingBox())) {
+                                if (!this.level.hasNearbyAlivePlayer((double) i1, (double) j1, (double) k1, 7.0D)
+                                        && this.level.isUnobstructed(ripper) && this.level.noCollision(ripper)
+                                        && !this.level.containsAnyLiquid(ripper.getBoundingBox())) {
                                     ripper.setTarget(livingentity);
-                                    ripper.finalizeSpawn(serverlevel, this.level.getCurrentDifficultyAt(ripper.blockPosition()), MobSpawnType.REINFORCEMENT, (SpawnGroupData) null, (CompoundTag) null);
+                                    ripper.finalizeSpawn(serverlevel,
+                                            this.level.getCurrentDifficultyAt(ripper.blockPosition()),
+                                            MobSpawnType.REINFORCEMENT, (SpawnGroupData) null, (CompoundTag) null);
                                     serverlevel.addFreshEntityWithPassengers(ripper);
-                                    spawnChance.addPermanentModifier(new AttributeModifier("Caller charge", (double) -0.05F, AttributeModifier.Operation.ADDITION));
-                                    AttributeInstance spawnChance2 = ripper.getAttribute(Attributes.SPAWN_REINFORCEMENTS_CHANCE);
+                                    spawnChance.addPermanentModifier(new AttributeModifier("Caller charge",
+                                            (double) -0.05F, AttributeModifier.Operation.ADDITION));
+                                    AttributeInstance spawnChance2 = ripper
+                                            .getAttribute(Attributes.SPAWN_REINFORCEMENTS_CHANCE);
                                     if (spawnChance2 != null) {
-                                        spawnChance2.addPermanentModifier(new AttributeModifier("Callee charge", (double) -0.05F, AttributeModifier.Operation.ADDITION));
+                                        spawnChance2.addPermanentModifier(new AttributeModifier("Callee charge",
+                                                (double) -0.05F, AttributeModifier.Operation.ADDITION));
                                     }
                                     break;
                                 }
@@ -415,7 +430,8 @@ public class Ripper extends Raider {
     }
 
     @Nullable
-    public SpawnGroupData finalizeSpawn(ServerLevelAccessor p_34297_, DifficultyInstance p_34298_, MobSpawnType p_34299_, @Nullable SpawnGroupData p_34300_, @Nullable CompoundTag p_34301_) {
+    public SpawnGroupData finalizeSpawn(ServerLevelAccessor p_34297_, DifficultyInstance p_34298_,
+            MobSpawnType p_34299_, @Nullable SpawnGroupData p_34300_, @Nullable CompoundTag p_34301_) {
         p_34300_ = super.finalizeSpawn(p_34297_, p_34298_, p_34299_, p_34300_, p_34301_);
         float f = p_34298_.getSpecialMultiplier();
         this.handleAttributes(f);
@@ -433,16 +449,19 @@ public class Ripper extends Raider {
         AttributeInstance speed = this.getAttribute(Attributes.MOVEMENT_SPEED);
         AttributeInstance knockResist = this.getAttribute(Attributes.KNOCKBACK_RESISTANCE);
         AttributeInstance spawnChance = this.getAttribute(Attributes.SPAWN_REINFORCEMENTS_CHANCE);
-        if (speed != null){
-            speed.addPermanentModifier(new AttributeModifier("Random spawn speed bonus", this.random.nextDouble() * 0.05D, AttributeModifier.Operation.ADDITION));
+        if (speed != null) {
+            speed.addPermanentModifier(new AttributeModifier("Random spawn speed bonus",
+                    this.random.nextDouble() * 0.05D, AttributeModifier.Operation.ADDITION));
         }
-        if (knockResist != null){
-            knockResist.addPermanentModifier(new AttributeModifier("Random spawn bonus", this.random.nextDouble() * 0.05D, AttributeModifier.Operation.ADDITION));
+        if (knockResist != null) {
+            knockResist.addPermanentModifier(new AttributeModifier("Random spawn bonus",
+                    this.random.nextDouble() * 0.05D, AttributeModifier.Operation.ADDITION));
         }
 
         if (this.random.nextFloat() < p_34340_ * 0.05F) {
             if (spawnChance != null) {
-                spawnChance.addPermanentModifier(new AttributeModifier("Leader Ripper bonus", this.random.nextDouble() * 0.25D + 0.5D, AttributeModifier.Operation.ADDITION));
+                spawnChance.addPermanentModifier(new AttributeModifier("Leader Ripper bonus",
+                        this.random.nextDouble() * 0.25D + 0.5D, AttributeModifier.Operation.ADDITION));
             }
             this.setRipperSize(2, true);
         } else {

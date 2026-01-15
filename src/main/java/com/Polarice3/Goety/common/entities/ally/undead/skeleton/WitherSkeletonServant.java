@@ -31,16 +31,18 @@ public class WitherSkeletonServant extends AbstractSkeletonServant {
 
    public static AttributeSupplier.Builder setCustomAttributes() {
       return Mob.createMobAttributes()
-              .add(Attributes.MAX_HEALTH, AttributesConfig.WitherSkeletonServantHealth.get())
-              .add(Attributes.ARMOR, AttributesConfig.WitherSkeletonServantArmor.get())
-              .add(Attributes.MOVEMENT_SPEED, 0.25F)
-              .add(Attributes.ATTACK_DAMAGE, AttributesConfig.WitherSkeletonServantDamage.get());
+            .add(Attributes.MAX_HEALTH, AttributesConfig.WitherSkeletonServantHealth.get())
+            .add(Attributes.ARMOR, AttributesConfig.WitherSkeletonServantArmor.get())
+            .add(Attributes.MOVEMENT_SPEED, 0.25F)
+            .add(Attributes.ATTACK_DAMAGE, AttributesConfig.WitherSkeletonServantDamage.get());
    }
 
-   public void setConfigurableAttributes(){
-      MobUtil.setBaseAttributes(this.getAttribute(Attributes.MAX_HEALTH), AttributesConfig.WitherSkeletonServantHealth.get());
+   public void setConfigurableAttributes() {
+      MobUtil.setBaseAttributes(this.getAttribute(Attributes.MAX_HEALTH),
+            AttributesConfig.WitherSkeletonServantHealth.get());
       MobUtil.setBaseAttributes(this.getAttribute(Attributes.ARMOR), AttributesConfig.WitherSkeletonServantArmor.get());
-      MobUtil.setBaseAttributes(this.getAttribute(Attributes.ATTACK_DAMAGE), AttributesConfig.WitherSkeletonServantDamage.get());
+      MobUtil.setBaseAttributes(this.getAttribute(Attributes.ATTACK_DAMAGE),
+            AttributesConfig.WitherSkeletonServantDamage.get());
    }
 
    @Override
@@ -65,7 +67,7 @@ public class WitherSkeletonServant extends AbstractSkeletonServant {
    }
 
    protected void populateDefaultEquipmentSlots(RandomSource p_219154_, DifficultyInstance p_219155_) {
-      if (this.canSpawnArmor()){
+      if (this.canSpawnArmor()) {
          super.populateDefaultEquipmentSlots(p_219154_, p_219155_);
       }
       this.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.STONE_SWORD));
@@ -84,7 +86,7 @@ public class WitherSkeletonServant extends AbstractSkeletonServant {
          return false;
       } else {
          if (p_34169_ instanceof LivingEntity) {
-            ((LivingEntity)p_34169_).addEffect(new MobEffectInstance(MobEffects.WITHER, 200), this);
+            ((LivingEntity) p_34169_).addEffect(new MobEffectInstance(MobEffects.WITHER, 200), this);
          }
 
          return true;
@@ -93,7 +95,7 @@ public class WitherSkeletonServant extends AbstractSkeletonServant {
 
    protected AbstractArrow getMobArrow(ItemStack p_34189_, float p_34190_) {
       AbstractArrow abstractarrow = super.getMobArrow(p_34189_, p_34190_);
-      abstractarrow.setSecondsOnFire(100);
+      abstractarrow.igniteForSeconds(100);
       return abstractarrow;
    }
 

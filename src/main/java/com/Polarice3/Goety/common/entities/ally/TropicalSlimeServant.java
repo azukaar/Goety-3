@@ -11,6 +11,9 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
+
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
@@ -33,8 +36,9 @@ import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.common.NeoForgeMod;
 import java.util.EnumSet;
 
-public class TropicalSlimeServant extends SlimeServant{
-    private static final EntityDataAccessor<Integer> DATA_TYPE_ID = SynchedEntityData.defineId(TropicalSlimeServant.class, EntityDataSerializers.INT);
+public class TropicalSlimeServant extends SlimeServant {
+    private static final EntityDataAccessor<Integer> DATA_TYPE_ID = SynchedEntityData
+            .defineId(TropicalSlimeServant.class, EntityDataSerializers.INT);
 
     public TropicalSlimeServant(EntityType<? extends Owned> type, Level worldIn) {
         super(type, worldIn);
@@ -46,20 +50,20 @@ public class TropicalSlimeServant extends SlimeServant{
         return TropicalSlimeTextures.TEXTURES.getOrDefault(this.getAnimation(), TropicalSlimeTextures.TEXTURES.get(0));
     }
 
-    public void slimeGoal(){
+    public void slimeGoal() {
         this.goalSelector.addGoal(2, new SlimeAttackGoal(this));
         this.goalSelector.addGoal(3, new SlimeRandomDirectionGoal(this));
         this.goalSelector.addGoal(5, new SlimeKeepOnJumpingGoal(this));
     }
 
-    public void followGoal(){
+    public void followGoal() {
         this.goalSelector.addGoal(8, new SlimeFollowGoal(this, 4.0F, 10.0F));
     }
 
     public static AttributeSupplier.Builder setCustomAttributes() {
         return Mob.createMobAttributes()
                 .add(Attributes.ATTACK_DAMAGE)
-                .add(NeoForgeMod.SWIM_SPEED.get(), 0.1D);
+                .add(NeoForgeMod.SWIM_SPEED, 0.1D);
     }
 
     @Override
@@ -88,12 +92,20 @@ public class TropicalSlimeServant extends SlimeServant{
 
     protected void dropCustomDeathLoot(DamageSource p_33574_, int p_33575_, boolean p_33576_) {
         super.dropCustomDeathLoot(p_33574_, p_33575_, p_33576_);
-        if (this.level.getServer() != null) {
+        if (this.level().getServer() != null) {
             if (this.shouldDropLoot()) {
-                LootTable loottable = this.level.getServer().getLootData().getLootTable(ModLootTables.TROPICAL_SLIME);
-                LootParams.Builder lootparams$builder = (new LootParams.Builder((ServerLevel) this.level)).withParameter(LootContextParams.THIS_ENTITY, this).withParameter(LootContextParams.ORIGIN, this.position()).withParameter(LootContextParams.DAMAGE_SOURCE, p_33574_).withOptionalParameter(LootContextParams.KILLER_ENTITY, p_33574_.getEntity()).withOptionalParameter(LootContextParams.DIRECT_KILLER_ENTITY, p_33574_.getDirectEntity());
+                LootTable loottable = this.level().getServer().reloadableRegistries()
+                        .getLootTable(ResourceKey.create(Registries.LOOT_TABLE, ModLootTables.TROPICAL_SLIME));
+                LootParams.Builder lootparams$builder = (new LootParams.Builder((ServerLevel) this.level()))
+                        .withParameter(LootContextParams.THIS_ENTITY, this)
+                        .withParameter(LootContextParams.ORIGIN, this.position())
+                        .withParameter(LootContextParams.DAMAGE_SOURCE, p_33574_)
+                        .withOptionalParameter(LootContextParams.KILLER_ENTITY, p_33574_.getEntity())
+                        .withOptionalParameter(LootContextParams.DIRECT_KILLER_ENTITY, p_33574_.getDirectEntity());
                 if (this.lastHurtByPlayerTime > 0 && this.lastHurtByPlayer != null) {
-                    lootparams$builder = lootparams$builder.withParameter(LootContextParams.LAST_DAMAGE_PLAYER, this.lastHurtByPlayer).withLuck(this.lastHurtByPlayer.getLuck());
+                    lootparams$builder = lootparams$builder
+                            .withParameter(LootContextParams.LAST_DAMAGE_PLAYER, this.lastHurtByPlayer)
+                            .withLuck(this.lastHurtByPlayer.getLuck());
                 }
 
                 LootParams lootparams = lootparams$builder.create(LootContextParamSets.ENTITY);
@@ -164,8 +176,8 @@ public class TropicalSlimeServant extends SlimeServant{
     @Override
     public void tick() {
         super.tick();
-        if (this.level.isClientSide){
-            if (this.getAnimation() < TropicalSlimeTextures.TEXTURES.size()){
+        if (this.level().isClientSide) {
+            if (this.getAnimation() < TropicalSlimeTextures.TEXTURES.size()) {
                 this.setAnimation(this.getAnimation() + 1);
             } else {
                 this.setAnimation(0);
@@ -189,7 +201,7 @@ public class TropicalSlimeServant extends SlimeServant{
 
     @Override
     public double getCommandSpeed() {
-        if (this.isInWater()){
+        if (this.isInWater()) {
             return 0.5D;
         }
         return 1.0D;
@@ -202,8 +214,10 @@ public class TropicalSlimeServant extends SlimeServant{
     @Override
     public void die(DamageSource pCause) {
         float size = 1.5F * Math.max(1, this.getSize());
-        for (LivingEntity livingEntity : this.level.getEntitiesOfClass(LivingEntity.class, this.getBoundingBox().inflate(size))){
-            int air = Math.min(livingEntity.getAirSupply() + (3 * Math.max(1, this.getSize())), livingEntity.getMaxAirSupply());
+        for (LivingEntity livingEntity : this.level().getEntitiesOfClass(LivingEntity.class,
+                this.getBoundingBox().inflate(size))) {
+            int air = Math.min(livingEntity.getAirSupply() + (3 * Math.max(1, this.getSize())),
+                    livingEntity.getMaxAirSupply());
             livingEntity.setAirSupply(air);
         }
         super.die(pCause);
@@ -225,7 +239,8 @@ public class TropicalSlimeServant extends SlimeServant{
 
     }
 
-    //Movements based on @baguchi's codes: https://github.com/baguchi/EarthMobs/blob/1.20.x/src/main/java/baguchan/earthmobsmod/entity/TropicalSlime.java
+    // Movements based on @baguchi's codes:
+    // https://github.com/baguchi/EarthMobs/blob/1.20.x/src/main/java/baguchan/earthmobsmod/entity/TropicalSlime.java
     static class TropicalSlimeMoveControl extends MoveControl {
         private float yRot;
         private int jumpDelay;
@@ -277,7 +292,8 @@ public class TropicalSlimeServant extends SlimeServant{
                         }
                     }
                 } else if (this.mob.onGround()) {
-                    this.mob.setSpeed((float) (this.speedModifier * this.mob.getAttributeValue(Attributes.MOVEMENT_SPEED)));
+                    this.mob.setSpeed(
+                            (float) (this.speedModifier * this.mob.getAttributeValue(Attributes.MOVEMENT_SPEED)));
 
                     if (this.jumpDelay-- <= 0) {
                         this.jumpDelay = this.slime.getJumpDelay();
@@ -287,7 +303,8 @@ public class TropicalSlimeServant extends SlimeServant{
 
                         this.slime.getJumpControl().jump();
                         if (this.slime.doPlayJumpSound()) {
-                            this.slime.playSound(this.slime.getJumpSound(), this.slime.getSoundVolume(), this.slime.getSoundPitch());
+                            this.slime.playSound(this.slime.getJumpSound(), this.slime.getSoundVolume(),
+                                    this.slime.getSoundPitch());
                         }
                     } else {
                         this.slime.xxa = 0.0F;
@@ -295,7 +312,8 @@ public class TropicalSlimeServant extends SlimeServant{
                         this.mob.setSpeed(0.0F);
                     }
                 } else {
-                    this.mob.setSpeed((float) (this.speedModifier * this.mob.getAttributeValue(Attributes.MOVEMENT_SPEED)));
+                    this.mob.setSpeed(
+                            (float) (this.speedModifier * this.mob.getAttributeValue(Attributes.MOVEMENT_SPEED)));
                 }
             }
         }
@@ -318,11 +336,11 @@ public class TropicalSlimeServant extends SlimeServant{
             LivingEntity livingentity = this.slime.getTrueOwner();
             if (livingentity == null) {
                 return false;
-            } else if (!(this.slime.getMoveControl() instanceof TropicalSlimeMoveControl)){
+            } else if (!(this.slime.getMoveControl() instanceof TropicalSlimeMoveControl)) {
                 return false;
             } else if (livingentity.isSpectator()) {
                 return false;
-            } else if (this.slime.distanceToSqr(livingentity) < (double)(Mth.square(this.startDistance))) {
+            } else if (this.slime.distanceToSqr(livingentity) < (double) (Mth.square(this.startDistance))) {
                 return false;
             } else if (!this.slime.isFollowing() || this.slime.isCommanded()) {
                 return false;
@@ -341,10 +359,10 @@ public class TropicalSlimeServant extends SlimeServant{
         public boolean canContinueToUse() {
             if (this.slime.getNavigation().isDone()) {
                 return false;
-            } else if (this.slime.getTarget() != null){
+            } else if (this.slime.getTarget() != null) {
                 return false;
             } else {
-                return !(this.slime.distanceToSqr(this.owner) <= (double)(Mth.square(this.stopDistance)));
+                return !(this.slime.distanceToSqr(this.owner) <= (double) (Mth.square(this.stopDistance)));
             }
         }
 
@@ -376,7 +394,7 @@ public class TropicalSlimeServant extends SlimeServant{
             return !this.slime.isPassenger()
                     && !this.slime.isStaying()
                     && (this.slime.getTrueOwner() == null
-                    || this.slime.isWandering() || this.slime.getTarget() != null);
+                            || this.slime.isWandering() || this.slime.getTarget() != null);
         }
 
         public void tick() {
@@ -399,7 +417,8 @@ public class TropicalSlimeServant extends SlimeServant{
         public boolean canUse() {
             return this.slime.getTarget() == null
                     && (this.slime.getTrueOwner() == null || this.slime.isWandering())
-                    && (this.slime.onGround() || this.slime.isInWater() || this.slime.isInLava() || this.slime.hasEffect(MobEffects.LEVITATION))
+                    && (this.slime.onGround() || this.slime.isInWater() || this.slime.isInLava()
+                            || this.slime.hasEffect(MobEffects.LEVITATION))
                     && this.slime.getMoveControl() instanceof TropicalSlimeMoveControl;
         }
 
@@ -429,7 +448,8 @@ public class TropicalSlimeServant extends SlimeServant{
             if (livingentity == null) {
                 return false;
             } else {
-                return this.slime.canAttack(livingentity) && this.slime.getMoveControl() instanceof TropicalSlimeMoveControl;
+                return this.slime.canAttack(livingentity)
+                        && this.slime.getMoveControl() instanceof TropicalSlimeMoveControl;
             }
         }
 

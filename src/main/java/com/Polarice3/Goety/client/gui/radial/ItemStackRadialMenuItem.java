@@ -1,7 +1,7 @@
 package com.Polarice3.Goety.client.gui.radial;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
+import org.joml.Matrix4fStack;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 
@@ -27,14 +27,14 @@ public class ItemStackRadialMenuItem extends TextRadialMenuItem {
     @Override
     public void draw(DrawingContext context) {
         if (stack.getCount() > 0) {
-            com.mojang.math.Matrix4fStack viewModelPose = RenderSystem.getModelViewStack();
-            viewModelPose.pushPose();
-            viewModelPose.mulPoseMatrix(context.guiGraphics().pose().last().pose());
+            Matrix4fStack viewModelPose = RenderSystem.getModelViewStack();
+            viewModelPose.pushMatrix();
+            viewModelPose.mul(context.guiGraphics().pose().last().pose());
             viewModelPose.translate(-8, -8, context.z());
             RenderSystem.applyModelViewMatrix();
             context.guiGraphics().renderFakeItem(stack, (int) context.x(), (int) context.y());
             context.guiGraphics().renderItemDecorations(context.fontRenderer(), stack, (int) context.x(), (int) context.y());
-            viewModelPose.popPose();
+            viewModelPose.popMatrix();
             RenderSystem.applyModelViewMatrix();
         } else {
             super.draw(context);

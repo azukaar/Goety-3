@@ -31,9 +31,9 @@ public class BrewingRecipe implements Recipe<Container> {
     public final int duration;
 
     public BrewingRecipe(ResourceLocation location,
-                         Ingredient ingredient,
-                         @Nullable TagKey<EntityType<?>> entityTypeTag,
-                         @Nullable EntityType<?> entityType, MobEffect mobEffect, int soulCost, int capacityExtra, int duration) {
+            Ingredient ingredient,
+            @Nullable TagKey<EntityType<?>> entityTypeTag,
+            @Nullable EntityType<?> entityType, MobEffect mobEffect, int soulCost, int capacityExtra, int duration) {
         this.id = location;
         this.input = ingredient;
         this.entityTypeTag = entityTypeTag;
@@ -50,8 +50,8 @@ public class BrewingRecipe implements Recipe<Container> {
     }
 
     @Override
-    public ItemStack assemble(Container p_44001_, RegistryAccess p_267052_) {
-        return ItemStack.EMPTY;
+    public ItemStack assemble(Container p_44001_, net.minecraft.core.HolderLookup.Provider p_267052_) {
+        return this.getResultItem(p_267052_);
     }
 
     @Override
@@ -59,7 +59,7 @@ public class BrewingRecipe implements Recipe<Container> {
         return false;
     }
 
-    public Ingredient getInput(){
+    public Ingredient getInput() {
         return this.input;
     }
 
@@ -69,23 +69,23 @@ public class BrewingRecipe implements Recipe<Container> {
     }
 
     @Nullable
-    public EntityType<?> getEntityType(){
+    public EntityType<?> getEntityType() {
         return this.entityType;
     }
 
-    public int getSoulCost(){
+    public int getSoulCost() {
         return this.soulCost;
     }
 
-    public int getCapacityExtra(){
+    public int getCapacityExtra() {
         return this.capacityExtra;
     }
 
-    public int getDuration(){
+    public int getDuration() {
         return this.duration;
     }
 
-    public MobEffect getOutput(){
+    public MobEffect getOutput() {
         return this.output;
     }
 
@@ -119,10 +119,12 @@ public class BrewingRecipe implements Recipe<Container> {
                 JsonObject data2 = json.getAsJsonObject("entity");
                 if (data2 != null) {
                     if (data2.has("entity_type")) {
-                        ResourceLocation resourceLocation = new ResourceLocation(data2.getAsJsonPrimitive("entity_type").getAsString());
+                        ResourceLocation resourceLocation = new ResourceLocation(
+                                data2.getAsJsonPrimitive("entity_type").getAsString());
                         entityType = NeoForgeRegistries.ENTITY_TYPES.getValue(resourceLocation);
                     } else if (data2.has("tag")) {
-                        ResourceLocation resourceLocation = new ResourceLocation(data2.getAsJsonPrimitive("tag").getAsString());
+                        ResourceLocation resourceLocation = new ResourceLocation(
+                                data2.getAsJsonPrimitive("tag").getAsString());
                         entityTag = TagKey.create(NeoForgeRegistries.ENTITY_TYPES.getRegistryKey(), resourceLocation);
                     }
                 }
@@ -131,7 +133,8 @@ public class BrewingRecipe implements Recipe<Container> {
                     ingredient,
                     entityTag,
                     entityType,
-                    NeoForgeRegistries.MOB_EFFECTS.getValue(new ResourceLocation(GsonHelper.getAsString(json, "effect"))),
+                    NeoForgeRegistries.MOB_EFFECTS
+                            .getValue(new ResourceLocation(GsonHelper.getAsString(json, "effect"))),
                     GsonHelper.getAsInt(json, "soulCost"),
                     GsonHelper.getAsInt(json, "capacityExtra"),
                     GsonHelper.getAsInt(json, "duration"));
@@ -148,7 +151,7 @@ public class BrewingRecipe implements Recipe<Container> {
                 entityTag = TagKey.create(Registries.ENTITY_TYPE, tagRL);
             }
 
-            if (buf.readBoolean()){
+            if (buf.readBoolean()) {
                 entityType = buf.readRegistryId();
             }
 

@@ -33,16 +33,21 @@ public class BlazingHornItem extends Item {
 
     public ItemStack finishUsingItem(ItemStack stack, Level worldIn, LivingEntity entityLiving) {
         super.finishUsingItem(stack, worldIn, entityLiving);
-        if (worldIn instanceof ServerLevel serverWorld){
-            boolean flag = serverWorld.structureManager().getStructureWithPieceAt(entityLiving.blockPosition(), ModTags.Structures.WITHER_NECROMANCER_SPAWNS).isValid();
-            if (flag){
+        if (worldIn instanceof ServerLevel serverWorld) {
+            boolean flag = serverWorld.structureManager()
+                    .getStructureWithPieceAt(entityLiving.blockPosition(), ModTags.Structures.WITHER_NECROMANCER_SPAWNS)
+                    .isValid();
+            if (flag) {
                 entityLiving.playSound(SoundEvents.GOAT_HORN_SOUND_VARIANTS.get(6).get(), 16.0F, 1.0F);
-                serverWorld.playSound(null, entityLiving.blockPosition(), SoundEvents.GOAT_HORN_SOUND_VARIANTS.get(6).get(), SoundSource.NEUTRAL, 16.0F, 1.0F);
+                serverWorld.playSound(null, entityLiving.blockPosition(),
+                        SoundEvents.GOAT_HORN_SOUND_VARIANTS.get(6).get(), SoundSource.NEUTRAL, 16.0F, 1.0F);
                 WitherNecromancer necromancer = ModEntityType.WITHER_NECROMANCER.get().create(worldIn);
                 if (necromancer != null) {
                     BlockPos blockPos = entityLiving.blockPosition().relative(entityLiving.getDirection());
                     necromancer.setPos(blockPos.getX(), blockPos.getY(), blockPos.getZ());
-                    necromancer.finalizeSpawn(serverWorld, serverWorld.getCurrentDifficultyAt(entityLiving.blockPosition()), MobSpawnType.MOB_SUMMONED, null, null);
+                    necromancer.finalizeSpawn(serverWorld,
+                            serverWorld.getCurrentDifficultyAt(entityLiving.blockPosition()), MobSpawnType.MOB_SUMMONED,
+                            null, null);
                     SummonCircleBoss summonCircle = new SummonCircleBoss(worldIn, blockPos, necromancer);
                     serverWorld.addFreshEntity(summonCircle);
                     if (!(entityLiving instanceof Player && ((Player) entityLiving).isCreative())) {
@@ -54,13 +59,14 @@ public class BlazingHornItem extends Item {
                     player.displayClientMessage(Component.translatable("info.goety.items.blaze_horn.failure"), true);
                 }
                 entityLiving.playSound(SoundEvents.FIRE_EXTINGUISH, 1.0F, 1.0F);
-                serverWorld.playSound(null, entityLiving.blockPosition(), SoundEvents.FIRE_EXTINGUISH, SoundSource.NEUTRAL, 1.0F, 1.0F);
+                serverWorld.playSound(null, entityLiving.blockPosition(), SoundEvents.FIRE_EXTINGUISH,
+                        SoundSource.NEUTRAL, 1.0F, 1.0F);
             }
         }
         return stack;
     }
 
-    public int getUseDuration(ItemStack stack) {
+    public int getUseDuration(ItemStack stack, LivingEntity livingEntity) {
         return 25;
     }
 
@@ -75,7 +81,7 @@ public class BlazingHornItem extends Item {
     }
 
     public void onUseTick(Level worldIn, LivingEntity livingEntityIn, ItemStack stack, int count) {
-        if (!worldIn.isClientSide){
+        if (!worldIn.isClientSide) {
             ServerLevel serverWorld = (ServerLevel) worldIn;
             ServerParticleUtil.addParticlesAroundSelf(serverWorld, ParticleTypes.FLAME, livingEntityIn);
         }

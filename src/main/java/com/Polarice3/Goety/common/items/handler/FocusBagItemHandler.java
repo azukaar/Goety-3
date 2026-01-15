@@ -11,6 +11,7 @@ import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.ItemStackHandler;
 
 import javax.annotation.Nonnull;
+import net.minecraft.core.HolderLookup;
 
 public class FocusBagItemHandler extends ItemStackHandler {
     private final ItemStack itemStack;
@@ -45,27 +46,26 @@ public class FocusBagItemHandler extends ItemStackHandler {
         return this.size;
     }
 
-    public NonNullList<ItemStack> getContents(){
+    public NonNullList<ItemStack> getContents() {
         return stacks;
     }
 
     @Override
-    public CompoundTag serializeNBT() {
-        CompoundTag nbt = super.serializeNBT();
+    public CompoundTag serializeNBT(HolderLookup.Provider provider) {
+        CompoundTag nbt = super.serializeNBT(provider);
         nbt.putInt("slot", slot);
         return nbt;
     }
 
     @Override
-    public void deserializeNBT(CompoundTag nbt) {
-        super.deserializeNBT(nbt);
+    public void deserializeNBT(HolderLookup.Provider provider, CompoundTag nbt) {
+        super.deserializeNBT(provider, nbt);
         ListTag tagList = nbt.getList("Items", Tag.TAG_COMPOUND);
-        for (int i = 0; i < tagList.size(); i++)
-        {
+        for (int i = 0; i < tagList.size(); i++) {
             CompoundTag itemTags = tagList.getCompound(i);
             if (nbt.contains("slot")) {
                 slot = nbt.getInt("slot");
-                stacks.set(slot, ItemStack.of(itemTags));
+                stacks.set(slot, ItemStack.parse(provider, itemTags).orElse(ItemStack.EMPTY));
             }
         }
         onLoad();
@@ -79,8 +79,9 @@ public class FocusBagItemHandler extends ItemStackHandler {
     }
 
     public static FocusBagItemHandler get(ItemStack stack) {
-        IItemHandler handler = stack.getCapability(Capabilities.ITEM_HANDLER)
-                .orElseThrow(() -> new IllegalArgumentException("ItemStack is missing item capability"));
+        IItemHandler handler = stack.getCapability(Capabilities.ItemHandler.ITEM);
+        if (handler == null)
+            throw new IllegalArgumentException("ItemStack is missing item capability");
         return (FocusBagItemHandler) handler;
     }
 }

@@ -26,13 +26,13 @@ public class ChorusSproutBlock extends BushBlock implements BonemealableBlock, I
 
    public ChorusSproutBlock() {
       super(BlockBehaviour.Properties.of()
-              .mapColor(MapColor.COLOR_PURPLE)
-              .replaceable()
-              .noCollission()
-              .instabreak()
-              .sound(SoundType.STEM)
-              .offsetType(BlockBehaviour.OffsetType.XYZ)
-              .pushReaction(PushReaction.DESTROY));
+            .mapColor(MapColor.COLOR_PURPLE)
+            .replaceable()
+            .noCollission()
+            .instabreak()
+            .sound(SoundType.STEM)
+            .offsetType(BlockBehaviour.OffsetType.XYZ)
+            .pushReaction(PushReaction.DESTROY));
    }
 
    public VoxelShape getShape(BlockState p_52419_, BlockGetter p_52420_, BlockPos p_52421_, CollisionContext p_52422_) {
@@ -43,11 +43,17 @@ public class ChorusSproutBlock extends BushBlock implements BonemealableBlock, I
       return state.is(ModTags.Blocks.CHORUS_GROW) || state.isSolidRender(world, pos);
    }
 
-   public boolean canSustainPlant(BlockState state, BlockGetter world, BlockPos pos, Direction facing, IPlantable plantable) {
+   public boolean canSustainPlant(BlockState state, BlockGetter world, BlockPos pos, Direction facing,
+         IPlantable plantable) {
       return state.is(ModTags.Blocks.CHORUS_GROW) || state.isSolidRender(world, pos);
    }
 
-   public boolean isValidBonemealTarget(LevelReader p_255692_, BlockPos p_57326_, BlockState p_57327_, boolean p_57328_) {
+   public boolean isValidBonemealTarget(LevelReader p_255692_, BlockPos p_57326_, BlockState p_57327_,
+         boolean p_57328_) {
+      return true;
+   }
+
+   public boolean isValidBonemealTarget(LevelReader level, BlockPos pos, BlockState state) {
       return true;
    }
 
@@ -55,7 +61,8 @@ public class ChorusSproutBlock extends BushBlock implements BonemealableBlock, I
       return true;
    }
 
-   public void performBonemeal(ServerLevel p_222578_, RandomSource p_222579_, BlockPos p_222580_, BlockState p_222581_) {
+   public void performBonemeal(ServerLevel p_222578_, RandomSource p_222579_, BlockPos p_222580_,
+         BlockState p_222581_) {
       Block block = ModBlocks.CHORUS_STALK.get();
       if (block.defaultBlockState().canSurvive(p_222578_, p_222580_)) {
          p_222578_.setBlock(p_222580_, block.defaultBlockState(), 2);

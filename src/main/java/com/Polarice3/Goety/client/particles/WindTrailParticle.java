@@ -20,7 +20,8 @@ import org.joml.Matrix4f;
 import java.util.Arrays;
 
 /**
- * Based on AbstractTrailParticle code from L_Ender's Cataclysm:<a href="https://github.com/lender544/new1.20.1/blob/master/src/main/java/com/github/L_Ender/cataclysm/client/particle/AbstractTrailParticle.java">...</a>;
+ * Based on AbstractTrailParticle code from L_Ender's Cataclysm:<a href=
+ * "https://github.com/lender544/new1.20.1/blob/master/src/main/java/com/github/L_Ender/cataclysm/client/particle/AbstractTrailParticle.java">...</a>;
  */
 public abstract class WindTrailParticle extends Particle {
     private static final ResourceLocation TEXTURE = Goety.location("textures/particle/trail.png");
@@ -28,7 +29,8 @@ public abstract class WindTrailParticle extends Particle {
     public int trailPointer = -1;
     public float trailA = 1.0F;
 
-    public WindTrailParticle(ClientLevel world, double x, double y, double z, double xd, double yd, double zd, float red, float green, float blue) {
+    public WindTrailParticle(ClientLevel world, double x, double y, double z, double xd, double yd, double zd,
+            float red, float green, float blue) {
         super(world, x, y, z);
         this.xd = xd;
         this.yd = yd;
@@ -50,7 +52,7 @@ public abstract class WindTrailParticle extends Particle {
             this.remove();
         } else {
             this.move(this.xd, this.yd, this.zd);
-            this.yd -= (double)this.gravity;
+            this.yd -= (double) this.gravity;
         }
     }
 
@@ -84,18 +86,40 @@ public abstract class WindTrailParticle extends Particle {
             Vec3 topAngleVec = (new Vec3(0.0, this.getTrailHeight() / 2.0D, 0.0)).zRot(zRot);
             Vec3 bottomAngleVec = (new Vec3(0.0, this.getTrailHeight() / -2.0D, 0.0)).zRot(zRot);
 
-            while (samples < this.sampleSize()){
+            while (samples < this.sampleSize()) {
                 Vec3 sample = this.getTrailPosition(samples * this.sampleStep(), partialTick);
                 Vec3 draw1 = drawFrom;
-                float u1 = (float)samples / (float)this.sampleSize();
-                float u2 = u1 + 1.0F / (float)this.sampleSize();
+                float u1 = (float) samples / (float) this.sampleSize();
+                float u2 = u1 + 1.0F / (float) this.sampleSize();
                 PoseStack.Pose last = poseStack.last();
                 Matrix4f matrix4f = last.pose();
                 Matrix3f matrix3f = last.normal();
-                vertexConsumer.vertex(matrix4f, (float)draw1.x + (float)bottomAngleVec.x, (float)draw1.y + (float)bottomAngleVec.y, (float)draw1.z + (float)bottomAngleVec.z).color(this.rCol, this.gCol, this.bCol, this.trailA).uv(u1, 1.0F).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(this.getLightColor(partialTick)).normal(matrix3f, 0.0F, 1.0F, 0.0F).endVertex();
-                vertexConsumer.vertex(matrix4f, (float)sample.x + (float)bottomAngleVec.x, (float)sample.y + (float)bottomAngleVec.y, (float)sample.z + (float)bottomAngleVec.z).color(this.rCol, this.gCol, this.bCol, this.trailA).uv(u2, 1.0F).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(this.getLightColor(partialTick)).normal(matrix3f, 0.0F, 1.0F, 0.0F).endVertex();
-                vertexConsumer.vertex(matrix4f, (float)sample.x + (float)topAngleVec.x, (float)sample.y + (float)topAngleVec.y, (float)sample.z + (float)topAngleVec.z).color(this.rCol, this.gCol, this.bCol, this.trailA).uv(u2, 0.0F).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(this.getLightColor(partialTick)).normal(matrix3f, 0.0F, 1.0F, 0.0F).endVertex();
-                vertexConsumer.vertex(matrix4f, (float)draw1.x + (float)topAngleVec.x, (float)draw1.y + (float)topAngleVec.y, (float)draw1.z + (float)topAngleVec.z).color(this.rCol, this.gCol, this.bCol, this.trailA).uv(u1, 0.0F).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(this.getLightColor(partialTick)).normal(matrix3f, 0.0F, 1.0F, 0.0F).endVertex();
+                vertexConsumer
+                        .addVertex(matrix4f, (float) draw1.x + (float) bottomAngleVec.x,
+                                (float) draw1.y + (float) bottomAngleVec.y, (float) draw1.z + (float) bottomAngleVec.z)
+                        .setColor(this.rCol, this.gCol, this.bCol, this.trailA).setUv(u1, 1.0F)
+                        .setOverlay(OverlayTexture.NO_OVERLAY).setLight(this.getLightColor(partialTick));
+                org.joml.Vector3f normal1 = new org.joml.Vector3f(0.0F, 1.0F, 0.0F).mul(matrix3f);
+                vertexConsumer.setNormal(normal1.x, normal1.y, normal1.z);
+                vertexConsumer
+                        .addVertex(matrix4f, (float) sample.x + (float) bottomAngleVec.x,
+                                (float) sample.y + (float) bottomAngleVec.y,
+                                (float) sample.z + (float) bottomAngleVec.z)
+                        .setColor(this.rCol, this.gCol, this.bCol, this.trailA).setUv(u2, 1.0F)
+                        .setOverlay(OverlayTexture.NO_OVERLAY).setLight(this.getLightColor(partialTick))
+                        .setNormal(normal1.x, normal1.y, normal1.z);
+                vertexConsumer
+                        .addVertex(matrix4f, (float) sample.x + (float) topAngleVec.x,
+                                (float) sample.y + (float) topAngleVec.y, (float) sample.z + (float) topAngleVec.z)
+                        .setColor(this.rCol, this.gCol, this.bCol, this.trailA).setUv(u2, 0.0F)
+                        .setOverlay(OverlayTexture.NO_OVERLAY).setLight(this.getLightColor(partialTick))
+                        .setNormal(normal1.x, normal1.y, normal1.z);
+                vertexConsumer
+                        .addVertex(matrix4f, (float) draw1.x + (float) topAngleVec.x,
+                                (float) draw1.y + (float) topAngleVec.y, (float) draw1.z + (float) topAngleVec.z)
+                        .setColor(this.rCol, this.gCol, this.bCol, this.trailA).setUv(u1, 0.0F)
+                        .setOverlay(OverlayTexture.NO_OVERLAY).setLight(this.getLightColor(partialTick))
+                        .setNormal(normal1.x, normal1.y, normal1.z);
                 ++samples;
                 drawFrom = sample;
             }
@@ -136,11 +160,6 @@ public abstract class WindTrailParticle extends Particle {
         Vec3 d0 = this.trailPositions[j];
         Vec3 d1 = this.trailPositions[i].subtract(d0);
         return d0.add(d1.scale(partialTick));
-    }
-
-    @Override
-    public boolean shouldCull() {
-        return false;
     }
 
     public ParticleRenderType getRenderType() {

@@ -11,13 +11,15 @@ import javax.annotation.Nullable;
 import java.util.List;
 
 public class ItemBase extends Item {
-    public ItemBase(){
+    public ItemBase() {
         super(new Properties());
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
-        super.appendHoverText(stack, worldIn, tooltip, flagIn);
+    @Override
+    public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltip,
+            TooltipFlag flagIn) {
+        super.appendHoverText(stack, context, tooltip, flagIn);
         ChatFormatting main = ChatFormatting.DARK_PURPLE;
         ChatFormatting secondary = ChatFormatting.BLUE;
 

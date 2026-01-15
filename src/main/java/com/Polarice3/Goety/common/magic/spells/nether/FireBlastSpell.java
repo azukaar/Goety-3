@@ -63,12 +63,12 @@ public class FireBlastSpell extends Spell {
         return list;
     }
 
-    public void SpellResult(ServerLevel worldIn, LivingEntity caster, ItemStack staff, SpellStat spellStat){
+    public void SpellResult(ServerLevel worldIn, LivingEntity caster, ItemStack staff, SpellStat spellStat) {
         int radius = (int) spellStat.getRadius();
         float damage = SpellConfig.FireBlastDamage.get().floatValue() * WandUtil.damageMultiply();
         float maxDamage = SpellConfig.FireBlastMaxDamage.get().floatValue() * WandUtil.damageMultiply();
         int burning = spellStat.getBurning();
-        if (WandUtil.enchantedFocus(caster)){
+        if (WandUtil.enchantedFocus(caster)) {
             radius += WandUtil.getLevels(ModEnchantments.RADIUS.get(), caster);
             damage += WandUtil.getPotencyLevel(caster) / 2.0F;
             maxDamage += WandUtil.getPotencyLevel(caster) / 2.0F;
@@ -77,20 +77,23 @@ public class FireBlastSpell extends Spell {
         damage += spellStat.getPotency();
         maxDamage += spellStat.getPotency();
         ColorUtil colorUtil = new ColorUtil(0xdd9c16);
-        worldIn.sendParticles(new ShockwaveParticleOption(colorUtil.red(), colorUtil.green(), colorUtil.blue()), caster.getX(), caster.getY() + 0.5F, caster.getZ(), 0, 0, 0, 0, 0);
-        worldIn.sendParticles(new VerticalCircleExplodeParticleOption(colorUtil.red(), colorUtil.green(), colorUtil.blue(), radius, 1), caster.getX(), caster.getY() + 0.5F, caster.getZ(), 1, 0, 0, 0, 0);
-        float trueDamage = Mth.clamp(damage + RandomUtil.nextInt(worldIn.getRandom(), (int) (maxDamage - damage)), damage, maxDamage);
+        worldIn.sendParticles(new ShockwaveParticleOption(colorUtil.red(), colorUtil.green(), colorUtil.blue()),
+                caster.getX(), caster.getY() + 0.5F, caster.getZ(), 0, 0, 0, 0, 0);
+        worldIn.sendParticles(new VerticalCircleExplodeParticleOption(colorUtil.red(), colorUtil.green(),
+                colorUtil.blue(), radius, 1), caster.getX(), caster.getY() + 0.5F, caster.getZ(), 1, 0, 0, 0, 0);
+        float trueDamage = Mth.clamp(damage + RandomUtil.nextInt(worldIn.getRandom(), (int) (maxDamage - damage)),
+                damage, maxDamage);
 
         DamageSource damageSource = ModDamageSource.fireBreath(caster, caster);
-        if (CuriosFinder.hasNetherRobe(caster)){
+        if (CuriosFinder.hasNetherRobe(caster)) {
             damageSource = ModDamageSource.magicFireBreath(caster, caster);
         }
-        if (MobUtil.getOwner(caster) != null){
-            if (CuriosFinder.hasNetherRobe(MobUtil.getOwner(caster))){
+        if (MobUtil.getOwner(caster) != null) {
+            if (CuriosFinder.hasNetherRobe(MobUtil.getOwner(caster))) {
                 damageSource = ModDamageSource.magicFireBreath(caster, caster);
             }
         }
-        if (CuriosFinder.hasUnholySet(caster)){
+        if (CuriosFinder.hasUnholySet(caster)) {
             damageSource = ModDamageSource.hellfire(caster, caster);
         }
 
@@ -99,14 +102,15 @@ public class FireBlastSpell extends Spell {
         if (rightStaff(staff)) {
             increase = 0.5F;
         }
-        new SpellExplosion(worldIn, caster, damageSource, caster.blockPosition(), radius + increase, trueDamage){
+        new SpellExplosion(worldIn, caster, damageSource, caster.blockPosition(), radius + increase, trueDamage) {
             @Override
-            public void explodeHurt(Entity target, DamageSource damageSource, double x, double y, double z, double seen, float actualDamage) {
-                if (target instanceof LivingEntity target1){
+            public void explodeHurt(Entity target, DamageSource damageSource, double x, double y, double z, double seen,
+                    float actualDamage) {
+                if (target instanceof LivingEntity target1) {
                     super.explodeHurt(target, damageSource, x, y, z, seen, actualDamage);
                     if (!target.fireImmune()) {
                         int i = finalBurning + 1;
-                        target1.setSecondsOnFire(5 * i);
+                        target1.igniteForSeconds(5 * i);
                     }
                 }
             }

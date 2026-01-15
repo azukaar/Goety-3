@@ -7,6 +7,8 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.NonNullList;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
@@ -28,56 +30,64 @@ import java.util.List;
 import java.util.Set;
 
 public class ModLootTables {
-    private static final Set<ResourceLocation> LOCATIONS = Sets.newHashSet();
-    private static final Set<ResourceLocation> IMMUTABLE_LOCATIONS = Collections.unmodifiableSet(LOCATIONS);
-    public static final ResourceLocation EMPTY = new ResourceLocation("empty");
-    public static final ResourceLocation CRYPT_TOMB = register("chests/crypt_tomb");
+    private static final Set<ResourceKey<LootTable>> LOCATIONS = Sets.newHashSet();
+    private static final Set<ResourceKey<LootTable>> IMMUTABLE_LOCATIONS = Collections.unmodifiableSet(LOCATIONS);
+    public static final ResourceKey<LootTable> EMPTY = register("empty");
+    public static final ResourceKey<LootTable> CRYPT_TOMB = register("chests/crypt_tomb");
 
-    public static final ResourceLocation TALL_SKULL = register("entities/tall_skull_mobs");
-    public static final ResourceLocation PLAYER_WITCH = register("entities/player_witch");
-    public static final ResourceLocation CULTISTS = register("entities/cultist_extra");
-    public static final ResourceLocation CRYPT_SLIME = register("entities/crypt_slime");
-    public static final ResourceLocation TROPICAL_SLIME = register("entities/tropical_slime");
-    public static final ResourceLocation INFERNO = register("entities/inferno_extra");
-    public static final ResourceLocation APOSTLE_HARD = register("entities/apostle_2");
+    public static final ResourceKey<LootTable> TALL_SKULL = register("entities/tall_skull_mobs");
+    public static final ResourceKey<LootTable> PLAYER_WITCH = register("entities/player_witch");
+    public static final ResourceKey<LootTable> CULTISTS = register("entities/cultist_extra");
+    public static final ResourceKey<LootTable> CRYPT_SLIME = register("entities/crypt_slime");
+    public static final ResourceKey<LootTable> TROPICAL_SLIME = register("entities/tropical_slime");
+    public static final ResourceKey<LootTable> INFERNO = register("entities/inferno_extra");
+    public static final ResourceKey<LootTable> APOSTLE_HARD = register("entities/apostle_2");
 
-    public static final ResourceLocation WITCH_BARTER = register("gameplay/witch_bartering");
-    public static final ResourceLocation WARLOCK_BARTER = register("gameplay/warlock_bartering");
-    public static final ResourceLocation MAVERICK_BARTER = register("gameplay/maverick_bartering");
-    public static final ResourceLocation HERETIC_BARTER = register("gameplay/heretic_bartering");
-    public static final ResourceLocation CRONE_BARTER = register("gameplay/crone_bartering");
+    public static final ResourceKey<LootTable> WITCH_BARTER = register("gameplay/witch_bartering");
+    public static final ResourceKey<LootTable> WARLOCK_BARTER = register("gameplay/warlock_bartering");
+    public static final ResourceKey<LootTable> MAVERICK_BARTER = register("gameplay/maverick_bartering");
+    public static final ResourceKey<LootTable> HERETIC_BARTER = register("gameplay/heretic_bartering");
+    public static final ResourceKey<LootTable> CRONE_BARTER = register("gameplay/crone_bartering");
 
-    public static final ResourceLocation TREASURE_POUCH = register("gameplay/treasure_pouch");
-    public static final ResourceLocation VOID_SPAWNER_LOOT = register("gameplay/void_spawner_loot");
-    public static final ResourceLocation VOID_SPAWNER_KEY = register("gameplay/void_spawner_key");
-    public static final ResourceLocation VOID_VAULT_REWARD = register("gameplay/void_vault_reward");
+    public static final ResourceKey<LootTable> TREASURE_POUCH = register("gameplay/treasure_pouch");
+    public static final ResourceKey<LootTable> VOID_SPAWNER_LOOT = register("gameplay/void_spawner_loot");
+    public static final ResourceKey<LootTable> VOID_SPAWNER_KEY = register("gameplay/void_spawner_key");
+    public static final ResourceKey<LootTable> VOID_VAULT_REWARD = register("gameplay/void_vault_reward");
 
-    private static ResourceLocation register(String pId) {
-        return register(Goety.location(pId));
+    private static ResourceKey<LootTable> register(String pId) {
+        return register(ResourceKey.create(Registries.LOOT_TABLE, Goety.location(pId)));
     }
 
-    private static ResourceLocation register(ResourceLocation pId) {
+    private static ResourceKey<LootTable> register(ResourceKey<LootTable> pId) {
         if (LOCATIONS.add(pId)) {
             return pId;
         } else {
-            throw new IllegalArgumentException(pId + " is already a registered built-in loot table");
+            throw new IllegalArgumentException(pId.location() + " is already a registered built-in loot table");
         }
     }
 
-    public static LootParams.Builder createLootParams(LivingEntity target, boolean checkPlayerKill, DamageSource source) {
-        LootParams.Builder lootcontext$builder = (new LootParams.Builder((ServerLevel) target.level())).withParameter(LootContextParams.THIS_ENTITY, target).withParameter(LootContextParams.ORIGIN, target.position()).withParameter(LootContextParams.DAMAGE_SOURCE, source).withOptionalParameter(LootContextParams.KILLER_ENTITY, source.getEntity()).withOptionalParameter(LootContextParams.DIRECT_KILLER_ENTITY, source.getDirectEntity());
+    public static LootParams.Builder createLootParams(LivingEntity target, boolean checkPlayerKill,
+            DamageSource source) {
+        LootParams.Builder lootcontext$builder = (new LootParams.Builder((ServerLevel) target.level()))
+                .withParameter(LootContextParams.THIS_ENTITY, target)
+                .withParameter(LootContextParams.ORIGIN, target.position())
+                .withParameter(LootContextParams.DAMAGE_SOURCE, source)
+                .withOptionalParameter(LootContextParams.ATTACKING_ENTITY, source.getEntity())
+                .withOptionalParameter(LootContextParams.DIRECT_ATTACKING_ENTITY, source.getDirectEntity());
         if (checkPlayerKill && target.getKillCredit() instanceof Player player) {
-            lootcontext$builder = lootcontext$builder.withParameter(LootContextParams.LAST_DAMAGE_PLAYER, player).withLuck(player.getLuck());
+            lootcontext$builder = lootcontext$builder.withParameter(LootContextParams.LAST_DAMAGE_PLAYER, player)
+                    .withLuck(player.getLuck());
         }
 
         return lootcontext$builder;
     }
 
-    public static void shuffleAndSplitItems(ObjectArrayList<ItemStack> p_230925_, int p_230926_, RandomSource p_230927_) {
+    public static void shuffleAndSplitItems(ObjectArrayList<ItemStack> p_230925_, int p_230926_,
+            RandomSource p_230927_) {
         List<ItemStack> list = Lists.newArrayList();
         Iterator<ItemStack> iterator = p_230925_.iterator();
 
-        while(iterator.hasNext()) {
+        while (iterator.hasNext()) {
             ItemStack itemstack = iterator.next();
             if (itemstack.isEmpty()) {
                 iterator.remove();
@@ -87,7 +97,7 @@ public class ModLootTables {
             }
         }
 
-        while(p_230926_ - p_230925_.size() - list.size() > 0 && !list.isEmpty()) {
+        while (p_230926_ - p_230925_.size() - list.size() > 0 && !list.isEmpty()) {
             ItemStack itemstack2 = list.remove(Mth.nextInt(p_230927_, 0, list.size() - 1));
             int i = Mth.nextInt(p_230927_, 1, itemstack2.getCount() / 2);
             ItemStack itemstack1 = itemstack2.split(i);
@@ -108,11 +118,13 @@ public class ModLootTables {
         Util.shuffle(p_230925_, p_230927_);
     }
 
-    public static void createLootChest(LivingEntity target, BlockState blockState, BlockPos blockPos, DamageSource cause){
-        if (target.level.getServer() != null) {
-            target.level.setBlockAndUpdate(blockPos, blockState);
-            LootParams lootParams = ModLootTables.createLootParams(target, true, cause).create(LootContextParamSets.ENTITY);
-            LootTable table = target.level.getServer().getLootData().getLootTable(target.getLootTable());
+    public static void createLootChest(LivingEntity target, BlockState blockState, BlockPos blockPos,
+            DamageSource cause) {
+        if (target.level().getServer() != null) {
+            target.level().setBlockAndUpdate(blockPos, blockState);
+            LootParams lootParams = ModLootTables.createLootParams(target, true, cause)
+                    .create(LootContextParamSets.ENTITY);
+            LootTable table = target.level().getServer().reloadableRegistries().getLootTable(target.getLootTable());
             ObjectArrayList<ItemStack> lootItems = table.getRandomItems(lootParams);
             List<Integer> availableSlots = getAvailableSlots(target.getRandom());
             ModLootTables.shuffleAndSplitItems(lootItems, availableSlots.size(), target.getRandom());
@@ -126,7 +138,7 @@ public class ModLootTables {
                     }
                 }
             }
-            if (target.level.getBlockEntity(blockPos) instanceof Container container) {
+            if (target.level().getBlockEntity(blockPos) instanceof Container container) {
                 for (int i = 0; i < container.getContainerSize(); i++) {
                     container.setItem(i, finalLoot.get(i));
                 }
@@ -143,7 +155,7 @@ public class ModLootTables {
         return arrayList;
     }
 
-    public static Set<ResourceLocation> all() {
+    public static Set<ResourceKey<LootTable>> all() {
         return IMMUTABLE_LOCATIONS;
     }
 

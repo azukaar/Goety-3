@@ -37,7 +37,8 @@ import java.util.EnumSet;
 import java.util.function.Predicate;
 
 public abstract class AbstractBoundIllager extends RaiderServant {
-    private static final EntityDataAccessor<Byte> DATA_SPELL_CASTING_ID = SynchedEntityData.defineId(AbstractBoundIllager.class, EntityDataSerializers.BYTE);
+    private static final EntityDataAccessor<Byte> DATA_SPELL_CASTING_ID = SynchedEntityData
+            .defineId(AbstractBoundIllager.class, EntityDataSerializers.BYTE);
     protected int spellCastingTickCount;
     private BoundSpell currentSpell = BoundSpell.NONE;
 
@@ -49,7 +50,7 @@ public abstract class AbstractBoundIllager extends RaiderServant {
 
     protected void defineSynchedData() {
         super.defineSynchedData();
-        this.entityData.define(DATA_SPELL_CASTING_ID, (byte)0);
+        this.entityData.define(DATA_SPELL_CASTING_ID, (byte) 0);
     }
 
     public void readAdditionalSaveData(CompoundTag p_33732_) {
@@ -72,14 +73,14 @@ public abstract class AbstractBoundIllager extends RaiderServant {
         return SpellConfig.BoundIllagerLimit.get();
     }
 
-    public boolean canBeLeader(){
+    public boolean canBeLeader() {
         return true;
     }
 
     protected PathNavigation createNavigation(Level pLevel) {
         FlyingPathNavigation flyingpathnavigation = new FlyingPathNavigation(this, pLevel) {
             public boolean isStableDestination(BlockPos blockPos) {
-                return !this.level.getBlockState(blockPos.below()).isAir();
+                return !this.level().getBlockState(blockPos.below()).isAir();
             }
 
             public void tick() {
@@ -151,7 +152,7 @@ public abstract class AbstractBoundIllager extends RaiderServant {
     }
 
     public boolean isCastingSpell() {
-        if (this.level.isClientSide) {
+        if (this.level().isClientSide) {
             return this.entityData.get(DATA_SPELL_CASTING_ID) > 0;
         } else {
             return this.spellCastingTickCount > 0;
@@ -160,11 +161,12 @@ public abstract class AbstractBoundIllager extends RaiderServant {
 
     public void setIsCastingSpell(BoundSpell p_33728_) {
         this.currentSpell = p_33728_;
-        this.entityData.set(DATA_SPELL_CASTING_ID, (byte)p_33728_.id);
+        this.entityData.set(DATA_SPELL_CASTING_ID, (byte) p_33728_.id);
     }
 
     protected BoundSpell getCurrentSpell() {
-        return !this.level.isClientSide ? this.currentSpell : BoundSpell.byId(this.entityData.get(DATA_SPELL_CASTING_ID));
+        return !this.level().isClientSide ? this.currentSpell
+                : BoundSpell.byId(this.entityData.get(DATA_SPELL_CASTING_ID));
     }
 
     protected void customServerAiStep() {
@@ -177,16 +179,18 @@ public abstract class AbstractBoundIllager extends RaiderServant {
 
     public void tick() {
         super.tick();
-        if (this.level.isClientSide && this.isCastingSpell() && this.getCurrentSpell() != BoundSpell.CLOUDLESS) {
+        if (this.level().isClientSide && this.isCastingSpell() && this.getCurrentSpell() != BoundSpell.CLOUDLESS) {
             BoundSpell spellcasterillager$illagerspell = this.getCurrentSpell();
             double d0 = spellcasterillager$illagerspell.spellColor[0];
             double d1 = spellcasterillager$illagerspell.spellColor[1];
             double d2 = spellcasterillager$illagerspell.spellColor[2];
-            float f = this.yBodyRot * ((float)Math.PI / 180F) + Mth.cos((float)this.tickCount * 0.6662F) * 0.25F;
+            float f = this.yBodyRot * ((float) Math.PI / 180F) + Mth.cos((float) this.tickCount * 0.6662F) * 0.25F;
             float f1 = Mth.cos(f);
             float f2 = Mth.sin(f);
-            this.level.addParticle(ParticleTypes.ENTITY_EFFECT, this.getX() + (double)f1 * 0.6D, this.getY() + 1.8D, this.getZ() + (double)f2 * 0.6D, d0, d1, d2);
-            this.level.addParticle(ParticleTypes.ENTITY_EFFECT, this.getX() - (double)f1 * 0.6D, this.getY() + 1.8D, this.getZ() - (double)f2 * 0.6D, d0, d1, d2);
+            this.level().addParticle(ParticleTypes.ENTITY_EFFECT, this.getX() + (double) f1 * 0.6D, this.getY() + 1.8D,
+                    this.getZ() + (double) f2 * 0.6D, d0, d1, d2);
+            this.level().addParticle(ParticleTypes.ENTITY_EFFECT, this.getX() - (double) f1 * 0.6D, this.getY() + 1.8D,
+                    this.getZ() - (double) f2 * 0.6D, d0, d1, d2);
         }
         if (this.hasItemInSlot(EquipmentSlot.LEGS)) {
             if (this.getEquipmentDropChance(EquipmentSlot.LEGS) > 0.0F) {
@@ -224,12 +228,13 @@ public abstract class AbstractBoundIllager extends RaiderServant {
                 }
                 this.playSound(SoundEvents.SOUL_ESCAPE, 1.0F, 1.0F);
                 this.heal(2.0F);
-                if (this.level instanceof ServerLevel serverLevel) {
+                if (this.level() instanceof ServerLevel serverLevel) {
                     for (int i = 0; i < 7; ++i) {
                         double d0 = this.random.nextGaussian() * 0.02D;
                         double d1 = this.random.nextGaussian() * 0.02D;
                         double d2 = this.random.nextGaussian() * 0.02D;
-                        serverLevel.sendParticles(ModParticleTypes.HEAL_EFFECT.get(), this.getRandomX(1.0D), this.getRandomY() + 0.5D, this.getRandomZ(1.0D), 0, d0, d1, d2, 0.5F);
+                        serverLevel.sendParticles(ModParticleTypes.HEAL_EFFECT.get(), this.getRandomX(1.0D),
+                                this.getRandomY() + 0.5D, this.getRandomZ(1.0D), 0, d0, d1, d2, 0.5F);
                     }
                 }
                 pPlayer.swing(pHand);
@@ -258,11 +263,11 @@ public abstract class AbstractBoundIllager extends RaiderServant {
 
         private BoundSpell(int p_33754_, double p_33755_, double p_33756_, double p_33757_) {
             this.id = p_33754_;
-            this.spellColor = new double[]{p_33755_, p_33756_, p_33757_};
+            this.spellColor = new double[] { p_33755_, p_33756_, p_33757_ };
         }
 
         public static BoundSpell byId(int p_33759_) {
-            for(BoundSpell spellcasterillager$illagerspell : values()) {
+            for (BoundSpell spellcasterillager$illagerspell : values()) {
                 if (p_33759_ == spellcasterillager$illagerspell.id) {
                     return spellcasterillager$illagerspell;
                 }
@@ -293,7 +298,9 @@ public abstract class AbstractBoundIllager extends RaiderServant {
 
         public void tick() {
             if (AbstractBoundIllager.this.getTarget() != null) {
-                AbstractBoundIllager.this.getLookControl().setLookAt(AbstractBoundIllager.this.getTarget(), (float)AbstractBoundIllager.this.getMaxHeadYRot(), (float)AbstractBoundIllager.this.getMaxHeadXRot());
+                AbstractBoundIllager.this.getLookControl().setLookAt(AbstractBoundIllager.this.getTarget(),
+                        (float) AbstractBoundIllager.this.getMaxHeadYRot(),
+                        (float) AbstractBoundIllager.this.getMaxHeadXRot());
             }
 
         }

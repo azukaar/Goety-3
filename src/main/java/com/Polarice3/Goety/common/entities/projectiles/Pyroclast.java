@@ -24,8 +24,10 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
+
 public class Pyroclast extends ThrowableProjectile implements ISpellEntity {
-    public static final EntityDataAccessor<Boolean> DATA_DANGEROUS = SynchedEntityData.defineId(Pyroclast.class, EntityDataSerializers.BOOLEAN);
+    public static final EntityDataAccessor<Boolean> DATA_DANGEROUS = SynchedEntityData.defineId(Pyroclast.class,
+            EntityDataSerializers.BOOLEAN);
     public float explosionPower = 1.5F;
     public int potency = 0;
     public int flaming = 0;
@@ -82,8 +84,8 @@ public class Pyroclast extends ThrowableProjectile implements ISpellEntity {
     public void addAdditionalSaveData(CompoundTag pCompound) {
         super.addAdditionalSaveData(pCompound);
         pCompound.putFloat("ExplosionPower", this.getExplosionPower());
-        pCompound.putInt("Potency",this.getPotency());
-        pCompound.putInt("Flaming",this.getFlaming());
+        pCompound.putInt("Potency", this.getPotency());
+        pCompound.putInt("Flaming", this.getFlaming());
     }
 
     public void readAdditionalSaveData(CompoundTag pCompound) {
@@ -91,10 +93,10 @@ public class Pyroclast extends ThrowableProjectile implements ISpellEntity {
         if (pCompound.contains("ExplosionPower", 99)) {
             this.setExplosionPower(pCompound.getFloat("ExplosionPower"));
         }
-        if (pCompound.contains("Potency")){
+        if (pCompound.contains("Potency")) {
             this.setPotency(pCompound.getInt("Potency"));
         }
-        if (pCompound.contains("Flaming")){
+        if (pCompound.contains("Flaming")) {
             this.setFlaming(pCompound.getInt("Flaming"));
         }
     }
@@ -102,10 +104,11 @@ public class Pyroclast extends ThrowableProjectile implements ISpellEntity {
     @Override
     public void tick() {
         super.tick();
-        if (!this.level.isClientSide){
-            //So Pyroclasts will immediately explode on and damage mobs on standing in a volcano
-            for (Entity entity : this.level.getEntitiesOfClass(Entity.class, this.getBoundingBox().inflate(1.0F))){
-                if (this.canHitEntity(entity)){
+        if (!this.level.isClientSide) {
+            // So Pyroclasts will immediately explode on and damage mobs on standing in a
+            // volcano
+            for (Entity entity : this.level.getEntitiesOfClass(Entity.class, this.getBoundingBox().inflate(1.0F))) {
+                if (this.canHitEntity(entity)) {
                     this.explode();
                     this.hitEntity(entity);
                 }
@@ -115,20 +118,23 @@ public class Pyroclast extends ThrowableProjectile implements ISpellEntity {
         double d0 = this.getX() + vector3d.x;
         double d1 = this.getY() + vector3d.y;
         double d2 = this.getZ() + vector3d.z;
-        this.level.addParticle(ParticleTypes.LARGE_SMOKE, d0 + level.random.nextDouble()/2, d1 + 0.5D, d2 + level.random.nextDouble()/2, 0.0D, 0.0D, 0.0D);
-        this.level.addParticle(ParticleTypes.FLAME, d0 + level.random.nextDouble()/2, d1 + 0.5D, d2 + level.random.nextDouble()/2, 0.0D, 0.0D, 0.0D);
+        this.level.addParticle(ParticleTypes.LARGE_SMOKE, d0 + level.random.nextDouble() / 2, d1 + 0.5D,
+                d2 + level.random.nextDouble() / 2, 0.0D, 0.0D, 0.0D);
+        this.level.addParticle(ParticleTypes.FLAME, d0 + level.random.nextDouble() / 2, d1 + 0.5D,
+                d2 + level.random.nextDouble() / 2, 0.0D, 0.0D, 0.0D);
     }
 
-    public void explode(){
+    public void explode() {
         if (!this.level.isClientSide) {
             Entity owner = this.getOwner();
             boolean flag = this.isDangerous();
-            if (owner instanceof Player){
-                if (!SpellConfig.PyroclastGriefing.get()){
+            if (owner instanceof Player) {
+                if (!SpellConfig.PyroclastGriefing.get()) {
                     flag = false;
                 }
             }
-            this.level.explode(owner, this.getX(), this.getY(), this.getZ(), this.explosionPower, flag, flag ? Level.ExplosionInteraction.BLOCK : Level.ExplosionInteraction.NONE);
+            this.level.explode(owner, this.getX(), this.getY(), this.getZ(), this.explosionPower, flag,
+                    flag ? Level.ExplosionInteraction.BLOCK : Level.ExplosionInteraction.NONE);
             this.discard();
         }
     }
@@ -138,47 +144,47 @@ public class Pyroclast extends ThrowableProjectile implements ISpellEntity {
         this.explode();
     }
 
-    public void hitEntity(Entity entity){
+    public void hitEntity(Entity entity) {
         Entity entity1 = this.getOwner();
         float damage = 6.0F;
-        if (entity1 instanceof Player){
+        if (entity1 instanceof Player) {
             damage = SpellConfig.PyroclastDamage.get().floatValue() * WandUtil.damageMultiply();
         }
         entity.hurt(ModDamageSource.modFireball(this.getOwner(), this.level), damage + this.potency);
 
-        if (this.flaming != 0){
-            entity.setSecondsOnFire(5 * this.flaming);
+        if (this.flaming != 0) {
+            entity.igniteForSeconds(5 * this.flaming);
         }
         if (entity1 instanceof LivingEntity) {
-            this.doEnchantDamageEffects((LivingEntity)entity1, entity);
+            this.doEnchantDamageEffects((LivingEntity) entity1, entity);
         }
     }
 
     @Override
     protected void onHitEntity(EntityHitResult pResult) {
         super.onHitEntity(pResult);
-        if (!this.level.isClientSide){
+        if (!this.level.isClientSide) {
             Entity entity = pResult.getEntity();
             this.hitEntity(entity);
         }
     }
 
     protected boolean canHitEntity(Entity pEntity) {
-        if (this.getOwner() != null){
-            if (pEntity == this.getOwner()){
+        if (this.getOwner() != null) {
+            if (pEntity == this.getOwner()) {
                 return false;
-            } else if (this.getOwner().isPassengerOfSameVehicle(pEntity)){
+            } else if (this.getOwner().isPassengerOfSameVehicle(pEntity)) {
                 return false;
-            } else if (pEntity instanceof Projectile projectile && projectile.getOwner() == this.getOwner()){
+            } else if (pEntity instanceof Projectile projectile && projectile.getOwner() == this.getOwner()) {
                 return false;
-            } else if (MobUtil.areAllies(pEntity, this.getOwner())){
+            } else if (MobUtil.areAllies(pEntity, this.getOwner())) {
                 return false;
-            } else if (this.getOwner() instanceof IOwned owned){
-                if (pEntity instanceof IOwned owned1){
-                    if (owned.getTrueOwner() == owned1.getTrueOwner()){
+            } else if (this.getOwner() instanceof IOwned owned) {
+                if (pEntity instanceof IOwned owned1) {
+                    if (owned.getTrueOwner() == owned1.getTrueOwner()) {
                         return false;
                     }
-                } else if (owned.getTrueOwner() == pEntity){
+                } else if (owned.getTrueOwner() == pEntity) {
                     return false;
                 }
             }

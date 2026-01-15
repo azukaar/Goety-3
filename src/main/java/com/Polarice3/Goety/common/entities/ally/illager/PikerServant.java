@@ -29,8 +29,9 @@ import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 
-public class PikerServant extends AbstractIllagerServant{
-    protected static final EntityDataAccessor<Byte> DATA_FLAGS_ID = SynchedEntityData.defineId(PikerServant.class, EntityDataSerializers.BYTE);
+public class PikerServant extends AbstractIllagerServant {
+    protected static final EntityDataAccessor<Byte> DATA_FLAGS_ID = SynchedEntityData.defineId(PikerServant.class,
+            EntityDataSerializers.BYTE);
     public int attackTick;
     public boolean aggressiveMode;
     public AnimationState idleAnimationState = new AnimationState();
@@ -56,7 +57,7 @@ public class PikerServant extends AbstractIllagerServant{
                 .add(Attributes.ARMOR, AttributesConfig.PikerArmor.get());
     }
 
-    public void setConfigurableAttributes(){
+    public void setConfigurableAttributes() {
         MobUtil.setBaseAttributes(this.getAttribute(Attributes.MAX_HEALTH), AttributesConfig.PikerHealth.get());
         MobUtil.setBaseAttributes(this.getAttribute(Attributes.ATTACK_DAMAGE), AttributesConfig.PikerDamage.get());
         MobUtil.setBaseAttributes(this.getAttribute(Attributes.ARMOR), AttributesConfig.PikerArmor.get());
@@ -64,10 +65,10 @@ public class PikerServant extends AbstractIllagerServant{
 
     protected void defineSynchedData() {
         super.defineSynchedData();
-        this.entityData.define(DATA_FLAGS_ID, (byte)0);
+        this.entityData.define(DATA_FLAGS_ID, (byte) 0);
     }
 
-    public List<AnimationState> getAnimations(){
+    public List<AnimationState> getAnimations() {
         List<AnimationState> animationStates = new ArrayList<>();
         animationStates.add(this.idleAnimationState);
         animationStates.add(this.walkAnimationState);
@@ -75,8 +76,8 @@ public class PikerServant extends AbstractIllagerServant{
         return animationStates;
     }
 
-    public void stopAllAnimations(){
-        for (AnimationState animationState : this.getAnimations()){
+    public void stopAllAnimations() {
+        for (AnimationState animationState : this.getAnimations()) {
             animationState.stop();
         }
     }
@@ -87,8 +88,8 @@ public class PikerServant extends AbstractIllagerServant{
 
     public void tick() {
         super.tick();
-        if (this.level.isClientSide){
-            if (this.isAlive()){
+        if (this.level.isClientSide) {
+            if (this.isAlive()) {
                 if (!this.isMeleeAttacking()) {
                     this.attackAnimationState.stop();
                     if (!this.isMoving()) {
@@ -107,11 +108,11 @@ public class PikerServant extends AbstractIllagerServant{
         if (this.isMeleeAttacking()) {
             ++this.attackTick;
         }
-        if (this.attackTick > 20){
+        if (this.attackTick > 20) {
             this.setMeleeAttacking(false);
         }
-        if (!this.level.isClientSide){
-            if (this.getTarget() != null){
+        if (!this.level.isClientSide) {
+            if (this.getTarget() != null) {
                 this.level.broadcastEntityEvent(this, (byte) 6);
             } else {
                 this.level.broadcastEntityEvent(this, (byte) 7);
@@ -132,7 +133,7 @@ public class PikerServant extends AbstractIllagerServant{
             i = i & ~mask;
         }
 
-        this.entityData.set(DATA_FLAGS_ID, (byte)(i & 255));
+        this.entityData.set(DATA_FLAGS_ID, (byte) (i & 255));
     }
 
     public boolean isMeleeAttacking() {
@@ -163,22 +164,23 @@ public class PikerServant extends AbstractIllagerServant{
     }
 
     public boolean doHurtTarget(Entity p_21372_) {
-        float f = (float)this.getAttributeValue(Attributes.ATTACK_DAMAGE);
-        float f1 = (float)this.getAttributeValue(Attributes.ATTACK_KNOCKBACK);
+        float f = (float) this.getAttributeValue(Attributes.ATTACK_DAMAGE);
+        float f1 = (float) this.getAttributeValue(Attributes.ATTACK_KNOCKBACK);
         if (p_21372_ instanceof LivingEntity) {
-            f += EnchantmentHelper.getDamageBonus(this.getMainHandItem(), ((LivingEntity)p_21372_).getMobType());
-            f1 += (float)EnchantmentHelper.getKnockbackBonus(this);
+            f += EnchantmentHelper.getDamageBonus(this.getMainHandItem(), ((LivingEntity) p_21372_).getMobType());
+            f1 += (float) EnchantmentHelper.getKnockbackBonus(this);
         }
 
         int i = EnchantmentHelper.getFireAspect(this);
         if (i > 0) {
-            p_21372_.setSecondsOnFire(i * 4);
+            p_21372_.igniteForSeconds(i * 4);
         }
 
         boolean flag = p_21372_.hurt(p_21372_.damageSources().mobAttack(this), f);
         if (flag) {
             if (f1 > 0.0F && p_21372_ instanceof LivingEntity living) {
-                living.knockback((double)(f1 * 0.5F), (double) Mth.sin(this.getYRot() * ((float)Math.PI / 180F)), (double)(-Mth.cos(this.getYRot() * ((float)Math.PI / 180F))));
+                living.knockback((double) (f1 * 0.5F), (double) Mth.sin(this.getYRot() * ((float) Math.PI / 180F)),
+                        (double) (-Mth.cos(this.getYRot() * ((float) Math.PI / 180F))));
             }
 
             this.doEnchantDamageEffects(this, p_21372_);
@@ -196,8 +198,9 @@ public class PikerServant extends AbstractIllagerServant{
         return this.getBbWidth() * 5.0F * this.getBbWidth() * 5.0F + enemy.getBbWidth();
     }
 
-    public boolean targetClose(LivingEntity enemy, double distToEnemySqr){
-        return (distToEnemySqr <= this.getAttackReachSqr(enemy) || this.getBoundingBox().intersects(enemy.getBoundingBox())) && this.hasLineOfSight(enemy);
+    public boolean targetClose(LivingEntity enemy, double distToEnemySqr) {
+        return (distToEnemySqr <= this.getAttackReachSqr(enemy)
+                || this.getBoundingBox().intersects(enemy.getBoundingBox())) && this.hasLineOfSight(enemy);
     }
 
     protected void populateDefaultEquipmentSlots(RandomSource p_217055_, DifficultyInstance p_217056_) {
@@ -212,10 +215,10 @@ public class PikerServant extends AbstractIllagerServant{
 
     @Override
     public void handleEntityEvent(byte p_21375_) {
-        if (p_21375_ == 4){
+        if (p_21375_ == 4) {
             this.stopAllAnimations();
             this.attackAnimationState.start(this.tickCount);
-        } else if (p_21375_ == 5){
+        } else if (p_21375_ == 5) {
             this.attackTick = 0;
         } else if (p_21375_ == 6) {
             this.aggressiveMode = true;
@@ -265,7 +268,8 @@ public class PikerServant extends AbstractIllagerServant{
                 PikerServant.this.getNavigation().moveTo(livingentity, SPEED);
             }
 
-            this.checkAndPerformAttack(livingentity, PikerServant.this.distanceToSqr(livingentity.getX(), livingentity.getBoundingBox().minY, livingentity.getZ()));
+            this.checkAndPerformAttack(livingentity, PikerServant.this.distanceToSqr(livingentity.getX(),
+                    livingentity.getBoundingBox().minY, livingentity.getZ()));
         }
 
         @Override
@@ -316,18 +320,24 @@ public class PikerServant extends AbstractIllagerServant{
         public void tick() {
             if (PikerServant.this.getTarget() != null && PikerServant.this.getTarget().isAlive()) {
                 LivingEntity livingentity = PikerServant.this.getTarget();
-                double d0 = PikerServant.this.distanceToSqr(livingentity.getX(), livingentity.getY(), livingentity.getZ());
+                double d0 = PikerServant.this.distanceToSqr(livingentity.getX(), livingentity.getY(),
+                        livingentity.getZ());
                 MobUtil.instaLook(PikerServant.this, livingentity);
-                if (PikerServant.this.attackTick == 1){
-                    PikerServant.this.playSound(ModSounds.PIKER_SWING.get(), PikerServant.this.getSoundVolume(), PikerServant.this.getVoicePitch());
+                if (PikerServant.this.attackTick == 1) {
+                    PikerServant.this.playSound(ModSounds.PIKER_SWING.get(), PikerServant.this.getSoundVolume(),
+                            PikerServant.this.getVoicePitch());
                 }
                 if (PikerServant.this.attackTick == 8) {
                     if (PikerServant.this.targetClose(livingentity, d0)) {
-                        if (PikerServant.this.doHurtTarget(livingentity)){
-                            PikerServant.this.playSound(ModSounds.PIKER_PIKE.get(), PikerServant.this.getSoundVolume(), PikerServant.this.getVoicePitch());
-                            for (Entity entity : getTargets(PikerServant.this.level, PikerServant.this, 3)){
-                                if (entity instanceof LivingEntity living && PikerServant.this.hasLineOfSight(living)){
-                                    if (!MobUtil.areAllies(PikerServant.this, living) && living != livingentity && (!(livingentity instanceof ArmorStand) || !((ArmorStand)livingentity).isMarker()) && PikerServant.this.canAttack(livingentity)){
+                        if (PikerServant.this.doHurtTarget(livingentity)) {
+                            PikerServant.this.playSound(ModSounds.PIKER_PIKE.get(), PikerServant.this.getSoundVolume(),
+                                    PikerServant.this.getVoicePitch());
+                            for (Entity entity : getTargets(PikerServant.this.level, PikerServant.this, 3)) {
+                                if (entity instanceof LivingEntity living && PikerServant.this.hasLineOfSight(living)) {
+                                    if (!MobUtil.areAllies(PikerServant.this, living) && living != livingentity
+                                            && (!(livingentity instanceof ArmorStand)
+                                                    || !((ArmorStand) livingentity).isMarker())
+                                            && PikerServant.this.canAttack(livingentity)) {
                                         PikerServant.this.doHurtTarget(living);
                                     }
                                 }
@@ -341,11 +351,13 @@ public class PikerServant extends AbstractIllagerServant{
         public static List<Entity> getTargets(Level level, LivingEntity pSource, double pRange) {
             List<Entity> list = new ArrayList<>();
             Vec3 lookVec = pSource.getViewVector(1.0F);
-            double[] lookRange = new double[] {lookVec.x() * pRange, lookVec.y() * pRange, lookVec.z() * pRange};
-            List<Entity> possibleList = level.getEntities(pSource, pSource.getBoundingBox().expandTowards(lookRange[0], lookRange[1], lookRange[2]));
+            double[] lookRange = new double[] { lookVec.x() * pRange, lookVec.y() * pRange, lookVec.z() * pRange };
+            List<Entity> possibleList = level.getEntities(pSource,
+                    pSource.getBoundingBox().expandTowards(lookRange[0], lookRange[1], lookRange[2]));
 
             for (Entity hit : possibleList) {
-                if (hit.isPickable() && hit != pSource && EntitySelector.NO_CREATIVE_OR_SPECTATOR.and(EntitySelector.LIVING_ENTITY_STILL_ALIVE).test(hit)) {
+                if (hit.isPickable() && hit != pSource && EntitySelector.NO_CREATIVE_OR_SPECTATOR
+                        .and(EntitySelector.LIVING_ENTITY_STILL_ALIVE).test(hit)) {
                     list.add(hit);
                 }
             }

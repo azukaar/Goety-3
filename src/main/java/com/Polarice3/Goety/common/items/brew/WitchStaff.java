@@ -31,7 +31,7 @@ public class WitchStaff extends Item {
 
     public InteractionResultHolder<ItemStack> use(Level worldIn, Player playerIn, InteractionHand handIn) {
         ItemStack itemstack = playerIn.getItemInHand(handIn);
-        if (getThrowBrew(itemstack) != null){
+        if (getThrowBrew(itemstack) != null) {
             if (!worldIn.isClientSide) {
                 ThrownBrew thrownBrew = new ThrownBrew(worldIn, playerIn);
                 thrownBrew.setItem(itemstack);
@@ -47,7 +47,7 @@ public class WitchStaff extends Item {
                 itemstack.shrink(1);
             }
             return InteractionResultHolder.sidedSuccess(itemstack, worldIn.isClientSide());
-        } else if (getDrinkBrew(itemstack) != null){
+        } else if (getDrinkBrew(itemstack) != null) {
             playerIn.startUsingItem(handIn);
         }
 
@@ -56,15 +56,15 @@ public class WitchStaff extends Item {
 
     public ItemStack finishUsingItem(ItemStack stack, Level worldIn, LivingEntity entityLiving) {
         super.finishUsingItem(stack, worldIn, entityLiving);
-        if (getDrinkBrew(stack) != null){
+        if (getDrinkBrew(stack) != null) {
             getDrinkBrew(stack).finishUsingItem(getBrew(stack), worldIn, entityLiving);
         }
         return stack;
     }
 
-    public int getUseDuration(@NotNull ItemStack stack) {
+    public int getUseDuration(@NotNull ItemStack stack, LivingEntity livingEntity) {
         if (getDrinkBrew(stack) != null) {
-            return getDrinkBrew(stack).getUseDuration(getBrew(stack));
+            return getDrinkBrew(stack).getUseDuration(getBrew(stack), livingEntity);
         } else {
             return 0;
         }
@@ -75,16 +75,18 @@ public class WitchStaff extends Item {
         return handler.getSlot();
     }
 
-    public static BrewItem getDrinkBrew(ItemStack itemStack){
-        if (getBrew(itemStack) != null && !getBrew(itemStack).isEmpty() && getBrew(itemStack).getItem() instanceof BrewItem brewItem){
+    public static BrewItem getDrinkBrew(ItemStack itemStack) {
+        if (getBrew(itemStack) != null && !getBrew(itemStack).isEmpty()
+                && getBrew(itemStack).getItem() instanceof BrewItem brewItem) {
             return brewItem;
         } else {
             return null;
         }
     }
 
-    public static ThrowableBrewItem getThrowBrew(ItemStack itemStack){
-        if (getBrew(itemStack) != null && !getBrew(itemStack).isEmpty() && getBrew(itemStack).getItem() instanceof ThrowableBrewItem brewItem){
+    public static ThrowableBrewItem getThrowBrew(ItemStack itemStack) {
+        if (getBrew(itemStack) != null && !getBrew(itemStack).isEmpty()
+                && getBrew(itemStack).getItem() instanceof ThrowableBrewItem brewItem) {
             return brewItem;
         } else {
             return null;
@@ -92,25 +94,25 @@ public class WitchStaff extends Item {
     }
 
     public static IItemHandler getItemHandler(ItemStack itemStack) {
-        return itemStack.getCapability(Capabilities.ITEM_HANDLER).orElseThrow(() ->
-                new IllegalArgumentException("Expected an item handler for the Brew item, but " + itemStack + " does not expose an item handler."));
+        return itemStack.getCapability(Capabilities.ITEM_HANDLER).orElseThrow(() -> new IllegalArgumentException(
+                "Expected an item handler for the Brew item, but " + itemStack + " does not expose an item handler."));
     }
 
     public CompoundTag getShareTag(ItemStack stack) {
         IItemHandler iitemHandler = getItemHandler(stack);
         CompoundTag nbt = stack.getTag() != null ? stack.getTag() : new CompoundTag();
-        if(iitemHandler instanceof ItemStackHandler itemHandler) {
+        if (iitemHandler instanceof ItemStackHandler itemHandler) {
             nbt.put("cap", itemHandler.serializeNBT());
         }
         return nbt;
     }
 
     public void readShareTag(ItemStack stack, @Nullable CompoundTag nbt) {
-        if(nbt == null) {
+        if (nbt == null) {
             stack.setTag(null);
         } else {
             IItemHandler iitemHandler = getItemHandler(stack);
-            if(iitemHandler instanceof ItemStackHandler itemHandler)
+            if (iitemHandler instanceof ItemStackHandler itemHandler)
                 itemHandler.deserializeNBT(nbt.getCompound("cap"));
             stack.setTag(nbt);
         }

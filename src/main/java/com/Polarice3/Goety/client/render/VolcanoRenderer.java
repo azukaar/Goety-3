@@ -17,7 +17,8 @@ import javax.annotation.Nullable;
 
 public class VolcanoRenderer extends EntityRenderer<AbstractMonolith> {
     private static final ResourceLocation TEXTURE_LOCATION = Goety.location("textures/entity/monolith/volcano.png");
-    private static final RenderType RENDER_TYPE = RenderType.eyes(Goety.location("textures/entity/monolith/volcano_active.png"));
+    private static final RenderType RENDER_TYPE = RenderType
+            .eyes(Goety.location("textures/entity/monolith/volcano_active.png"));
     private final VolcanoModel<AbstractMonolith> model;
 
     public VolcanoRenderer(EntityRendererProvider.Context p_i47208_1_) {
@@ -25,7 +26,8 @@ public class VolcanoRenderer extends EntityRenderer<AbstractMonolith> {
         this.model = new VolcanoModel<>(p_i47208_1_.bakeLayer(ModModelLayer.VOLCANO));
     }
 
-    public void render(AbstractMonolith pEntity, float pEntityYaw, float pPartialTicks, PoseStack pMatrixStack, MultiBufferSource pBuffer, int pPackedLight) {
+    public void render(AbstractMonolith pEntity, float pEntityYaw, float pPartialTicks, PoseStack pMatrixStack,
+            MultiBufferSource pBuffer, int pPackedLight) {
         float f = Math.min(AbstractMonolith.getEmergingTime(), pEntity.getAge());
         pMatrixStack.pushPose();
         pMatrixStack.mulPose(Axis.YP.rotationDegrees(pEntity.getYRot()));
@@ -34,12 +36,12 @@ public class VolcanoRenderer extends EntityRenderer<AbstractMonolith> {
         pMatrixStack.scale(1.0F, 1.0F, 1.0F);
         this.model.setupAnim(pEntity, f, 0.0F, pPartialTicks, pEntity.getYRot(), pEntity.getXRot());
         VertexConsumer ivertexbuilder = pBuffer.getBuffer(this.model.renderType(getTextureLocation(pEntity)));
-        this.model.renderToBuffer(pMatrixStack, ivertexbuilder, pPackedLight, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 1.0F);
+        this.model.renderToBuffer(pMatrixStack, ivertexbuilder, pPackedLight, OverlayTexture.NO_OVERLAY, -1);
         if (!pEntity.isEmerging() && !pEntity.isInvisible()) {
             RenderType renderType = getActivatedTextureLocation(pEntity);
             if (renderType != null) {
                 VertexConsumer vertexconsumer = pBuffer.getBuffer(renderType);
-                this.model.renderToBuffer(pMatrixStack, vertexconsumer, pPackedLight, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 1.0F);
+                this.model.renderToBuffer(pMatrixStack, vertexconsumer, pPackedLight, OverlayTexture.NO_OVERLAY, -1);
             }
         }
         pMatrixStack.popPose();

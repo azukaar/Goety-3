@@ -10,6 +10,7 @@ import net.minecraft.tags.BlockTags;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -38,22 +39,25 @@ public class ReedBlock extends Block implements BonemealableBlock {
         this.registerDefaultState(this.stateDefinition.any().setValue(AGE, 0));
     }
 
-    public VoxelShape getShape(BlockState p_57193_, BlockGetter p_57194_, BlockPos p_57195_, CollisionContext p_57196_) {
+    public VoxelShape getShape(BlockState p_57193_, BlockGetter p_57194_, BlockPos p_57195_,
+            CollisionContext p_57196_) {
         return SHAPE;
     }
 
     @Override
     public InteractionResult use(BlockState state, Level world, BlockPos pos, Player player,
-                                 InteractionHand hand, BlockHitResult hit) {
+            InteractionHand hand, BlockHitResult hit) {
         ItemStack itemStack = player.getItemInHand(hand);
         if (state.is(ModBlocks.CHORUS_BLOSSOM_VINES.get())) {
             if (itemStack.is(Items.SHEARS)) {
                 if (!world.isClientSide) {
                     world.playSound(null, pos, SoundEvents.PUMPKIN_CARVE, SoundSource.BLOCKS, 1.0F, 1.0F);
-                    world.setBlock(pos, ModBlocks.CHORUS_BLOSSOM_VINES_PRUNED.get().defaultBlockState().setValue(ReedBlock.AGE, 0), 11);
-                    itemStack.hurtAndBreak(1, player, (p_55287_) -> {
-                        p_55287_.broadcastBreakEvent(hand);
-                    });
+                    world.setBlock(pos,
+                            ModBlocks.CHORUS_BLOSSOM_VINES_PRUNED.get().defaultBlockState().setValue(ReedBlock.AGE, 0),
+                            11);
+                    EquipmentSlot slot = hand == InteractionHand.MAIN_HAND ? EquipmentSlot.MAINHAND
+                            : EquipmentSlot.OFFHAND;
+                    itemStack.hurtAndBreak(1, player, slot);
                     world.gameEvent(player, GameEvent.SHEAR, pos);
                     player.awardStat(Stats.ITEM_USED.get(Items.SHEARS));
                 }
@@ -91,7 +95,9 @@ public class ReedBlock extends Block implements BonemealableBlock {
     }
 
     public void randomTick(BlockState p_221350_, ServerLevel p_221351_, BlockPos p_221352_, RandomSource p_221353_) {
-        if (p_221350_.getValue(AGE) < 25 && net.neoforged.common.ForgeHooks.onCropsGrowPre(p_221351_, p_221352_.relative(Direction.UP), p_221351_.getBlockState(p_221352_.relative(Direction.UP)),p_221353_.nextDouble() < 0.1D)) {
+        if (p_221350_.getValue(AGE) < 25
+                && net.neoforged.common.ForgeHooks.onCropsGrowPre(p_221351_, p_221352_.relative(Direction.UP),
+                        p_221351_.getBlockState(p_221352_.relative(Direction.UP)), p_221353_.nextDouble() < 0.1D)) {
             BlockPos blockpos = p_221352_.relative(Direction.UP);
             if (this.canGrowInto(p_221351_.getBlockState(blockpos))) {
                 p_221351_.setBlockAndUpdate(blockpos, this.getGrowIntoState(p_221350_, p_221351_.random));
@@ -115,11 +121,13 @@ public class ReedBlock extends Block implements BonemealableBlock {
         if (!this.canAttachTo(blockstate)) {
             return false;
         } else {
-            return this.isSameType(blockstate) || blockstate.isFaceSturdy(p_53877_, blockpos, Direction.UP) || blockstate.is(BlockTags.LEAVES);
+            return this.isSameType(blockstate) || blockstate.isFaceSturdy(p_53877_, blockpos, Direction.UP)
+                    || blockstate.is(BlockTags.LEAVES);
         }
     }
 
-    public BlockState updateShape(BlockState p_53951_, Direction p_53952_, BlockState p_53953_, LevelAccessor p_53954_, BlockPos p_53955_, BlockPos p_53956_) {
+    public BlockState updateShape(BlockState p_53951_, Direction p_53952_, BlockState p_53953_, LevelAccessor p_53954_,
+            BlockPos p_53955_, BlockPos p_53956_) {
         if (p_53952_ == Direction.DOWN && !p_53951_.canSurvive(p_53954_, p_53955_)) {
             p_53954_.scheduleTick(p_53955_, this, 1);
         }
@@ -132,7 +140,8 @@ public class ReedBlock extends Block implements BonemealableBlock {
     }
 
     public boolean isSameType(BlockState blockState) {
-        if (blockState.is(ModBlocks.CHORUS_BLOSSOM_VINES.get()) || blockState.is(ModBlocks.CHORUS_BLOSSOM_VINES_PRUNED.get())) {
+        if (blockState.is(ModBlocks.CHORUS_BLOSSOM_VINES.get())
+                || blockState.is(ModBlocks.CHORUS_BLOSSOM_VINES_PRUNED.get())) {
             return this == ModBlocks.CHORUS_BLOSSOM_VINES.get() || this == ModBlocks.CHORUS_BLOSSOM_VINES_PRUNED.get();
         }
         return blockState.is(this);
@@ -150,20 +159,23 @@ public class ReedBlock extends Block implements BonemealableBlock {
         p_53958_.add(AGE);
     }
 
-    public boolean isValidBonemealTarget(LevelReader p_255931_, BlockPos p_256046_, BlockState p_256550_, boolean p_256181_) {
+    public boolean isValidBonemealTarget(LevelReader p_255931_, BlockPos p_256046_, BlockState p_256550_,
+            boolean p_256181_) {
         return this.canGrowInto(p_255931_.getBlockState(p_256046_.relative(Direction.UP)));
     }
 
-    public boolean isBonemealSuccess(Level p_221343_, RandomSource p_221344_, BlockPos p_221345_, BlockState p_221346_) {
+    public boolean isBonemealSuccess(Level p_221343_, RandomSource p_221344_, BlockPos p_221345_,
+            BlockState p_221346_) {
         return true;
     }
 
-    public void performBonemeal(ServerLevel p_221337_, RandomSource p_221338_, BlockPos p_221339_, BlockState p_221340_) {
+    public void performBonemeal(ServerLevel p_221337_, RandomSource p_221338_, BlockPos p_221339_,
+            BlockState p_221340_) {
         BlockPos blockpos = p_221339_.relative(Direction.UP);
         int i = Math.min(p_221340_.getValue(AGE) + 1, 25);
         int j = this.getBlocksToGrowWhenBonemealed(p_221338_);
 
-        for(int k = 0; k < j && this.canGrowInto(p_221337_.getBlockState(blockpos)); ++k) {
+        for (int k = 0; k < j && this.canGrowInto(p_221337_.getBlockState(blockpos)); ++k) {
             p_221337_.setBlockAndUpdate(blockpos, p_221340_.setValue(AGE, Integer.valueOf(i)));
             blockpos = blockpos.relative(Direction.UP);
             i = Math.min(i + 1, 25);

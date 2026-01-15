@@ -41,19 +41,19 @@ public class SculkGrowerBlockEntity extends ModBlockEntity implements IEnchanted
     }
 
     @Override
-    public Object2IntMap<Enchantment> getEnchantments(){
+    public Object2IntMap<Enchantment> getEnchantments() {
         return this.enchantments;
     }
 
-    public void tick(){
-        if (this.level != null && !this.level.isClientSide){
-            if (this.checkCage()){
+    public void tick() {
+        if (this.level != null && !this.level.isClientSide) {
+            if (this.checkCage()) {
                 this.level.setBlock(this.getBlockPos(), this.getBlockState().setValue(SculkGrowerBlock.LIT, true), 3);
             } else {
                 this.level.setBlock(this.getBlockPos(), this.getBlockState().setValue(SculkGrowerBlock.LIT, false), 3);
             }
             this.scanTotalPlants();
-            if (this.level.getGameTime() % 5 == 0){
+            if (this.level.getGameTime() % 5 == 0) {
                 this.findPlants();
             }
             if (this.growCharges <= 0) {
@@ -65,38 +65,46 @@ public class SculkGrowerBlockEntity extends ModBlockEntity implements IEnchanted
             } else {
                 this.growPlants();
             }
-            if (this.totalPlantPos.isEmpty() || this.decayTimer <= 0){
+            if (this.totalPlantPos.isEmpty() || this.decayTimer <= 0) {
                 this.decayCharges();
             }
         }
     }
 
-    public void commonTick(){
-        if (this.level != null && !this.level.isClientSide){
-            if (this.growCharges <= 0){
-                this.level.setBlock(this.getBlockPos(), this.getBlockState().setValue(SculkGrowerBlock.CHARGED, false), 3);
+    public void commonTick() {
+        if (this.level != null && !this.level.isClientSide) {
+            if (this.growCharges <= 0) {
+                this.level.setBlock(this.getBlockPos(), this.getBlockState().setValue(SculkGrowerBlock.CHARGED, false),
+                        3);
             } else {
-                this.level.setBlock(this.getBlockPos(), this.getBlockState().setValue(SculkGrowerBlock.CHARGED, true), 3);
+                this.level.setBlock(this.getBlockPos(), this.getBlockState().setValue(SculkGrowerBlock.CHARGED, true),
+                        3);
             }
         }
     }
 
-    public void decayCharges(){
+    public void decayCharges() {
         if (this.level != null && this.level instanceof ServerLevel serverLevel) {
-            if (this.growCharges > 0 && this.level.getGameTime() % 10 == 0){
+            if (this.growCharges > 0 && this.level.getGameTime() % 10 == 0) {
                 --this.growCharges;
                 double d0 = 0.5625D;
                 float f5 = 0.15F + 0.02F * serverLevel.random.nextFloat();
                 float f = 0.4F + 0.3F * serverLevel.random.nextFloat();
-                ModNetwork.INSTANCE.send(PacketDistributor.ALL.noArg(), new SPlayWorldSoundPacket(this.getBlockPos(), SoundEvents.SCULK_BLOCK_CHARGE, f5, f));
-                for(Direction direction : Direction.values()) {
+                ModNetwork.sendToALL(
+                        new SPlayWorldSoundPacket(this.getBlockPos(), SoundEvents.SCULK_BLOCK_CHARGE, f5, f));
+                for (Direction direction : Direction.values()) {
                     BlockPos blockpos = this.getBlockPos().relative(direction);
                     if (!serverLevel.getBlockState(blockpos).isSolidRender(serverLevel, blockpos)) {
                         Direction.Axis direction$axis = direction.getAxis();
-                        double d1 = direction$axis == Direction.Axis.X ? 0.5D + d0 * (double)direction.getStepX() : (double)serverLevel.random.nextFloat();
-                        double d2 = direction$axis == Direction.Axis.Y ? 0.5D + d0 * (double)direction.getStepY() : (double)serverLevel.random.nextFloat();
-                        double d3 = direction$axis == Direction.Axis.Z ? 0.5D + d0 * (double)direction.getStepZ() : (double)serverLevel.random.nextFloat();
-                        serverLevel.sendParticles(ParticleTypes.SCULK_CHARGE_POP, (double) this.getBlockPos().getX() + d1, (double) this.getBlockPos().getY() + d2, (double) this.getBlockPos().getZ() + d3, 2, 0.2D, 0.0D, 0.2D, 0.0D);
+                        double d1 = direction$axis == Direction.Axis.X ? 0.5D + d0 * (double) direction.getStepX()
+                                : (double) serverLevel.random.nextFloat();
+                        double d2 = direction$axis == Direction.Axis.Y ? 0.5D + d0 * (double) direction.getStepY()
+                                : (double) serverLevel.random.nextFloat();
+                        double d3 = direction$axis == Direction.Axis.Z ? 0.5D + d0 * (double) direction.getStepZ()
+                                : (double) serverLevel.random.nextFloat();
+                        serverLevel.sendParticles(ParticleTypes.SCULK_CHARGE_POP,
+                                (double) this.getBlockPos().getX() + d1, (double) this.getBlockPos().getY() + d2,
+                                (double) this.getBlockPos().getZ() + d3, 2, 0.2D, 0.0D, 0.2D, 0.0D);
                     }
                 }
             }
@@ -104,7 +112,7 @@ public class SculkGrowerBlockEntity extends ModBlockEntity implements IEnchanted
     }
 
     @SuppressWarnings("deprecation")
-    public void scanTotalPlants(){
+    public void scanTotalPlants() {
         if (this.level != null) {
             this.totalPlantPos.clear();
             int distance = 4 + this.enchantments.getOrDefault(ModEnchantments.RADIUS.get(), 0);
@@ -130,7 +138,7 @@ public class SculkGrowerBlockEntity extends ModBlockEntity implements IEnchanted
     }
 
     @SuppressWarnings("deprecation")
-    public void findPlants(){
+    public void findPlants() {
         if (this.level != null && this.level instanceof ServerLevel serverLevel) {
             this.growablePlantPos.clear();
             int distance = 5 + this.enchantments.getOrDefault(ModEnchantments.RADIUS.get(), 0);
@@ -148,11 +156,11 @@ public class SculkGrowerBlockEntity extends ModBlockEntity implements IEnchanted
         }
     }
 
-    public void growPlants(){
+    public void growPlants() {
         if (this.level != null && this.level instanceof ServerLevel serverLevel) {
             if (!this.growablePlantPos.isEmpty()) {
                 int potency = 1 + this.enchantments.getOrDefault(ModEnchantments.POTENCY.get(), 0);
-                if (!MainConfig.SculkGrowerPotency.get()){
+                if (!MainConfig.SculkGrowerPotency.get()) {
                     potency = 1;
                 }
                 int random = serverLevel.random.nextInt(this.growablePlantPos.size());
@@ -160,11 +168,13 @@ public class SculkGrowerBlockEntity extends ModBlockEntity implements IEnchanted
                 BlockState blockState = serverLevel.getBlockState(blockPos);
                 if (!blockState.isAir()) {
                     --this.growCharges;
-                    serverLevel.sendParticles(new SculkChargeParticleOptions(0.0F), (double) blockPos.getX() + 0.5D, (double) blockPos.getY(), (double) blockPos.getZ() + 0.5D, 2, 0.2D, 0.0D, 0.2D, 0.0D);
+                    serverLevel.sendParticles(new SculkChargeParticleOptions(0.0F), (double) blockPos.getX() + 0.5D,
+                            (double) blockPos.getY(), (double) blockPos.getZ() + 0.5D, 2, 0.2D, 0.0D, 0.2D, 0.0D);
                     float f5 = 0.15F + 0.02F * serverLevel.random.nextFloat();
                     float f = 0.4F + 0.3F * serverLevel.random.nextFloat();
-                    ModNetwork.INSTANCE.send(PacketDistributor.ALL.noArg(), new SPlayWorldSoundPacket(blockPos, SoundEvents.SCULK_BLOCK_CHARGE, f5, f));
-                    for (int i = 0; i < potency; ++i){
+                    ModNetwork.sendToALL(
+                            new SPlayWorldSoundPacket(blockPos, SoundEvents.SCULK_BLOCK_CHARGE, f5, f));
+                    for (int i = 0; i < potency; ++i) {
                         blockState.randomTick(serverLevel, blockPos, serverLevel.random);
                     }
                     this.decayTimer = 100;
@@ -178,24 +188,26 @@ public class SculkGrowerBlockEntity extends ModBlockEntity implements IEnchanted
     }
 
     private boolean isCrops(BlockPos blockPos) {
-        if (this.level == null){
+        if (this.level == null) {
             return false;
         }
         BlockState blockState = this.level.getBlockState(blockPos);
         Block cropBlock = blockState.getBlock();
-        return cropBlock != Blocks.GRASS_BLOCK && !(cropBlock instanceof DoublePlantBlock) && cropBlock instanceof BonemealableBlock && ((BonemealableBlock) cropBlock).isValidBonemealTarget(this.level, blockPos, blockState, this.level.isClientSide);
+        return cropBlock != Blocks.GRASS_BLOCK && !(cropBlock instanceof DoublePlantBlock)
+                && cropBlock instanceof BonemealableBlock && ((BonemealableBlock) cropBlock)
+                        .isValidBonemealTarget(this.level, blockPos, blockState, this.level.isClientSide);
     }
 
-    private boolean takeSouls(){
-        if (this.level == null){
+    private boolean takeSouls() {
+        if (this.level == null) {
             return false;
         }
         int potency = 1 + this.enchantments.getOrDefault(ModEnchantments.POTENCY.get(), 0);
-        if (!MainConfig.SculkGrowerPotency.get()){
+        if (!MainConfig.SculkGrowerPotency.get()) {
             potency = 1;
         }
         int cost = MainConfig.SculkGrowerCost.get() * potency;
-        if (this.getCursedCageTile().getSouls() > cost){
+        if (this.getCursedCageTile().getSouls() > cost) {
             this.getCursedCageTile().decreaseSouls(cost);
             this.getCursedCageTile().generateManyParticles();
             return true;
@@ -205,14 +217,14 @@ public class SculkGrowerBlockEntity extends ModBlockEntity implements IEnchanted
     }
 
     private boolean checkCage() {
-        if (this.level == null){
+        if (this.level == null) {
             return false;
         }
         BlockPos pos = this.getBlockPos().above();
         BlockState blockState = this.level.getBlockState(pos);
-        if (blockState.is(ModBlocks.CURSED_CAGE_BLOCK.get())){
+        if (blockState.is(ModBlocks.CURSED_CAGE_BLOCK.get())) {
             BlockEntity tileentity = this.level.getBlockEntity(pos);
-            if (tileentity instanceof CursedCageBlockEntity){
+            if (tileentity instanceof CursedCageBlockEntity) {
                 this.cursedCageTile = (CursedCageBlockEntity) tileentity;
                 return !cursedCageTile.getItem().isEmpty();
             } else {
@@ -223,7 +235,7 @@ public class SculkGrowerBlockEntity extends ModBlockEntity implements IEnchanted
         }
     }
 
-    public int getGrowCharges(){
+    public int getGrowCharges() {
         return this.growCharges;
     }
 
@@ -242,7 +254,7 @@ public class SculkGrowerBlockEntity extends ModBlockEntity implements IEnchanted
         return pCompound;
     }
 
-    public CursedCageBlockEntity getCursedCageTile(){
+    public CursedCageBlockEntity getCursedCageTile() {
         return this.cursedCageTile;
     }
 

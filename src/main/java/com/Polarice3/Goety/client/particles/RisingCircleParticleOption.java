@@ -1,5 +1,6 @@
 package com.Polarice3.Goety.client.particles;
 
+import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.particles.ParticleOptions;
@@ -14,9 +15,8 @@ public class RisingCircleParticleOption implements ParticleOptions {
       })).apply(p_235952_, RisingCircleParticleOption::new);
    });
    public static final StreamCodec<RegistryFriendlyByteBuf, RisingCircleParticleOption> STREAM_CODEC = StreamCodec.of(
-           (buf, value) -> buf.writeVarInt(value.delay),
-           buf -> new RisingCircleParticleOption(buf.readVarInt())
-   );
+         (buf, value) -> buf.writeVarInt(value.delay),
+         buf -> new RisingCircleParticleOption(buf.readVarInt()));
    private final int delay;
 
    public RisingCircleParticleOption(int p_235949_) {

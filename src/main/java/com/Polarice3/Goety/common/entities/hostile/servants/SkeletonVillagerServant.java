@@ -41,10 +41,13 @@ import net.minecraft.world.level.block.state.BlockState;
 import javax.annotation.Nullable;
 import java.util.function.Predicate;
 
-public class SkeletonVillagerServant extends Owned implements CrossbowAttackMob, RangedAttackMob {
-    private static final EntityDataAccessor<Boolean> DATA_CHARGING_STATE = SynchedEntityData.defineId(SkeletonVillagerServant.class, EntityDataSerializers.BOOLEAN);
-    private final CreatureBowAttackGoal<SkeletonVillagerServant> bowGoal = new CreatureBowAttackGoal<>(this, 1.0D, 20, 15.0F);
-    private final BackawayCrossbowGoal<SkeletonVillagerServant> crossBowGoal = new BackawayCrossbowGoal<>(this, 1.0D, 16.0F);
+public class SkeletonVillagerServant extends Owned implements CrossbowAttackMob {
+    private static final EntityDataAccessor<Boolean> DATA_CHARGING_STATE = SynchedEntityData
+            .defineId(SkeletonVillagerServant.class, EntityDataSerializers.BOOLEAN);
+    private final CreatureBowAttackGoal<SkeletonVillagerServant> bowGoal = new CreatureBowAttackGoal<>(this, 1.0D, 20,
+            15.0F);
+    private final BackawayCrossbowGoal<SkeletonVillagerServant> crossBowGoal = new BackawayCrossbowGoal<>(this, 1.0D,
+            16.0F);
     private final MeleeAttackGoal meleeGoal = new MeleeAttackGoal(this, 1.2D, false) {
 
         public void stop() {
@@ -71,29 +74,32 @@ public class SkeletonVillagerServant extends Owned implements CrossbowAttackMob,
         this.targetSelector.addGoal(1, (new HurtByTargetGoal(this)).setAlertOthers(SkeletonVillagerServant.class));
     }
 
-    public static AttributeSupplier.Builder setCustomAttributes(){
+    public static AttributeSupplier.Builder setCustomAttributes() {
         return Mob.createMobAttributes()
                 .add(Attributes.MAX_HEALTH, AttributesConfig.SkeletonVillagerServantHealth.get())
                 .add(Attributes.ATTACK_DAMAGE, AttributesConfig.SkeletonVillagerServantDamage.get())
                 .add(Attributes.MOVEMENT_SPEED, 0.25D);
     }
 
-    public void setConfigurableAttributes(){
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.MAX_HEALTH), AttributesConfig.SkeletonVillagerServantHealth.get());
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ATTACK_DAMAGE), AttributesConfig.SkeletonVillagerServantDamage.get());
+    public void setConfigurableAttributes() {
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.MAX_HEALTH),
+                AttributesConfig.SkeletonVillagerServantHealth.get());
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ATTACK_DAMAGE),
+                AttributesConfig.SkeletonVillagerServantDamage.get());
     }
 
     public void reassessWeaponGoal() {
-        if (this.level != null && !this.level.isClientSide) {
+        if (this.level() != null && !this.level().isClientSide) {
             this.goalSelector.removeGoal(this.meleeGoal);
             this.goalSelector.removeGoal(this.bowGoal);
-            ItemStack itemstack = this.getItemInHand(ProjectileUtil.getWeaponHoldingHand(this, item -> item instanceof ProjectileWeaponItem));
+            ItemStack itemstack = this.getItemInHand(
+                    ProjectileUtil.getWeaponHoldingHand(this, item -> item instanceof ProjectileWeaponItem));
             if (itemstack.getItem() == Items.BOW) {
                 int i = 20;
 
                 this.bowGoal.setMinAttackInterval(i);
                 this.goalSelector.addGoal(4, this.bowGoal);
-            } else if (itemstack.getItem() == Items.CROSSBOW){
+            } else if (itemstack.getItem() == Items.CROSSBOW) {
                 this.goalSelector.addGoal(4, this.crossBowGoal);
             } else {
                 this.goalSelector.addGoal(4, this.meleeGoal);
@@ -104,7 +110,7 @@ public class SkeletonVillagerServant extends Owned implements CrossbowAttackMob,
 
     public void setItemSlot(EquipmentSlot pSlot, ItemStack pStack) {
         super.setItemSlot(pSlot, pStack);
-        if (!this.level.isClientSide) {
+        if (!this.level().isClientSide) {
             this.reassessWeaponGoal();
         }
 
@@ -114,9 +120,9 @@ public class SkeletonVillagerServant extends Owned implements CrossbowAttackMob,
         return MobType.UNDEAD;
     }
 
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.entityData.define(DATA_CHARGING_STATE, false);
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(DATA_CHARGING_STATE, false);
     }
 
     public void readAdditionalSaveData(CompoundTag compound) {
@@ -127,9 +133,9 @@ public class SkeletonVillagerServant extends Owned implements CrossbowAttackMob,
     public boolean doHurtTarget(Entity entityIn) {
         boolean flag = super.doHurtTarget(entityIn);
         if (flag) {
-            float f = this.level.getCurrentDifficultyAt(this.blockPosition()).getEffectiveDifficulty();
+            float f = this.level().getCurrentDifficultyAt(this.blockPosition()).getEffectiveDifficulty();
             if (this.getMainHandItem().isEmpty() && this.isOnFire() && this.random.nextFloat() < f * 0.3F) {
-                entityIn.setSecondsOnFire(2 * (int)f);
+                entityIn.igniteForSeconds(2 * (int) f);
             }
         }
 
@@ -158,7 +164,7 @@ public class SkeletonVillagerServant extends Owned implements CrossbowAttackMob,
 
     protected void populateDefaultEquipmentSlots(RandomSource randomSource, DifficultyInstance pDifficulty) {
         super.populateDefaultEquipmentSlots(randomSource, pDifficulty);
-        if (this.level.random.nextBoolean()) {
+        if (this.level().random.nextBoolean()) {
             this.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.BOW));
         } else {
             this.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.CROSSBOW));
@@ -166,13 +172,14 @@ public class SkeletonVillagerServant extends Owned implements CrossbowAttackMob,
     }
 
     @Nullable
-    public SpawnGroupData finalizeSpawn(ServerLevelAccessor pLevel, DifficultyInstance pDifficulty, MobSpawnType pReason, @Nullable SpawnGroupData pSpawnData, @Nullable CompoundTag pDataTag) {
-        pSpawnData = super.finalizeSpawn(pLevel, pDifficulty, pReason, pSpawnData, pDataTag);
+    public SpawnGroupData finalizeSpawn(ServerLevelAccessor pLevel, DifficultyInstance pDifficulty,
+            MobSpawnType pReason, @Nullable SpawnGroupData pSpawnData) {
+        pSpawnData = super.finalizeSpawn(pLevel, pDifficulty, pReason, pSpawnData);
         RandomSource randomsource = pLevel.getRandom();
         this.populateDefaultEquipmentSlots(randomsource, pDifficulty);
-        this.populateDefaultEquipmentEnchantments(randomsource, pDifficulty);
+        this.populateDefaultEquipmentEnchantments(pLevel, randomsource, pDifficulty);
         this.reassessWeaponGoal();
-        for(EquipmentSlot equipmentslottype : EquipmentSlot.values()) {
+        for (EquipmentSlot equipmentslottype : EquipmentSlot.values()) {
             this.setDropChance(equipmentslottype, 0.0F);
         }
 
@@ -180,21 +187,24 @@ public class SkeletonVillagerServant extends Owned implements CrossbowAttackMob,
     }
 
     public void performRangedAttack(LivingEntity pTarget, float pDistanceFactor) {
-        ItemStack itemstack = this.getProjectile(this.getItemInHand(ProjectileUtil.getWeaponHoldingHand(this, item -> item instanceof BowItem)));
-        AbstractArrow abstractarrowentity = this.getArrow(itemstack, pDistanceFactor);
-        if (this.getMainHandItem().getItem() instanceof BowItem)
-            abstractarrowentity = ((BowItem)this.getMainHandItem().getItem()).customArrow(abstractarrowentity);
+        ItemStack itemstack = this.getProjectile(
+                this.getItemInHand(ProjectileUtil.getWeaponHoldingHand(this, item -> item instanceof BowItem)));
+        AbstractArrow abstractarrowentity = this.getArrow(itemstack, pDistanceFactor,
+                this.getItemInHand(ProjectileUtil.getWeaponHoldingHand(this, item -> item instanceof BowItem)));
+        if (this.getMainHandItem().getItem() instanceof BowItem bow)
+            abstractarrowentity = bow.customArrow(abstractarrowentity, this.getMainHandItem(), itemstack);
         double d0 = pTarget.getX() - this.getX();
         double d1 = pTarget.getY(0.3333333333333333D) - abstractarrowentity.getY();
         double d2 = pTarget.getZ() - this.getZ();
         double d3 = Mth.sqrt((float) (d0 * d0 + d2 * d2));
-        abstractarrowentity.shoot(d0, d1 + d3 * (double)0.2F, d2, 1.6F, (float)(14 - this.level.getDifficulty().getId() * 4));
+        abstractarrowentity.shoot(d0, d1 + d3 * (double) 0.2F, d2, 1.6F,
+                (float) (14 - this.level().getDifficulty().getId() * 4));
         this.playSound(SoundEvents.SKELETON_SHOOT, 1.0F, 1.0F / (this.getRandom().nextFloat() * 0.4F + 0.8F));
-        this.level.addFreshEntity(abstractarrowentity);
+        this.level().addFreshEntity(abstractarrowentity);
     }
 
-    protected AbstractArrow getArrow(ItemStack pArrowStack, float pDistanceFactor) {
-        return ProjectileUtil.getMobArrow(this, pArrowStack, pDistanceFactor);
+    protected AbstractArrow getArrow(ItemStack pArrowStack, float pDistanceFactor, ItemStack weapon) {
+        return ProjectileUtil.getMobArrow(this, pArrowStack, pDistanceFactor, weapon);
     }
 
     public boolean canFireProjectileWeapon(ProjectileWeaponItem p_230280_1_) {
@@ -202,8 +212,8 @@ public class SkeletonVillagerServant extends Owned implements CrossbowAttackMob,
     }
 
     public ItemStack getProjectile(ItemStack shootable) {
-        if (shootable.getItem() instanceof ProjectileWeaponItem) {
-            Predicate<ItemStack> predicate = ((ProjectileWeaponItem)shootable.getItem()).getSupportedHeldProjectiles();
+        if (shootable.getItem() instanceof ProjectileWeaponItem weaponItem) {
+            Predicate<ItemStack> predicate = weaponItem.getSupportedHeldProjectiles();
             ItemStack itemstack = ProjectileWeaponItem.getHeldProjectile(this, predicate);
             return itemstack.isEmpty() ? new ItemStack(Items.ARROW) : itemstack;
         } else {
@@ -224,9 +234,17 @@ public class SkeletonVillagerServant extends Owned implements CrossbowAttackMob,
         this.entityData.set(DATA_CHARGING_STATE, isCharging);
     }
 
-    @Override
-    public void shootCrossbowProjectile(LivingEntity p_230284_1_, ItemStack p_230284_2_, Projectile p_230284_3_, float p_230284_4_) {
-        this.shootCrossbowProjectile(this, p_230284_1_, p_230284_3_, p_230284_4_, 1.6F);
+    public void shootCrossbowProjectile(LivingEntity p_230284_1_, ItemStack p_230284_2_, Projectile p_230284_3_,
+            float p_230284_4_) {
+        double d0 = p_230284_1_.getX() - this.getX();
+        double d1 = p_230284_1_.getZ() - this.getZ();
+        double d2 = Math.sqrt(d0 * d0 + d1 * d1);
+        double d3 = p_230284_1_.getY(0.3333333333333333D) - p_230284_3_.getY() + d2 * (double) 0.2F;
+        org.joml.Vector3f vector3f = this.getProjectileShotVector(p_230284_1_,
+                new net.minecraft.world.phys.Vec3(d0, d3, d1), p_230284_4_);
+        p_230284_3_.shoot((double) vector3f.x(), (double) vector3f.y(), (double) vector3f.z(), 1.6F,
+                (float) (14 - this.level().getDifficulty().getId() * 4));
+        this.playSound(SoundEvents.CROSSBOW_SHOOT, 1.0F, 1.0F / (this.getRandom().nextFloat() * 0.4F + 0.8F));
     }
 
     public void onCrossbowAttackPerformed() {

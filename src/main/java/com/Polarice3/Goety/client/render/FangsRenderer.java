@@ -13,7 +13,8 @@ import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
 
 public class FangsRenderer extends EntityRenderer<Fangs> {
-    private static final ResourceLocation TEXTURE_LOCATION = new ResourceLocation("textures/entity/illager/evoker_fangs.png");
+    private static final ResourceLocation TEXTURE_LOCATION = new ResourceLocation(
+            "textures/entity/illager/evoker_fangs.png");
     private final EvokerFangsModel<Fangs> model;
 
     public FangsRenderer(EntityRendererProvider.Context p_174100_) {
@@ -21,7 +22,8 @@ public class FangsRenderer extends EntityRenderer<Fangs> {
         this.model = new EvokerFangsModel<>(p_174100_.bakeLayer(ModelLayers.EVOKER_FANGS));
     }
 
-    public void render(Fangs p_114528_, float p_114529_, float p_114530_, PoseStack p_114531_, MultiBufferSource p_114532_, int p_114533_) {
+    public void render(Fangs p_114528_, float p_114529_, float p_114530_, PoseStack p_114531_,
+            MultiBufferSource p_114532_, int p_114533_) {
         float f = p_114528_.getAnimationProgress(p_114530_);
         if (f != 0.0F) {
             float f1 = 2.0F;
@@ -37,7 +39,7 @@ public class FangsRenderer extends EntityRenderer<Fangs> {
             p_114531_.scale(0.5F, 0.5F, 0.5F);
             this.model.setupAnim(p_114528_, f, 0.0F, 0.0F, p_114528_.getYRot(), p_114528_.getXRot());
             VertexConsumer vertexconsumer = p_114532_.getBuffer(this.model.renderType(TEXTURE_LOCATION));
-            this.model.renderToBuffer(p_114531_, vertexconsumer, p_114533_, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 1.0F);
+            this.model.renderToBuffer(p_114531_, vertexconsumer, p_114533_, OverlayTexture.NO_OVERLAY, -1);
             p_114531_.popPose();
             super.render(p_114528_, p_114529_, p_114530_, p_114531_, p_114532_, p_114533_);
         }

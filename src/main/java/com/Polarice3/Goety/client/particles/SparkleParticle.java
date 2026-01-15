@@ -27,7 +27,8 @@ public class SparkleParticle extends TextureSheetParticle {
     private final boolean slowdown = true;
     private final SpriteSet sprite;
 
-    public SparkleParticle(ClientLevel world, double x, double y, double z, float size, float red, float green, float blue, int extraLife, SpriteSet sprite) {
+    public SparkleParticle(ClientLevel world, double x, double y, double z, float size, float red, float green,
+            float blue, int extraLife, SpriteSet sprite) {
         super(world, x, y, z, 0.0D, 0.0D, 0.0D);
         this.rCol = red;
         this.gCol = green;
@@ -92,7 +93,6 @@ public class SparkleParticle extends TextureSheetParticle {
         RenderSystem.setShaderTexture(0, TextureAtlas.LOCATION_PARTICLES);
         AbstractTexture tex = textureManager.getTexture(TextureAtlas.LOCATION_PARTICLES);
         tex.setBlurMipmap(true, false);
-        buffer.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.PARTICLE);
     }
 
     private static void endRenderCommon() {
@@ -104,14 +104,10 @@ public class SparkleParticle extends TextureSheetParticle {
 
     public static final ParticleRenderType NORMAL_RENDER = new ParticleRenderType() {
         @Override
-        public void begin(BufferBuilder bufferBuilder, TextureManager textureManager) {
-            beginRenderCommon(bufferBuilder, textureManager);
-        }
-
-        @Override
-        public void end(Tesselator tessellator) {
-            tessellator.end();
-            endRenderCommon();
+        public BufferBuilder begin(Tesselator tesselator, TextureManager textureManager) {
+            BufferBuilder buffer = tesselator.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.PARTICLE);
+            beginRenderCommon(buffer, textureManager);
+            return buffer;
         }
 
         @Override
@@ -128,7 +124,8 @@ public class SparkleParticle extends TextureSheetParticle {
         }
 
         @Override
-        public Particle createParticle(SparkleParticleOption data, ClientLevel world, double x, double y, double z, double mx, double my, double mz) {
+        public Particle createParticle(SparkleParticleOption data, ClientLevel world, double x, double y, double z,
+                double mx, double my, double mz) {
             return new SparkleParticle(world, x, y, z, data.size, data.r, data.g, data.b, data.extraLife, sprite);
         }
     }

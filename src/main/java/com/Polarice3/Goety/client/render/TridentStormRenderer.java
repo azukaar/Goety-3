@@ -22,21 +22,23 @@ public class TridentStormRenderer extends EntityRenderer<TridentStorm> {
         this.model = new TridentStormModel<>(renderManagerIn.bakeLayer(ModModelLayer.TRIDENT_STORM));
     }
 
-    public void render(TridentStorm entityIn, float entityYaw, float partialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn, int packedLightIn) {
+    public void render(TridentStorm entityIn, float entityYaw, float partialTicks, PoseStack matrixStackIn,
+            MultiBufferSource bufferIn, int packedLightIn) {
         matrixStackIn.pushPose();
-        VertexConsumer ivertexbuilder = bufferIn.getBuffer(RenderType.entityTranslucentEmissive(this.getTextureLocation(entityIn)));
+        VertexConsumer ivertexbuilder = bufferIn
+                .getBuffer(RenderType.entityTranslucentEmissive(this.getTextureLocation(entityIn)));
         float f7 = this.getBob(entityIn, partialTicks);
         this.model.setupAnim(entityIn, 0.0F, 0.0F, f7, entityIn.getYRot(), entityIn.getXRot());
         matrixStackIn.scale(1.0F, 1.0F, 1.0F);
         matrixStackIn.translate(0.0D, 1.6D, 0.0D);
         matrixStackIn.mulPose(Axis.ZP.rotationDegrees(180.0F));
-        this.model.renderToBuffer(matrixStackIn, ivertexbuilder, packedLightIn, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 1.0F);
+        this.model.renderToBuffer(matrixStackIn, ivertexbuilder, packedLightIn, OverlayTexture.NO_OVERLAY, -1);
         matrixStackIn.popPose();
         super.render(entityIn, entityYaw, partialTicks, matrixStackIn, bufferIn, packedLightIn);
     }
 
     protected float getBob(TridentStorm p_115305_, float p_115306_) {
-        return (float)p_115305_.tickCount + p_115306_;
+        return (float) p_115305_.tickCount + p_115306_;
     }
 
     @Override

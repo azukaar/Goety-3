@@ -38,7 +38,8 @@ import java.util.Optional;
 import java.util.function.Consumer;
 
 /**
- * Based on Rat Sack item by @AlexModGuy: <a href="https://github.com/AlexModGuy/Rats/blob/1.20/src/main/java/com/github/alexthe666/rats/server/items/RatSackItem.java">...</a>
+ * Based on Rat Sack item by @AlexModGuy: <a href=
+ * "https://github.com/AlexModGuy/Rats/blob/1.20/src/main/java/com/github/alexthe666/rats/server/items/RatSackItem.java">...</a>
  */
 public class EsotericTesseract extends Item implements IPersist {
     public static String BIG = "Big";
@@ -66,7 +67,7 @@ public class EsotericTesseract extends Item implements IPersist {
     }
 
     @Override
-    public int getBarWidth(ItemStack stack){
+    public int getBarWidth(ItemStack stack) {
         if (this.isBroken(stack)) {
             return 13;
         }
@@ -98,7 +99,8 @@ public class EsotericTesseract extends Item implements IPersist {
     }
 
     public boolean onLeftClickEntity(ItemStack stack, Player player, Entity target) {
-        if (target instanceof Mob mob && mob.isAlive() && mob instanceof OwnableEntity owned && owned.getOwner() == player && mob.canChangeDimensions()) {
+        if (target instanceof Mob mob && mob.isAlive() && mob instanceof OwnableEntity owned
+                && owned.getOwner() == player && mob.canChangeDimensions()) {
             if (stack.getItem() == this && this.isNotBroken(stack)) {
                 if (!player.level.isClientSide) {
                     if (getServantsInTesseract(stack) < ItemConfig.TesseractCapacity.get()) {
@@ -119,7 +121,8 @@ public class EsotericTesseract extends Item implements IPersist {
                         if (flag) {
                             putServantIntoTesseract(stack, mob, getServantsInTesseract(stack) + 1);
                             player.playSound(SoundEvents.BOTTLE_FILL_DRAGONBREATH, 1.0F, 0.75F);
-                            ModNetwork.sendTo(player, new SPlayPlayerSoundPacket(SoundEvents.BOTTLE_FILL_DRAGONBREATH, 1.0F, 0.75F));
+                            ModNetwork.sendTo(player,
+                                    new SPlayPlayerSoundPacket(SoundEvents.BOTTLE_FILL_DRAGONBREATH, 1.0F, 0.75F));
                             mob.discard();
                         }
                     }
@@ -131,7 +134,7 @@ public class EsotericTesseract extends Item implements IPersist {
     }
 
     @Override
-    public int getUseDuration(ItemStack p_41454_) {
+    public int getUseDuration(ItemStack p_41454_, LivingEntity livingEntity) {
         return 72000;
     }
 
@@ -146,11 +149,12 @@ public class EsotericTesseract extends Item implements IPersist {
         if (!worldIn.isClientSide) {
             if (stack.is(this)) {
                 if (getServantsInTesseract(stack) > 0) {
-                    int time = this.getUseDuration(stack) - count;
+                    int time = this.getUseDuration(stack, livingEntityIn) - count;
                     if (time > 0 && time % 20 == 0) {
                         int servantCount = ejectSingleServant(stack, worldIn, livingEntityIn.blockPosition());
                         if (servantCount > 0) {
-                            worldIn.playSound(null, livingEntityIn.blockPosition(), SoundEvents.ENDERMAN_TELEPORT, livingEntityIn.getSoundSource(), 1.0F, 1.0F);
+                            worldIn.playSound(null, livingEntityIn.blockPosition(), SoundEvents.ENDERMAN_TELEPORT,
+                                    livingEntityIn.getSoundSource(), 1.0F, 1.0F);
                             ItemHelper.hurtAndBreak(stack, servantCount, livingEntityIn);
                         }
                     }
@@ -196,7 +200,7 @@ public class EsotericTesseract extends Item implements IPersist {
             if (!mob.getTags().isEmpty()) {
                 ListTag listtag = new ListTag();
 
-                for(String s : mob.getTags()) {
+                for (String s : mob.getTags()) {
                     listtag.add(StringTag.valueOf(s));
                 }
 
@@ -228,7 +232,7 @@ public class EsotericTesseract extends Item implements IPersist {
                     }
                 }
             }
-            String finalName  = mainName + count;
+            String finalName = mainName + count;
             tag.put(finalName, servantTag);
         }
         tesseract.setTag(tag);
@@ -242,9 +246,9 @@ public class EsotericTesseract extends Item implements IPersist {
                     CompoundTag servantTag = stack.getTag().getCompound(tagInfo);
                     if (servantTag.contains(HUGE)) {
                         servantCount += ItemConfig.TesseractCapacity.get();
-                    } else if (servantTag.contains(LARGE)){
+                    } else if (servantTag.contains(LARGE)) {
                         servantCount += 4;
-                    } else if (servantTag.contains(BIG)){
+                    } else if (servantTag.contains(BIG)) {
                         servantCount += 2;
                     } else {
                         servantCount++;
@@ -258,7 +262,8 @@ public class EsotericTesseract extends Item implements IPersist {
     public static int ejectSingleServant(ItemStack stack, Level level, BlockPos pos) {
         int servantCount = 0;
         if (stack.getTag() != null) {
-            Optional<String> optional = stack.getTag().getAllKeys().stream().filter(string -> string.contains("Servant")).findFirst();
+            Optional<String> optional = stack.getTag().getAllKeys().stream()
+                    .filter(string -> string.contains("Servant")).findFirst();
             if (optional.isPresent()) {
                 String tagInfo = optional.get();
                 if (tagInfo.contains("Servant")) {
@@ -272,7 +277,8 @@ public class EsotericTesseract extends Item implements IPersist {
                     } else {
                         servantCount++;
                     }
-                    EntityType<?> entityType = NeoForgeRegistries.ENTITY_TYPES.getValue(new ResourceLocation(servantTag.getString("ServantType")));
+                    EntityType<?> entityType = NeoForgeRegistries.ENTITY_TYPES
+                            .getValue(new ResourceLocation(servantTag.getString("ServantType")));
                     if (entityType != null) {
                         Entity entity = entityType.create(level);
                         if (entity instanceof Mob servant && entity instanceof OwnableEntity) {
@@ -293,7 +299,7 @@ public class EsotericTesseract extends Item implements IPersist {
                                 ListTag listtag3 = servantTag.getList("Tags", 8);
                                 int i = Math.min(listtag3.size(), 1024);
 
-                                for(int j = 0; j < i; ++j) {
+                                for (int j = 0; j < i; ++j) {
                                     servant.getTags().add(listtag3.getString(j));
                                 }
                             }
@@ -303,7 +309,8 @@ public class EsotericTesseract extends Item implements IPersist {
 
                             servant.readAdditionalSaveData(servantTag);
                             if (!servantTag.getString("CustomName").isEmpty()) {
-                                servant.setCustomName(Component.Serializer.fromJson(servantTag.getString("CustomName")));
+                                servant.setCustomName(
+                                        Component.Serializer.fromJson(servantTag.getString("CustomName")));
                             }
                             BlockPos blockPos = BlockFinder.SummonRadius(pos, servant, level, 4);
                             servant.moveTo(blockPos.getX() + 0.5D, blockPos.getY(), blockPos.getZ() + 0.5D, 0.0F, 0.0F);
@@ -312,7 +319,8 @@ public class EsotericTesseract extends Item implements IPersist {
                                 if (servant instanceof IServant servant1) {
                                     servant1.setFollowing();
                                 }
-                                ServerParticleUtil.addParticlesAroundMiddleSelf(serverLevel, ParticleTypes.PORTAL, servant);
+                                ServerParticleUtil.addParticlesAroundMiddleSelf(serverLevel, ParticleTypes.PORTAL,
+                                        servant);
                             }
                             if (!stack.isEmpty()) {
                                 stack.getTag().remove(tagInfo);
@@ -332,7 +340,8 @@ public class EsotericTesseract extends Item implements IPersist {
                 if (tagInfo.contains("Servant")) {
                     servantCount++;
                     CompoundTag servantTag = stack.getTag().getCompound(tagInfo);
-                    EntityType<?> entityType = NeoForgeRegistries.ENTITY_TYPES.getValue(new ResourceLocation(servantTag.getString("ServantType")));
+                    EntityType<?> entityType = NeoForgeRegistries.ENTITY_TYPES
+                            .getValue(new ResourceLocation(servantTag.getString("ServantType")));
                     if (entityType != null) {
                         Entity entity = entityType.create(level);
                         if (entity instanceof Mob servant && entity instanceof OwnableEntity) {
@@ -353,7 +362,7 @@ public class EsotericTesseract extends Item implements IPersist {
                                 ListTag listtag3 = servantTag.getList("Tags", 8);
                                 int i = Math.min(listtag3.size(), 1024);
 
-                                for(int j = 0; j < i; ++j) {
+                                for (int j = 0; j < i; ++j) {
                                     servant.getTags().add(listtag3.getString(j));
                                 }
                             }
@@ -363,7 +372,8 @@ public class EsotericTesseract extends Item implements IPersist {
 
                             servant.readAdditionalSaveData(servantTag);
                             if (!servantTag.getString("CustomName").isEmpty()) {
-                                servant.setCustomName(Component.Serializer.fromJson(servantTag.getString("CustomName")));
+                                servant.setCustomName(
+                                        Component.Serializer.fromJson(servantTag.getString("CustomName")));
                             }
                             BlockPos blockPos = pos;
                             if (servantCount > 1) {
@@ -392,7 +402,8 @@ public class EsotericTesseract extends Item implements IPersist {
         ItemStack stack = entity.getItem();
         if (getServantsInTesseract(stack) > 0) {
             ejectAllServants(stack, entity.level, entity.blockPosition());
-            entity.level.playSound(null, entity.blockPosition(), SoundEvents.RESPAWN_ANCHOR_DEPLETE.get(), entity.getSoundSource(), 1.0F, 1.0F);
+            entity.level.playSound(null, entity.blockPosition(), SoundEvents.RESPAWN_ANCHOR_DEPLETE.get(),
+                    entity.getSoundSource(), 1.0F, 1.0F);
         }
     }
 
@@ -418,7 +429,8 @@ public class EsotericTesseract extends Item implements IPersist {
                     } else {
                         servantCount++;
                     }
-                    EntityType<?> entityType = NeoForgeRegistries.ENTITY_TYPES.getValue(new ResourceLocation(servantTag.getString("ServantType")));
+                    EntityType<?> entityType = NeoForgeRegistries.ENTITY_TYPES
+                            .getValue(new ResourceLocation(servantTag.getString("ServantType")));
                     String servantName = Component.translatable("info.goety.servant").toString();
                     if (entityType != null) {
                         servantName = I18n.get(entityType.getDescriptionId());
@@ -443,7 +455,9 @@ public class EsotericTesseract extends Item implements IPersist {
         } else {
             tooltip.add(Component.translatable("item.goety.tesseract.unleash").withStyle(ChatFormatting.DARK_PURPLE));
         }
-        tooltip.add(Component.translatable("item.goety.tesseract.contains", servantCount, ItemConfig.TesseractCapacity.get()).withStyle(ChatFormatting.GRAY));
+        tooltip.add(Component
+                .translatable("item.goety.tesseract.contains", servantCount, ItemConfig.TesseractCapacity.get())
+                .withStyle(ChatFormatting.GRAY));
         if (!servantNames.isEmpty()) {
             for (int i = 0; i < servantNames.size(); i++) {
                 if (i < 3) {
@@ -453,7 +467,8 @@ public class EsotericTesseract extends Item implements IPersist {
                 }
             }
             if (servantNames.size() > 3) {
-                tooltip.add(Component.translatable("item.goety.tesseract.more", servantNames.size() - 3).withStyle(ChatFormatting.GRAY));
+                tooltip.add(Component.translatable("item.goety.tesseract.more", servantNames.size() - 3)
+                        .withStyle(ChatFormatting.GRAY));
             }
         }
     }

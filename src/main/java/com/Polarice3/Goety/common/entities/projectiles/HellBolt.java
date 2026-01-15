@@ -35,21 +35,26 @@ import org.joml.Vector3f;
 import java.util.Map;
 
 public class HellBolt extends WaterHurtingProjectile {
-    private static final EntityDataAccessor<Integer> DATA_TYPE_ID = SynchedEntityData.defineId(HellBolt.class, EntityDataSerializers.INT);
+    private static final EntityDataAccessor<Integer> DATA_TYPE_ID = SynchedEntityData.defineId(HellBolt.class,
+            EntityDataSerializers.INT);
     public static final Map<Integer, ResourceLocation> TEXTURE_BY_TYPE = Util.make(Maps.newHashMap(), (map) -> {
         map.put(0, Goety.location("textures/entity/projectiles/hell_bolt/bolt_1.png"));
         map.put(1, Goety.location("textures/entity/projectiles/hell_bolt/bolt_2.png"));
         map.put(2, Goety.location("textures/entity/projectiles/hell_bolt/bolt_3.png"));
     });
-    public static final EntityDataAccessor<Integer> DATA_FIERY = SynchedEntityData.defineId(HellBolt.class, EntityDataSerializers.INT);
-    public static final EntityDataAccessor<Float> DATA_DAMAGE = SynchedEntityData.defineId(HellBolt.class, EntityDataSerializers.FLOAT);
-    public static final EntityDataAccessor<Boolean> RAIN = SynchedEntityData.defineId(HellBolt.class, EntityDataSerializers.BOOLEAN);
+    public static final EntityDataAccessor<Integer> DATA_FIERY = SynchedEntityData.defineId(HellBolt.class,
+            EntityDataSerializers.INT);
+    public static final EntityDataAccessor<Float> DATA_DAMAGE = SynchedEntityData.defineId(HellBolt.class,
+            EntityDataSerializers.FLOAT);
+    public static final EntityDataAccessor<Boolean> RAIN = SynchedEntityData.defineId(HellBolt.class,
+            EntityDataSerializers.BOOLEAN);
 
     public HellBolt(EntityType<? extends HellBolt> p_i50160_1_, Level p_i50160_2_) {
         super(p_i50160_1_, p_i50160_2_);
     }
 
-    public HellBolt(LivingEntity p_i1771_2_, double p_i1771_3_, double p_i1771_5_, double p_i1771_7_, Level p_i1771_1_) {
+    public HellBolt(LivingEntity p_i1771_2_, double p_i1771_3_, double p_i1771_5_, double p_i1771_7_,
+            Level p_i1771_1_) {
         super(ModEntityType.HELL_BOLT.get(), p_i1771_2_, p_i1771_3_, p_i1771_5_, p_i1771_7_, p_i1771_1_);
     }
 
@@ -72,7 +77,7 @@ public class HellBolt extends WaterHurtingProjectile {
         } else {
             this.setAnimation(0);
         }
-        if (this.tickCount >= MathHelper.secondsToTicks(10)){
+        if (this.tickCount >= MathHelper.secondsToTicks(10)) {
             this.discard();
         }
     }
@@ -80,12 +85,13 @@ public class HellBolt extends WaterHurtingProjectile {
     @Override
     public void trailParticle() {
         Entity entity = this.getOwner();
-        if (this.level.isClientSide || (entity == null || !entity.isRemoved()) && this.level.hasChunkAt(this.blockPosition())) {
+        if (this.level.isClientSide
+                || (entity == null || !entity.isRemoved()) && this.level.hasChunkAt(this.blockPosition())) {
             Vec3 vec3 = this.getDeltaMovement();
             double d0 = this.getX() - vec3.x;
             double d1 = this.getY() - vec3.y;
             double d2 = this.getZ() - vec3.z;
-            if (this.level.random.nextFloat() <= 0.05F){
+            if (this.level.random.nextFloat() <= 0.05F) {
                 this.level.addParticle(ModParticleTypes.BIG_FIRE.get(), d0, d1 + 0.15D, d2, 0.0D, 0.0D, 0.0D);
             }
         }
@@ -114,16 +120,16 @@ public class HellBolt extends WaterHurtingProjectile {
             Entity entity1 = this.getOwner();
             int flaming = this.getFiery();
             int i = 0;
-            if (flaming > 0){
+            if (flaming > 0) {
                 i = entity.getRemainingFireTicks() + (flaming - 1);
-                entity.setSecondsOnFire(5 * flaming);
+                entity.igniteForSeconds(5 * flaming);
             }
             boolean flag = entity.hurt(ModDamageSource.hellfire(this, entity1), this.getDamage());
             if (!flag) {
                 entity.setRemainingFireTicks(i);
             }
             if (entity1 instanceof LivingEntity) {
-                this.doEnchantDamageEffects((LivingEntity)entity1, entity);
+                this.doEnchantDamageEffects((LivingEntity) entity1, entity);
             }
         }
     }
@@ -144,7 +150,8 @@ public class HellBolt extends WaterHurtingProjectile {
                         }
                     } else if (pResult instanceof EntityHitResult entityHitResult) {
                         Entity entity1 = entityHitResult.getEntity();
-                        Hellfire hellfire = new Hellfire(this.level, Vec3.atCenterOf(entity1.blockPosition()), livingOwner);
+                        Hellfire hellfire = new Hellfire(this.level, Vec3.atCenterOf(entity1.blockPosition()),
+                                livingOwner);
                         vec3 = Vec3.atCenterOf(entity1.blockPosition());
                         this.level.addFreshEntity(hellfire);
                     }
@@ -152,13 +159,19 @@ public class HellBolt extends WaterHurtingProjectile {
                 if (this.level instanceof ServerLevel serverLevel) {
                     ServerParticleUtil.addParticlesAroundSelf(serverLevel, ModParticleTypes.BIG_FIRE.get(), this);
                     ColorUtil colorUtil = new ColorUtil(0xdd9c16);
-                    serverLevel.sendParticles(new CircleExplodeParticleOption(colorUtil.red, colorUtil.green, colorUtil.blue, 2, 1), vec3.x, BlockFinder.moveDownToGround(this), vec3.z, 1, 0.0D, 0.0D, 0.0D, 0.0D);
-                    DustCloudParticleOption cloudParticleOptions = new DustCloudParticleOption(new Vector3f(Vec3.fromRGB24(0x7a6664).toVector3f()), 1.0F);
-                    DustCloudParticleOption cloudParticleOptions2 = new DustCloudParticleOption(new Vector3f(Vec3.fromRGB24(0xeca294).toVector3f()), 1.0F);
+                    serverLevel.sendParticles(
+                            new CircleExplodeParticleOption(colorUtil.red, colorUtil.green, colorUtil.blue, 2, 1),
+                            vec3.x, BlockFinder.moveDownToGround(this), vec3.z, 1, 0.0D, 0.0D, 0.0D, 0.0D);
+                    DustCloudParticleOption cloudParticleOptions = new DustCloudParticleOption(
+                            new Vector3f(Vec3.fromRGB24(0x7a6664).toVector3f()), 1.0F);
+                    DustCloudParticleOption cloudParticleOptions2 = new DustCloudParticleOption(
+                            new Vector3f(Vec3.fromRGB24(0xeca294).toVector3f()), 1.0F);
                     for (int i = 0; i < 2; ++i) {
-                        ServerParticleUtil.circularParticles(serverLevel, cloudParticleOptions, vec3.x, this.getY() + 0.25D, vec3.z, 0, 0.14D, 0, 1.0F);
+                        ServerParticleUtil.circularParticles(serverLevel, cloudParticleOptions, vec3.x,
+                                this.getY() + 0.25D, vec3.z, 0, 0.14D, 0, 1.0F);
                     }
-                    ServerParticleUtil.circularParticles(serverLevel, cloudParticleOptions2, vec3.x, this.getY() + 0.25D, vec3.z, 0, 0.14D, 0, 1.0F);
+                    ServerParticleUtil.circularParticles(serverLevel, cloudParticleOptions2, vec3.x,
+                            this.getY() + 0.25D, vec3.z, 0, 0.14D, 0, 1.0F);
                 }
                 this.playSound(ModSounds.HELL_BOLT_IMPACT.get(), 1.0F, 1.0F);
             }
@@ -167,17 +180,17 @@ public class HellBolt extends WaterHurtingProjectile {
     }
 
     protected boolean canHitEntity(Entity pEntity) {
-        if (this.getOwner() != null){
-            if (pEntity == this.getOwner()){
+        if (this.getOwner() != null) {
+            if (pEntity == this.getOwner()) {
                 return false;
             }
-            if (this.getOwner() instanceof Mob mob && mob.getTarget() == pEntity){
+            if (this.getOwner() instanceof Mob mob && mob.getTarget() == pEntity) {
                 return super.canHitEntity(pEntity);
             } else {
-                if (MobUtil.areAllies(this.getOwner(), pEntity)){
+                if (MobUtil.areAllies(this.getOwner(), pEntity)) {
                     return false;
                 }
-                if (pEntity instanceof IOwned owned0 && this.getOwner() instanceof IOwned owned1){
+                if (pEntity instanceof IOwned owned0 && this.getOwner() instanceof IOwned owned1) {
                     return !MobUtil.ownerStack(owned0, owned1);
                 }
             }
@@ -228,11 +241,11 @@ public class HellBolt extends WaterHurtingProjectile {
         this.entityData.set(DATA_TYPE_ID, pType);
     }
 
-    public boolean isRain(){
+    public boolean isRain() {
         return this.entityData.get(RAIN);
     }
 
-    public void setRain(boolean rain){
+    public void setRain(boolean rain) {
         this.entityData.set(RAIN, rain);
     }
 

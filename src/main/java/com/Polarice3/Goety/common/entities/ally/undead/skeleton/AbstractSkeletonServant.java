@@ -50,7 +50,8 @@ import java.time.temporal.ChronoField;
 import java.util.function.Predicate;
 
 public abstract class AbstractSkeletonServant extends Summoned implements RangedAttackMob {
-    private final CreatureBowAttackGoal<AbstractSkeletonServant> bowGoal = new CreatureBowAttackGoal<>(this, 1.0D, 20, 15.0F);
+    private final CreatureBowAttackGoal<AbstractSkeletonServant> bowGoal = new CreatureBowAttackGoal<>(this, 1.0D, 20,
+            15.0F);
     public final ModMeleeAttackGoal meleeGoal = new ModMeleeAttackGoal(this, 1.2D, false) {
 
         public void stop() {
@@ -95,18 +96,20 @@ public abstract class AbstractSkeletonServant extends Summoned implements Ranged
                 .add(Attributes.ATTACK_DAMAGE, AttributesConfig.SkeletonServantDamage.get());
     }
 
-    public void setConfigurableAttributes(){
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.MAX_HEALTH), AttributesConfig.SkeletonServantHealth.get());
+    public void setConfigurableAttributes() {
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.MAX_HEALTH),
+                AttributesConfig.SkeletonServantHealth.get());
         MobUtil.setBaseAttributes(this.getAttribute(Attributes.ARMOR), AttributesConfig.SkeletonServantArmor.get());
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ATTACK_DAMAGE), AttributesConfig.SkeletonServantDamage.get());
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ATTACK_DAMAGE),
+                AttributesConfig.SkeletonServantDamage.get());
     }
 
-    public double getBaseRangeDamage(){
+    public double getBaseRangeDamage() {
         return AttributesConfig.SkeletonServantRangeDamage.get();
     }
 
     public void reassessWeaponGoal() {
-        if (!this.level.isClientSide) {
+        if (!this.level().isClientSide) {
             this.goalSelector.removeGoal(this.meleeGoal);
             this.goalSelector.removeGoal(this.bowGoal);
             ItemStack itemstack = this.getMainHandItem();
@@ -134,7 +137,7 @@ public abstract class AbstractSkeletonServant extends Summoned implements Ranged
 
     public void addAdditionalSaveData(CompoundTag pCompound) {
         super.addAdditionalSaveData(pCompound);
-        if (pCompound.contains("arrowPower")){
+        if (pCompound.contains("arrowPower")) {
             pCompound.putDouble("arrowPower", this.arrowPower);
         }
     }
@@ -151,7 +154,7 @@ public abstract class AbstractSkeletonServant extends Summoned implements Ranged
 
     public void setItemSlot(EquipmentSlot pSlot, ItemStack pStack) {
         super.setItemSlot(pSlot, pStack);
-        if (!this.level.isClientSide) {
+        if (!this.level().isClientSide) {
             this.reassessWeaponGoal();
         }
 
@@ -160,7 +163,7 @@ public abstract class AbstractSkeletonServant extends Summoned implements Ranged
     public void rideTick() {
         super.rideTick();
         if (this.getVehicle() instanceof PathfinderMob) {
-            PathfinderMob pathfindermob = (PathfinderMob)this.getVehicle();
+            PathfinderMob pathfindermob = (PathfinderMob) this.getVehicle();
             this.yBodyRot = pathfindermob.yBodyRot;
         }
 
@@ -186,33 +189,36 @@ public abstract class AbstractSkeletonServant extends Summoned implements Ranged
         this.arrowPower += arrowPower;
     }
 
-    public EntityType<?> getVariant(@Nullable Player player, Level level, BlockPos blockPos){
+    public EntityType<?> getVariant(@Nullable Player player, Level level, BlockPos blockPos) {
         EntityType<?> entityType = ModEntityType.SKELETON_SERVANT.get();
         if (level instanceof ServerLevel serverLevel) {
             if (level.getBiome(blockPos).is(Tags.Biomes.IS_COLD_OVERWORLD) && level.canSeeSky(blockPos)) {
                 entityType = ModEntityType.STRAY_SERVANT.get();
             } else if (BlockFinder.findStructure(serverLevel, blockPos, BuiltinStructures.PILLAGER_OUTPOST)) {
                 entityType = ModEntityType.SKELETON_PILLAGER_SERVANT.get();
-            } else if (player != null && BlockFinder.findStructure(serverLevel, blockPos, ModTags.Structures.CAN_SUMMON_WITHER_SKELETONS) && SEHelper.hasResearch(player, ResearchList.BYGONE)) {
+            } else if (player != null
+                    && BlockFinder.findStructure(serverLevel, blockPos, ModTags.Structures.CAN_SUMMON_WITHER_SKELETONS)
+                    && SEHelper.hasResearch(player, ResearchList.BYGONE)) {
                 entityType = ModEntityType.WITHER_SKELETON_SERVANT.get();
             } else if (level.getBiome(blockPos).is(BiomeTags.IS_JUNGLE) && level.random.nextBoolean()) {
                 entityType = ModEntityType.MOSSY_SKELETON_SERVANT.get();
             } else if (level.isWaterAt(blockPos)) {
                 entityType = ModEntityType.SUNKEN_SKELETON_SERVANT.get();
             }
-            if (level.getBiome(blockPos).is(BiomeTags.IS_SNOWY)){
+            if (level.getBiome(blockPos).is(BiomeTags.IS_SNOWY)) {
                 entityType = ModEntityType.STRAY_SERVANT.get();
             }
         }
         return entityType;
     }
 
-    public SpawnGroupData finalizeSpawn(ServerLevelAccessor worldIn, DifficultyInstance difficultyIn, MobSpawnType reason, @Nullable SpawnGroupData spawnDataIn, @Nullable CompoundTag dataTag) {
+    public SpawnGroupData finalizeSpawn(ServerLevelAccessor worldIn, DifficultyInstance difficultyIn,
+            MobSpawnType reason, @Nullable SpawnGroupData spawnDataIn, @Nullable CompoundTag dataTag) {
         spawnDataIn = super.finalizeSpawn(worldIn, difficultyIn, reason, spawnDataIn, dataTag);
         this.reassessWeaponGoal();
         this.populateDefaultEquipmentSlots(worldIn.getRandom(), difficultyIn);
-        this.populateDefaultEquipmentEnchantments(worldIn.getRandom(), difficultyIn);
-        if (this.isNatural()){
+        this.populateDefaultEquipmentEnchantments(worldIn, worldIn.getRandom(), difficultyIn);
+        if (this.isNatural()) {
             this.goalSelector.addGoal(3, new AvoidEntityGoal<>(this, Wolf.class, 6.0F, 1.0D, 1.2D));
         }
         if (this.getItemBySlot(EquipmentSlot.HEAD).isEmpty()) {
@@ -220,34 +226,38 @@ public abstract class AbstractSkeletonServant extends Summoned implements Ranged
             int i = localdate.get(ChronoField.DAY_OF_MONTH);
             int j = localdate.get(ChronoField.MONTH_OF_YEAR);
             if (j == 10 && i == 31 && this.random.nextFloat() < 0.25F) {
-                this.setItemSlot(EquipmentSlot.HEAD, new ItemStack(this.random.nextFloat() < 0.1F ? Blocks.JACK_O_LANTERN : Blocks.CARVED_PUMPKIN));
+                this.setItemSlot(EquipmentSlot.HEAD,
+                        new ItemStack(this.random.nextFloat() < 0.1F ? Blocks.JACK_O_LANTERN : Blocks.CARVED_PUMPKIN));
                 this.armorDropChances[EquipmentSlot.HEAD.getIndex()] = 0.0F;
             }
         }
         return spawnDataIn;
     }
 
-    public SoundEvent getShootSound(){
+    public SoundEvent getShootSound() {
         return SoundEvents.SKELETON_SHOOT;
     }
 
     public void performRangedAttack(LivingEntity target, float distanceFactor) {
-        ItemStack itemstack = this.getProjectile(this.getItemInHand(ProjectileUtil.getWeaponHoldingHand(this, item -> item instanceof BowItem)));
+        ItemStack itemstack = this.getProjectile(
+                this.getItemInHand(ProjectileUtil.getWeaponHoldingHand(this, item -> item instanceof BowItem)));
         AbstractArrow abstractarrowentity = this.getMobArrow(itemstack, distanceFactor);
         if (this.getMainHandItem().getItem() instanceof BowItem) {
             abstractarrowentity = ((BowItem) this.getMainHandItem().getItem()).customArrow(abstractarrowentity);
             ItemHelper.hurtAndBreak(this.getMainHandItem(), 1, this);
         }
-        abstractarrowentity.setBaseDamage(abstractarrowentity.getBaseDamage() + this.getArrowPower() + this.getBaseRangeDamage());
+        abstractarrowentity
+                .setBaseDamage(abstractarrowentity.getBaseDamage() + this.getArrowPower() + this.getBaseRangeDamage());
         double d0 = target.getX() - this.getX();
         double d1 = target.getY(0.3333333333333333D) - abstractarrowentity.getY();
         double d2 = target.getZ() - this.getZ();
         double d3 = Mth.sqrt((float) (d0 * d0 + d2 * d2));
-        abstractarrowentity.shoot(d0, d1 + d3 * (double)0.2F, d2, 1.6F, (float)(14 - this.level.getDifficulty().getId() * 4));
+        abstractarrowentity.shoot(d0, d1 + d3 * (double) 0.2F, d2, 1.6F,
+                (float) (14 - this.level().getDifficulty().getId() * 4));
         if (this.getShootSound() != null) {
             this.playSound(this.getShootSound(), 1.0F, 1.0F / (this.getRandom().nextFloat() * 0.4F + 0.8F));
         }
-        this.level.addFreshEntity(abstractarrowentity);
+        this.level().addFreshEntity(abstractarrowentity);
     }
 
     protected AbstractArrow getMobArrow(ItemStack arrowStack, float distanceFactor) {
@@ -293,19 +303,20 @@ public abstract class AbstractSkeletonServant extends Summoned implements Ranged
                 }
                 this.playSound(SoundEvents.SKELETON_STEP, 1.0F, 1.25F);
                 this.heal(2.0F);
-                if (this.level instanceof ServerLevel serverLevel) {
+                if (this.level() instanceof ServerLevel serverLevel) {
                     for (int i = 0; i < 7; ++i) {
                         double d0 = this.random.nextGaussian() * 0.02D;
                         double d1 = this.random.nextGaussian() * 0.02D;
                         double d2 = this.random.nextGaussian() * 0.02D;
-                        serverLevel.sendParticles(ModParticleTypes.HEAL_EFFECT.get(), this.getRandomX(1.0D), this.getRandomY() + 0.5D, this.getRandomZ(1.0D), 0, d0, d1, d2, 0.5F);
+                        serverLevel.sendParticles(ModParticleTypes.HEAL_EFFECT.get(), this.getRandomX(1.0D),
+                                this.getRandomY() + 0.5D, this.getRandomZ(1.0D), 0, d0, d1, d2, 0.5F);
                     }
                 }
                 return InteractionResult.SUCCESS;
             }
             if (!(pPlayer.getOffhandItem().getItem() instanceof IWand)) {
                 if (item instanceof SwordItem) {
-                    this.playSound(SoundEvents.ARMOR_EQUIP_GENERIC, 1.0F, 1.0F);
+                    this.playSound(SoundEvents.ARMOR_EQUIP_GENERIC.value(), 1.0F, 1.0F);
                     this.setItemSlot(EquipmentSlot.MAINHAND, itemstack.copyWithCount(1));
                     this.dropEquipment(EquipmentSlot.MAINHAND, itemstack2);
                     this.setGuaranteedDrop(EquipmentSlot.MAINHAND);
@@ -313,7 +324,8 @@ public abstract class AbstractSkeletonServant extends Summoned implements Ranged
                         double d0 = this.random.nextGaussian() * 0.02D;
                         double d1 = this.random.nextGaussian() * 0.02D;
                         double d2 = this.random.nextGaussian() * 0.02D;
-                        this.level.addParticle(ParticleTypes.HAPPY_VILLAGER, this.getRandomX(1.0D), this.getRandomY() + 0.5D, this.getRandomZ(1.0D), d0, d1, d2);
+                        this.level().addParticle(ParticleTypes.HAPPY_VILLAGER, this.getRandomX(1.0D),
+                                this.getRandomY() + 0.5D, this.getRandomZ(1.0D), d0, d1, d2);
                     }
                     if (!pPlayer.getAbilities().instabuild) {
                         itemstack.shrink(1);
@@ -321,7 +333,7 @@ public abstract class AbstractSkeletonServant extends Summoned implements Ranged
                     return InteractionResult.SUCCESS;
                 }
                 if (item instanceof BowItem) {
-                    this.playSound(SoundEvents.ARMOR_EQUIP_GENERIC, 1.0F, 1.0F);
+                    this.playSound(SoundEvents.ARMOR_EQUIP_GENERIC.value(), 1.0F, 1.0F);
                     this.setItemSlot(EquipmentSlot.MAINHAND, itemstack.copyWithCount(1));
                     this.dropEquipment(EquipmentSlot.MAINHAND, itemstack2);
                     this.setGuaranteedDrop(EquipmentSlot.MAINHAND);
@@ -329,16 +341,17 @@ public abstract class AbstractSkeletonServant extends Summoned implements Ranged
                         double d0 = this.random.nextGaussian() * 0.02D;
                         double d1 = this.random.nextGaussian() * 0.02D;
                         double d2 = this.random.nextGaussian() * 0.02D;
-                        this.level.addParticle(ParticleTypes.HAPPY_VILLAGER, this.getRandomX(1.0D), this.getRandomY() + 0.5D, this.getRandomZ(1.0D), d0, d1, d2);
+                        this.level().addParticle(ParticleTypes.HAPPY_VILLAGER, this.getRandomX(1.0D),
+                                this.getRandomY() + 0.5D, this.getRandomZ(1.0D), d0, d1, d2);
                     }
                     if (!pPlayer.getAbilities().instabuild) {
                         itemstack.shrink(1);
                     }
                     return InteractionResult.SUCCESS;
                 }
-                if (this instanceof CrossbowAttackMob){
+                if (this instanceof CrossbowAttackMob) {
                     if (item instanceof CrossbowItem) {
-                        this.playSound(SoundEvents.ARMOR_EQUIP_GENERIC, 1.0F, 1.0F);
+                        this.playSound(SoundEvents.ARMOR_EQUIP_GENERIC.value(), 1.0F, 1.0F);
                         this.setItemSlot(EquipmentSlot.MAINHAND, itemstack.copyWithCount(1));
                         this.dropEquipment(EquipmentSlot.MAINHAND, itemstack2);
                         this.setGuaranteedDrop(EquipmentSlot.MAINHAND);
@@ -346,7 +359,8 @@ public abstract class AbstractSkeletonServant extends Summoned implements Ranged
                             double d0 = this.random.nextGaussian() * 0.02D;
                             double d1 = this.random.nextGaussian() * 0.02D;
                             double d2 = this.random.nextGaussian() * 0.02D;
-                            this.level.addParticle(ParticleTypes.HAPPY_VILLAGER, this.getRandomX(1.0D), this.getRandomY() + 0.5D, this.getRandomZ(1.0D), d0, d1, d2);
+                            this.level().addParticle(ParticleTypes.HAPPY_VILLAGER, this.getRandomX(1.0D),
+                                    this.getRandomY() + 0.5D, this.getRandomZ(1.0D), d0, d1, d2);
                         }
                         if (!pPlayer.getAbilities().instabuild) {
                             itemstack.shrink(1);

@@ -34,8 +34,10 @@ import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec3;
+
 public class SwordProjectile extends AbstractArrow implements ItemSupplier {
-    private static final EntityDataAccessor<ItemStack> DATA_ITEM_STACK = SynchedEntityData.defineId(SwordProjectile.class, EntityDataSerializers.ITEM_STACK);
+    private static final EntityDataAccessor<ItemStack> DATA_ITEM_STACK = SynchedEntityData
+            .defineId(SwordProjectile.class, EntityDataSerializers.ITEM_STACK);
 
     public SwordProjectile(EntityType<? extends AbstractArrow> p_i48546_1_, Level p_i48546_2_) {
         super(p_i48546_1_, p_i48546_2_);
@@ -108,7 +110,8 @@ public class SwordProjectile extends AbstractArrow implements ItemSupplier {
             double d5 = this.getX() + d3;
             double d1 = this.getY() + d4;
             double d2 = this.getZ() + d0;
-            this.level.addParticle(ParticleTypes.ENCHANT, d5 - d3 * 0.25D, d1 - d4 * 0.25D, d2 - d0 * 0.25D, d3, d4, d0);
+            this.level.addParticle(ParticleTypes.ENCHANT, d5 - d3 * 0.25D, d1 - d4 * 0.25D, d2 - d0 * 0.25D, d3, d4,
+                    d0);
         }
     }
 
@@ -118,7 +121,7 @@ public class SwordProjectile extends AbstractArrow implements ItemSupplier {
         float f1 = 0.0F;
         int i = 0;
         Entity owner = this.getOwner();
-        if (this.getItem().getItem() instanceof SwordItem swordItem){
+        if (this.getItem().getItem() instanceof SwordItem swordItem) {
             f = swordItem.getDamage();
         }
         if (!this.getItem().isEmpty()) {
@@ -129,9 +132,9 @@ public class SwordProjectile extends AbstractArrow implements ItemSupplier {
             f += EnchantmentHelper.getDamageBonus(this.getItem(), livingentity.getMobType());
         }
         DamageSource damagesource = ModDamageSource.sword(this, owner == null ? this : owner);
-        if (owner instanceof Player player){
+        if (owner instanceof Player player) {
             damagesource = this.damageSources().playerAttack(player);
-        } else if (owner instanceof Mob mob){
+        } else if (owner instanceof Mob mob) {
             damagesource = this.damageSources().mobAttack(mob);
         }
         SoundEvent soundevent = SoundEvents.TRIDENT_HIT;
@@ -139,7 +142,7 @@ public class SwordProjectile extends AbstractArrow implements ItemSupplier {
             if (target instanceof LivingEntity livingTarget) {
                 if (owner instanceof LivingEntity) {
                     EnchantmentHelper.doPostHurtEffects(livingTarget, owner);
-                    EnchantmentHelper.doPostDamageEffects((LivingEntity)owner, livingTarget);
+                    EnchantmentHelper.doPostDamageEffects((LivingEntity) owner, livingTarget);
                     ItemHelper.setItemEffect(this.getItem(), livingTarget);
                 }
                 if (f1 > 0) {
@@ -148,7 +151,7 @@ public class SwordProjectile extends AbstractArrow implements ItemSupplier {
                     livingTarget.knockback(f1 * 0.5F, d0, d1);
                 }
                 if (i > 0) {
-                    livingTarget.setSecondsOnFire(i * 4);
+                    livingTarget.igniteForSeconds(i * 4);
                 }
 
                 this.doPostHurtEffects(livingTarget);
@@ -160,20 +163,20 @@ public class SwordProjectile extends AbstractArrow implements ItemSupplier {
     }
 
     protected boolean canHitEntity(Entity pEntity) {
-        if (this.getOwner() != null){
-            if (this.getOwner() instanceof Mob mob && mob.getTarget() == pEntity){
+        if (this.getOwner() != null) {
+            if (this.getOwner() instanceof Mob mob && mob.getTarget() == pEntity) {
                 return super.canHitEntity(pEntity);
             } else {
-                if (MobUtil.areAllies(this.getOwner(), pEntity)){
+                if (MobUtil.areAllies(this.getOwner(), pEntity)) {
                     return false;
                 }
-                if (this.getOwner() instanceof Enemy && pEntity instanceof Enemy){
+                if (this.getOwner() instanceof Enemy && pEntity instanceof Enemy) {
                     return false;
                 }
-                if (pEntity instanceof Projectile projectile && projectile.getOwner() == this.getOwner()){
+                if (pEntity instanceof Projectile projectile && projectile.getOwner() == this.getOwner()) {
                     return false;
                 }
-                if (pEntity instanceof IOwned owned0 && this.getOwner() instanceof IOwned owned1){
+                if (pEntity instanceof IOwned owned0 && this.getOwner() instanceof IOwned owned1) {
                     return !MobUtil.ownerStack(owned0, owned1);
                 }
             }

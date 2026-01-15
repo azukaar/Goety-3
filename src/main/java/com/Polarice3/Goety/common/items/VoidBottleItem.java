@@ -24,7 +24,8 @@ public class VoidBottleItem extends Item {
       super.finishUsingItem(p_41348_, p_41349_, p_41350_);
 
       if (!p_41349_.isClientSide) {
-         if (p_41350_.hurt(ModDamageSource.getDamageSource(p_41349_, ModDamageSource.VOIDED), p_41350_.getMaxHealth() * 0.03F)){
+         if (p_41350_.hurt(ModDamageSource.getDamageSource(p_41349_, ModDamageSource.VOIDED),
+               p_41350_.getMaxHealth() * 0.03F)) {
             p_41350_.addEffect(new MobEffectInstance(GoetyEffects.VOID_TOUCHED.get(), MathHelper.secondsToTicks(5)));
          }
       }
@@ -34,7 +35,7 @@ public class VoidBottleItem extends Item {
       } else {
          if (p_41350_ instanceof Player player && !player.getAbilities().instabuild) {
             ItemStack itemstack = new ItemStack(Items.GLASS_BOTTLE);
-             if (!player.getInventory().add(itemstack)) {
+            if (!player.getInventory().add(itemstack)) {
                player.drop(itemstack, false);
             }
          }
@@ -43,7 +44,7 @@ public class VoidBottleItem extends Item {
       }
    }
 
-   public int getUseDuration(ItemStack p_41360_) {
+   public int getUseDuration(ItemStack p_41360_, LivingEntity livingEntity) {
       return 40;
    }
 

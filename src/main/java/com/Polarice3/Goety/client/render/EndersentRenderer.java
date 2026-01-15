@@ -21,7 +21,8 @@ import net.minecraft.util.Mth;
 import javax.annotation.Nullable;
 
 public class EndersentRenderer<T extends Endersent> extends MobRenderer<T, EndersentModel<T>> {
-    protected static final ResourceLocation TEXTURE_LOCATION = Goety.location("textures/entity/enderling/endersent.png");
+    protected static final ResourceLocation TEXTURE_LOCATION = Goety
+            .location("textures/entity/enderling/endersent.png");
     protected static final ResourceLocation DEATH = Goety.location("textures/entity/enderling/endersent_death.png");
 
     public EndersentRenderer(EntityRendererProvider.Context p_i47208_1_) {
@@ -32,9 +33,10 @@ public class EndersentRenderer<T extends Endersent> extends MobRenderer<T, Ender
     }
 
     @Override
-    public void render(T pEntity, float pEntityYaw, float pPartialTicks, PoseStack pMatrixStack, MultiBufferSource pBuffer, int pPackedLight) {
+    public void render(T pEntity, float pEntityYaw, float pPartialTicks, PoseStack pMatrixStack,
+            MultiBufferSource pBuffer, int pPackedLight) {
         super.render(pEntity, pEntityYaw, pPartialTicks, pMatrixStack, pBuffer, pPackedLight);
-        if (pEntity.deathTime > 0){
+        if (pEntity.deathTime > 0) {
             pMatrixStack.pushPose();
             boolean flag = pEntity.hurtTime > 0;
             float f = Mth.rotLerp(pPartialTicks, pEntity.yBodyRotO, pEntity.yBodyRot);
@@ -45,23 +47,27 @@ public class EndersentRenderer<T extends Endersent> extends MobRenderer<T, Ender
             this.setupRotations(pEntity, pMatrixStack, f71, f, pPartialTicks);
             pMatrixStack.scale(-1.0F, -1.0F, 1.0F);
             this.scale(pEntity, pMatrixStack, pPartialTicks);
-            pMatrixStack.translate(0.0D, (double)-1.501F, 0.0D);
+            pMatrixStack.translate(0.0D, (double) -1.501F, 0.0D);
             this.model.prepareMobModel(pEntity, 0.0F, 0.0F, pPartialTicks);
             this.model.setupAnim(pEntity, 0.0F, 0.0F, f71, f2, f6);
             float f8 = MathHelper.secondsToTicks(4);
-            float f9 = (float)pEntity.deathTime / f8;
+            float f9 = (float) pEntity.deathTime / f8;
             float f10 = 1.0F - (pEntity.deathTime / f8);
             VertexConsumer vertexconsumer = pBuffer.getBuffer(RenderType.dragonExplosionAlpha(DEATH));
-            this.model.renderToBuffer(pMatrixStack, vertexconsumer, pPackedLight, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, f9);
-            VertexConsumer ivertexbuilder1 = pBuffer.getBuffer(RenderType.entityDecal(this.getTextureLocation(pEntity)));
-            this.model.renderToBuffer(pMatrixStack, ivertexbuilder1, pPackedLight, OverlayTexture.pack(0.0F, flag), f10, f10, f10, 1.0F);
+            this.model.renderToBuffer(pMatrixStack, vertexconsumer, pPackedLight, OverlayTexture.NO_OVERLAY,
+                    net.minecraft.util.FastColor.ARGB32.color((int) (f9 * 255), 255, 255, 255));
+            VertexConsumer ivertexbuilder1 = pBuffer
+                    .getBuffer(RenderType.entityDecal(this.getTextureLocation(pEntity)));
+            this.model.renderToBuffer(pMatrixStack, ivertexbuilder1, pPackedLight, OverlayTexture.pack(0.0F, flag),
+                    net.minecraft.util.FastColor.ARGB32.color(255, (int) (f10 * 255), (int) (f10 * 255),
+                            (int) (f10 * 255)));
             pMatrixStack.popPose();
         }
     }
 
     @Nullable
     protected RenderType getRenderType(T p_230496_1_, boolean p_230496_2_, boolean p_230496_3_, boolean p_230496_4_) {
-        if (p_230496_1_.deathTime > 0){
+        if (p_230496_1_.deathTime > 0) {
             return RenderType.dragonExplosionAlpha(DEATH);
         } else {
             return super.getRenderType(p_230496_1_, p_230496_2_, p_230496_3_, p_230496_4_);
@@ -73,16 +79,19 @@ public class EndersentRenderer<T extends Endersent> extends MobRenderer<T, Ender
     }
 
     public static class GlowLayer<T extends Endersent, M extends EndersentModel<T>> extends EyesLayer<T, M> {
-        private static final RenderType RENDER_TYPE = RenderType.eyes(Goety.location("textures/entity/enderling/endersent_glow.png"));
+        private static final RenderType RENDER_TYPE = RenderType
+                .eyes(Goety.location("textures/entity/enderling/endersent_glow.png"));
 
         public GlowLayer(RenderLayerParent<T, M> p_i50919_1_) {
             super(p_i50919_1_);
         }
 
-        public void render(PoseStack p_116983_, MultiBufferSource p_116984_, int p_116985_, T p_116986_, float p_116987_, float p_116988_, float p_116989_, float p_116990_, float p_116991_, float p_116992_) {
+        public void render(PoseStack p_116983_, MultiBufferSource p_116984_, int p_116985_, T p_116986_,
+                float p_116987_, float p_116988_, float p_116989_, float p_116990_, float p_116991_, float p_116992_) {
             if (!p_116986_.isInvisible() && !p_116986_.isDeadOrDying()) {
                 VertexConsumer vertexconsumer = p_116984_.getBuffer(this.renderType());
-                this.getParentModel().renderToBuffer(p_116983_, vertexconsumer, 15728640, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 1.0F);
+                this.getParentModel().renderToBuffer(p_116983_, vertexconsumer, 15728640, OverlayTexture.NO_OVERLAY,
+                        -1);
             }
         }
 
@@ -93,16 +102,19 @@ public class EndersentRenderer<T extends Endersent> extends MobRenderer<T, Ender
     }
 
     public static class EnderEyeLayer<T extends Endersent, M extends EndersentModel<T>> extends EyesLayer<T, M> {
-        private static final RenderType RENDER_TYPE = RenderType.entityCutout(Goety.location("textures/entity/enderling/endersent_eye.png"));
+        private static final RenderType RENDER_TYPE = RenderType
+                .entityCutout(Goety.location("textures/entity/enderling/endersent_eye.png"));
 
         public EnderEyeLayer(RenderLayerParent<T, M> p_i50919_1_) {
             super(p_i50919_1_);
         }
 
-        public void render(PoseStack p_116983_, MultiBufferSource p_116984_, int p_116985_, T p_116986_, float p_116987_, float p_116988_, float p_116989_, float p_116990_, float p_116991_, float p_116992_) {
+        public void render(PoseStack p_116983_, MultiBufferSource p_116984_, int p_116985_, T p_116986_,
+                float p_116987_, float p_116988_, float p_116989_, float p_116990_, float p_116991_, float p_116992_) {
             if (!p_116986_.isInvisible() && !p_116986_.isDeadOrDying() && p_116986_.hasEye()) {
                 VertexConsumer vertexconsumer = p_116984_.getBuffer(this.renderType());
-                this.getParentModel().renderToBuffer(p_116983_, vertexconsumer, 15728640, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 1.0F);
+                this.getParentModel().renderToBuffer(p_116983_, vertexconsumer, 15728640, OverlayTexture.NO_OVERLAY,
+                        -1);
             }
         }
 
@@ -121,15 +133,18 @@ public class EndersentRenderer<T extends Endersent> extends MobRenderer<T, Ender
             this.model = new EndersentModel<>(p_174555_.bakeLayer(ModModelLayer.ENDERSENT));
         }
 
-        public void render(PoseStack p_116970_, MultiBufferSource p_116971_, int p_116972_, T p_116973_, float p_116974_, float p_116975_, float p_116976_, float p_116977_, float p_116978_, float p_116979_) {
+        public void render(PoseStack p_116970_, MultiBufferSource p_116971_, int p_116972_, T p_116973_,
+                float p_116974_, float p_116975_, float p_116976_, float p_116977_, float p_116978_, float p_116979_) {
             if (p_116973_.hasEye() && !p_116973_.isInvisible() && !p_116973_.isDeadOrDying()) {
-                float f = (float)p_116973_.tickCount + p_116976_;
+                float f = (float) p_116973_.tickCount + p_116976_;
                 EndersentModel<T> entitymodel = this.model;
                 entitymodel.prepareMobModel(p_116973_, p_116974_, p_116975_, p_116976_);
                 this.getParentModel().copyPropertiesTo(entitymodel);
-                VertexConsumer vertexconsumer = p_116971_.getBuffer(RenderType.energySwirl(ARMOR, this.xOffset(f) % 1.0F, f * 0.01F % 1.0F));
+                VertexConsumer vertexconsumer = p_116971_
+                        .getBuffer(RenderType.energySwirl(ARMOR, this.xOffset(f) % 1.0F, f * 0.01F % 1.0F));
                 entitymodel.setupAnim(p_116973_, p_116974_, p_116975_, p_116977_, p_116978_, p_116979_);
-                entitymodel.renderToBuffer(p_116970_, vertexconsumer, p_116972_, OverlayTexture.NO_OVERLAY, 0.5F, 0.5F, 0.5F, 1.0F);
+                entitymodel.renderToBuffer(p_116970_, vertexconsumer, p_116972_, OverlayTexture.NO_OVERLAY,
+                        net.minecraft.util.FastColor.ARGB32.color(255, 128, 128, 128));
                 entitymodel.ender_eye.visible = false;
             }
         }

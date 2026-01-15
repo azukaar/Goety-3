@@ -18,8 +18,9 @@ import javax.annotation.Nullable;
 import java.util.EnumSet;
 import java.util.function.IntFunction;
 
-public abstract class SpellcasterIllagerServant extends AbstractIllagerServant{
-    private static final EntityDataAccessor<Byte> DATA_SPELL_CASTING_ID = SynchedEntityData.defineId(SpellcasterIllagerServant.class, EntityDataSerializers.BYTE);
+public abstract class SpellcasterIllagerServant extends AbstractIllagerServant {
+    private static final EntityDataAccessor<Byte> DATA_SPELL_CASTING_ID = SynchedEntityData
+            .defineId(SpellcasterIllagerServant.class, EntityDataSerializers.BYTE);
     protected int spellCastingTickCount;
     private IllagerServantSpell currentSpell = IllagerServantSpell.NONE;
 
@@ -29,7 +30,7 @@ public abstract class SpellcasterIllagerServant extends AbstractIllagerServant{
 
     protected void defineSynchedData() {
         super.defineSynchedData();
-        this.entityData.define(DATA_SPELL_CASTING_ID, (byte)0);
+        this.entityData.define(DATA_SPELL_CASTING_ID, (byte) 0);
     }
 
     public void readAdditionalSaveData(CompoundTag compound) {
@@ -51,7 +52,7 @@ public abstract class SpellcasterIllagerServant extends AbstractIllagerServant{
     }
 
     public boolean isCastingSpell() {
-        if (this.level.isClientSide) {
+        if (this.level().isClientSide) {
             return this.entityData.get(DATA_SPELL_CASTING_ID) > 0;
         } else {
             return this.spellCastingTickCount > 0;
@@ -60,11 +61,12 @@ public abstract class SpellcasterIllagerServant extends AbstractIllagerServant{
 
     public void setIsCastingSpell(IllagerServantSpell p_33728_) {
         this.currentSpell = p_33728_;
-        this.entityData.set(DATA_SPELL_CASTING_ID, (byte)p_33728_.id);
+        this.entityData.set(DATA_SPELL_CASTING_ID, (byte) p_33728_.id);
     }
 
     protected IllagerServantSpell getCurrentSpell() {
-        return !this.level.isClientSide ? this.currentSpell : IllagerServantSpell.byId(this.entityData.get(DATA_SPELL_CASTING_ID));
+        return !this.level().isClientSide ? this.currentSpell
+                : IllagerServantSpell.byId(this.entityData.get(DATA_SPELL_CASTING_ID));
     }
 
     protected void customServerAiStep() {
@@ -79,8 +81,8 @@ public abstract class SpellcasterIllagerServant extends AbstractIllagerServant{
         this.spellParticles();
     }
 
-    public void spellParticles(){
-        if (this.level.isClientSide && this.isCastingSpell()) {
+    public void spellParticles() {
+        if (this.level().isClientSide && this.isCastingSpell()) {
             IllagerServantSpell spell = this.getCurrentSpell();
             if (spell != IllagerServantSpell.NONE) {
                 double d0 = spell.spellColor[0];
@@ -89,8 +91,10 @@ public abstract class SpellcasterIllagerServant extends AbstractIllagerServant{
                 float f = this.yBodyRot * ((float) Math.PI / 180F) + Mth.cos((float) this.tickCount * 0.6662F) * 0.25F;
                 float f1 = Mth.cos(f);
                 float f2 = Mth.sin(f);
-                this.level.addParticle(ParticleTypes.ENTITY_EFFECT, this.getX() + (double) f1 * 0.6D, this.getY() + 1.8D, this.getZ() + (double) f2 * 0.6D, d0, d1, d2);
-                this.level.addParticle(ParticleTypes.ENTITY_EFFECT, this.getX() - (double) f1 * 0.6D, this.getY() + 1.8D, this.getZ() - (double) f2 * 0.6D, d0, d1, d2);
+                this.level().addParticle(ParticleTypes.ENTITY_EFFECT, this.getX() + (double) f1 * 0.6D,
+                        this.getY() + 1.8D, this.getZ() + (double) f2 * 0.6D, d0, d1, d2);
+                this.level().addParticle(ParticleTypes.ENTITY_EFFECT, this.getX() - (double) f1 * 0.6D,
+                        this.getY() + 1.8D, this.getZ() - (double) f2 * 0.6D, d0, d1, d2);
             }
         }
     }
@@ -118,7 +122,7 @@ public abstract class SpellcasterIllagerServant extends AbstractIllagerServant{
 
         IllagerServantSpell(int p_33754_, double p_33755_, double p_33756_, double p_33757_) {
             this.id = p_33754_;
-            this.spellColor = new double[]{p_33755_, p_33756_, p_33757_};
+            this.spellColor = new double[] { p_33755_, p_33756_, p_33757_ };
         }
 
         public static IllagerServantSpell byId(int p_33759_) {
@@ -147,7 +151,9 @@ public abstract class SpellcasterIllagerServant extends AbstractIllagerServant{
 
         public void tick() {
             if (SpellcasterIllagerServant.this.getTarget() != null) {
-                SpellcasterIllagerServant.this.getLookControl().setLookAt(SpellcasterIllagerServant.this.getTarget(), (float)SpellcasterIllagerServant.this.getMaxHeadYRot(), (float)SpellcasterIllagerServant.this.getMaxHeadXRot());
+                SpellcasterIllagerServant.this.getLookControl().setLookAt(SpellcasterIllagerServant.this.getTarget(),
+                        (float) SpellcasterIllagerServant.this.getMaxHeadYRot(),
+                        (float) SpellcasterIllagerServant.this.getMaxHeadXRot());
             }
 
         }
@@ -191,7 +197,8 @@ public abstract class SpellcasterIllagerServant extends AbstractIllagerServant{
             --this.attackWarmupDelay;
             if (this.attackWarmupDelay == 0) {
                 this.performSpellCasting();
-                SpellcasterIllagerServant.this.playSound(SpellcasterIllagerServant.this.getCastingSoundEvent(), 1.0F, 1.0F);
+                SpellcasterIllagerServant.this.playSound(SpellcasterIllagerServant.this.getCastingSoundEvent(), 1.0F,
+                        1.0F);
             }
 
         }

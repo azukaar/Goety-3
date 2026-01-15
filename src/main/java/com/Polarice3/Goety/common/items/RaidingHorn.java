@@ -28,18 +28,20 @@ public class RaidingHorn extends Item {
 
     public ItemStack finishUsingItem(ItemStack stack, Level worldIn, LivingEntity entityLiving) {
         super.finishUsingItem(stack, worldIn, entityLiving);
-        if (worldIn instanceof ServerLevel serverWorld){
+        if (worldIn instanceof ServerLevel serverWorld) {
             boolean flag = serverWorld.isVillage(entityLiving.blockPosition());
             entityLiving.playSound(SoundEvents.RAID_HORN.get(), 16.0F, 1.0F);
-            serverWorld.playSound(null, entityLiving.blockPosition(), SoundEvents.RAID_HORN.get(), SoundSource.NEUTRAL, 16.0F, 1.0F);
+            serverWorld.playSound(null, entityLiving.blockPosition(), SoundEvents.RAID_HORN.get(), SoundSource.NEUTRAL,
+                    16.0F, 1.0F);
             if (entityLiving instanceof Player player) {
                 if (SEHelper.getAllyEntityTypes(player).contains(EntityType.VILLAGER)) {
                     flag = false;
                 }
             }
-            if (flag){
+            if (flag) {
                 int i = 0;
-                for (RaiderServant servant : worldIn.getEntitiesOfClass(RaiderServant.class, entityLiving.getBoundingBox().inflate(16.0F))) {
+                for (RaiderServant servant : worldIn.getEntitiesOfClass(RaiderServant.class,
+                        entityLiving.getBoundingBox().inflate(16.0F))) {
                     if (servant.getTrueOwner() == entityLiving) {
                         ++i;
                         servant.setRaidPos(entityLiving.blockPosition());
@@ -72,7 +74,7 @@ public class RaidingHorn extends Item {
         return stack;
     }
 
-    public int getUseDuration(ItemStack stack) {
+    public int getUseDuration(ItemStack stack, LivingEntity livingEntity) {
         return 25;
     }
 

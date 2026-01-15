@@ -16,7 +16,8 @@ import org.joml.Matrix4f;
 import java.util.*;
 
 /***
- * This class is based of BoltRenderer Code from Botania: "<a href="https://github.com/VazkiiMods/Botania/blob/1.19.x/Xplat/src/main/java/vazkii/botania/client/fx/BoltRenderer.java">...</a>">...</a>
+ * This class is based of BoltRenderer Code from Botania: "<a href=
+ * "https://github.com/VazkiiMods/Botania/blob/1.19.x/Xplat/src/main/java/vazkii/botania/client/fx/BoltRenderer.java">...</a>">...</a>
  */
 public class LightningEffect {
 
@@ -49,7 +50,7 @@ public class LightningEffect {
                 this.refreshTimestamp = timestamp;
             }
 
-            for (Iterator<BoltEmitter> iter = this.boltEmitters.iterator(); iter.hasNext(); ) {
+            for (Iterator<BoltEmitter> iter = this.boltEmitters.iterator(); iter.hasNext();) {
                 BoltEmitter emitter = iter.next();
                 emitter.renderTick(timestamp, refresh, matrix, buffer);
                 if (emitter.shouldRemove(timestamp)) {
@@ -65,7 +66,8 @@ public class LightningEffect {
         }
         BoltEmitter emitter = new BoltEmitter(options);
         Timestamp timestamp = new Timestamp(level.getGameTime(), partialTicks);
-        if ((!emitter.options.getSpawnFunction().isConsecutive() || emitter.bolts.isEmpty()) && timestamp.isPassed(emitter.lastBoltTimestamp, emitter.lastBoltDelay)) {
+        if ((!emitter.options.getSpawnFunction().isConsecutive() || emitter.bolts.isEmpty())
+                && timestamp.isPassed(emitter.lastBoltTimestamp, emitter.lastBoltDelay)) {
             emitter.addBolt(new BoltInstance(options, timestamp), timestamp);
         }
         emitter.lastUpdateTimestamp = timestamp;
@@ -119,11 +121,13 @@ public class LightningEffect {
 
         public void render(Matrix4f matrix, VertexConsumer buffer, Timestamp timestamp) {
             float lifeScale = timestamp.subtract(this.createdTimestamp).value() / this.options.getLifespan();
-            Pair<Integer, Integer> bounds = options.getFadeFunction().getRenderBounds(this.renderQuads.size(), lifeScale);
+            Pair<Integer, Integer> bounds = options.getFadeFunction().getRenderBounds(this.renderQuads.size(),
+                    lifeScale);
             for (int i = bounds.getLeft(); i < bounds.getRight(); i++) {
-                this.renderQuads.get(i).getVecs().forEach(v -> buffer.vertex(matrix, (float) v.x, (float) v.y, (float) v.z)
-                        .color(this.options.getColor().red(), this.options.getColor().green(), this.options.getColor().blue(), options.getColor().alpha())
-                        .endVertex());
+                this.renderQuads.get(i).getVecs()
+                        .forEach(v -> buffer.addVertex(matrix, (float) v.x, (float) v.y, (float) v.z)
+                                .setColor(this.options.getColor().red(), this.options.getColor().green(),
+                                        this.options.getColor().blue(), options.getColor().alpha()));
             }
         }
 
@@ -134,32 +138,32 @@ public class LightningEffect {
 
     private record Timestamp(long ticks, float partial) {
 
-            public static final Timestamp ZERO = new Timestamp(0, 0);
+        public static final Timestamp ZERO = new Timestamp(0, 0);
 
         public Timestamp subtract(Timestamp other) {
-                long newTicks = this.ticks - other.ticks;
-                float newPartial = this.partial - other.partial;
-                if (newPartial < 0) {
-                    newPartial += 1;
-                    newTicks -= 1;
-                }
-                return new Timestamp(newTicks, newPartial);
+            long newTicks = this.ticks - other.ticks;
+            float newPartial = this.partial - other.partial;
+            if (newPartial < 0) {
+                newPartial += 1;
+                newTicks -= 1;
             }
-
-            public float value() {
-                return this.ticks + this.partial;
-            }
-
-            public boolean isPassed(Timestamp prev, double duration) {
-                long ticksPassed = this.ticks - prev.ticks;
-                if (ticksPassed > duration) {
-                    return true;
-                }
-                duration -= ticksPassed;
-                if (duration >= 1) {
-                    return false;
-                }
-                return (this.partial - prev.partial) >= duration;
-            }
+            return new Timestamp(newTicks, newPartial);
         }
+
+        public float value() {
+            return this.ticks + this.partial;
+        }
+
+        public boolean isPassed(Timestamp prev, double duration) {
+            long ticksPassed = this.ticks - prev.ticks;
+            if (ticksPassed > duration) {
+                return true;
+            }
+            duration -= ticksPassed;
+            if (duration >= 1) {
+                return false;
+            }
+            return (this.partial - prev.partial) >= duration;
+        }
+    }
 }

@@ -52,14 +52,22 @@ import javax.annotation.Nullable;
 import java.util.Optional;
 import java.util.UUID;
 
-public abstract class AbstractSpiderServant extends Spider implements PlayerRideable, IServant, OwnableEntity, ICustomAttributes {
-    protected static final EntityDataAccessor<Optional<UUID>> OWNER_UNIQUE_ID = SynchedEntityData.defineId(AbstractSpiderServant.class, EntityDataSerializers.OPTIONAL_UUID);
-    protected static final EntityDataAccessor<Integer> OWNER_CLIENT_ID = SynchedEntityData.defineId(AbstractSpiderServant.class, EntityDataSerializers.INT);
-    protected static final EntityDataAccessor<Boolean> HOSTILE = SynchedEntityData.defineId(AbstractSpiderServant.class, EntityDataSerializers.BOOLEAN);
-    protected static final EntityDataAccessor<Boolean> NATURAL = SynchedEntityData.defineId(AbstractSpiderServant.class, EntityDataSerializers.BOOLEAN);
-    protected static final EntityDataAccessor<Byte> SUMMONED_FLAGS = SynchedEntityData.defineId(AbstractSpiderServant.class, EntityDataSerializers.BYTE);
-    protected static final EntityDataAccessor<Byte> UPGRADE_FLAGS = SynchedEntityData.defineId(AbstractSpiderServant.class, EntityDataSerializers.BYTE);
-    private final NearestAttackableTargetGoal<Player> targetGoal = new NearestAttackableTargetGoal<>(this, Player.class, true);
+public abstract class AbstractSpiderServant extends Spider
+        implements PlayerRideable, IServant, OwnableEntity, ICustomAttributes {
+    protected static final EntityDataAccessor<Optional<UUID>> OWNER_UNIQUE_ID = SynchedEntityData
+            .defineId(AbstractSpiderServant.class, EntityDataSerializers.OPTIONAL_UUID);
+    protected static final EntityDataAccessor<Integer> OWNER_CLIENT_ID = SynchedEntityData
+            .defineId(AbstractSpiderServant.class, EntityDataSerializers.INT);
+    protected static final EntityDataAccessor<Boolean> HOSTILE = SynchedEntityData.defineId(AbstractSpiderServant.class,
+            EntityDataSerializers.BOOLEAN);
+    protected static final EntityDataAccessor<Boolean> NATURAL = SynchedEntityData.defineId(AbstractSpiderServant.class,
+            EntityDataSerializers.BOOLEAN);
+    protected static final EntityDataAccessor<Byte> SUMMONED_FLAGS = SynchedEntityData
+            .defineId(AbstractSpiderServant.class, EntityDataSerializers.BYTE);
+    protected static final EntityDataAccessor<Byte> UPGRADE_FLAGS = SynchedEntityData
+            .defineId(AbstractSpiderServant.class, EntityDataSerializers.BYTE);
+    private final NearestAttackableTargetGoal<Player> targetGoal = new NearestAttackableTargetGoal<>(this, Player.class,
+            true);
     public boolean limitedLifespan;
     public int limitedLifeTicks;
     @Nullable
@@ -88,25 +96,25 @@ public abstract class AbstractSpiderServant extends Spider implements PlayerRide
         this.targetSelectGoal();
     }
 
-    public void followGoal(){
+    public void followGoal() {
         this.goalSelector.addGoal(5, new Summoned.FollowOwnerGoal<>(this, 1.0D, 10.0F, 2.0F));
     }
 
-    public void targetSelectGoal(){
+    public void targetSelectGoal() {
         this.targetSelector.addGoal(1, new SummonTargetGoal(this));
     }
 
-    public void setConfigurableAttributes(){
+    public void setConfigurableAttributes() {
     }
 
     public void checkDespawn() {
-        if (this.isHostile()){
+        if (this.isHostile()) {
             super.checkDespawn();
         }
     }
 
     public boolean isInvisibleTo(Player p_20178_) {
-        if (p_20178_ == this.getMasterOwner()){
+        if (p_20178_ == this.getMasterOwner()) {
             return false;
         } else {
             return super.isInvisibleTo(p_20178_);
@@ -115,18 +123,18 @@ public abstract class AbstractSpiderServant extends Spider implements PlayerRide
 
     public void checkHostility() {
         if (!this.level.isClientSide) {
-            if (this.getTrueOwner() instanceof Enemy){
+            if (this.getTrueOwner() instanceof Enemy) {
                 this.setHostile(true);
             }
-            if (this.getTrueOwner() instanceof IOwned owned){
-                if (owned.isHostile()){
+            if (this.getTrueOwner() instanceof IOwned owned) {
+                if (owned.isHostile()) {
                     this.setHostile(true);
                 }
             }
         }
     }
 
-    public void tick(){
+    public void tick() {
         super.tick();
         this.ownedTick();
         this.servantTick();
@@ -172,18 +180,21 @@ public abstract class AbstractSpiderServant extends Spider implements PlayerRide
 
             int i = EnchantmentHelper.getFireAspect(this);
             if (i > 0) {
-                entity.setSecondsOnFire(i * 4);
+                entity.igniteForSeconds(i * 4);
             }
 
             boolean flag = entity.hurt(ModDamageSource.summonAttack(this, this.getTrueOwner()), f);
             if (flag) {
                 if (f1 > 0.0F && entity instanceof LivingEntity) {
-                    ((LivingEntity) entity).knockback((double) (f1 * 0.5F), (double) Mth.sin(this.getYRot() * ((float) Math.PI / 180F)), (double) (-Mth.cos(this.getYRot() * ((float) Math.PI / 180F))));
+                    ((LivingEntity) entity).knockback((double) (f1 * 0.5F),
+                            (double) Mth.sin(this.getYRot() * ((float) Math.PI / 180F)),
+                            (double) (-Mth.cos(this.getYRot() * ((float) Math.PI / 180F))));
                     this.setDeltaMovement(this.getDeltaMovement().multiply(0.6D, 1.0D, 0.6D));
                 }
 
                 if (entity instanceof Player player) {
-                    this.maybeDisableShield(player, this.getMainHandItem(), player.isUsingItem() ? player.getUseItem() : ItemStack.EMPTY);
+                    this.maybeDisableShield(player, this.getMainHandItem(),
+                            player.isUsingItem() ? player.getUseItem() : ItemStack.EMPTY);
                 }
 
                 this.doEnchantDamageEffects(this, entity);
@@ -198,10 +209,10 @@ public abstract class AbstractSpiderServant extends Spider implements PlayerRide
 
     public void maybeDisableShield(Player player, ItemStack axe, ItemStack shield) {
         if (!axe.isEmpty() && !shield.isEmpty() && axe.getItem() instanceof AxeItem && shield.is(Items.SHIELD)) {
-            float f = 0.25F + (float)EnchantmentHelper.getBlockEfficiency(this) * 0.05F;
+            float f = 0.25F + (float) EnchantmentHelper.getBlockEfficiency(this) * 0.05F;
             if (this.random.nextFloat() < f) {
                 player.getCooldowns().addCooldown(Items.SHIELD, 100);
-                this.level.broadcastEntityEvent(player, (byte)30);
+                this.level.broadcastEntityEvent(player, (byte) 30);
             }
         }
 
@@ -211,7 +222,8 @@ public abstract class AbstractSpiderServant extends Spider implements PlayerRide
     public Team getTeam() {
         if (this.getTrueOwner() != null) {
             LivingEntity livingentity = this.getTrueOwner();
-            if (livingentity != null && livingentity != this && !this.areOwnedByEachOther(livingentity) && livingentity.getTeam() != null) {
+            if (livingentity != null && livingentity != this && !this.areOwnedByEachOther(livingentity)
+                    && livingentity.getTeam() != null) {
                 return livingentity.getTeam();
             }
         }
@@ -219,14 +231,14 @@ public abstract class AbstractSpiderServant extends Spider implements PlayerRide
         return super.getTeam();
     }
 
-    public boolean areOwnedByEachOther(LivingEntity livingEntity){
-        if (livingEntity instanceof IOwned owned){
+    public boolean areOwnedByEachOther(LivingEntity livingEntity) {
+        if (livingEntity instanceof IOwned owned) {
             return owned.getTrueOwner() == this && this.getTrueOwner() == livingEntity;
         }
         return false;
     }
 
-    //look at dish
+    // look at dish
     public boolean isAlliedTo(Entity entityIn) {
         if (this.getTrueOwner() != null) {
             LivingEntity trueOwner = this.getTrueOwner();
@@ -236,9 +248,9 @@ public abstract class AbstractSpiderServant extends Spider implements PlayerRide
                     || (entityIn instanceof IOwned owned && MobUtil.ownerStack(this, owned))
                     || (entityIn instanceof OwnableEntity ownable && ownable.getOwner() == trueOwner)
                     || (trueOwner instanceof Player player
-                    && entityIn instanceof LivingEntity livingEntity
-                    && (SEHelper.getAllyEntities(player).contains(livingEntity)
-                    || SEHelper.getAllyEntityTypes(player).contains(livingEntity.getType())));
+                            && entityIn instanceof LivingEntity livingEntity
+                            && (SEHelper.getAllyEntities(player).contains(livingEntity)
+                                    || SEHelper.getAllyEntityTypes(player).contains(livingEntity.getType())));
         }
         return super.isAlliedTo(entityIn);
     }
@@ -249,8 +261,8 @@ public abstract class AbstractSpiderServant extends Spider implements PlayerRide
         this.entityData.define(OWNER_CLIENT_ID, -1);
         this.entityData.define(HOSTILE, false);
         this.entityData.define(NATURAL, false);
-        this.entityData.define(SUMMONED_FLAGS, (byte)0);
-        this.entityData.define(UPGRADE_FLAGS, (byte)0);
+        this.entityData.define(SUMMONED_FLAGS, (byte) 0);
+        this.entityData.define(UPGRADE_FLAGS, (byte) 0);
     }
 
     public void readAdditionalSaveData(CompoundTag compound) {
@@ -279,7 +291,7 @@ public abstract class AbstractSpiderServant extends Spider implements PlayerRide
             i = i & ~mask;
         }
 
-        this.entityData.set(SUMMONED_FLAGS, (byte)(i & 255));
+        this.entityData.set(SUMMONED_FLAGS, (byte) (i & 255));
     }
 
     public boolean isWandering() {
@@ -290,15 +302,15 @@ public abstract class AbstractSpiderServant extends Spider implements PlayerRide
         this.setFlags(1, wandering);
     }
 
-    public boolean isStaying(){
+    public boolean isStaying() {
         return this.getFlag(2) && !this.isCommanded() && !this.isVehicle();
     }
 
-    public void setStaying(boolean staying){
+    public void setStaying(boolean staying) {
         this.setFlags(2, staying);
     }
 
-    public boolean canUpdateMove(){
+    public boolean canUpdateMove() {
         return true;
     }
 
@@ -309,17 +321,17 @@ public abstract class AbstractSpiderServant extends Spider implements PlayerRide
     public void setUpgraded(boolean upgraded) {
         byte b0 = this.entityData.get(UPGRADE_FLAGS);
         if (upgraded) {
-            this.entityData.set(UPGRADE_FLAGS, (byte)(b0 | 4));
+            this.entityData.set(UPGRADE_FLAGS, (byte) (b0 | 4));
         } else {
-            this.entityData.set(UPGRADE_FLAGS, (byte)(b0 & -5));
+            this.entityData.set(UPGRADE_FLAGS, (byte) (b0 & -5));
         }
     }
 
-    public void upgrade(){
+    public void upgrade() {
         this.setUpgraded(true);
     }
 
-    public void downgrade(){
+    public void downgrade() {
         this.setUpgraded(false);
     }
 
@@ -331,11 +343,11 @@ public abstract class AbstractSpiderServant extends Spider implements PlayerRide
         this.setCommandTick(MathHelper.secondsToTicks(10));
     }
 
-    public BlockPos getCommandPos(){
+    public BlockPos getCommandPos() {
         return this.commandPos;
     }
 
-    public void setCommandPosEntity(@Nullable LivingEntity living){
+    public void setCommandPosEntity(@Nullable LivingEntity living) {
         this.commandPosEntity = living;
         if (living != null) {
             this.setCommandPos(living.blockPosition(), false);
@@ -343,11 +355,11 @@ public abstract class AbstractSpiderServant extends Spider implements PlayerRide
     }
 
     @Nullable
-    public LivingEntity getCommandPosEntity(){
+    public LivingEntity getCommandPosEntity() {
         return this.commandPosEntity;
     }
 
-    public int getCommandTick(){
+    public int getCommandTick() {
         return this.commandTick;
     }
 
@@ -356,20 +368,20 @@ public abstract class AbstractSpiderServant extends Spider implements PlayerRide
         this.commandTick = commandTick;
     }
 
-    public boolean isCommanded(){
+    public boolean isCommanded() {
         return this.commandPos != null;
     }
 
-    public BlockPos getBoundPos(){
+    public BlockPos getBoundPos() {
         return this.boundPos;
     }
 
-    public void setBoundPos(BlockPos blockPos){
+    public void setBoundPos(BlockPos blockPos) {
         this.boundPos = blockPos;
         this.setBoundDim(this.level.dimension());
     }
 
-    public Vec3 vec3BoundPos(){
+    public Vec3 vec3BoundPos() {
         return Vec3.atBottomCenterOf(this.boundPos);
     }
 
@@ -383,7 +395,7 @@ public abstract class AbstractSpiderServant extends Spider implements PlayerRide
     }
 
     public void setTarget(@Nullable LivingEntity target) {
-        if (this.isGuardingArea() && !this.isPrioritizing()){
+        if (this.isGuardingArea() && !this.isPrioritizing()) {
             if (target != null) {
                 if (target.distanceToSqr(this.vec3BoundPos()) <= Mth.square(GUARDING_RANGE)) {
                     this.overrideSetTarget(target);
@@ -396,7 +408,7 @@ public abstract class AbstractSpiderServant extends Spider implements PlayerRide
         }
     }
 
-    public void overrideSetTarget(@Nullable LivingEntity target){
+    public void overrideSetTarget(@Nullable LivingEntity target) {
         super.setTarget(target);
     }
 
@@ -434,12 +446,13 @@ public abstract class AbstractSpiderServant extends Spider implements PlayerRide
     public void setPriorityPos(BlockPos priorityPos) {
         this.priorityPos = priorityPos;
     }
+
     @Deprecated
     public void normalSetTarget(@Nullable LivingEntity target) {
         this.overrideSetTarget(target);
     }
 
-    public void dropEquipment(EquipmentSlot equipmentSlot, ItemStack stack){
+    public void dropEquipment(EquipmentSlot equipmentSlot, ItemStack stack) {
         if (this.getEquipmentDropChance(equipmentSlot) > 0.0F) {
             this.spawnAtLocation(stack);
         }
@@ -468,12 +481,12 @@ public abstract class AbstractSpiderServant extends Spider implements PlayerRide
         this.killChance = killChance;
     }
 
-    public void warnKill(Player player){
+    public void warnKill(Player player) {
         this.killChance = 60;
         player.displayClientMessage(Component.translatable("info.goety.servant.tryKill", this.getDisplayName()), true);
     }
 
-    public void tryKill(Player player){
+    public void tryKill(Player player) {
         this.kill();
     }
 
@@ -498,28 +511,30 @@ public abstract class AbstractSpiderServant extends Spider implements PlayerRide
     }
 
     @Override
-    public void convertNewEquipment(Entity entity){
+    public void convertNewEquipment(Entity entity) {
         this.populateDefaultEquipmentSlots(this.random, this.level.getCurrentDifficultyAt(this.blockPosition()));
     }
 
     @Nullable
-    public EntityType<?> getVariant(Level level, BlockPos blockPos){
+    public EntityType<?> getVariant(Level level, BlockPos blockPos) {
         return this.getType();
     }
 
     @Nullable
-    public SpawnGroupData finalizeSpawn(ServerLevelAccessor pLevel, DifficultyInstance pDifficulty, MobSpawnType pReason, @Nullable SpawnGroupData pSpawnData, @Nullable CompoundTag pDataTag) {
+    public SpawnGroupData finalizeSpawn(ServerLevelAccessor pLevel, DifficultyInstance pDifficulty,
+            MobSpawnType pReason, @Nullable SpawnGroupData pSpawnData, @Nullable CompoundTag pDataTag) {
         RandomSource randomsource = pLevel.getRandom();
         AttributeInstance instance = this.getAttribute(Attributes.FOLLOW_RANGE);
-        if (instance != null){
-            instance.addPermanentModifier(new AttributeModifier("Random spawn bonus", randomsource.triangle(0.0D, 0.11485000000000001D), AttributeModifier.Operation.MULTIPLY_BASE));
+        if (instance != null) {
+            instance.addPermanentModifier(new AttributeModifier("Random spawn bonus",
+                    randomsource.triangle(0.0D, 0.11485000000000001D), AttributeModifier.Operation.MULTIPLY_BASE));
         }
         this.setLeftHanded(randomsource.nextFloat() < 0.05F);
 
         MobAccessor mobAccessor = (MobAccessor) this;
         mobAccessor.setSpawnType(pReason);
         this.checkHostility();
-        if (pReason != MobSpawnType.MOB_SUMMONED && this.getTrueOwner() == null){
+        if (pReason != MobSpawnType.MOB_SUMMONED && this.getTrueOwner() == null) {
             this.setNatural(true);
         }
         this.setWandering(this.getTrueOwner() == null);
@@ -538,14 +553,16 @@ public abstract class AbstractSpiderServant extends Spider implements PlayerRide
             }
         }
         boolean flag = super.hurt(source, amount);
-        if (flag){
+        if (flag) {
             this.noHealTime = MathHelper.secondsToTicks(MobsConfig.ServantHealHalt.get());
         }
         return flag;
     }
 
     public void die(DamageSource pCause) {
-        if (!this.level.isClientSide && this.hasCustomName() && this.level.getGameRules().getBoolean(GameRules.RULE_SHOWDEATHMESSAGES) && this.getTrueOwner() instanceof ServerPlayer) {
+        if (!this.level.isClientSide && this.hasCustomName()
+                && this.level.getGameRules().getBoolean(GameRules.RULE_SHOWDEATHMESSAGES)
+                && this.getTrueOwner() instanceof ServerPlayer) {
             this.getTrueOwner().sendSystemMessage(this.getCombatTracker().getDeathMessage());
         }
         super.die(pCause);
@@ -553,18 +570,21 @@ public abstract class AbstractSpiderServant extends Spider implements PlayerRide
 
     @Nullable
     public LivingEntity getTrueOwner() {
-        if (!this.level.isClientSide){
+        if (!this.level.isClientSide) {
             UUID uuid = this.getOwnerId();
             return uuid == null ? null : EntityFinder.getLivingEntityByUuiD(uuid);
         } else {
             int id = this.getOwnerClientId();
-            return id <= -1 ? null : this.level.getEntity(this.getOwnerClientId()) instanceof LivingEntity living && living != this ? living : null;
+            return id <= -1 ? null
+                    : this.level.getEntity(this.getOwnerClientId()) instanceof LivingEntity living && living != this
+                            ? living
+                            : null;
         }
     }
 
     @Nullable
-    public LivingEntity getMasterOwner(){
-        if (this.getTrueOwner() instanceof IOwned owned){
+    public LivingEntity getMasterOwner() {
+        if (this.getTrueOwner() instanceof IOwned owned) {
             return owned.getTrueOwner();
         } else {
             return this.getTrueOwner();
@@ -584,39 +604,39 @@ public abstract class AbstractSpiderServant extends Spider implements PlayerRide
 
     @Nullable
     public UUID getOwnerId() {
-        return this.entityData.get(OWNER_UNIQUE_ID).orElse((UUID)null);
+        return this.entityData.get(OWNER_UNIQUE_ID).orElse((UUID) null);
     }
 
     public void setOwnerId(@Nullable UUID p_184754_1_) {
         this.entityData.set(OWNER_UNIQUE_ID, Optional.ofNullable(p_184754_1_));
     }
 
-    public int getOwnerClientId(){
+    public int getOwnerClientId() {
         return this.entityData.get(OWNER_CLIENT_ID);
     }
 
-    public void setOwnerClientId(int id){
+    public void setOwnerClientId(int id) {
         this.entityData.set(OWNER_CLIENT_ID, id);
     }
 
-    public void setHostile(boolean hostile){
+    public void setHostile(boolean hostile) {
         this.entityData.set(HOSTILE, hostile);
         this.addTargetGoal();
     }
 
-    public void addTargetGoal(){
+    public void addTargetGoal() {
         this.targetSelector.addGoal(2, this.targetGoal);
     }
 
-    public boolean isHostile(){
+    public boolean isHostile() {
         return this.entityData.get(HOSTILE);
     }
 
-    public void setNatural(boolean natural){
+    public void setNatural(boolean natural) {
         this.entityData.set(NATURAL, natural);
     }
 
-    public boolean isNatural(){
+    public boolean isNatural() {
         return this.entityData.get(NATURAL);
     }
 
@@ -633,7 +653,7 @@ public abstract class AbstractSpiderServant extends Spider implements PlayerRide
         return 0;
     }
 
-    public int xpReward(){
+    public int xpReward() {
         return 5;
     }
 
@@ -655,7 +675,7 @@ public abstract class AbstractSpiderServant extends Spider implements PlayerRide
     }
 
     public boolean canCollideWith(Entity p_20303_) {
-        if (p_20303_ != this.getTrueOwner()){
+        if (p_20303_ != this.getTrueOwner()) {
             return super.canCollideWith(p_20303_);
         } else {
             return false;
@@ -686,8 +706,8 @@ public abstract class AbstractSpiderServant extends Spider implements PlayerRide
         if (this.getTrueOwner() != null && pPlayer == this.getTrueOwner()) {
             if (this.isFood(itemstack) && this.getHealth() < this.getMaxHealth()) {
                 FoodProperties foodProperties = itemstack.getFoodProperties(this);
-                if (foodProperties != null){
-                    this.heal((float)foodProperties.getNutrition());
+                if (foodProperties != null) {
+                    this.heal((float) foodProperties.getNutrition());
                     if (!pPlayer.getAbilities().instabuild) {
                         itemstack.shrink(1);
                     }
@@ -699,7 +719,8 @@ public abstract class AbstractSpiderServant extends Spider implements PlayerRide
                             double d0 = this.random.nextGaussian() * 0.02D;
                             double d1 = this.random.nextGaussian() * 0.02D;
                             double d2 = this.random.nextGaussian() * 0.02D;
-                            serverLevel.sendParticles(ModParticleTypes.HEAL_EFFECT.get(), this.getRandomX(1.0D), this.getRandomY() + 0.5D, this.getRandomZ(1.0D), 0, d0, d1, d2, 0.5F);
+                            serverLevel.sendParticles(ModParticleTypes.HEAL_EFFECT.get(), this.getRandomX(1.0D),
+                                    this.getRandomY() + 0.5D, this.getRandomZ(1.0D), 0, d0, d1, d2, 0.5F);
                         }
                     }
                     pPlayer.swing(pHand);

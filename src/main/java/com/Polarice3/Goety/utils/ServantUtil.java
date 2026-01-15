@@ -42,16 +42,18 @@ import java.util.function.Predicate;
 
 public class ServantUtil {
 
-    public static void convertZombies(Entity target, LivingEntity owner, boolean permanent){
-        if (target instanceof Zombie zombieEntity && net.neoforged.event.net.neoforged.neoforge.event.EventHooks.canLivingConvert(zombieEntity, ModEntityType.ZOMBIE_SERVANT.get(), (timer) -> {})) {
+    public static void convertZombies(Entity target, LivingEntity owner, boolean permanent) {
+        if (target instanceof Zombie zombieEntity && net.neoforged.neoforge.event.EventHooks
+                .canLivingConvert(zombieEntity, ModEntityType.ZOMBIE_SERVANT.get(), (timer) -> {
+                })) {
             EntityType<? extends Mob> entityType = ModEntityType.ZOMBIE_SERVANT.get();
-            if (zombieEntity instanceof ZombieVillager){
+            if (zombieEntity instanceof ZombieVillager) {
                 entityType = ModEntityType.ZOMBIE_VILLAGER_SERVANT.get();
-            } else if (zombieEntity instanceof Husk){
+            } else if (zombieEntity instanceof Husk) {
                 entityType = ModEntityType.HUSK_SERVANT.get();
-            } else if (zombieEntity instanceof Drowned){
+            } else if (zombieEntity instanceof Drowned) {
                 entityType = ModEntityType.DROWNED_SERVANT.get();
-            } else if (zombieEntity instanceof ZombifiedPiglin){
+            } else if (zombieEntity instanceof ZombifiedPiglin) {
                 entityType = ModEntityType.ZPIGLIN_SERVANT.get();
             }
             ZombieServant zombieServant = (ZombieServant) zombieEntity.convertTo(entityType, true);
@@ -60,9 +62,12 @@ public class ServantUtil {
                     zombieServant.setTrueOwner(owner);
                 }
                 if (target.level instanceof ServerLevel serverLevel) {
-                    zombieServant.finalizeSpawn(serverLevel, target.level.getCurrentDifficultyAt(zombieServant.blockPosition()), MobSpawnType.CONVERSION, null, null);
+                    zombieServant.finalizeSpawn(serverLevel,
+                            target.level.getCurrentDifficultyAt(zombieServant.blockPosition()), MobSpawnType.CONVERSION,
+                            null, null);
                 }
-                if (zombieEntity instanceof ZombieVillager villager && zombieServant instanceof ZombieVillagerServant servant){
+                if (zombieEntity instanceof ZombieVillager villager
+                        && zombieServant instanceof ZombieVillagerServant servant) {
                     servant.setVillagerData(villager.getVillagerData());
                     servant.setGossips(villager.gossips);
                     servant.setTradeOffers(villager.tradeOffers);
@@ -71,7 +76,8 @@ public class ServantUtil {
                 if (!permanent) {
                     zombieServant.setLimitedLife(10 * (15 + target.level.random.nextInt(45)));
                 }
-                net.neoforged.event.net.neoforged.neoforge.event.EventHooks.onLivingConvert(zombieEntity, zombieServant);
+                net.neoforged.neoforge.event.EventHooks.onLivingConvert(zombieEntity,
+                        zombieServant);
                 if (!zombieServant.isSilent()) {
                     zombieServant.level.levelEvent(null, 1026, zombieServant.blockPosition(), 0);
                 }
@@ -79,12 +85,14 @@ public class ServantUtil {
         }
     }
 
-    public static void convertSkeletons(Entity target, LivingEntity owner, boolean wither, boolean permanent){
-        if (target instanceof AbstractSkeleton skeleton && net.neoforged.event.net.neoforged.neoforge.event.EventHooks.canLivingConvert(skeleton, ModEntityType.SKELETON_SERVANT.get(), (timer) -> {})) {
+    public static void convertSkeletons(Entity target, LivingEntity owner, boolean wither, boolean permanent) {
+        if (target instanceof AbstractSkeleton skeleton && net.neoforged.neoforge.event.EventHooks
+                .canLivingConvert(skeleton, ModEntityType.SKELETON_SERVANT.get(), (timer) -> {
+                })) {
             EntityType<? extends Mob> entityType = ModEntityType.SKELETON_SERVANT.get();
-            if (skeleton instanceof Stray){
+            if (skeleton instanceof Stray) {
                 entityType = ModEntityType.STRAY_SERVANT.get();
-            } else if (wither && skeleton instanceof WitherSkeleton){
+            } else if (wither && skeleton instanceof WitherSkeleton) {
                 entityType = ModEntityType.WITHER_SKELETON_SERVANT.get();
             }
             AbstractSkeletonServant skeletonServant = (AbstractSkeletonServant) skeleton.convertTo(entityType, true);
@@ -93,12 +101,14 @@ public class ServantUtil {
                     skeletonServant.setTrueOwner(owner);
                 }
                 if (target.level instanceof ServerLevel serverLevel) {
-                    skeletonServant.finalizeSpawn(serverLevel, target.level.getCurrentDifficultyAt(skeletonServant.blockPosition()), MobSpawnType.CONVERSION, null, null);
+                    skeletonServant.finalizeSpawn(serverLevel,
+                            target.level.getCurrentDifficultyAt(skeletonServant.blockPosition()),
+                            MobSpawnType.CONVERSION, null, null);
                 }
                 if (!permanent) {
                     skeletonServant.setLimitedLife(10 * (15 + target.level.random.nextInt(45)));
                 }
-                net.neoforged.event.net.neoforged.neoforge.event.EventHooks.onLivingConvert(skeleton, skeletonServant);
+                net.neoforged.neoforge.event.EventHooks.onLivingConvert(skeleton, skeletonServant);
                 if (!skeletonServant.isSilent()) {
                     skeletonServant.level.levelEvent(null, 1026, skeletonServant.blockPosition(), 0);
                 }
@@ -106,31 +116,35 @@ public class ServantUtil {
         }
     }
 
-    public static void infect(Mob target, LivingEntity owner, boolean permanent, boolean keepLoot){
+    public static void infect(Mob target, LivingEntity owner, boolean permanent, boolean keepLoot) {
         Summoned summoned = null;
-        if (target instanceof Wraith){
+        if (target instanceof Wraith) {
             summoned = target.convertTo(ModEntityType.WRAITH_SERVANT.get(), keepLoot);
-        } else if (target instanceof BorderWraith){
+        } else if (target instanceof BorderWraith) {
             summoned = target.convertTo(ModEntityType.BORDER_WRAITH_SERVANT.get(), keepLoot);
-        } else if (target instanceof MuckWraith){
+        } else if (target instanceof MuckWraith) {
             summoned = target.convertTo(ModEntityType.MUCK_WRAITH_SERVANT.get(), keepLoot);
-        } else if (target instanceof PiglinBrute){
+        } else if (target instanceof PiglinBrute) {
             summoned = target.convertTo(ModEntityType.ZPIGLIN_BRUTE_SERVANT.get(), keepLoot);
-        } else if (target instanceof AbstractPiglin){
+        } else if (target instanceof AbstractPiglin) {
             summoned = target.convertTo(ModEntityType.ZPIGLIN_SERVANT.get(), keepLoot);
-        } else if (target instanceof Villager || target instanceof Prisoner || target.getType().getDescriptionId().contains("entity.guardvillagers.guard")){
+        } else if (target instanceof Villager || target instanceof Prisoner
+                || target.getType().getDescriptionId().contains("entity.guardvillagers.guard")) {
             summoned = target.convertTo(ModEntityType.ZOMBIE_VILLAGER_SERVANT.get(), keepLoot);
-        } else if (target instanceof Vindicator || target instanceof VindicatorServant){
+        } else if (target instanceof Vindicator || target instanceof VindicatorServant) {
             summoned = target.convertTo(ModEntityType.ZOMBIE_VINDICATOR_SERVANT.get(), keepLoot);
-        } else if (target instanceof Pillager || target instanceof PillagerServant){
+        } else if (target instanceof Pillager || target instanceof PillagerServant) {
             summoned = target.convertTo(ModEntityType.SKELETON_PILLAGER_SERVANT.get(), keepLoot);
         }
 
         if (summoned != null) {
             EntityType<? extends LivingEntity> entityType = (EntityType<? extends LivingEntity>) summoned.getType();
-            if (net.neoforged.event.net.neoforged.neoforge.event.EventHooks.canLivingConvert(target, entityType, (timer) -> {})) {
+            if (net.neoforged.neoforge.event.EventHooks.canLivingConvert(target, entityType,
+                    (timer) -> {
+                    })) {
                 if (target.level instanceof ServerLevel serverLevel) {
-                    summoned.finalizeSpawn(serverLevel, target.level.getCurrentDifficultyAt(summoned.blockPosition()), MobSpawnType.CONVERSION, null, null);
+                    summoned.finalizeSpawn(serverLevel, target.level.getCurrentDifficultyAt(summoned.blockPosition()),
+                            MobSpawnType.CONVERSION, null, null);
                 }
                 if (!permanent) {
                     summoned.setLimitedLife(10 * (15 + target.level.random.nextInt(45)));
@@ -155,7 +169,7 @@ public class ServantUtil {
                         servant.setVillagerXp(prisoner.getVillagerXp());
                     }
                 }
-                net.neoforged.event.net.neoforged.neoforge.event.EventHooks.onLivingConvert(target, summoned);
+                net.neoforged.neoforge.event.EventHooks.onLivingConvert(target, summoned);
                 if (!summoned.isSilent()) {
                     summoned.level.levelEvent(null, 1026, summoned.blockPosition(), 0);
                 }
@@ -163,56 +177,53 @@ public class ServantUtil {
         }
     }
 
-    public static boolean isFrostHeal(LivingEntity servant){
-        MobType mobType = servant.getMobType();
+    public static boolean isFrostHeal(LivingEntity servant) {
         EntityType<?> entityType = servant.getType();
-        return mobType == ModMobType.FROST || entityType.is(ModTags.EntityTypes.FROST_HEAL);
+        return entityType.is(ModTags.EntityTypes.FROST_HEAL);
     }
 
-    public static boolean isWildHeal(LivingEntity servant){
-        MobType mobType = servant.getMobType();
+    public static boolean isWildHeal(LivingEntity servant) {
         EntityType<?> entityType = servant.getType();
-        return mobType == ModMobType.NATURAL || mobType == MobType.ARTHROPOD || entityType.is(ModTags.EntityTypes.WILD_HEAL);
+        return servant.getMobType() == MobType.ARTHROPOD || entityType.is(ModTags.EntityTypes.WILD_HEAL);
     }
 
-    public static boolean isNetherHeal(LivingEntity servant){
-        MobType mobType = servant.getMobType();
+    public static boolean isNetherHeal(LivingEntity servant) {
         EntityType<?> entityType = servant.getType();
-        return mobType == ModMobType.NETHER || entityType.is(ModTags.EntityTypes.NETHER_HEAL);
+        return entityType.is(ModTags.EntityTypes.NETHER_HEAL);
     }
 
-    public static boolean isNecroHeal(LivingEntity servant){
-        MobType mobType = servant.getMobType();
+    public static boolean isNecroHeal(LivingEntity servant) {
         EntityType<?> entityType = servant.getType();
-        return mobType == MobType.UNDEAD || entityType.is(ModTags.EntityTypes.NECRO_HEAL);
+        return servant.isInvertedHealAndHarm() || entityType.is(ModTags.EntityTypes.NECRO_HEAL);
     }
 
-    public static boolean isAbyssHeal(LivingEntity servant){
-        MobType mobType = servant.getMobType();
+    public static boolean isAbyssHeal(LivingEntity servant) {
         EntityType<?> entityType = servant.getType();
-        return mobType == MobType.WATER || entityType.is(ModTags.EntityTypes.ABYSS_HEAL);
+        return servant.getMobType() == MobType.WATER || entityType.is(ModTags.EntityTypes.ABYSS_HEAL);
     }
 
-    public static boolean isVoidHeal(LivingEntity servant){
+    public static boolean isVoidHeal(LivingEntity servant) {
         EntityType<?> entityType = servant.getType();
         return servant instanceof AbstractEnderling || entityType.is(ModTags.EntityTypes.VOID_HEAL);
     }
 
-    public static boolean isValidServantHeal(LivingEntity livingEntity){
-        return isFrostHeal(livingEntity) || isWildHeal(livingEntity) || isNecroHeal(livingEntity) || isNetherHeal(livingEntity) || isAbyssHeal(livingEntity) || isVoidHeal(livingEntity);
+    public static boolean isValidServantHeal(LivingEntity livingEntity) {
+        return isFrostHeal(livingEntity) || isWildHeal(livingEntity) || isNecroHeal(livingEntity)
+                || isNetherHeal(livingEntity) || isAbyssHeal(livingEntity) || isVoidHeal(livingEntity);
     }
 
-    public static boolean notServantButOwned(LivingEntity livingEntity){
-        return livingEntity instanceof OwnableEntity && !(livingEntity instanceof IServant) && isValidServantHeal(livingEntity);
+    public static boolean notServantButOwned(LivingEntity livingEntity) {
+        return livingEntity instanceof OwnableEntity && !(livingEntity instanceof IServant)
+                && isValidServantHeal(livingEntity);
     }
 
-    public static void healServant(LivingEntity owner, LivingEntity servant){
-        if (owner instanceof Player player){
+    public static void healServant(LivingEntity owner, LivingEntity servant) {
+        if (owner instanceof Player player) {
             healServant(player, servant);
         }
     }
 
-    public static void healServant(Player owner, LivingEntity servant){
+    public static void healServant(Player owner, LivingEntity servant) {
         if (!servant.level.isClientSide) {
             if (!servant.getType().is(ModTags.EntityTypes.NO_HEAL_SERVANTS)) {
                 if (!servant.isOnFire() && !servant.isDeadOrDying()) {
@@ -225,7 +236,9 @@ public class ServantUtil {
                                     Vec3 vector3d = servant.getDeltaMovement();
                                     if (servant.level instanceof ServerLevel serverWorld) {
                                         SEHelper.decreaseSouls(owner, config.soulCost);
-                                        serverWorld.sendParticles(ParticleTypes.SCULK_SOUL, servant.getRandomX(0.5D), servant.getRandomY(), servant.getRandomZ(0.5D), 0, vector3d.x * -0.2D, 0.1D, vector3d.z * -0.2D, 0.5F);
+                                        serverWorld.sendParticles(ParticleTypes.SCULK_SOUL, servant.getRandomX(0.5D),
+                                                servant.getRandomY(), servant.getRandomZ(0.5D), 0, vector3d.x * -0.2D,
+                                                0.1D, vector3d.z * -0.2D, 0.5F);
                                     }
                                 }
                             }
@@ -237,13 +250,14 @@ public class ServantUtil {
     }
 
     @Nullable
-    public static Entity teleportToRevive(IOwned owned){
+    public static Entity teleportToRevive(IOwned owned) {
         if (owned instanceof LivingEntity livingOwned) {
             if (livingOwned.level instanceof ServerLevel serverLevel) {
                 BlockPos blockPos = owned.getRevivePos();
                 if (blockPos != null) {
                     if (owned.getReviveLevel() != null) {
-                        Optional<Vec3> optional = RespawnAnchorBlock.findStandUpPosition(livingOwned.getType(), livingOwned.level, blockPos);
+                        Optional<Vec3> optional = RespawnAnchorBlock.findStandUpPosition(livingOwned.getType(),
+                                livingOwned.level, blockPos);
                         Vec3 vec3 = blockPos.getCenter();
                         if (optional.isPresent()) {
                             vec3 = optional.get();
@@ -252,10 +266,12 @@ public class ServantUtil {
                             if (livingOwned.getServer() != null) {
                                 ServerLevel newLevel = livingOwned.getServer().getLevel(owned.getReviveLevel());
                                 if (newLevel != null) {
-                                    Optional<Vec3> optional2 = RespawnAnchorBlock.findStandUpPosition(livingOwned.getType(), newLevel, blockPos);
+                                    Optional<Vec3> optional2 = RespawnAnchorBlock
+                                            .findStandUpPosition(livingOwned.getType(), newLevel, blockPos);
                                     if (optional2.isPresent()) {
                                         Vec3 vec32 = optional2.get();
-                                        Entity entity = livingOwned.changeDimension(ArcaTeleporter.transition(newLevel, livingOwned, vec32));
+                                        Entity entity = livingOwned.changeDimension(
+                                                ArcaTeleporter.transition(newLevel, livingOwned, vec32));
                                         if (entity != null) {
                                             if (newLevel.getWorldBorder().isWithinBounds(vec32.x, vec32.y, vec32.z)) {
                                                 entity.teleportTo(vec32.x, vec32.y, vec32.z);
@@ -284,7 +300,8 @@ public class ServantUtil {
         return null;
     }
 
-    public static InteractionResult equipServantArmor(Player player, Summoned summoned, ItemStack itemStack, InteractionResult failResult) {
+    public static InteractionResult equipServantArmor(Player player, Summoned summoned, ItemStack itemStack,
+            InteractionResult failResult) {
         ItemStack helmet = summoned.getItemBySlot(EquipmentSlot.HEAD);
         ItemStack chestplate = summoned.getItemBySlot(EquipmentSlot.CHEST);
         ItemStack legging = summoned.getItemBySlot(EquipmentSlot.LEGS);
@@ -316,7 +333,8 @@ public class ServantUtil {
                     double d0 = summoned.getRandom().nextGaussian() * 0.02D;
                     double d1 = summoned.getRandom().nextGaussian() * 0.02D;
                     double d2 = summoned.getRandom().nextGaussian() * 0.02D;
-                    summoned.level.addParticle(ParticleTypes.HAPPY_VILLAGER, summoned.getRandomX(1.0D), summoned.getRandomY() + 0.5D, summoned.getRandomZ(1.0D), d0, d1, d2);
+                    summoned.level.addParticle(ParticleTypes.HAPPY_VILLAGER, summoned.getRandomX(1.0D),
+                            summoned.getRandomY() + 0.5D, summoned.getRandomZ(1.0D), d0, d1, d2);
                 }
                 if (!player.getAbilities().instabuild) {
                     itemStack.shrink(1);
@@ -343,7 +361,8 @@ public class ServantUtil {
         EquipmentSlot equipmentslot1 = EquipmentSlot.FEET;
         if (d0 >= 0.1D && d0 < 0.1D + (flag ? 0.8D : 0.45D) && mob.hasItemInSlot(equipmentslot1)) {
             equipmentslot = EquipmentSlot.FEET;
-        } else if (d0 >= 0.9D + (flag ? 0.3D : 0.0D) && d0 < 0.9D + (flag ? 1.0D : 0.7D) && mob.hasItemInSlot(EquipmentSlot.CHEST)) {
+        } else if (d0 >= 0.9D + (flag ? 0.3D : 0.0D) && d0 < 0.9D + (flag ? 1.0D : 0.7D)
+                && mob.hasItemInSlot(EquipmentSlot.CHEST)) {
             equipmentslot = EquipmentSlot.CHEST;
         } else if (d0 >= 0.4D && d0 < 0.4D + (flag ? 1.0D : 0.8D) && mob.hasItemInSlot(EquipmentSlot.LEGS)) {
             equipmentslot = EquipmentSlot.LEGS;
@@ -363,48 +382,42 @@ public class ServantUtil {
                 MobsConfig.WaterMinionHeal.get(),
                 MobsConfig.WaterMinionHealCost.get(),
                 MobsConfig.WaterMinionHealTime.get(),
-                MobsConfig.WaterMinionHealAmount.get()
-        ),
+                MobsConfig.WaterMinionHealAmount.get()),
         WILD(
                 ServantUtil::isWildHeal,
                 CuriosFinder::hasWildRobe,
                 MobsConfig.NaturalMinionHeal.get(),
                 MobsConfig.NaturalMinionHealCost.get(),
                 MobsConfig.NaturalMinionHealTime.get(),
-                MobsConfig.NaturalMinionHealAmount.get()
-        ),
+                MobsConfig.NaturalMinionHealAmount.get()),
         FROST(
                 ServantUtil::isFrostHeal,
                 CuriosFinder::hasFrostRobes,
                 MobsConfig.FrostMinionHeal.get(),
                 MobsConfig.FrostMinionHealCost.get(),
                 MobsConfig.FrostMinionHealTime.get(),
-                MobsConfig.FrostMinionHealAmount.get()
-        ),
+                MobsConfig.FrostMinionHealAmount.get()),
         NETHER(
                 ServantUtil::isNetherHeal,
                 CuriosFinder::hasNetherRobe,
                 MobsConfig.NetherMinionHeal.get(),
                 MobsConfig.NetherMinionHealCost.get(),
                 MobsConfig.NetherMinionHealTime.get(),
-                MobsConfig.NetherMinionHealAmount.get()
-        ),
+                MobsConfig.NetherMinionHealAmount.get()),
         VOID(
                 ServantUtil::isVoidHeal,
                 CuriosFinder::hasVoidRobe,
                 MobsConfig.VoidMinionHeal.get(),
                 MobsConfig.VoidMinionHealCost.get(),
                 MobsConfig.VoidMinionHealTime.get(),
-                MobsConfig.VoidMinionHealAmount.get()
-        ),
+                MobsConfig.VoidMinionHealAmount.get()),
         NECRO(
                 ServantUtil::isNecroHeal,
                 CuriosFinder::hasUndeadCape,
                 MobsConfig.UndeadMinionHeal.get(),
                 MobsConfig.UndeadMinionHealCost.get(),
                 MobsConfig.UndeadMinionHealTime.get(),
-                MobsConfig.UndeadMinionHealAmount.get()
-        );
+                MobsConfig.UndeadMinionHealAmount.get());
 
         private final Predicate<LivingEntity> healCheck;
         private final Predicate<LivingEntity> curioCheck;
@@ -414,8 +427,8 @@ public class ServantUtil {
         private final double healAmount;
 
         HealType(Predicate<LivingEntity> healCheck, Predicate<LivingEntity> curioCheck,
-                 boolean healEnabled, int healCost,
-                 int healTime, double healAmount) {
+                boolean healEnabled, int healCost,
+                int healTime, double healAmount) {
             this.healCheck = healCheck;
             this.curioCheck = curioCheck;
             this.healEnabled = healEnabled;
@@ -424,9 +437,10 @@ public class ServantUtil {
             this.healAmount = healAmount;
         }
 
-        public static HealType create(String name, Predicate<LivingEntity> healCheck, Predicate<LivingEntity> curioCheck,
-                                      boolean healEnabled, int healCost,
-                                      int healTime, double healAmount){
+        public static HealType create(String name, Predicate<LivingEntity> healCheck,
+                Predicate<LivingEntity> curioCheck,
+                boolean healEnabled, int healCost,
+                int healTime, double healAmount) {
             throw new IllegalStateException("Enum not extended");
         }
 
@@ -438,8 +452,7 @@ public class ServantUtil {
                                 type.curioCheck.test(owner),
                                 type.healCost,
                                 type.healTime,
-                                (float) type.healAmount
-                        );
+                                (float) type.healAmount);
                     }
                 }
             }
@@ -447,6 +460,7 @@ public class ServantUtil {
         }
     }
 
-    public record HealConfig(boolean curio, int soulCost, int healRate, float healAmount) {}
+    public record HealConfig(boolean curio, int soulCost, int healRate, float healAmount) {
+    }
 
 }

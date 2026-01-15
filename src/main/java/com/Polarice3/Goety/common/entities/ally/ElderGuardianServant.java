@@ -19,7 +19,7 @@ import net.minecraft.world.phys.Vec3;
 
 import java.util.List;
 
-public class ElderGuardianServant extends GuardianServant{
+public class ElderGuardianServant extends GuardianServant {
 
     public ElderGuardianServant(EntityType<? extends Owned> type, Level worldIn) {
         super(type, worldIn);
@@ -31,7 +31,7 @@ public class ElderGuardianServant extends GuardianServant{
 
     public static AttributeSupplier.Builder setCustomAttributes() {
         return GuardianServant.setCustomAttributes()
-                .add(Attributes.MOVEMENT_SPEED, (double)0.3F)
+                .add(Attributes.MOVEMENT_SPEED, (double) 0.3F)
                 .add(Attributes.ATTACK_DAMAGE, 8.0D)
                 .add(Attributes.MAX_HEALTH, 80.0D);
     }
@@ -60,15 +60,22 @@ public class ElderGuardianServant extends GuardianServant{
         super.customServerAiStep();
         if ((this.tickCount + this.getId()) % 1200 == 0) {
             MobEffectInstance mobeffectinstance = new MobEffectInstance(MobEffects.DIG_SLOWDOWN, 6000, 2);
-            List<ServerPlayer> list = this.addEffectToPlayersAround((ServerLevel)this.level(), this.position(), 50.0D, mobeffectinstance, 1200);
-            list.forEach((serverPlayer) -> serverPlayer.connection.send(new ClientboundGameEventPacket(ClientboundGameEventPacket.GUARDIAN_ELDER_EFFECT, this.isSilent() ? 0.0F : 1.0F)));
+            List<ServerPlayer> list = this.addEffectToPlayersAround((ServerLevel) this.level(), this.position(), 50.0D,
+                    mobeffectinstance, 1200);
+            list.forEach((serverPlayer) -> serverPlayer.connection.send(new ClientboundGameEventPacket(
+                    ClientboundGameEventPacket.GUARDIAN_ELDER_EFFECT, this.isSilent() ? 0.0F : 1.0F)));
         }
     }
 
-    public List<ServerPlayer> addEffectToPlayersAround(ServerLevel p_216947_, Vec3 p_216949_, double p_216950_, MobEffectInstance p_216951_, int p_216952_) {
-        MobEffect mobeffect = p_216951_.getEffect();
+    public List<ServerPlayer> addEffectToPlayersAround(ServerLevel p_216947_, Vec3 p_216949_, double p_216950_,
+            MobEffectInstance p_216951_, int p_216952_) {
+        Holder<MobEffect> mobeffect = p_216951_.getEffect();
         List<ServerPlayer> list = p_216947_.getPlayers((serverPlayer) -> {
-            return serverPlayer.gameMode.isSurvival() && !MobUtil.areAllies(this, serverPlayer) && p_216949_.closerThan(serverPlayer.position(), p_216950_) && (!serverPlayer.hasEffect(mobeffect) || serverPlayer.getEffect(mobeffect).getAmplifier() < p_216951_.getAmplifier() || serverPlayer.getEffect(mobeffect).endsWithin(p_216952_ - 1));
+            return serverPlayer.gameMode.isSurvival() && !MobUtil.areAllies(this, serverPlayer)
+                    && p_216949_.closerThan(serverPlayer.position(), p_216950_)
+                    && (!serverPlayer.hasEffect(mobeffect)
+                            || serverPlayer.getEffect(mobeffect).getAmplifier() < p_216951_.getAmplifier()
+                            || serverPlayer.getEffect(mobeffect).endsWithin(p_216952_ - 1));
         });
         list.forEach((serverPlayer) -> serverPlayer.addEffect(new MobEffectInstance(p_216951_), this));
         return list;

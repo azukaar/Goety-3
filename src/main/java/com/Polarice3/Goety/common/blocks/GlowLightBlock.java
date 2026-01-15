@@ -29,16 +29,14 @@ public class GlowLightBlock extends BaseEntityBlock implements SimpleWaterlogged
     public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
     protected static final VoxelShape SHAPE = Block.box(5.0D, 5.0D, 5.0D, 11.0D, 11.0D, 11.0D);
 
-    public GlowLightBlock() {
-        super(Properties.of()
-                .pushReaction(PushReaction.DESTROY)
-                .instabreak()
-                .sound(SoundType.WOOL)
-                .noCollission()
-                .lightLevel((p_235443_0_) -> 15)
-                .noOcclusion()
-                .noLootTable()
-        );
+    public static final com.mojang.serialization.MapCodec<GlowLightBlock> CODEC = simpleCodec(GlowLightBlock::new);
+
+    public com.mojang.serialization.MapCodec<GlowLightBlock> codec() {
+        return CODEC;
+    }
+
+    public GlowLightBlock(Properties pProperties) {
+        super(pProperties);
         this.registerDefaultState(this.stateDefinition.any().setValue(WATERLOGGED, Boolean.FALSE));
     }
 
@@ -54,7 +52,8 @@ public class GlowLightBlock extends BaseEntityBlock implements SimpleWaterlogged
         return PushReaction.DESTROY;
     }
 
-    public BlockState updateShape(BlockState pState, Direction pFacing, BlockState pFacingState, LevelAccessor pLevel, BlockPos pCurrentPos, BlockPos pFacingPos) {
+    public BlockState updateShape(BlockState pState, Direction pFacing, BlockState pFacingState, LevelAccessor pLevel,
+            BlockPos pCurrentPos, BlockPos pFacingPos) {
         if (pState.getValue(WATERLOGGED)) {
             pLevel.scheduleTick(pCurrentPos, Fluids.WATER, Fluids.WATER.getTickDelay(pLevel));
         }
@@ -89,9 +88,9 @@ public class GlowLightBlock extends BaseEntityBlock implements SimpleWaterlogged
     }
 
     public void animateTick(BlockState pState, Level pLevel, BlockPos pPos, RandomSource pRand) {
-        double d0 = (double)pPos.getX() + 0.5D;
-        double d1 = (double)pPos.getY() + 0.6D;
-        double d2 = (double)pPos.getZ() + 0.5D;
+        double d0 = (double) pPos.getX() + 0.5D;
+        double d1 = (double) pPos.getY() + 0.6D;
+        double d2 = (double) pPos.getZ() + 0.5D;
         pLevel.addParticle(ModParticleTypes.GLOW_EFFECT.get(), d0, d1, d2, 0.0D, 0.0D, 0.0D);
     }
 
@@ -103,7 +102,8 @@ public class GlowLightBlock extends BaseEntityBlock implements SimpleWaterlogged
 
     @org.jetbrains.annotations.Nullable
     @Override
-    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level p_153212_, BlockState p_153213_, BlockEntityType<T> p_153214_) {
+    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level p_153212_, BlockState p_153213_,
+            BlockEntityType<T> p_153214_) {
         return (world, pos, state, blockEntity) -> {
             if (blockEntity instanceof MagicLightBlockEntity arcaBlock)
                 arcaBlock.tick(ModParticleTypes.GLOW_LIGHT_EFFECT.get());

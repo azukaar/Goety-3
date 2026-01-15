@@ -22,7 +22,8 @@ public class SummonCircleBossRenderer extends EntityRenderer<SummonCircleBoss> {
         this.model = new SummonCircleBossModel<>(p_i46179_1_.bakeLayer(ModModelLayer.SUMMON_CIRCLE_BOSS));
     }
 
-    public void render(SummonCircleBoss entityIn, float entityYaw, float partialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn, int packedLightIn) {
+    public void render(SummonCircleBoss entityIn, float entityYaw, float partialTicks, PoseStack matrixStackIn,
+            MultiBufferSource bufferIn, int packedLightIn) {
         matrixStackIn.pushPose();
         VertexConsumer ivertexbuilder = bufferIn.getBuffer(this.model.renderType(this.getTextureLocation(entityIn)));
         this.model.setupAnim(entityIn, 0.0F, 0.0F, 0.0F, entityIn.getYRot(), entityIn.getXRot());
@@ -30,7 +31,7 @@ public class SummonCircleBossRenderer extends EntityRenderer<SummonCircleBoss> {
         matrixStackIn.translate(0.0D, 1.6D, 0.0D);
         matrixStackIn.mulPose(Axis.ZP.rotationDegrees(180.0F));
         int i = getOverlayCoords(this.getWhiteOverlayProgress(entityIn, partialTicks));
-        this.model.renderToBuffer(matrixStackIn, ivertexbuilder, packedLightIn, i, 1.0F, 1.0F, 1.0F, 0.15F);
+        this.model.renderToBuffer(matrixStackIn, ivertexbuilder, packedLightIn, i, 0x26FFFFFF);
         matrixStackIn.popPose();
         super.render(entityIn, entityYaw, partialTicks, matrixStackIn, bufferIn, packedLightIn);
     }
@@ -41,7 +42,7 @@ public class SummonCircleBossRenderer extends EntityRenderer<SummonCircleBoss> {
 
     protected float getWhiteOverlayProgress(SummonCircleBoss p_114043_, float p_114044_) {
         float f = p_114043_.getSwelling(p_114044_);
-        return (int)(f * 10.0F) % 2 == 0 ? 0.0F : Mth.clamp(f, 0.5F, 1.0F);
+        return (int) (f * 10.0F) % 2 == 0 ? 0.0F : Mth.clamp(f, 0.5F, 1.0F);
     }
 
     @Override

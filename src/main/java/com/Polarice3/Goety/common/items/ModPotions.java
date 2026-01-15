@@ -12,10 +12,12 @@ import net.neoforged.neoforge.registries.RegistryObject;
 public class ModPotions {
     public static DeferredRegister<Potion> POTIONS = DeferredRegister.create(NeoForgeRegistries.POTIONS, Goety.MOD_ID);
 
-    public static void init(){
+    public static void init() {
         ModPotions.POTIONS.register(FMLJavaModLoadingContext.get().getModEventBus());
     }
 
-    public static final RegistryObject<Potion> CLIMBING = POTIONS.register("climbing", () -> new Potion(new MobEffectInstance(GoetyEffects.CLIMBING.get(), 3600)));
-    public static final RegistryObject<Potion> LONG_CLIMBING = POTIONS.register("long_climbing", () -> new Potion("climbing", new MobEffectInstance(GoetyEffects.CLIMBING.get(), 9600)));
+    public static final RegistryObject<Potion> CLIMBING = POTIONS.register("climbing",
+            () -> new Potion(new MobEffectInstance(GoetyEffects.CLIMBING.getHolder().get(), 3600)));
+    public static final RegistryObject<Potion> LONG_CLIMBING = POTIONS.register("long_climbing",
+            () -> new Potion("climbing", new MobEffectInstance(GoetyEffects.CLIMBING.getHolder().get(), 9600)));
 }

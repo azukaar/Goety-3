@@ -4,8 +4,9 @@ import com.google.common.collect.Lists;
 import com.mojang.blaze3d.platform.Window;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
-import com.mojang.math.Matrix4fStack;
 import com.Polarice3.Goety.client.events.ClientEvents;
+import org.joml.Matrix4fStack;
+import org.joml.Matrix4f;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
@@ -146,14 +147,16 @@ public class GenericRadialMenu {
 
     public void close() {
         state = State.CLOSING;
-        startAnimation = minecraft.level().getGameTime() + (double) ClientEvents.PARTIAL_TICK;
+        startAnimation = (minecraft.level != null ? minecraft.level.getGameTime() : 0)
+                + (double) ClientEvents.PARTIAL_TICK;
         animProgress = 1.0f;
         setHovered(-1);
     }
 
     public void tick() {
         if (state == State.INITIALIZING) {
-            startAnimation = minecraft.level().getGameTime() + (double) PARTIAL_TICK;
+            startAnimation = (minecraft.level != null ? minecraft.level.getGameTime() : 0)
+                    + (double) ClientEvents.PARTIAL_TICK;
             state = State.OPENING;
             animProgress = 0;
         }
@@ -189,9 +192,12 @@ public class GenericRadialMenu {
             guiGraphics.pose().pushPose();
             guiGraphics.pose().translate(animSide, animTop - 1, 0);
             guiGraphics.pose().scale(anim, anim, anim);
-/*            if (minecraft.player != null) {
-                guiGraphics.mulPose(Axis.ZP.rotationDegrees(partialTicks + (float) (minecraft.player.tickCount % 720) / 2.0F));
-            }*/
+            /*
+             * if (minecraft.player != null) {
+             * guiGraphics.mulPose(Axis.ZP.rotationDegrees(partialTicks + (float)
+             * (minecraft.player.tickCount % 720) / 2.0F));
+             * }
+             */
             drawBg(guiGraphics, owner);
 
             guiGraphics.pose().popPose();
@@ -213,13 +219,13 @@ public class GenericRadialMenu {
                 int textX = (owner.width - 16) / 2;
                 int textY = (owner.height - 16) / 2;
                 Matrix4fStack viewModelPose = RenderSystem.getModelViewStack();
-                viewModelPose.pushPose();
-                viewModelPose.mulPoseMatrix(guiGraphics.pose().last().pose());
-                viewModelPose.translate(0.0D, 0.0D, 0.0D);
+                viewModelPose.pushMatrix();
+                viewModelPose.mul(guiGraphics.pose().last().pose());
+                viewModelPose.translate(0.0f, 0.0f, 0.0f);
                 RenderSystem.applyModelViewMatrix();
                 guiGraphics.renderFakeItem(this.getCentralItem(), (int) textX, (int) textY);
                 guiGraphics.renderItemDecorations(fontRenderer, this.getCentralItem(), (int) textX, (int) textY);
-                viewModelPose.popPose();
+                viewModelPose.popMatrix();
                 RenderSystem.applyModelViewMatrix();
             }
 
@@ -233,14 +239,16 @@ public class GenericRadialMenu {
         float openAnimation = 0;
         switch (state) {
             case OPENING -> {
-                openAnimation = (float) ((minecraft.level.getGameTime() + partialTicks - startAnimation) / OPEN_ANIMATION_LENGTH);
+                openAnimation = (float) (((minecraft.level != null ? minecraft.level.getGameTime() : 0) + partialTicks
+                        - startAnimation) / OPEN_ANIMATION_LENGTH);
                 if (openAnimation >= 1.0 || getVisibleItemCount() == 0) {
                     openAnimation = 1;
                     state = State.NORMAL;
                 }
             }
             case CLOSING -> {
-                openAnimation = 1 - (float) ((minecraft.level.getGameTime() + partialTicks - startAnimation) / OPEN_ANIMATION_LENGTH);
+                openAnimation = 1 - (float) (((minecraft.level != null ? minecraft.level.getGameTime() : 0)
+                        + partialTicks - startAnimation) / OPEN_ANIMATION_LENGTH);
                 if (openAnimation <= 0 || getVisibleItemCount() == 0) {
                     openAnimation = 0;
                     state = State.CLOSED;
@@ -255,7 +263,8 @@ public class GenericRadialMenu {
         Font fontRenderer = host.getFontRenderer();
         for (RadialMenuItem item : visibleItems) {
             if (item.isHovered()) {
-                DrawingContext context = new DrawingContext(matrixStack, owner.width, owner.height, mouseX, mouseY, 0, fontRenderer, host);
+                DrawingContext context = new DrawingContext(matrixStack, owner.width, owner.height, mouseX, mouseY, 0,
+                        fontRenderer, host);
                 item.drawTooltips(context);
             }
         }
@@ -303,20 +312,21 @@ public class GenericRadialMenu {
             RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 
             Tesselator tessellator = Tesselator.getInstance();
-            BufferBuilder buffer = tessellator.getBuilder();
-            buffer.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
+            BufferBuilder buffer = tessellator.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
+            Matrix4f matrix = new Matrix4f(); // Identity matrix
             iterateVisible((item, s, e) -> {
                 int color = item.isHovered() ? backgroundColorHover : backgroundColor;
-                drawPieArc(buffer, x, y, z, radiusIn, radiusOut, s, e, color);
+                drawPieArc(buffer, matrix, x, y, z, radiusIn, radiusOut, s, e, color);
             });
-            tessellator.end();
+            BufferUploader.drawWithShader(buffer.buildOrThrow());
             RenderSystem.disableBlend();
         }
     }
 
     private static final float PRECISION = 2.5f / 360.0f;
 
-    private void drawPieArc(BufferBuilder buffer, float x, float y, float z, float radiusIn, float radiusOut, float startAngle, float endAngle, int color) {
+    private void drawPieArc(BufferBuilder buffer, Matrix4f matrix, float x, float y, float z, float radiusIn,
+            float radiusOut, float startAngle, float endAngle, int color) {
         float angle = endAngle - startAngle;
         int sections = Math.max(1, Mth.ceil(angle / PRECISION));
 
@@ -342,10 +352,10 @@ public class GenericRadialMenu {
             float pos2InX = x + radiusIn * (float) Math.cos(angle2);
             float pos2InY = y + radiusIn * (float) Math.sin(angle2);
 
-            buffer.vertex(pos1OutX, pos1OutY, z).color(r, g, b, a).endVertex();
-            buffer.vertex(pos1InX, pos1InY, z).color(r, g, b, a).endVertex();
-            buffer.vertex(pos2InX, pos2InY, z).color(r, g, b, a).endVertex();
-            buffer.vertex(pos2OutX, pos2OutY, z).color(r, g, b, a).endVertex();
+            buffer.addVertex(matrix, pos1OutX, pos1OutY, z).setColor(r, g, b, a);
+            buffer.addVertex(matrix, pos1InX, pos1InY, z).setColor(r, g, b, a);
+            buffer.addVertex(matrix, pos2InX, pos2InY, z).setColor(r, g, b, a);
+            buffer.addVertex(matrix, pos2OutX, pos2OutY, z).setColor(r, g, b, a);
         }
     }
 
@@ -382,14 +392,14 @@ public class GenericRadialMenu {
         float angle = (float) getAngleFor(which, numItems);
         setMousePosition(
                 x + itemRadius * Math.cos(angle),
-                y + itemRadius * Math.sin(angle)
-        );
+                y + itemRadius * Math.sin(angle));
     }
 
     private void setMousePosition(double x, double y) {
         Screen owner = host.getScreen();
         Window mainWindow = minecraft.getWindow();
-        GLFW.glfwSetCursorPos(mainWindow.getWindow(), (int) (x * mainWindow.getScreenWidth() / owner.width), (int) (y * mainWindow.getScreenHeight() / owner.height));
+        GLFW.glfwSetCursorPos(mainWindow.getWindow(), (int) (x * mainWindow.getScreenWidth() / owner.width),
+                (int) (y * mainWindow.getScreenHeight() / owner.height));
     }
 
     private static final double TWO_PI = 2.0 * Math.PI;
@@ -429,27 +439,30 @@ public class GenericRadialMenu {
         }
         setHovered(hovered);
 
-/*        Window mainWindow = minecraft.getWindow();
-
-        int windowWidth = mainWindow.getScreenWidth();
-        int windowHeight = mainWindow.getScreenHeight();
-
-        double[] xPos = new double[1];
-        double[] yPos = new double[1];
-        GLFW.glfwGetCursorPos(mainWindow.getWindow(), xPos, yPos);
-
-        double scaledX = xPos[0] - (windowWidth / 2.0f);
-        double scaledY = yPos[0] - (windowHeight / 2.0f);
-
-        double distance = Math.sqrt(scaledX * scaledX + scaledY * scaledY);
-        double radius = radiusOut * (windowWidth / (float) owner.width) * 0.975;
-
-        if (distance > radius) {
-            double fixedX = scaledX * radius / distance;
-            double fixedY = scaledY * radius / distance;
-
-            GLFW.glfwSetCursorPos(mainWindow.getWindow(), (int) (windowWidth / 2 + fixedX), (int) (windowHeight / 2 + fixedY));
-        }*/
+        /*
+         * Window mainWindow = minecraft.getWindow();
+         * 
+         * int windowWidth = mainWindow.getScreenWidth();
+         * int windowHeight = mainWindow.getScreenHeight();
+         * 
+         * double[] xPos = new double[1];
+         * double[] yPos = new double[1];
+         * GLFW.glfwGetCursorPos(mainWindow.getWindow(), xPos, yPos);
+         * 
+         * double scaledX = xPos[0] - (windowWidth / 2.0f);
+         * double scaledY = yPos[0] - (windowHeight / 2.0f);
+         * 
+         * double distance = Math.sqrt(scaledX * scaledX + scaledY * scaledY);
+         * double radius = radiusOut * (windowWidth / (float) owner.width) * 0.975;
+         * 
+         * if (distance > radius) {
+         * double fixedX = scaledX * radius / distance;
+         * double fixedY = scaledY * radius / distance;
+         * 
+         * GLFW.glfwSetCursorPos(mainWindow.getWindow(), (int) (windowWidth / 2 +
+         * fixedX), (int) (windowHeight / 2 + fixedY));
+         * }
+         */
     }
 
     private double getAngleFor(double i, int numItems) {
@@ -465,16 +478,17 @@ public class GenericRadialMenu {
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- *     * Redistributions of source code must retain the above copyright
- *       notice, this list of conditions and the following disclaimer.
- *     * Redistributions in binary form must reproduce the above copyright
- *       notice, this list of conditions and the following disclaimer in the
- *       documentation and/or other materials provided with the distribution.
- *     * Neither the name of the author nor the
- *       names of the contributors may be used to endorse or promote products
- *       derived from this software without specific prior written permission.
+ * * Redistributions of source code must retain the above copyright
+ * notice, this list of conditions and the following disclaimer.
+ * * Redistributions in binary form must reproduce the above copyright
+ * notice, this list of conditions and the following disclaimer in the
+ * documentation and/or other materials provided with the distribution.
+ * * Neither the name of the author nor the
+ * names of the contributors may be used to endorse or promote products
+ * derived from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND
  * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
  * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
  * DISCLAIMED. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY

@@ -39,9 +39,12 @@ public class ModSaveInventory extends SavedData {
     }
 
     public static void setInstance(ServerLevel world) {
-        if (world == null) return;
+        if (world == null)
+            return;
         DimensionDataStorage manager = world.getDataStorage();
-        INSTANCE = manager.computeIfAbsent(ModSaveInventory::load, ModSaveInventory::new, NAME);
+        INSTANCE = manager
+                .computeIfAbsent(new SavedData.Factory<ModSaveInventory>(ModSaveInventory::new, ModSaveInventory::load,
+                        net.minecraft.util.datafix.DataFixTypes.LEVEL), NAME);
     }
 
     public static void read(CompoundTag nbt) {

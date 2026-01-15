@@ -13,7 +13,8 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 
 public class SkeletonServant extends AbstractSkeletonServant {
-    private static final EntityDataAccessor<Boolean> DATA_STRAY_CONVERSION_ID = SynchedEntityData.defineId(SkeletonServant.class, EntityDataSerializers.BOOLEAN);
+    private static final EntityDataAccessor<Boolean> DATA_STRAY_CONVERSION_ID = SynchedEntityData
+            .defineId(SkeletonServant.class, EntityDataSerializers.BOOLEAN);
     private int inPowderSnowTime;
     private int conversionTime;
 
@@ -39,7 +40,7 @@ public class SkeletonServant extends AbstractSkeletonServant {
     }
 
     public void tick() {
-        if (!this.level.isClientSide && this.isAlive() && !this.isNoAi()) {
+        if (!this.level().isClientSide && this.isAlive() && !this.isNoAi()) {
             if (this.isFreezeConverting()) {
                 --this.conversionTime;
                 if (this.conversionTime < 0) {
@@ -79,7 +80,7 @@ public class SkeletonServant extends AbstractSkeletonServant {
     protected void doFreezeConversion() {
         this.convertToSkeletonType(ModEntityType.STRAY_SERVANT.get());
         if (!this.isSilent()) {
-            this.level.levelEvent((Player)null, 1048, this.blockPosition(), 0);
+            this.level().levelEvent((Player) null, 1048, this.blockPosition(), 0);
         }
 
     }
@@ -90,10 +91,10 @@ public class SkeletonServant extends AbstractSkeletonServant {
             if (this.getTrueOwner() != null) {
                 skeletonServant.setTrueOwner(this.getTrueOwner());
             }
-            if (this.limitedLifeTicks > 0){
+            if (this.limitedLifeTicks > 0) {
                 skeletonServant.setLimitedLife(this.limitedLifeTicks);
             }
-            net.neoforged.event.net.neoforged.neoforge.event.EventHooks.onLivingConvert(this, skeletonServant);
+            net.neoforged.neoforge.event.EventHooks.onLivingConvert(this, skeletonServant);
         }
     }
 

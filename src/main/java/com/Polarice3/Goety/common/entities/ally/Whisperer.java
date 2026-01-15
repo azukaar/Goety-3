@@ -43,10 +43,13 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.Objects;
 
-public class Whisperer extends Summoned{
-    private static final EntityDataAccessor<Integer> ANIM_STATE = SynchedEntityData.defineId(Whisperer.class, EntityDataSerializers.INT);
-    protected static final EntityDataAccessor<Byte> DATA_FLAGS_ID = SynchedEntityData.defineId(Whisperer.class, EntityDataSerializers.BYTE);
-    private static final EntityDataAccessor<Boolean> DATA_WAVE_CONVERSION_ID = SynchedEntityData.defineId(Whisperer.class, EntityDataSerializers.BOOLEAN);
+public class Whisperer extends Summoned {
+    private static final EntityDataAccessor<Integer> ANIM_STATE = SynchedEntityData.defineId(Whisperer.class,
+            EntityDataSerializers.INT);
+    protected static final EntityDataAccessor<Byte> DATA_FLAGS_ID = SynchedEntityData.defineId(Whisperer.class,
+            EntityDataSerializers.BYTE);
+    private static final EntityDataAccessor<Boolean> DATA_WAVE_CONVERSION_ID = SynchedEntityData
+            .defineId(Whisperer.class, EntityDataSerializers.BOOLEAN);
     public static String IDLE = "idle";
     public static String WALK = "walk";
     public static String ATTACK = "attack";
@@ -72,7 +75,7 @@ public class Whisperer extends Summoned{
     @Override
     protected void registerGoals() {
         super.registerGoals();
-        this.goalSelector.addGoal(0, new FloatGoal(this){
+        this.goalSelector.addGoal(0, new FloatGoal(this) {
             @Override
             public boolean canUse() {
                 return super.canUse() && !(Whisperer.this instanceof Wavewhisperer);
@@ -82,7 +85,7 @@ public class Whisperer extends Summoned{
         this.goalSelector.addGoal(1, new SummonGoal(this));
         this.goalSelector.addGoal(1, AvoidTargetGoal.AvoidRadiusGoal.newGoal(this, 4.0F, 8, 1.0F, 1.2F));
         this.goalSelector.addGoal(2, new LookAtTargetGoal(this, 15.0F));
-        this.goalSelector.addGoal(8, new WanderGoal<>(this, 1.0D){
+        this.goalSelector.addGoal(8, new WanderGoal<>(this, 1.0D) {
             @Override
             public boolean canUse() {
                 return super.canUse() && Whisperer.this.getTarget() == null;
@@ -92,7 +95,7 @@ public class Whisperer extends Summoned{
         this.goalSelector.addGoal(10, new LookAtPlayerGoal(this, Mob.class, 8.0F));
     }
 
-    public static AttributeSupplier.Builder setCustomAttributes(){
+    public static AttributeSupplier.Builder setCustomAttributes() {
         return Mob.createMobAttributes()
                 .add(Attributes.MAX_HEALTH, AttributesConfig.WhispererHealth.get())
                 .add(Attributes.ARMOR, AttributesConfig.WhispererArmor.get())
@@ -102,7 +105,7 @@ public class Whisperer extends Summoned{
                 .add(Attributes.FOLLOW_RANGE, 15.0D);
     }
 
-    public void setConfigurableAttributes(){
+    public void setConfigurableAttributes() {
         MobUtil.setBaseAttributes(this.getAttribute(Attributes.MAX_HEALTH), AttributesConfig.WhispererHealth.get());
         MobUtil.setBaseAttributes(this.getAttribute(Attributes.ARMOR), AttributesConfig.WhispererArmor.get());
         MobUtil.setBaseAttributes(this.getAttribute(Attributes.ATTACK_DAMAGE), AttributesConfig.WhispererDamage.get());
@@ -110,13 +113,13 @@ public class Whisperer extends Summoned{
 
     protected void defineSynchedData() {
         super.defineSynchedData();
-        this.entityData.define(DATA_FLAGS_ID, (byte)0);
+        this.entityData.define(DATA_FLAGS_ID, (byte) 0);
         this.entityData.define(ANIM_STATE, 0);
         this.getEntityData().define(DATA_WAVE_CONVERSION_ID, false);
     }
 
     protected void dropFromLootTable(DamageSource p_21021_, boolean p_21022_) {
-        if (!this.limitedLifespan){
+        if (!this.limitedLifespan) {
             super.dropFromLootTable(p_21021_, p_21022_);
         }
     }
@@ -144,10 +147,10 @@ public class Whisperer extends Summoned{
             if (this.getTrueOwner() != null) {
                 wavewhisperer.setTrueOwner(this.getTrueOwner());
             }
-            if (this.limitedLifeTicks > 0){
+            if (this.limitedLifeTicks > 0) {
                 wavewhisperer.setLimitedLife(this.limitedLifeTicks);
             }
-            net.neoforged.event.net.neoforged.neoforge.event.EventHooks.onLivingConvert(this, wavewhisperer);
+            net.neoforged.neoforge.event.EventHooks.onLivingConvert(this, wavewhisperer);
         }
 
     }
@@ -166,24 +169,24 @@ public class Whisperer extends Summoned{
     }
 
     public int getAnimationState(String animation) {
-        if (Objects.equals(animation, IDLE)){
+        if (Objects.equals(animation, IDLE)) {
             return 1;
-        } else if (Objects.equals(animation, WALK)){
+        } else if (Objects.equals(animation, WALK)) {
             return 2;
-        } else if (Objects.equals(animation, ATTACK)){
+        } else if (Objects.equals(animation, ATTACK)) {
             return 3;
-        } else if (Objects.equals(animation, SUMMON)){
+        } else if (Objects.equals(animation, SUMMON)) {
             return 4;
-        } else if (Objects.equals(animation, SUMMON_POISON)){
+        } else if (Objects.equals(animation, SUMMON_POISON)) {
             return 5;
-        } else if (Objects.equals(animation, SUMMON_THORNS)){
+        } else if (Objects.equals(animation, SUMMON_THORNS)) {
             return 6;
         } else {
             return 0;
         }
     }
 
-    public List<AnimationState> getAllAnimations(){
+    public List<AnimationState> getAllAnimations() {
         List<AnimationState> animationStates = new ArrayList<>();
         animationStates.add(this.idleAnimationState);
         animationStates.add(this.walkAnimationState);
@@ -194,28 +197,28 @@ public class Whisperer extends Summoned{
         return animationStates;
     }
 
-    public void stopAllAnimations(){
-        for (AnimationState animationState : this.getAllAnimations()){
+    public void stopAllAnimations() {
+        for (AnimationState animationState : this.getAllAnimations()) {
             animationState.stop();
         }
     }
 
-    public void stopMostAnimation(AnimationState exception){
-        for (AnimationState state : this.getAllAnimations()){
-            if (state != exception){
+    public void stopMostAnimation(AnimationState exception) {
+        for (AnimationState state : this.getAllAnimations()) {
+            if (state != exception) {
                 state.stop();
             }
         }
     }
 
-    public int getCurrentAnimation(){
+    public int getCurrentAnimation() {
         return this.entityData.get(ANIM_STATE);
     }
 
     public void onSyncedDataUpdated(EntityDataAccessor<?> accessor) {
         if (ANIM_STATE.equals(accessor)) {
-            if (this.level.isClientSide){
-                switch (this.entityData.get(ANIM_STATE)){
+            if (this.level.isClientSide) {
+                switch (this.entityData.get(ANIM_STATE)) {
                     case 0:
                         break;
                     case 1:
@@ -277,27 +280,27 @@ public class Whisperer extends Summoned{
         this.playSound(ModSounds.WHISPERER_STEP.get(), 0.15F, 1.0F);
     }
 
-    protected SoundEvent getAttackSound(){
+    protected SoundEvent getAttackSound() {
         return ModSounds.WHISPERER_ATTACK.get();
     }
 
-    protected SoundEvent getSummonSound(){
+    protected SoundEvent getSummonSound() {
         return ModSounds.WHISPERER_SUMMON.get();
     }
 
-    protected SoundEvent getSummonPoisonSound(){
+    protected SoundEvent getSummonPoisonSound() {
         return ModSounds.WHISPERER_SUMMON_POISON.get();
     }
 
-    protected SoundEvent getSummonThornsSound(){
+    protected SoundEvent getSummonThornsSound() {
         return ModSounds.WHISPERER_SUMMON_THORNS.get();
     }
 
-    protected EntityType<? extends AbstractMonolith> getVines(){
+    protected EntityType<? extends AbstractMonolith> getVines() {
         return ModEntityType.QUICK_GROWING_VINE.get();
     }
 
-    protected EntityType<? extends AbstractMonolith> getPoison(){
+    protected EntityType<? extends AbstractMonolith> getPoison() {
         return ModEntityType.POISON_QUILL_VINE.get();
     }
 
@@ -314,18 +317,18 @@ public class Whisperer extends Summoned{
             i = i & ~mask;
         }
 
-        this.entityData.set(DATA_FLAGS_ID, (byte)(i & 255));
+        this.entityData.set(DATA_FLAGS_ID, (byte) (i & 255));
     }
 
-    public boolean isSummonCool(){
+    public boolean isSummonCool() {
         return this.summonCool > 0;
     }
 
-    public boolean isSummoning(){
+    public boolean isSummoning() {
         return this.getFlag(2);
     }
 
-    public void setSummoning(boolean summon){
+    public void setSummoning(boolean summon) {
         this.setFlag(2, summon);
     }
 
@@ -351,7 +354,7 @@ public class Whisperer extends Summoned{
         return true;
     }
 
-    public EntityType<?> getVariant(Level level, BlockPos blockPos){
+    public EntityType<?> getVariant(Level level, BlockPos blockPos) {
         EntityType<?> entityType = ModEntityType.WHISPERER.get();
         if (level.isWaterAt(blockPos)) {
             entityType = ModEntityType.WAVEWHISPERER.get();
@@ -362,13 +365,14 @@ public class Whisperer extends Summoned{
     @Override
     public void tick() {
         super.tick();
-        if (this.isAlive()){
+        if (this.isAlive()) {
             if (!this.level.isClientSide) {
                 if (this.isAlive() && !this.isNoAi()) {
                     if (this.isUnderWaterConverting()) {
                         --this.conversionTime;
 
-                        if (this.conversionTime < 0 && net.neoforged.event.net.neoforged.neoforge.event.EventHooks.canLivingConvert(this, ModEntityType.ZOMBIE_SERVANT.get(), (timer) -> this.conversionTime = timer)) {
+                        if (this.conversionTime < 0 && net.neoforged.neoforge.event.EventHooks.canLivingConvert(this,
+                                ModEntityType.ZOMBIE_SERVANT.get(), (timer) -> this.conversionTime = timer)) {
                             this.doUnderWaterConversion();
                         }
                     } else if (this.convertsInWater()) {
@@ -391,27 +395,35 @@ public class Whisperer extends Summoned{
                 }
                 if (this.isMeleeAttacking()) {
                     ++this.attackTick;
-                    if (this.attackTick >= MathHelper.secondsToTicks(1.3333F)){
+                    if (this.attackTick >= MathHelper.secondsToTicks(1.3333F)) {
                         this.setMeleeAttacking(false);
                         this.level.broadcastEntityEvent(this, (byte) 9);
                     }
                 }
-                if (this.isSummoning()){
+                if (this.isSummoning()) {
                     ++this.summonTick;
                 }
-                if (this.summonCool > 0){
+                if (this.summonCool > 0) {
                     --this.summonCool;
                 }
                 if (this.level instanceof ServerLevel serverLevel) {
                     if (this.getCurrentAnimation() == this.getAnimationState(SUMMON)) {
                         if (this.summonTick > 5 && this.summonTick <= 20) {
                             ColorUtil colorUtil = new ColorUtil(0xfcd9f7);
-                            float f = this.yBodyRot * ((float) Math.PI / 180F) + Mth.cos((float) this.tickCount * 0.6662F) * 0.25F;
+                            float f = this.yBodyRot * ((float) Math.PI / 180F)
+                                    + Mth.cos((float) this.tickCount * 0.6662F) * 0.25F;
                             float f1 = Mth.cos(f);
                             float f2 = Mth.sin(f);
-                            serverLevel.sendParticles(ModParticleTypes.SPELL_SQUARE.get(), this.getX() + (double) f1 * 0.6D, this.getY() + 3.0D, this.getZ() + (double) f2 * 0.6D, 0, colorUtil.red(), colorUtil.green(), colorUtil.blue(), 0.5F);
-                            serverLevel.sendParticles(ModParticleTypes.SPELL_SQUARE.get(), this.getX() - (double) f1 * 0.6D, this.getY() + 3.0D, this.getZ() - (double) f2 * 0.6D, 0, colorUtil.red(), colorUtil.green(), colorUtil.blue(), 0.5F);
-                            serverLevel.sendParticles(new FoggyCloudParticleOption(new ColorUtil(0xcf75af), 0.25F, 6), this.getX(), this.getY() + 2.5D, this.getZ(), 1, 0, 0, 0, 0);
+                            serverLevel.sendParticles(ModParticleTypes.SPELL_SQUARE.get(),
+                                    this.getX() + (double) f1 * 0.6D, this.getY() + 3.0D,
+                                    this.getZ() + (double) f2 * 0.6D, 0, colorUtil.red(), colorUtil.green(),
+                                    colorUtil.blue(), 0.5F);
+                            serverLevel.sendParticles(ModParticleTypes.SPELL_SQUARE.get(),
+                                    this.getX() - (double) f1 * 0.6D, this.getY() + 3.0D,
+                                    this.getZ() - (double) f2 * 0.6D, 0, colorUtil.red(), colorUtil.green(),
+                                    colorUtil.blue(), 0.5F);
+                            serverLevel.sendParticles(new FoggyCloudParticleOption(new ColorUtil(0xcf75af), 0.25F, 6),
+                                    this.getX(), this.getY() + 2.5D, this.getZ(), 1, 0, 0, 0, 0);
                         }
                     }
                 }
@@ -430,11 +442,11 @@ public class Whisperer extends Summoned{
 
     @Override
     public void handleEntityEvent(byte p_21375_) {
-        if (p_21375_ == 5){
+        if (p_21375_ == 5) {
             this.attackTick = 0;
-        } else if (p_21375_ == 6){
+        } else if (p_21375_ == 6) {
             this.setAggressive(true);
-        } else if (p_21375_ == 7){
+        } else if (p_21375_ == 7) {
             this.setAggressive(false);
         } else {
             super.handleEntityEvent(p_21375_);
@@ -442,7 +454,7 @@ public class Whisperer extends Summoned{
     }
 
     public InteractionResult mobInteract(Player pPlayer, InteractionHand p_230254_2_) {
-        if (!this.level.isClientSide){
+        if (!this.level.isClientSide) {
             ItemStack itemstack = pPlayer.getItemInHand(p_230254_2_);
             Item item = itemstack.getItem();
             if (this.getTrueOwner() != null && pPlayer == this.getTrueOwner()) {
@@ -450,7 +462,7 @@ public class Whisperer extends Summoned{
                     if (!pPlayer.getAbilities().instabuild) {
                         itemstack.shrink(1);
                     }
-                    if (this.getType() == ModEntityType.WAVEWHISPERER.get()){
+                    if (this.getType() == ModEntityType.WAVEWHISPERER.get()) {
                         this.playSound(ModSounds.WAVEWHISPERER_AMBIENT.get(), 1.0F, 1.25F);
                     } else {
                         this.playSound(ModSounds.WHISPERER_AMBIENT.get(), 1.0F, 1.25F);
@@ -461,7 +473,8 @@ public class Whisperer extends Summoned{
                             double d0 = this.random.nextGaussian() * 0.02D;
                             double d1 = this.random.nextGaussian() * 0.02D;
                             double d2 = this.random.nextGaussian() * 0.02D;
-                            serverLevel.sendParticles(ModParticleTypes.HEAL_EFFECT.get(), this.getRandomX(1.0D), this.getRandomY() + 0.5D, this.getRandomZ(1.0D), 0, d0, d1, d2, 0.5F);
+                            serverLevel.sendParticles(ModParticleTypes.HEAL_EFFECT.get(), this.getRandomX(1.0D),
+                                    this.getRandomY() + 0.5D, this.getRandomZ(1.0D), 0, d0, d1, d2, 0.5F);
                         }
                     }
                     pPlayer.swing(p_230254_2_);
@@ -515,7 +528,7 @@ public class Whisperer extends Summoned{
 
         @Override
         public void tick() {
-            if (this.target == null){
+            if (this.target == null) {
                 return;
             }
 
@@ -528,7 +541,8 @@ public class Whisperer extends Summoned{
 
                 if (this.whisperer.getCurrentAnimation() != this.whisperer.getAnimationState(ATTACK)) {
                     this.whisperer.setAnimationState(ATTACK);
-                    this.whisperer.playSound(this.whisperer.getAttackSound(), this.whisperer.getSoundVolume(), this.whisperer.getVoicePitch());
+                    this.whisperer.playSound(this.whisperer.getAttackSound(), this.whisperer.getSoundVolume(),
+                            this.whisperer.getVoicePitch());
                 }
 
                 if (this.whisperer.attackTick == 14) {
@@ -551,7 +565,7 @@ public class Whisperer extends Summoned{
 
     }
 
-    static class SummonGoal extends Goal{
+    static class SummonGoal extends Goal {
         public Whisperer whisperer;
         public LivingEntity target;
         public int type = 0;
@@ -588,8 +602,8 @@ public class Whisperer extends Summoned{
         public void tick() {
             super.tick();
 
-            if (this.target != null){
-                if (this.target.distanceTo(this.whisperer) > 13.0F){
+            if (this.target != null) {
+                if (this.target.distanceTo(this.whisperer) > 13.0F) {
                     this.whisperer.navigation.moveTo(this.target, 1.0F);
                 } else {
                     MobUtil.instaLook(this.whisperer, this.target);
@@ -618,64 +632,76 @@ public class Whisperer extends Summoned{
                         }
                         this.whisperer.setSummoning(true);
                     } else {
-                        if (this.type == 1){
+                        if (this.type == 1) {
                             spellTime = 34;
-                            if (this.whisperer.getCurrentAnimation() != this.whisperer.getAnimationState(SUMMON)){
+                            if (this.whisperer.getCurrentAnimation() != this.whisperer.getAnimationState(SUMMON)) {
                                 this.whisperer.setAnimationState(SUMMON);
-                                this.whisperer.playSound(this.whisperer.getSummonSound(), this.whisperer.getSoundVolume(), this.whisperer.getVoicePitch());
+                                this.whisperer.playSound(this.whisperer.getSummonSound(),
+                                        this.whisperer.getSoundVolume(), this.whisperer.getVoicePitch());
                             }
-                            if (this.whisperer.summonTick == 20){
+                            if (this.whisperer.summonTick == 20) {
                                 int random = this.whisperer.random.nextInt(5);
                                 Direction direction = Direction.fromYRot(this.target.getYHeadRot());
                                 if (random == 0) {
-                                    WandUtil.summonMinorSquareTrap(this.whisperer, this.target, this.whisperer.getVines(), direction, 0);
+                                    WandUtil.summonMinorSquareTrap(this.whisperer, this.target,
+                                            this.whisperer.getVines(), direction, 0);
                                 } else if (random == 1) {
                                     WandUtil.summonHallTrap(this.whisperer, this.target, this.whisperer.getVines(), 0);
                                 } else if (random == 2) {
                                     WandUtil.summonCubeTrap(this.whisperer, this.target, this.whisperer.getVines(), 0);
                                 } else if (random == 3) {
-                                    WandUtil.summonCircleTrap(this.whisperer, this.target, this.whisperer.getVines(), direction, 0);
+                                    WandUtil.summonCircleTrap(this.whisperer, this.target, this.whisperer.getVines(),
+                                            direction, 0);
                                 } else {
-                                    WandUtil.summonSurroundTrap(this.whisperer, this.target, this.whisperer.getVines(), 0);
+                                    WandUtil.summonSurroundTrap(this.whisperer, this.target, this.whisperer.getVines(),
+                                            0);
                                 }
                             }
                             cooldown = spellTime + MathHelper.secondsToTicks(1);
-                        } else if (this.type == 2){
+                        } else if (this.type == 2) {
                             spellTime = 63;
-                            if (this.whisperer.getCurrentAnimation() != this.whisperer.getAnimationState(SUMMON_POISON)){
+                            if (this.whisperer.getCurrentAnimation() != this.whisperer
+                                    .getAnimationState(SUMMON_POISON)) {
                                 this.whisperer.setAnimationState(SUMMON_POISON);
-                                this.whisperer.playSound(this.whisperer.getSummonPoisonSound(), this.whisperer.getSoundVolume(), this.whisperer.getVoicePitch());
+                                this.whisperer.playSound(this.whisperer.getSummonPoisonSound(),
+                                        this.whisperer.getSoundVolume(), this.whisperer.getVoicePitch());
                             }
-                            if (this.whisperer.summonTick == 20){
+                            if (this.whisperer.summonTick == 20) {
                                 int x = (int) (this.whisperer.getHorizontalLeftLookAngle().x * 4);
                                 int z = (int) (this.whisperer.getHorizontalLeftLookAngle().z * 4);
                                 BlockPos left = new BlockPos(this.whisperer.blockPosition().offset(x, 0, z));
-                                WandUtil.summonTurret(this.whisperer, BlockFinder.SummonPosition(this.whisperer, left), this.whisperer.getPoison(), target, 0, 0);
+                                WandUtil.summonTurret(this.whisperer, BlockFinder.SummonPosition(this.whisperer, left),
+                                        this.whisperer.getPoison(), target, 0, 0);
                             }
-                            if (this.whisperer.summonTick == 50){
+                            if (this.whisperer.summonTick == 50) {
                                 int x = (int) (this.whisperer.getHorizontalRightLookAngle().x * 4);
                                 int z = (int) (this.whisperer.getHorizontalRightLookAngle().z * 4);
                                 BlockPos right = new BlockPos(this.whisperer.blockPosition().offset(x, 0, z));
-                                WandUtil.summonTurret(this.whisperer, BlockFinder.SummonPosition(this.whisperer, right), this.whisperer.getPoison(), target, 0, 0);
+                                WandUtil.summonTurret(this.whisperer, BlockFinder.SummonPosition(this.whisperer, right),
+                                        this.whisperer.getPoison(), target, 0, 0);
                             }
                             cooldown = (int) (spellTime + MathHelper.secondsToTicks(1.4F));
-                        } else if (this.type == 3){
+                        } else if (this.type == 3) {
                             spellTime = 74;
-                            if (this.whisperer.getCurrentAnimation() != this.whisperer.getAnimationState(SUMMON_THORNS)){
+                            if (this.whisperer.getCurrentAnimation() != this.whisperer
+                                    .getAnimationState(SUMMON_THORNS)) {
                                 this.whisperer.setAnimationState(SUMMON_THORNS);
-                                this.whisperer.playSound(ModSounds.WHISPERER_CAST_THORNS.get(), this.whisperer.getSoundVolume(), this.whisperer.getVoicePitch());
+                                this.whisperer.playSound(ModSounds.WHISPERER_CAST_THORNS.get(),
+                                        this.whisperer.getSoundVolume(), this.whisperer.getVoicePitch());
                             }
-                            if (this.whisperer.summonTick == 44){
-                                this.whisperer.playSound(this.whisperer.getSummonThornsSound(), this.whisperer.getSoundVolume(), this.whisperer.getVoicePitch());
+                            if (this.whisperer.summonTick == 44) {
+                                this.whisperer.playSound(this.whisperer.getSummonThornsSound(),
+                                        this.whisperer.getSoundVolume(), this.whisperer.getVoicePitch());
                             }
-                            if (this.whisperer.summonTick == 46){
-                                EntangleVines entangleVines = new EntangleVines(this.whisperer.level, this.whisperer, this.target);
+                            if (this.whisperer.summonTick == 46) {
+                                EntangleVines entangleVines = new EntangleVines(this.whisperer.level, this.whisperer,
+                                        this.target);
                                 entangleVines.setDamaging(CuriosFinder.hasWildRobe(this.whisperer.getTrueOwner()));
                                 this.whisperer.level.addFreshEntity(entangleVines);
                             }
                             cooldown = (int) (spellTime + MathHelper.secondsToTicks(0.1F));
                         }
-                        if (this.type < 1 || (spellTime > 0 && this.whisperer.summonTick >= spellTime)){
+                        if (this.type < 1 || (spellTime > 0 && this.whisperer.summonTick >= spellTime)) {
                             this.whisperer.setSummoning(false);
                             this.whisperer.summonTick = 0;
                             this.whisperer.summonCool = cooldown;

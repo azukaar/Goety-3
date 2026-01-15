@@ -22,12 +22,12 @@ import net.minecraft.world.level.block.state.BlockState;
 
 import javax.annotation.Nullable;
 
-public class TotemicWall extends AbstractMonolith{
+public class TotemicWall extends AbstractMonolith {
     public TotemicWall(EntityType<? extends Owned> type, Level worldIn) {
         super(type, worldIn);
     }
 
-    public static AttributeSupplier.Builder setCustomAttributes(){
+    public static AttributeSupplier.Builder setCustomAttributes() {
         return Mob.createMobAttributes()
                 .add(Attributes.MOVEMENT_SPEED, 0.0D)
                 .add(Attributes.KNOCKBACK_RESISTANCE, 1.0D)
@@ -35,14 +35,16 @@ public class TotemicWall extends AbstractMonolith{
     }
 
     @Nullable
-    public SpawnGroupData finalizeSpawn(ServerLevelAccessor pLevel, DifficultyInstance pDifficulty, MobSpawnType pReason, @Nullable SpawnGroupData pSpawnData, @Nullable CompoundTag pDataTag) {
-        pSpawnData = super.finalizeSpawn(pLevel, pDifficulty, pReason, pSpawnData, pDataTag);
-        if (this.canSpawn(pLevel.getLevel())){
+    public SpawnGroupData finalizeSpawn(ServerLevelAccessor pLevel, DifficultyInstance pDifficulty,
+            MobSpawnType pReason, @Nullable SpawnGroupData pSpawnData) {
+        pSpawnData = super.finalizeSpawn(pLevel, pDifficulty, pReason, pSpawnData);
+        if (this.canSpawn(pLevel.getLevel())) {
             this.playSound(ModSounds.WALL_SPAWN.get(), 2.0F, 1.0F);
             this.playSound(ModSounds.WALL_ERUPT.get(), 1.0F, 1.0F);
             ServerLevel serverLevel = pLevel.getLevel();
             for (int i = 0; i < serverLevel.random.nextInt(35) + 10; ++i) {
-                ServerParticleUtil.smokeParticles(ParticleTypes.POOF, this.getX(), this.getY(), this.getZ(), serverLevel);
+                ServerParticleUtil.smokeParticles(ParticleTypes.POOF, this.getX(), this.getY(), this.getZ(),
+                        serverLevel);
             }
         }
         return pSpawnData;
@@ -72,20 +74,20 @@ public class TotemicWall extends AbstractMonolith{
 
     public void aiStep() {
         super.aiStep();
-        if (!this.isEmerging()){
-            if (!this.isActivate()){
+        if (!this.isEmerging()) {
+            if (!this.isActivate()) {
                 this.setActivate(true);
             }
-            if (!this.level.isClientSide) {
-                if (this.tickCount >= MathHelper.secondsToTicks(this.getLifeSpan())){
+            if (!this.level().isClientSide) {
+                if (this.tickCount >= MathHelper.secondsToTicks(this.getLifeSpan())) {
                     this.setAge(this.getAge() - this.getAgeSpeed());
-                    this.level.broadcastEntityEvent(this, (byte) 5);
+                    this.level().broadcastEntityEvent(this, (byte) 5);
                 }
-                if (this.getAge() <= 0){
+                if (this.getAge() <= 0) {
                     this.discard();
                 }
             }
-            if (this.tickCount == MathHelper.secondsToTicks(this.getLifeSpan())){
+            if (this.tickCount == MathHelper.secondsToTicks(this.getLifeSpan())) {
                 this.playSound(ModSounds.WALL_DISAPPEAR.get(), 2.0F, 1.0F);
             }
         }

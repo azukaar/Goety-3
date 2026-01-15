@@ -50,8 +50,10 @@ import javax.annotation.Nullable;
 import java.util.function.Predicate;
 
 public class AbstractWraith extends Summoned {
-    private static final EntityDataAccessor<Boolean> DATA_INTERESTED_ID = SynchedEntityData.defineId(AbstractWraith.class, EntityDataSerializers.BOOLEAN);
-    private static final EntityDataAccessor<Byte> FLAGS = SynchedEntityData.defineId(AbstractWraith.class, EntityDataSerializers.BYTE);
+    private static final EntityDataAccessor<Boolean> DATA_INTERESTED_ID = SynchedEntityData
+            .defineId(AbstractWraith.class, EntityDataSerializers.BOOLEAN);
+    private static final EntityDataAccessor<Byte> FLAGS = SynchedEntityData.defineId(AbstractWraith.class,
+            EntityDataSerializers.BYTE);
     public int fireTick;
     public int fireCooldown;
     public int teleportCooldown;
@@ -85,9 +87,12 @@ public class AbstractWraith extends Summoned {
         this.goalSelector.addGoal(10, new WraithLookRandomlyGoal(this));
     }
 
-    public void targetSelectGoal(){
+    public void targetSelectGoal() {
         this.targetSelector.addGoal(1, new SummonTargetGoal(this, false, false));
-        this.targetSelector.addGoal(1, new NaturalAttackGoal<>(this, Mob.class, true, mob -> mob.getType().getDescriptionId().contains("netherexp") && mob.getType().getDescriptionId().contains("carcass") && mob.getBbWidth() < 2.2F));
+        this.targetSelector.addGoal(1,
+                new NaturalAttackGoal<>(this, Mob.class, true,
+                        mob -> mob.getType().getDescriptionId().contains("netherexp")
+                                && mob.getType().getDescriptionId().contains("carcass") && mob.getBbWidth() < 2.2F));
     }
 
     @SuppressWarnings("removal")
@@ -97,20 +102,20 @@ public class AbstractWraith extends Summoned {
                 .add(Attributes.ARMOR, AttributesConfig.WraithArmor.get())
                 .add(Attributes.FOLLOW_RANGE, 16.0D)
                 .add(Attributes.MOVEMENT_SPEED, 0.25F)
-                .add(NeoForgeMod.STEP_HEIGHT_ADDITION.get(), 1.0F)
+                .add(Attributes.STEP_HEIGHT, 1.0F)
                 .add(Attributes.ATTACK_DAMAGE, AttributesConfig.WraithDamage.get());
     }
 
-    public void setConfigurableAttributes(){
+    public void setConfigurableAttributes() {
         MobUtil.setBaseAttributes(this.getAttribute(Attributes.MAX_HEALTH), AttributesConfig.WraithHealth.get());
         MobUtil.setBaseAttributes(this.getAttribute(Attributes.ARMOR), AttributesConfig.WraithArmor.get());
         MobUtil.setBaseAttributes(this.getAttribute(Attributes.ATTACK_DAMAGE), AttributesConfig.WraithDamage.get());
     }
 
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.entityData.define(DATA_INTERESTED_ID, false);
-        this.entityData.define(FLAGS, (byte)0);
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(DATA_INTERESTED_ID, false);
+        builder.define(FLAGS, (byte) 0);
     }
 
     public void addAdditionalSaveData(CompoundTag pCompound) {
@@ -152,7 +157,7 @@ public class AbstractWraith extends Summoned {
             i = i & ~mask;
         }
 
-        this.entityData.set(FLAGS, (byte)(i & 255));
+        this.entityData.set(FLAGS, (byte) (i & 255));
     }
 
     public boolean isFiring() {
@@ -203,15 +208,15 @@ public class AbstractWraith extends Summoned {
         return ModSounds.WRAITH_FLY.get();
     }
 
-    protected SoundEvent getAttackSound(){
+    protected SoundEvent getAttackSound() {
         return ModSounds.WRAITH_ATTACK.get();
     }
 
-    protected SoundEvent getTeleportInSound(){
+    protected SoundEvent getTeleportInSound() {
         return ModSounds.WRAITH_TELEPORT.get();
     }
 
-    protected SoundEvent getTeleportOutSound(){
+    protected SoundEvent getTeleportOutSound() {
         return ModSounds.WRAITH_TELEPORT.get();
     }
 
@@ -237,20 +242,21 @@ public class AbstractWraith extends Summoned {
     }
 
     protected float getBlockSpeedFactor() {
-        return this.onSoulSpeedBlock() ? 1.0F : super.getBlockSpeedFactor();
+        return this.level().getBlockState(this.getOnPos())
+                .is(net.minecraft.tags.BlockTags.SOUL_SPEED_BLOCKS) ? 1.0F : super.getBlockSpeedFactor();
     }
 
     @Deprecated
-    public double getFollowRange(){
+    public double getFollowRange() {
         return this.getAttributeValue(Attributes.FOLLOW_RANGE);
     }
 
     @Deprecated
-    public float getFloatFollowRange(){
+    public float getFloatFollowRange() {
         return (float) this.getFollowRange();
     }
 
-    public float attackRange(){
+    public float attackRange() {
         return 12.0F;
     }
 
@@ -269,7 +275,7 @@ public class AbstractWraith extends Summoned {
             if (this.isInterested()) {
                 --this.interestTime;
             }
-            if (this.interestTime <= 0){
+            if (this.interestTime <= 0) {
                 this.setIsInterested(false);
             }
         }
@@ -277,11 +283,11 @@ public class AbstractWraith extends Summoned {
         super.tick();
     }
 
-    public boolean isPostTeleporting(){
+    public boolean isPostTeleporting() {
         return this.postTeleportTime > 0;
     }
 
-    public void setGravity(){
+    public void setGravity() {
         this.setNoGravity(this.isUnderWater());
     }
 
@@ -289,23 +295,24 @@ public class AbstractWraith extends Summoned {
         super.aiStep();
 
         Vec3 vector3d = this.getDeltaMovement();
-        if (!this.onGround()&& vector3d.y < 0.0D && !this.isNoGravity()) {
+        if (!this.onGround() && vector3d.y < 0.0D && !this.isNoGravity()) {
             this.setDeltaMovement(vector3d.multiply(1.0D, 0.6D, 1.0D));
         }
 
-        if (this.teleportCooldown > 0){
+        if (this.teleportCooldown > 0) {
             --this.teleportCooldown;
         }
 
-        if (this.postTeleportTime > 0){
-            if (this.postTeleportTime == 36){
-                if (this.level instanceof ServerLevel serverLevel){
-                    serverLevel.sendParticles(new TeleportShockwaveParticleOption(8, 4, 10), this.getX(), this.getY() + 0.5F, this.getZ(), 0, 0, 0, 0, 0.5F);
+        if (this.postTeleportTime > 0) {
+            if (this.postTeleportTime == 36) {
+                if (this.level() instanceof ServerLevel serverLevel) {
+                    serverLevel.sendParticles(new TeleportShockwaveParticleOption(8, 4, 10), this.getX(),
+                            this.getY() + 0.5F, this.getZ(), 0, 0, 0, 0, 0.5F);
                 }
             }
             --this.postTeleportTime;
         } else {
-            this.level.broadcastEntityEvent(this, (byte) 7);
+            this.level().broadcastEntityEvent(this, (byte) 7);
         }
 
         if (this.isAlive()) {
@@ -315,21 +322,22 @@ public class AbstractWraith extends Summoned {
 
     }
 
-    public void teleportAI(){
-        if (!this.level.isClientSide){
+    public void teleportAI() {
+        if (!this.level().isClientSide) {
             if (this.isTeleporting()) {
                 --this.teleportTime;
-                if (this.teleportTime == 2){
-                    if (this.level instanceof ServerLevel serverLevel){
-                        serverLevel.sendParticles(new TeleportInShockwaveParticleOption(), this.getX(), this.getY() + 0.5F, this.getZ(), 0, 0, 0, 0, 0.5F);
+                if (this.teleportTime == 2) {
+                    if (this.level() instanceof ServerLevel serverLevel) {
+                        serverLevel.sendParticles(new TeleportInShockwaveParticleOption(), this.getX(),
+                                this.getY() + 0.5F, this.getZ(), 0, 0, 0, 0, 0.5F);
                     }
                 }
-                if (this.teleportTime <= 2){
+                if (this.teleportTime <= 2) {
                     this.prevX = this.getX();
                     this.prevY = this.getY();
                     this.prevZ = this.getZ();
                 }
-                if (this.teleportTime <= 0){
+                if (this.teleportTime <= 0) {
                     this.teleport();
                 }
             } else {
@@ -339,7 +347,7 @@ public class AbstractWraith extends Summoned {
             if (this.isTeleporting()) {
                 --this.teleportTime;
                 ++this.teleportTime2;
-                if (this.teleportTime <= 2){
+                if (this.teleportTime <= 2) {
                     this.prevX = this.getX();
                     this.prevY = this.getY();
                     this.prevZ = this.getZ();
@@ -351,35 +359,36 @@ public class AbstractWraith extends Summoned {
         }
     }
 
-    public void attackAI(){
-        if (!this.level.isClientSide) {
-            if (this.isPostTeleporting()){
+    public void attackAI() {
+        if (!this.level().isClientSide) {
+            if (this.isPostTeleporting()) {
                 this.getNavigation().stop();
             }
-            if (this.fireCooldown > 0){
+            if (this.fireCooldown > 0) {
                 --this.fireCooldown;
             }
             if (this.fireTick > 10) {
                 ++this.fireTick;
             }
-            if (this.fireTick > 54){
+            if (this.fireTick > 54) {
                 this.fireCooldown = 80;
                 this.fireTick = 0;
-                if (this.isFiring()){
+                if (this.isFiring()) {
                     this.stopFiring();
                 }
             }
             if (this.getTarget() != null && !this.isPostTeleporting()) {
-                if (!this.isFiring()){
+                if (!this.isFiring()) {
                     this.getLookControl().setLookAt(this.getTarget(), 100.0F, this.getMaxHeadXRot());
                 }
                 if (this.getSensing().hasLineOfSight(this.getTarget())) {
                     if ((this.fireCooldown <= 0 && !this.isTeleporting()
-                            && this.getTarget().distanceToSqr(this) < Mth.square(this.attackRange())) || this.isFiring()) {
-                        if (this.fireTick <= 10){
+                            && this.getTarget().distanceToSqr(this) < Mth.square(this.attackRange()))
+                            || this.isFiring()) {
+                        if (this.fireTick <= 10) {
                             ++this.fireTick;
                         }
-                        if (this.isFiring()){
+                        if (this.isFiring()) {
                             this.getNavigation().stop();
                             double d2 = this.getTarget().getX() - this.getX();
                             double d1 = this.getTarget().getZ() - this.getZ();
@@ -425,18 +434,18 @@ public class AbstractWraith extends Summoned {
         }
     }
 
-    public void magicFire(LivingEntity livingEntity){
-        if (this.level.random.nextFloat() <= 0.05F) {
-            WandUtil.spawnCrossIceBouquet(this.level, livingEntity.position(), this);
+    public void magicFire(LivingEntity livingEntity) {
+        if (this.level().random.nextFloat() <= 0.05F) {
+            WandUtil.spawnCrossIceBouquet(this.level(), livingEntity.position(), this);
         } else {
-            WandUtil.spawnIceBouquet(this.level, livingEntity.position(), this);
+            WandUtil.spawnIceBouquet(this.level(), livingEntity.position(), this);
         }
     }
 
-    public void movement(){
+    public void movement() {
         if (this.getTarget() != null && !this.isStaying() && !this.isPostTeleporting()) {
             Vec3 vector3d2;
-            if (this.getTarget().distanceToSqr(this) > Mth.square(this.attackRange())){
+            if (this.getTarget().distanceToSqr(this) > Mth.square(this.attackRange())) {
                 vector3d2 = this.getTarget().position();
             } else {
                 vector3d2 = LandRandomPos.getPos(this, 6, 6);
@@ -450,21 +459,22 @@ public class AbstractWraith extends Summoned {
         }
     }
 
-    public boolean canTeleport(){
-        net.neoforged.event.entity.EntityTeleportEvent.EnderEntity event = new net.neoforged.event.entity.EntityTeleportEvent.EnderEntity(this, this.getX(), this.getY(), this.getZ());
+    public boolean canTeleport() {
+        net.neoforged.neoforge.event.entity.EntityTeleportEvent.EnderEntity event = new net.neoforged.neoforge.event.entity.EntityTeleportEvent.EnderEntity(
+                this, this.getX(), this.getY(), this.getZ());
         net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(event);
         return !event.isCanceled() && !this.isStaying() && this.teleportCooldown <= 0 && !this.isPostTeleporting();
     }
 
     protected void teleport() {
-        if (!this.level.isClientSide() && this.isAlive() && this.getTarget() != null) {
+        if (!this.level().isClientSide() && this.isAlive() && this.getTarget() != null) {
             if (this.getSensing().hasLineOfSight(this.getTarget())) {
                 for (int i = 0; i < 128; ++i) {
                     double d3 = this.getTarget().getX() + (this.getRandom().nextDouble() - 0.5D) * 20.0F;
                     double d4 = this.getTarget().getY();
                     double d5 = this.getTarget().getZ() + (this.getRandom().nextDouble() - 0.5D) * 20.0F;
                     BlockPos blockPos1 = BlockPos.containing(d3, d4, d5);
-                    if (MobUtil.isFireImmune(this) || !BlockFinder.hasSunlight(this.level, blockPos1)) {
+                    if (MobUtil.isFireImmune(this) || !BlockFinder.hasSunlight(this.level(), blockPos1)) {
                         if (BlockFinder.canSeeBlock(this.getTarget(), blockPos1)) {
                             if (this.randomTeleport(d3, d4, d5, false)) {
                                 this.teleportHits();
@@ -473,7 +483,7 @@ public class AbstractWraith extends Summoned {
                                 break;
                             }
                         }
-                    } else if (i == 127){
+                    } else if (i == 127) {
                         this.setIsTeleporting(false);
                         break;
                     }
@@ -484,13 +494,14 @@ public class AbstractWraith extends Summoned {
         }
     }
 
-    public void teleportTowardsEntity(LivingEntity livingEntity){
-        for(int i = 0; i < 128; ++i) {
-            Vec3 vector3d = new Vec3(this.getX() - livingEntity.getX(), this.getY(0.5D) - livingEntity.getEyeY(), this.getZ() - livingEntity.getZ());
+    public void teleportTowardsEntity(LivingEntity livingEntity) {
+        for (int i = 0; i < 128; ++i) {
+            Vec3 vector3d = new Vec3(this.getX() - livingEntity.getX(), this.getY(0.5D) - livingEntity.getEyeY(),
+                    this.getZ() - livingEntity.getZ());
             vector3d = vector3d.normalize();
             double d0 = 16.0D;
             double d1 = this.getX() + (this.random.nextDouble() - 0.5D) * 8.0D - vector3d.x * d0;
-            double d2 = this.getY() + (double)(this.random.nextInt(16) - 8) - vector3d.y * d0;
+            double d2 = this.getY() + (double) (this.random.nextInt(16) - 8) - vector3d.y * d0;
             double d3 = this.getZ() + (this.random.nextDouble() - 0.5D) * 8.0D - vector3d.z * d0;
             if (this.randomTeleport(d1, d2, d3, false)) {
                 this.teleportHits();
@@ -502,50 +513,52 @@ public class AbstractWraith extends Summoned {
         }
     }
 
-    public void teleportHits(){
+    public void teleportHits() {
         this.postTeleportTime = 38;
-        this.level.broadcastEntityEvent(this, (byte) 6);
-        this.level.broadcastEntityEvent(this, (byte) 100);
-        this.level.broadcastEntityEvent(this, (byte) 101);
-        this.level.gameEvent(GameEvent.TELEPORT, this.position(), GameEvent.Context.of(this));
+        this.level().broadcastEntityEvent(this, (byte) 6);
+        this.level().broadcastEntityEvent(this, (byte) 100);
+        this.level().broadcastEntityEvent(this, (byte) 101);
+        this.level().gameEvent(GameEvent.TELEPORT, this.position(), GameEvent.Context.of(this));
         if (!this.isSilent()) {
-            this.level.playSound(null, this.prevX, this.prevY, this.prevZ, this.getTeleportInSound(), this.getSoundSource(), 1.0F, 1.0F);
+            this.level().playSound(null, this.prevX, this.prevY, this.prevZ, this.getTeleportInSound(),
+                    this.getSoundSource(), 1.0F, 1.0F);
             this.playSound(this.getTeleportOutSound(), 1.0F, 1.0F);
         }
     }
 
-    public void startFiring(){
+    public void startFiring() {
         if (!this.isFiring()) {
             this.setIsFiring(true);
-            this.level.broadcastEntityEvent(this, (byte) 4);
+            this.level().broadcastEntityEvent(this, (byte) 4);
             this.firingParticles();
-            if (this.level instanceof ServerLevel serverLevel){
-                serverLevel.sendParticles(new TeleportShockwaveParticleOption(8, 4, 10), this.getX(), this.getY() + 0.5F, this.getZ(), 0, 0, 0, 0, 0.5F);
+            if (this.level() instanceof ServerLevel serverLevel) {
+                serverLevel.sendParticles(new TeleportShockwaveParticleOption(8, 4, 10), this.getX(),
+                        this.getY() + 0.5F, this.getZ(), 0, 0, 0, 0, 0.5F);
             }
             this.playAttackSound();
         }
     }
 
-    public void firingParticles(){
-        this.level.broadcastEntityEvent(this, (byte) 100);
+    public void firingParticles() {
+        this.level().broadcastEntityEvent(this, (byte) 100);
     }
 
-    public void playAttackSound(){
+    public void playAttackSound() {
         SoundUtil.playWraithAttack(this);
     }
 
-    public void stopFiring(){
+    public void stopFiring() {
         if (this.isFiring()) {
             this.setIsFiring(false);
-            this.level.broadcastEntityEvent(this, (byte) 5);
+            this.level().broadcastEntityEvent(this, (byte) 5);
         }
     }
 
-    public ParticleOptions getFireParticles(){
+    public ParticleOptions getFireParticles() {
         return ModParticleTypes.WRAITH.get();
     }
 
-    public ParticleOptions getBurstParticles(){
+    public ParticleOptions getBurstParticles() {
         return ModParticleTypes.WRAITH_BURST.get();
     }
 
@@ -559,42 +572,45 @@ public class AbstractWraith extends Summoned {
             this.setIsFiring(false);
             this.attackAnimationState.stop();
         }
-        if (pId == 6){
+        if (pId == 6) {
             this.postTeleportAnimationState.start(this.tickCount);
             this.postTeleportTime = 38;
         }
-        if (pId == 7){
+        if (pId == 7) {
             this.postTeleportAnimationState.stop();
         }
-        if (pId == 100){
-            for(int j = 0; j < 8; ++j) {
-                double d1 = this.getX() + (this.random.nextDouble() - 0.5D) * (double)this.getBbWidth() * 2.0D;
+        if (pId == 100) {
+            for (int j = 0; j < 8; ++j) {
+                double d1 = this.getX() + (this.random.nextDouble() - 0.5D) * (double) this.getBbWidth() * 2.0D;
                 double d2 = this.getY() + (this.random.nextDouble() + 0.5D);
-                double d3 = this.getZ() + (this.random.nextDouble() - 0.5D) * (double)this.getBbWidth() * 2.0D;
-                this.level.addParticle(this.getFireParticles(), d1, d2, d3, 0.0D, 0.0D, 0.0D);
-                this.level.addParticle(this.getBurstParticles(), d1, d2, d3, 0.0D, 0.0D, 0.0D);
+                double d3 = this.getZ() + (this.random.nextDouble() - 0.5D) * (double) this.getBbWidth() * 2.0D;
+                this.level().addParticle(this.getFireParticles(), d1, d2, d3, 0.0D, 0.0D, 0.0D);
+                this.level().addParticle(this.getBurstParticles(), d1, d2, d3, 0.0D, 0.0D, 0.0D);
             }
         }
-        if (pId == 101){
+        if (pId == 101) {
             if (!this.isSilent()) {
-                this.level.playSound(null, this.prevX, this.prevY, this.prevZ, this.getTeleportInSound(), this.getSoundSource(), 1.0F, 1.0F);
+                this.level().playSound(null, this.prevX, this.prevY, this.prevZ, this.getTeleportInSound(),
+                        this.getSoundSource(), 1.0F, 1.0F);
                 this.playSound(this.getTeleportOutSound(), 1.0F, 1.0F);
             }
         }
-        if (pId == 102){
+        if (pId == 102) {
             this.setIsInterested(true);
             this.interestTime = 40;
-            this.playSound(this.getAmbientSound() != null ? this.getAmbientSound() : ModSounds.WRAITH_AMBIENT.get(), 1.0F, 2.0F);
+            this.playSound(this.getAmbientSound() != null ? this.getAmbientSound() : ModSounds.WRAITH_AMBIENT.get(),
+                    1.0F, 2.0F);
             this.addParticlesAroundSelf(ParticleTypes.HEART);
         }
     }
 
     protected void addParticlesAroundSelf(ParticleOptions pParticleData) {
-        for(int i = 0; i < 5; ++i) {
+        for (int i = 0; i < 5; ++i) {
             double d0 = this.random.nextGaussian() * 0.02D;
             double d1 = this.random.nextGaussian() * 0.02D;
             double d2 = this.random.nextGaussian() * 0.02D;
-            this.level.addParticle(pParticleData, this.getRandomX(1.0D), this.getRandomY() + 1.0D, this.getRandomZ(1.0D), d0, d1, d2);
+            this.level().addParticle(pParticleData, this.getRandomX(1.0D), this.getRandomY() + 1.0D,
+                    this.getRandomZ(1.0D), d0, d1, d2);
         }
 
     }
@@ -608,22 +624,22 @@ public class AbstractWraith extends Summoned {
         }
     }
 
-    public EntityType<?> getVariant(@Nullable Player player, Level level, BlockPos blockPos){
+    public EntityType<?> getVariant(@Nullable Player player, Level level, BlockPos blockPos) {
         EntityType<?> entityType;
-        if (this.isHostile()){
+        if (this.isHostile()) {
             entityType = ModEntityType.WRAITH.get();
         } else {
             entityType = ModEntityType.WRAITH_SERVANT.get();
         }
         if (level instanceof ServerLevel serverLevel) {
             if (BlockFinder.findStructure(serverLevel, blockPos, ModTags.Structures.CRYPT)) {
-                if (this.isHostile()){
+                if (this.isHostile()) {
                     entityType = ModEntityType.BORDER_WRAITH.get();
                 } else {
                     entityType = ModEntityType.BORDER_WRAITH_SERVANT.get();
                 }
-            } else if (level.getBiome(blockPos).is(Tags.Biomes.IS_SWAMP)){
-                if (this.isHostile()){
+            } else if (level.getBiome(blockPos).is(Tags.Biomes.IS_SWAMP)) {
+                if (this.isHostile()) {
                     entityType = ModEntityType.MUCK_WRAITH.get();
                 } else {
                     entityType = ModEntityType.MUCK_WRAITH_SERVANT.get();
@@ -636,18 +652,19 @@ public class AbstractWraith extends Summoned {
     public InteractionResult mobInteract(Player pPlayer, InteractionHand pHand) {
         ItemStack itemstack = pPlayer.getItemInHand(pHand);
         if (this.getTrueOwner() != null && pPlayer == this.getTrueOwner()) {
-            if (itemstack.is(ModItems.ECTOPLASM.get()) && this.getHealth() < this.getMaxHealth()){
+            if (itemstack.is(ModItems.ECTOPLASM.get()) && this.getHealth() < this.getMaxHealth()) {
                 if (!pPlayer.getAbilities().instabuild) {
                     itemstack.shrink(1);
                 }
                 this.playSound(ModSounds.WRAITH_AMBIENT.get(), 1.0F, 1.25F);
                 this.heal(2.0F);
-                if (this.level instanceof ServerLevel serverLevel) {
+                if (this.level() instanceof ServerLevel serverLevel) {
                     for (int i = 0; i < 7; ++i) {
                         double d0 = this.random.nextGaussian() * 0.02D;
                         double d1 = this.random.nextGaussian() * 0.02D;
                         double d2 = this.random.nextGaussian() * 0.02D;
-                        serverLevel.sendParticles(ModParticleTypes.HEAL_EFFECT.get(), this.getRandomX(1.0D), this.getRandomY() + 0.5D, this.getRandomZ(1.0D), 0, d0, d1, d2, 0.5F);
+                        serverLevel.sendParticles(ModParticleTypes.HEAL_EFFECT.get(), this.getRandomX(1.0D),
+                                this.getRandomY() + 0.5D, this.getRandomZ(1.0D), 0, d0, d1, d2, 0.5F);
                     }
                 }
                 pPlayer.swing(pHand);
@@ -657,7 +674,7 @@ public class AbstractWraith extends Summoned {
                 if (!actionresulttype.consumesAction()) {
                     this.setIsInterested(true);
                     this.interestTime = 40;
-                    this.level.broadcastEntityEvent(this, (byte) 102);
+                    this.level().broadcastEntityEvent(this, (byte) 102);
                     this.playSound(ModSounds.WRAITH_AMBIENT.get(), 1.0F, 2.0F);
                     this.heal(1.0F);
                     return InteractionResult.SUCCESS;
@@ -676,7 +693,8 @@ public class AbstractWraith extends Summoned {
             this.wraith = p_i1631_1_;
         }
 
-        public WraithLookGoal(AbstractWraith p_i1632_1_, Class<? extends LivingEntity> p_i1632_2_, float p_i1632_3_, float p_i1632_4_) {
+        public WraithLookGoal(AbstractWraith p_i1632_1_, Class<? extends LivingEntity> p_i1632_2_, float p_i1632_3_,
+                float p_i1632_4_) {
             super(p_i1632_1_, p_i1632_2_, p_i1632_3_, p_i1632_4_);
             this.wraith = p_i1632_1_;
         }

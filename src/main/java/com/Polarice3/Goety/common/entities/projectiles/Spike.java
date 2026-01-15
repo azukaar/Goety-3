@@ -17,6 +17,7 @@ import net.minecraft.world.entity.MoverType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
+
 public class Spike extends GroundProjectile {
     public int burning = 0;
     public int soulEater = 0;
@@ -31,20 +32,20 @@ public class Spike extends GroundProjectile {
         this(ModEntityType.SPIKE.get(), world);
         this.warmupDelayTicks = pWarmUp;
         this.setOwner(owner);
-        this.setYRot(pYRot * (180F / (float)Math.PI));
+        this.setYRot(pYRot * (180F / (float) Math.PI));
         this.setPos(pPosX, pPosY, pPosZ);
     }
 
     @Override
     protected void readAdditionalSaveData(CompoundTag pCompound) {
         super.readAdditionalSaveData(pCompound);
-        if (pCompound.contains("ExtraDamage")){
+        if (pCompound.contains("ExtraDamage")) {
             this.extraDamage = pCompound.getInt("ExtraDamage");
         }
-        if (pCompound.contains("Burning")){
+        if (pCompound.contains("Burning")) {
             this.burning = pCompound.getInt("Burning");
         }
-        if (pCompound.contains("SoulEater")){
+        if (pCompound.contains("SoulEater")) {
             this.soulEater = pCompound.getInt("SoulEater");
         }
     }
@@ -57,7 +58,7 @@ public class Spike extends GroundProjectile {
         pCompound.putInt("SoulEater", this.soulEater);
     }
 
-    public void setBurning(int burning){
+    public void setBurning(int burning) {
         this.burning = burning;
     }
 
@@ -65,7 +66,7 @@ public class Spike extends GroundProjectile {
         return this.burning;
     }
 
-    public void setExtraDamage(float extraDamage){
+    public void setExtraDamage(float extraDamage) {
         this.extraDamage = extraDamage;
     }
 
@@ -73,11 +74,11 @@ public class Spike extends GroundProjectile {
         return this.extraDamage;
     }
 
-    public void setSoulEater(int soulEater){
+    public void setSoulEater(int soulEater) {
         this.soulEater = soulEater;
     }
 
-    public int getSoulEater(){
+    public int getSoulEater() {
         return this.soulEater;
     }
 
@@ -88,7 +89,8 @@ public class Spike extends GroundProjectile {
     }
 
     public boolean canCollideWith(Entity p_241849_1_) {
-        return (p_241849_1_.canBeCollidedWith() || p_241849_1_.isPushable()) && !this.isPassengerOfSameVehicle(p_241849_1_);
+        return (p_241849_1_.canBeCollidedWith() || p_241849_1_.isPushable())
+                && !this.isPassengerOfSameVehicle(p_241849_1_);
     }
 
     public boolean canBeCollidedWith() {
@@ -108,25 +110,26 @@ public class Spike extends GroundProjectile {
         if (this.level.isClientSide) {
             if (this.sentTrapEvent) {
                 --this.lifeTicks;
-                if (this.animationTicks > 9){
+                if (this.animationTicks > 9) {
                     --this.animationTicks;
                 }
             }
         } else if (--this.warmupDelayTicks < 0) {
-            for(Entity entity : this.level.getEntitiesOfClass(Entity.class, this.getBoundingBox().move(0.0F, 0.2F, 0.0F).inflate(0.1F, 0.0F, 0.1F))) {
+            for (Entity entity : this.level.getEntitiesOfClass(Entity.class,
+                    this.getBoundingBox().move(0.0F, 0.2F, 0.0F).inflate(0.1F, 0.0F, 0.1F))) {
                 LivingEntity livingEntity = MobUtil.getLivingTarget(entity);
                 if (livingEntity != null) {
                     this.dealDamageTo(livingEntity);
                 }
             }
 
-            if (!this.playSound){
-                this.level.broadcastEntityEvent(this, (byte)5);
+            if (!this.playSound) {
+                this.level.broadcastEntityEvent(this, (byte) 5);
                 this.playSound = true;
             }
 
             if (!this.sentTrapEvent) {
-                this.level.broadcastEntityEvent(this, (byte)4);
+                this.level.broadcastEntityEvent(this, (byte) 4);
                 this.sentTrapEvent = true;
             }
 
@@ -142,19 +145,21 @@ public class Spike extends GroundProjectile {
         if (target.isAlive() && !target.isInvulnerable() && target != livingEntity) {
             boolean flag;
             if (livingEntity == null) {
-                flag = target.hurt(ModDamageSource.spike(this, this), SpellConfig.SpikeDamage.get().floatValue() + this.getExtraDamage());
+                flag = target.hurt(ModDamageSource.spike(this, this),
+                        SpellConfig.SpikeDamage.get().floatValue() + this.getExtraDamage());
             } else {
-                if (MobUtil.areAllies(livingEntity, target)){
+                if (MobUtil.areAllies(livingEntity, target)) {
                     return;
                 }
-                flag = target.hurt(ModDamageSource.spike(this, livingEntity), SpellConfig.SpikeDamage.get().floatValue() + this.getExtraDamage());
+                flag = target.hurt(ModDamageSource.spike(this, livingEntity),
+                        SpellConfig.SpikeDamage.get().floatValue() + this.getExtraDamage());
             }
-            if (flag){
+            if (flag) {
                 if (livingEntity instanceof Player player) {
                     int soulEater = Mth.clamp(this.getSoulEater(), 0, 10);
                     SEHelper.increaseSouls(player, SpellConfig.SpikeGainSouls.get() * soulEater);
-                    if (this.getBurning() > 0){
-                        target.setSecondsOnFire(5 * this.getBurning());
+                    if (this.getBurning() > 0) {
+                        target.igniteForSeconds(5 * this.getBurning());
                     }
                 }
             }
@@ -164,7 +169,8 @@ public class Spike extends GroundProjectile {
     public void handleEntityEvent(byte pId) {
         super.handleEntityEvent(pId);
         if (pId == 5) {
-            this.level.playLocalSound(this.getX(), this.getY(), this.getZ(), SoundEvents.GRINDSTONE_USE, this.getSoundSource(), 1.0F, this.random.nextFloat() * 0.2F + 0.85F, false);
+            this.level.playLocalSound(this.getX(), this.getY(), this.getZ(), SoundEvents.GRINDSTONE_USE,
+                    this.getSoundSource(), 1.0F, this.random.nextFloat() * 0.2F + 0.85F, false);
         }
     }
 

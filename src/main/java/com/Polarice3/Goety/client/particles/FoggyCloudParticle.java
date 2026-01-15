@@ -14,12 +14,14 @@ import net.minecraft.world.phys.Vec3;
 import org.joml.Vector3f;
 
 /**
- * Based on Iron's Fog Particle: <a href="https://github.com/iron431/irons-spells-n-spellbooks/blob/1.19.2/src/main/java/io/redspace/ironsspellbooks/particle/FogParticle.java">...</a>
+ * Based on Iron's Fog Particle: <a href=
+ * "https://github.com/iron431/irons-spells-n-spellbooks/blob/1.19.2/src/main/java/io/redspace/ironsspellbooks/particle/FogParticle.java">...</a>
  */
-public class FoggyCloudParticle extends GroundCircleParticle{
+public class FoggyCloudParticle extends GroundCircleParticle {
     private final int speed;
 
-    public FoggyCloudParticle(ClientLevel pLevel, double pX, double pY, double pZ, double xd, double yd, double zd, FoggyCloudParticleOption options) {
+    public FoggyCloudParticle(ClientLevel pLevel, double pX, double pY, double pZ, double xd, double yd, double zd,
+            FoggyCloudParticleOption options) {
         super(pLevel, pX, pY, pZ, 0, 0, 0);
         float magnitude = 0.3F;
         this.xd = xd + (Math.random() * 2.0D - 1.0D) * magnitude;
@@ -45,7 +47,8 @@ public class FoggyCloudParticle extends GroundCircleParticle{
 
     @Override
     public float getQuadSize(float pScaleFactor) {
-        return this.quadSize * (1.0F + Mth.clamp((this.age + pScaleFactor) / (float) this.lifetime * 0.75F, 0.0F, 1.0F)) * Mth.clamp(this.age / 5.0F, 0, 1);
+        return this.quadSize * (1.0F + Mth.clamp((this.age + pScaleFactor) / (float) this.lifetime * 0.75F, 0.0F, 1.0F))
+                * Mth.clamp(this.age / 5.0F, 0, 1);
     }
 
     @Override
@@ -78,9 +81,14 @@ public class FoggyCloudParticle extends GroundCircleParticle{
         super.render(p_233985_, p_233986_, p_233987_);
     }
 
-    public void makeCornerVertex(VertexConsumer pConsumer, Vector3f pVec3f, float p_233996_, float p_233997_, int p_233998_) {
-        Vec3 wiggle = new Vec3(noise((float) (age + this.x)), noise((float) (age - this.x)), noise((float) (age + this.z))).scale(0.02F);
-        pConsumer.vertex(pVec3f.x() + wiggle.x, pVec3f.y() + 0.08F + alpha * 0.125F, pVec3f.z() + wiggle.z).uv(p_233996_, p_233997_).color(this.rCol, this.gCol, this.bCol, this.alpha).uv2(p_233998_).endVertex();
+    public void makeCornerVertex(VertexConsumer pConsumer, Vector3f pVec3f, float p_233996_, float p_233997_,
+            int p_233998_) {
+        Vec3 wiggle = new Vec3(noise((float) (age + this.x)), noise((float) (age - this.x)),
+                noise((float) (age + this.z))).scale(0.02F);
+        pConsumer
+                .addVertex((float) (pVec3f.x() + wiggle.x), (float) (pVec3f.y() + 0.08F + alpha * 0.125F),
+                        (float) (pVec3f.z() + wiggle.z))
+                .setUv(p_233996_, p_233997_).setColor(this.rCol, this.gCol, this.bCol, this.alpha).setLight(p_233998_);
     }
 
     @Override
@@ -101,8 +109,10 @@ public class FoggyCloudParticle extends GroundCircleParticle{
             this.sprite = pSprite;
         }
 
-        public Particle createParticle(FoggyCloudParticleOption options, ClientLevel pLevel, double pX, double pY, double pZ, double pXSpeed, double pYSpeed, double pZSpeed) {
-            FoggyCloudParticle foggyCloudParticle = new FoggyCloudParticle(pLevel, pX, pY, pZ, pXSpeed, pYSpeed, pZSpeed, options);
+        public Particle createParticle(FoggyCloudParticleOption options, ClientLevel pLevel, double pX, double pY,
+                double pZ, double pXSpeed, double pYSpeed, double pZSpeed) {
+            FoggyCloudParticle foggyCloudParticle = new FoggyCloudParticle(pLevel, pX, pY, pZ, pXSpeed, pYSpeed,
+                    pZSpeed, options);
             foggyCloudParticle.pickSprite(this.sprite);
             foggyCloudParticle.setAlpha(1.0F);
             return foggyCloudParticle;

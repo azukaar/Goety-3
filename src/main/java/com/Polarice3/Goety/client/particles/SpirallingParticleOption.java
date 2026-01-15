@@ -8,6 +8,7 @@
  */
 package com.Polarice3.Goety.client.particles;
 
+import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.particles.ParticleOptions;
@@ -17,13 +18,13 @@ import net.minecraft.network.codec.StreamCodec;
 import org.jetbrains.annotations.NotNull;
 
 public class SpirallingParticleOption implements ParticleOptions {
-    public static final MapCodec<SpirallingParticleOption> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
-            Codec.FLOAT.fieldOf("size").forGetter(d -> d.size),
-            Codec.FLOAT.fieldOf("r").forGetter(d -> d.r),
-            Codec.FLOAT.fieldOf("g").forGetter(d -> d.g),
-            Codec.FLOAT.fieldOf("b").forGetter(d -> d.b),
-            Codec.INT.fieldOf("life").forGetter(d -> d.life)
-    ).apply(instance, SpirallingParticleOption::new));
+    public static final MapCodec<SpirallingParticleOption> CODEC = RecordCodecBuilder
+            .mapCodec(instance -> instance.group(
+                    Codec.FLOAT.fieldOf("size").forGetter(d -> d.size),
+                    Codec.FLOAT.fieldOf("r").forGetter(d -> d.r),
+                    Codec.FLOAT.fieldOf("g").forGetter(d -> d.g),
+                    Codec.FLOAT.fieldOf("b").forGetter(d -> d.b),
+                    Codec.INT.fieldOf("life").forGetter(d -> d.life)).apply(instance, SpirallingParticleOption::new));
 
     public static final StreamCodec<RegistryFriendlyByteBuf, SpirallingParticleOption> STREAM_CODEC = StreamCodec.of(
             (buf, value) -> {
@@ -33,8 +34,8 @@ public class SpirallingParticleOption implements ParticleOptions {
                 buf.writeFloat(value.b);
                 buf.writeInt(value.life);
             },
-            buf -> new SpirallingParticleOption(buf.readFloat(), buf.readFloat(), buf.readFloat(), buf.readFloat(), buf.readInt())
-    );
+            buf -> new SpirallingParticleOption(buf.readFloat(), buf.readFloat(), buf.readFloat(), buf.readFloat(),
+                    buf.readInt()));
     public final float size;
     public final float r, g, b;
     public final int life;

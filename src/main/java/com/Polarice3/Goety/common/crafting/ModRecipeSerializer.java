@@ -7,61 +7,72 @@ import net.minecraft.world.item.crafting.RecipeType;
 import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
-import net.neoforged.neoforge.registries.RegistryObject;
+import net.neoforged.neoforge.registries.DeferredHolder;
 
 public class ModRecipeSerializer {
 
-    public static final DeferredRegister<RecipeType<?>> RECIPE_TYPES = DeferredRegister.create(
-            NeoForgeRegistries.RECIPE_TYPES, Goety.MOD_ID);
+        public static final DeferredRegister<RecipeType<?>> RECIPE_TYPES = DeferredRegister.create(
+                        NeoForgeRegistries.RECIPE_TYPES, Goety.MOD_ID);
 
-    public static final DeferredRegister<RecipeSerializer<?>> RECIPE_SERIALIZERS = DeferredRegister.create(
-            NeoForgeRegistries.RECIPE_SERIALIZERS, Goety.MOD_ID);
+        public static final DeferredRegister<RecipeSerializer<?>> RECIPE_SERIALIZERS = DeferredRegister.create(
+                        NeoForgeRegistries.RECIPE_SERIALIZERS, Goety.MOD_ID);
 
-    public static void init(){
-        RECIPE_TYPES.register(FMLJavaModLoadingContext.get().getModEventBus());
-        RECIPE_SERIALIZERS.register(FMLJavaModLoadingContext.get().getModEventBus());
-    }
+        public static void init() {
+                RECIPE_TYPES.register(FMLJavaModLoadingContext.get().getModEventBus());
+                RECIPE_SERIALIZERS.register(FMLJavaModLoadingContext.get().getModEventBus());
+        }
 
-    public static final RegistryObject<RecipeType<CursedInfuserRecipes>> CURSED_INFUSER = register("cursed_infuser");
+        public static final DeferredHolder<RecipeType<?>, RecipeType<CursedInfuserRecipes>> CURSED_INFUSER = register(
+                        "cursed_infuser");
 
-    public static final RegistryObject<RecipeSerializer<CursedInfuserRecipes>> CURSED_INFUSER_RECIPES = RECIPE_SERIALIZERS.register("cursed_infuser_recipes",
-            () -> new CursedInfuserRecipeSerializer<>(CursedInfuserRecipes::new, 60));
+        public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<CursedInfuserRecipes>> CURSED_INFUSER_RECIPES = RECIPE_SERIALIZERS
+                        .register("cursed_infuser_recipes",
+                                        () -> new CursedInfuserRecipeSerializer<>(CursedInfuserRecipes::new, 60));
 
-    public static final RegistryObject<RecipeType<SoulAbsorberRecipes>> SOUL_ABSORBER = register("soul_absorber");
+        public static final DeferredHolder<RecipeType<?>, RecipeType<SoulAbsorberRecipes>> SOUL_ABSORBER = register(
+                        "soul_absorber");
 
-    public static final RegistryObject<RecipeSerializer<SoulAbsorberRecipes>> SOUL_ABSORBER_RECIPES = RECIPE_SERIALIZERS.register("soul_absorber_recipes",
-            () -> new SoulAbsorberRecipeSerializer<>(SoulAbsorberRecipes::new, 25, 200));
+        public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<SoulAbsorberRecipes>> SOUL_ABSORBER_RECIPES = RECIPE_SERIALIZERS
+                        .register("soul_absorber_recipes",
+                                        () -> new SoulAbsorberRecipeSerializer<>(SoulAbsorberRecipes::new, 25, 200));
 
-    public static final RegistryObject<RecipeType<RitualRecipe>> RITUAL_TYPE = register("ritual");
+        public static final DeferredHolder<RecipeType<?>, RecipeType<RitualRecipe>> RITUAL_TYPE = register("ritual");
 
-    public static final RegistryObject<RecipeSerializer<RitualRecipe>> RITUAL = RECIPE_SERIALIZERS.register("ritual",
-            () -> RitualRecipe.SERIALIZER);
+        public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<RitualRecipe>> RITUAL = RECIPE_SERIALIZERS
+                        .register("ritual",
+                                        () -> RitualRecipe.SERIALIZER);
 
-    public static final RegistryObject<RecipeType<BrazierRecipe>> BRAZIER_TYPE = register("brazier");
+        public static final DeferredHolder<RecipeType<?>, RecipeType<BrazierRecipe>> BRAZIER_TYPE = register("brazier");
 
-    public static final RegistryObject<RecipeSerializer<BrazierRecipe>> BRAZIER = RECIPE_SERIALIZERS.register("brazier",
-            () -> BrazierRecipe.SERIALIZER);
+        public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<BrazierRecipe>> BRAZIER = RECIPE_SERIALIZERS
+                        .register("brazier",
+                                        () -> BrazierRecipe.SERIALIZER);
 
-    public static final RegistryObject<RecipeType<BrewingRecipe>> BREWING_TYPE = register("brewing");
+        public static final DeferredHolder<RecipeType<?>, RecipeType<BrewingRecipe>> BREWING_TYPE = register("brewing");
 
-    public static final RegistryObject<RecipeSerializer<BrewingRecipe>> BREWING = RECIPE_SERIALIZERS.register("brewing",
-            () -> BrewingRecipe.SERIALIZER);
+        public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<BrewingRecipe>> BREWING = RECIPE_SERIALIZERS
+                        .register("brewing",
+                                        () -> BrewingRecipe.SERIALIZER);
 
-    public static final RegistryObject<RecipeType<PulverizeRecipe>> PULVERIZE_TYPE = register("pulverize");
+        public static final DeferredHolder<RecipeType<?>, RecipeType<PulverizeRecipe>> PULVERIZE_TYPE = register(
+                        "pulverize");
 
-    public static final RegistryObject<RecipeSerializer<PulverizeRecipe>> PULVERIZE = RECIPE_SERIALIZERS.register("pulverize",
-            () -> PulverizeRecipe.SERIALIZER);
+        public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<PulverizeRecipe>> PULVERIZE = RECIPE_SERIALIZERS
+                        .register("pulverize",
+                                        () -> PulverizeRecipe.SERIALIZER);
 
-    // 1.21+: vanilla shapeless recipe already supports complex ingredients via codecs/stream codecs.
-    // This legacy shim is disabled until the custom serializer is ported.
-//    public static final RegistryObject<RecipeSerializer<ModShapelessRecipe>> MODDED_SHAPELESS = RECIPE_SERIALIZERS.register("crafting_shapeless",
-//            ModShapelessRecipe.Serializer::new);
+        // 1.21+: vanilla shapeless recipe already supports complex ingredients via
+        // codecs/stream codecs.
+        // This legacy shim is disabled until the custom serializer is ported.
+        // public static final RegistryObject<RecipeSerializer<ModShapelessRecipe>>
+        // MODDED_SHAPELESS = RECIPE_SERIALIZERS.register("crafting_shapeless",
+        // ModShapelessRecipe.Serializer::new);
 
-    static <T extends Recipe<?>> RegistryObject<RecipeType<T>> register(final String id) {
-        return RECIPE_TYPES.register(id, () -> new RecipeType<T>() {
-            public String toString() {
-                return id;
-            }
-        });
-    }
+        static <T extends Recipe<?>> DeferredHolder<RecipeType<?>, RecipeType<T>> register(final String id) {
+                return RECIPE_TYPES.register(id, () -> new RecipeType<T>() {
+                        public String toString() {
+                                return id;
+                        }
+                });
+        }
 }

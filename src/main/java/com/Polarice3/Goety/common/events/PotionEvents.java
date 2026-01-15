@@ -90,11 +90,11 @@ import static net.neoforged.neoforge.event.entity.living.LivingChangeTargetEvent
 public class PotionEvents {
 
     @SubscribeEvent
-    public static void LivingEffects(EntityTickEvent.Post event){
+    public static void LivingEffects(EntityTickEvent.Post event) {
         if (!(event.getEntity() instanceof LivingEntity livingEntity)) {
             return;
         }
-        if (livingEntity != null){
+        if (livingEntity != null) {
             if (livingEntity.level instanceof ServerLevel serverLevel) {
                 if (livingEntity.hasEffect(GoetyEffects.ILLAGUE.get())) {
                     EffectsUtil.Illague(serverLevel, livingEntity);
@@ -102,47 +102,51 @@ public class PotionEvents {
                 if (livingEntity.hasEffect(GoetyEffects.VOID_TOUCHED.get())) {
                     if (livingEntity.tickCount % 10 == 0) {
                         ColorUtil colorUtil = new ColorUtil(0x7f0075);
-                        serverLevel.sendParticles(new FollowFireParticle.Option(livingEntity.getId()), livingEntity.getX(), livingEntity.getY() + (livingEntity.getBbHeight() / 2.0F), livingEntity.getZ(), 0, colorUtil.red(), colorUtil.green(), colorUtil.blue(), 1.0F);
+                        serverLevel.sendParticles(new FollowFireParticle.Option(livingEntity.getId()),
+                                livingEntity.getX(), livingEntity.getY() + (livingEntity.getBbHeight() / 2.0F),
+                                livingEntity.getZ(), 0, colorUtil.red(), colorUtil.green(), colorUtil.blue(), 1.0F);
                     }
                 }
             }
             AttributeInstance armor = livingEntity.getAttribute(Attributes.ARMOR);
-            AttributeModifier soulArmorBuff = new AttributeModifier(UUID.fromString("3e4b414b-466c-4b90-8a92-a878e2542bb8"), "Increase Armor", 2.0D, AttributeModifier.Operation.MULTIPLY_TOTAL);
-            if (armor != null){
-                if (livingEntity.hasEffect(GoetyEffects.SOUL_ARMOR.get())){
-                    if (ItemHelper.noArmor(livingEntity)){
-                        if (!armor.hasModifier(soulArmorBuff)){
+            AttributeModifier soulArmorBuff = new AttributeModifier(
+                    UUID.fromString("3e4b414b-466c-4b90-8a92-a878e2542bb8"), "Increase Armor", 2.0D,
+                    AttributeModifier.Operation.MULTIPLY_TOTAL);
+            if (armor != null) {
+                if (livingEntity.hasEffect(GoetyEffects.SOUL_ARMOR.get())) {
+                    if (ItemHelper.noArmor(livingEntity)) {
+                        if (!armor.hasModifier(soulArmorBuff)) {
                             armor.addPermanentModifier(soulArmorBuff);
                         }
                     } else {
-                        if (armor.hasModifier(soulArmorBuff)){
+                        if (armor.hasModifier(soulArmorBuff)) {
                             armor.removeModifier(soulArmorBuff);
                         }
                     }
                 } else {
-                    if (armor.hasModifier(soulArmorBuff)){
+                    if (armor.hasModifier(soulArmorBuff)) {
                         armor.removeModifier(soulArmorBuff);
                     }
                 }
             }
-            if (livingEntity.getTags().contains(ConstantPaths.gassed())){
-                if (livingEntity.tickCount % 20 == 0){
+            if (livingEntity.getTags().contains(ConstantPaths.gassed())) {
+                if (livingEntity.tickCount % 20 == 0) {
                     livingEntity.getTags().remove(ConstantPaths.gassed());
                 }
             }
-            if (livingEntity.hasEffect(GoetyEffects.BURN_HEX.get())){
-                if (livingEntity.hasEffect(MobEffects.FIRE_RESISTANCE)){
+            if (livingEntity.hasEffect(GoetyEffects.BURN_HEX.get())) {
+                if (livingEntity.hasEffect(MobEffects.FIRE_RESISTANCE)) {
                     livingEntity.removeEffectNoUpdate(MobEffects.FIRE_RESISTANCE);
                 }
             }
-            if (livingEntity.hasEffect(GoetyEffects.CLIMBING.get())){
+            if (livingEntity.hasEffect(GoetyEffects.CLIMBING.get())) {
                 MobUtil.ClimbAnyWall(livingEntity);
             }
-            if (livingEntity instanceof Bee bee){
+            if (livingEntity instanceof Bee bee) {
                 if (!bee.level.isClientSide) {
-                    if (bee.getTags().contains(ConstantPaths.conjuredBee())){
-                        if ((bee.getTarget() == null && bee.getPersistentAngerTarget() == null) || bee.hasStung()){
-                            if (bee.tickCount % MathHelper.secondsToTicks(10) == 0){
+                    if (bee.getTags().contains(ConstantPaths.conjuredBee())) {
+                        if ((bee.getTarget() == null && bee.getPersistentAngerTarget() == null) || bee.hasStung()) {
+                            if (bee.tickCount % MathHelper.secondsToTicks(10) == 0) {
                                 bee.spawnAnim();
                                 bee.discard();
                             }
@@ -150,26 +154,28 @@ public class PotionEvents {
                     }
                 }
             }
-            if (livingEntity instanceof Bat bat){
-                if (!bat.level.isClientSide){
-                    if (bat.getTags().contains(ConstantPaths.conjuredBat())){
-                        if (bat.tickCount % MathHelper.secondsToTicks(20) == 0){
+            if (livingEntity instanceof Bat bat) {
+                if (!bat.level.isClientSide) {
+                    if (bat.getTags().contains(ConstantPaths.conjuredBat())) {
+                        if (bat.tickCount % MathHelper.secondsToTicks(20) == 0) {
                             bat.spawnAnim();
                             bat.discard();
                         }
                     }
                 }
             }
-            if (livingEntity.hasEffect(GoetyEffects.FREEZING.get())){
-                if (!livingEntity.level.isClientSide){
+            if (livingEntity.hasEffect(GoetyEffects.FREEZING.get())) {
+                if (!livingEntity.level.isClientSide) {
                     livingEntity.setIsInPowderSnow(true);
                     if (livingEntity.canFreeze()) {
-                        int h = Objects.requireNonNull(livingEntity.getEffect(GoetyEffects.FREEZING.get())).getAmplifier() + 1;
+                        int h = Objects.requireNonNull(livingEntity.getEffect(GoetyEffects.FREEZING.get()))
+                                .getAmplifier() + 1;
                         MiscCapHelper.setFreezing(livingEntity, h);
-                        if (livingEntity.level instanceof ServerLevel serverLevel){
+                        if (livingEntity.level instanceof ServerLevel serverLevel) {
                             if (serverLevel.random.nextFloat() <= 0.25F) {
                                 for (int h1 = 0; h1 < h; ++h1) {
-                                    ServerParticleUtil.addParticlesAroundSelf(serverLevel, ParticleTypes.SNOWFLAKE, livingEntity);
+                                    ServerParticleUtil.addParticlesAroundSelf(serverLevel, ParticleTypes.SNOWFLAKE,
+                                            livingEntity);
                                 }
                             }
                         }
@@ -179,39 +185,42 @@ public class PotionEvents {
                     }
                 }
             } else {
-                if (!livingEntity.level.isClientSide){
-                    if (MiscCapHelper.isFreezing(livingEntity)){
+                if (!livingEntity.level.isClientSide) {
+                    if (MiscCapHelper.isFreezing(livingEntity)) {
                         MiscCapHelper.setFreezing(livingEntity, 0);
                     }
                 }
             }
-            if (livingEntity instanceof Player && livingEntity.hasEffect(GoetyEffects.SENSE_LOSS.get())){
+            if (livingEntity instanceof Player && livingEntity.hasEffect(GoetyEffects.SENSE_LOSS.get())) {
                 MobEffectInstance mobEffectInstance = livingEntity.getEffect(GoetyEffects.SENSE_LOSS.get());
                 if (mobEffectInstance != null) {
-                    if (livingEntity.addEffect(new MobEffectInstance(MobEffects.BLINDNESS, mobEffectInstance.getDuration(), mobEffectInstance.getAmplifier(), mobEffectInstance.isAmbient(), mobEffectInstance.isVisible()))){
+                    if (livingEntity.addEffect(new MobEffectInstance(MobEffects.BLINDNESS,
+                            mobEffectInstance.getDuration(), mobEffectInstance.getAmplifier(),
+                            mobEffectInstance.isAmbient(), mobEffectInstance.isVisible()))) {
                         livingEntity.removeEffect(GoetyEffects.SENSE_LOSS.get());
                     }
                 }
             }
             if (livingEntity.hasEffect(GoetyEffects.EXPLOSIVE.get())) {
                 MobEffectInstance mobEffectInstance = livingEntity.getEffect(GoetyEffects.EXPLOSIVE.get());
-                if (mobEffectInstance != null){
+                if (mobEffectInstance != null) {
                     int a = mobEffectInstance.getAmplifier() + 1;
                     if (MobUtil.isPushed(livingEntity)) {
                         int max = Math.max(1, 100 - (a * 10));
                         if (livingEntity.getRandom().nextInt(max) == 0) {
                             if (!livingEntity.level.isClientSide) {
-                                livingEntity.level.explode(livingEntity, livingEntity.getX(), livingEntity.getY(), livingEntity.getZ(), 3.0F + (a / 2.0F), Level.ExplosionInteraction.BLOCK);
+                                livingEntity.level.explode(livingEntity, livingEntity.getX(), livingEntity.getY(),
+                                        livingEntity.getZ(), 3.0F + (a / 2.0F), Level.ExplosionInteraction.BLOCK);
                                 livingEntity.removeEffect(GoetyEffects.EXPLOSIVE.get());
                             }
                         }
                     }
                 }
             }
-            if (livingEntity.hasEffect(GoetyEffects.SNOW_SKIN.get())){
+            if (livingEntity.hasEffect(GoetyEffects.SNOW_SKIN.get())) {
                 MobEffectInstance mobEffectInstance = livingEntity.getEffect(GoetyEffects.SNOW_SKIN.get());
-                if(mobEffectInstance != null){
-                    if (!livingEntity.level.isClientSide){
+                if (mobEffectInstance != null) {
+                    if (!livingEntity.level.isClientSide) {
                         int i = Mth.floor(livingEntity.getX());
                         int j = Mth.floor(livingEntity.getY());
                         int k = Mth.floor(livingEntity.getZ());
@@ -226,14 +235,16 @@ public class PotionEvents {
 
                         BlockState blockstate = Blocks.SNOW.defaultBlockState();
 
-                        for(int l = 0; l < 4; ++l) {
-                            i = Mth.floor(livingEntity.getX() + (double)((float)(l % 2 * 2 - 1) * 0.25F));
+                        for (int l = 0; l < 4; ++l) {
+                            i = Mth.floor(livingEntity.getX() + (double) ((float) (l % 2 * 2 - 1) * 0.25F));
                             j = Mth.floor(livingEntity.getY());
-                            k = Mth.floor(livingEntity.getZ() + (double)((float)(l / 2 % 2 * 2 - 1) * 0.25F));
+                            k = Mth.floor(livingEntity.getZ() + (double) ((float) (l / 2 % 2 * 2 - 1) * 0.25F));
                             BlockPos blockpos1 = new BlockPos(i, j, k);
-                            if (livingEntity.level.isEmptyBlock(blockpos1) && blockstate.canSurvive(livingEntity.level, blockpos1)) {
+                            if (livingEntity.level.isEmptyBlock(blockpos1)
+                                    && blockstate.canSurvive(livingEntity.level, blockpos1)) {
                                 livingEntity.level.setBlockAndUpdate(blockpos1, blockstate);
-                                livingEntity.level.gameEvent(GameEvent.BLOCK_PLACE, blockpos1, GameEvent.Context.of(livingEntity, blockstate));
+                                livingEntity.level.gameEvent(GameEvent.BLOCK_PLACE, blockpos1,
+                                        GameEvent.Context.of(livingEntity, blockstate));
                             }
                         }
                     }
@@ -243,7 +254,7 @@ public class PotionEvents {
     }
 
     @SubscribeEvent
-    public static void HurtEvent(LivingDamageEvent.Post event){
+    public static void HurtEvent(LivingDamageEvent.Post event) {
         LivingEntity victim = event.getEntity();
         Entity attacker = event.getSource().getEntity();
 
@@ -253,12 +264,12 @@ public class PotionEvents {
                     MobEffectInstance mobEffectInstance = living.getEffect(GoetyEffects.FLAME_HANDS.get());
                     if (mobEffectInstance != null) {
                         int a = mobEffectInstance.getAmplifier() + 1;
-                        victim.setSecondsOnFire(a * 4);
+                        victim.igniteForSeconds(a * 4);
                     }
                 }
                 if (living.hasEffect(GoetyEffects.VENOMOUS_HANDS.get())) {
                     MobEffect effect = MobEffects.POISON;
-                    if (CuriosFinder.hasWildRobe(living)){
+                    if (CuriosFinder.hasWildRobe(living)) {
                         effect = GoetyEffects.ACID_VENOM.get();
                     }
                     MobEffectInstance mobEffectInstance = living.getEffect(GoetyEffects.VENOMOUS_HANDS.get());
@@ -270,59 +281,65 @@ public class PotionEvents {
             }
             if (victim.hasEffect(GoetyEffects.REPULSIVE.get())) {
                 MobEffectInstance mobEffectInstance = victim.getEffect(GoetyEffects.REPULSIVE.get());
-                if (mobEffectInstance != null){
+                if (mobEffectInstance != null) {
                     int a = mobEffectInstance.getAmplifier();
                     living.playSound(SoundEvents.IRON_GOLEM_ATTACK);
-                    if (!living.level.isClientSide){
-                        ModNetwork.sendToALL(new SPlayWorldSoundPacket(living.blockPosition(), SoundEvents.IRON_GOLEM_ATTACK, 1.0F, 1.0F));
+                    if (!living.level.isClientSide) {
+                        ModNetwork.sendToALL(new SPlayWorldSoundPacket(living.blockPosition(),
+                                SoundEvents.IRON_GOLEM_ATTACK, 1.0F, 1.0F));
                         MobUtil.knockBack(living, victim, 1.0D + (a / 2.0D), 0.4D + (a * 0.2D), 1.0D + (a / 2.0D));
                     }
                 }
             }
         }
-        if (victim.hasEffect(GoetyEffects.SOUL_ARMOR.get())){
+        if (victim.hasEffect(GoetyEffects.SOUL_ARMOR.get())) {
             MobEffectInstance mobEffectInstance = victim.getEffect(GoetyEffects.SOUL_ARMOR.get());
-            if (mobEffectInstance != null){
-                if (mobEffectInstance.getDuration() > MathHelper.secondsToTicks(event.getNewDamage())){
-                    EffectsUtil.decreaseDuration(victim, GoetyEffects.SOUL_ARMOR.get(), MathHelper.secondsToTicks(event.getNewDamage()), mobEffectInstance.isAmbient(), mobEffectInstance.isVisible());
+            if (mobEffectInstance != null) {
+                if (mobEffectInstance.getDuration() > MathHelper.secondsToTicks(event.getNewDamage())) {
+                    EffectsUtil.decreaseDuration(victim, GoetyEffects.SOUL_ARMOR.get(),
+                            MathHelper.secondsToTicks(event.getNewDamage()), mobEffectInstance.isAmbient(),
+                            mobEffectInstance.isVisible());
                 }
-                if (victim instanceof Player player){
+                if (victim instanceof Player player) {
                     SEHelper.decreaseSouls(player, (int) event.getNewDamage());
                 }
             }
         }
         if (victim.hasEffect(GoetyEffects.EXPLOSIVE.get())) {
             MobEffectInstance mobEffectInstance = victim.getEffect(GoetyEffects.EXPLOSIVE.get());
-            if (mobEffectInstance != null){
+            if (mobEffectInstance != null) {
                 int a = mobEffectInstance.getAmplifier() + 1;
                 int max = Math.max(1, 5 - a);
                 if (victim.getRandom().nextInt(max) == 0) {
                     if (!victim.level.isClientSide) {
-                        victim.level.explode(victim, victim.getX(), victim.getY(), victim.getZ(), 3.0F + (a / 2.0F), Level.ExplosionInteraction.BLOCK);
+                        victim.level.explode(victim, victim.getX(), victim.getY(), victim.getZ(), 3.0F + (a / 2.0F),
+                                Level.ExplosionInteraction.BLOCK);
                         victim.removeEffect(GoetyEffects.EXPLOSIVE.get());
                     }
                 }
             }
         }
-        if (victim.hasEffect(GoetyEffects.FLAMMABLE.get())){
+        if (victim.hasEffect(GoetyEffects.FLAMMABLE.get())) {
             MobEffectInstance mobEffectInstance = victim.getEffect(GoetyEffects.FLAMMABLE.get());
-            if (mobEffectInstance != null){
+            if (mobEffectInstance != null) {
                 int a = mobEffectInstance.getAmplifier() + 2;
                 if (event.getSource().is(DamageTypeTags.IS_FIRE)) {
                     event.setAmount(event.getAmount() * a);
                 }
             }
         }
-        if (victim.hasEffect(GoetyEffects.ENDER_FLUX.get())){
+        if (victim.hasEffect(GoetyEffects.ENDER_FLUX.get())) {
             MobEffectInstance mobEffectInstance = victim.getEffect(GoetyEffects.ENDER_FLUX.get());
-            if (mobEffectInstance != null){
+            if (mobEffectInstance != null) {
                 int a = mobEffectInstance.getAmplifier();
-                for(int i = 0; i < 64; ++i) {
-                    if (MobUtil.teleport(victim, 16, a)){
-                        if (victim.getRandom().nextFloat() < 0.05F && victim.level.getGameRules().getBoolean(GameRules.RULE_DOMOBSPAWNING)) {
+                for (int i = 0; i < 64; ++i) {
+                    if (MobUtil.teleport(victim, 16, a)) {
+                        if (victim.getRandom().nextFloat() < 0.05F
+                                && victim.level.getGameRules().getBoolean(GameRules.RULE_DOMOBSPAWNING)) {
                             Endermite endermite = EntityType.ENDERMITE.create(victim.level);
                             if (endermite != null) {
-                                endermite.moveTo(victim.getX(), victim.getY(), victim.getZ(), victim.getYRot(), victim.getXRot());
+                                endermite.moveTo(victim.getX(), victim.getY(), victim.getZ(), victim.getYRot(),
+                                        victim.getXRot());
                                 victim.level.addFreshEntity(endermite);
                             }
                         }
@@ -334,11 +351,11 @@ public class PotionEvents {
     }
 
     @SubscribeEvent
-    public static void DamageEvents(LivingDamageEvent event){
+    public static void DamageEvents(LivingDamageEvent event) {
         LivingEntity target = event.getEntity();
         Entity attacker = event.getSource().getEntity();
 
-        if (target.hasEffect(GoetyEffects.SAPPED.get())){
+        if (target.hasEffect(GoetyEffects.SAPPED.get())) {
             MobEffectInstance effectInstance = target.getEffect(GoetyEffects.SAPPED.get());
             float original = event.getAmount();
             if (effectInstance != null) {
@@ -348,7 +365,7 @@ public class PotionEvents {
             }
         }
 
-        if (target.hasEffect(GoetyEffects.VOID_TOUCHED.get())){
+        if (target.hasEffect(GoetyEffects.VOID_TOUCHED.get())) {
             if (!event.getSource().is(ModDamageSource.VOIDED)) {
                 MobEffectInstance effectInstance = target.getEffect(GoetyEffects.VOID_TOUCHED.get());
                 float original = event.getAmount();
@@ -362,7 +379,8 @@ public class PotionEvents {
         }
 
         if (target.hasEffect(GoetyEffects.SHIELDING.get()) || target.hasEffect(GoetyEffects.SHIELDED.get())) {
-            if (!event.getSource().is(DamageTypeTags.BYPASSES_EFFECTS) && !event.getSource().is(DamageTypeTags.BYPASSES_RESISTANCE)) {
+            if (!event.getSource().is(DamageTypeTags.BYPASSES_EFFECTS)
+                    && !event.getSource().is(DamageTypeTags.BYPASSES_RESISTANCE)) {
                 MobEffectInstance effectInstance = target.getEffect(GoetyEffects.SHIELDING.get());
                 if (effectInstance == null && target.hasEffect(GoetyEffects.SHIELDED.get())) {
                     effectInstance = target.getEffect(GoetyEffects.SHIELDED.get());
@@ -382,11 +400,12 @@ public class PotionEvents {
                 event.setAmount(event.getAmount() * multiply);
                 attackerL.removeEffect(GoetyEffects.SHADOW_WALK.get());
             }
-            if (target.hasEffect(GoetyEffects.CHILL_HIDE.get()) && ModDamageSource.physicalAttacks(event.getSource())){
+            if (target.hasEffect(GoetyEffects.CHILL_HIDE.get()) && ModDamageSource.physicalAttacks(event.getSource())) {
                 MobEffectInstance effectInstance = target.getEffect(GoetyEffects.CHILL_HIDE.get());
                 if (effectInstance != null) {
                     int i = effectInstance.getAmplifier() * 2;
-                    attackerL.addEffect(new MobEffectInstance(GoetyEffects.FREEZING.get(), MathHelper.secondsToTicks(3 + i), 1));
+                    attackerL.addEffect(
+                            new MobEffectInstance(GoetyEffects.FREEZING.get(), MathHelper.secondsToTicks(3 + i), 1));
                 }
             }
             if (attackerL.hasEffect(GoetyEffects.RADIANCE.get())) {
@@ -397,16 +416,25 @@ public class PotionEvents {
                     if (attackerL.level instanceof ServerLevel serverLevel) {
                         float chance = event.getSource().is(DamageTypeTags.IS_PROJECTILE) ? 0.5F : 0.2F;
                         if (attackerL.level.getRandom().nextFloat() <= chance) {
-                            attackerL.level.playSound(null, target, ModSounds.RADIANCE_WAVE.get(), attacker.getSoundSource(), 0.9F, 1.0F);
-                            serverLevel.sendParticles(new ShockwaveParticleOption(4, 1), target.getX(), target.getY() + 0.25F, target.getZ(), 0, 0, 0, 0, 0.5F);
-                            for (LivingEntity living2 : attackerL.level.getEntitiesOfClass(LivingEntity.class, target.getBoundingBox().inflate(4.0D), ally -> MobUtil.areAllies(attackerL, ally) || ally == attackerL)) {
+                            attackerL.level.playSound(null, target, ModSounds.RADIANCE_WAVE.get(),
+                                    attacker.getSoundSource(), 0.9F, 1.0F);
+                            serverLevel.sendParticles(new ShockwaveParticleOption(4, 1), target.getX(),
+                                    target.getY() + 0.25F, target.getZ(), 0, 0, 0, 0, 0.5F);
+                            for (LivingEntity living2 : attackerL.level.getEntitiesOfClass(LivingEntity.class,
+                                    target.getBoundingBox().inflate(4.0D),
+                                    ally -> MobUtil.areAllies(attackerL, ally) || ally == attackerL)) {
                                 living2.heal(heal);
                                 for (int i = 0; i < serverLevel.getRandom().nextInt(10) + 10; ++i) {
-                                    serverLevel.sendParticles(ModParticleTypes.HEAL_EFFECT_2.get(), living2.getRandomX(1.5D), living2.getRandomY(), living2.getRandomZ(1.5D), 0, 0.0F, 1.0F, 0.0F, 1.0F);
+                                    serverLevel.sendParticles(ModParticleTypes.HEAL_EFFECT_2.get(),
+                                            living2.getRandomX(1.5D), living2.getRandomY(), living2.getRandomZ(1.5D), 0,
+                                            0.0F, 1.0F, 0.0F, 1.0F);
                                 }
                                 ColorUtil colorUtil = new ColorUtil(0xfffcc5);
-                                serverLevel.sendParticles(new RisingCircleParticleOption(0), living2.getX(), living2.getY(), living2.getZ(), 0, colorUtil.red(), colorUtil.green(), colorUtil.blue(), 1.0F);
-                                living2.level.playSound(null, living2, ModSounds.HEAL_SPELL.get(), living2.getSoundSource(), 1.0F, 1.0F);
+                                serverLevel.sendParticles(new RisingCircleParticleOption(0), living2.getX(),
+                                        living2.getY(), living2.getZ(), 0, colorUtil.red(), colorUtil.green(),
+                                        colorUtil.blue(), 1.0F);
+                                living2.level.playSound(null, living2, ModSounds.HEAL_SPELL.get(),
+                                        living2.getSoundSource(), 1.0F, 1.0F);
                             }
                         }
                     }
@@ -420,7 +448,8 @@ public class PotionEvents {
                         float increase = 0.02F * amp;
                         float heal = target.getMaxHealth() * (0.05F + increase);
                         if (heal > 0.0F) {
-                            attackerL.level.playSound(null, attackerL, ModSounds.LEECHING.get(), attackerL.getSoundSource(), 1.0F, 1.0F);
+                            attackerL.level.playSound(null, attackerL, ModSounds.LEECHING.get(),
+                                    attackerL.getSoundSource(), 1.0F, 1.0F);
                             attackerL.heal(heal);
                         }
                     }
@@ -429,13 +458,17 @@ public class PotionEvents {
             if (attackerL.hasEffect(GoetyEffects.SWIRLING.get())) {
                 MobEffectInstance effectInstance = attackerL.getEffect(GoetyEffects.SWIRLING.get());
                 if (effectInstance != null) {
-                    if (ModDamageSource.physicalAttacks(event.getSource()) && !event.getSource().is(ModDamageSource.SWORD)) {
+                    if (ModDamageSource.physicalAttacks(event.getSource())
+                            && !event.getSource().is(ModDamageSource.SWORD)) {
                         int amp = effectInstance.getAmplifier();
                         float damage = 5.0F * ((amp / 2.0F) + 1);
                         if (attackerL.level instanceof ServerLevel serverLevel) {
-                            ServerParticleUtil.windShockwaveParticle(serverLevel, ColorUtil.WHITE, 4.0F, 0, -1, attackerL.position().add(0.0D, 1.0D, 0.0D));
-                            for (LivingEntity livingEntity : attackerL.level.getEntitiesOfClass(LivingEntity.class, attackerL.getBoundingBox().inflate(4.0D, 1.0D, 4.0D))) {
-                                if (attackerL != livingEntity && livingEntity != target && !MobUtil.areAllies(attackerL, livingEntity)) {
+                            ServerParticleUtil.windShockwaveParticle(serverLevel, ColorUtil.WHITE, 4.0F, 0, -1,
+                                    attackerL.position().add(0.0D, 1.0D, 0.0D));
+                            for (LivingEntity livingEntity : attackerL.level.getEntitiesOfClass(LivingEntity.class,
+                                    attackerL.getBoundingBox().inflate(4.0D, 1.0D, 4.0D))) {
+                                if (attackerL != livingEntity && livingEntity != target
+                                        && !MobUtil.areAllies(attackerL, livingEntity)) {
                                     livingEntity.hurt(ModDamageSource.sword(attackerL, attackerL), damage);
                                 }
                             }
@@ -451,7 +484,9 @@ public class PotionEvents {
                 if (effectInstance != null) {
                     int amp = effectInstance.getAmplifier() + 1;
                     float heal = Math.min(0.25F * amp, 1.0F);
-                    for (LivingEntity living : target.level.getEntitiesOfClass(LivingEntity.class, target.getBoundingBox().inflate(60.0D), livingEntity -> MobUtil.areAllies(target, livingEntity) && livingEntity != target)) {
+                    for (LivingEntity living : target.level.getEntitiesOfClass(LivingEntity.class,
+                            target.getBoundingBox().inflate(60.0D),
+                            livingEntity -> MobUtil.areAllies(target, livingEntity) && livingEntity != target)) {
                         living.heal(event.getAmount() * heal);
                     }
                 }
@@ -460,13 +495,13 @@ public class PotionEvents {
     }
 
     @SubscribeEvent
-    public static void ExperienceEvents(LivingExperienceDropEvent event){
+    public static void ExperienceEvents(LivingExperienceDropEvent event) {
         Player player = event.getAttackingPlayer();
         LivingEntity living = event.getEntity();
-        if (player != null && living != null){
-            if (player.hasEffect(GoetyEffects.INSIGHT.get())){
+        if (player != null && living != null) {
+            if (player.hasEffect(GoetyEffects.INSIGHT.get())) {
                 MobEffectInstance mobEffectInstance = player.getEffect(GoetyEffects.INSIGHT.get());
-                if (mobEffectInstance != null){
+                if (mobEffectInstance != null) {
                     int a = mobEffectInstance.getAmplifier() + 2;
                     event.setDroppedExperience(event.getOriginalExperience() * a);
                 }
@@ -475,13 +510,13 @@ public class PotionEvents {
     }
 
     @SubscribeEvent
-    public static void DeathEvents(LivingDeathEvent event){
+    public static void DeathEvents(LivingDeathEvent event) {
         LivingEntity effected = event.getEntity();
-        if (event.getEntity() instanceof Player player){
-            if (player.hasEffect(GoetyEffects.SAVE_EFFECTS.get())){
-                if (!player.getActiveEffects().isEmpty()){
+        if (event.getEntity() instanceof Player player) {
+            if (player.hasEffect(GoetyEffects.SAVE_EFFECTS.get())) {
+                if (!player.getActiveEffects().isEmpty()) {
                     List<MobEffectInstance> instanceList = new ArrayList<>(player.getActiveEffects());
-                    if (!instanceList.isEmpty()){
+                    if (!instanceList.isEmpty()) {
                         ListTag listtag = new ListTag();
                         CompoundTag playerData = event.getEntity().getPersistentData();
                         CompoundTag data;
@@ -491,7 +526,7 @@ public class PotionEvents {
                         } else {
                             data = playerData.getCompound(Player.PERSISTED_NBT_TAG);
                         }
-                        for(MobEffectInstance mobeffectinstance : instanceList) {
+                        for (MobEffectInstance mobeffectinstance : instanceList) {
                             listtag.add(mobeffectinstance.save(new CompoundTag()));
                         }
                         data.put(ConstantPaths.keepEffects(), listtag);
@@ -499,12 +534,12 @@ public class PotionEvents {
                     }
                 }
             }
-            if (SEHelper.hasEndWalk(player)){
+            if (SEHelper.hasEndWalk(player)) {
                 SEHelper.removeEndWalk(player);
             }
         }
-        if (event.getSource().getEntity() instanceof LivingEntity livingEntity){
-            if (livingEntity.hasEffect(GoetyEffects.CORPSE_EATER.get())){
+        if (event.getSource().getEntity() instanceof LivingEntity livingEntity) {
+            if (livingEntity.hasEffect(GoetyEffects.CORPSE_EATER.get())) {
                 MobEffectInstance mobEffectInstance = livingEntity.getEffect(GoetyEffects.CORPSE_EATER.get());
                 if (mobEffectInstance != null) {
                     int amp = mobEffectInstance.getAmplifier() + 1;
@@ -520,17 +555,19 @@ public class PotionEvents {
                 }
             }
         }
-        if (event.getSource().is(ModDamageSource.DOOM)){
-            if (effected.level instanceof ServerLevel serverLevel){
-                serverLevel.sendParticles(ModParticleTypes.DOOM_DEATH.get(), effected.getX(), effected.getNameTagOffsetY(), effected.getZ(), 0, 0.0D, 0.07D, 0.0D, 0.5D);
+        if (event.getSource().is(ModDamageSource.DOOM)) {
+            if (effected.level instanceof ServerLevel serverLevel) {
+                serverLevel.sendParticles(ModParticleTypes.DOOM_DEATH.get(), effected.getX(),
+                        effected.getNameTagOffsetY(), effected.getZ(), 0, 0.0D, 0.07D, 0.0D, 0.5D);
                 effected.playSound(ModSounds.DOOM.get(), 1.0F, 1.0F);
-                ModNetwork.sendToALL(new SPlayWorldSoundPacket(effected.blockPosition(), ModSounds.DOOM.get(), 1.0F, 1.0F));
+                ModNetwork.sendToALL(
+                        new SPlayWorldSoundPacket(effected.blockPosition(), ModSounds.DOOM.get(), 1.0F, 1.0F));
             }
         }
     }
 
     @SubscribeEvent
-    public static void RespawnEvents(PlayerEvent.PlayerRespawnEvent event){
+    public static void RespawnEvents(PlayerEvent.PlayerRespawnEvent event) {
         CompoundTag playerData = event.getEntity().getPersistentData();
         if (playerData.contains(Player.PERSISTED_NBT_TAG)) {
             CompoundTag data = playerData.getCompound(Player.PERSISTED_NBT_TAG);
@@ -552,19 +589,25 @@ public class PotionEvents {
     }
 
     @SubscribeEvent
-    public static void ChargeEffect(EntityTickEvent.Post event){
+    public static void ChargeEffect(EntityTickEvent.Post event) {
         if (!(event.getEntity() instanceof LivingEntity livingEntity)) {
             return;
         }
-        if (livingEntity != null){
+        if (livingEntity != null) {
             AttributeInstance speed = livingEntity.getAttribute(Attributes.MOVEMENT_SPEED);
             AttributeInstance attack = livingEntity.getAttribute(Attributes.ATTACK_DAMAGE);
 
-            AttributeModifier addSpeed = new AttributeModifier(UUID.fromString("d4818bbc-54ed-4ecf-95a3-a15fbf71b31d"), "Charged Speed I", 0.1, AttributeModifier.Operation.MULTIPLY_TOTAL);
-            AttributeModifier addAttack = new AttributeModifier(UUID.fromString("4bf0a8e3-a8f8-4bf6-95d2-f0ddbadd793e"), "Charged Attack I", 0.1, AttributeModifier.Operation.MULTIPLY_TOTAL);
+            AttributeModifier addSpeed = new AttributeModifier(UUID.fromString("d4818bbc-54ed-4ecf-95a3-a15fbf71b31d"),
+                    "Charged Speed I", 0.1, AttributeModifier.Operation.MULTIPLY_TOTAL);
+            AttributeModifier addAttack = new AttributeModifier(UUID.fromString("4bf0a8e3-a8f8-4bf6-95d2-f0ddbadd793e"),
+                    "Charged Attack I", 0.1, AttributeModifier.Operation.MULTIPLY_TOTAL);
 
-            AttributeModifier addMoreSpeed = new AttributeModifier(UUID.fromString("e8ea9f21-c671-4a61-a297-db8fa50f3d13"), "Charged Speed II", 0.25, AttributeModifier.Operation.MULTIPLY_TOTAL);
-            AttributeModifier reduceAttack = new AttributeModifier(UUID.fromString("a55e53d6-dd6a-41e8-8c1f-8f548887ed30"), "Charged Attack II", -0.15, AttributeModifier.Operation.MULTIPLY_TOTAL);
+            AttributeModifier addMoreSpeed = new AttributeModifier(
+                    UUID.fromString("e8ea9f21-c671-4a61-a297-db8fa50f3d13"), "Charged Speed II", 0.25,
+                    AttributeModifier.Operation.MULTIPLY_TOTAL);
+            AttributeModifier reduceAttack = new AttributeModifier(
+                    UUID.fromString("a55e53d6-dd6a-41e8-8c1f-8f548887ed30"), "Charged Attack II", -0.15,
+                    AttributeModifier.Operation.MULTIPLY_TOTAL);
 
             MobEffectInstance chargeInstance = livingEntity.getEffect(GoetyEffects.CHARGED.get());
             boolean notNull = chargeInstance != null;
@@ -573,10 +616,10 @@ public class PotionEvents {
             if (attack != null && speed != null) {
                 if (notNull) {
                     if (flag) {
-                        if (speed.hasModifier(addMoreSpeed)){
+                        if (speed.hasModifier(addMoreSpeed)) {
                             speed.removeModifier(addMoreSpeed);
                         }
-                        if (attack.hasModifier(reduceAttack)){
+                        if (attack.hasModifier(reduceAttack)) {
                             attack.removeModifier(reduceAttack);
                         }
                         if (!speed.hasModifier(addSpeed)) {
@@ -586,10 +629,10 @@ public class PotionEvents {
                             attack.addPermanentModifier(addAttack);
                         }
                     } else if (flag2) {
-                        if (speed.hasModifier(addSpeed)){
+                        if (speed.hasModifier(addSpeed)) {
                             speed.removeModifier(addSpeed);
                         }
-                        if (attack.hasModifier(addAttack)){
+                        if (attack.hasModifier(addAttack)) {
                             attack.removeModifier(addAttack);
                         }
                         if (!speed.hasModifier(addMoreSpeed)) {
@@ -600,10 +643,10 @@ public class PotionEvents {
                         }
                     }
                 } else {
-                    if (speed.hasModifier(addSpeed)){
+                    if (speed.hasModifier(addSpeed)) {
                         speed.removeModifier(addSpeed);
                     }
-                    if (attack.hasModifier(addAttack)){
+                    if (attack.hasModifier(addAttack)) {
                         attack.removeModifier(addAttack);
                     }
                     if (speed.hasModifier(addMoreSpeed)) {
@@ -614,13 +657,14 @@ public class PotionEvents {
                     }
                 }
             }
-            if (notNull){
-                if (chargeInstance.getAmplifier() >= 2 && livingEntity.hurtTime > 0){
+            if (notNull) {
+                if (chargeInstance.getAmplifier() >= 2 && livingEntity.hurtTime > 0) {
                     livingEntity.removeEffect(chargeInstance.getEffect());
                 } else {
-                    if (livingEntity.tickCount % 20 == 0){
-                        if (livingEntity.level instanceof ServerLevel serverLevel){
-                            ServerParticleUtil.addParticlesAroundSelf(serverLevel, ModParticleTypes.ELECTRIC.get(), livingEntity);
+                    if (livingEntity.tickCount % 20 == 0) {
+                        if (livingEntity.level instanceof ServerLevel serverLevel) {
+                            ServerParticleUtil.addParticlesAroundSelf(serverLevel, ModParticleTypes.ELECTRIC.get(),
+                                    livingEntity);
                         }
                     }
                 }
@@ -629,17 +673,17 @@ public class PotionEvents {
     }
 
     @SubscribeEvent
-    public static void EffectVisibilityEvents(LivingEvent.LivingVisibilityEvent event){
-        if (event.getLookingEntity() instanceof LivingEntity living){
-            if (living.hasEffect(GoetyEffects.SENSE_LOSS.get())){
+    public static void EffectVisibilityEvents(LivingEvent.LivingVisibilityEvent event) {
+        if (event.getLookingEntity() instanceof LivingEntity living) {
+            if (living.hasEffect(GoetyEffects.SENSE_LOSS.get())) {
                 MobEffectInstance mobEffectInstance = living.getEffect(GoetyEffects.SENSE_LOSS.get());
-                if (mobEffectInstance != null){
+                if (mobEffectInstance != null) {
                     int a = mobEffectInstance.getAmplifier();
                     event.modifyVisibility(0.5D - (a / 10.0D));
                 }
             }
-            if (event.getEntity().hasEffect(GoetyEffects.SHADOW_WALK.get())){
-                if (event.getLookingEntity().getType().is(Tags.EntityTypes.BOSSES)){
+            if (event.getEntity().hasEffect(GoetyEffects.SHADOW_WALK.get())) {
+                if (event.getLookingEntity().getType().is(Tags.EntityTypes.BOSSES)) {
                     event.modifyVisibility(0.5D);
                 } else {
                     event.modifyVisibility(0.0D);
@@ -649,12 +693,12 @@ public class PotionEvents {
     }
 
     @SubscribeEvent
-    public static void changeTarget(LivingChangeTargetEvent event){
+    public static void changeTarget(LivingChangeTargetEvent event) {
         LivingEntity target = event.getOriginalTarget();
         if (target != null) {
             LivingEntity owner = MobUtil.getOwner(event.getEntity());
             if (target.hasEffect(GoetyEffects.SHADOW_WALK.get())
-            && !event.getEntity().getType().is(Tags.EntityTypes.BOSSES)
+                    && !event.getEntity().getType().is(Tags.EntityTypes.BOSSES)
                     && !(owner != null && owner.getType().is(Tags.EntityTypes.BOSSES))) {
                 if (event.getTargetType() == MOB_TARGET) {
                     event.setNewTarget(null);
@@ -666,8 +710,9 @@ public class PotionEvents {
     }
 
     @SubscribeEvent
-    public static void enderTeleport(EntityTeleportEvent event){
-        if (!(event instanceof EntityTeleportEvent.TeleportCommand) && !(event instanceof EntityTeleportEvent.SpreadPlayersCommand)) {
+    public static void enderTeleport(EntityTeleportEvent event) {
+        if (!(event instanceof EntityTeleportEvent.TeleportCommand)
+                && !(event instanceof EntityTeleportEvent.SpreadPlayersCommand)) {
             if (event.getEntity() instanceof LivingEntity living) {
                 if (living.hasEffect(GoetyEffects.ENDER_GROUND.get())) {
                     event.setCanceled(true);
@@ -677,22 +722,24 @@ public class PotionEvents {
     }
 
     @SubscribeEvent
-    public static void finishItemEvents(LivingEntityUseItemEvent.Finish event){
-        if (event.getItem().getItem() == Items.MILK_BUCKET){
-            if (event.getEntity().hasEffect(GoetyEffects.SOUL_ARMOR.get())){
+    public static void finishItemEvents(LivingEntityUseItemEvent.Finish event) {
+        if (event.getItem().getItem() == Items.MILK_BUCKET) {
+            if (event.getEntity().hasEffect(GoetyEffects.SOUL_ARMOR.get())) {
                 event.getEntity().removeEffect(GoetyEffects.SOUL_ARMOR.get());
             }
         }
-        if (event.getItem().is(ModTags.Items.BREWABLE_FOOD)){
-            for(MobEffectInstance mobeffectinstance : PotionUtils.getMobEffects(event.getItem())) {
+        if (event.getItem().is(ModTags.Items.BREWABLE_FOOD)) {
+            for (MobEffectInstance mobeffectinstance : PotionUtils.getMobEffects(event.getItem())) {
                 if (mobeffectinstance.getEffect().isInstantenous()) {
-                    mobeffectinstance.getEffect().applyInstantenousEffect(event.getEntity(), event.getEntity(), event.getEntity(), mobeffectinstance.getAmplifier(), 1.0D);
+                    mobeffectinstance.getEffect().applyInstantenousEffect(event.getEntity(), event.getEntity(),
+                            event.getEntity(), mobeffectinstance.getAmplifier(), 1.0D);
                 } else {
                     event.getEntity().addEffect(new MobEffectInstance(mobeffectinstance));
                 }
             }
-            for (BrewEffectInstance brewEffectInstance : BrewUtils.getBrewEffects(event.getItem())){
-                brewEffectInstance.getEffect().drinkBlockEffect(event.getEntity(), event.getEntity(), event.getEntity(), brewEffectInstance.getAmplifier(), BrewUtils.getAreaOfEffect(event.getItem()));
+            for (BrewEffectInstance brewEffectInstance : BrewUtils.getBrewEffects(event.getItem())) {
+                brewEffectInstance.getEffect().drinkBlockEffect(event.getEntity(), event.getEntity(), event.getEntity(),
+                        brewEffectInstance.getAmplifier(), BrewUtils.getAreaOfEffect(event.getItem()));
             }
         }
         if (!(event.getItem().getItem() instanceof IWand)) {
@@ -703,9 +750,10 @@ public class PotionEvents {
     }
 
     @SubscribeEvent
-    public static void onCastingSpell(CastingMagicEvent event){
-        if (!(event.getSpell() instanceof EndWalkSpell)){
-            if (event.castingTime() > 20 || event.castingTime() >= event.getSpell().castDuration(event.getEntity(), event.getUseItem())) {
+    public static void onCastingSpell(CastingMagicEvent event) {
+        if (!(event.getSpell() instanceof EndWalkSpell)) {
+            if (event.castingTime() > 20
+                    || event.castingTime() >= event.getSpell().castDuration(event.getEntity(), event.getUseItem())) {
                 if (event.getEntity().hasEffect(GoetyEffects.SHADOW_WALK.get())) {
                     event.getEntity().removeEffect(GoetyEffects.SHADOW_WALK.get());
                     event.setCanceled(true);
@@ -715,8 +763,8 @@ public class PotionEvents {
     }
 
     @SubscribeEvent
-    public static void onCastSpell(CastMagicEvent event){
-        if (!(event.getSpell() instanceof EndWalkSpell)){
+    public static void onCastSpell(CastMagicEvent event) {
+        if (!(event.getSpell() instanceof EndWalkSpell)) {
             if (event.getEntity().hasEffect(GoetyEffects.SHADOW_WALK.get())) {
                 event.getEntity().removeEffect(GoetyEffects.SHADOW_WALK.get());
             }
@@ -724,11 +772,11 @@ public class PotionEvents {
     }
 
     @SubscribeEvent
-    public static void ProjectileAddEvents(EntityJoinLevelEvent event){
-        if (!event.getLevel().isClientSide){
-            if (event.getEntity() instanceof Projectile projectile){
-                if (projectile.getOwner() instanceof LivingEntity livingEntity){
-                    if (livingEntity.hasEffect(GoetyEffects.SHADOW_WALK.get())){
+    public static void ProjectileAddEvents(EntityJoinLevelEvent event) {
+        if (!event.getLevel().isClientSide) {
+            if (event.getEntity() instanceof Projectile projectile) {
+                if (projectile.getOwner() instanceof LivingEntity livingEntity) {
+                    if (livingEntity.hasEffect(GoetyEffects.SHADOW_WALK.get())) {
                         livingEntity.removeEffect(GoetyEffects.SHADOW_WALK.get());
                     }
                 }
@@ -760,20 +808,23 @@ public class PotionEvents {
     }
 
     @SubscribeEvent
-    public static void PlayerInteractItemEvents(PlayerInteractEvent.RightClickItem event){
+    public static void PlayerInteractItemEvents(PlayerInteractEvent.RightClickItem event) {
         Player player = event.getEntity();
         Level level = event.getLevel();
-        if (event.getItemStack().getItem() instanceof BottleItem bottleItem){
-            List<DragonBreathCloud> list = level.getEntitiesOfClass(DragonBreathCloud.class, player.getBoundingBox().inflate(2.0D), (p_289499_) -> {
-                return p_289499_ != null && p_289499_.isAlive() && p_289499_.getOwner() instanceof EnderDragon;
-            });
+        if (event.getItemStack().getItem() instanceof BottleItem bottleItem) {
+            List<DragonBreathCloud> list = level.getEntitiesOfClass(DragonBreathCloud.class,
+                    player.getBoundingBox().inflate(2.0D), (p_289499_) -> {
+                        return p_289499_ != null && p_289499_.isAlive() && p_289499_.getOwner() instanceof EnderDragon;
+                    });
             if (!list.isEmpty()) {
                 DragonBreathCloud breathCloud = list.get(0);
                 breathCloud.setRadius(breathCloud.getRadius() - 0.5F);
-                level.playSound((Player)null, player.getX(), player.getY(), player.getZ(), SoundEvents.BOTTLE_FILL_DRAGONBREATH, SoundSource.NEUTRAL, 1.0F, 1.0F);
+                level.playSound((Player) null, player.getX(), player.getY(), player.getZ(),
+                        SoundEvents.BOTTLE_FILL_DRAGONBREATH, SoundSource.NEUTRAL, 1.0F, 1.0F);
                 level.gameEvent(player, GameEvent.FLUID_PICKUP, player.position());
                 if (player instanceof ServerPlayer serverplayer) {
-                    CriteriaTriggers.PLAYER_INTERACTED_WITH_ENTITY.trigger(serverplayer, event.getItemStack(), breathCloud);
+                    CriteriaTriggers.PLAYER_INTERACTED_WITH_ENTITY.trigger(serverplayer, event.getItemStack(),
+                            breathCloud);
                 }
                 player.awardStat(Stats.ITEM_USED.get(bottleItem));
                 ItemUtils.createFilledResult(event.getItemStack(), player, new ItemStack(Items.DRAGON_BREATH));
@@ -783,9 +834,9 @@ public class PotionEvents {
     }
 
     @SubscribeEvent
-    public static void PlayerInteractEntityEvents(PlayerInteractEvent.EntityInteract event){
+    public static void PlayerInteractEntityEvents(PlayerInteractEvent.EntityInteract event) {
         Player player = event.getEntity();
-        if (player.hasEffect(GoetyEffects.SHADOW_WALK.get())){
+        if (player.hasEffect(GoetyEffects.SHADOW_WALK.get())) {
             if (SEHelper.hasEndWalk(player)) {
                 if (event.getTarget() instanceof Merchant merchant) {
                     merchant.setTradingPlayer(null);
@@ -797,14 +848,14 @@ public class PotionEvents {
     }
 
     @SubscribeEvent
-    public static void PlayerInteractBlockEvents(PlayerInteractEvent.RightClickBlock event){
+    public static void PlayerInteractBlockEvents(PlayerInteractEvent.RightClickBlock event) {
         Player player = event.getEntity();
         Level level = event.getLevel();
         BlockHitResult blockHitResult = event.getHitVec();
         BlockPos blockPos = blockHitResult.getBlockPos();
         BlockState blockState = level.getBlockState(blockPos);
-        if (player.hasEffect(GoetyEffects.SHADOW_WALK.get())){
-            if (blockState.use(level, player, player.getUsedItemHand(), blockHitResult).consumesAction()){
+        if (player.hasEffect(GoetyEffects.SHADOW_WALK.get())) {
+            if (blockState.use(level, player, player.getUsedItemHand(), blockHitResult).consumesAction()) {
                 player.removeEffect(GoetyEffects.SHADOW_WALK.get());
                 event.setCanceled(true);
             }
@@ -812,7 +863,7 @@ public class PotionEvents {
     }
 
     @SubscribeEvent
-    public static void BreakingBlockEvents(BlockEvent.BreakEvent event){
+    public static void BreakingBlockEvents(BlockEvent.BreakEvent event) {
         Player player = event.getPlayer();
         if (!event.getState().isAir()) {
             if (player.hasEffect(GoetyEffects.SHADOW_WALK.get())) {
@@ -827,7 +878,7 @@ public class PotionEvents {
     }
 
     @SubscribeEvent
-    public static void PlacingBlockEvents(BlockEvent.EntityPlaceEvent event){
+    public static void PlacingBlockEvents(BlockEvent.EntityPlaceEvent event) {
         Entity entity = event.getEntity();
         if (entity instanceof LivingEntity living) {
             if (!event.getState().isAir()) {
@@ -857,12 +908,12 @@ public class PotionEvents {
     }
 
     @SubscribeEvent
-    public static void DimensionChangeEvents(EntityTravelToDimensionEvent event){
+    public static void DimensionChangeEvents(EntityTravelToDimensionEvent event) {
         Entity entity = event.getEntity();
-        if (entity instanceof LivingEntity living){
+        if (entity instanceof LivingEntity living) {
             if (living.hasEffect(GoetyEffects.SHADOW_WALK.get())) {
-                if (living instanceof Player player){
-                    if (SEHelper.hasEndWalk(player)){
+                if (living instanceof Player player) {
+                    if (SEHelper.hasEndWalk(player)) {
                         SEHelper.removeEndWalk(player);
                     }
                 }
@@ -872,13 +923,13 @@ public class PotionEvents {
     }
 
     @SubscribeEvent
-    public static void PotionApplicationEvents(MobEffectEvent.Applicable event){
-        if (event.getEffectInstance().getEffect() == MobEffects.FIRE_RESISTANCE){
-            if (event.getEntity().hasEffect(GoetyEffects.BURN_HEX.get())){
+    public static void PotionApplicationEvents(MobEffectEvent.Applicable event) {
+        if (event.getEffectInstance().getEffect() == MobEffects.FIRE_RESISTANCE) {
+            if (event.getEntity().hasEffect(GoetyEffects.BURN_HEX.get())) {
                 event.setResult(Event.Result.DENY);
             }
         }
-        if (event.getEffectInstance().getEffect() == MobEffects.BLINDNESS){
+        if (event.getEffectInstance().getEffect() == MobEffects.BLINDNESS) {
             if (event.getEntity() instanceof Player player) {
                 if (ItemConfig.DarkHelmetBlindness.get()) {
                     if (ItemHelper.findHelmet(player, ModItems.DARK_HELMET.get())) {
@@ -887,36 +938,39 @@ public class PotionEvents {
                 }
             }
         }
-        if (event.getEffectInstance().getEffect() == MobEffects.DARKNESS){
+        if (event.getEffectInstance().getEffect() == MobEffects.DARKNESS) {
             if (event.getEntity() instanceof Player player) {
                 if (ItemConfig.DarkHelmetDarkness.get()) {
-                    if (ItemHelper.findHelmet(player, ModItems.DARK_HELMET.get())){
+                    if (ItemHelper.findHelmet(player, ModItems.DARK_HELMET.get())) {
                         event.setResult(Event.Result.DENY);
                     }
                 }
             }
         }
-        if (event.getEffectInstance().getEffect() == MobEffects.SLOW_FALLING){
-            if (CuriosFinder.hasWindyRobes(event.getEntity())){
+        if (event.getEffectInstance().getEffect() == MobEffects.SLOW_FALLING) {
+            if (CuriosFinder.hasWindyRobes(event.getEntity())) {
                 event.setResult(Event.Result.DENY);
             }
         }
-        if (event.getEffectInstance().getEffect() == GoetyEffects.ILLAGUE.get()){
-            if (event.getEntity().getType().is(EntityTypeTags.RAIDERS) || event.getEntity() instanceof PatrollingMonster){
+        if (event.getEffectInstance().getEffect() == GoetyEffects.ILLAGUE.get()) {
+            if (event.getEntity().getType().is(EntityTypeTags.RAIDERS)
+                    || event.getEntity() instanceof PatrollingMonster) {
                 event.setResult(Event.Result.DENY);
             }
         }
-        if (event.getEffectInstance().getEffect() == GoetyEffects.FREEZING.get()){
-            if (event.getEntity().hasEffect(GoetyEffects.SNOW_SKIN.get()) || event.getEntity().getType().is(EntityTypeTags.FREEZE_IMMUNE_ENTITY_TYPES)){
+        if (event.getEffectInstance().getEffect() == GoetyEffects.FREEZING.get()) {
+            if (event.getEntity().hasEffect(GoetyEffects.SNOW_SKIN.get())
+                    || event.getEntity().getType().is(EntityTypeTags.FREEZE_IMMUNE_ENTITY_TYPES)) {
                 event.setResult(Event.Result.DENY);
             }
         }
-        if (event.getEffectInstance().getEffect() == GoetyEffects.BUSTED.get()){
-            if (event.getEntity().getAttribute(Attributes.ARMOR) == null || event.getEntity().getAttributeValue(Attributes.ARMOR) <= 0.0D){
+        if (event.getEffectInstance().getEffect() == GoetyEffects.BUSTED.get()) {
+            if (event.getEntity().getAttribute(Attributes.ARMOR) == null
+                    || event.getEntity().getAttributeValue(Attributes.ARMOR) <= 0.0D) {
                 event.setResult(Event.Result.DENY);
             }
         }
-        if (event.getEffectInstance().getEffect() == GoetyEffects.VOID_TOUCHED.get()){
+        if (event.getEffectInstance().getEffect() == GoetyEffects.VOID_TOUCHED.get()) {
             if (event.getEntity().getType().is(ModTags.EntityTypes.VOID_TOUCHED_IMMUNE)) {
                 event.setResult(Event.Result.DENY);
             }
@@ -924,49 +978,50 @@ public class PotionEvents {
     }
 
     @SubscribeEvent
-    public static void PotionAddedEvents(MobEffectEvent.Added event){
+    public static void PotionAddedEvents(MobEffectEvent.Added event) {
         LivingEntity effected = event.getEntity();
         MobEffectInstance instance = event.getEffectInstance();
         MobEffect effect = instance.getEffect();
-        if (effect == GoetyEffects.BURN_HEX.get()){
-            if (effected.hasEffect(MobEffects.FIRE_RESISTANCE)){
+        if (effect == GoetyEffects.BURN_HEX.get()) {
+            if (effected.hasEffect(MobEffects.FIRE_RESISTANCE)) {
                 effected.removeEffect(MobEffects.FIRE_RESISTANCE);
             }
         }
-        if (effect == GoetyEffects.SNOW_SKIN.get()){
-            if (effected.hasEffect(GoetyEffects.FREEZING.get())){
+        if (effect == GoetyEffects.SNOW_SKIN.get()) {
+            if (effected.hasEffect(GoetyEffects.FREEZING.get())) {
                 effected.removeEffect(GoetyEffects.FREEZING.get());
             }
         }
-        if (effect == GoetyEffects.ENDER_GROUND.get()){
-            if (effected.hasEffect(GoetyEffects.SHADOW_WALK.get())){
+        if (effect == GoetyEffects.ENDER_GROUND.get()) {
+            if (effected.hasEffect(GoetyEffects.SHADOW_WALK.get())) {
                 effected.removeEffect(GoetyEffects.SHADOW_WALK.get());
             }
         }
-        if (effect == GoetyEffects.VOID_TOUCHED.get()){
+        if (effect == GoetyEffects.VOID_TOUCHED.get()) {
             if (!effected.hasEffect(GoetyEffects.VOID_TOUCHED.get())) {
                 if (effected.level instanceof ServerLevel) {
-                    ModNetwork.sentToTrackingEntityAndPlayer(effected, new SPlayWorldSoundPacket(effected.blockPosition(), ModSounds.VOID_TOUCHED_ACTIVATE.get(), 1.0F, 1.0F));
+                    ModNetwork.sentToTrackingEntityAndPlayer(effected, new SPlayWorldSoundPacket(
+                            effected.blockPosition(), ModSounds.VOID_TOUCHED_ACTIVATE.get(), 1.0F, 1.0F));
                 }
             }
         }
-        if (effect == GoetyEffects.SENSE_LOSS.get()){
-            if (effected instanceof Mob mob){
+        if (effect == GoetyEffects.SENSE_LOSS.get()) {
+            if (effected instanceof Mob mob) {
                 mob.setTarget(null);
             }
         }
     }
 
     @SubscribeEvent
-    public static void PotionRemoveEvents(MobEffectEvent.Remove event){
+    public static void PotionRemoveEvents(MobEffectEvent.Remove event) {
         LivingEntity effected = event.getEntity();
         if (effected != null) {
             if (event.getEffect() != null) {
                 if (effected.hasEffect(GoetyEffects.SAVE_EFFECTS.get())) {
                     event.setCanceled(event.getEffect() != GoetyEffects.SAVE_EFFECTS.get()
                             && (effected instanceof Player player
-                            && SEHelper.hasEndWalk(player)
-                            && event.getEffect() != GoetyEffects.SHADOW_WALK.get()));
+                                    && SEHelper.hasEndWalk(player)
+                                    && event.getEffect() != GoetyEffects.SHADOW_WALK.get()));
                 }
                 if (event.getEffect() != null) {
                     if (event.getEffect() == GoetyEffects.SHADOW_WALK.get()) {
@@ -975,7 +1030,7 @@ public class PotionEvents {
                         }
                     }
                 }
-                if (event.getEffect() == GoetyEffects.WILD_RAGE.get()){
+                if (event.getEffect() == GoetyEffects.WILD_RAGE.get()) {
                     if (effected instanceof Mob mob) {
                         mob.setTarget(null);
                         mob.setLastHurtByMob(null);
@@ -983,9 +1038,10 @@ public class PotionEvents {
                         mob.getBrain().eraseMemory(MemoryModuleType.ATTACK_TARGET);
                     }
                 }
-                if (event.getEffect() == GoetyEffects.VOID_TOUCHED.get()){
+                if (event.getEffect() == GoetyEffects.VOID_TOUCHED.get()) {
                     if (effected.level instanceof ServerLevel) {
-                        ModNetwork.sentToTrackingEntityAndPlayer(effected, new SPlayWorldSoundPacket(effected.blockPosition(), ModSounds.VOID_TOUCHED_DEACTIVATE.get(), 1.0F, 1.0F));
+                        ModNetwork.sentToTrackingEntityAndPlayer(effected, new SPlayWorldSoundPacket(
+                                effected.blockPosition(), ModSounds.VOID_TOUCHED_DEACTIVATE.get(), 1.0F, 1.0F));
                     }
                 }
             }
@@ -993,7 +1049,7 @@ public class PotionEvents {
     }
 
     @SubscribeEvent
-    public static void PotionExpiredEvents(MobEffectEvent.Expired event){
+    public static void PotionExpiredEvents(MobEffectEvent.Expired event) {
         LivingEntity effected = event.getEntity();
         MobEffectInstance mobEffectInstance = event.getEffectInstance();
         if (mobEffectInstance != null) {
@@ -1003,25 +1059,27 @@ public class PotionEvents {
                 }
             }
 
-            if (mobEffectInstance.getEffect() == GoetyEffects.DOOM.get()){
+            if (mobEffectInstance.getEffect() == GoetyEffects.DOOM.get()) {
                 if (effected.canChangeDimensions() && !effected.getType().is(Tags.EntityTypes.BOSSES)) {
                     int a = mobEffectInstance.getAmplifier() + 1;
                     float doom = 0.05F * a;
                     if (effected.getHealth() <= effected.getMaxHealth() * doom) {
-                        effected.hurt(ModDamageSource.getDamageSource(effected.level, ModDamageSource.DOOM), effected.getMaxHealth() * 20);
+                        effected.hurt(ModDamageSource.getDamageSource(effected.level, ModDamageSource.DOOM),
+                                effected.getMaxHealth() * 20);
                     }
                 }
             }
 
-            if (mobEffectInstance.getEffect() == GoetyEffects.VOID_TOUCHED.get()){
+            if (mobEffectInstance.getEffect() == GoetyEffects.VOID_TOUCHED.get()) {
                 if (effected.level instanceof ServerLevel) {
-                    ModNetwork.sentToTrackingEntityAndPlayer(effected, new SPlayWorldSoundPacket(effected.blockPosition(), ModSounds.VOID_TOUCHED_DEACTIVATE.get(), 1.0F, 1.0F));
+                    ModNetwork.sentToTrackingEntityAndPlayer(effected, new SPlayWorldSoundPacket(
+                            effected.blockPosition(), ModSounds.VOID_TOUCHED_DEACTIVATE.get(), 1.0F, 1.0F));
                 }
             }
         }
     }
 
-    public static void teleportShadowWalk(Player player){
+    public static void teleportShadowWalk(Player player) {
         BlockPos blockPos = SEHelper.getEndWalkPos(player);
         if (blockPos != null) {
             if (SEHelper.getEndWalkDimension(player) != null
@@ -1030,8 +1088,10 @@ public class PotionEvents {
                 player.teleportTo(blockPos.getX() + 0.5D, blockPos.getY(), blockPos.getZ() + 0.5D);
                 if (!player.level.isClientSide) {
                     player.level.broadcastEntityEvent(player, (byte) 46);
-                    ModNetwork.sendToALL(new SPlayWorldSoundPacket(player.blockPosition(), SoundEvents.ENDERMAN_TELEPORT, 1.0F, 1.0F));
-                    ModNetwork.sendToALL(new SPlayEntitySoundPacket(player.getUUID(), SoundEvents.ENDERMAN_TELEPORT, 1.0F, 1.0F));
+                    ModNetwork.sendToALL(new SPlayWorldSoundPacket(player.blockPosition(),
+                            SoundEvents.ENDERMAN_TELEPORT, 1.0F, 1.0F));
+                    ModNetwork.sendToALL(
+                            new SPlayEntitySoundPacket(player.getUUID(), SoundEvents.ENDERMAN_TELEPORT, 1.0F, 1.0F));
                 }
                 Vec3 vec3 = player.position();
                 player.level.gameEvent(GameEvent.TELEPORT, vec3, GameEvent.Context.of(player));

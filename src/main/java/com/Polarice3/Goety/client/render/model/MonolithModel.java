@@ -18,12 +18,14 @@ public class MonolithModel<T extends AbstractMonolith> extends EntityModel<T> {
 	public static LayerDefinition createBodyLayer() {
 		MeshDefinition meshdefinition = new MeshDefinition();
 		PartDefinition partdefinition = meshdefinition.getRoot();
-		partdefinition.addOrReplaceChild("monolith", CubeListBuilder.create().texOffs(0, 0).addBox(-7.0F, -50.0F, -7.0F, 14.0F, 50.0F, 14.0F, new CubeDeformation(0.0F)), PartPose.offset(0.0F, 24.0F, 0.0F));
+		partdefinition.addOrReplaceChild("monolith", CubeListBuilder.create().texOffs(0, 0).addBox(-7.0F, -50.0F, -7.0F,
+				14.0F, 50.0F, 14.0F, new CubeDeformation(0.0F)), PartPose.offset(0.0F, 24.0F, 0.0F));
 		return LayerDefinition.create(meshdefinition, 64, 64);
 	}
 
 	@Override
-	public void setupAnim(T entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
+	public void setupAnim(T entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw,
+			float headPitch) {
 		if (entity.isEmerging() || entity.isDescending()) {
 			this.monolith.y = (AbstractMonolith.getEmergingTime()) - limbSwing;
 		} else {
@@ -32,7 +34,8 @@ public class MonolithModel<T extends AbstractMonolith> extends EntityModel<T> {
 	}
 
 	@Override
-	public void renderToBuffer(PoseStack poseStack, VertexConsumer vertexConsumer, int packedLight, int packedOverlay, float red, float green, float blue, float alpha) {
-		monolith.render(poseStack, vertexConsumer, packedLight, packedOverlay, red, green, blue, alpha);
+	public void renderToBuffer(PoseStack poseStack, VertexConsumer vertexConsumer, int packedLight, int packedOverlay,
+			int color) {
+		monolith.render(poseStack, vertexConsumer, packedLight, packedOverlay, color);
 	}
 }

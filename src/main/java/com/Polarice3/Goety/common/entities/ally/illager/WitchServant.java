@@ -52,8 +52,10 @@ import java.util.UUID;
 
 public class WitchServant extends RaiderServant implements RangedAttackMob {
     private static final UUID SPEED_MODIFIER_DRINKING_UUID = UUID.fromString("5CD17E52-A79A-43D3-A529-90FDE04B181E");
-    private static final AttributeModifier SPEED_MODIFIER_DRINKING = new AttributeModifier(SPEED_MODIFIER_DRINKING_UUID, "Drinking speed penalty", -0.25D, AttributeModifier.Operation.ADDITION);
-    private static final EntityDataAccessor<Boolean> DATA_USING_ITEM = SynchedEntityData.defineId(WitchServant.class, EntityDataSerializers.BOOLEAN);
+    private static final AttributeModifier SPEED_MODIFIER_DRINKING = new AttributeModifier(SPEED_MODIFIER_DRINKING_UUID,
+            "Drinking speed penalty", -0.25D, AttributeModifier.Operation.ADDITION);
+    private static final EntityDataAccessor<Boolean> DATA_USING_ITEM = SynchedEntityData.defineId(WitchServant.class,
+            EntityDataSerializers.BOOLEAN);
     private LivingEntity shootTarget;
     private int cooldown = 0;
     private int usingTime;
@@ -65,7 +67,7 @@ public class WitchServant extends RaiderServant implements RangedAttackMob {
     protected void registerGoals() {
         super.registerGoals();
         this.goalSelector.addGoal(1, new WitchServantBarterGoal(this));
-        this.goalSelector.addGoal(2, new ModRangedAttackGoal<>(this, 1.0D, 60, 10.0F){
+        this.goalSelector.addGoal(2, new ModRangedAttackGoal<>(this, 1.0D, 60, 10.0F) {
             public boolean canUse() {
                 LivingEntity livingentity = WitchServant.this.getShootTarget();
                 if (livingentity != null && livingentity.isAlive()) {
@@ -141,7 +143,8 @@ public class WitchServant extends RaiderServant implements RangedAttackMob {
     public void setConfigurableAttributes() {
         MobUtil.setBaseAttributes(this.getAttribute(Attributes.MAX_HEALTH), AttributesConfig.WitchServantHealth.get());
         MobUtil.setBaseAttributes(this.getAttribute(Attributes.ARMOR), AttributesConfig.WitchServantArmor.get());
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.FOLLOW_RANGE), AttributesConfig.WitchServantFollowRange.get());
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.FOLLOW_RANGE),
+                AttributesConfig.WitchServantFollowRange.get());
     }
 
     public void aiStep() {
@@ -166,7 +169,7 @@ public class WitchServant extends RaiderServant implements RangedAttackMob {
                     if (itemstack.is(Items.POTION)) {
                         List<MobEffectInstance> list = PotionUtils.getMobEffects(itemstack);
                         if (list != null) {
-                            for(MobEffectInstance mobeffectinstance : list) {
+                            for (MobEffectInstance mobeffectinstance : list) {
                                 this.addEffect(new MobEffectInstance(mobeffectinstance));
                             }
                         }
@@ -178,22 +181,31 @@ public class WitchServant extends RaiderServant implements RangedAttackMob {
                 }
             } else {
                 Potion potion = null;
-                if (this.random.nextFloat() < 0.15F && this.isEyeInFluidType(NeoForgeMod.WATER_TYPE.get()) && !this.hasEffect(MobEffects.WATER_BREATHING)) {
+                if (this.random.nextFloat() < 0.15F && this.isEyeInFluidType(NeoForgeMod.WATER_TYPE.get())
+                        && !this.hasEffect(MobEffects.WATER_BREATHING)) {
                     potion = Potions.WATER_BREATHING;
-                } else if (this.random.nextFloat() < 0.15F && (this.isOnFire() || this.getLastDamageSource() != null && this.getLastDamageSource().is(DamageTypeTags.IS_FIRE)) && !this.hasEffect(MobEffects.FIRE_RESISTANCE)) {
+                } else if (this.random.nextFloat() < 0.15F
+                        && (this.isOnFire() || this.getLastDamageSource() != null
+                                && this.getLastDamageSource().is(DamageTypeTags.IS_FIRE))
+                        && !this.hasEffect(MobEffects.FIRE_RESISTANCE)) {
                     potion = Potions.FIRE_RESISTANCE;
                 } else if (this.random.nextFloat() < 0.05F && this.getHealth() < this.getMaxHealth()) {
                     potion = Potions.HEALING;
-                } else if (this.random.nextFloat() < 0.5F && this.getTarget() != null && !this.hasEffect(MobEffects.MOVEMENT_SPEED) && this.getTarget().distanceToSqr(this) > 121.0D) {
+                } else if (this.random.nextFloat() < 0.5F && this.getTarget() != null
+                        && !this.hasEffect(MobEffects.MOVEMENT_SPEED)
+                        && this.getTarget().distanceToSqr(this) > 121.0D) {
                     potion = Potions.SWIFTNESS;
                 }
 
                 if (potion != null) {
-                    this.setItemSlot(EquipmentSlot.MAINHAND, PotionUtils.setPotion(new ItemStack(Items.POTION), potion));
-                    this.usingTime = this.getMainHandItem().getUseDuration();
+                    this.setItemSlot(EquipmentSlot.MAINHAND,
+                            PotionUtils.setPotion(new ItemStack(Items.POTION), potion));
+                    this.usingTime = this.getMainHandItem().getUseDuration(this);
                     this.setUsingItem(true);
                     if (!this.isSilent()) {
-                        this.level().playSound((Player)null, this.getX(), this.getY(), this.getZ(), SoundEvents.WITCH_DRINK, this.getSoundSource(), 1.0F, 0.8F + this.random.nextFloat() * 0.4F);
+                        this.level().playSound((Player) null, this.getX(), this.getY(), this.getZ(),
+                                SoundEvents.WITCH_DRINK, this.getSoundSource(), 1.0F,
+                                0.8F + this.random.nextFloat() * 0.4F);
                     }
 
                     if (attributeinstance != null) {
@@ -204,7 +216,7 @@ public class WitchServant extends RaiderServant implements RangedAttackMob {
             }
 
             if (this.random.nextFloat() < 7.5E-4F) {
-                this.level().broadcastEntityEvent(this, (byte)15);
+                this.level().broadcastEntityEvent(this, (byte) 15);
             }
         }
 
@@ -224,10 +236,13 @@ public class WitchServant extends RaiderServant implements RangedAttackMob {
     }
 
     protected void findTarget() {
-        this.shootTarget = this.level.getNearestEntity(this.level.getEntitiesOfClass(LivingEntity.class, this.getTargetSearchArea(this.getAttributeValue(Attributes.FOLLOW_RANGE)), (p_148152_) -> {
-            return true;
-        }), TargetingConditions.forNonCombat().range(this.getAttributeValue(Attributes.FOLLOW_RANGE))
-                .selector(livingEntity -> this.isAlliedTarget(livingEntity) && livingEntity.getHealth() < livingEntity.getMaxHealth()), this, this.getX(), this.getEyeY(), this.getZ());
+        this.shootTarget = this.level.getNearestEntity(this.level.getEntitiesOfClass(LivingEntity.class,
+                this.getTargetSearchArea(this.getAttributeValue(Attributes.FOLLOW_RANGE)), (p_148152_) -> {
+                    return true;
+                }), TargetingConditions.forNonCombat().range(this.getAttributeValue(Attributes.FOLLOW_RANGE))
+                        .selector(livingEntity -> this.isAlliedTarget(livingEntity)
+                                && livingEntity.getHealth() < livingEntity.getMaxHealth()),
+                this, this.getX(), this.getEyeY(), this.getZ());
     }
 
     public SoundEvent getCelebrateSound() {
@@ -236,8 +251,10 @@ public class WitchServant extends RaiderServant implements RangedAttackMob {
 
     public void handleEntityEvent(byte p_34138_) {
         if (p_34138_ == 15) {
-            for(int i = 0; i < this.random.nextInt(35) + 10; ++i) {
-                this.level().addParticle(ParticleTypes.WITCH, this.getX() + this.random.nextGaussian() * (double)0.13F, this.getBoundingBox().maxY + 0.5D + this.random.nextGaussian() * (double)0.13F, this.getZ() + this.random.nextGaussian() * (double)0.13F, 0.0D, 0.0D, 0.0D);
+            for (int i = 0; i < this.random.nextInt(35) + 10; ++i) {
+                this.level().addParticle(ParticleTypes.WITCH, this.getX() + this.random.nextGaussian() * (double) 0.13F,
+                        this.getBoundingBox().maxY + 0.5D + this.random.nextGaussian() * (double) 0.13F,
+                        this.getZ() + this.random.nextGaussian() * (double) 0.13F, 0.0D, 0.0D, 0.0D);
             }
         } else {
             super.handleEntityEvent(p_34138_);
@@ -262,7 +279,7 @@ public class WitchServant extends RaiderServant implements RangedAttackMob {
         if (!this.isDrinkingPotion()) {
             Vec3 vec3 = target.getDeltaMovement();
             double d0 = target.getX() + vec3.x - this.getX();
-            double d1 = target.getEyeY() - (double)1.1F - this.getY();
+            double d1 = target.getEyeY() - (double) 1.1F - this.getY();
             double d2 = target.getZ() + vec3.z - this.getZ();
             double d3 = Math.sqrt(d0 * d0 + d2 * d2);
             Potion potion = Potions.HARMING;
@@ -283,7 +300,8 @@ public class WitchServant extends RaiderServant implements RangedAttackMob {
                 this.setShootTarget(null);
             } else if (d3 >= 8.0D && !target.hasEffect(MobEffects.MOVEMENT_SLOWDOWN)) {
                 potion = Potions.SLOWNESS;
-            } else if (target.getHealth() >= 8.0F && target.canBeAffected(new MobEffectInstance(MobEffects.POISON)) && !target.hasEffect(MobEffects.POISON)) {
+            } else if (target.getHealth() >= 8.0F && target.canBeAffected(new MobEffectInstance(MobEffects.POISON))
+                    && !target.hasEffect(MobEffects.POISON)) {
                 potion = Potions.POISON;
             } else if (d3 <= 3.0D && !target.hasEffect(MobEffects.WEAKNESS) && this.random.nextFloat() < 0.25F) {
                 potion = Potions.WEAKNESS;
@@ -294,7 +312,8 @@ public class WitchServant extends RaiderServant implements RangedAttackMob {
             thrownpotion.setXRot(thrownpotion.getXRot() - -20.0F);
             thrownpotion.shoot(d0, d1 + d3 * 0.2D, d2, 0.75F, 8.0F);
             if (!this.isSilent()) {
-                this.level.playSound((Player)null, this.getX(), this.getY(), this.getZ(), SoundEvents.WITCH_THROW, this.getSoundSource(), 1.0F, 0.8F + this.random.nextFloat() * 0.4F);
+                this.level.playSound((Player) null, this.getX(), this.getY(), this.getZ(), SoundEvents.WITCH_THROW,
+                        this.getSoundSource(), 1.0F, 0.8F + this.random.nextFloat() * 0.4F);
             }
 
             this.level.addFreshEntity(thrownpotion);
@@ -309,8 +328,10 @@ public class WitchServant extends RaiderServant implements RangedAttackMob {
         ItemStack itemstack = pPlayer.getItemInHand(pHand);
         Item item = itemstack.getItem();
         boolean isOwner = this.getTrueOwner() != null && pPlayer == this.getTrueOwner();
-        boolean isAlly = ((this.getTrueOwner() != null && MobUtil.areAllies(this.getTrueOwner(), pPlayer)) || this.getTrueOwner() == null) && CuriosFinder.isWitchFriendly(pPlayer);
-        if (this.getMainHandItem().isEmpty() && pHand == InteractionHand.MAIN_HAND && itemstack.is(ModTags.Items.WITCH_CURRENCY)) {
+        boolean isAlly = ((this.getTrueOwner() != null && MobUtil.areAllies(this.getTrueOwner(), pPlayer))
+                || this.getTrueOwner() == null) && CuriosFinder.isWitchFriendly(pPlayer);
+        if (this.getMainHandItem().isEmpty() && pHand == InteractionHand.MAIN_HAND
+                && itemstack.is(ModTags.Items.WITCH_CURRENCY)) {
             if (isOwner || isAlly) {
                 if (!this.isAggressive()) {
                     this.playSound(this.getCelebrateSound());

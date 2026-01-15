@@ -1,5 +1,7 @@
 package com.Polarice3.Goety.common.entities.hostile;
 
+import net.minecraft.world.level.GameRules;
+
 import com.Polarice3.Goety.api.entities.IHiding;
 import com.Polarice3.Goety.client.particles.TeleportInShockwaveParticleOption;
 import com.Polarice3.Goety.client.particles.TeleportShockwaveParticleOption;
@@ -81,10 +83,14 @@ import java.util.*;
 import java.util.function.Predicate;
 
 public class Wight extends Summoned implements Enemy, NeutralMob, IHiding {
-    private static final EntityDataAccessor<Boolean> IS_CLONE = SynchedEntityData.defineId(Wight.class, EntityDataSerializers.BOOLEAN);
-    private static final EntityDataAccessor<Boolean> DATA_HIDE = SynchedEntityData.defineId(Wight.class, EntityDataSerializers.BOOLEAN);
-    protected static final EntityDataAccessor<Byte> DATA_FLAGS_ID = SynchedEntityData.defineId(Wight.class, EntityDataSerializers.BYTE);
-    private static final EntityDataAccessor<Integer> ANIM_STATE = SynchedEntityData.defineId(Wight.class, EntityDataSerializers.INT);
+    private static final EntityDataAccessor<Boolean> IS_CLONE = SynchedEntityData.defineId(Wight.class,
+            EntityDataSerializers.BOOLEAN);
+    private static final EntityDataAccessor<Boolean> DATA_HIDE = SynchedEntityData.defineId(Wight.class,
+            EntityDataSerializers.BOOLEAN);
+    protected static final EntityDataAccessor<Byte> DATA_FLAGS_ID = SynchedEntityData.defineId(Wight.class,
+            EntityDataSerializers.BYTE);
+    private static final EntityDataAccessor<Integer> ANIM_STATE = SynchedEntityData.defineId(Wight.class,
+            EntityDataSerializers.INT);
     public static String IDLE = "idle";
     public static String WALK = "walk";
     public static String ATTACK = "attack";
@@ -126,11 +132,11 @@ public class Wight extends Summoned implements Enemy, NeutralMob, IHiding {
         this.waterNavigation = new WightAquaticNavigation(this, worldIn);
         this.groundNavigation = new WightNavigation(this, worldIn);
         this.setPathfindingMalus(PathType.WATER, 0.0F);
-        this.setPathfindingMalus(PathType.LEAVES,0);
-        this.setPathfindingMalus(PathType.UNPASSABLE_RAIL,0);
-        this.setPathfindingMalus(PathType.DOOR_OPEN,0);
-        this.setPathfindingMalus(PathType.DOOR_IRON_CLOSED,0);
-        this.setPathfindingMalus(PathType.DOOR_WOOD_CLOSED,0);
+        this.setPathfindingMalus(PathType.LEAVES, 0);
+        this.setPathfindingMalus(PathType.UNPASSABLE_RAIL, 0);
+        this.setPathfindingMalus(PathType.DOOR_OPEN, 0);
+        this.setPathfindingMalus(PathType.DOOR_IRON_CLOSED, 0);
+        this.setPathfindingMalus(PathType.DOOR_WOOD_CLOSED, 0);
     }
 
     protected void registerGoals() {
@@ -142,10 +148,10 @@ public class Wight extends Summoned implements Enemy, NeutralMob, IHiding {
         this.targetSelector.addGoal(4, new ResetUniversalAngerTargetGoal<>(this, false));
     }
 
-    public void targetSelectGoal(){
+    public void targetSelectGoal() {
     }
 
-    public void addTargetGoal(){
+    public void addTargetGoal() {
     }
 
     public static AttributeSupplier.Builder setCustomAttributes() {
@@ -158,7 +164,7 @@ public class Wight extends Summoned implements Enemy, NeutralMob, IHiding {
                 .add(Attributes.FOLLOW_RANGE, 64.0D);
     }
 
-    public void setConfigurableAttributes(){
+    public void setConfigurableAttributes() {
         MobUtil.setBaseAttributes(this.getAttribute(Attributes.MAX_HEALTH), AttributesConfig.WightHealth.get());
         MobUtil.setBaseAttributes(this.getAttribute(Attributes.ATTACK_DAMAGE), AttributesConfig.WightDamage.get());
     }
@@ -167,7 +173,7 @@ public class Wight extends Summoned implements Enemy, NeutralMob, IHiding {
         super.defineSynchedData(builder);
         builder.define(IS_CLONE, false);
         builder.define(DATA_HIDE, false);
-        builder.define(DATA_FLAGS_ID, (byte)0);
+        builder.define(DATA_FLAGS_ID, (byte) 0);
         builder.define(ANIM_STATE, 0);
     }
 
@@ -198,11 +204,11 @@ public class Wight extends Summoned implements Enemy, NeutralMob, IHiding {
         this.readPersistentAngerSaveData(this.level(), p_32511_);
     }
 
-    public boolean isEasterEgg(){
+    public boolean isEasterEgg() {
         return this.getCustomName() != null
                 && (this.getCustomName().getString().contains("Walter")
-                || this.getCustomName().getString().contains("Waltuh")
-                || this.getCustomName().getString().contains("Heisenberg"));
+                        || this.getCustomName().getString().contains("Waltuh")
+                        || this.getCustomName().getString().contains("Heisenberg"));
     }
 
     public void startPersistentAngerTimer() {
@@ -271,24 +277,24 @@ public class Wight extends Summoned implements Enemy, NeutralMob, IHiding {
     }
 
     public int getAnimationState(String animation) {
-        if (Objects.equals(animation, "idle")){
+        if (Objects.equals(animation, "idle")) {
             return 1;
-        } else if (Objects.equals(animation, "attack")){
+        } else if (Objects.equals(animation, "attack")) {
             return 2;
-        } else if (Objects.equals(animation, "smash")){
+        } else if (Objects.equals(animation, "smash")) {
             return 3;
-        } else if (Objects.equals(animation, "unleash")){
+        } else if (Objects.equals(animation, "unleash")) {
             return 4;
-        } else if (Objects.equals(animation, "summon")){
+        } else if (Objects.equals(animation, "summon")) {
             return 5;
-        } else if (Objects.equals(animation, "super_smash")){
+        } else if (Objects.equals(animation, "super_smash")) {
             return 6;
         } else {
             return 0;
         }
     }
 
-    public List<AnimationState> getAnimations(){
+    public List<AnimationState> getAnimations() {
         List<AnimationState> animationStates = new ArrayList<>();
         animationStates.add(this.idleAnimationState);
         animationStates.add(this.attackAnimationState);
@@ -299,22 +305,22 @@ public class Wight extends Summoned implements Enemy, NeutralMob, IHiding {
         return animationStates;
     }
 
-    public void stopMostAnimation(AnimationState exception){
-        for (AnimationState state : this.getAnimations()){
-            if (state != exception){
+    public void stopMostAnimation(AnimationState exception) {
+        for (AnimationState state : this.getAnimations()) {
+            if (state != exception) {
                 state.stop();
             }
         }
     }
 
-    public int getCurrentAnimation(){
+    public int getCurrentAnimation() {
         return this.entityData.get(ANIM_STATE);
     }
 
     public void onSyncedDataUpdated(EntityDataAccessor<?> p_219422_) {
         if (ANIM_STATE.equals(p_219422_)) {
-            if (this.level().isClientSide){
-                switch (this.entityData.get(ANIM_STATE)){
+            if (this.level().isClientSide) {
+                switch (this.entityData.get(ANIM_STATE)) {
                     case 0:
                         break;
                     case 1:
@@ -356,7 +362,7 @@ public class Wight extends Summoned implements Enemy, NeutralMob, IHiding {
     // Use attribute or other means if step height modification is needed
 
     public void die(DamageSource cause) {
-        if (this.isHallucination()){
+        if (this.isHallucination()) {
             this.hallucinateVanish();
         } else if (this.deathTime > 0) {
             super.die(cause);
@@ -367,11 +373,12 @@ public class Wight extends Summoned implements Enemy, NeutralMob, IHiding {
         ++this.deathTime;
         if (this.level() instanceof ServerLevel serverLevel) {
             for (int i = 0; i < 2; ++i) {
-                serverLevel.sendParticles(ParticleTypes.LARGE_SMOKE, this.getRandomX(0.5D), this.getRandomY(), this.getRandomZ(0.5D), 0, 0.0D, 0.0D, 0.0D, 0.5F);
+                serverLevel.sendParticles(ParticleTypes.LARGE_SMOKE, this.getRandomX(0.5D), this.getRandomY(),
+                        this.getRandomZ(0.5D), 0, 0.0D, 0.0D, 0.0D, 0.5F);
             }
         }
         this.move(MoverType.SELF, new Vec3(0.0D, 0.0D, 0.0D));
-        if (this.deathTime == 1){
+        if (this.deathTime == 1) {
             this.die(this.deathBlow);
         }
         if (this.deathTime >= 60) {
@@ -402,7 +409,7 @@ public class Wight extends Summoned implements Enemy, NeutralMob, IHiding {
     }
 
     protected float getStandingEyeHeight(Pose p_32517_, EntityDimensions p_32518_) {
-        if (this.isHiding()){
+        if (this.isHiding()) {
             return 0.1F;
         } else {
             return p_32518_.height() * 0.85F;
@@ -425,9 +432,9 @@ public class Wight extends Summoned implements Enemy, NeutralMob, IHiding {
 
     @Override
     public boolean isInvisibleTo(Player p_20178_) {
-        if (this.isHallucination()){
+        if (this.isHallucination()) {
             return false;
-        } else if (this.isHiding()){
+        } else if (this.isHiding()) {
             return true;
         } else {
             return super.isInvisibleTo(p_20178_);
@@ -461,7 +468,7 @@ public class Wight extends Summoned implements Enemy, NeutralMob, IHiding {
             i = i & ~mask;
         }
 
-        this.entityData.set(DATA_FLAGS_ID, (byte)(i & 255));
+        this.entityData.set(DATA_FLAGS_ID, (byte) (i & 255));
     }
 
     public boolean isMeleeAttacking() {
@@ -518,7 +525,7 @@ public class Wight extends Summoned implements Enemy, NeutralMob, IHiding {
         this.entityData.set(IS_CLONE, shadowClone);
     }
 
-    public void spawnHallucination(){
+    public void spawnHallucination() {
         this.setHallucination(true);
         this.level().broadcastEntityEvent(this, (byte) 6);
     }
@@ -534,32 +541,41 @@ public class Wight extends Summoned implements Enemy, NeutralMob, IHiding {
     // getDefaultLootTable() is final in 1.21.1, cannot override
     // Use getLootTable() instead if needed
 
-    public void applyDarkness(){
+    public void applyDarkness() {
         if (this.level() instanceof ServerLevel serverLevel) {
-            MobEffectInstance mobeffectinstance = new MobEffectInstance(MobEffects.DARKNESS, MathHelper.secondsToTicks(6), 0, false, false);
-            MobEffectUtil.addEffectToPlayersAround(serverLevel, this, this.position(), (double)20, mobeffectinstance, 200);
+            MobEffectInstance mobeffectinstance = new MobEffectInstance(MobEffects.DARKNESS,
+                    MathHelper.secondsToTicks(6), 0, false, false);
+            MobEffectUtil.addEffectToPlayersAround(serverLevel, this, this.position(), (double) 20, mobeffectinstance,
+                    200);
         }
-        if (!this.isSilent()){
-            this.level().playSound((Player)null, this.prevX, this.prevY, this.prevZ, ModSounds.WIGHT_TELEPORT_SCREAM.get(), this.getSoundSource(), this.getSoundVolume() + 1.0F, this.getVoicePitch());
+        if (!this.isSilent()) {
+            this.level().playSound((Player) null, this.prevX, this.prevY, this.prevZ,
+                    ModSounds.WIGHT_TELEPORT_SCREAM.get(), this.getSoundSource(), this.getSoundVolume() + 1.0F,
+                    this.getVoicePitch());
             this.playSound(ModSounds.WIGHT_TELEPORT_SCREAM.get(), this.getSoundVolume() + 1.0F, this.getVoicePitch());
         }
     }
 
-    // getDimensions() signature changed in 1.21.1 - needs EntityDimensions parameter
+    // getDimensions() signature changed in 1.21.1 - needs EntityDimensions
+    // parameter
     // For now, removed override - dimensions are handled differently
 
     public boolean hurt(DamageSource p_32494_, float p_32495_) {
         if (this.isInvulnerableTo(p_32494_)) {
             return false;
         } else {
-            if (p_32494_.is(DamageTypes.IN_WALL) || p_32494_.is(DamageTypes.DROWN)){
+            if (p_32494_.is(DamageTypes.IN_WALL) || p_32494_.is(DamageTypes.DROWN)) {
                 return false;
             }
 
             if (!this.isMeleeAttacking() && this.attackTick <= 0) {
                 if (this.teleportCool <= 0) {
                     if (!(p_32494_ instanceof NoKnockBackDamageSource) && p_32495_ < this.getHealth()) {
-                        if (!this.level().isClientSide() && ((p_32495_ < this.getHealth() && p_32494_.getEntity() instanceof LivingEntity) || (!(p_32494_.getEntity() instanceof LivingEntity) && !p_32494_.is(DamageTypeTags.IS_FIRE) && !p_32494_.is(DamageTypeTags.WITCH_RESISTANT_TO)))) {
+                        if (!this.level().isClientSide()
+                                && ((p_32495_ < this.getHealth() && p_32494_.getEntity() instanceof LivingEntity)
+                                        || (!(p_32494_.getEntity() instanceof LivingEntity)
+                                                && !p_32494_.is(DamageTypeTags.IS_FIRE)
+                                                && !p_32494_.is(DamageTypeTags.WITCH_RESISTANT_TO)))) {
                             if (this.teleport()) {
                                 this.teleportCool = MathHelper.secondsToTicks(2);
                             }
@@ -568,7 +584,7 @@ public class Wight extends Summoned implements Enemy, NeutralMob, IHiding {
                 }
             }
 
-            if (this.isHallucination() && p_32495_ > 0.0F){
+            if (this.isHallucination() && p_32495_ > 0.0F) {
                 this.hallucinateVanish();
             }
 
@@ -603,7 +619,8 @@ public class Wight extends Summoned implements Enemy, NeutralMob, IHiding {
     }
 
     public void breakBlocksAround() {
-            if (this.isDeadOrDying() || this.isHallucination() || !this.level().getGameRules().getBoolean(GameRules.RULE_MOB_GRIEFING)) {
+        if (this.isDeadOrDying() || this.isHallucination()
+                || !this.level().getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING)) {
             return;
         }
 
@@ -615,9 +632,10 @@ public class Wight extends Summoned implements Enemy, NeutralMob, IHiding {
 
             Block block = blockState.getBlock();
 
-            if (blockPos.getX() == this.getBlockX() && blockPos.getZ() == this.getBlockZ() && this.blockPosition().getY() < blockPos.getY() && this.isClimbing()) {
+            if (blockPos.getX() == this.getBlockX() && blockPos.getZ() == this.getBlockZ()
+                    && this.blockPosition().getY() < blockPos.getY() && this.isClimbing()) {
                 if (!blockState.isAir() && blockState.getBlock() instanceof LeavesBlock) {
-                        this.level().destroyBlock(blockPos, false);
+                    this.level().destroyBlock(blockPos, false);
                 }
             }
 
@@ -639,8 +657,9 @@ public class Wight extends Summoned implements Enemy, NeutralMob, IHiding {
             }
 
             if (block instanceof DoorBlock) {
-                        this.level().destroyBlock(blockPos, true);
-                this.level().playLocalSound(blockPos, SoundEvents.ZOMBIE_BREAK_WOODEN_DOOR, SoundSource.BLOCKS, 2.0F, 1.0F, true);
+                this.level().destroyBlock(blockPos, true);
+                this.level().playLocalSound(blockPos, SoundEvents.ZOMBIE_BREAK_WOODEN_DOOR, SoundSource.BLOCKS, 2.0F,
+                        1.0F, true);
             }
         }
     }
@@ -657,8 +676,10 @@ public class Wight extends Summoned implements Enemy, NeutralMob, IHiding {
         BlockPos standPos0 = this.blockPosition().offset(0, 2, 0);
         BlockPos standPos1 = this.blockPosition().offset(0, 1, 0);
 
-        boolean frontStand = this.level().getBlockState(standPos0.relative(this.getDirection())).getCollisionShape(this.level(), standPos0.relative(this.getDirection())).isEmpty()
-                && this.level().getBlockState(standPos1.relative(this.getDirection())).getCollisionShape(this.level(), standPos1.relative(this.getDirection())).isEmpty();
+        boolean frontStand = this.level().getBlockState(standPos0.relative(this.getDirection()))
+                .getCollisionShape(this.level(), standPos0.relative(this.getDirection())).isEmpty()
+                && this.level().getBlockState(standPos1.relative(this.getDirection()))
+                        .getCollisionShape(this.level(), standPos1.relative(this.getDirection())).isEmpty();
 
         boolean shouldStand = this.level().getBlockState(standPos0).getCollisionShape(this.level(), standPos0).isEmpty()
                 && this.level().getBlockState(standPos1).getCollisionShape(this.level(), standPos1).isEmpty();
@@ -669,7 +690,7 @@ public class Wight extends Summoned implements Enemy, NeutralMob, IHiding {
             this.setPose(Pose.CROUCHING);
         }
 
-        if (this.isClimbing()){
+        if (this.isClimbing()) {
             this.walkAnimation.setSpeed(this.walkAnimation.speed() + 0.8F);
         }
     }
@@ -686,7 +707,7 @@ public class Wight extends Summoned implements Enemy, NeutralMob, IHiding {
                 if (this.isMeleeAttacking()) {
                     ++this.attackTick;
                 }
-                if (this.getTarget() != null){
+                if (this.getTarget() != null) {
                     this.breakBlocksAround();
                 }
                 if (MobUtil.healthIsHalved(this) && this.level().getDifficulty() == Difficulty.HARD) {
@@ -704,11 +725,11 @@ public class Wight extends Summoned implements Enemy, NeutralMob, IHiding {
                     Vec3 vec3 = this.getDeltaMovement();
                     if (this.isUnderWater()
                             && (this.getTarget() == null
-                            || this.getTarget().getBlockY() > (this.getBlockY() + 2))) {
+                                    || this.getTarget().getBlockY() > (this.getBlockY() + 2))) {
                         this.setDeltaMovement(vec3.x(), 0.25D, vec3.z());
                     } else if (this.isInWater()
                             && this.getTarget() != null
-                            && (this.getTarget().getBlockY() + 2) < this.getBlockY()){
+                            && (this.getTarget().getBlockY() + 2) < this.getBlockY()) {
                         this.setDeltaMovement(vec3.x(), -0.25D, vec3.z());
                     }
 
@@ -716,18 +737,21 @@ public class Wight extends Summoned implements Enemy, NeutralMob, IHiding {
                     this.updatePersistentAnger(serverLevel, true);
                     if (!this.isHiding()) {
                         this.hidingTime = 0;
-                        if (this.regenHeal > 0){
-                            if (this.tickCount % 10 == 0){
+                        if (this.regenHeal > 0) {
+                            if (this.tickCount % 10 == 0) {
                                 --this.regenHeal;
                                 if (!this.isOnFire()) {
                                     this.heal(1.0F);
                                     Vec3 vector3d = this.getDeltaMovement();
-                                    serverLevel.sendParticles(ParticleTypes.SCULK_SOUL, this.getRandomX(0.5D), this.getRandomY(), this.getRandomZ(0.5D), 0, vector3d.x * -0.2D, 0.1D, vector3d.z * -0.2D, 0.5F);
+                                    serverLevel.sendParticles(ParticleTypes.SCULK_SOUL, this.getRandomX(0.5D),
+                                            this.getRandomY(), this.getRandomZ(0.5D), 0, vector3d.x * -0.2D, 0.1D,
+                                            vector3d.z * -0.2D, 0.5F);
                                 }
                             }
                         }
                         for (int i = 0; i < 2; ++i) {
-                            serverLevel.sendParticles(ParticleTypes.SMOKE, this.getRandomX(0.5D), this.getRandomY(), this.getRandomZ(0.5D), 0, 0.0D, 0.0D, 0.0D, 0.5F);
+                            serverLevel.sendParticles(ParticleTypes.SMOKE, this.getRandomX(0.5D), this.getRandomY(),
+                                    this.getRandomZ(0.5D), 0, 0.0D, 0.0D, 0.0D, 0.5F);
                         }
                     } else {
                         ++this.hidingTime;
@@ -745,16 +769,16 @@ public class Wight extends Summoned implements Enemy, NeutralMob, IHiding {
                         }
                     }
                 }
-                if (this.isScreaming()){
+                if (this.isScreaming()) {
                     if (this.getTarget() != null) {
                         MobUtil.instaLook(this, this.getTarget());
                     }
                     this.getNavigation().stop();
                     ++this.screamTick;
                     int total = this.isSummoning() ? 30 : 4;
-                    if (this.screamTick >= total){
-                        for (int i = 0; i < 64; ++i){
-                            if (this.teleport()){
+                    if (this.screamTick >= total) {
+                        for (int i = 0; i < 64; ++i) {
+                            if (this.teleport()) {
                                 this.setScreaming(false);
                                 this.setSummoning(false);
                                 this.level().broadcastEntityEvent(this, (byte) 9);
@@ -766,15 +790,15 @@ public class Wight extends Summoned implements Enemy, NeutralMob, IHiding {
                 if (this.hidingCooldown > 0) {
                     --this.hidingCooldown;
                 }
-                if (this.spawnCool > 0 && !this.isHiding()){
+                if (this.spawnCool > 0 && !this.isHiding()) {
                     --this.spawnCool;
                 }
-                if (this.teleportCool > 0){
+                if (this.teleportCool > 0) {
                     --this.teleportCool;
                 }
-                if (this.isHallucination()){
-                    if (this.getTrueOwner() != null){
-                        if (this.getTrueOwner().isDeadOrDying()){
+                if (this.isHallucination()) {
+                    if (this.getTrueOwner() != null) {
+                        if (this.getTrueOwner().isDeadOrDying()) {
                             this.hallucinateVanish();
                         }
                     }
@@ -782,7 +806,7 @@ public class Wight extends Summoned implements Enemy, NeutralMob, IHiding {
             }
         }
 
-        if (this.isHiding() || this.isScreaming()){
+        if (this.isHiding() || this.isScreaming()) {
             this.jumping = false;
             this.xxa = 0.0F;
             this.zza = 0.0F;
@@ -792,9 +816,9 @@ public class Wight extends Summoned implements Enemy, NeutralMob, IHiding {
         super.aiStep();
     }
 
-    public void hallucinateVanish(){
-        if (this.level() instanceof ServerLevel serverLevel){
-            for(int i = 0; i < this.level().random.nextInt(10) + 10; ++i) {
+    public void hallucinateVanish() {
+        if (this.level() instanceof ServerLevel serverLevel) {
+            for (int i = 0; i < this.level().random.nextInt(10) + 10; ++i) {
                 ServerParticleUtil.addParticlesAroundMiddleSelf(serverLevel, ParticleTypes.SMOKE, this);
             }
         }
@@ -833,8 +857,8 @@ public class Wight extends Summoned implements Enemy, NeutralMob, IHiding {
 
     @Nullable
     public BlockPos getClimbPos(BlockPos pPos) {
-        for (int i = -1; i <= 1; ++i){
-            for (int k = -1; k <= 1; ++k){
+        for (int i = -1; i <= 1; ++i) {
+            for (int k = -1; k <= 1; ++k) {
                 BlockPos blockPos = pPos.offset(i, 0, k);
                 if (this.level().getBlockState(blockPos).isSolidRender(this.level(), blockPos)) {
                     return blockPos;
@@ -846,8 +870,8 @@ public class Wight extends Summoned implements Enemy, NeutralMob, IHiding {
 
     @Nullable
     public BlockPos getClimbablePos(BlockPos pPos, int pHeight) {
-        for (int i = -1; i <= 1; ++i){
-            for (int k = -1; k <= 1; ++k){
+        for (int i = -1; i <= 1; ++i) {
+            for (int k = -1; k <= 1; ++k) {
                 BlockPos blockPos = pPos.offset(i, 0, k);
                 if (this.isClimbable(blockPos, pHeight)) {
                     return blockPos;
@@ -864,9 +888,9 @@ public class Wight extends Summoned implements Enemy, NeutralMob, IHiding {
     }
 
     public static boolean haveBlocksAround(Level level, BlockPos pPos, int rangeX, int rangeY, int rangeZ) {
-        for (int i = -rangeX; i <= rangeX; ++i){
-            for (int j = -rangeY; j <= rangeY; ++j){
-                for (int k = -rangeZ; k <= rangeZ; ++k){
+        for (int i = -rangeX; i <= rangeX; ++i) {
+            for (int j = -rangeY; j <= rangeY; ++j) {
+                for (int k = -rangeZ; k <= rangeZ; ++k) {
                     BlockPos blockPos = pPos.offset(i, j, k);
                     BlockState blockState = level.getBlockState(blockPos);
                     if (!blockState.getCollisionShape(level, blockPos).isEmpty()) {
@@ -879,7 +903,8 @@ public class Wight extends Summoned implements Enemy, NeutralMob, IHiding {
     }
 
     /**
-     * Based on Climbing codes from Man From the Fog Reimagined: <a href="https://github.com/z3n01d/man-from-the-fog-reimagined/blob/master/src/main/java/com/zen/the_fog/common/entity/the_man/TheManEntity.java#L292">...</a>
+     * Based on Climbing codes from Man From the Fog Reimagined: <a href=
+     * "https://github.com/z3n01d/man-from-the-fog-reimagined/blob/master/src/main/java/com/zen/the_fog/common/entity/the_man/TheManEntity.java#L292">...</a>
      */
     public void climb(ServerLevel serverLevel) {
         if (this.getTarget() == null) {
@@ -888,16 +913,17 @@ public class Wight extends Summoned implements Enemy, NeutralMob, IHiding {
         }
 
         boolean blocksAbove = haveBlocksAround(serverLevel, this.blockPosition().above(2), 1, 0, 1);
-        this.setClimbing(blocksAbove && horizontalDistance(this.position(), this.getTarget().position()) <= 5.0D && this.getTarget().getBlockY() > this.getBlockY());
+        this.setClimbing(blocksAbove && horizontalDistance(this.position(), this.getTarget().position()) <= 5.0D
+                && this.getTarget().getBlockY() > this.getBlockY());
 
         if (this.isClimbing()) {
             this.setDeltaMovement(0.0D, 0.25D, 0.0D);
             BlockPos blockPos = this.getClimbPos(this.blockPosition());
-            if (blockPos != null){
+            if (blockPos != null) {
                 this.getLookControl().setLookAt(blockPos.getCenter());
                 int height = this.getClimbHeight(blockPos);
                 BlockPos blockPos1 = this.getClimbablePos(blockPos, height);
-                if (blockPos1 != null){
+                if (blockPos1 != null) {
                     Vec3 vec3 = blockPos1.above().getCenter();
                     this.setPos(vec3.x(), this.getY(), vec3.z());
                 }
@@ -911,7 +937,7 @@ public class Wight extends Summoned implements Enemy, NeutralMob, IHiding {
             this.prevY = this.getY();
             this.prevZ = this.getZ();
             double d0 = this.getX() + (this.random.nextDouble() - 0.5D) * 32.0D;
-            double d1 = this.getY() + (double)(this.random.nextInt(32) - 16);
+            double d1 = this.getY() + (double) (this.random.nextInt(32) - 16);
             double d2 = this.getZ() + (this.random.nextDouble() - 0.5D) * 32.0D;
             return this.teleport(d0, d1, d2);
         } else {
@@ -924,11 +950,12 @@ public class Wight extends Summoned implements Enemy, NeutralMob, IHiding {
             this.prevX = this.getX();
             this.prevY = this.getY();
             this.prevZ = this.getZ();
-            Vec3 vec3 = new Vec3(this.getX() - p_32501_.getX(), this.getY(0.5D) - p_32501_.getEyeY(), this.getZ() - p_32501_.getZ());
+            Vec3 vec3 = new Vec3(this.getX() - p_32501_.getX(), this.getY(0.5D) - p_32501_.getEyeY(),
+                    this.getZ() - p_32501_.getZ());
             vec3 = vec3.normalize();
             double d0 = 16.0D;
             double d1 = this.getX() + (this.random.nextDouble() - 0.5D) * 8.0D - vec3.x * d0;
-            double d2 = this.getY() + (double)(this.random.nextInt(16) - 8) - vec3.y * d0;
+            double d2 = this.getY() + (double) (this.random.nextInt(16) - 8) - vec3.y * d0;
             double d3 = this.getZ() + (this.random.nextDouble() - 0.5D) * 8.0D - vec3.z * d0;
             return this.teleport(d1, d2, d3);
         } else {
@@ -939,7 +966,8 @@ public class Wight extends Summoned implements Enemy, NeutralMob, IHiding {
     private boolean teleport(double pX, double pY, double pZ) {
         BlockPos.MutableBlockPos blockpos$mutableblockpos = new BlockPos.MutableBlockPos(pX, pY, pZ);
 
-        while(blockpos$mutableblockpos.getY() > this.level().getMinBuildHeight() && !this.level().getBlockState(blockpos$mutableblockpos).blocksMotion()) {
+        while (blockpos$mutableblockpos.getY() > this.level().getMinBuildHeight()
+                && !this.level().getBlockState(blockpos$mutableblockpos).blocksMotion()) {
             blockpos$mutableblockpos.move(Direction.DOWN);
         }
 
@@ -947,76 +975,92 @@ public class Wight extends Summoned implements Enemy, NeutralMob, IHiding {
         boolean flag = blockstate.blocksMotion();
         boolean flag1 = blockstate.getFluidState().is(FluidTags.WATER) && !this.isSwimming();
         if (flag && !flag1) {
-            net.neoforged.neoforge.event.entity.EntityTeleportEvent.EnderEntity event = new net.neoforged.neoforge.event.entity.EntityTeleportEvent.EnderEntity(this, pX, pY, pZ);
+            net.neoforged.neoforge.event.entity.EntityTeleportEvent.EnderEntity event = new net.neoforged.neoforge.event.entity.EntityTeleportEvent.EnderEntity(
+                    this, pX, pY, pZ);
             net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(event);
-            if (event.isCanceled()) return false;
+            if (event.isCanceled())
+                return false;
             Vec3 vec3 = this.position();
             boolean flag2 = this.randomTeleport(event.getTargetX(), event.getTargetY(), event.getTargetZ(), false);
-            if (this.isSwimming() || (this.getTarget() != null && this.getTarget().isInWater())){
-                flag2 = MobUtil.randomWaterTeleport(this, event.getTargetX(), event.getTargetY(), event.getTargetZ(), false);
+            if (this.isSwimming() || (this.getTarget() != null && this.getTarget().isInWater())) {
+                flag2 = MobUtil.randomWaterTeleport(this, event.getTargetX(), event.getTargetY(), event.getTargetZ(),
+                        false);
             }
             if (flag2) {
-                if (this.getTarget() != null && !this.isScreaming() && this.getTarget().distanceTo(this) >= 4.0D && this.spawnCool <= 0 && this.level().random.nextFloat() <= 0.25F){
+                if (this.getTarget() != null && !this.isScreaming() && this.getTarget().distanceTo(this) >= 4.0D
+                        && this.spawnCool <= 0 && this.level().random.nextFloat() <= 0.25F) {
                     this.setSummoning(true);
                     this.level().broadcastEntityEvent(this, (byte) 8);
                     this.playSound(ModSounds.WIGHT_SUMMON.get(), 3.0F, 1.0F);
                     int amount = 3 + this.level().random.nextInt(1 + this.level().getDifficulty().getId());
-                    for (int j = 0; j < amount; ++j){
-                        CarrionMaggot carrionMaggot = new CarrionMaggot(ModEntityType.CARRION_MAGGOT.get(), this.level());
+                    for (int j = 0; j < amount; ++j) {
+                        CarrionMaggot carrionMaggot = new CarrionMaggot(ModEntityType.CARRION_MAGGOT.get(),
+                                this.level());
                         BlockPos blockPos = BlockFinder.SummonRadius(this.blockPosition(), carrionMaggot, this.level());
                         carrionMaggot.setTrueOwner(this);
                         carrionMaggot.setLimitedLife(MobUtil.getSummonLifespan(this.level()));
                         carrionMaggot.moveTo(blockPos, this.getYRot(), this.getXRot());
-                        carrionMaggot.finalizeSpawn((ServerLevelAccessor) this.level(), this.level().getCurrentDifficultyAt(blockPos), MobSpawnType.MOB_SUMMONED, null);
-                        DelayedSummon delayedSummon = new DelayedSummon(this.level(), blockPos, carrionMaggot, true, true, this);
+                        carrionMaggot.finalizeSpawn((ServerLevelAccessor) this.level(),
+                                this.level().getCurrentDifficultyAt(blockPos), MobSpawnType.MOB_SUMMONED, null);
+                        DelayedSummon delayedSummon = new DelayedSummon(this.level(), blockPos, carrionMaggot, true,
+                                true, this);
                         delayedSummon.setLifeSpan(MathHelper.secondsToTicks(this.random.nextInt(1 + j)));
                         this.level().addFreshEntity(delayedSummon);
                     }
                     this.spawnCool = MathHelper.secondsToTicks(10);
-                } else if ((this.level().random.nextFloat() <= 0.25F && this.hidingCooldown <= 0) || this.isScreaming()){
+                } else if ((this.level().random.nextFloat() <= 0.25F && this.hidingCooldown <= 0)
+                        || this.isScreaming()) {
                     this.setHide(true);
                     this.level().broadcastEntityEvent(this, (byte) 4);
                     this.applyDarkness();
-                } else if (this.level().random.nextFloat() <= 0.25F){
+                } else if (this.level().random.nextFloat() <= 0.25F) {
                     this.applyDarkness();
-                    if (this.level().random.nextFloat() <= 0.15F && this.getTarget() != null){
+                    if (this.level().random.nextFloat() <= 0.15F && this.getTarget() != null) {
                         int amount = 4 + this.level().random.nextInt(1 + this.level().getDifficulty().getId());
-                        for (int j = 0; j < amount; ++j){
+                        for (int j = 0; j < amount; ++j) {
                             Wight falseWight = new Wight(ModEntityType.WIGHT.get(), this.level());
-                            Vec3 vec31 = BlockFinder.SummonRadius(this.blockPosition(), falseWight, this.level()).getCenter();
+                            Vec3 vec31 = BlockFinder.SummonRadius(this.blockPosition(), falseWight, this.level())
+                                    .getCenter();
                             falseWight.setTrueOwner(this);
                             falseWight.setLimitedLife(MathHelper.secondsToTicks(5 + this.level().random.nextInt(10)));
                             falseWight.setPos(vec31);
                             double d2 = this.getTarget().getX() - falseWight.getX();
                             double d1 = this.getTarget().getZ() - falseWight.getZ();
-                            falseWight.setYRot(-((float)Mth.atan2(d2, d1)) * (180F / (float)Math.PI));
+                            falseWight.setYRot(-((float) Mth.atan2(d2, d1)) * (180F / (float) Math.PI));
                             float f = (float) Mth.atan2(d1, d2);
                             float f2 = f + (float) j * (float) Math.PI * 0.25F + 4.0F;
-                            vec31 = new Vec3(this.getTarget().getX() + (double) Mth.cos(f2) * 4.0D, this.getTarget().getY(), this.getTarget().getZ() + (double) Mth.sin(f2) * 4.0D);
+                            vec31 = new Vec3(this.getTarget().getX() + (double) Mth.cos(f2) * 4.0D,
+                                    this.getTarget().getY(), this.getTarget().getZ() + (double) Mth.sin(f2) * 4.0D);
                             falseWight.setPos(vec31);
-                            falseWight.finalizeSpawn((ServerLevelAccessor) this.level(), this.level().getCurrentDifficultyAt(BlockPos.containing(vec31)), MobSpawnType.MOB_SUMMONED, null);
+                            falseWight.finalizeSpawn((ServerLevelAccessor) this.level(),
+                                    this.level().getCurrentDifficultyAt(BlockPos.containing(vec31)),
+                                    MobSpawnType.MOB_SUMMONED, null);
                             falseWight.spawnHallucination();
                             falseWight.setHealth(this.getHealth());
                             this.level().addFreshEntity(falseWight);
                         }
                     }
                 }
-                if (this.level() instanceof ServerLevel serverLevel){
+                if (this.level() instanceof ServerLevel serverLevel) {
                     for (int i = 0; i < 16; ++i) {
                         serverLevel.sendParticles(ParticleTypes.LARGE_SMOKE,
-                                this.prevX + (double)this.getBbWidth() * (2.0D * this.random.nextDouble() - 1.0D) * 0.5D,
-                                this.prevY + (double)this.getBbHeight() * this.random.nextDouble(),
-                                this.prevZ + (double)this.getBbWidth() * (2.0D * this.random.nextDouble() - 1.0D) * 0.5D,
+                                this.prevX
+                                        + (double) this.getBbWidth() * (2.0D * this.random.nextDouble() - 1.0D) * 0.5D,
+                                this.prevY + (double) this.getBbHeight() * this.random.nextDouble(),
+                                this.prevZ
+                                        + (double) this.getBbWidth() * (2.0D * this.random.nextDouble() - 1.0D) * 0.5D,
                                 0, 0.0D, 0.0D, 0.0D, 0.5F);
                     }
-                    serverLevel.sendParticles(new TeleportInShockwaveParticleOption(), this.prevX, this.prevY + 0.5F, this.prevZ, 0, 0, 0, 0, 0.5F);
-                    if (!this.isHiding()){
+                    serverLevel.sendParticles(new TeleportInShockwaveParticleOption(), this.prevX, this.prevY + 0.5F,
+                            this.prevZ, 0, 0, 0, 0, 0.5F);
+                    if (!this.isHiding()) {
                         this.teleportHit(serverLevel);
                     }
                 }
                 this.level().gameEvent(GameEvent.TELEPORT, vec3, GameEvent.Context.of(this));
                 if (!this.isSilent()) {
-                    this.level().playSound((Player)null, this.prevX, this.prevY, this.prevZ, ModSounds.WIGHT_TELEPORT.get(), this.getSoundSource(), 1.0F, 0.5F);
+                    this.level().playSound((Player) null, this.prevX, this.prevY, this.prevZ,
+                            ModSounds.WIGHT_TELEPORT.get(), this.getSoundSource(), 1.0F, 0.5F);
                 }
             }
 
@@ -1026,21 +1070,23 @@ public class Wight extends Summoned implements Enemy, NeutralMob, IHiding {
         }
     }
 
-    public void teleportHit(ServerLevel serverLevel){
+    public void teleportHit(ServerLevel serverLevel) {
         for (int i = 0; i < 16; ++i) {
-            serverLevel.sendParticles(ParticleTypes.LARGE_SMOKE, this.getRandomX(0.5D), this.getRandomY(), this.getRandomZ(0.5D), 0, 0.0D, 0.0D, 0.0D, 0.5F);
+            serverLevel.sendParticles(ParticleTypes.LARGE_SMOKE, this.getRandomX(0.5D), this.getRandomY(),
+                    this.getRandomZ(0.5D), 0, 0.0D, 0.0D, 0.0D, 0.5F);
         }
-        serverLevel.sendParticles(new TeleportShockwaveParticleOption(10), this.getX(), this.getY() + 0.5F, this.getZ(), 0, 0, 0, 0, 0.5F);
+        serverLevel.sendParticles(new TeleportShockwaveParticleOption(10), this.getX(), this.getY() + 0.5F, this.getZ(),
+                0, 0, 0, 0, 0.5F);
         if (!this.isSilent()) {
             this.playSound(ModSounds.WIGHT_TELEPORT.get(), 1.0F, 0.5F);
         }
     }
 
     public double getAttackReachSqr(LivingEntity enemy) {
-        return (double)(this.getBbWidth() * 4.0F * this.getBbWidth() * 4.0F + enemy.getBbWidth());
+        return (double) (this.getBbWidth() * 4.0F * this.getBbWidth() * 4.0F + enemy.getBbWidth());
     }
 
-    public boolean targetClose(LivingEntity enemy, double distToEnemySqr){
+    public boolean targetClose(LivingEntity enemy, double distToEnemySqr) {
         double reach = this.getAttackReachSqr(enemy);
         return distToEnemySqr <= reach || this.getBoundingBox().inflate(1.0D).intersects(enemy.getBoundingBox());
     }
@@ -1048,7 +1094,7 @@ public class Wight extends Summoned implements Enemy, NeutralMob, IHiding {
     @Override
     public boolean doHurtTarget(Entity entityIn) {
         boolean flag;
-        if (this.isHallucination()){
+        if (this.isHallucination()) {
             flag = this.doHurtTarget(0.5F, entityIn);
             if (flag) {
                 if (entityIn instanceof LivingEntity living) {
@@ -1059,10 +1105,10 @@ public class Wight extends Summoned implements Enemy, NeutralMob, IHiding {
             }
         } else {
             flag = super.doHurtTarget(entityIn);
-            if (flag){
-                if (entityIn instanceof LivingEntity living){
-                    if (entityIn instanceof Player player){
-                        if (SEHelper.getSoulsAmount(player, AttributesConfig.WightSoulAbsorb.get())){
+            if (flag) {
+                if (entityIn instanceof LivingEntity living) {
+                    if (entityIn instanceof Player player) {
+                        if (SEHelper.getSoulsAmount(player, AttributesConfig.WightSoulAbsorb.get())) {
                             SEHelper.decreaseSouls(player, AttributesConfig.WightSoulAbsorb.get());
                             this.regenHeal += AttributesConfig.WightSoulHeal.get();
                         } else {
@@ -1072,7 +1118,7 @@ public class Wight extends Summoned implements Enemy, NeutralMob, IHiding {
                         living.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, 100, 0, false, false));
                     }
                     living.addEffect(new MobEffectInstance(GoetyEffects.CURSED.getHolder(), 60, 0, false, false));
-                    if (this.isEasterEgg()){
+                    if (this.isEasterEgg()) {
                         living.addEffect(new MobEffectInstance(MobEffects.CONFUSION, 100, 0, false, false));
                     }
                 }
@@ -1081,7 +1127,7 @@ public class Wight extends Summoned implements Enemy, NeutralMob, IHiding {
         return flag;
     }
 
-    public void upgradePower(int sePercent){
+    public void upgradePower(int sePercent) {
         AttributeInstance health = this.getAttribute(Attributes.MAX_HEALTH);
         AttributeInstance attack = this.getAttribute(Attributes.ATTACK_DAMAGE);
         AttributeInstance speed = this.getAttribute(Attributes.MOVEMENT_SPEED);
@@ -1111,21 +1157,21 @@ public class Wight extends Summoned implements Enemy, NeutralMob, IHiding {
 
     @Override
     public void handleEntityEvent(byte p_21375_) {
-        if (p_21375_ == 4){
+        if (p_21375_ == 4) {
             this.setHide(true);
-        } else if (p_21375_ == 5){
+        } else if (p_21375_ == 5) {
             this.setHide(false);
-        } else if (p_21375_ == 6){
+        } else if (p_21375_ == 6) {
             this.setHallucination(true);
-        } else if (p_21375_ == 7){
+        } else if (p_21375_ == 7) {
             this.setHallucination(false);
-        } else if (p_21375_ == 8){
+        } else if (p_21375_ == 8) {
             this.setSummoning(true);
-        } else if (p_21375_ == 9){
+        } else if (p_21375_ == 9) {
             this.setSummoning(false);
-        } else if (p_21375_ == 10){
+        } else if (p_21375_ == 10) {
             this.attackFast = true;
-        } else if (p_21375_ == 11){
+        } else if (p_21375_ == 11) {
             this.attackFast = false;
         } else {
             super.handleEntityEvent(p_21375_);
@@ -1133,21 +1179,21 @@ public class Wight extends Summoned implements Enemy, NeutralMob, IHiding {
     }
 
     @Nullable
-    public static Wight findWight(Entity entity){
+    public static Wight findWight(Entity entity) {
         return findWight(entity,
                 wight -> EntitySelector.NO_CREATIVE_OR_SPECTATOR.test(entity)
                         && !wight.isAggressive());
     }
 
     @Nullable
-    public static Wight findWight(Entity entity, Predicate<Wight> predicate){
+    public static Wight findWight(Entity entity, Predicate<Wight> predicate) {
         try {
             List<Wight> wightList = entity.level().getEntitiesOfClass(Wight.class,
                     entity.getBoundingBox().inflate(64.0D),
                     predicate.and(wight -> !wight.isHallucination()));
             Wight wight = null;
-            for (Wight wight1 : wightList){
-                if (wight1 != null){
+            for (Wight wight1 : wightList) {
+                if (wight1 != null) {
                     wight = wight1;
                 }
             }
@@ -1189,12 +1235,14 @@ public class Wight extends Summoned implements Enemy, NeutralMob, IHiding {
         }
 
         protected boolean canMoveDirectly(Vec3 posVec31, Vec3 posVec32, int sizeX, int sizeY, int sizeZ) {
-            Vec3 vector3d = new Vec3(posVec32.x, posVec32.y + (double)this.mob.getBbHeight() * 0.5, posVec32.z);
-            return this.level().clip(new ClipContext(posVec31, vector3d, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, this.mob)).getType() == HitResult.Type.MISS;
+            Vec3 vector3d = new Vec3(posVec32.x, posVec32.y + (double) this.mob.getBbHeight() * 0.5, posVec32.z);
+            return this.mob.level().clip(
+                    new ClipContext(posVec31, vector3d, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, this.mob))
+                    .getType() == HitResult.Type.MISS;
         }
 
         public boolean isStableDestination(BlockPos pos) {
-            return !this.level().getBlockState(pos.below()).isAir();
+            return !this.mob.level().getBlockState(pos.below()).isAir();
         }
 
     }
@@ -1243,7 +1291,8 @@ public class Wight extends Summoned implements Enemy, NeutralMob, IHiding {
                 return;
             }
 
-            Wight.this.getLookControl().setLookAt(livingentity, Wight.this.getMaxHeadYRot(), Wight.this.getMaxHeadXRot());
+            Wight.this.getLookControl().setLookAt(livingentity, Wight.this.getMaxHeadYRot(),
+                    Wight.this.getMaxHeadXRot());
 
             if (Wight.this.getCurrentAnimation() != Wight.this.getAnimationState(SUPER_SMASH)) {
                 if (--this.delayCounter <= 0) {
@@ -1255,7 +1304,8 @@ public class Wight extends Summoned implements Enemy, NeutralMob, IHiding {
                 Wight.this.getNavigation().stop();
             }
 
-            this.checkAndPerformAttack(livingentity, Wight.this.distanceToSqr(livingentity.getX(), livingentity.getY(), livingentity.getZ()));
+            this.checkAndPerformAttack(livingentity,
+                    Wight.this.distanceToSqr(livingentity.getX(), livingentity.getY(), livingentity.getZ()));
         }
 
         // checkAndPerformAttack signature may have changed in 1.21.1
@@ -1263,10 +1313,10 @@ public class Wight extends Summoned implements Enemy, NeutralMob, IHiding {
             if (!Wight.this.isHiding()) {
                 boolean smash = Wight.this.random.nextBoolean();
                 float chance = MobUtil.healthIsHalved(Wight.this) ? 0.25F : 0.0F;
-                if (!Wight.this.isMeleeAttacking() && Wight.this.targetClose(enemy, distToEnemySqr)){
+                if (!Wight.this.isMeleeAttacking() && Wight.this.targetClose(enemy, distToEnemySqr)) {
                     Wight.this.setMeleeAttacking(true);
                     float pitch = 0.0F;
-                    if (Wight.this.level().getRandom().nextFloat() <= chance && !Wight.this.isHallucination()){
+                    if (Wight.this.level().getRandom().nextFloat() <= chance && !Wight.this.isHallucination()) {
                         Wight.this.setAnimationState(SUPER_SMASH);
                         pitch = 0.5F;
                     } else if (smash) {
@@ -1274,45 +1324,59 @@ public class Wight extends Summoned implements Enemy, NeutralMob, IHiding {
                     } else {
                         Wight.this.setAnimationState(ATTACK);
                     }
-                    Wight.this.playSound(ModSounds.WIGHT_PRE_SWING.get(), Wight.this.getSoundVolume(), Wight.this.getVoicePitch() - pitch);
+                    Wight.this.playSound(ModSounds.WIGHT_PRE_SWING.get(), Wight.this.getSoundVolume(),
+                            Wight.this.getVoicePitch() - pitch);
                 }
                 if (Wight.this.isMeleeAttacking()) {
-                    float seconds = Wight.this.getCurrentAnimation() == Wight.this.getAnimationState(SUPER_SMASH) ? 2.05F : 1.7F;
+                    float seconds = Wight.this.getCurrentAnimation() == Wight.this.getAnimationState(SUPER_SMASH)
+                            ? 2.05F
+                            : 1.7F;
                     if (Wight.this.attackTick < MathHelper.secondsToTicks(seconds)) {
                         Wight.this.setYBodyRot(Wight.this.getYHeadRot());
                         if (Wight.this.getCurrentAnimation() == Wight.this.getAnimationState(SUPER_SMASH)) {
                             if (Wight.this.attackTick == 24) {
-                                Wight.this.playSound(ModSounds.WIGHT_SWING.get(), Wight.this.getSoundVolume(), Wight.this.getVoicePitch() - 0.5F);
+                                Wight.this.playSound(ModSounds.WIGHT_SWING.get(), Wight.this.getSoundVolume(),
+                                        Wight.this.getVoicePitch() - 0.5F);
                                 Difficulty difficulty = Wight.this.level().getDifficulty();
                                 int h = difficulty == Difficulty.HARD ? 8 : difficulty == Difficulty.NORMAL ? 6 : 4;
                                 for (int i = 0; i <= h; ++i) {
                                     surroundTremor(Wight.this, i, 3, 0.0F, false, 0.1F);
                                 }
-                                Wight.this.level().playLocalSound(Wight.this.blockPosition(), ModSounds.WALL_ERUPT.get(), SoundSource.PLAYERS, 1.0F, 0.8F + Wight.this.level().random.nextFloat() * 0.4F, false);
-                                Wight.this.level().playLocalSound(Wight.this.blockPosition(), ModSounds.DIRT_DEBRIS.get(), SoundSource.PLAYERS, 1.0F, 0.8F + Wight.this.level().random.nextFloat() * 0.4F, false);
-                                Wight.this.level().playLocalSound(Wight.this.blockPosition(), SoundEvents.GENERIC_EXPLODE.value(), SoundSource.PLAYERS, 1.0F, 0.8F + Wight.this.level().random.nextFloat() * 0.4F, false);
+                                Wight.this.level().playLocalSound(Wight.this.blockPosition(),
+                                        ModSounds.WALL_ERUPT.get(), SoundSource.PLAYERS, 1.0F,
+                                        0.8F + Wight.this.level().random.nextFloat() * 0.4F, false);
+                                Wight.this.level().playLocalSound(Wight.this.blockPosition(),
+                                        ModSounds.DIRT_DEBRIS.get(), SoundSource.PLAYERS, 1.0F,
+                                        0.8F + Wight.this.level().random.nextFloat() * 0.4F, false);
+                                Wight.this.level().playLocalSound(Wight.this.blockPosition(),
+                                        SoundEvents.GENERIC_EXPLODE.value(), SoundSource.PLAYERS, 1.0F,
+                                        0.8F + Wight.this.level().random.nextFloat() * 0.4F, false);
                                 if (Wight.this.targetClose(enemy, distToEnemySqr)) {
                                     Wight.this.doHurtTarget(enemy);
-                                    if (enemy instanceof Player player){
-                                        Wight.this.maybeDisableShield(player, new ItemStack(Items.IRON_AXE), player.isUsingItem() ? player.getUseItem() : ItemStack.EMPTY);
+                                    if (enemy instanceof Player player) {
+                                        Wight.this.maybeDisableShield(player, new ItemStack(Items.IRON_AXE),
+                                                player.isUsingItem() ? player.getUseItem() : ItemStack.EMPTY);
                                     }
                                 }
                             }
                         } else if (Wight.this.getCurrentAnimation() == Wight.this.getAnimationState(SMASH)) {
                             int i = Wight.this.attackFast ? 10 : 20;
                             if (Wight.this.attackTick == i) {
-                                Wight.this.playSound(ModSounds.WIGHT_SWING.get(), Wight.this.getSoundVolume(), Wight.this.getVoicePitch() - 0.5F);
+                                Wight.this.playSound(ModSounds.WIGHT_SWING.get(), Wight.this.getSoundVolume(),
+                                        Wight.this.getVoicePitch() - 0.5F);
                                 if (Wight.this.targetClose(enemy, distToEnemySqr)) {
                                     Wight.this.doHurtTarget(enemy);
-                                    if (enemy instanceof Player player){
-                                        Wight.this.maybeDisableShield(player, new ItemStack(Items.STONE_AXE), player.isUsingItem() ? player.getUseItem() : ItemStack.EMPTY);
+                                    if (enemy instanceof Player player) {
+                                        Wight.this.maybeDisableShield(player, new ItemStack(Items.STONE_AXE),
+                                                player.isUsingItem() ? player.getUseItem() : ItemStack.EMPTY);
                                     }
                                 }
                             }
                         } else {
                             int i = Wight.this.attackFast ? 7 : 14;
                             if (Wight.this.attackTick == i) {
-                                Wight.this.playSound(ModSounds.WIGHT_SWING.get(), Wight.this.getSoundVolume(), Wight.this.getVoicePitch());
+                                Wight.this.playSound(ModSounds.WIGHT_SWING.get(), Wight.this.getSoundVolume(),
+                                        Wight.this.getVoicePitch());
                                 this.massiveSweep(Wight.this, 3.0D, 100.0D);
                             }
                         }
@@ -1326,10 +1390,11 @@ public class Wight extends Summoned implements Enemy, NeutralMob, IHiding {
             }
         }
 
-        public void massiveSweep(LivingEntity source, double range, double arc){
+        public void massiveSweep(LivingEntity source, double range, double arc) {
             List<LivingEntity> hits = MobUtil.getAttackableLivingEntitiesNearby(source, range, 1.0F, range, range);
             for (LivingEntity target : hits) {
-                float targetAngle = (float) ((Math.atan2(target.getZ() - source.getZ(), target.getX() - source.getX()) * (180 / Math.PI) - 90) % 360);
+                float targetAngle = (float) ((Math.atan2(target.getZ() - source.getZ(), target.getX() - source.getX())
+                        * (180 / Math.PI) - 90) % 360);
                 float attackAngle = source.yBodyRot % 360;
                 if (targetAngle < 0) {
                     targetAngle += 360;
@@ -1338,39 +1403,49 @@ public class Wight extends Summoned implements Enemy, NeutralMob, IHiding {
                     attackAngle += 360;
                 }
                 float relativeAngle = targetAngle - attackAngle;
-                float hitDistance = (float) Math.sqrt((target.getZ() - source.getZ()) * (target.getZ() - source.getZ()) + (target.getX() - source.getX()) * (target.getX() - source.getX())) - target.getBbWidth() / 2f;
-                if (hitDistance <= range && (relativeAngle <= arc / 2 && relativeAngle >= -arc / 2) || (relativeAngle >= 360 - arc / 2 || relativeAngle <= -360 + arc / 2)) {
+                float hitDistance = (float) Math.sqrt((target.getZ() - source.getZ()) * (target.getZ() - source.getZ())
+                        + (target.getX() - source.getX()) * (target.getX() - source.getX())) - target.getBbWidth() / 2f;
+                if (hitDistance <= range && (relativeAngle <= arc / 2 && relativeAngle >= -arc / 2)
+                        || (relativeAngle >= 360 - arc / 2 || relativeAngle <= -360 + arc / 2)) {
                     Wight.this.doHurtTarget(target);
                 }
             }
         }
 
-        public static void surroundTremor(LivingEntity livingEntity, int distance, double topY, float side, boolean grab, float airborne) {
+        public static void surroundTremor(LivingEntity livingEntity, int distance, double topY, float side,
+                boolean grab, float airborne) {
             int hitY = Mth.floor(livingEntity.getBoundingBox().minY - 0.5D);
-            double spread = Math.PI * (double)2.0F;
-            int arcLen = Mth.ceil((double)distance * spread);
+            double spread = Math.PI * (double) 2.0F;
+            int arcLen = Mth.ceil((double) distance * spread);
             double minY = livingEntity.getY() - 1.0D;
             double maxY = livingEntity.getY() + topY;
 
-            for(int i = 0; i < arcLen; ++i) {
-                double theta = ((double)i / ((double)arcLen - 1.0D) - 0.5D) * spread;
+            for (int i = 0; i < arcLen; ++i) {
+                double theta = ((double) i / ((double) arcLen - 1.0D) - 0.5D) * spread;
                 double vx = Math.cos(theta);
                 double vz = Math.sin(theta);
-                double px = livingEntity.getX() + vx * (double)distance + (double)side * Math.cos((double)(livingEntity.yBodyRot + 90.0F) * Math.PI / 180.0D);
-                double pz = livingEntity.getZ() + vz * (double)distance + (double)side * Math.sin((double)(livingEntity.yBodyRot + 90.0F) * Math.PI / 180.0D);
-                float factor = 1.0F - (float)distance / 12.0F;
+                double px = livingEntity.getX() + vx * (double) distance
+                        + (double) side * Math.cos((double) (livingEntity.yBodyRot + 90.0F) * Math.PI / 180.0D);
+                double pz = livingEntity.getZ() + vz * (double) distance
+                        + (double) side * Math.sin((double) (livingEntity.yBodyRot + 90.0F) * Math.PI / 180.0D);
+                float factor = 1.0F - (float) distance / 12.0F;
                 int hitX = Mth.floor(px);
                 int hitZ = Mth.floor(pz);
                 BlockPos blockPos = new BlockPos(hitX, hitY, hitZ);
 
                 BlockState blockState;
-                for(blockState = livingEntity.level().getBlockState(blockPos); blockState.getRenderShape() != RenderShape.MODEL; blockState = livingEntity.level().getBlockState(blockPos)) {
+                for (blockState = livingEntity.level().getBlockState(blockPos); blockState
+                        .getRenderShape() != RenderShape.MODEL; blockState = livingEntity.level()
+                                .getBlockState(blockPos)) {
                     blockPos = blockPos.below();
                 }
                 BlockState blockAbove = livingEntity.level().getBlockState(blockPos.above());
 
-                if (blockState != Blocks.AIR.defaultBlockState() && !blockState.hasBlockEntity() && !blockAbove.blocksMotion()) {
-                    ModFallingBlock fallingBlock = new ModFallingBlock(livingEntity.level(), Vec3.atCenterOf(blockPos.above()), blockState, (float) (0.2D + livingEntity.getRandom().nextGaussian() * 0.15D));
+                if (blockState != Blocks.AIR.defaultBlockState() && !blockState.hasBlockEntity()
+                        && !blockAbove.blocksMotion()) {
+                    ModFallingBlock fallingBlock = new ModFallingBlock(livingEntity.level(),
+                            Vec3.atCenterOf(blockPos.above()), blockState,
+                            (float) (0.2D + livingEntity.getRandom().nextGaussian() * 0.15D));
                     livingEntity.level().addFreshEntity(fallingBlock);
                 }
 
@@ -1391,7 +1466,8 @@ public class Wight extends Summoned implements Enemy, NeutralMob, IHiding {
                                 double z = vz * (double) (1.0F - factor) * magnitude;
                                 MobUtil.push(target, x, y, z);
                             } else {
-                                MobUtil.push(target, 0.0D, (double) (airborne * (float) distance) + livingEntity.getRandom().nextDouble() * 0.15D, 0.0D);
+                                MobUtil.push(target, 0.0D, (double) (airborne * (float) distance)
+                                        + livingEntity.getRandom().nextDouble() * 0.15D, 0.0D);
                             }
                         }
                     }
@@ -1402,7 +1478,7 @@ public class Wight extends Summoned implements Enemy, NeutralMob, IHiding {
 
     }
 
-    static class StarePlayerGoal extends Goal{
+    static class StarePlayerGoal extends Goal {
         protected final Mob mob;
         @Nullable
         protected Player lookAt;
@@ -1410,12 +1486,14 @@ public class Wight extends Summoned implements Enemy, NeutralMob, IHiding {
 
         public StarePlayerGoal(Mob p_148118_, float p_148120_) {
             this.mob = p_148118_;
-            this.lookDistance = p_148118_.getAttribute(Attributes.FOLLOW_RANGE) != null ? (float) p_148118_.getAttributeValue(Attributes.FOLLOW_RANGE) : p_148120_;
+            this.lookDistance = p_148118_.getAttribute(Attributes.FOLLOW_RANGE) != null
+                    ? (float) p_148118_.getAttributeValue(Attributes.FOLLOW_RANGE)
+                    : p_148120_;
             this.setFlags(EnumSet.of(Goal.Flag.LOOK, Flag.MOVE));
         }
 
         public boolean canUse() {
-            if (this.mob.getTarget() != null){
+            if (this.mob.getTarget() != null) {
                 return false;
             }
 
@@ -1433,7 +1511,7 @@ public class Wight extends Summoned implements Enemy, NeutralMob, IHiding {
         }
 
         public boolean canContinueToUse() {
-            if (this.lookAt == null){
+            if (this.lookAt == null) {
                 return false;
             } else if (!this.lookAt.isAlive()) {
                 return false;
@@ -1453,7 +1531,8 @@ public class Wight extends Summoned implements Enemy, NeutralMob, IHiding {
         public void tick() {
             if (this.lookAt != null && this.lookAt.isAlive()) {
                 if (this.mob.level().players().size() > 1) {
-                    for (Player player : this.mob.level().players().stream().filter(player -> player != this.lookAt).toList()) {
+                    for (Player player : this.mob.level().players().stream().filter(player -> player != this.lookAt)
+                            .toList()) {
                         if (EntitySelector.NO_CREATIVE_OR_SPECTATOR.test(player)
                                 && !MobUtil.areAllies(player, this.mob)
                                 && player.distanceTo(this.mob) <= this.lookDistance
@@ -1480,14 +1559,18 @@ public class Wight extends Summoned implements Enemy, NeutralMob, IHiding {
         private int aggroTime;
         private int teleportTime;
         private final TargetingConditions startAggroTargetConditions;
-        private final TargetingConditions continueAggroTargetConditions = TargetingConditions.forCombat().ignoreInvisibilityTesting().ignoreLineOfSight();
+        private final TargetingConditions continueAggroTargetConditions = TargetingConditions.forCombat()
+                .ignoreInvisibilityTesting().ignoreLineOfSight();
 
         public WightLookForPlayerGoal(Wight wight, @Nullable Predicate<LivingEntity> predicate) {
             super(wight, Player.class, 10, false, false, predicate);
             this.wight = wight;
-            this.startAggroTargetConditions = TargetingConditions.forCombat().range(this.getFollowDistance()).selector((livingEntity) -> {
-                return (MobUtil.isDirectlyLooking(livingEntity, this.wight) || wight.closerThan(livingEntity, 4.0D) || wight.getTarget() == livingEntity) && !MobUtil.areAllies(wight, livingEntity);
-            });
+            this.startAggroTargetConditions = TargetingConditions.forCombat().range(this.getFollowDistance())
+                    .selector((livingEntity) -> {
+                        return (MobUtil.isDirectlyLooking(livingEntity, this.wight)
+                                || wight.closerThan(livingEntity, 4.0D) || wight.getTarget() == livingEntity)
+                                && !MobUtil.areAllies(wight, livingEntity);
+                    });
         }
 
         public boolean canUse() {
@@ -1500,12 +1583,14 @@ public class Wight extends Summoned implements Enemy, NeutralMob, IHiding {
             this.wight.setScreaming(true);
             if (this.pendingTarget != null) {
                 this.pendingTarget.playSound(ModSounds.WIGHT_SCREAM.get(), 3.0F, 0.5F);
-                if (!this.wight.level().isClientSide){
-                    if (this.pendingTarget instanceof ServerPlayer serverPlayer){
-                        ModNetwork.sendToClient(serverPlayer, new SPlayPlayerSoundPacket(ModSounds.WIGHT_SCREAM.get(), 3.0F, 0.5F));
+                if (!this.wight.level().isClientSide) {
+                    if (this.pendingTarget instanceof ServerPlayer serverPlayer) {
+                        ModNetwork.sendToClient(serverPlayer,
+                                new SPlayPlayerSoundPacket(ModSounds.WIGHT_SCREAM.get(), 3.0F, 0.5F));
                     }
                 }
-                MobEffectInstance mobeffectinstance = new MobEffectInstance(MobEffects.DARKNESS, MathHelper.secondsToTicks(6), 0, false, false);
+                MobEffectInstance mobeffectinstance = new MobEffectInstance(MobEffects.DARKNESS,
+                        MathHelper.secondsToTicks(6), 0, false, false);
                 this.pendingTarget.addEffect(mobeffectinstance);
             }
             this.wight.playSound(ModSounds.WIGHT_SCREAM.get(), 3.0F, 0.5F);
@@ -1522,13 +1607,14 @@ public class Wight extends Summoned implements Enemy, NeutralMob, IHiding {
                 this.wight.lookAt(this.pendingTarget, 10.0F, 10.0F);
                 return true;
             } else {
-                return this.target != null && this.continueAggroTargetConditions.test(this.wight, this.target) || super.canContinueToUse();
+                return this.target != null && this.continueAggroTargetConditions.test(this.wight, this.target)
+                        || super.canContinueToUse();
             }
         }
 
         public void tick() {
             if (this.wight.getTarget() == null) {
-                super.setTarget((LivingEntity)null);
+                super.setTarget((LivingEntity) null);
             }
 
             if (this.pendingTarget != null) {
@@ -1539,7 +1625,9 @@ public class Wight extends Summoned implements Enemy, NeutralMob, IHiding {
                 }
             } else {
                 if (this.target != null && !this.wight.isPassenger() && !this.wight.isMeleeAttacking()) {
-                    if ((this.target.distanceToSqr(this.wight) > 256.0D || !this.wight.hasLineOfSight(this.target)) && this.teleportTime++ >= this.adjustedTickDelay(MathHelper.secondsToTicks(3.5F)) && this.wight.teleportNearTo(this.target)) {
+                    if ((this.target.distanceToSqr(this.wight) > 256.0D || !this.wight.hasLineOfSight(this.target))
+                            && this.teleportTime++ >= this.adjustedTickDelay(MathHelper.secondsToTicks(3.5F))
+                            && this.wight.teleportNearTo(this.target)) {
                         this.teleportTime = 0;
                     }
                 }

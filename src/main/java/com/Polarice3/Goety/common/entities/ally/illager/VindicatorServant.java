@@ -43,7 +43,8 @@ import java.util.function.Predicate;
 
 public class VindicatorServant extends AbstractIllagerServant {
     private static final String TAG_JOHNNY = "Johnny";
-    static final Predicate<Difficulty> DOOR_BREAKING_PREDICATE = (p_34082_) -> p_34082_ == Difficulty.NORMAL || p_34082_ == Difficulty.HARD;
+    static final Predicate<Difficulty> DOOR_BREAKING_PREDICATE = (p_34082_) -> p_34082_ == Difficulty.NORMAL
+            || p_34082_ == Difficulty.HARD;
     boolean isJohnny;
 
     public VindicatorServant(EntityType<? extends Owned> type, Level worldIn) {
@@ -64,17 +65,19 @@ public class VindicatorServant extends AbstractIllagerServant {
 
     public static AttributeSupplier.Builder setCustomAttributes() {
         return Monster.createMonsterAttributes()
-                .add(Attributes.MOVEMENT_SPEED, (double)0.35F)
+                .add(Attributes.MOVEMENT_SPEED, (double) 0.35F)
                 .add(Attributes.FOLLOW_RANGE, 12.0D)
                 .add(Attributes.MAX_HEALTH, AttributesConfig.VindicatorServantHealth.get())
                 .add(Attributes.ARMOR, AttributesConfig.VindicatorServantArmor.get())
                 .add(Attributes.ATTACK_DAMAGE, AttributesConfig.VindicatorServantDamage.get());
     }
 
-    public void setConfigurableAttributes(){
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.MAX_HEALTH), AttributesConfig.VindicatorServantHealth.get());
+    public void setConfigurableAttributes() {
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.MAX_HEALTH),
+                AttributesConfig.VindicatorServantHealth.get());
         MobUtil.setBaseAttributes(this.getAttribute(Attributes.ARMOR), AttributesConfig.VindicatorServantArmor.get());
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ATTACK_DAMAGE), AttributesConfig.VindicatorServantDamage.get());
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ATTACK_DAMAGE),
+                AttributesConfig.VindicatorServantDamage.get());
     }
 
     @Override
@@ -110,7 +113,8 @@ public class VindicatorServant extends AbstractIllagerServant {
     }
 
     @Nullable
-    public SpawnGroupData finalizeSpawn(ServerLevelAccessor p_34088_, DifficultyInstance p_34089_, MobSpawnType p_34090_, @Nullable SpawnGroupData p_34091_, @Nullable CompoundTag p_34092_) {
+    public SpawnGroupData finalizeSpawn(ServerLevelAccessor p_34088_, DifficultyInstance p_34089_,
+            MobSpawnType p_34090_, @Nullable SpawnGroupData p_34091_, @Nullable CompoundTag p_34092_) {
         SpawnGroupData spawngroupdata = super.finalizeSpawn(p_34088_, p_34089_, p_34090_, p_34091_, p_34092_);
         RandomSource randomsource = p_34088_.getRandom();
         this.populateDefaultEquipmentSlots(randomsource, p_34089_);
@@ -133,7 +137,7 @@ public class VindicatorServant extends AbstractIllagerServant {
     @Nullable
     @Override
     public LivingEntity getTrueOwner() {
-        if (this.isJohnny){
+        if (this.isJohnny) {
             return null;
         } else {
             return super.getTrueOwner();
@@ -158,10 +162,11 @@ public class VindicatorServant extends AbstractIllagerServant {
             if (this.getIdol() == null) {
                 if (this.getTrueOwner() != null) {
                     if (CuriosFinder.hasNamelessSet(this.getTrueOwner())) {
-                        ZombieVindicatorServant servant = this.convertTo(ModEntityType.ZOMBIE_VINDICATOR_SERVANT.get(), true);
+                        ZombieVindicatorServant servant = this.convertTo(ModEntityType.ZOMBIE_VINDICATOR_SERVANT.get(),
+                                true);
                         if (servant != null) {
                             servant.setTrueOwner(this.getTrueOwner());
-                            net.neoforged.event.net.neoforged.neoforge.event.EventHooks.onLivingConvert(this, servant);
+                            net.neoforged.neoforge.event.EventHooks.onLivingConvert(this, servant);
                             if (!this.isSilent()) {
                                 this.level.levelEvent((Player) null, 1026, this.blockPosition(), 0);
                             }
@@ -179,7 +184,8 @@ public class VindicatorServant extends AbstractIllagerServant {
         ItemStack itemstack2 = this.getMainHandItem();
         if (this.getTrueOwner() != null && pPlayer == this.getTrueOwner()) {
             if (!(pPlayer.getOffhandItem().getItem() instanceof IWand)) {
-                if (item instanceof AxeItem || itemstack.is(ItemTags.AXES) || itemstack.is(ModTags.Items.VINDICATOR_WEAPONS)) {
+                if (item instanceof AxeItem || itemstack.is(ItemTags.AXES)
+                        || itemstack.is(ModTags.Items.VINDICATOR_WEAPONS)) {
                     this.playSound(SoundEvents.ARMOR_EQUIP_GENERIC, 1.0F, 1.0F);
                     this.setItemSlot(EquipmentSlot.MAINHAND, itemstack.copy());
                     this.dropEquipment(EquipmentSlot.MAINHAND, itemstack2);
@@ -188,7 +194,8 @@ public class VindicatorServant extends AbstractIllagerServant {
                         double d0 = this.random.nextGaussian() * 0.02D;
                         double d1 = this.random.nextGaussian() * 0.02D;
                         double d2 = this.random.nextGaussian() * 0.02D;
-                        this.level.addParticle(ParticleTypes.HAPPY_VILLAGER, this.getRandomX(1.0D), this.getRandomY() + 0.5D, this.getRandomZ(1.0D), d0, d1, d2);
+                        this.level.addParticle(ParticleTypes.HAPPY_VILLAGER, this.getRandomX(1.0D),
+                                this.getRandomY() + 0.5D, this.getRandomZ(1.0D), d0, d1, d2);
                     }
                     if (!pPlayer.getAbilities().instabuild) {
                         itemstack.shrink(1);
@@ -207,12 +214,12 @@ public class VindicatorServant extends AbstractIllagerServant {
         }
 
         public boolean canContinueToUse() {
-            VindicatorServant vindicator = (VindicatorServant)this.mob;
+            VindicatorServant vindicator = (VindicatorServant) this.mob;
             return vindicator.isRaiding() && super.canContinueToUse();
         }
 
         public boolean canUse() {
-            VindicatorServant vindicator = (VindicatorServant)this.mob;
+            VindicatorServant vindicator = (VindicatorServant) this.mob;
             return vindicator.isRaiding() && vindicator.random.nextInt(reducedTickDelay(10)) == 0 && super.canUse();
         }
 
@@ -228,7 +235,7 @@ public class VindicatorServant extends AbstractIllagerServant {
         }
 
         public boolean canUse() {
-            return ((VindicatorServant)this.mob).isJohnny && super.canUse();
+            return ((VindicatorServant) this.mob).isJohnny && super.canUse();
         }
 
         public void start() {

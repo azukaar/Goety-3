@@ -18,12 +18,4 @@ public class BrewMobEffect extends GoetyBaseEffect {
         this(p_19451_, p_19452_, true);
     }
 
-    @Override
-    public List<ItemStack> getCurativeItems() {
-        if (this.curable) {
-            return super.getCurativeItems();
-        } else {
-            return new ArrayList<>();
-        }
-    }
 }

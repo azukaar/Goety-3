@@ -42,21 +42,23 @@ public class BrewItem extends Item {
     }
 
     public ItemStack finishUsingItem(ItemStack pStack, Level level, LivingEntity livingEntity) {
-        Player player = livingEntity instanceof Player ? (Player)livingEntity : null;
+        Player player = livingEntity instanceof Player ? (Player) livingEntity : null;
         if (player instanceof ServerPlayer) {
-            CriteriaTriggers.CONSUME_ITEM.trigger((ServerPlayer)player, pStack);
+            CriteriaTriggers.CONSUME_ITEM.trigger((ServerPlayer) player, pStack);
         }
 
         if (!level.isClientSide) {
-            for(MobEffectInstance mobeffectinstance : PotionUtils.getMobEffects(pStack)) {
+            for (MobEffectInstance mobeffectinstance : PotionUtils.getMobEffects(pStack)) {
                 if (mobeffectinstance.getEffect().isInstantenous()) {
-                    mobeffectinstance.getEffect().applyInstantenousEffect(player, player, livingEntity, mobeffectinstance.getAmplifier(), 1.0D);
+                    mobeffectinstance.getEffect().applyInstantenousEffect(player, player, livingEntity,
+                            mobeffectinstance.getAmplifier(), 1.0D);
                 } else {
                     livingEntity.addEffect(new MobEffectInstance(mobeffectinstance));
                 }
             }
-            for (BrewEffectInstance brewEffectInstance : BrewUtils.getBrewEffects(pStack)){
-                brewEffectInstance.getEffect().drinkBlockEffect(player, player, livingEntity, brewEffectInstance.getAmplifier(), BrewUtils.getAreaOfEffect(pStack));
+            for (BrewEffectInstance brewEffectInstance : BrewUtils.getBrewEffects(pStack)) {
+                brewEffectInstance.getEffect().drinkBlockEffect(player, player, livingEntity,
+                        brewEffectInstance.getAmplifier(), BrewUtils.getAreaOfEffect(pStack));
             }
         }
 
@@ -87,20 +89,24 @@ public class BrewItem extends Item {
         Player player = p_220235_.getPlayer();
         ItemStack itemstack = p_220235_.getItemInHand();
         BlockState blockstate = level.getBlockState(blockpos);
-        if (p_220235_.getClickedFace() != Direction.DOWN && blockstate.is(BlockTags.CONVERTABLE_TO_MUD) && PotionUtils.getPotion(itemstack) == Potions.WATER) {
-            level.playSound((Player)null, blockpos, SoundEvents.GENERIC_SPLASH, SoundSource.PLAYERS, 1.0F, 1.0F);
-            player.setItemInHand(p_220235_.getHand(), ItemUtils.createFilledResult(itemstack, player, new ItemStack(Items.GLASS_BOTTLE)));
+        if (p_220235_.getClickedFace() != Direction.DOWN && blockstate.is(BlockTags.CONVERTABLE_TO_MUD)
+                && PotionUtils.getPotion(itemstack) == Potions.WATER) {
+            level.playSound((Player) null, blockpos, SoundEvents.GENERIC_SPLASH, SoundSource.PLAYERS, 1.0F, 1.0F);
+            player.setItemInHand(p_220235_.getHand(),
+                    ItemUtils.createFilledResult(itemstack, player, new ItemStack(Items.GLASS_BOTTLE)));
             player.awardStat(Stats.ITEM_USED.get(itemstack.getItem()));
             if (!level.isClientSide) {
-                ServerLevel serverlevel = (ServerLevel)level;
+                ServerLevel serverlevel = (ServerLevel) level;
 
-                for(int i = 0; i < 5; ++i) {
-                    serverlevel.sendParticles(ParticleTypes.SPLASH, (double)blockpos.getX() + level.random.nextDouble(), (double)(blockpos.getY() + 1), (double)blockpos.getZ() + level.random.nextDouble(), 1, 0.0D, 0.0D, 0.0D, 1.0D);
+                for (int i = 0; i < 5; ++i) {
+                    serverlevel.sendParticles(ParticleTypes.SPLASH,
+                            (double) blockpos.getX() + level.random.nextDouble(), (double) (blockpos.getY() + 1),
+                            (double) blockpos.getZ() + level.random.nextDouble(), 1, 0.0D, 0.0D, 0.0D, 1.0D);
                 }
             }
 
-            level.playSound((Player)null, blockpos, SoundEvents.BOTTLE_EMPTY, SoundSource.BLOCKS, 1.0F, 1.0F);
-            level.gameEvent((Entity)null, GameEvent.FLUID_PLACE, blockpos);
+            level.playSound((Player) null, blockpos, SoundEvents.BOTTLE_EMPTY, SoundSource.BLOCKS, 1.0F, 1.0F);
+            level.gameEvent((Entity) null, GameEvent.FLUID_PLACE, blockpos);
             level.setBlockAndUpdate(blockpos, Blocks.MUD.defaultBlockState());
             return InteractionResult.sidedSuccess(level.isClientSide);
         } else {
@@ -108,7 +114,7 @@ public class BrewItem extends Item {
         }
     }
 
-    public int getUseDuration(ItemStack p_43001_) {
+    public int getUseDuration(ItemStack p_43001_, LivingEntity livingEntity) {
         return 32 - BrewUtils.getQuaff(p_43001_);
     }
 
@@ -120,11 +126,13 @@ public class BrewItem extends Item {
         return ItemUtils.startUsingInstantly(p_42993_, p_42994_, p_42995_);
     }
 
-    public void appendHoverText(ItemStack p_42988_, @Nullable Level p_42989_, List<Component> p_42990_, TooltipFlag p_42991_) {
+    public void appendHoverText(ItemStack p_42988_, @Nullable Level p_42989_, List<Component> p_42990_,
+            TooltipFlag p_42991_) {
         BrewUtils.addBrewTooltip(p_42988_, p_42990_, 1.0F);
     }
 
     public boolean isFoil(ItemStack p_42999_) {
-        return super.isFoil(p_42999_) || PotionUtils.getPotion(p_42999_).isFoil(p_42999_) || BrewUtils.hasBrewEffect(p_42999_);
+        return super.isFoil(p_42999_) || PotionUtils.getPotion(p_42999_).isFoil(p_42999_)
+                || BrewUtils.hasBrewEffect(p_42999_);
     }
 }

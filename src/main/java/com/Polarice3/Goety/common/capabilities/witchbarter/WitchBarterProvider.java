@@ -8,16 +8,19 @@ import net.neoforged.neoforge.common.util.LazyOptional;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class WitchBarterProvider implements ICapabilityProvider, ICapabilitySerializable<CompoundTag> {
-    public static Capability<IWitchBarter> CAPABILITY = CapabilityManager.get(new CapabilityToken<>() {});
+public class WitchBarterProvider implements ICapabilitySerializable<CompoundTag> {
+    public static Capability<IWitchBarter> CAPABILITY = CapabilityManager.get(new CapabilityToken<>() {
+    });
 
     IWitchBarter instance = new WitchBarterImp();
 
-    @Nonnull
-    @Override
-    public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
-        return cap == CAPABILITY ? LazyOptional.of(() -> (T) instance) : LazyOptional.empty();
-    }
+    // @Nonnull
+    // @Override
+    // public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap,
+    // @Nullable Direction side) {
+    // return cap == CAPABILITY ? LazyOptional.of(() -> (T) instance) :
+    // LazyOptional.empty();
+    // }
 
     @Override
     public CompoundTag serializeNBT() {

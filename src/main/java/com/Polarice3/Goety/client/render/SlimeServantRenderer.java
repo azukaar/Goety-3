@@ -17,7 +17,8 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 
 public class SlimeServantRenderer extends MobRenderer<SlimeServant, SlimeModel<SlimeServant>> {
-   private static final ResourceLocation SLIME_LOCATION = Goety.location("textures/entity/servants/slime/slime_servant.png");
+   private static final ResourceLocation SLIME_LOCATION = Goety
+         .location("textures/entity/servants/slime/slime_servant.png");
    private static final ResourceLocation ORIGINAL = new ResourceLocation("textures/entity/slime/slime.png");
 
    public SlimeServantRenderer(EntityRendererProvider.Context p_174391_) {
@@ -26,30 +27,32 @@ public class SlimeServantRenderer extends MobRenderer<SlimeServant, SlimeModel<S
       this.addLayer(new SlimeOuterLayer<>(this, p_174391_.getModelSet()));
    }
 
-   public void render(SlimeServant p_115976_, float p_115977_, float p_115978_, PoseStack p_115979_, MultiBufferSource p_115980_, int p_115981_) {
-      this.shadowRadius = 0.25F * (float)p_115976_.getSize();
+   public void render(SlimeServant p_115976_, float p_115977_, float p_115978_, PoseStack p_115979_,
+         MultiBufferSource p_115980_, int p_115981_) {
+      this.shadowRadius = 0.25F * (float) p_115976_.getSize();
       super.render(p_115976_, p_115977_, p_115978_, p_115979_, p_115980_, p_115981_);
    }
 
    protected void scale(SlimeServant p_115983_, PoseStack p_115984_, float p_115985_) {
       float f = 0.999F;
       p_115984_.scale(0.999F, 0.999F, 0.999F);
-      p_115984_.translate(0.0D, (double)0.001F, 0.0D);
-      float f1 = (float)p_115983_.getSize();
+      p_115984_.translate(0.0D, (double) 0.001F, 0.0D);
+      float f1 = (float) p_115983_.getSize();
       float f2 = Mth.lerp(p_115985_, p_115983_.oSquish, p_115983_.squish) / (f1 * 0.5F + 1.0F);
       float f3 = 1.0F / (f2 + 1.0F);
       p_115984_.scale(f3 * f1, 1.0F / f3 * f1, f3 * f1);
    }
 
    public ResourceLocation getTextureLocation(SlimeServant p_115974_) {
-      if (p_115974_.isHostile() || !MobsConfig.SlimeServantTexture.get()){
+      if (p_115974_.isHostile() || !MobsConfig.SlimeServantTexture.get()) {
          return ORIGINAL;
       }
       return SLIME_LOCATION;
    }
 
    public class SlimeSecretLayer<T extends SlimeServant> extends RenderLayer<T, SlimeModel<T>> {
-      private static final ResourceLocation TEXTURES = Goety.location("textures/entity/servants/slime/slime_servant_secret.png");
+      private static final ResourceLocation TEXTURES = Goety
+            .location("textures/entity/servants/slime/slime_servant_secret.png");
       private final SlimeModel<T> layerModel;
 
       public SlimeSecretLayer(RenderLayerParent<T, SlimeModel<T>> p_i50919_1_, EntityModelSet p_174555_) {
@@ -58,9 +61,13 @@ public class SlimeServantRenderer extends MobRenderer<SlimeServant, SlimeModel<S
       }
 
       @Override
-      public void render(PoseStack matrixStackIn, MultiBufferSource bufferIn, int packedLightIn, T entitylivingbaseIn, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch) {
+      public void render(PoseStack matrixStackIn, MultiBufferSource bufferIn, int packedLightIn, T entitylivingbaseIn,
+            float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw,
+            float headPitch) {
          if (entitylivingbaseIn.isInterested()) {
-            coloredCutoutModelCopyLayerRender(this.getParentModel(), this.layerModel, TEXTURES, matrixStackIn, bufferIn, packedLightIn, entitylivingbaseIn, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, partialTicks, 1.0F, 1.0F, 1.0F);
+            coloredCutoutModelCopyLayerRender(this.getParentModel(), this.layerModel, TEXTURES, matrixStackIn, bufferIn,
+                  packedLightIn, entitylivingbaseIn, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch,
+                  partialTicks, -1);
          }
       }
    }

@@ -21,9 +21,9 @@ public class GuardianLaserSound extends AbstractTickableSoundInstance {
     public GuardianLaserSound(LivingEntity livingEntity) {
         super(SoundEvents.GUARDIAN_ATTACK, livingEntity.getSoundSource(), SoundInstance.createUnseededRandom());
         this.livingEntity = livingEntity;
-        this.x = (float)livingEntity.getX();
-        this.y = (float)livingEntity.getY();
-        this.z = (float)livingEntity.getZ();
+        this.x = (float) livingEntity.getX();
+        this.y = (float) livingEntity.getY();
+        this.z = (float) livingEntity.getZ();
         this.attenuation = SoundInstance.Attenuation.NONE;
         this.looping = true;
         this.delay = 0;
@@ -35,13 +35,14 @@ public class GuardianLaserSound extends AbstractTickableSoundInstance {
 
     public void tick() {
         Entity entity = MiscCapHelper.getClientTarget(this.livingEntity);
-        if (!this.livingEntity.isRemoved() && this.livingEntity.isAlive() && this.livingEntity.isUsingItem() && WandUtil.getSpell(this.livingEntity) instanceof PrismaBeamSpell && entity != null) {
-            this.x = (float)this.livingEntity.getX();
-            this.y = (float)this.livingEntity.getY();
-            this.z = (float)this.livingEntity.getZ();
+        if (!this.livingEntity.isRemoved() && this.livingEntity.isAlive() && this.livingEntity.isUsingItem()
+                && WandUtil.getSpell(this.livingEntity) instanceof PrismaBeamSpell && entity != null) {
+            this.x = (float) this.livingEntity.getX();
+            this.y = (float) this.livingEntity.getY();
+            this.z = (float) this.livingEntity.getZ();
             int count = livingEntity.getUseItemRemainingTicks();
             ItemStack useItem = livingEntity.getUseItem();
-            int useDuration = useItem.getUseDuration();
+            int useDuration = useItem.getItem().getUseDuration(useItem, this.livingEntity);
             int CastTime = useDuration - count;
             float f = CastTime / (float) SpellConfig.PrismaBeamDuration.get();
             this.volume = 0.0F + 1.0F * f * f;

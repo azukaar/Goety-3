@@ -25,7 +25,8 @@ public abstract class AbstractMonolithRenderer<T extends AbstractMonolith> exten
         this.model = new MonolithModel<>(p_i47208_1_.bakeLayer(ModModelLayer.MONOLITH));
     }
 
-    public void render(T pEntity, float pEntityYaw, float pPartialTicks, PoseStack pMatrixStack, MultiBufferSource pBuffer, int pPackedLight) {
+    public void render(T pEntity, float pEntityYaw, float pPartialTicks, PoseStack pMatrixStack,
+            MultiBufferSource pBuffer, int pPackedLight) {
         float f = Math.min(AbstractMonolith.getEmergingTime(), pEntity.getAge());
         pMatrixStack.pushPose();
         pMatrixStack.mulPose(Axis.YP.rotationDegrees(pEntity.getYRot()));
@@ -34,19 +35,19 @@ public abstract class AbstractMonolithRenderer<T extends AbstractMonolith> exten
         pMatrixStack.scale(1.0F, 1.0F, 1.0F);
         this.model.setupAnim(pEntity, f, 0.0F, pPartialTicks, pEntity.getYRot(), pEntity.getXRot());
         VertexConsumer ivertexbuilder = pBuffer.getBuffer(this.model.renderType(getTextureLocation(pEntity)));
-        this.model.renderToBuffer(pMatrixStack, ivertexbuilder, pPackedLight, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 1.0F);
+        this.model.renderToBuffer(pMatrixStack, ivertexbuilder, pPackedLight, OverlayTexture.NO_OVERLAY, -1);
         if (!pEntity.isEmerging() && !pEntity.isInvisible()) {
             RenderType renderType = getActivatedTextureLocation(pEntity);
             if (renderType != null) {
                 VertexConsumer vertexconsumer = pBuffer.getBuffer(renderType);
-                this.model.renderToBuffer(pMatrixStack, vertexconsumer, pPackedLight, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 1.0F);
+                this.model.renderToBuffer(pMatrixStack, vertexconsumer, pPackedLight, OverlayTexture.NO_OVERLAY, -1);
             }
             Map<AbstractMonolith.Crackiness, ResourceLocation> locationMap = cracknessLocation();
             if (locationMap != null) {
                 AbstractMonolith.Crackiness irongolem$crackiness = pEntity.getCrackiness();
                 if (irongolem$crackiness != AbstractMonolith.Crackiness.NONE) {
                     ResourceLocation resourcelocation = locationMap.get(irongolem$crackiness);
-                    renderColoredCutoutModel(this.model, resourcelocation, pMatrixStack, pBuffer, pPackedLight, 1.0F, 1.0F, 1.0F);
+                    renderColoredCutoutModel(this.model, resourcelocation, pMatrixStack, pBuffer, pPackedLight, -1);
                 }
             }
             this.extraLayer(pEntity, pEntityYaw, pPartialTicks, pMatrixStack, pBuffer, pPackedLight);
@@ -55,12 +56,14 @@ public abstract class AbstractMonolithRenderer<T extends AbstractMonolith> exten
         super.render(pEntity, pEntityYaw, pPartialTicks, pMatrixStack, pBuffer, pPackedLight);
     }
 
-    protected static <T extends LivingEntity> void renderColoredCutoutModel(EntityModel<T> p_117377_, ResourceLocation p_117378_, PoseStack p_117379_, MultiBufferSource p_117380_, int p_117381_, float p_117383_, float p_117384_, float p_117385_) {
+    protected static <T extends LivingEntity> void renderColoredCutoutModel(EntityModel<T> p_117377_,
+            ResourceLocation p_117378_, PoseStack p_117379_, MultiBufferSource p_117380_, int p_117381_, int color) {
         VertexConsumer vertexconsumer = p_117380_.getBuffer(RenderType.entityCutoutNoCull(p_117378_));
-        p_117377_.renderToBuffer(p_117379_, vertexconsumer, p_117381_, OverlayTexture.NO_OVERLAY, p_117383_, p_117384_, p_117385_, 1.0F);
+        p_117377_.renderToBuffer(p_117379_, vertexconsumer, p_117381_, OverlayTexture.NO_OVERLAY, color);
     }
 
-    public void extraLayer(T pEntity, float pEntityYaw, float pPartialTicks, PoseStack pMatrixStack, MultiBufferSource pBuffer, int pPackedLight) {
+    public void extraLayer(T pEntity, float pEntityYaw, float pPartialTicks, PoseStack pMatrixStack,
+            MultiBufferSource pBuffer, int pPackedLight) {
 
     }
 

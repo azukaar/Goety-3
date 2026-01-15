@@ -70,11 +70,16 @@ import java.util.function.Predicate;
 
 public class Prisoner extends RaiderServant implements VillagerDataHolder, ILooter {
     private static final Logger LOGGER = LogUtils.getLogger();
-    private static final EntityDataAccessor<Float> LOOK_ANGLE = SynchedEntityData.defineId(Prisoner.class, EntityDataSerializers.FLOAT);
-    private static final EntityDataAccessor<Boolean> IS_TRADER = SynchedEntityData.defineId(Prisoner.class, EntityDataSerializers.BOOLEAN);
-    private static final EntityDataAccessor<Boolean> IS_MINING = SynchedEntityData.defineId(Prisoner.class, EntityDataSerializers.BOOLEAN);
-    private static final EntityDataAccessor<Boolean> HAS_LOOK = SynchedEntityData.defineId(Prisoner.class, EntityDataSerializers.BOOLEAN);
-    private static final EntityDataAccessor<VillagerData> DATA_VILLAGER_DATA = SynchedEntityData.defineId(Prisoner.class, EntityDataSerializers.VILLAGER_DATA);
+    private static final EntityDataAccessor<Float> LOOK_ANGLE = SynchedEntityData.defineId(Prisoner.class,
+            EntityDataSerializers.FLOAT);
+    private static final EntityDataAccessor<Boolean> IS_TRADER = SynchedEntityData.defineId(Prisoner.class,
+            EntityDataSerializers.BOOLEAN);
+    private static final EntityDataAccessor<Boolean> IS_MINING = SynchedEntityData.defineId(Prisoner.class,
+            EntityDataSerializers.BOOLEAN);
+    private static final EntityDataAccessor<Boolean> HAS_LOOK = SynchedEntityData.defineId(Prisoner.class,
+            EntityDataSerializers.BOOLEAN);
+    private static final EntityDataAccessor<VillagerData> DATA_VILLAGER_DATA = SynchedEntityData
+            .defineId(Prisoner.class, EntityDataSerializers.VILLAGER_DATA);
     private final DynamicGameEventListener<GameEventListener> gameEventListener;
     @Nullable
     private Tag gossips;
@@ -108,8 +113,10 @@ public class Prisoner extends RaiderServant implements VillagerDataHolder, ILoot
                 return MobsConfig.PrisonerMiningRange.get() * 2;
             }
 
-            public boolean handleGameEvent(ServerLevel serverLevel, GameEvent p_282184_, GameEvent.Context p_283014_, Vec3 p_282350_) {
-                if (!Prisoner.this.isRemoved() && (Prisoner.this.getMainHandItem().is(ItemTags.PICKAXES) || Prisoner.this.getMainHandItem().getItem() instanceof PickaxeItem)) {
+            public boolean handleGameEvent(ServerLevel serverLevel, GameEvent p_282184_, GameEvent.Context p_283014_,
+                    Vec3 p_282350_) {
+                if (!Prisoner.this.isRemoved() && (Prisoner.this.getMainHandItem().is(ItemTags.PICKAXES)
+                        || Prisoner.this.getMainHandItem().getItem() instanceof PickaxeItem)) {
                     if (p_282184_.is(ModTags.GameEvents.BLOCK_EVENTS)) {
                         Prisoner.this.updateList = 5;
                         return true;
@@ -132,16 +139,16 @@ public class Prisoner extends RaiderServant implements VillagerDataHolder, ILoot
 
     @Override
     public void followGoal() {
-        this.goalSelector.addGoal(6, new FollowOwnerGoal<>(this, 0.6D, 6.0F, 2.0F){
+        this.goalSelector.addGoal(6, new FollowOwnerGoal<>(this, 0.6D, 6.0F, 2.0F) {
             @Override
             public boolean canUse() {
-                if (Prisoner.this.getLeader() != null){
+                if (Prisoner.this.getLeader() != null) {
                     LivingEntity livingentity = Prisoner.this.getLeader();
                     if (livingentity == null) {
                         return false;
                     } else if (livingentity.isSpectator()) {
                         return false;
-                    } else if (Prisoner.this.distanceToSqr(livingentity) < (double)(Mth.square(this.startDistance))) {
+                    } else if (Prisoner.this.distanceToSqr(livingentity) < (double) (Mth.square(this.startDistance))) {
                         return false;
                     } else if (!Prisoner.this.isFollowing() || Prisoner.this.isCommanded()) {
                         return false;
@@ -160,7 +167,7 @@ public class Prisoner extends RaiderServant implements VillagerDataHolder, ILoot
     public void miscGoal() {
         this.goalSelector.addGoal(0, new FloatGoal(this));
         this.goalSelector.addGoal(7, new ReturnToGuardPos<>(this, 0.6D, 2));
-        this.goalSelector.addGoal(8, new RaiderWanderGoal<>(this, 0.6D){
+        this.goalSelector.addGoal(8, new RaiderWanderGoal<>(this, 0.6D) {
             @Override
             public Vec3 randomBoundPos() {
                 return this.summonedEntity.vec3BoundPos();
@@ -181,9 +188,10 @@ public class Prisoner extends RaiderServant implements VillagerDataHolder, ILoot
 
     public void addAdditionalSaveData(CompoundTag compound) {
         super.addAdditionalSaveData(compound);
-        VillagerData.CODEC.encodeStart(NbtOps.INSTANCE, this.getVillagerData()).resultOrPartial(LOGGER::error).ifPresent((p_204072_) -> {
-            compound.put("VillagerData", p_204072_);
-        });
+        VillagerData.CODEC.encodeStart(NbtOps.INSTANCE, this.getVillagerData()).resultOrPartial(LOGGER::error)
+                .ifPresent((p_204072_) -> {
+                    compound.put("VillagerData", p_204072_);
+                });
         if (this.tradeOffers != null) {
             compound.put("Offers", this.tradeOffers);
         }
@@ -207,7 +215,8 @@ public class Prisoner extends RaiderServant implements VillagerDataHolder, ILoot
     public void readAdditionalSaveData(CompoundTag compound) {
         super.readAdditionalSaveData(compound);
         if (compound.contains("VillagerData", 10)) {
-            DataResult<VillagerData> dataresult = VillagerData.CODEC.parse(new Dynamic<>(NbtOps.INSTANCE, compound.get("VillagerData")));
+            DataResult<VillagerData> dataresult = VillagerData.CODEC
+                    .parse(new Dynamic<>(NbtOps.INSTANCE, compound.get("VillagerData")));
             dataresult.resultOrPartial(LOGGER::error).ifPresent(this::setVillagerData);
         }
 
@@ -245,7 +254,7 @@ public class Prisoner extends RaiderServant implements VillagerDataHolder, ILoot
 
     public void onSyncedDataUpdated(EntityDataAccessor<?> accessor) {
         if (IS_MINING.equals(accessor)) {
-            if (this.level.isClientSide){
+            if (this.level.isClientSide) {
                 if (this.isMining()) {
                     this.miningAnimationState.startIfStopped(this.tickCount);
                 } else {
@@ -266,7 +275,8 @@ public class Prisoner extends RaiderServant implements VillagerDataHolder, ILoot
 
     public SlotAccess getSlot(int p_149995_) {
         int i = p_149995_ - 300;
-        return i >= 0 && i < this.inventory.getContainerSize() ? SlotAccess.forContainer(this.inventory, i) : super.getSlot(p_149995_);
+        return i >= 0 && i < this.inventory.getContainerSize() ? SlotAccess.forContainer(this.inventory, i)
+                : super.getSlot(p_149995_);
     }
 
     @Nullable
@@ -305,10 +315,12 @@ public class Prisoner extends RaiderServant implements VillagerDataHolder, ILoot
 
     @Nullable
     @Override
-    public SpawnGroupData finalizeSpawn(ServerLevelAccessor pLevel, DifficultyInstance pDifficulty, MobSpawnType pReason, @Nullable SpawnGroupData pSpawnData, @Nullable CompoundTag pDataTag) {
+    public SpawnGroupData finalizeSpawn(ServerLevelAccessor pLevel, DifficultyInstance pDifficulty,
+            MobSpawnType pReason, @Nullable SpawnGroupData pSpawnData, @Nullable CompoundTag pDataTag) {
         pSpawnData = super.finalizeSpawn(pLevel, pDifficulty, pReason, pSpawnData, pDataTag);
         if (pReason != MobSpawnType.CONVERSION) {
-            this.setVillagerData(this.getVillagerData().setType(VillagerType.byBiome(pLevel.getBiome(this.blockPosition()))));
+            this.setVillagerData(
+                    this.getVillagerData().setType(VillagerType.byBiome(pLevel.getBiome(this.blockPosition()))));
         }
         return pSpawnData;
     }
@@ -335,13 +347,13 @@ public class Prisoner extends RaiderServant implements VillagerDataHolder, ILoot
         return SoundEvents.VILLAGER_DEATH;
     }
 
-    public List<ItemStack> itemsInInv(Predicate<ItemStack> predicate){
+    public List<ItemStack> itemsInInv(Predicate<ItemStack> predicate) {
         List<ItemStack> list = new ArrayList<>();
         SimpleContainer simplecontainer = this.getInventory();
         int i = simplecontainer.getContainerSize();
         for (int j = 0; j < i; ++j) {
             ItemStack itemStack = simplecontainer.getItem(j);
-            if (predicate.test(itemStack)){
+            if (predicate.test(itemStack)) {
                 list.add(itemStack);
             }
         }
@@ -363,11 +375,18 @@ public class Prisoner extends RaiderServant implements VillagerDataHolder, ILoot
         if (this.level instanceof ServerLevel serverLevel) {
             Entity entity = pCause.getEntity();
             if (entity instanceof Zombie zombie) {
-                if ((zombie.level.getDifficulty() == Difficulty.NORMAL || zombie.level.getDifficulty() == Difficulty.HARD) && net.neoforged.event.net.neoforged.neoforge.event.EventHooks.canLivingConvert(this, EntityType.ZOMBIE_VILLAGER, (timer) -> {})) {
+                if ((zombie.level.getDifficulty() == Difficulty.NORMAL
+                        || zombie.level.getDifficulty() == Difficulty.HARD)
+                        && net.neoforged.neoforge.event.EventHooks.canLivingConvert(this, EntityType.ZOMBIE_VILLAGER,
+                                (timer) -> {
+                                })) {
                     if (!(zombie.level.getDifficulty() != Difficulty.HARD && this.random.nextBoolean())) {
                         ZombieVillager zombievillager = this.convertTo(EntityType.ZOMBIE_VILLAGER, false);
                         if (zombievillager != null) {
-                            zombievillager.finalizeSpawn(serverLevel, serverLevel.getCurrentDifficultyAt(zombievillager.blockPosition()), MobSpawnType.CONVERSION, new Zombie.ZombieGroupData(false, true), (CompoundTag)null);
+                            zombievillager.finalizeSpawn(serverLevel,
+                                    serverLevel.getCurrentDifficultyAt(zombievillager.blockPosition()),
+                                    MobSpawnType.CONVERSION, new Zombie.ZombieGroupData(false, true),
+                                    (CompoundTag) null);
                             zombievillager.setVillagerData(this.getVillagerData());
                             if (this.getGossips() != null) {
                                 zombievillager.setGossips(this.getGossips());
@@ -376,7 +395,7 @@ public class Prisoner extends RaiderServant implements VillagerDataHolder, ILoot
                                 zombievillager.setTradeOffers(this.getOffers());
                             }
                             zombievillager.setVillagerXp(this.getVillagerXp());
-                            net.neoforged.event.net.neoforged.neoforge.event.EventHooks.onLivingConvert(this, zombievillager);
+                            net.neoforged.neoforge.event.EventHooks.onLivingConvert(this, zombievillager);
                             if (!this.isSilent()) {
                                 serverLevel.levelEvent(null, 1026, this.blockPosition(), 0);
                             }
@@ -396,7 +415,8 @@ public class Prisoner extends RaiderServant implements VillagerDataHolder, ILoot
                 ++this.toMineTick;
                 if (this.toMineTick == 26) {
                     this.playSound(ModSounds.VILLAGER_CHOP.get());
-                    this.level.playLocalSound(this.getX(), this.getY(), this.getZ(), ModSounds.VILLAGER_CHOP.get(), this.getSoundSource(), 1.0F, 1.0F, false);
+                    this.level.playLocalSound(this.getX(), this.getY(), this.getZ(), ModSounds.VILLAGER_CHOP.get(),
+                            this.getSoundSource(), 1.0F, 1.0F, false);
                     ModNetwork.sendToServer(new CPrisonerMinePacket(this.getId()));
                 }
                 if (this.toMineTick >= 55) {
@@ -412,11 +432,14 @@ public class Prisoner extends RaiderServant implements VillagerDataHolder, ILoot
             } else {
                 this.level.broadcastEntityEvent(this, (byte) 5);
             }
-            /*if (this.getTrueOwner() instanceof Raider raider && raider.getCurrentRaid() != null) {
-                if (raider.getCurrentRaid().isLoss() && raider.isRemoved()) {
-                    this.discard();
-                }
-            }*/
+            /*
+             * if (this.getTrueOwner() instanceof Raider raider && raider.getCurrentRaid()
+             * != null) {
+             * if (raider.getCurrentRaid().isLoss() && raider.isRemoved()) {
+             * this.discard();
+             * }
+             * }
+             */
             if (this.getTrueOwner() instanceof RaiderServant raider) {
                 if (raider.getLeader() != null && this.getLeader() != raider.getLeader()) {
                     this.setLeader(raider.getLeader());
@@ -428,10 +451,11 @@ public class Prisoner extends RaiderServant implements VillagerDataHolder, ILoot
             if (this.getLeader() == null && this.getTrueOwner() instanceof Player player && this.isFollowing()) {
                 float f = this.distanceTo(player);
                 if (f > 6.0F) {
-                    double d0 = (player.getX() - this.getX()) / (double)f;
-                    double d1 = (player.getY() - this.getY()) / (double)f;
-                    double d2 = (player.getZ() - this.getZ()) / (double)f;
-                    this.setDeltaMovement(this.getDeltaMovement().add(Math.copySign(d0 * d0 * 0.4D, d0), Math.copySign(d1 * d1 * 0.4D, d1), Math.copySign(d2 * d2 * 0.4D, d2)));
+                    double d0 = (player.getX() - this.getX()) / (double) f;
+                    double d1 = (player.getY() - this.getY()) / (double) f;
+                    double d2 = (player.getZ() - this.getZ()) / (double) f;
+                    this.setDeltaMovement(this.getDeltaMovement().add(Math.copySign(d0 * d0 * 0.4D, d0),
+                            Math.copySign(d1 * d1 * 0.4D, d1), Math.copySign(d2 * d2 * 0.4D, d2)));
                     this.checkSlowFallDistance();
                 }
             }
@@ -442,7 +466,8 @@ public class Prisoner extends RaiderServant implements VillagerDataHolder, ILoot
                 if (this.updateList > 0) {
                     --this.updateList;
                 }
-                if (this.getMainHandItem().is(ItemTags.PICKAXES) && this.getMainHandItem().getItem() instanceof PickaxeItem pickaxe) {
+                if (this.getMainHandItem().is(ItemTags.PICKAXES)
+                        && this.getMainHandItem().getItem() instanceof PickaxeItem pickaxe) {
                     int range = MobsConfig.PrisonerMiningRange.get();
                     if (this.blockPosList.isEmpty() || this.updateList > 0) {
                         if (!this.blockPosList.isEmpty()) {
@@ -467,7 +492,8 @@ public class Prisoner extends RaiderServant implements VillagerDataHolder, ILoot
                                         }
                                     }
                                     if (hasSight) {
-                                        if (blockState.is(ModTags.Blocks.PRISONER_MINEABLE) && !blockState.is(ModTags.Blocks.PRISONER_UNMINEABLE)) {
+                                        if (blockState.is(ModTags.Blocks.PRISONER_MINEABLE)
+                                                && !blockState.is(ModTags.Blocks.PRISONER_UNMINEABLE)) {
                                             this.blockPosList.add(blockPos);
                                             if (blockState.is(ModTags.Blocks.PRISONER_RARE_ORES)) {
                                                 this.rareList.add(blockPos);
@@ -480,16 +506,20 @@ public class Prisoner extends RaiderServant implements VillagerDataHolder, ILoot
                     }
                     if (!this.blockPosList.isEmpty()) {
                         if (this.mineTimes >= MobsConfig.PrisonerMiningSwings.get()) {
-                            BlockPos blockPos = this.blockPosList.get(RandomUtil.nextInt(serverLevel.getRandom(), blockPosList.size()));
+                            BlockPos blockPos = this.blockPosList
+                                    .get(RandomUtil.nextInt(serverLevel.getRandom(), blockPosList.size()));
                             boolean isRare = false;
                             if (!this.rareList.isEmpty()) {
                                 if (this.rareList.contains(blockPos)) {
                                     isRare = true;
-                                    if (MobsConfig.PrisonerMiningRareChance.get() != 0 && RandomUtil.nextInt(serverLevel.getRandom(), MobsConfig.PrisonerMiningRareChance.get()) != 0) {
+                                    if (MobsConfig.PrisonerMiningRareChance.get() != 0
+                                            && RandomUtil.nextInt(serverLevel.getRandom(),
+                                                    MobsConfig.PrisonerMiningRareChance.get()) != 0) {
                                         List<BlockPos> newBlockList = new ArrayList<>(blockPosList);
                                         newBlockList.removeIf(this.rareList::contains);
                                         if (newBlockList.size() > 1) {
-                                            blockPos = this.blockPosList.get(RandomUtil.nextInt(serverLevel.getRandom(), newBlockList.size()));
+                                            blockPos = this.blockPosList.get(
+                                                    RandomUtil.nextInt(serverLevel.getRandom(), newBlockList.size()));
                                         } else {
                                             blockPos = null;
                                         }
@@ -497,14 +527,16 @@ public class Prisoner extends RaiderServant implements VillagerDataHolder, ILoot
                                 }
                             }
                             if (!isRare) {
-                                if (MobsConfig.PrisonerMiningChance.get() != 0 && RandomUtil.nextInt(serverLevel.getRandom(), MobsConfig.PrisonerMiningChance.get()) != 0) {
+                                if (MobsConfig.PrisonerMiningChance.get() != 0 && RandomUtil
+                                        .nextInt(serverLevel.getRandom(), MobsConfig.PrisonerMiningChance.get()) != 0) {
                                     blockPos = null;
                                 }
                             }
                             if (blockPos != null) {
                                 BlockState blockState = serverLevel.getBlockState(blockPos);
                                 if (this.getMainHandItem().isCorrectToolForDrops(blockState)) {
-                                    for (ItemStack itemStack : Block.getDrops(blockState, serverLevel, blockPos, this.level.getBlockEntity(blockPos), this, this.getMainHandItem())) {
+                                    for (ItemStack itemStack : Block.getDrops(blockState, serverLevel, blockPos,
+                                            this.level.getBlockEntity(blockPos), this, this.getMainHandItem())) {
                                         this.getInventory().addItem(itemStack);
                                     }
                                 }
@@ -566,19 +598,19 @@ public class Prisoner extends RaiderServant implements VillagerDataHolder, ILoot
     public void onStopAttack() {
     }
 
-    public boolean isTrader(){
+    public boolean isTrader() {
         return this.entityData.get(IS_TRADER);
     }
 
-    public void setIsTrader(boolean isTrader){
+    public void setIsTrader(boolean isTrader) {
         this.entityData.set(IS_TRADER, isTrader);
     }
 
-    public boolean isMining(){
+    public boolean isMining() {
         return this.entityData.get(IS_MINING);
     }
 
-    public void setMining(boolean mining){
+    public void setMining(boolean mining) {
         this.entityData.set(IS_MINING, mining);
     }
 
@@ -635,7 +667,7 @@ public class Prisoner extends RaiderServant implements VillagerDataHolder, ILoot
         return false;
     }
 
-    public boolean canCelebrate(){
+    public boolean canCelebrate() {
         return false;
     }
 
@@ -644,11 +676,11 @@ public class Prisoner extends RaiderServant implements VillagerDataHolder, ILoot
     }
 
     public @NotNull Vec3 getLeashOffset() {
-        return new Vec3(0.0D, 0.6F * this.getEyeHeight(), (double)(this.getBbWidth() * 0.4F));
+        return new Vec3(0.0D, 0.6F * this.getEyeHeight(), (double) (this.getBbWidth() * 0.4F));
     }
 
     public boolean isWithinDistance(Entity entity, double distance) {
-        if (entity == null){
+        if (entity == null) {
             return false;
         }
         BlockPos blockpos = entity.blockPosition();
@@ -703,7 +735,8 @@ public class Prisoner extends RaiderServant implements VillagerDataHolder, ILoot
 
     public void unshackle(@Nullable Player player) {
         if (this.level instanceof ServerLevel serverLevel) {
-            serverLevel.playSound(null, this.getX(), this.getY(), this.getZ(), SoundEvents.CHAIN_BREAK, this.getSoundSource(), 1.0F, 2.0F);
+            serverLevel.playSound(null, this.getX(), this.getY(), this.getZ(), SoundEvents.CHAIN_BREAK,
+                    this.getSoundSource(), 1.0F, 2.0F);
             AbstractVillager villager;
             if (this.isTrader()) {
                 villager = this.convertTo(EntityType.WANDERING_TRADER, true);
@@ -777,10 +810,12 @@ public class Prisoner extends RaiderServant implements VillagerDataHolder, ILoot
                     }
                 }
             }
-            ServerParticleUtil.addParticlesAroundMiddleSelf(serverLevel, new BlockParticleOption(ParticleTypes.BLOCK, Blocks.CHAIN.defaultBlockState()), villager);
-            villager.finalizeSpawn(serverLevel, serverLevel.getCurrentDifficultyAt(villager.blockPosition()), MobSpawnType.CONVERSION, (SpawnGroupData) null, (CompoundTag) null);
+            ServerParticleUtil.addParticlesAroundMiddleSelf(serverLevel,
+                    new BlockParticleOption(ParticleTypes.BLOCK, Blocks.CHAIN.defaultBlockState()), villager);
+            villager.finalizeSpawn(serverLevel, serverLevel.getCurrentDifficultyAt(villager.blockPosition()),
+                    MobSpawnType.CONVERSION, (SpawnGroupData) null, (CompoundTag) null);
             villager.setHealth(this.getHealth());
-            net.neoforged.event.net.neoforged.neoforge.event.EventHooks.onLivingConvert(this, villager);
+            net.neoforged.neoforge.event.EventHooks.onLivingConvert(this, villager);
         }
     }
 
@@ -789,7 +824,8 @@ public class Prisoner extends RaiderServant implements VillagerDataHolder, ILoot
         ItemStack itemInHand = pPlayer.getItemInHand(pHand);
         Item item = itemInHand.getItem();
         ItemStack mainHandItem = this.getMainHandItem();
-        if (pPlayer.isCrouching() && !(item.interactLivingEntity(itemInHand, pPlayer, this, pHand).consumesAction() || itemInHand.is(ModTags.Items.GRIMOIRES))) {
+        if (pPlayer.isCrouching() && !(item.interactLivingEntity(itemInHand, pPlayer, this, pHand).consumesAction()
+                || itemInHand.is(ModTags.Items.GRIMOIRES))) {
             this.unshackle(pPlayer);
             return InteractionResult.SUCCESS;
         } else if (this.getMasterOwner() != null && this.getMasterOwner() == pPlayer) {
@@ -809,7 +845,8 @@ public class Prisoner extends RaiderServant implements VillagerDataHolder, ILoot
                 return InteractionResult.SUCCESS;
             } else if (pPlayer.getMainHandItem().is(ModItems.WAYSTONE.get())) {
                 if (WaystoneItem.isSameDimension(this, pPlayer.getMainHandItem())) {
-                    if (WaystoneItem.getBlockEntity(pPlayer.getMainHandItem(), this.level) instanceof ChestBlockEntity chestBlock && chestBlock.canOpen(pPlayer)) {
+                    if (WaystoneItem.getBlockEntity(pPlayer.getMainHandItem(),
+                            this.level) instanceof ChestBlockEntity chestBlock && chestBlock.canOpen(pPlayer)) {
                         if (!this.level.isClientSide) {
                             BlockPos blockPos = WaystoneItem.getBlockPos(pPlayer.getMainHandItem());
                             if (blockPos != null) {
@@ -819,7 +856,8 @@ public class Prisoner extends RaiderServant implements VillagerDataHolder, ILoot
                                         double d0 = this.random.nextGaussian() * 0.02D;
                                         double d1 = this.random.nextGaussian() * 0.02D;
                                         double d2 = this.random.nextGaussian() * 0.02D;
-                                        serverLevel.sendParticles(ParticleTypes.ANGRY_VILLAGER, this.getRandomX(1.0D), this.getRandomY() + 0.5D, this.getRandomZ(1.0D), 0, d0, d1, d2, 0.5F);
+                                        serverLevel.sendParticles(ParticleTypes.ANGRY_VILLAGER, this.getRandomX(1.0D),
+                                                this.getRandomY() + 0.5D, this.getRandomZ(1.0D), 0, d0, d1, d2, 0.5F);
                                     }
                                 }
                                 if (chestBlock.getBlockState().is(ModTags.Blocks.RAIDING_CHESTS)) {
@@ -836,7 +874,7 @@ public class Prisoner extends RaiderServant implements VillagerDataHolder, ILoot
                 }
                 return InteractionResult.FAIL;
             } else if (pPlayer.getMainHandItem().isEmpty() && this.isMining()) {
-                float f = (float)Mth.floor((Mth.wrapDegrees(pPlayer.getYRot() - 180.0F) + 22.5F) / 45.0F) * 45.0F;
+                float f = (float) Mth.floor((Mth.wrapDegrees(pPlayer.getYRot() - 180.0F) + 22.5F) / 45.0F) * 45.0F;
                 this.setYRot(f);
                 this.setYBodyRot(f);
                 this.setYHeadRot(f);
@@ -937,7 +975,9 @@ public class Prisoner extends RaiderServant implements VillagerDataHolder, ILoot
             if (this.prisoner.level instanceof ServerLevel serverLevel) {
                 if (this.prisoner.tickCount % 5 == 0) {
                     ColorUtil colorUtil = new ColorUtil(0xFFFB5A);
-                    serverLevel.sendParticles(ModParticleTypes.RISING_SPIRAL.get(), this.prisoner.getRandomX(1.0D), this.prisoner.getEyeY(), this.prisoner.getRandomZ(1.0D), 0, colorUtil.red(), colorUtil.green(), colorUtil.blue(), 1.0F);
+                    serverLevel.sendParticles(ModParticleTypes.RISING_SPIRAL.get(), this.prisoner.getRandomX(1.0D),
+                            this.prisoner.getEyeY(), this.prisoner.getRandomZ(1.0D), 0, colorUtil.red(),
+                            colorUtil.green(), colorUtil.blue(), 1.0F);
                 }
             }
             this.prisoner.getNavigation().stop();
@@ -952,18 +992,19 @@ public class Prisoner extends RaiderServant implements VillagerDataHolder, ILoot
         public Predicate<LivingEntity> targetPredicate = living -> false;
         public int throwTime;
 
-        public ThrowItemGoal(Prisoner prisoner){
+        public ThrowItemGoal(Prisoner prisoner) {
             this.prisoner = prisoner;
             this.setFlags(EnumSet.of(Flag.LOOK, Flag.MOVE));
         }
 
         @Override
         public boolean canUse() {
-            if (this.hasItem()){
+            if (this.hasItem()) {
                 this.target = this.getThrowTarget();
                 if (this.target != null) {
                     if (this.prisoner.isStaying()) {
-                        return this.prisoner.isWithinThrowingDistance(this.target) && this.prisoner.hasLineOfSight(this.target);
+                        return this.prisoner.isWithinThrowingDistance(this.target)
+                                && this.prisoner.hasLineOfSight(this.target);
                     }
                     return this.target.distanceTo(this.prisoner) <= 8.0D && this.prisoner.hasLineOfSight(this.target);
                 }
@@ -985,14 +1026,14 @@ public class Prisoner extends RaiderServant implements VillagerDataHolder, ILoot
         }
 
         public void tick() {
-            if (this.target == null){
+            if (this.target == null) {
                 this.stop();
             }
-            this.prisoner.getLookControl().setLookAt(this.target, 10.0F, (float)this.prisoner.getMaxHeadXRot());
-            if (this.isWithinThrowingDistance()){
+            this.prisoner.getLookControl().setLookAt(this.target, 10.0F, (float) this.prisoner.getMaxHeadXRot());
+            if (this.isWithinThrowingDistance()) {
                 this.prisoner.getNavigation().stop();
                 ++this.throwTime;
-                if (this.throwTime > 20){
+                if (this.throwTime > 20) {
                     this.throwItem();
                     this.throwTime = 0;
                 }
@@ -1006,7 +1047,7 @@ public class Prisoner extends RaiderServant implements VillagerDataHolder, ILoot
         }
 
         public void throwItem() {
-            if (this.target == null){
+            if (this.target == null) {
                 this.stop();
             }
             for (ItemStack itemstack : this.prisoner.itemsInInv(this.predicate)) {
@@ -1014,17 +1055,18 @@ public class Prisoner extends RaiderServant implements VillagerDataHolder, ILoot
             }
         }
 
-        public boolean hasItem(){
+        public boolean hasItem() {
             return !this.prisoner.itemsInInv(this.predicate).isEmpty();
         }
 
         @Nullable
         public LivingEntity getThrowTarget() {
-            List<LivingEntity> list = this.prisoner.level.getEntitiesOfClass(LivingEntity.class, this.prisoner.getBoundingBox().inflate(16.0D));
+            List<LivingEntity> list = this.prisoner.level.getEntitiesOfClass(LivingEntity.class,
+                    this.prisoner.getBoundingBox().inflate(16.0D));
             list.sort(Comparator.comparingDouble(this.prisoner::distanceToSqr));
             LivingEntity target = null;
 
-            for(LivingEntity servant : list) {
+            for (LivingEntity servant : list) {
                 if (servant != this.prisoner
                         && this.targetPredicate.test(servant)
                         && this.prisoner.hasLineOfSight(servant)) {
@@ -1043,15 +1085,14 @@ public class Prisoner extends RaiderServant implements VillagerDataHolder, ILoot
 
     public static class GiveMinedGoal extends ThrowItemGoal {
 
-        public GiveMinedGoal(Prisoner prisoner){
+        public GiveMinedGoal(Prisoner prisoner) {
             super(prisoner);
             this.predicate = itemStack -> !itemStack.isEmpty();
-            this.targetPredicate = living ->
-                    (living instanceof AbstractIllagerServant servant1
-                            && servant1.getTrueOwner() == prisoner.getTrueOwner()
-                            && !servant1.inventoryFull()
-                            && !servant1.isBaby()) ||
-                            (prisoner.getTrueOwner() instanceof Player
+            this.targetPredicate = living -> (living instanceof AbstractIllagerServant servant1
+                    && servant1.getTrueOwner() == prisoner.getTrueOwner()
+                    && !servant1.inventoryFull()
+                    && !servant1.isBaby()) ||
+                    (prisoner.getTrueOwner() instanceof Player
                             && living == prisoner.getTrueOwner());
         }
 
@@ -1073,12 +1114,12 @@ public class Prisoner extends RaiderServant implements VillagerDataHolder, ILoot
         }
 
         public void throwItem() {
-            if (this.target == null){
+            if (this.target == null) {
                 this.stop();
             }
             SimpleContainer simpleContainer = this.prisoner.getInventory();
             List<ItemStack> list = new ArrayList<>();
-            for (int i = 0; i < simpleContainer.getContainerSize(); ++i){
+            for (int i = 0; i < simpleContainer.getContainerSize(); ++i) {
                 ItemStack itemstack1 = simpleContainer.getItem(i);
                 if (!itemstack1.isEmpty()) {
                     list.add(itemstack1.copyAndClear());
@@ -1087,7 +1128,7 @@ public class Prisoner extends RaiderServant implements VillagerDataHolder, ILoot
             if (!list.isEmpty()) {
                 for (ItemStack itemStack : list) {
                     if (this.target instanceof InventoryCarrier carrier) {
-                        if (carrier.getInventory().canAddItem(itemStack)){
+                        if (carrier.getInventory().canAddItem(itemStack)) {
                             carrier.getInventory().addItem(itemStack.copyAndClear());
                             this.target.playSound(SoundEvents.ITEM_PICKUP);
                         }
@@ -1160,7 +1201,8 @@ public class Prisoner extends RaiderServant implements VillagerDataHolder, ILoot
         public PrisonerGetPickChestGoal(T prisoner) {
             super(prisoner);
             this.predicate = itemStack -> true;
-            this.chestPredicate = itemStack -> itemStack.is(ItemTags.PICKAXES) || itemStack.getItem() instanceof PickaxeItem;
+            this.chestPredicate = itemStack -> itemStack.is(ItemTags.PICKAXES)
+                    || itemStack.getItem() instanceof PickaxeItem;
         }
 
         @Override
@@ -1174,9 +1216,9 @@ public class Prisoner extends RaiderServant implements VillagerDataHolder, ILoot
             if (this.illager.getChestLevel() != this.illager.level.dimension()) {
                 return false;
             }
-            if (this.illager.getBoundPos() != null){
-                if (this.illager.getChestPos() != null){
-                    if (!this.illager.isWithinGuard(this.illager.getChestPos())){
+            if (this.illager.getBoundPos() != null) {
+                if (this.illager.getChestPos() != null) {
+                    if (!this.illager.isWithinGuard(this.illager.getChestPos())) {
                         return false;
                     }
                 }
@@ -1187,15 +1229,15 @@ public class Prisoner extends RaiderServant implements VillagerDataHolder, ILoot
             if (!this.illager.getMainHandItem().isEmpty()) {
                 return false;
             }
-            if (!this.isChestRaidable(this.illager.level, this.illager.getChestPos())){
+            if (!this.isChestRaidable(this.illager.level, this.illager.getChestPos())) {
                 return false;
             }
             if (this.illager.level.getEntitiesOfClass(LivingEntity.class, this.illager.getBoundingBox().inflate(16.0F),
-                    livingEntity ->
-                            ((livingEntity instanceof IOwned owned
-                                    && owned.getTrueOwner() == this.illager.getTrueOwner())
-                                    || (this.illager.getMasterOwner() == livingEntity))
-                            && this.illager.hasLineOfSight(livingEntity)).isEmpty()) {
+                    livingEntity -> ((livingEntity instanceof IOwned owned
+                            && owned.getTrueOwner() == this.illager.getTrueOwner())
+                            || (this.illager.getMasterOwner() == livingEntity))
+                            && this.illager.hasLineOfSight(livingEntity))
+                    .isEmpty()) {
                 return false;
             }
             return super.canUse();
@@ -1204,7 +1246,7 @@ public class Prisoner extends RaiderServant implements VillagerDataHolder, ILoot
         @Override
         public void chestInteract(Container container) {
             for (ItemStack itemStack : this.getItems(container)) {
-                if (this.illager.getMainHandItem().isEmpty()){
+                if (this.illager.getMainHandItem().isEmpty()) {
                     this.illager.setItemSlot(EquipmentSlot.MAINHAND, itemStack.copyAndClear());
                     container.setChanged();
                 }

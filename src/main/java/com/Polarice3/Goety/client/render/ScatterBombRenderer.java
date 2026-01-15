@@ -23,7 +23,8 @@ public class ScatterBombRenderer extends EntityRenderer<ScatterBomb> {
         this.shadowRadius = 0.5F;
     }
 
-    public void render(ScatterBomb p_116177_, float p_116178_, float p_116179_, PoseStack p_116180_, MultiBufferSource p_116181_, int p_116182_) {
+    public void render(ScatterBomb p_116177_, float p_116178_, float p_116179_, PoseStack p_116180_,
+            MultiBufferSource p_116181_, int p_116182_) {
         p_116180_.pushPose();
         p_116180_.translate(0.0F, -1.25F, 0.0F);
         p_116180_.scale(1.0F, 1.0F, 1.0F);
@@ -31,7 +32,7 @@ public class ScatterBombRenderer extends EntityRenderer<ScatterBomb> {
         float f1 = Mth.lerp(p_116179_, p_116177_.xRotO, p_116177_.getXRot());
         VertexConsumer vertexconsumer = p_116181_.getBuffer(RenderType.eyes(this.getTextureLocation(p_116177_)));
         this.model.setupAnim(f, f1);
-        this.model.renderToBuffer(p_116180_, vertexconsumer, 15728640, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 0.5F);
+        this.model.renderToBuffer(p_116180_, vertexconsumer, 15728640, OverlayTexture.NO_OVERLAY, 0x80FFFFFF);
         p_116180_.popPose();
         super.render(p_116177_, p_116178_, p_116179_, p_116180_, p_116181_, p_116182_);
     }

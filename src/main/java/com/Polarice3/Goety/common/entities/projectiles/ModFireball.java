@@ -24,16 +24,21 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 
 public class ModFireball extends SmallFireball implements ISpellEntity {
-    public static final EntityDataAccessor<Boolean> DATA_DANGEROUS = SynchedEntityData.defineId(ModFireball.class, EntityDataSerializers.BOOLEAN);
-    public static final EntityDataAccessor<Float> DATA_DAMAGE = SynchedEntityData.defineId(ModFireball.class, EntityDataSerializers.FLOAT);
-    public static final EntityDataAccessor<Float> DATA_EXTRA_DAMAGE = SynchedEntityData.defineId(ModFireball.class, EntityDataSerializers.FLOAT);
-    public static final EntityDataAccessor<Integer> DATA_FIERY = SynchedEntityData.defineId(ModFireball.class, EntityDataSerializers.INT);
+    public static final EntityDataAccessor<Boolean> DATA_DANGEROUS = SynchedEntityData.defineId(ModFireball.class,
+            EntityDataSerializers.BOOLEAN);
+    public static final EntityDataAccessor<Float> DATA_DAMAGE = SynchedEntityData.defineId(ModFireball.class,
+            EntityDataSerializers.FLOAT);
+    public static final EntityDataAccessor<Float> DATA_EXTRA_DAMAGE = SynchedEntityData.defineId(ModFireball.class,
+            EntityDataSerializers.FLOAT);
+    public static final EntityDataAccessor<Integer> DATA_FIERY = SynchedEntityData.defineId(ModFireball.class,
+            EntityDataSerializers.INT);
 
     public ModFireball(EntityType<? extends ModFireball> p_i50160_1_, Level p_i50160_2_) {
         super(p_i50160_1_, p_i50160_2_);
     }
 
-    public ModFireball(Level p_i1771_1_, LivingEntity p_i1771_2_, double p_i1771_3_, double p_i1771_5_, double p_i1771_7_) {
+    public ModFireball(Level p_i1771_1_, LivingEntity p_i1771_2_, double p_i1771_3_, double p_i1771_5_,
+            double p_i1771_7_) {
         super(p_i1771_1_, p_i1771_2_, p_i1771_3_, p_i1771_5_, p_i1771_7_);
     }
 
@@ -112,7 +117,7 @@ public class ModFireball extends SmallFireball implements ISpellEntity {
 
     public void tick() {
         super.tick();
-        if (this.tickCount >= MathHelper.secondsToTicks(10)){
+        if (this.tickCount >= MathHelper.secondsToTicks(10)) {
             this.discard();
         }
     }
@@ -124,20 +129,20 @@ public class ModFireball extends SmallFireball implements ISpellEntity {
             float enchantment = this.getExtraDamage();
             float damage = 5.0F;
             int flaming = 1 + this.getFiery();
-            if (entity1 instanceof Player){
+            if (entity1 instanceof Player) {
                 damage = SpellConfig.FireballDamage.get().floatValue() * WandUtil.damageMultiply();
             } else if (entity1 instanceof LivingEntity) {
                 damage = this.getDamage();
             }
             int i = entity.getRemainingFireTicks() + (flaming - 1);
-            entity.setSecondsOnFire(5 * flaming);
+            entity.igniteForSeconds(5 * flaming);
             DamageSource damageSource = entity.damageSources().fireball(this, entity1);
-            if (entity1 instanceof LivingEntity livingEntity){
-                if (CuriosFinder.hasNetherRobe(livingEntity)){
+            if (entity1 instanceof LivingEntity livingEntity) {
+                if (CuriosFinder.hasNetherRobe(livingEntity)) {
                     damageSource = ModDamageSource.magicFireball(this, entity1, this.level);
                 }
-                if (MobUtil.getOwner(livingEntity) != null){
-                    if (CuriosFinder.hasNetherRobe(MobUtil.getOwner(livingEntity))){
+                if (MobUtil.getOwner(livingEntity) != null) {
+                    if (CuriosFinder.hasNetherRobe(MobUtil.getOwner(livingEntity))) {
                         damageSource = ModDamageSource.magicFireball(this, entity1, this.level);
                     }
                 }
@@ -146,7 +151,7 @@ public class ModFireball extends SmallFireball implements ISpellEntity {
             if (!flag) {
                 entity.setRemainingFireTicks(i);
             } else if (entity1 instanceof LivingEntity) {
-                this.doEnchantDamageEffects((LivingEntity)entity1, entity);
+                this.doEnchantDamageEffects((LivingEntity) entity1, entity);
             }
         }
     }
@@ -158,7 +163,8 @@ public class ModFireball extends SmallFireball implements ISpellEntity {
             Entity entity = this.getOwner();
             if (this.isDangerous()) {
                 boolean flag = this.level.getGameRules().getBoolean(GameRules.RULE_MOB_GRIEFING);
-                if (entity instanceof Player || (entity instanceof IOwned iOwned && iOwned.getTrueOwner() instanceof Player)){
+                if (entity instanceof Player
+                        || (entity instanceof IOwned iOwned && iOwned.getTrueOwner() instanceof Player)) {
                     flag = SpellConfig.FireballGriefing.get();
                 }
                 if (flag) {
@@ -172,17 +178,17 @@ public class ModFireball extends SmallFireball implements ISpellEntity {
     }
 
     protected boolean canHitEntity(Entity pEntity) {
-        if (this.getOwner() != null){
-            if (pEntity == this.getOwner()){
+        if (this.getOwner() != null) {
+            if (pEntity == this.getOwner()) {
                 return false;
             }
-            if (this.getOwner() instanceof Mob mob && mob.getTarget() == pEntity){
+            if (this.getOwner() instanceof Mob mob && mob.getTarget() == pEntity) {
                 return super.canHitEntity(pEntity);
             } else {
-                if (MobUtil.areAllies(this.getOwner(), pEntity)){
+                if (MobUtil.areAllies(this.getOwner(), pEntity)) {
                     return false;
                 }
-                if (pEntity instanceof IOwned owned0 && this.getOwner() instanceof IOwned owned1){
+                if (pEntity instanceof IOwned owned0 && this.getOwner() instanceof IOwned owned1) {
                     return !MobUtil.ownerStack(owned0, owned1);
                 }
             }

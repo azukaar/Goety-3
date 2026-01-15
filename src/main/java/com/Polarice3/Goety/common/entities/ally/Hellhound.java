@@ -6,7 +6,7 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.pathfinder.PathType;
 
-public class Hellhound extends BlackWolf{
+public class Hellhound extends BlackWolf {
 
     public Hellhound(EntityType<? extends Owned> type, Level worldIn) {
         super(type, worldIn);
@@ -20,8 +20,8 @@ public class Hellhound extends BlackWolf{
     public boolean doHurtTarget(Entity entityIn) {
         boolean flag = super.doHurtTarget(entityIn);
         if (flag) {
-            float f = this.level.getCurrentDifficultyAt(this.blockPosition()).getEffectiveDifficulty();
-            entityIn.setSecondsOnFire(5 * (int)f);
+            float f = this.level().getCurrentDifficultyAt(this.blockPosition()).getEffectiveDifficulty();
+            entityIn.igniteForSeconds(5 * (int) f);
         }
         return flag;
     }

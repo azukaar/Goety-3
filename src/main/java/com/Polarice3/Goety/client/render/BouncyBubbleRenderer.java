@@ -14,7 +14,8 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 
 public class BouncyBubbleRenderer extends EntityRenderer<BouncyBubble> {
-   private static final ResourceLocation TEXTURE_LOCATION = Goety.location("textures/entity/projectiles/bouncy_bubble.png");
+   private static final ResourceLocation TEXTURE_LOCATION = Goety
+         .location("textures/entity/projectiles/bouncy_bubble.png");
    private final SoulBoltModel<BouncyBubble> model;
 
    public BouncyBubbleRenderer(EntityRendererProvider.Context p_174449_) {
@@ -22,7 +23,8 @@ public class BouncyBubbleRenderer extends EntityRenderer<BouncyBubble> {
       this.model = new SoulBoltModel<>(p_174449_.bakeLayer(ModModelLayer.SOUL_BOLT));
    }
 
-   public void render(BouncyBubble p_116484_, float p_116485_, float p_116486_, PoseStack p_116487_, MultiBufferSource p_116488_, int p_116489_) {
+   public void render(BouncyBubble p_116484_, float p_116485_, float p_116486_, PoseStack p_116487_,
+         MultiBufferSource p_116488_, int p_116489_) {
       p_116487_.pushPose();
       p_116487_.scale(-1.0F, -1.0F, 1.0F);
       float size = 1.0F + p_116484_.getSize();
@@ -31,7 +33,7 @@ public class BouncyBubbleRenderer extends EntityRenderer<BouncyBubble> {
       float f1 = Mth.lerp(p_116486_, p_116484_.xRotO, p_116484_.getXRot());
       VertexConsumer vertexconsumer = p_116488_.getBuffer(RenderType.eyes(this.getTextureLocation(p_116484_)));
       this.model.setupAnim(0.0F, f, f1);
-      this.model.renderToBuffer(p_116487_, vertexconsumer, 15728640, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 0.5F);
+      this.model.renderToBuffer(p_116487_, vertexconsumer, 15728640, OverlayTexture.NO_OVERLAY, 0x80FFFFFF);
       p_116487_.popPose();
       super.render(p_116484_, p_116485_, p_116486_, p_116487_, p_116488_, p_116489_);
    }

@@ -13,7 +13,8 @@ import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
 
 public class EntangleVinesRenderer<T extends EntangleVines> extends EntityRenderer<T> {
-    private static final ResourceLocation TEXTURE_LOCATION = Goety.location("textures/entity/projectiles/entangle_vines.png");
+    private static final ResourceLocation TEXTURE_LOCATION = Goety
+            .location("textures/entity/projectiles/entangle_vines.png");
     private final EntangleVinesModel<T> model;
 
     public EntangleVinesRenderer(EntityRendererProvider.Context p_i47208_1_) {
@@ -22,14 +23,15 @@ public class EntangleVinesRenderer<T extends EntangleVines> extends EntityRender
         this.shadowRadius = 0.0F;
     }
 
-    public void render(T pEntity, float entityYaw, float pPartialTicks, PoseStack pMatrixStack, MultiBufferSource bufferIn, int packedLightIn) {
+    public void render(T pEntity, float entityYaw, float pPartialTicks, PoseStack pMatrixStack,
+            MultiBufferSource bufferIn, int packedLightIn) {
         pMatrixStack.pushPose();
         pMatrixStack.mulPose(Axis.YP.rotationDegrees(90.0F - pEntity.getYRot()));
         pMatrixStack.scale(-1.0F, -1.0F, 1.0F);
         pMatrixStack.translate(0.0D, -1.45D, 0.0D);
         VertexConsumer ivertexbuilder = bufferIn.getBuffer(this.model.renderType(this.getTextureLocation(pEntity)));
         this.model.setupAnim(pEntity, 0.0F, 0.0F, pEntity.tickCount + pPartialTicks, 0, 0);
-        this.model.renderToBuffer(pMatrixStack, ivertexbuilder, packedLightIn, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 1.0F);
+        this.model.renderToBuffer(pMatrixStack, ivertexbuilder, packedLightIn, OverlayTexture.NO_OVERLAY, -1);
         pMatrixStack.popPose();
         super.render(pEntity, entityYaw, pPartialTicks, pMatrixStack, bufferIn, packedLightIn);
     }

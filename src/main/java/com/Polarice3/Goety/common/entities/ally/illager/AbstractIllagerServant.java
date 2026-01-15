@@ -70,9 +70,12 @@ import java.util.*;
 import java.util.function.Predicate;
 
 public abstract class AbstractIllagerServant extends RaiderServant implements ITrainable, ILooter {
-    protected static final EntityDataAccessor<String> CURRENT_TRAIN = SynchedEntityData.defineId(AbstractIllagerServant.class, EntityDataSerializers.STRING);
-    protected static final EntityDataAccessor<Optional<BlockPos>> TRAIN_POS = SynchedEntityData.defineId(AbstractIllagerServant.class, EntityDataSerializers.OPTIONAL_BLOCK_POS);
-    protected static final EntityDataAccessor<Optional<BlockPos>> STORED_TRAIN_POS = SynchedEntityData.defineId(AbstractIllagerServant.class, EntityDataSerializers.OPTIONAL_BLOCK_POS);
+    protected static final EntityDataAccessor<String> CURRENT_TRAIN = SynchedEntityData
+            .defineId(AbstractIllagerServant.class, EntityDataSerializers.STRING);
+    protected static final EntityDataAccessor<Optional<BlockPos>> TRAIN_POS = SynchedEntityData
+            .defineId(AbstractIllagerServant.class, EntityDataSerializers.OPTIONAL_BLOCK_POS);
+    protected static final EntityDataAccessor<Optional<BlockPos>> STORED_TRAIN_POS = SynchedEntityData
+            .defineId(AbstractIllagerServant.class, EntityDataSerializers.OPTIONAL_BLOCK_POS);
     protected int trainTime;
     protected int trainCheck;
     protected int trainCompleted = 0;
@@ -102,16 +105,19 @@ public abstract class AbstractIllagerServant extends RaiderServant implements IT
         this.goalSelector.addGoal(7, new MakeLove(this));
     }
 
-    public void targetSelectGoal(){
+    public void targetSelectGoal() {
         super.targetSelectGoal();
-        this.targetSelector.addGoal(1, (new HurtByTargetGoal(this, RaiderServant.class){
+        this.targetSelector.addGoal(1, (new HurtByTargetGoal(this, RaiderServant.class) {
             @Override
             public boolean canUse() {
-                return super.canUse() && (AbstractIllagerServant.this.isHostile() || AbstractIllagerServant.this.isNatural());
+                return super.canUse()
+                        && (AbstractIllagerServant.this.isHostile() || AbstractIllagerServant.this.isNatural());
             }
         }).setAlertOthers());
-        this.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, AbstractVillager.class, false, livingEntity -> this.isHostile() && !livingEntity.isBaby()).setUnseenMemoryTicks(300));
-        this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, IronGolem.class, false, livingEntity -> this.isHostile()));
+        this.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, AbstractVillager.class, false,
+                livingEntity -> this.isHostile() && !livingEntity.isBaby()).setUnseenMemoryTicks(300));
+        this.targetSelector.addGoal(3,
+                new NearestAttackableTargetGoal<>(this, IronGolem.class, false, livingEntity -> this.isHostile()));
     }
 
     public void throwGoal() {
@@ -166,7 +172,8 @@ public abstract class AbstractIllagerServant extends RaiderServant implements IT
 
     public SlotAccess getSlot(int p_149995_) {
         int i = p_149995_ - 300;
-        return i >= 0 && i < this.inventory.getContainerSize() ? SlotAccess.forContainer(this.inventory, i) : super.getSlot(p_149995_);
+        return i >= 0 && i < this.inventory.getContainerSize() ? SlotAccess.forContainer(this.inventory, i)
+                : super.getSlot(p_149995_);
     }
 
     public MobType getMobType() {
@@ -176,10 +183,10 @@ public abstract class AbstractIllagerServant extends RaiderServant implements IT
     @Nullable
     @Override
     public Team getTeam() {
-        if (super.getTeam() != null){
+        if (super.getTeam() != null) {
             return super.getTeam();
         } else {
-            //To allow Illagers to hurt other vanilla/modded Illagers
+            // To allow Illagers to hurt other vanilla/modded Illagers
             return new DummyTeam();
         }
     }
@@ -191,7 +198,8 @@ public abstract class AbstractIllagerServant extends RaiderServant implements IT
     }
 
     public static MutableComponent formatNameForTeam(@Nullable Team p_83349_, Component p_83350_) {
-        return p_83349_ == null || p_83349_ instanceof DummyTeam ? p_83350_.copy() : p_83349_.getFormattedName(p_83350_);
+        return p_83349_ == null || p_83349_ instanceof DummyTeam ? p_83350_.copy()
+                : p_83349_.getFormattedName(p_83350_);
     }
 
     @Override
@@ -206,7 +214,8 @@ public abstract class AbstractIllagerServant extends RaiderServant implements IT
 
     @Override
     public boolean canCommandToBlock(Level level, BlockPos blockPos) {
-        return super.canCommandToBlock(level, blockPos) || level.getBlockEntity(blockPos) instanceof OminousPyreBlockEntity;
+        return super.canCommandToBlock(level, blockPos)
+                || level.getBlockEntity(blockPos) instanceof OminousPyreBlockEntity;
     }
 
     @Override
@@ -260,7 +269,7 @@ public abstract class AbstractIllagerServant extends RaiderServant implements IT
         return this.trainTime;
     }
 
-    public void setTrainTime(int time){
+    public void setTrainTime(int time) {
         this.trainTime = time;
     }
 
@@ -268,15 +277,16 @@ public abstract class AbstractIllagerServant extends RaiderServant implements IT
         return this.trainCheck;
     }
 
-    public void setTrainCheck(int check){
+    public void setTrainCheck(int check) {
         this.trainCheck = check;
     }
 
     @Override
     public boolean canTrain(Level level, BlockPos blockPos, EntityType<? extends Mob> entityType) {
         boolean flag = true;
-        if (!MobsConfig.IllagerServantAutoTrain.get()){
-            flag = this.getStoredTrainPos().isPresent() && BlockFinder.samePos(this.getStoredTrainPos().get(), blockPos);
+        if (!MobsConfig.IllagerServantAutoTrain.get()) {
+            flag = this.getStoredTrainPos().isPresent()
+                    && BlockFinder.samePos(this.getStoredTrainPos().get(), blockPos);
         }
         if (flag) {
             this.setTrainCheck(10);
@@ -285,7 +295,7 @@ public abstract class AbstractIllagerServant extends RaiderServant implements IT
         return false;
     }
 
-    public boolean canOpenDoors(){
+    public boolean canOpenDoors() {
         return MobsConfig.IllagerServantAllOpenDoors.get();
     }
 
@@ -317,7 +327,7 @@ public abstract class AbstractIllagerServant extends RaiderServant implements IT
                 }
             }
         }
-        if (this.cantDo > 0){
+        if (this.cantDo > 0) {
             --this.cantDo;
         }
         if (!this.level.isClientSide) {
@@ -353,19 +363,21 @@ public abstract class AbstractIllagerServant extends RaiderServant implements IT
                             if (integer != null) {
                                 FoodProperties foodProperties = itemstack.getFoodProperties(this);
                                 if (foodProperties != null) {
-                                    if (!foodProperties.getEffects().isEmpty()) {
-                                        for(Pair<MobEffectInstance, Float> pair : foodProperties.getEffects()) {
-                                            if (pair.getFirst() != null && this.getRandom().nextFloat() < pair.getSecond()) {
-                                                this.addEffect(new MobEffectInstance(pair.getFirst()));
+                                    if (!foodProperties.effects().isEmpty()) {
+                                        for (FoodProperties.PossibleEffect possibleEffect : foodProperties.effects()) {
+                                            if (possibleEffect.effect() != null
+                                                    && this.getRandom().nextFloat() < possibleEffect.probability()) {
+                                                this.addEffect(new MobEffectInstance(possibleEffect.effect()));
                                             }
                                         }
                                     }
                                 }
-                                if (!BrewUtils.isEmpty(itemstack)){
+                                if (!BrewUtils.isEmpty(itemstack)) {
                                     if (!PotionUtils.getMobEffects(itemstack).isEmpty()) {
                                         for (MobEffectInstance instance : PotionUtils.getMobEffects(itemstack)) {
                                             if (instance.getEffect().isInstantenous()) {
-                                                instance.getEffect().applyInstantenousEffect(this, this, this, instance.getAmplifier(), 1.0D);
+                                                instance.getEffect().applyInstantenousEffect(this, this, this,
+                                                        instance.getAmplifier(), 1.0D);
                                             } else {
                                                 this.addEffect(new MobEffectInstance(instance));
                                             }
@@ -373,14 +385,16 @@ public abstract class AbstractIllagerServant extends RaiderServant implements IT
                                     }
                                     if (!BrewUtils.getBrewEffects(itemstack).isEmpty()) {
                                         for (BrewEffectInstance instance : BrewUtils.getBrewEffects(itemstack)) {
-                                            instance.getEffect().drinkBlockEffect(this, this, this, instance.getAmplifier(), BrewUtils.getAreaOfEffect(itemstack));
+                                            instance.getEffect().drinkBlockEffect(this, this, this,
+                                                    instance.getAmplifier(), BrewUtils.getAreaOfEffect(itemstack));
                                         }
                                     }
                                 }
                                 this.eatenFoodLevel = integer;
                                 this.playSound(SoundEvents.GENERIC_EAT);
                                 if (this.level instanceof ServerLevel serverLevel) {
-                                    ServerParticleUtil.addParticlesAroundMiddleSelf(serverLevel, new ItemParticleOption(ParticleTypes.ITEM, itemstack), this);
+                                    ServerParticleUtil.addParticlesAroundMiddleSelf(serverLevel,
+                                            new ItemParticleOption(ParticleTypes.ITEM, itemstack), this);
                                 }
                                 this.getInventory().removeItem(i, 1);
                                 break;
@@ -397,13 +411,13 @@ public abstract class AbstractIllagerServant extends RaiderServant implements IT
         return 1.0D;
     }
 
-    public List<ItemStack> itemsInInv(Predicate<ItemStack> predicate){
+    public List<ItemStack> itemsInInv(Predicate<ItemStack> predicate) {
         List<ItemStack> list = new ArrayList<>();
         SimpleContainer simplecontainer = this.getInventory();
         int i = simplecontainer.getContainerSize();
         for (int j = 0; j < i; ++j) {
             ItemStack itemStack = simplecontainer.getItem(j);
-            if (predicate.test(itemStack)){
+            if (predicate.test(itemStack)) {
                 list.add(itemStack);
             }
         }
@@ -421,7 +435,7 @@ public abstract class AbstractIllagerServant extends RaiderServant implements IT
         return i == 0;
     }
 
-    public int getBreedCool(){
+    public int getBreedCool() {
         return this.breedCool;
     }
 
@@ -431,7 +445,7 @@ public abstract class AbstractIllagerServant extends RaiderServant implements IT
 
     public boolean canBreed() {
         boolean flag = true;
-        if (!MobsConfig.IllagerServantAllBreed.get()){
+        if (!MobsConfig.IllagerServantAllBreed.get()) {
             flag = this.getType() == ModEntityType.NEOLLAGER.get();
         }
         return flag
@@ -486,14 +500,14 @@ public abstract class AbstractIllagerServant extends RaiderServant implements IT
 
     private void eatUntilFull() {
         if (this.hungry() && this.countFoodPointsInInventory() != 0) {
-            for(int i = 0; i < this.getInventory().getContainerSize(); ++i) {
+            for (int i = 0; i < this.getInventory().getContainerSize(); ++i) {
                 ItemStack itemstack = this.getInventory().getItem(i);
                 if (!itemstack.isEmpty()) {
                     Integer integer = this.getFoodPoints().get(itemstack.getItem());
                     if (integer != null) {
                         int j = itemstack.getCount();
 
-                        for(int k = j; k > 0; --k) {
+                        for (int k = j; k > 0; --k) {
                             this.foodLevel += integer;
                             this.getInventory().removeItem(i, 1);
                             if (!this.hungry()) {
@@ -532,10 +546,10 @@ public abstract class AbstractIllagerServant extends RaiderServant implements IT
         FoodProperties foodProperties = itemStack.getFoodProperties(this);
         if (foodProperties == null) {
             return false;
-        } else if (foodProperties.isMeat() && foodProperties.getNutrition() <= 3) {
+        } else if (foodProperties.isMeat() && foodProperties.nutrition() <= 3) {
             return false;
         } else {
-            return foodProperties.getEffects().isEmpty() || itemStack.is(Items.ROTTEN_FLESH);
+            return foodProperties.effects().isEmpty() || itemStack.is(Items.ROTTEN_FLESH);
         }
     }
 
@@ -547,16 +561,16 @@ public abstract class AbstractIllagerServant extends RaiderServant implements IT
         return !itemStack.is(Items.ROTTEN_FLESH);
     }
 
-    public Map<Item, Integer> getFoodPoints(){
+    public Map<Item, Integer> getFoodPoints() {
         SimpleContainer simplecontainer = this.getInventory();
         int i = simplecontainer.getContainerSize();
         Map<Item, Integer> foodPoints = new HashMap<>();
         for (int j = 0; j < i; ++j) {
             ItemStack itemStack = simplecontainer.getItem(j);
-            if (itemStack.getFoodProperties(this) != null){
+            if (itemStack.getFoodProperties(this) != null) {
                 FoodProperties foodProperties = itemStack.getFoodProperties(this);
-                if (foodProperties != null && this.validFood(itemStack) && this.canEat(itemStack)){
-                    foodPoints.put(itemStack.getItem(), foodProperties.getNutrition());
+                if (foodProperties != null && this.validFood(itemStack) && this.canEat(itemStack)) {
+                    foodPoints.put(itemStack.getItem(), foodProperties.nutrition());
                 }
             }
         }
@@ -576,21 +590,22 @@ public abstract class AbstractIllagerServant extends RaiderServant implements IT
     }
 
     protected void addParticlesAroundSelf(ParticleOptions p_35288_) {
-        for(int i = 0; i < 5; ++i) {
+        for (int i = 0; i < 5; ++i) {
             double d0 = this.random.nextGaussian() * 0.02D;
             double d1 = this.random.nextGaussian() * 0.02D;
             double d2 = this.random.nextGaussian() * 0.02D;
-            this.level.addParticle(p_35288_, this.getRandomX(1.0D), this.getRandomY() + 1.0D, this.getRandomZ(1.0D), d0, d1, d2);
+            this.level.addParticle(p_35288_, this.getRandomX(1.0D), this.getRandomY() + 1.0D, this.getRandomZ(1.0D), d0,
+                    d1, d2);
         }
 
     }
 
     public @NotNull Vec3 getLeashOffset() {
-        return new Vec3(0.0D, 0.6F * this.getEyeHeight(), (double)(this.getBbWidth() * 0.4F));
+        return new Vec3(0.0D, 0.6F * this.getEyeHeight(), (double) (this.getBbWidth() * 0.4F));
     }
 
     public Vec3 getRopeHoldPosition(float p_35318_) {
-        float f = Mth.lerp(p_35318_, this.yBodyRotO, this.yBodyRot) * ((float)Math.PI / 180F);
+        float f = Mth.lerp(p_35318_, this.yBodyRotO, this.yBodyRot) * ((float) Math.PI / 180F);
         Vec3 vec3 = new Vec3(0.0D, this.getBoundingBox().getYsize() - 1.0D, 0.2D);
         return this.getPosition(p_35318_).add(vec3.yRot(-f));
     }
@@ -598,10 +613,11 @@ public abstract class AbstractIllagerServant extends RaiderServant implements IT
     protected void pickUpItem(ItemEntity itemEntity) {
         ItemStack itemstack = itemEntity.getItem();
         boolean flag = (this.getMarked() != null || this.isRaiding()) && !this.isLeader();
-        if (flag && this.getLeader() == null && !this.getLeaderBannerInstance().isEmpty() && ItemHelper.sameBanner(itemstack, this.getBannerPatternInstance())) {
+        if (flag && this.getLeader() == null && !this.getLeaderBannerInstance().isEmpty()
+                && ItemHelper.sameBanner(itemstack, this.getBannerPatternInstance())) {
             ItemStack itemstack1 = this.getItemBySlot(EquipmentSlot.HEAD);
             double d0 = this.getEquipmentDropChance(EquipmentSlot.HEAD);
-            if (!itemstack1.isEmpty() && (double)Math.max(this.random.nextFloat() - 0.1F, 0.0F) < d0) {
+            if (!itemstack1.isEmpty() && (double) Math.max(this.random.nextFloat() - 0.1F, 0.0F) < d0) {
                 this.spawnAtLocation(itemstack1);
             }
 
@@ -631,7 +647,8 @@ public abstract class AbstractIllagerServant extends RaiderServant implements IT
     public AbstractIllagerServant getBreedOffspring(ServerLevel serverLevel, AbstractIllagerServant illager) {
         Neollager neollager = new Neollager(ModEntityType.NEOLLAGER.get(), serverLevel);
         neollager.copyTrueOwner(this);
-        net.neoforged.neoforge.event.EventHooks.onFinalizeSpawn(neollager, serverLevel, serverLevel.getCurrentDifficultyAt(this.blockPosition()), MobSpawnType.BREEDING, null, null);
+        neollager.finalizeSpawn(serverLevel, serverLevel.getCurrentDifficultyAt(this.blockPosition()),
+                MobSpawnType.BREEDING, null);
         if (illager.isGuardingArea()) {
             neollager.setBoundPos(illager.getBoundPos());
             neollager.setBoundDim(illager.getBoundLevel());
@@ -645,17 +662,16 @@ public abstract class AbstractIllagerServant extends RaiderServant implements IT
     public int trainSpeed(EntityType<? extends Mob> entityType) {
         int i = this.isBaby() ? 2 : 1;
         Mob mob = entityType.create(this.level);
-        if (mob instanceof PillagerServant){
+        if (mob instanceof PillagerServant) {
             i *= 2;
         }
         List<AbstractIllagerServant> list = this.level.getNearbyEntities(AbstractIllagerServant.class,
                 TargetingConditions.forNonCombat().range(8.0D)
                         .ignoreLineOfSight()
                         .ignoreInvisibilityTesting()
-                        .selector(livingEntity ->
-                                livingEntity instanceof AbstractIllagerServant illager
-                                        && illager.getTrueOwner() == this.getTrueOwner()
-                                        && illager.getType() == entityType),
+                        .selector(livingEntity -> livingEntity instanceof AbstractIllagerServant illager
+                                && illager.getTrueOwner() == this.getTrueOwner()
+                                && illager.getType() == entityType),
                 this, this.getBoundingBox().inflate(8.0D));
         i += Mth.clamp(list.size(), 0, MobsConfig.IllagerServantMaxMentors.get());
         return i;
@@ -667,7 +683,8 @@ public abstract class AbstractIllagerServant extends RaiderServant implements IT
             if (this.getTrainTime() < this.getTotalTrainTime()) {
                 if (this.getTrainTime() % 1000 == 0) {
                     if (this.level instanceof ServerLevel serverLevel) {
-                        ServerParticleUtil.addParticlesAroundMiddleSelf(serverLevel, ParticleTypes.HAPPY_VILLAGER, this);
+                        ServerParticleUtil.addParticlesAroundMiddleSelf(serverLevel, ParticleTypes.HAPPY_VILLAGER,
+                                this);
                     }
                 }
                 this.setTrainTime(this.getTrainTime() + this.trainSpeed(entityType));
@@ -701,7 +718,7 @@ public abstract class AbstractIllagerServant extends RaiderServant implements IT
     }
 
     public void handleEntityEvent(byte p_35391_) {
-        if (p_35391_ == 9){
+        if (p_35391_ == 9) {
             this.cantDo = 40;
         } else if (p_35391_ == 12) {
             this.addParticlesAroundSelf(ParticleTypes.HEART);
@@ -719,7 +736,7 @@ public abstract class AbstractIllagerServant extends RaiderServant implements IT
     }
 
     protected void dropAllInventory() {
-        for(int i = 0; i < this.getInventory().getContainerSize(); ++i) {
+        for (int i = 0; i < this.getInventory().getContainerSize(); ++i) {
             ItemStack itemstack = this.getInventory().getItem(i);
             if (!itemstack.isEmpty()) {
                 if (EnchantmentHelper.hasVanishingCurse(itemstack)) {
@@ -732,7 +749,7 @@ public abstract class AbstractIllagerServant extends RaiderServant implements IT
     }
 
     public boolean isWithinDistance(Entity entity, double distance) {
-        if (entity == null){
+        if (entity == null) {
             return false;
         }
         BlockPos blockpos = entity.blockPosition();
@@ -750,7 +767,7 @@ public abstract class AbstractIllagerServant extends RaiderServant implements IT
                 .map(ItemEntity::getItem)
                 .filter(itemStack -> !itemStack.isEmpty())
                 .toList();
-        for (ItemStack itemStack : drops){
+        for (ItemStack itemStack : drops) {
             if (this.getInventory().canAddItem(itemStack)) {
                 this.getInventory().addItem(itemStack);
             } else {
@@ -775,7 +792,8 @@ public abstract class AbstractIllagerServant extends RaiderServant implements IT
                             double d0 = this.random.nextGaussian() * 0.02D;
                             double d1 = this.random.nextGaussian() * 0.02D;
                             double d2 = this.random.nextGaussian() * 0.02D;
-                            serverLevel.sendParticles(ParticleTypes.HAPPY_VILLAGER, this.getRandomX(1.0D), this.getRandomY() + 0.5D, this.getRandomZ(1.0D), 0, d0, d1, d2, 0.5F);
+                            serverLevel.sendParticles(ParticleTypes.HAPPY_VILLAGER, this.getRandomX(1.0D),
+                                    this.getRandomY() + 0.5D, this.getRandomZ(1.0D), 0, d0, d1, d2, 0.5F);
                         }
                     }
                     return InteractionResult.SUCCESS;
@@ -784,7 +802,8 @@ public abstract class AbstractIllagerServant extends RaiderServant implements IT
                 return ServantUtil.equipServantArmor(pPlayer, this, itemstack, super.mobInteract(pPlayer, pHand));
             } else if (pPlayer.getMainHandItem().is(ModItems.WAYSTONE.get())) {
                 if (WaystoneItem.isSameDimension(this, pPlayer.getMainHandItem())) {
-                    if (WaystoneItem.getBlockEntity(pPlayer.getMainHandItem(), this.level) instanceof ChestBlockEntity chestBlock && chestBlock.canOpen(pPlayer)) {
+                    if (WaystoneItem.getBlockEntity(pPlayer.getMainHandItem(),
+                            this.level) instanceof ChestBlockEntity chestBlock && chestBlock.canOpen(pPlayer)) {
                         if (!this.level.isClientSide) {
                             BlockPos blockPos = WaystoneItem.getBlockPos(pPlayer.getMainHandItem());
                             if (blockPos != null) {
@@ -794,7 +813,8 @@ public abstract class AbstractIllagerServant extends RaiderServant implements IT
                                         double d0 = this.random.nextGaussian() * 0.02D;
                                         double d1 = this.random.nextGaussian() * 0.02D;
                                         double d2 = this.random.nextGaussian() * 0.02D;
-                                        serverLevel.sendParticles(ParticleTypes.HAPPY_VILLAGER, this.getRandomX(1.0D), this.getRandomY() + 0.5D, this.getRandomZ(1.0D), 0, d0, d1, d2, 0.5F);
+                                        serverLevel.sendParticles(ParticleTypes.HAPPY_VILLAGER, this.getRandomX(1.0D),
+                                                this.getRandomY() + 0.5D, this.getRandomZ(1.0D), 0, d0, d1, d2, 0.5F);
                                     }
                                 }
                                 if (chestBlock.getBlockState().is(ModTags.Blocks.RAIDING_CHESTS)) {
@@ -837,7 +857,8 @@ public abstract class AbstractIllagerServant extends RaiderServant implements IT
                         double d0 = this.random.nextGaussian() * 0.02D;
                         double d1 = this.random.nextGaussian() * 0.02D;
                         double d2 = this.random.nextGaussian() * 0.02D;
-                        serverLevel.sendParticles(ParticleTypes.HAPPY_VILLAGER, this.getRandomX(1.0D), this.getRandomY() + 0.5D, this.getRandomZ(1.0D), 0, d0, d1, d2, 0.5F);
+                        serverLevel.sendParticles(ParticleTypes.HAPPY_VILLAGER, this.getRandomX(1.0D),
+                                this.getRandomY() + 0.5D, this.getRandomZ(1.0D), 0, d0, d1, d2, 0.5F);
                     }
                 }
                 return InteractionResult.SUCCESS;
@@ -859,7 +880,7 @@ public abstract class AbstractIllagerServant extends RaiderServant implements IT
         public Predicate<LivingEntity> targetPredicate = living -> false;
         public int throwTime;
 
-        public ThrowItemGoal(AbstractIllagerServant illager){
+        public ThrowItemGoal(AbstractIllagerServant illager) {
             this.illager = illager;
             this.setFlags(EnumSet.of(Flag.LOOK, Flag.MOVE));
         }
@@ -871,11 +892,12 @@ public abstract class AbstractIllagerServant extends RaiderServant implements IT
                     && !this.illager.isCommanded()
                     && !this.illager.isRaiding()
                     && !this.illager.isCelebrating()
-                    && this.hasItem()){
+                    && this.hasItem()) {
                 this.target = this.getThrowTarget();
                 if (this.target != null) {
                     if (this.illager.isStaying()) {
-                        return this.illager.isWithinThrowingDistance(this.target) && this.illager.hasLineOfSight(this.target);
+                        return this.illager.isWithinThrowingDistance(this.target)
+                                && this.illager.hasLineOfSight(this.target);
                     }
                     return this.target.distanceTo(this.illager) <= 8.0D && this.illager.hasLineOfSight(this.target);
                 }
@@ -897,14 +919,14 @@ public abstract class AbstractIllagerServant extends RaiderServant implements IT
         }
 
         public void tick() {
-            if (this.target == null){
+            if (this.target == null) {
                 this.stop();
             }
-            this.illager.getLookControl().setLookAt(this.target, 10.0F, (float)this.illager.getMaxHeadXRot());
-            if (this.isWithinThrowingDistance()){
+            this.illager.getLookControl().setLookAt(this.target, 10.0F, (float) this.illager.getMaxHeadXRot());
+            if (this.isWithinThrowingDistance()) {
                 this.illager.getNavigation().stop();
                 ++this.throwTime;
-                if (this.throwTime > 20){
+                if (this.throwTime > 20) {
                     this.throwItem();
                     this.throwTime = 0;
                 }
@@ -918,7 +940,7 @@ public abstract class AbstractIllagerServant extends RaiderServant implements IT
         }
 
         public void throwItem() {
-            if (this.target == null){
+            if (this.target == null) {
                 this.stop();
             }
             for (ItemStack itemstack : this.illager.itemsInInv(this.predicate)) {
@@ -926,17 +948,18 @@ public abstract class AbstractIllagerServant extends RaiderServant implements IT
             }
         }
 
-        public boolean hasItem(){
+        public boolean hasItem() {
             return !this.illager.itemsInInv(this.predicate).isEmpty();
         }
 
         @Nullable
         public LivingEntity getThrowTarget() {
-            List<LivingEntity> list = this.illager.level.getEntitiesOfClass(LivingEntity.class, this.illager.getBoundingBox().inflate(16.0D));
+            List<LivingEntity> list = this.illager.level.getEntitiesOfClass(LivingEntity.class,
+                    this.illager.getBoundingBox().inflate(16.0D));
             list.sort(Comparator.comparingDouble(this.illager::distanceToSqr));
             LivingEntity illagerServant = null;
 
-            for(LivingEntity servant : list) {
+            for (LivingEntity servant : list) {
                 if (servant != this.illager
                         && this.targetPredicate.test(servant)
                         && this.illager.hasLineOfSight(servant)) {
@@ -955,7 +978,7 @@ public abstract class AbstractIllagerServant extends RaiderServant implements IT
 
     public static class ThrowLootGoal extends ThrowItemGoal {
 
-        public ThrowLootGoal(AbstractIllagerServant illager){
+        public ThrowLootGoal(AbstractIllagerServant illager) {
             super(illager);
             this.predicate = this.illager::validLootToStore;
             this.targetPredicate = livingEntity -> illager.getTrueOwner() != null
@@ -975,11 +998,10 @@ public abstract class AbstractIllagerServant extends RaiderServant implements IT
 
     public static class GiveExcessFoodGoal extends ThrowItemGoal {
 
-        public GiveExcessFoodGoal(AbstractIllagerServant illager){
+        public GiveExcessFoodGoal(AbstractIllagerServant illager) {
             super(illager);
             this.predicate = ItemStack::isEdible;
-            this.targetPredicate = living ->
-                    living instanceof AbstractIllagerServant servant1
+            this.targetPredicate = living -> living instanceof AbstractIllagerServant servant1
                     && servant1.getTrueOwner() == illager.getTrueOwner()
                     && servant1.wantsMoreFood()
                     && !servant1.isBaby();
@@ -1003,12 +1025,12 @@ public abstract class AbstractIllagerServant extends RaiderServant implements IT
         }
 
         public void throwItem() {
-            if (this.target == null){
+            if (this.target == null) {
                 this.stop();
             }
             SimpleContainer simpleContainer = this.illager.getInventory();
             List<ItemStack> list = new ArrayList<>();
-            for (int i = 0; i < simpleContainer.getContainerSize(); ++i){
+            for (int i = 0; i < simpleContainer.getContainerSize(); ++i) {
                 ItemStack itemstack1 = simpleContainer.getItem(i);
                 Item item = itemstack1.getItem();
                 if (!itemstack1.isEmpty()) {
@@ -1031,7 +1053,7 @@ public abstract class AbstractIllagerServant extends RaiderServant implements IT
             if (!list.isEmpty()) {
                 for (ItemStack itemStack : list) {
                     if (this.target instanceof InventoryCarrier carrier) {
-                        if (carrier.getInventory().canAddItem(itemStack)){
+                        if (carrier.getInventory().canAddItem(itemStack)) {
                             carrier.getInventory().addItem(itemStack.copyAndClear());
                             this.target.playSound(SoundEvents.ITEM_PICKUP);
                         }
@@ -1044,7 +1066,7 @@ public abstract class AbstractIllagerServant extends RaiderServant implements IT
     }
 
     public static class ThrowRottenFleshGoal extends ThrowItemGoal {
-        public ThrowRottenFleshGoal(AbstractIllagerServant illager){
+        public ThrowRottenFleshGoal(AbstractIllagerServant illager) {
             super(illager);
             this.predicate = itemStack -> itemStack.is(Items.ROTTEN_FLESH);
             this.targetPredicate = living -> living instanceof Ravaged ravaged
@@ -1057,7 +1079,7 @@ public abstract class AbstractIllagerServant extends RaiderServant implements IT
 
     public static class FeedRottenFleshGoal extends ThrowItemGoal {
 
-        public FeedRottenFleshGoal(AbstractIllagerServant illager){
+        public FeedRottenFleshGoal(AbstractIllagerServant illager) {
             super(illager);
             this.predicate = itemStack -> itemStack.is(Items.ROTTEN_FLESH);
             this.targetPredicate = living -> living instanceof RaiderServant servant
@@ -1073,23 +1095,23 @@ public abstract class AbstractIllagerServant extends RaiderServant implements IT
         @Override
         public void stop() {
             super.stop();
-            if (this.illager.getMainHandItem().is(Items.ROTTEN_FLESH)){
+            if (this.illager.getMainHandItem().is(Items.ROTTEN_FLESH)) {
                 this.illager.setItemSlot(EquipmentSlot.MAINHAND, ItemStack.EMPTY);
-            } else if (this.illager.getOffhandItem().is(Items.ROTTEN_FLESH)){
+            } else if (this.illager.getOffhandItem().is(Items.ROTTEN_FLESH)) {
                 this.illager.setItemSlot(EquipmentSlot.OFFHAND, ItemStack.EMPTY);
             }
         }
 
         public void tick() {
-            if (this.target == null){
+            if (this.target == null) {
                 this.stop();
             }
-            this.illager.getLookControl().setLookAt(this.target, 10.0F, (float)this.illager.getMaxHeadXRot());
+            this.illager.getLookControl().setLookAt(this.target, 10.0F, (float) this.illager.getMaxHeadXRot());
             if (!this.illager.itemsInInv(this.predicate).isEmpty()) {
                 Optional<ItemStack> optional = this.illager.itemsInInv(this.predicate).stream().findFirst();
                 if (optional.isPresent()) {
                     ItemStack itemStack = optional.get();
-                    if (!itemStack.isEmpty()){
+                    if (!itemStack.isEmpty()) {
                         FoodProperties foodProperties = itemStack.getFoodProperties(this.target);
                         if (foodProperties != null) {
                             if (this.illager.getMainHandItem().isEmpty()) {
@@ -1097,10 +1119,10 @@ public abstract class AbstractIllagerServant extends RaiderServant implements IT
                             } else if (this.illager.getOffhandItem().isEmpty()) {
                                 this.illager.setItemSlot(EquipmentSlot.OFFHAND, itemStack.copyWithCount(1));
                             }
-                            if (this.illager.isWithinThrowingDistance(this.target)){
+                            if (this.illager.isWithinThrowingDistance(this.target)) {
                                 this.illager.getNavigation().stop();
                                 ++this.throwTime;
-                                if (this.throwTime > 20){
+                                if (this.throwTime > 20) {
                                     this.target.heal(foodProperties.getNutrition());
                                     this.target.playSound(SoundEvents.GENERIC_EAT, 1.0F, 0.5F);
                                     this.target.gameEvent(GameEvent.EAT, this.target);
@@ -1111,7 +1133,9 @@ public abstract class AbstractIllagerServant extends RaiderServant implements IT
                                             double d0 = this.target.getRandom().nextGaussian() * 0.02D;
                                             double d1 = this.target.getRandom().nextGaussian() * 0.02D;
                                             double d2 = this.target.getRandom().nextGaussian() * 0.02D;
-                                            serverLevel.sendParticles(ModParticleTypes.HEAL_EFFECT.get(), this.target.getRandomX(1.0D), this.target.getRandomY() + 0.5D, this.target.getRandomZ(1.0D), 0, d0, d1, d2, 0.5F);
+                                            serverLevel.sendParticles(ModParticleTypes.HEAL_EFFECT.get(),
+                                                    this.target.getRandomX(1.0D), this.target.getRandomY() + 0.5D,
+                                                    this.target.getRandomZ(1.0D), 0, d0, d1, d2, 0.5F);
                                         }
                                     }
                                 }
@@ -1139,7 +1163,8 @@ public abstract class AbstractIllagerServant extends RaiderServant implements IT
         }
 
         public boolean canUse() {
-            return super.canUse() && AbstractIllagerServant.this.isRaiding() && AbstractIllagerServant.this.canOpenDoors();
+            return super.canUse() && AbstractIllagerServant.this.isRaiding()
+                    && AbstractIllagerServant.this.canOpenDoors();
         }
     }
 
@@ -1150,13 +1175,13 @@ public abstract class AbstractIllagerServant extends RaiderServant implements IT
         private int loveTime;
         private boolean hasBred;
 
-        public MakeLove(AbstractIllagerServant illager){
+        public MakeLove(AbstractIllagerServant illager) {
             this.illager = illager;
         }
 
         @Override
         public boolean canUse() {
-            if (!this.illager.canBreed()){
+            if (!this.illager.canBreed()) {
                 return false;
             }
             this.partner = this.getFreePartner();
@@ -1187,24 +1212,25 @@ public abstract class AbstractIllagerServant extends RaiderServant implements IT
         }
 
         public void tick() {
-            if (this.partner == null){
+            if (this.partner == null) {
                 this.stop();
             }
-            this.illager.getLookControl().setLookAt(this.partner, 10.0F, (float)this.illager.getMaxHeadXRot());
+            this.illager.getLookControl().setLookAt(this.partner, 10.0F, (float) this.illager.getMaxHeadXRot());
             this.illager.getNavigation().moveTo(this.partner, 0.5F);
-            if ((int) this.illager.level.getGameTime() >= this.loveTime && this.illager.distanceToSqr(this.partner) <= 5.0D) {
+            if ((int) this.illager.level.getGameTime() >= this.loveTime
+                    && this.illager.distanceToSqr(this.partner) <= 5.0D) {
                 this.partner.eatAndDigestFood();
                 this.illager.eatAndDigestFood();
                 this.breed();
             } else if (this.illager.level.getRandom().nextInt(35) == 0) {
-                this.illager.level.broadcastEntityEvent(this.illager, (byte)12);
-                this.illager.level.broadcastEntityEvent(this.partner, (byte)12);
+                this.illager.level.broadcastEntityEvent(this.illager, (byte) 12);
+                this.illager.level.broadcastEntityEvent(this.partner, (byte) 12);
             }
         }
 
-        public void breed(){
+        public void breed() {
             this.illager.breedCool = 6000;
-            if (this.partner == null || this.hasBred){
+            if (this.partner == null || this.hasBred) {
                 return;
             }
             this.partner.breedCool = 6000;
@@ -1223,12 +1249,14 @@ public abstract class AbstractIllagerServant extends RaiderServant implements IT
 
         @Nullable
         private AbstractIllagerServant getFreePartner() {
-            List<AbstractIllagerServant> list = this.illager.level.getEntitiesOfClass(AbstractIllagerServant.class, this.illager.getBoundingBox().inflate(16.0D));
+            List<AbstractIllagerServant> list = this.illager.level.getEntitiesOfClass(AbstractIllagerServant.class,
+                    this.illager.getBoundingBox().inflate(16.0D));
             list.sort(Comparator.comparingDouble(this.illager::distanceToSqr));
             AbstractIllagerServant illagerServant = null;
 
-            for(AbstractIllagerServant servant : list) {
-                if (servant != this.illager && servant.getTrueOwner() == this.illager.getTrueOwner() && servant.canBreed() && this.illager.canBreed() && this.illager.hasLineOfSight(servant)) {
+            for (AbstractIllagerServant servant : list) {
+                if (servant != this.illager && servant.getTrueOwner() == this.illager.getTrueOwner()
+                        && servant.canBreed() && this.illager.canBreed() && this.illager.hasLineOfSight(servant)) {
                     illagerServant = servant;
                 }
             }
@@ -1236,7 +1264,7 @@ public abstract class AbstractIllagerServant extends RaiderServant implements IT
             return illagerServant;
         }
 
-        public boolean hasVacantBed(){
+        public boolean hasVacantBed() {
             if (this.illager.level instanceof ServerLevel serverLevel) {
                 Optional<BlockPos> optional = this.getVacantBed(serverLevel);
                 return optional.isPresent() && this.canReach(optional.get());
@@ -1246,8 +1274,8 @@ public abstract class AbstractIllagerServant extends RaiderServant implements IT
         }
 
         public Optional<BlockPos> getVacantBed(ServerLevel serverLevel) {
-            return serverLevel.getPoiManager().find((holder) -> holder.is(PoiTypes.HOME)
-                    , (blockPos -> true), this.illager.blockPosition(), 8, PoiManager.Occupancy.HAS_SPACE);
+            return serverLevel.getPoiManager().find((holder) -> holder.is(PoiTypes.HOME), (blockPos -> true),
+                    this.illager.blockPosition(), 8, PoiManager.Occupancy.HAS_SPACE);
         }
 
         public boolean canReach(BlockPos p_217502_) {

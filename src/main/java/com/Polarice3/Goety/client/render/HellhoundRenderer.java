@@ -11,13 +11,16 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.MobRenderer;
 import net.minecraft.client.renderer.entity.RenderLayerParent;
+import net.minecraft.client.renderer.texture.OverlayTexture;
+import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.renderer.entity.layers.EyesLayer;
 import net.minecraft.client.renderer.entity.layers.RenderLayer;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
 
 public class HellhoundRenderer extends MobRenderer<Hellhound, BlackWolfModel<Hellhound>> {
-    private static final ResourceLocation TEXTURES = Goety.location("textures/entity/servants/black_wolf/hellhound.png");
+    private static final ResourceLocation TEXTURES = Goety
+            .location("textures/entity/servants/black_wolf/hellhound.png");
 
     public HellhoundRenderer(EntityRendererProvider.Context p_174452_) {
         super(p_174452_, new BlackWolfModel<>(p_174452_.bakeLayer(ModModelLayer.BLACK_WOLF)), 0.5F);
@@ -29,7 +32,7 @@ public class HellhoundRenderer extends MobRenderer<Hellhound, BlackWolfModel<Hel
     @Override
     protected void scale(Hellhound p_115314_, PoseStack p_115315_, float p_115316_) {
         int i = p_115314_.isUpgraded() ? 1 : 0;
-        float f = 1.0F + 0.15F * (float)i;
+        float f = 1.0F + 0.15F * (float) i;
         p_115315_.scale(f, f, f);
     }
 
@@ -37,7 +40,8 @@ public class HellhoundRenderer extends MobRenderer<Hellhound, BlackWolfModel<Hel
         return p_116528_.getTailAngle();
     }
 
-    public void render(Hellhound p_116531_, float p_116532_, float p_116533_, PoseStack p_116534_, MultiBufferSource p_116535_, int p_116536_) {
+    public void render(Hellhound p_116531_, float p_116532_, float p_116533_, PoseStack p_116534_,
+            MultiBufferSource p_116535_, int p_116536_) {
         if (p_116531_.isWet()) {
             float f = p_116531_.getWetShade(p_116533_);
             this.model.setColor(f, f, f);
@@ -55,7 +59,8 @@ public class HellhoundRenderer extends MobRenderer<Hellhound, BlackWolfModel<Hel
     }
 
     public static class ChainsLayer<T extends Hellhound, M extends BlackWolfModel<T>> extends RenderLayer<T, M> {
-        private static final ResourceLocation TEXTURES = Goety.location("textures/entity/servants/black_wolf/hellhound_chains.png");
+        private static final ResourceLocation TEXTURES = Goety
+                .location("textures/entity/servants/black_wolf/hellhound_chains.png");
         private final BlackWolfModel<T> layerModel;
 
         public ChainsLayer(RenderLayerParent<T, M> p_117346_, EntityModelSet p_174555_) {
@@ -64,15 +69,20 @@ public class HellhoundRenderer extends MobRenderer<Hellhound, BlackWolfModel<Hel
         }
 
         @Override
-        public void render(PoseStack matrixStackIn, MultiBufferSource bufferIn, int packedLightIn, T blackHound, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch) {
+        public void render(PoseStack matrixStackIn, MultiBufferSource bufferIn, int packedLightIn, T blackHound,
+                float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw,
+                float headPitch) {
             if (!blackHound.isNatural()) {
-                coloredCutoutModelCopyLayerRender(this.getParentModel(), this.layerModel, TEXTURES, matrixStackIn, bufferIn, packedLightIn, blackHound, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, partialTicks, 1.0F, 1.0F, 1.0F);
+                VertexConsumer vertexConsumer = bufferIn.getBuffer(RenderType.entityCutoutNoCull(TEXTURES));
+                this.layerModel.renderToBuffer(matrixStackIn, vertexConsumer, packedLightIn, OverlayTexture.NO_OVERLAY,
+                        -1);
             }
         }
     }
 
     public static class BigFurLayer<T extends BlackWolf, M extends BlackWolfModel<T>> extends RenderLayer<T, M> {
-        private static final ResourceLocation TEXTURES = Goety.location("textures/entity/servants/black_wolf/hellhound_fur.png");
+        private static final ResourceLocation TEXTURES = Goety
+                .location("textures/entity/servants/black_wolf/hellhound_fur.png");
 
         private final BlackWolfModel<T> layerModel;
 
@@ -82,15 +92,20 @@ public class HellhoundRenderer extends MobRenderer<Hellhound, BlackWolfModel<Hel
         }
 
         @Override
-        public void render(PoseStack matrixStackIn, MultiBufferSource bufferIn, int packedLightIn, T blackHound, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch) {
+        public void render(PoseStack matrixStackIn, MultiBufferSource bufferIn, int packedLightIn, T blackHound,
+                float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw,
+                float headPitch) {
             if (blackHound.isUpgraded()) {
-                coloredCutoutModelCopyLayerRender(this.getParentModel(), this.layerModel, TEXTURES, matrixStackIn, bufferIn, packedLightIn, blackHound, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, partialTicks, 1.0F, 1.0F, 1.0F);
+                coloredCutoutModelCopyLayerRender(this.getParentModel(), this.layerModel, TEXTURES, matrixStackIn,
+                        bufferIn, packedLightIn, blackHound, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw,
+                        headPitch, partialTicks, 1.0F, 1.0F, 1.0F);
             }
         }
     }
 
     public static class WolfEyesLayer<T extends Hellhound, M extends BlackWolfModel<T>> extends EyesLayer<T, M> {
-        private static final ResourceLocation TEXTURES = Goety.location("textures/entity/servants/black_wolf/hellhound_eyes.png");
+        private static final ResourceLocation TEXTURES = Goety
+                .location("textures/entity/servants/black_wolf/hellhound_eyes.png");
 
         public WolfEyesLayer(RenderLayerParent<T, M> p_117346_) {
             super(p_117346_);

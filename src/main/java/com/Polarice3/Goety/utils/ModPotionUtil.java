@@ -18,18 +18,21 @@ public class ModPotionUtil extends BrewingRecipe {
 
     @Override
     public boolean isInput(ItemStack stack) {
-        return super.isInput(stack) && PotionUtils.getPotion(stack) == PotionUtils.getPotion(inputStack);
+        return super.isInput(stack) && stack.has(net.minecraft.core.component.DataComponents.POTION_CONTENTS)
+                && inputStack.has(net.minecraft.core.component.DataComponents.POTION_CONTENTS) &&
+                stack.get(net.minecraft.core.component.DataComponents.POTION_CONTENTS)
+                        .equals(inputStack.get(net.minecraft.core.component.DataComponents.POTION_CONTENTS));
     }
 
-    public static ItemStack setPotion(Potion pPotion) {
-        return PotionUtils.setPotion(new ItemStack(Items.POTION), pPotion);
+    public static ItemStack setPotion(net.minecraft.core.Holder<Potion> pPotion) {
+        return net.minecraft.world.item.alchemy.PotionContents.createItemStack(Items.POTION, pPotion);
     }
 
-    public static ItemStack setSplashPotion(Potion pPotion) {
-        return PotionUtils.setPotion(new ItemStack(Items.SPLASH_POTION), pPotion);
+    public static ItemStack setSplashPotion(net.minecraft.core.Holder<Potion> pPotion) {
+        return net.minecraft.world.item.alchemy.PotionContents.createItemStack(Items.SPLASH_POTION, pPotion);
     }
 
-    public static ItemStack setLingeringPotion(Potion pPotion) {
-        return PotionUtils.setPotion(new ItemStack(Items.LINGERING_POTION), pPotion);
+    public static ItemStack setLingeringPotion(net.minecraft.core.Holder<Potion> pPotion) {
+        return net.minecraft.world.item.alchemy.PotionContents.createItemStack(Items.LINGERING_POTION, pPotion);
     }
 }

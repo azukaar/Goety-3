@@ -32,7 +32,8 @@ import java.util.List;
 import java.util.UUID;
 
 public class FireBlastTrap extends Entity implements ISpellEntity {
-    private static final EntityDataAccessor<Boolean> IMMEDIATE = SynchedEntityData.defineId(FireBlastTrap.class, EntityDataSerializers.BOOLEAN);
+    private static final EntityDataAccessor<Boolean> IMMEDIATE = SynchedEntityData.defineId(FireBlastTrap.class,
+            EntityDataSerializers.BOOLEAN);
     public LivingEntity owner;
     private UUID ownerUniqueId;
     private float extraDamage;
@@ -82,20 +83,20 @@ public class FireBlastTrap extends Entity implements ISpellEntity {
     @Nullable
     public LivingEntity getOwner() {
         if (this.owner == null && this.ownerUniqueId != null && this.level instanceof ServerLevel) {
-            Entity entity = ((ServerLevel)this.level).getEntity(this.ownerUniqueId);
+            Entity entity = ((ServerLevel) this.level).getEntity(this.ownerUniqueId);
             if (entity instanceof LivingEntity) {
-                this.owner = (LivingEntity)entity;
+                this.owner = (LivingEntity) entity;
             }
         }
 
         return this.owner;
     }
 
-    public void setBurning(int burning){
+    public void setBurning(int burning) {
         this.burning = burning;
     }
 
-    public int getBurning(){
+    public int getBurning() {
         return this.burning;
     }
 
@@ -115,11 +116,11 @@ public class FireBlastTrap extends Entity implements ISpellEntity {
         return this.areaOfEffect;
     }
 
-    public void setImmediate(boolean immediate){
+    public void setImmediate(boolean immediate) {
         this.entityData.set(IMMEDIATE, immediate);
     }
 
-    public boolean getImmediate(){
+    public boolean getImmediate() {
         return this.entityData.get(IMMEDIATE);
     }
 
@@ -135,30 +136,36 @@ public class FireBlastTrap extends Entity implements ISpellEntity {
                 float f7 = Mth.sqrt(this.random.nextFloat()) * f;
                 float f8 = Mth.cos(f6) * f7;
                 float f9 = Mth.sin(f6) * f7;
-                serverLevel.sendParticles(ModParticleTypes.BURNING.get(), this.getX() + (double) f8, this.getY(), this.getZ() + (double) f9, 1, 0, 0, 0, 0);
+                serverLevel.sendParticles(ModParticleTypes.BURNING.get(), this.getX() + (double) f8, this.getY(),
+                        this.getZ() + (double) f9, 1, 0, 0, 0, 0);
             }
             ColorUtil color = new ColorUtil(ChatFormatting.GOLD);
-            ServerParticleUtil.windParticle(serverLevel, color, (f - 1.0F) + serverLevel.random.nextFloat() * 0.5F, 0.0F, this.getId(), this.position());
-            ServerParticleUtil.windParticle(serverLevel, color, f + serverLevel.random.nextFloat() * 0.5F, 0.0F, this.getId(), this.position());
+            ServerParticleUtil.windParticle(serverLevel, color, (f - 1.0F) + serverLevel.random.nextFloat() * 0.5F,
+                    0.0F, this.getId(), this.position());
+            ServerParticleUtil.windParticle(serverLevel, color, f + serverLevel.random.nextFloat() * 0.5F, 0.0F,
+                    this.getId(), this.position());
 
-            if (this.tickCount == 20 || this.getImmediate()){
+            if (this.tickCount == 20 || this.getImmediate()) {
                 for (int j1 = 0; j1 < 16; ++j1) {
                     for (int k1 = 0; (float) k1 < f5; ++k1) {
                         float f6 = this.random.nextFloat() * ((float) Math.PI * 2F);
                         float f7 = Mth.sqrt(this.random.nextFloat()) * f;
                         float f8 = Mth.cos(f6) * f7;
                         float f9 = Mth.sin(f6) * f7;
-                        serverLevel.sendParticles(ParticleTypes.FLAME, this.getX() + (double) f8, this.getY(), this.getZ() + (double) f9, 0, 0, 0.5D, 0, 0.5F);
+                        serverLevel.sendParticles(ParticleTypes.FLAME, this.getX() + (double) f8, this.getY(),
+                                this.getZ() + (double) f9, 0, 0, 0.5D, 0, 0.5F);
                     }
                 }
                 List<Entity> targets = new ArrayList<>();
                 float area0 = 1.0F + area;
                 AABB aabb = this.getBoundingBox();
-                AABB aabb1 = new AABB(aabb.minX - area0, aabb.minY - 1.0F, aabb.minZ - area0, aabb.maxX + area0, aabb.maxY + 1.0F, aabb.maxZ + area0);
-                for (Entity entity : this.level.getEntitiesOfClass(Entity.class, aabb1)){
+                AABB aabb1 = new AABB(aabb.minX - area0, aabb.minY - 1.0F, aabb.minZ - area0, aabb.maxX + area0,
+                        aabb.maxY + 1.0F, aabb.maxZ + area0);
+                for (Entity entity : this.level.getEntitiesOfClass(Entity.class, aabb1)) {
                     if (this.owner != null) {
                         if (entity != this.owner && !MobUtil.areAllies(entity, this.owner)) {
-                            if (this.owner instanceof Mob mob && this.owner instanceof Enemy && entity instanceof Enemy) {
+                            if (this.owner instanceof Mob mob && this.owner instanceof Enemy
+                                    && entity instanceof Enemy) {
                                 if (mob.getTarget() == entity) {
                                     targets.add(entity);
                                 }
@@ -170,47 +177,50 @@ public class FireBlastTrap extends Entity implements ISpellEntity {
                         targets.add(entity);
                     }
                 }
-                if (!targets.isEmpty()){
+                if (!targets.isEmpty()) {
                     for (Entity entity : targets) {
                         if ((this.owner != null && CuriosFinder.hasUnholySet(this.owner))) {
                             if (entity instanceof LivingEntity livingEntity) {
                                 livingEntity.addEffect(new MobEffectInstance(GoetyEffects.BURN_HEX.get(), 1200));
                             }
-                            entity.hurt(ModDamageSource.hellfire(this, this.owner), AttributesConfig.ApostleMagicDamage.get().floatValue() + this.getExtraDamage());
+                            entity.hurt(ModDamageSource.hellfire(this, this.owner),
+                                    AttributesConfig.ApostleMagicDamage.get().floatValue() + this.getExtraDamage());
                         } else {
-                            if (this.owner != null){
+                            if (this.owner != null) {
                                 float damage = 5.0F;
-                                if (this.owner instanceof Mob mob && mob.getAttribute(Attributes.ATTACK_DAMAGE) != null){
+                                if (this.owner instanceof Mob mob
+                                        && mob.getAttribute(Attributes.ATTACK_DAMAGE) != null) {
                                     damage = (float) mob.getAttributeValue(Attributes.ATTACK_DAMAGE);
                                 }
-                                entity.hurt(ModDamageSource.magicFireBreath(this, this.owner), damage + this.getExtraDamage());
+                                entity.hurt(ModDamageSource.magicFireBreath(this, this.owner),
+                                        damage + this.getExtraDamage());
                             } else {
                                 entity.hurt(damageSources().magic(), 5.0F + this.getExtraDamage());
                             }
                         }
                         if (entity instanceof LivingEntity livingEntity) {
                             MobUtil.push(livingEntity, 0.0D, 1.0D, 0.0D, 0.5D);
-                            if (this.burning > 0){
-                                livingEntity.setSecondsOnFire(this.burning * 4);
+                            if (this.burning > 0) {
+                                livingEntity.igniteForSeconds(this.burning * 4);
                             }
                         }
                     }
                 }
             }
         }
-        if (this.tickCount > 20 || (this.getImmediate() && this.tickCount > 5)){
+        if (this.tickCount > 20 || (this.getImmediate() && this.tickCount > 5)) {
             this.setDeltaMovement(this.getDeltaMovement().add(0.0D, 0.25D, 0.0D));
             this.move(MoverType.SELF, this.getDeltaMovement());
         }
-        if (this.tickCount == 20 || (this.getImmediate() && this.tickCount == 5)){
+        if (this.tickCount == 20 || (this.getImmediate() && this.tickCount == 5)) {
             this.playSound(SoundEvents.GENERIC_EXPLODE, 1.0F, 0.5F);
         }
-        if (this.owner != null){
-            if (this.owner.isDeadOrDying() || this.owner.isRemoved()){
+        if (this.owner != null) {
+            if (this.owner.isDeadOrDying() || this.owner.isRemoved()) {
                 this.discard();
             }
         }
-        if (this.tickCount % 30 == 0){
+        if (this.tickCount % 30 == 0) {
             this.discard();
         }
     }

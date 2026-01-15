@@ -13,7 +13,8 @@ import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
 
 public class ViciousToothRenderer extends EntityRenderer<ViciousTooth> {
-    private static final ResourceLocation TEXTURE = new ResourceLocation(Goety.MOD_ID,"textures/entity/projectiles/vicious_tooth.png");
+    private static final ResourceLocation TEXTURE = new ResourceLocation(Goety.MOD_ID,
+            "textures/entity/projectiles/vicious_tooth.png");
     private final ViciousToothModel<ViciousTooth> model;
 
     public ViciousToothRenderer(EntityRendererProvider.Context renderManagerIn) {
@@ -21,12 +22,13 @@ public class ViciousToothRenderer extends EntityRenderer<ViciousTooth> {
         this.model = new ViciousToothModel<>(renderManagerIn.bakeLayer(ModModelLayer.VICIOUS_TOOTH));
     }
 
-    public void render(ViciousTooth pEntity, float entityYaw, float pPartialTicks, PoseStack pMatrixStack, MultiBufferSource bufferIn, int packedLightIn) {
+    public void render(ViciousTooth pEntity, float entityYaw, float pPartialTicks, PoseStack pMatrixStack,
+            MultiBufferSource bufferIn, int packedLightIn) {
         pMatrixStack.pushPose();
         pMatrixStack.mulPose(Axis.YP.rotationDegrees(90.0F - pEntity.getYRot()));
         float f;
         VertexConsumer ivertexbuilder = bufferIn.getBuffer(this.model.renderType(this.getTextureLocation(pEntity)));
-        if (pEntity.isStarting()){
+        if (pEntity.isStarting()) {
             f = pEntity.hovering / 20.0F;
         } else {
             f = 1.0F;
@@ -34,7 +36,7 @@ public class ViciousToothRenderer extends EntityRenderer<ViciousTooth> {
         pMatrixStack.scale(-f, -f, f);
         pMatrixStack.translate(0.0D, -2.1D, 0.0D);
         this.model.setupAnim(pEntity, 0.0F, 0.0F, pPartialTicks, 0, 0);
-        this.model.renderToBuffer(pMatrixStack, ivertexbuilder, packedLightIn, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 0.15F);
+        this.model.renderToBuffer(pMatrixStack, ivertexbuilder, packedLightIn, OverlayTexture.NO_OVERLAY, 0x26FFFFFF);
         pMatrixStack.popPose();
         super.render(pEntity, entityYaw, pPartialTicks, pMatrixStack, bufferIn, packedLightIn);
     }

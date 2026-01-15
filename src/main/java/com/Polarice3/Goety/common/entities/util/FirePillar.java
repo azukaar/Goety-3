@@ -21,7 +21,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FirePillar extends CastSpellTrap{
+public class FirePillar extends CastSpellTrap {
     public int warmUp;
     public boolean playEvent;
 
@@ -63,7 +63,7 @@ public class FirePillar extends CastSpellTrap{
         return ModParticleTypes.BURNING.get();
     }
 
-    public void setWarmUp(int warmUp){
+    public void setWarmUp(int warmUp) {
         this.warmUp = warmUp;
         this.setDuration(this.getDuration() + warmUp);
     }
@@ -74,7 +74,8 @@ public class FirePillar extends CastSpellTrap{
             if (this.warmUp <= 0) {
                 if (this.level instanceof ServerLevel serverWorld) {
                     if (this.tickCount % 5 == 0) {
-                        serverWorld.sendParticles(ModParticleTypes.FIERY_PILLAR.get(), this.getX(), this.getY() + 0.5D, this.getZ(), 0, 0, 0.5D, 0, 1.0D);
+                        serverWorld.sendParticles(ModParticleTypes.FIERY_PILLAR.get(), this.getX(), this.getY() + 0.5D,
+                                this.getZ(), 0, 0, 0.5D, 0, 1.0D);
                     }
                 }
                 this.setActivated(true);
@@ -86,7 +87,8 @@ public class FirePillar extends CastSpellTrap{
                     this.playSound(ModSounds.FIRE_TORNADO_AMBIENT.get(), 1.0F, 1.0F);
                 }
                 List<LivingEntity> targets = new ArrayList<>();
-                for (Entity entity : this.level.getEntitiesOfClass(Entity.class, this.getBoundingBox().inflate(0, 8, 0))) {
+                for (Entity entity : this.level.getEntitiesOfClass(Entity.class,
+                        this.getBoundingBox().inflate(0, 8, 0))) {
                     LivingEntity livingEntity = MobUtil.getLivingTarget(entity);
                     if (livingEntity != null) {
                         if (this.getOwner() != null) {
@@ -101,28 +103,31 @@ public class FirePillar extends CastSpellTrap{
                 if (!targets.isEmpty()) {
                     for (LivingEntity livingEntity : targets) {
                         int distance = Math.max((int) (livingEntity.getY() - this.getY()), 1);
-                        if (BlockFinder.emptySpaceBetween(this.level, this.blockPosition().above(), Math.min(8, distance), true)) {
+                        if (BlockFinder.emptySpaceBetween(this.level, this.blockPosition().above(),
+                                Math.min(8, distance), true)) {
                             float damage = SpellConfig.FlameStrikeDamage.get().floatValue() * WandUtil.damageMultiply();
                             if (this.getOwner() != null) {
-                                if (this.getOwner() instanceof Mob mob && mob.getAttribute(Attributes.ATTACK_DAMAGE) != null) {
+                                if (this.getOwner() instanceof Mob mob
+                                        && mob.getAttribute(Attributes.ATTACK_DAMAGE) != null) {
                                     damage = (float) mob.getAttributeValue(Attributes.ATTACK_DAMAGE) / 2.0F;
                                 }
                             }
                             damage += this.getExtraDamage();
                             DamageSource damageSource = ModDamageSource.fireBreath(this, this.getOwner());
-                            if (CuriosFinder.hasNetherRobe(this.getOwner())){
+                            if (CuriosFinder.hasNetherRobe(this.getOwner())) {
                                 damageSource = ModDamageSource.magicFireBreath(this, this.getOwner());
                             }
-                            if (MobUtil.getOwner(livingEntity) != null){
-                                if (CuriosFinder.hasNetherRobe(MobUtil.getOwner(livingEntity))){
+                            if (MobUtil.getOwner(livingEntity) != null) {
+                                if (CuriosFinder.hasNetherRobe(MobUtil.getOwner(livingEntity))) {
                                     damageSource = ModDamageSource.magicFireBreath(this, this.getOwner());
                                 }
                             }
-                            if (this.getOwner() instanceof WitherNecromancer || CuriosFinder.hasUnholySet(this.getOwner())){
+                            if (this.getOwner() instanceof WitherNecromancer
+                                    || CuriosFinder.hasUnholySet(this.getOwner())) {
                                 damageSource = ModDamageSource.hellfire(this, this.getOwner());
                             }
                             livingEntity.hurt(damageSource, damage);
-                            livingEntity.setSecondsOnFire(5);
+                            livingEntity.igniteForSeconds(5);
                         }
                     }
                 }
@@ -134,7 +139,8 @@ public class FirePillar extends CastSpellTrap{
                     double d1 = this.getX() + (this.random.nextDouble() - 0.5D) * (double) this.getBbWidth();
                     double d2 = this.getY() + 0.5F;
                     double d3 = this.getZ() + (this.random.nextDouble() - 0.5D) * (double) this.getBbWidth();
-                    serverWorld.sendParticles(ModParticleTypes.BIG_FIRE_GROUND.get(), d1, d2, d3, 0, 0.0D, 0.0D, 0.0D, 0.5F);
+                    serverWorld.sendParticles(ModParticleTypes.BIG_FIRE_GROUND.get(), d1, d2, d3, 0, 0.0D, 0.0D, 0.0D,
+                            0.5F);
                 }
                 if (this.getOwner() != null && this.getOwner().isDeadOrDying()) {
                     this.discard();

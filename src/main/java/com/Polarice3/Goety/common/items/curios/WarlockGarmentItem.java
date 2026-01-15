@@ -10,7 +10,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 
-public class WarlockGarmentItem extends SingleStackItem{
+public class WarlockGarmentItem extends SingleStackItem {
 
     @Override
     public void inventoryTick(ItemStack stack, Level worldIn, Entity entityIn, int itemSlot, boolean isSelected) {
@@ -20,9 +20,12 @@ public class WarlockGarmentItem extends SingleStackItem{
                     if (player.tickCount % 60 == 0) {
                         if (!ItemHelper.findItem(player, ModItems.WARTFUL_EGG.get()).isEmpty()) {
                             ItemStack itemStack = ItemHelper.findItem(player, ModItems.WARTFUL_EGG.get());
-                            player.getActiveEffects().stream().filter(mobEffect -> mobEffect.getEffect().getCategory() == MobEffectCategory.HARMFUL && !mobEffect.getEffect().getCurativeItems().isEmpty()).findFirst().ifPresent(effect -> {
-                                WartlingEggItem.warlockUse(worldIn, player, itemStack);
-                            });
+                            player.getActiveEffects().stream()
+                                    .filter(mobEffect -> mobEffect.getEffect().value()
+                                            .getCategory() == MobEffectCategory.HARMFUL)
+                                    .findFirst().ifPresent(effect -> {
+                                        WartlingEggItem.warlockUse(worldIn, player, itemStack);
+                                    });
                         }
                     }
                 }

@@ -15,6 +15,8 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.LayeredDraw;
 import net.minecraft.client.DeltaTracker;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.GameType;
@@ -28,8 +30,9 @@ public class SoulEnergyGui {
         drawHUD(guiGraphics, partialTick, screenWidth, screenHeight);
     };
 
-    public static boolean shouldDisplayBar(){
-        return SEHelper.getSoulsContainer(minecraft.player) && MainConfig.SoulGuiShow.get() && (minecraft.gameMode != null && minecraft.gameMode.getPlayerMode() != GameType.SPECTATOR);
+    public static boolean shouldDisplayBar() {
+        return SEHelper.getSoulsContainer(minecraft.player) && MainConfig.SoulGuiShow.get()
+                && (minecraft.gameMode != null && minecraft.gameMode.getPlayerMode() != GameType.SPECTATOR);
     }
 
     public static Font getFont() {
@@ -37,64 +40,71 @@ public class SoulEnergyGui {
     }
 
     public static void drawHUD(GuiGraphics guiGraphics, DeltaTracker partialTick, int screenWidth, int screenHeight) {
-        if(!shouldDisplayBar()) {
+        if (!shouldDisplayBar()) {
             return;
         }
 
         ItemStack stack = TotemFinder.FindTotem(minecraft.player);
         int SoulEnergy = 0;
         int SoulEnergyTotal = MainConfig.MaxSouls.get();
-        if (SEHelper.getSEActive(minecraft.player)){
+        if (SEHelper.getSEActive(minecraft.player)) {
             SoulEnergy = SEHelper.getSESouls(minecraft.player);
             SoulEnergyTotal = MainConfig.MaxArcaSouls.get();
         } else if (!stack.isEmpty()) {
-            if (stack.getTag() != null) {
+            CompoundTag tag = stack.get(DataComponents.CUSTOM_DATA);
+            if (tag != null) {
                 SoulEnergy = ITotem.currentSouls(stack);
-                if (stack.getTag().contains(ITotem.MAX_SOUL_AMOUNT)) {
+                if (tag.contains(ITotem.MAX_SOUL_AMOUNT)) {
                     SoulEnergyTotal = ITotem.maximumSouls(stack);
                 }
             }
         }
 
-        int i = (screenWidth/2) + (MainConfig.SoulGuiHorizontal.get());
-        int energylength = (int)(117 * (SoulEnergy / (double)SoulEnergyTotal));
-        int maxenergy = (int) (117 * (MainConfig.MaxSouls.get() / (double)SoulEnergyTotal));
+        int i = (screenWidth / 2) + (MainConfig.SoulGuiHorizontal.get());
+        int energylength = (int) (117 * (SoulEnergy / (double) SoulEnergyTotal));
+        int maxenergy = (int) (117 * (MainConfig.MaxSouls.get() / (double) SoulEnergyTotal));
 
         int height = screenHeight + (MainConfig.SoulGuiVertical.get());
 
         int offset = (int) ((minecraft.player.tickCount + partialTick.getGameTimeDeltaPartialTick(false)) % 234);
 
-        if (SEHelper.getSEActive(minecraft.player)){
+        if (SEHelper.getSEActive(minecraft.player)) {
             guiGraphics.blit(Goety.location("textures/gui/soul_energy.png"), i, height - 9, 0, 9, 128, 9, 128, 90);
-            guiGraphics.blit(Goety.location("textures/gui/soul_energy.png"), i + 9, height - 9, 9, 18, maxenergy, 9, 128, 90);
+            guiGraphics.blit(Goety.location("textures/gui/soul_energy.png"), i + 9, height - 9, 9, 18, maxenergy, 9,
+                    128, 90);
         } else {
             int height1 = stack.getItem() instanceof FullSpentTotem ? 36 : 0;
-            guiGraphics.blit(Goety.location("textures/gui/soul_energy.png"), i, height - 9, 0, height1, 128, 9, 128, 90);
+            guiGraphics.blit(Goety.location("textures/gui/soul_energy.png"), i, height - 9, 0, height1, 128, 9, 128,
+                    90);
         }
         RenderSystem.setShaderTexture(0, Goety.location("textures/gui/soul_energy_bar.png"));
-        guiGraphics.blit(Goety.location("textures/gui/soul_energy_bar.png"), i + 9, height - 7, offset, 0, energylength, 5, 234, 5);
+        guiGraphics.blit(Goety.location("textures/gui/soul_energy_bar.png"), i + 9, height - 7, offset, 0, energylength,
+                5, 234, 5);
 
-        if (MobUtil.isSpellCasting(minecraft.player)){
+        if (MobUtil.isSpellCasting(minecraft.player)) {
             ItemStack useItem = minecraft.player.getUseItem();
-            int useDuration = useItem.getUseDuration();
+            int useDuration = useItem.getItem().getUseDuration(useItem, minecraft.player);
             float remain = minecraft.player.getUseItemRemainingTicks();
             float useTime0 = (useDuration - remain) / useDuration;
             int bar = 27;
-            if (WandUtil.getSpell(minecraft.player) instanceof IChargingSpell spell){
-                if (WandUtil.getShots(minecraft.player) > 0 && spell.shotsNumber(minecraft.player, minecraft.player.getUseItem()) > 0){
+            if (WandUtil.getSpell(minecraft.player) instanceof IChargingSpell spell) {
+                if (WandUtil.getShots(minecraft.player) > 0
+                        && spell.shotsNumber(minecraft.player, minecraft.player.getUseItem()) > 0) {
                     useDuration = spell.shotsNumber(minecraft.player, minecraft.player.getUseItem());
                     remain = WandUtil.getShots(minecraft.player);
                     useTime0 = remain / useDuration;
                     bar = 45;
                 } else if (spell.castUp(minecraft.player, minecraft.player.getUseItem()) > 0) {
                     useDuration = spell.castUp(minecraft.player, minecraft.player.getUseItem());
-                    remain = useItem.getUseDuration() - minecraft.player.getUseItemRemainingTicks();
+                    remain = useItem.getItem().getUseDuration(useItem, minecraft.player)
+                            - minecraft.player.getUseItemRemainingTicks();
                     useTime0 = remain / useDuration;
                 }
             }
             useTime0 = Math.min(1.0F, useTime0);
             int useTime = (int) (117 * useTime0);
-            guiGraphics.blit(Goety.location("textures/gui/soul_energy.png"), i + 9, height - 9, 9, bar, useTime, 9, 128, 90);
+            guiGraphics.blit(Goety.location("textures/gui/soul_energy.png"), i + 9, height - 9, 9, bar, useTime, 9, 128,
+                    90);
         }
 
         if (MainConfig.ShowNum.get()) {

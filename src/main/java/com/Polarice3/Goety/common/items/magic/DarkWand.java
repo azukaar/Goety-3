@@ -63,7 +63,7 @@ import java.util.function.Consumer;
 public class DarkWand extends Item implements IWand {
     public SpellType spellType;
 
-    public DarkWand(Properties properties, SpellType spellType){
+    public DarkWand(Properties properties, SpellType spellType) {
         super(properties);
         this.spellType = spellType;
     }
@@ -76,11 +76,11 @@ public class DarkWand extends Item implements IWand {
         this(SpellType.NONE);
     }
 
-    public SpellType getSpellType(){
+    public SpellType getSpellType() {
         return this.spellType;
     }
 
-    public static Item.Properties wandProperties(){
+    public static Item.Properties wandProperties() {
         return new Properties()
                 .rarity(Rarity.RARE)
                 .setNoRepair()
@@ -99,7 +99,7 @@ public class DarkWand extends Item implements IWand {
                 compound.putInt(SHOTS, 0);
                 compound.putInt(SECONDS, 0);
             } else {
-                if (!compound.contains(SHOTS)){
+                if (!compound.contains(SHOTS)) {
                     compound.putInt(SHOTS, 0);
                 }
             }
@@ -110,7 +110,7 @@ public class DarkWand extends Item implements IWand {
             }
             compound.putInt(SOULUSE, SoulUse(livingEntity, stack));
             compound.putInt(CASTTIME, CastDuration(stack));
-            if (IWand.getFocus(stack) != null){
+            if (IWand.getFocus(stack) != null) {
                 IWand.getFocus(stack).inventoryTick(worldIn, entityIn, itemSlot, isSelected);
             }
         }
@@ -129,8 +129,8 @@ public class DarkWand extends Item implements IWand {
         this.setSpellConditions(null, pStack, pPlayer);
     }
 
-    public int SoulUse(LivingEntity entityLiving, ItemStack stack){
-        if (IWand.getFocus(stack).isEnchanted() && SpellConfig.EnchantMultiCost.get()){
+    public int SoulUse(LivingEntity entityLiving, ItemStack stack) {
+        if (IWand.getFocus(stack).isEnchanted() && SpellConfig.EnchantMultiCost.get()) {
             return (int) (SoulCost(stack) * 2 * SEHelper.soulDiscount(entityLiving));
         } else {
             return (int) (SoulCost(stack) * SEHelper.soulDiscount(entityLiving));
@@ -139,9 +139,11 @@ public class DarkWand extends Item implements IWand {
 
     public boolean onLeftClickEntity(ItemStack stack, Player player, Entity entity) {
         boolean flag = false;
-        if (entity instanceof LivingEntity target && target instanceof IOwned owned && (owned.getTrueOwner() == player || (owned.getTrueOwner() instanceof IOwned owned1 && owned1.getTrueOwner() == player))) {
+        if (entity instanceof LivingEntity target && target instanceof IOwned owned && (owned.getTrueOwner() == player
+                || (owned.getTrueOwner() instanceof IOwned owned1 && owned1.getTrueOwner() == player))) {
             if (!player.level.isClientSide) {
-                if (IWand.getFocus(stack).getItem() instanceof CallFocus && !CallFocus.hasSummon(IWand.getFocus(stack))) {
+                if (IWand.getFocus(stack).getItem() instanceof CallFocus
+                        && !CallFocus.hasSummon(IWand.getFocus(stack))) {
                     CompoundTag compoundTag = new CompoundTag();
                     if (IWand.getFocus(stack).hasTag()) {
                         compoundTag = IWand.getFocus(stack).getTag();
@@ -151,7 +153,8 @@ public class DarkWand extends Item implements IWand {
                     player.playSound(SoundEvents.ARROW_HIT_PLAYER, 1.0F, 0.45F);
                     ModNetwork.sendTo(player, new SPlayPlayerSoundPacket(SoundEvents.ARROW_HIT_PLAYER, 1.0F, 0.45F));
                     flag = true;
-                } else if (IWand.getFocus(stack).getItem() instanceof TroopFocus && !TroopFocus.hasSummonType(IWand.getFocus(stack))) {
+                } else if (IWand.getFocus(stack).getItem() instanceof TroopFocus
+                        && !TroopFocus.hasSummonType(IWand.getFocus(stack))) {
                     CompoundTag compoundTag = new CompoundTag();
                     if (IWand.getFocus(stack).hasTag()) {
                         compoundTag = IWand.getFocus(stack).getTag();
@@ -161,7 +164,8 @@ public class DarkWand extends Item implements IWand {
                     player.playSound(SoundEvents.ARROW_HIT_PLAYER, 1.0F, 0.45F);
                     ModNetwork.sendTo(player, new SPlayPlayerSoundPacket(SoundEvents.ARROW_HIT_PLAYER, 1.0F, 0.45F));
                     flag = true;
-                } else if (IWand.getFocus(stack).getItem() instanceof CommandFocus && owned instanceof IServant servant && servant.canBeCommanded() && !CommandFocus.hasServant(IWand.getFocus(stack))) {
+                } else if (IWand.getFocus(stack).getItem() instanceof CommandFocus && owned instanceof IServant servant
+                        && servant.canBeCommanded() && !CommandFocus.hasServant(IWand.getFocus(stack))) {
                     CompoundTag compoundTag = new CompoundTag();
                     if (IWand.getFocus(stack).hasTag()) {
                         compoundTag = IWand.getFocus(stack).getTag();
@@ -171,18 +175,20 @@ public class DarkWand extends Item implements IWand {
                     player.playSound(SoundEvents.ARROW_HIT_PLAYER, 1.0F, 0.45F);
                     ModNetwork.sendTo(player, new SPlayPlayerSoundPacket(SoundEvents.ARROW_HIT_PLAYER, 1.0F, 0.45F));
                     flag = true;
-                } else if (IWand.getFocus(stack).getItem() instanceof OrderFocus && owned instanceof IServant servant && servant.canBeCommanded()) {
+                } else if (IWand.getFocus(stack).getItem() instanceof OrderFocus && owned instanceof IServant servant
+                        && servant.canBeCommanded()) {
                     List<LivingEntity> list = OrderFocus.getServants(IWand.getFocus(stack));
                     if (list.isEmpty() || list.size() < 8) {
                         if (!list.contains(target)) {
                             OrderFocus.setServants(IWand.getFocus(stack), player, target);
                             player.playSound(SoundEvents.ARROW_HIT_PLAYER, 1.0F, 0.45F);
-                            ModNetwork.sendTo(player, new SPlayPlayerSoundPacket(SoundEvents.ARROW_HIT_PLAYER, 1.0F, 0.45F));
+                            ModNetwork.sendTo(player,
+                                    new SPlayPlayerSoundPacket(SoundEvents.ARROW_HIT_PLAYER, 1.0F, 0.45F));
                             flag = true;
                         }
                     }
                 }
-                if (!flag){
+                if (!flag) {
                     if (owned instanceof IServant summonedEntity) {
                         if (player.isShiftKeyDown() || player.isCrouching()) {
                             if (SpellConfig.OwnerHitKill.get() == 0) {
@@ -195,7 +201,7 @@ public class DarkWand extends Item implements IWand {
                                 }
                             }
                         }
-                    } else if (owned instanceof AbstractVine vine){
+                    } else if (owned instanceof AbstractVine vine) {
                         if (player.isShiftKeyDown() || player.isCrouching()) {
                             if (SpellConfig.OwnerHitKill.get() == 0) {
                                 vine.kill();
@@ -211,10 +217,11 @@ public class DarkWand extends Item implements IWand {
 
     @Nonnull
     @Override
-    public InteractionResult interactLivingEntity(ItemStack stack, Player player, LivingEntity target, InteractionHand hand){
+    public InteractionResult interactLivingEntity(ItemStack stack, Player player, LivingEntity target,
+            InteractionHand hand) {
         if (IWand.getFocus(stack).getItem() instanceof CommandFocus) {
-            if (CommandFocus.getServant(IWand.getFocus(stack)) instanceof IServant summoned && summoned != target){
-                if (summoned.getTrueOwner() == player && target.distanceTo(player) <= 64){
+            if (CommandFocus.getServant(IWand.getFocus(stack)) instanceof IServant summoned && summoned != target) {
+                if (summoned.getTrueOwner() == player && target.distanceTo(player) <= 64) {
                     summoned.setCommandPosEntity(target);
                     player.playSound(ModSounds.COMMAND.get(), 1.0F, 0.45F);
                     if (!player.level.isClientSide) {
@@ -234,7 +241,7 @@ public class DarkWand extends Item implements IWand {
                         }
                     }
                 }
-                if (i > 0){
+                if (i > 0) {
                     player.playSound(ModSounds.COMMAND.get(), 1.0F, 0.45F);
                     if (!player.level.isClientSide) {
                         ModNetwork.sendTo(player, new SPlayPlayerSoundPacket(ModSounds.COMMAND.get(), 1.0F, 0.45F));
@@ -244,7 +251,8 @@ public class DarkWand extends Item implements IWand {
             }
         }
         if (target instanceof IOwned owned) {
-            if (owned.getTrueOwner() == player || (owned.getTrueOwner() instanceof IOwned owned1 && owned1.getTrueOwner() == player)) {
+            if (owned.getTrueOwner() == player
+                    || (owned.getTrueOwner() instanceof IOwned owned1 && owned1.getTrueOwner() == player)) {
                 if (owned instanceof IServant summonedEntity) {
                     if (player.isShiftKeyDown() || player.isCrouching()) {
                         if (SpellConfig.OwnerHitKill.get() == 1) {
@@ -269,7 +277,7 @@ public class DarkWand extends Item implements IWand {
                 }
             }
         }
-        if (this.getSpell(stack) instanceof ITouchSpell touchSpells){
+        if (this.getSpell(stack) instanceof ITouchSpell touchSpells) {
             if (this.canCastTouch(stack, player.level, player)) {
                 if (player.level instanceof ServerLevel serverLevel) {
                     touchSpells.touchResult(serverLevel, player, target, stack, WandUtil.getStats(player, touchSpells));
@@ -288,17 +296,19 @@ public class DarkWand extends Item implements IWand {
         InteractionHand hand = pContext.getHand();
         ItemStack stack = pContext.getItemInHand();
         if (player != null) {
-            if (IWand.getFocus(stack).getItem() instanceof RecallFocus recallFocus){
+            if (IWand.getFocus(stack).getItem() instanceof RecallFocus recallFocus) {
                 CompoundTag compoundTag = IWand.getFocus(stack).getOrCreateTag();
-                if (!RecallFocus.hasRecall(IWand.getFocus(stack))){
+                if (!RecallFocus.hasRecall(IWand.getFocus(stack))) {
                     BlockEntity tileEntity = level.getBlockEntity(blockpos);
                     if (tileEntity instanceof ArcaBlockEntity arcaTile) {
                         if (pContext.getPlayer() == arcaTile.getPlayer() && arcaTile.getLevel() != null) {
-                            recallFocus.addRecallTags(arcaTile.getLevel().dimension(), arcaTile.getBlockPos(), compoundTag);
+                            recallFocus.addRecallTags(arcaTile.getLevel().dimension(), arcaTile.getBlockPos(),
+                                    compoundTag);
                             IWand.getFocus(stack).setTag(compoundTag);
                             player.playSound(SoundEvents.ARROW_HIT_PLAYER, 1.0F, 0.45F);
                             if (!level.isClientSide) {
-                                ModNetwork.sendTo(player, new SPlayPlayerSoundPacket(SoundEvents.ARROW_HIT_PLAYER, 1.0F, 0.45F));
+                                ModNetwork.sendTo(player,
+                                        new SPlayPlayerSoundPacket(SoundEvents.ARROW_HIT_PLAYER, 1.0F, 0.45F));
                             }
                             return InteractionResult.sidedSuccess(level.isClientSide);
                         }
@@ -309,13 +319,15 @@ public class DarkWand extends Item implements IWand {
                         IWand.getFocus(stack).setTag(compoundTag);
                         player.playSound(SoundEvents.ARROW_HIT_PLAYER, 1.0F, 0.45F);
                         if (!level.isClientSide) {
-                            ModNetwork.sendTo(player, new SPlayPlayerSoundPacket(SoundEvents.ARROW_HIT_PLAYER, 1.0F, 0.45F));
+                            ModNetwork.sendTo(player,
+                                    new SPlayPlayerSoundPacket(SoundEvents.ARROW_HIT_PLAYER, 1.0F, 0.45F));
                         }
                         return InteractionResult.sidedSuccess(level.isClientSide);
                     }
                 }
-            } else if (IWand.getFocus(stack).getItem() instanceof CommandFocus){
-                if (CommandFocus.hasServant(IWand.getFocus(stack)) && CommandFocus.getServant(IWand.getFocus(stack)) instanceof IServant summoned){
+            } else if (IWand.getFocus(stack).getItem() instanceof CommandFocus) {
+                if (CommandFocus.hasServant(IWand.getFocus(stack))
+                        && CommandFocus.getServant(IWand.getFocus(stack)) instanceof IServant summoned) {
                     LivingEntity livingEntity = CommandFocus.getServant(IWand.getFocus(stack));
                     if (livingEntity != null) {
                         if (summoned.getTrueOwner() == player && livingEntity.distanceTo(player) <= 64) {
@@ -331,14 +343,15 @@ public class DarkWand extends Item implements IWand {
                             if (flag) {
                                 player.playSound(ModSounds.COMMAND.get(), 1.0F, 0.45F);
                                 if (!level.isClientSide) {
-                                    ModNetwork.sendTo(player, new SPlayPlayerSoundPacket(ModSounds.COMMAND.get(), 1.0F, 0.45F));
+                                    ModNetwork.sendTo(player,
+                                            new SPlayPlayerSoundPacket(ModSounds.COMMAND.get(), 1.0F, 0.45F));
                                 }
                                 return InteractionResult.sidedSuccess(level.isClientSide);
                             }
                         }
                     }
                 }
-            } else if (IWand.getFocus(stack).getItem() instanceof OrderFocus){
+            } else if (IWand.getFocus(stack).getItem() instanceof OrderFocus) {
                 if (!OrderFocus.getServants(IWand.getFocus(stack)).isEmpty()) {
                     int i = 0;
                     for (LivingEntity livingEntity : OrderFocus.getServants(IWand.getFocus(stack))) {
@@ -363,27 +376,33 @@ public class DarkWand extends Item implements IWand {
                         return InteractionResult.sidedSuccess(level.isClientSide);
                     }
                 }
-            } else if (this.getSpell(stack) instanceof IBlockSpell blockSpell0){
-                ISpell spell2 = GoetyEventFactory.onBlockBasedSpell(player.level, blockpos, player.level.getBlockState(blockpos), blockSpell0, pContext.getClickedFace(), player);
+            } else if (this.getSpell(stack) instanceof IBlockSpell blockSpell0) {
+                ISpell spell2 = GoetyEventFactory.onBlockBasedSpell(player.level, blockpos,
+                        player.level.getBlockState(blockpos), blockSpell0, pContext.getClickedFace(), player);
                 if (spell2 instanceof IBlockSpell blockSpell) {
                     if (player.level instanceof ServerLevel serverLevel) {
-                        if (blockSpell.rightBlock(serverLevel, player, blockpos, pContext.getClickedFace(), WandUtil.getStats(player, blockSpell))) {
+                        if (blockSpell.rightBlock(serverLevel, player, blockpos, pContext.getClickedFace(),
+                                WandUtil.getStats(player, blockSpell))) {
                             if (this.canCastTouch(stack, level, player)) {
-                                blockSpell.blockResult(serverLevel, player, stack, blockpos, pContext.getClickedFace(), WandUtil.getStats(player, blockSpell));
+                                blockSpell.blockResult(serverLevel, player, stack, blockpos, pContext.getClickedFace(),
+                                        WandUtil.getStats(player, blockSpell));
                             }
                             return InteractionResult.SUCCESS;
                         }
                     }
                 }
-            } else if (level.getBlockState(blockpos).is(BlockTags.BANNERS) && level.getBlockEntity(blockpos) instanceof BannerBlockEntity bannerBlock){
-                if (!level.isClientSide){
+            } else if (level.getBlockState(blockpos).is(BlockTags.BANNERS)
+                    && level.getBlockEntity(blockpos) instanceof BannerBlockEntity bannerBlock) {
+                if (!level.isClientSide) {
                     CompoundTag compoundtag = BlockItem.getBlockEntityData(bannerBlock.getItem());
                     if (compoundtag != null) {
                         if (compoundtag.contains("Patterns")) {
                             SEHelper.setBannerBaseColor(player, bannerBlock.getBaseColor());
                             SEHelper.setBannerPattern(player, compoundtag.getList("Patterns", 10));
-                            player.displayClientMessage(Component.translatable("info.goety.banner.add", player.getDisplayName()), true);
-                            level.playSound(null, blockpos.getX(), blockpos.getY(), blockpos.getZ(), ModSounds.CAST_SPELL.get(), SoundSource.BLOCKS, 1.0F, 0.5F);
+                            player.displayClientMessage(
+                                    Component.translatable("info.goety.banner.add", player.getDisplayName()), true);
+                            level.playSound(null, blockpos.getX(), blockpos.getY(), blockpos.getZ(),
+                                    ModSounds.CAST_SPELL.get(), SoundSource.BLOCKS, 1.0F, 0.5F);
                             return InteractionResult.SUCCESS;
                         }
                     }
@@ -392,18 +411,22 @@ public class DarkWand extends Item implements IWand {
                 if (!level.isClientSide) {
                     if (level.getBlockEntity(blockpos) instanceof BrewCauldronBlockEntity cauldronBlock) {
                         if (MobUtil.isShifting(player)) {
-                            if (stack.getItem() instanceof IWand){
+                            if (stack.getItem() instanceof IWand) {
                                 cauldronBlock.fullReset();
-                                level.playSound(null, blockpos, SoundEvents.BUCKET_EMPTY, SoundSource.BLOCKS, 1.0F, 1.0F);
-                                level.playSound(null, blockpos, SoundEvents.FIRE_EXTINGUISH, SoundSource.BLOCKS, 1.0F, 1.0F);
+                                level.playSound(null, blockpos, SoundEvents.BUCKET_EMPTY, SoundSource.BLOCKS, 1.0F,
+                                        1.0F);
+                                level.playSound(null, blockpos, SoundEvents.FIRE_EXTINGUISH, SoundSource.BLOCKS, 1.0F,
+                                        1.0F);
                                 return InteractionResult.SUCCESS;
                             }
                         }
                     }
                 }
-            } else if (!level.getBlockState(blockpos).isAir()){
-                if (!level.isClientSide){
-                    return level.getBlockState(blockpos).use(level, player, hand, new BlockHitResult(pContext.getClickLocation(), pContext.getClickedFace(), pContext.getClickedPos(), pContext.isInside()));
+            } else if (!level.getBlockState(blockpos).isAir()) {
+                if (!level.isClientSide) {
+                    return level.getBlockState(blockpos).use(level, player, hand,
+                            new BlockHitResult(pContext.getClickLocation(), pContext.getClickedFace(),
+                                    pContext.getClickedPos(), pContext.isInside()));
                 }
             }
         }
@@ -412,41 +435,45 @@ public class DarkWand extends Item implements IWand {
 
     public void onUseTick(Level worldIn, LivingEntity livingEntityIn, ItemStack stack, int count) {
         ISpell iSpell = GoetyEventFactory.onStartSpell(livingEntityIn, stack, this.getSpell(stack));
-        if (worldIn instanceof ServerLevel && this.cannotCast(livingEntityIn, stack, iSpell)){
+        if (worldIn instanceof ServerLevel && this.cannotCast(livingEntityIn, stack, iSpell)) {
             livingEntityIn.stopUsingItem();
             return;
         }
-        int CastTime = stack.getUseDuration() - count;
-        if (livingEntityIn.getUseItem() == stack && iSpell != null && this.isNotInstant(iSpell, livingEntityIn, stack)) {
+        int CastTime = stack.getItem().getUseDuration(stack, livingEntityIn) - count;
+        if (livingEntityIn.getUseItem() == stack && iSpell != null
+                && this.isNotInstant(iSpell, livingEntityIn, stack)) {
             SoundEvent soundevent = this.CastingSound(stack, livingEntityIn);
             if (CastTime == 1 && soundevent != null) {
                 if (worldIn instanceof ServerLevel serverLevel) {
                     iSpell.startSpell(serverLevel, livingEntityIn, stack, WandUtil.getStats(livingEntityIn, iSpell));
                 }
-                worldIn.playSound(null, livingEntityIn.getX(), livingEntityIn.getY(), livingEntityIn.getZ(), soundevent, SoundSource.PLAYERS, this.castingVolume(stack), this.castingPitch(stack));
+                worldIn.playSound(null, livingEntityIn.getX(), livingEntityIn.getY(), livingEntityIn.getZ(), soundevent,
+                        SoundSource.PLAYERS, this.castingVolume(stack), this.castingPitch(stack));
             }
             if (worldIn instanceof ServerLevel serverLevel) {
                 iSpell = GoetyEventFactory.onCastingSpell(livingEntityIn, stack, iSpell, CastTime);
                 if (iSpell != null) {
-                    iSpell.useSpell(serverLevel, livingEntityIn, stack, CastTime, WandUtil.getStats(livingEntityIn, iSpell));
+                    iSpell.useSpell(serverLevel, livingEntityIn, stack, CastTime,
+                            WandUtil.getStats(livingEntityIn, iSpell));
                 } else {
                     livingEntityIn.stopUsingItem();
                 }
             }
             if (iSpell != null) {
                 if (iSpell instanceof IChargingSpell spell
-                        && spell.castUp(livingEntityIn, stack) > 0){
+                        && spell.castUp(livingEntityIn, stack) > 0) {
                     this.useParticles(worldIn, livingEntityIn, stack, iSpell);
                 } else if (!(iSpell instanceof IChargingSpell)) {
                     this.useParticles(worldIn, livingEntityIn, stack, iSpell);
                 }
                 if (iSpell instanceof IChargingSpell spell) {
                     if (stack.getTag() != null) {
-                        if (CastTime >= spell.castUp(livingEntityIn, stack) || spell.castUp(livingEntityIn, stack) <= 0) {
+                        if (CastTime >= spell.castUp(livingEntityIn, stack)
+                                || spell.castUp(livingEntityIn, stack) <= 0) {
                             stack.getTag().putInt(COOL, stack.getTag().getInt(COOL) + 1);
                             if (stack.getTag().getInt(COOL) >= Cooldown(stack)) {
                                 stack.getTag().putInt(COOL, 0);
-                                if (spell.shotsNumber(livingEntityIn, stack) > 0){
+                                if (spell.shotsNumber(livingEntityIn, stack) > 0) {
                                     this.increaseShots(stack);
                                 }
                                 this.MagicResults(stack, worldIn, livingEntityIn, spell);
@@ -454,8 +481,8 @@ public class DarkWand extends Item implements IWand {
                         }
                     }
 
-                    if (livingEntityIn instanceof Player player){
-                        if (!SEHelper.getSoulsAmount(player, iSpell.soulCost(player, stack)) && !player.isCreative()){
+                    if (livingEntityIn instanceof Player player) {
+                        if (!SEHelper.getSoulsAmount(player, iSpell.soulCost(player, stack)) && !player.isCreative()) {
                             player.stopUsingItem();
                         }
                     }
@@ -469,20 +496,25 @@ public class DarkWand extends Item implements IWand {
     @Override
     public void releaseUsing(ItemStack stack, Level level, LivingEntity livingEntity, int useTimeRemaining) {
         if (level instanceof ServerLevel serverLevel) {
-            int CastTime = stack.getUseDuration() - useTimeRemaining;
-            ISpell spell = GoetyEventFactory.onStopSpell(livingEntity, stack, this.getSpell(stack), CastTime, useTimeRemaining);
+            int CastTime = stack.getItem().getUseDuration(stack, livingEntity) - useTimeRemaining;
+            ISpell spell = GoetyEventFactory.onStopSpell(livingEntity, stack, this.getSpell(stack), CastTime,
+                    useTimeRemaining);
             if (spell != null) {
-                spell.stopSpell(serverLevel, livingEntity, stack, IWand.getFocus(stack), CastTime, WandUtil.getStats(livingEntity, spell));
+                spell.stopSpell(serverLevel, livingEntity, stack, IWand.getFocus(stack), CastTime,
+                        WandUtil.getStats(livingEntity, spell));
                 if (livingEntity instanceof Player player) {
                     if (spell instanceof IChargingSpell chargeSpell) {
                         if (chargeSpell.shotsNumber(player, stack) > 0) {
                             if (this.ShotsFired(stack) > 0) {
-                                float coolPercent = (float) this.ShotsFired(stack) / chargeSpell.shotsNumber(player, stack);
+                                float coolPercent = (float) this.ShotsFired(stack)
+                                        / chargeSpell.shotsNumber(player, stack);
                                 this.setShots(stack, 0);
-                                SEHelper.addCooldown(player, IWand.getFocus(stack).getItem(), Mth.floor(chargeSpell.spellCooldown(player) * coolPercent));
+                                SEHelper.addCooldown(player, IWand.getFocus(stack).getItem(),
+                                        Mth.floor(chargeSpell.spellCooldown(player) * coolPercent));
                             }
                         } else {
-                            SEHelper.addCooldown(player, IWand.getFocus(stack).getItem(), Mth.floor(chargeSpell.spellCooldown(player)));
+                            SEHelper.addCooldown(player, IWand.getFocus(stack).getItem(),
+                                    Mth.floor(chargeSpell.spellCooldown(player)));
                         }
                     }
                 }
@@ -490,7 +522,7 @@ public class DarkWand extends Item implements IWand {
         }
     }
 
-    public int getUseDuration(ItemStack stack) {
+    public int getUseDuration(ItemStack stack, LivingEntity livingEntity) {
         if (stack.getTag() != null) {
             return stack.getTag().getInt(CASTTIME);
         } else {
@@ -508,8 +540,9 @@ public class DarkWand extends Item implements IWand {
         super.finishUsingItem(stack, worldIn, entityLiving);
         ISpell iSpell = GoetyEventFactory.onCastSpell(entityLiving, this.getSpell(stack));
         if (iSpell != null) {
-            if (!(iSpell instanceof IChargingSpell) || this.isNotInstant(iSpell, entityLiving, stack) || this.notTouch(iSpell)) {
-                if (!this.cannotCast(entityLiving, stack)){
+            if (!(iSpell instanceof IChargingSpell) || this.isNotInstant(iSpell, entityLiving, stack)
+                    || this.notTouch(iSpell)) {
+                if (!this.cannotCast(entityLiving, stack)) {
                     this.MagicResults(stack, worldIn, entityLiving, iSpell);
                 }
             }
@@ -529,44 +562,48 @@ public class DarkWand extends Item implements IWand {
     public InteractionResultHolder<ItemStack> use(Level worldIn, Player playerIn, InteractionHand handIn) {
         ItemStack itemstack = playerIn.getItemInHand(handIn);
         ItemStack focus = IWand.getFocus(itemstack);
-        if (focus.getItem() instanceof CommandFocus && playerIn.isCrouching()){
-            if (CommandFocus.hasServant(focus) && focus.getTag() != null){
+        if (focus.getItem() instanceof CommandFocus && playerIn.isCrouching()) {
+            if (CommandFocus.hasServant(focus) && focus.getTag() != null) {
                 focus.getTag().remove(CommandFocus.TAG_ENTITY);
                 playerIn.playSound(SoundEvents.ARROW_HIT_PLAYER, 1.0F, 0.45F);
                 if (!worldIn.isClientSide) {
-                    ModNetwork.sendTo(playerIn, new SPlayEntitySoundPacket(playerIn.getUUID(), SoundEvents.ARROW_HIT_PLAYER, 1.0F, 0.45F));
+                    ModNetwork.sendTo(playerIn,
+                            new SPlayEntitySoundPacket(playerIn.getUUID(), SoundEvents.ARROW_HIT_PLAYER, 1.0F, 0.45F));
                 }
             }
             return InteractionResultHolder.sidedSuccess(itemstack, worldIn.isClientSide());
-        } else if (focus.getItem() instanceof OrderFocus && playerIn.isCrouching()){
-            if (focus.getTag() != null){
+        } else if (focus.getItem() instanceof OrderFocus && playerIn.isCrouching()) {
+            if (focus.getTag() != null) {
                 focus.getTag().remove(OrderFocus.SERVANT_LIST);
                 focus.getTag().remove(OrderFocus.SERVANT_CLIENT_LIST);
                 playerIn.playSound(SoundEvents.ARROW_HIT_PLAYER, 1.0F, 0.45F);
                 if (!worldIn.isClientSide) {
-                    ModNetwork.sendTo(playerIn, new SPlayEntitySoundPacket(playerIn.getUUID(), SoundEvents.ARROW_HIT_PLAYER, 1.0F, 0.45F));
+                    ModNetwork.sendTo(playerIn,
+                            new SPlayEntitySoundPacket(playerIn.getUUID(), SoundEvents.ARROW_HIT_PLAYER, 1.0F, 0.45F));
                 }
             }
             return InteractionResultHolder.sidedSuccess(itemstack, worldIn.isClientSide());
-        } else if (focus.getItem() instanceof CallFocus && playerIn.isCrouching()){
-            if (CallFocus.hasSummon(focus) && focus.getTag() != null){
+        } else if (focus.getItem() instanceof CallFocus && playerIn.isCrouching()) {
+            if (CallFocus.hasSummon(focus) && focus.getTag() != null) {
                 focus.getTag().remove(CallFocus.TAG_ENTITY);
                 playerIn.playSound(SoundEvents.ARROW_HIT_PLAYER, 1.0F, 0.45F);
                 if (!worldIn.isClientSide) {
-                    ModNetwork.sendTo(playerIn, new SPlayEntitySoundPacket(playerIn.getUUID(), SoundEvents.ARROW_HIT_PLAYER, 1.0F, 0.45F));
+                    ModNetwork.sendTo(playerIn,
+                            new SPlayEntitySoundPacket(playerIn.getUUID(), SoundEvents.ARROW_HIT_PLAYER, 1.0F, 0.45F));
                 }
             }
             return InteractionResultHolder.sidedSuccess(itemstack, worldIn.isClientSide());
         } else if (this.getSpell(itemstack) != null) {
-            if (this.cannotCast(playerIn, itemstack)){
+            if (this.cannotCast(playerIn, itemstack)) {
                 return InteractionResultHolder.pass(itemstack);
-            } else if (this.isNotInstant(this.getSpell(itemstack), playerIn, itemstack)){
-                if (SEHelper.getSoulsAmount(playerIn, this.getSpell(itemstack).soulCost(playerIn, itemstack)) || playerIn.getAbilities().instabuild) {
+            } else if (this.isNotInstant(this.getSpell(itemstack), playerIn, itemstack)) {
+                if (SEHelper.getSoulsAmount(playerIn, this.getSpell(itemstack).soulCost(playerIn, itemstack))
+                        || playerIn.getAbilities().instabuild) {
                     if (!worldIn.isClientSide) {
                         playerIn.startUsingItem(handIn);
                     }
                 }
-            } else if (this.notTouch(this.getSpell(itemstack))){
+            } else if (this.notTouch(this.getSpell(itemstack))) {
                 playerIn.swing(handIn);
                 ISpell iSpell = GoetyEventFactory.onCastSpell(playerIn, this.getSpell(itemstack));
                 this.MagicResults(itemstack, worldIn, playerIn, iSpell);
@@ -577,13 +614,14 @@ public class DarkWand extends Item implements IWand {
 
     }
 
-    public void setSpellConditions(@Nullable ISpell spell, ItemStack stack, LivingEntity livingEntity){
+    public void setSpellConditions(@Nullable ISpell spell, ItemStack stack, LivingEntity livingEntity) {
         if (stack.getTag() != null) {
             if (spell != null) {
                 stack.getTag().putInt(SOULCOST, spell.soulCost(livingEntity, stack));
                 stack.getTag().putInt(DURATION, spell.castDuration(livingEntity, stack));
                 if (spell instanceof IChargingSpell chargingSpell) {
-                    stack.getTag().putInt(COOLDOWN, chargingSpell.Cooldown(livingEntity, stack, stack.getTag().contains(SHOTS) ? stack.getTag().getInt(SHOTS) : 0));
+                    stack.getTag().putInt(COOLDOWN, chargingSpell.Cooldown(livingEntity, stack,
+                            stack.getTag().contains(SHOTS) ? stack.getTag().getInt(SHOTS) : 0));
                 } else {
                     stack.getTag().putInt(COOLDOWN, 0);
                 }
@@ -596,7 +634,7 @@ public class DarkWand extends Item implements IWand {
     }
 
     public int SoulCost(ItemStack itemStack) {
-        if (itemStack.getTag() == null){
+        if (itemStack.getTag() == null) {
             return 0;
         } else {
             return itemStack.getTag().getInt(SOULCOST);
@@ -619,7 +657,7 @@ public class DarkWand extends Item implements IWand {
         }
     }
 
-    public int ShotsFired(ItemStack itemStack){
+    public int ShotsFired(ItemStack itemStack) {
         if (itemStack.getTag() != null) {
             return itemStack.getTag().getInt(SHOTS);
         } else {
@@ -627,13 +665,13 @@ public class DarkWand extends Item implements IWand {
         }
     }
 
-    public void increaseShots(ItemStack itemStack){
+    public void increaseShots(ItemStack itemStack) {
         if (itemStack.getTag() != null) {
             itemStack.getTag().putInt(SHOTS, ShotsFired(itemStack) + 1);
         }
     }
 
-    public void setShots(ItemStack itemStack, int amount){
+    public void setShots(ItemStack itemStack, int amount) {
         if (itemStack.getTag() != null) {
             itemStack.getTag().putInt(SHOTS, amount);
         }
@@ -648,34 +686,36 @@ public class DarkWand extends Item implements IWand {
         }
     }
 
-    public float castingVolume(ItemStack stack){
-        if (this.getSpell(stack) != null){
+    public float castingVolume(ItemStack stack) {
+        if (this.getSpell(stack) != null) {
             return this.getSpell(stack).castingVolume();
         } else {
             return 0.5F;
         }
     }
 
-    public float castingPitch(ItemStack stack){
-        if (this.getSpell(stack) != null){
+    public float castingPitch(ItemStack stack) {
+        if (this.getSpell(stack) != null) {
             return this.getSpell(stack).castingPitch();
         } else {
             return 1.0F;
         }
     }
 
-    public boolean canCastTouch(ItemStack stack, Level worldIn, LivingEntity caster){
+    public boolean canCastTouch(ItemStack stack, Level worldIn, LivingEntity caster) {
         Player playerEntity = (Player) caster;
         if (!worldIn.isClientSide) {
             ISpell spell = GoetyEventFactory.onTouchBasedSpell(caster, stack, this.getSpell(stack));
             if (spell != null && !this.cannotCast(caster, stack, spell)) {
-                if (playerEntity.isCreative()){
-                    SEHelper.addCooldown(playerEntity, IWand.getFocus(stack).getItem(), spell.spellCooldown(playerEntity));
+                if (playerEntity.isCreative()) {
+                    SEHelper.addCooldown(playerEntity, IWand.getFocus(stack).getItem(),
+                            spell.spellCooldown(playerEntity));
                     return stack.getTag() != null;
                 } else if (SEHelper.getSoulsAmount(playerEntity, SoulUse(caster, stack))) {
                     if (stack.getTag() != null) {
                         SEHelper.decreaseSouls(playerEntity, SoulUse(caster, stack));
-                        SEHelper.addCooldown(playerEntity, IWand.getFocus(stack).getItem(), spell.spellCooldown(playerEntity));
+                        SEHelper.addCooldown(playerEntity, IWand.getFocus(stack).getItem(),
+                                spell.spellCooldown(playerEntity));
                         SEHelper.sendSEUpdatePacket(playerEntity);
                         return true;
                     }
@@ -699,7 +739,8 @@ public class DarkWand extends Item implements IWand {
                         spell.SpellResult(serverWorld, caster, stack, WandUtil.getStats(caster, spell));
                         boolean flag = false;
                         if (spell instanceof IChargingSpell chargingSpell) {
-                            if (chargingSpell.shotsNumber(playerEntity, stack) > 0 && this.ShotsFired(stack) >= chargingSpell.shotsNumber(playerEntity, stack)) {
+                            if (chargingSpell.shotsNumber(playerEntity, stack) > 0
+                                    && this.ShotsFired(stack) >= chargingSpell.shotsNumber(playerEntity, stack)) {
                                 flag = true;
                             }
                         } else {
@@ -707,7 +748,8 @@ public class DarkWand extends Item implements IWand {
                         }
                         if (flag) {
                             this.setShots(stack, 0);
-                            SEHelper.addCooldown(playerEntity, IWand.getFocus(stack).getItem(), spell.spellCooldown(playerEntity));
+                            SEHelper.addCooldown(playerEntity, IWand.getFocus(stack).getItem(),
+                                    spell.spellCooldown(playerEntity));
                         }
                     }
                 } else if (SEHelper.getSoulsAmount(playerEntity, SoulUse(caster, stack))) {
@@ -726,9 +768,11 @@ public class DarkWand extends Item implements IWand {
                         SEHelper.decreaseSouls(playerEntity, SoulUse(caster, stack));
                         SEHelper.sendSEUpdatePacket(playerEntity);
                         if (MobsConfig.VillagerHateSpells.get() > 0) {
-                            for (Villager villager : caster.level.getEntitiesOfClass(Villager.class, caster.getBoundingBox().inflate(16.0D))) {
+                            for (Villager villager : caster.level.getEntitiesOfClass(Villager.class,
+                                    caster.getBoundingBox().inflate(16.0D))) {
                                 if (villager.hasLineOfSight(caster)) {
-                                    villager.getGossips().add(caster.getUUID(), GossipType.MINOR_NEGATIVE, MobsConfig.VillagerHateSpells.get());
+                                    villager.getGossips().add(caster.getUUID(), GossipType.MINOR_NEGATIVE,
+                                            MobsConfig.VillagerHateSpells.get());
                                 }
                             }
                         }
@@ -737,7 +781,8 @@ public class DarkWand extends Item implements IWand {
                         spell.SpellResult(serverWorld, caster, stack, WandUtil.getStats(caster, spell));
                         boolean flag = false;
                         if (spell instanceof IChargingSpell chargingSpell) {
-                            if (chargingSpell.shotsNumber(playerEntity, stack) > 0 && this.ShotsFired(stack) >= chargingSpell.shotsNumber(playerEntity, stack)) {
+                            if (chargingSpell.shotsNumber(playerEntity, stack) > 0
+                                    && this.ShotsFired(stack) >= chargingSpell.shotsNumber(playerEntity, stack)) {
                                 flag = true;
                             }
                         } else {
@@ -745,11 +790,13 @@ public class DarkWand extends Item implements IWand {
                         }
                         if (flag) {
                             this.setShots(stack, 0);
-                            SEHelper.addCooldown(playerEntity, IWand.getFocus(stack).getItem(), spell.spellCooldown(playerEntity));
+                            SEHelper.addCooldown(playerEntity, IWand.getFocus(stack).getItem(),
+                                    spell.spellCooldown(playerEntity));
                         }
                     }
                 } else {
-                    worldIn.playSound(null, caster.getX(), caster.getY(), caster.getZ(), SoundEvents.FIRE_EXTINGUISH, SoundSource.NEUTRAL, 1.0F, 1.0F);
+                    worldIn.playSound(null, caster.getX(), caster.getY(), caster.getZ(), SoundEvents.FIRE_EXTINGUISH,
+                            SoundSource.NEUTRAL, 1.0F, 1.0F);
                 }
             }
             if (worldIn.isClientSide) {
@@ -767,7 +814,8 @@ public class DarkWand extends Item implements IWand {
             }
         } else {
             this.failParticles(worldIn, caster);
-            worldIn.playSound(null, caster.getX(), caster.getY(), caster.getZ(), SoundEvents.FIRE_EXTINGUISH, SoundSource.NEUTRAL, 1.0F, 1.0F);
+            worldIn.playSound(null, caster.getX(), caster.getY(), caster.getZ(), SoundEvents.FIRE_EXTINGUISH,
+                    SoundSource.NEUTRAL, 1.0F, 1.0F);
         }
     }
 
@@ -779,32 +827,40 @@ public class DarkWand extends Item implements IWand {
             int SoulUse = stack.getTag().getInt(SOULUSE);
             tooltip.add(Component.translatable("info.goety.wand.cost", SoulUse));
             if (getSpell(stack) != null) {
-                if (this.isNotInstant(this.getSpell(stack), player, stack) && !(getSpell(stack) instanceof IChargingSpell)) {
+                if (this.isNotInstant(this.getSpell(stack), player, stack)
+                        && !(getSpell(stack) instanceof IChargingSpell)) {
                     int CastTime = stack.getTag().getInt(CASTTIME);
                     tooltip.add(Component.translatable("info.goety.wand.castTime", CastTime / 20.0F));
                 }
-                if (getSpell(stack).spellCooldown(player) > 0){
-                    tooltip.add(Component.translatable("info.goety.wand.coolDown", getSpell(stack).spellCooldown(player) / 20.0F));
+                if (getSpell(stack).spellCooldown(player) > 0) {
+                    tooltip.add(Component.translatable("info.goety.wand.coolDown",
+                            getSpell(stack).spellCooldown(player) / 20.0F));
                 }
             }
         } else {
             tooltip.add(Component.translatable("info.goety.wand.cost", SoulCost(stack)));
         }
-        if (!IWand.getFocus(stack).isEmpty()){
-            tooltip.add(Component.translatable("info.goety.wand.focus", IWand.getFocus(stack).getItem().getDescription()));
-            if (IWand.getFocus(stack).getItem() instanceof RecallFocus){
+        if (!IWand.getFocus(stack).isEmpty()) {
+            tooltip.add(
+                    Component.translatable("info.goety.wand.focus", IWand.getFocus(stack).getItem().getDescription()));
+            if (IWand.getFocus(stack).getItem() instanceof RecallFocus) {
                 ItemStack recallFocus = IWand.getFocus(stack);
                 RecallFocus.addRecallText(recallFocus, tooltip);
             }
             ItemHelper.addOnShift(tooltip, () -> addInformationAfterShift(IWand.getFocus(stack).getItem(), tooltip));
         } else {
-            tooltip.add(Component.translatable("info.goety.wand.focus", Component.translatable("info.goety.wand.empty")));
+            tooltip.add(
+                    Component.translatable("info.goety.wand.focus", Component.translatable("info.goety.wand.empty")));
             if (ModKeybindings.wandSlot() != null) {
-                tooltip.add(Component.translatable("info.goety.wand.open", ModKeybindings.wandSlot().getTranslatedKeyMessage()).withStyle(ChatFormatting.BLUE));
+                tooltip.add(Component
+                        .translatable("info.goety.wand.open", ModKeybindings.wandSlot().getTranslatedKeyMessage())
+                        .withStyle(ChatFormatting.BLUE));
             }
         }
         if (ModKeybindings.wandCircle() != null) {
-            tooltip.add(Component.translatable("info.goety.wand.switch", ModKeybindings.wandCircle().getTranslatedKeyMessage()).withStyle(ChatFormatting.BLUE));
+            tooltip.add(Component
+                    .translatable("info.goety.wand.switch", ModKeybindings.wandCircle().getTranslatedKeyMessage())
+                    .withStyle(ChatFormatting.BLUE));
         }
     }
 
@@ -818,56 +874,59 @@ public class DarkWand extends Item implements IWand {
         consumer.accept(new DarkWandClient());
     }
 
-    public static class DarkWandClient implements IClientItemExtensions{
+    public static class DarkWandClient implements IClientItemExtensions {
 
-        private static final HumanoidModel.ArmPose SPELL = HumanoidModel.ArmPose.create("GOETY_SPELL", false, (model, entity, arm) -> {
-            float f5 = entity.walkAnimation.position(Minecraft.getInstance().getPartialTick());
-            if (arm == HumanoidArm.RIGHT) {
-                model.rightArm.xRot -= MathHelper.modelDegrees(105);
-                model.rightArm.zRot = Mth.cos(f5 * 0.6662F) * 0.25F;
-                model.leftArm.xRot += MathHelper.modelDegrees(25);
-            } else {
-                model.leftArm.xRot -= MathHelper.modelDegrees(105);
-                model.leftArm.zRot = -Mth.cos(f5 * 0.6662F) * 0.25F;
-                model.rightArm.xRot += MathHelper.modelDegrees(25);
-            }
-        });
+        private static final HumanoidModel.ArmPose SPELL = HumanoidModel.ArmPose.create("GOETY_SPELL", false,
+                (model, entity, arm) -> {
+                    float f5 = entity.walkAnimation.position(Minecraft.getInstance().getPartialTick());
+                    if (arm == HumanoidArm.RIGHT) {
+                        model.rightArm.xRot -= MathHelper.modelDegrees(105);
+                        model.rightArm.zRot = Mth.cos(f5 * 0.6662F) * 0.25F;
+                        model.leftArm.xRot += MathHelper.modelDegrees(25);
+                    } else {
+                        model.leftArm.xRot -= MathHelper.modelDegrees(105);
+                        model.leftArm.zRot = -Mth.cos(f5 * 0.6662F) * 0.25F;
+                        model.rightArm.xRot += MathHelper.modelDegrees(25);
+                    }
+                });
 
-        private static final HumanoidModel.ArmPose FLIGHT_POSE = HumanoidModel.ArmPose.create("GOETY_FLYING", false, (model, entity, arm) -> {
-            float f5 = 1.0F;
-            if (arm == HumanoidArm.RIGHT) {
-                model.rightArm.xRot = -MathHelper.modelDegrees(105);
-                model.rightArm.zRot = Mth.cos(f5 * 0.6662F) * 0.25F;
-                model.leftArm.xRot = MathHelper.modelDegrees(25);
-            } else {
-                model.leftArm.xRot = -MathHelper.modelDegrees(105);
-                model.leftArm.zRot = -Mth.cos(f5 * 0.6662F) * 0.25F;
-                model.rightArm.xRot = MathHelper.modelDegrees(25);
-            }
-            model.rightLeg.xRot = MathHelper.modelDegrees(17.5F);
-            model.leftLeg.xRot = MathHelper.modelDegrees(17.5F);
+        private static final HumanoidModel.ArmPose FLIGHT_POSE = HumanoidModel.ArmPose.create("GOETY_FLYING", false,
+                (model, entity, arm) -> {
+                    float f5 = 1.0F;
+                    if (arm == HumanoidArm.RIGHT) {
+                        model.rightArm.xRot = -MathHelper.modelDegrees(105);
+                        model.rightArm.zRot = Mth.cos(f5 * 0.6662F) * 0.25F;
+                        model.leftArm.xRot = MathHelper.modelDegrees(25);
+                    } else {
+                        model.leftArm.xRot = -MathHelper.modelDegrees(105);
+                        model.leftArm.zRot = -Mth.cos(f5 * 0.6662F) * 0.25F;
+                        model.rightArm.xRot = MathHelper.modelDegrees(25);
+                    }
+                    model.rightLeg.xRot = MathHelper.modelDegrees(17.5F);
+                    model.leftLeg.xRot = MathHelper.modelDegrees(17.5F);
 
-            model.rightLeg.xRot += 1.0F * Mth.sin(Minecraft.getInstance().getPartialTick() * 0.067F) * 0.05F;
-            model.leftLeg.xRot += -1.0F * Mth.sin(Minecraft.getInstance().getPartialTick() * 0.067F) * 0.05F;
-        });
+                    model.rightLeg.xRot += 1.0F * Mth.sin(Minecraft.getInstance().getPartialTick() * 0.067F) * 0.05F;
+                    model.leftLeg.xRot += -1.0F * Mth.sin(Minecraft.getInstance().getPartialTick() * 0.067F) * 0.05F;
+                });
 
-        private static final HumanoidModel.ArmPose HOLD_STAFF = HumanoidModel.ArmPose.create("HOLD_STAFF", false, (model, entity, arm) -> {
-            float f5 = entity.walkAnimation.position(Minecraft.getInstance().getPartialTick());
-            if (arm == HumanoidArm.RIGHT) {
-                model.rightArm.xRot -= MathHelper.modelDegrees(90);
-                model.rightArm.zRot = Mth.cos(f5 * 0.6662F) * 0.1F;
-            } else {
-                model.leftArm.xRot -= MathHelper.modelDegrees(90);
-                model.leftArm.zRot = -Mth.cos(f5 * 0.6662F) * 0.1F;
-            }
-        });
+        private static final HumanoidModel.ArmPose HOLD_STAFF = HumanoidModel.ArmPose.create("HOLD_STAFF", false,
+                (model, entity, arm) -> {
+                    float f5 = entity.walkAnimation.position(Minecraft.getInstance().getPartialTick());
+                    if (arm == HumanoidArm.RIGHT) {
+                        model.rightArm.xRot -= MathHelper.modelDegrees(90);
+                        model.rightArm.zRot = Mth.cos(f5 * 0.6662F) * 0.1F;
+                    } else {
+                        model.leftArm.xRot -= MathHelper.modelDegrees(90);
+                        model.leftArm.zRot = -Mth.cos(f5 * 0.6662F) * 0.1F;
+                    }
+                });
 
         @Override
         public HumanoidModel.ArmPose getArmPose(LivingEntity entityLiving, InteractionHand hand, ItemStack itemStack) {
             if (!itemStack.isEmpty() && itemStack.getItem() instanceof IWand) {
                 if (entityLiving.getUsedItemHand() == hand && entityLiving.getUseItemRemainingTicks() > 0) {
                     ISpell spell = WandUtil.getSpell(entityLiving);
-                    if (spell != null){
+                    if (spell != null) {
                         return spell.getPose(entityLiving, itemStack, WandUtil.getStats(entityLiving, spell));
                     }
                 }
@@ -876,15 +935,17 @@ public class DarkWand extends Item implements IWand {
         }
 
         @Override
-        public boolean applyForgeHandTransform(PoseStack poseStack, LocalPlayer player, HumanoidArm arm, ItemStack itemInHand, float partialTick, float equipProcess, float swingProcess) {
+        public boolean applyForgeHandTransform(PoseStack poseStack, LocalPlayer player, HumanoidArm arm,
+                ItemStack itemInHand, float partialTick, float equipProcess, float swingProcess) {
             int i = arm == HumanoidArm.RIGHT ? 1 : -1;
             if (player.isUsingItem()) {
                 applyItemArmTransform(poseStack, arm, equipProcess);
-                poseStack.translate((double)((float)i * -0.2785682F), (double)0.18344387F, (double)0.15731531F);
+                poseStack.translate((double) ((float) i * -0.2785682F), (double) 0.18344387F, (double) 0.15731531F);
                 poseStack.mulPose(Axis.XP.rotationDegrees(-13.935F));
-                poseStack.mulPose(Axis.YP.rotationDegrees((float)i * 35.3F));
-                poseStack.mulPose(Axis.ZP.rotationDegrees((float)i * -9.785F));
-                float f8 = (float)itemInHand.getUseDuration() - ((float)player.getUseItemRemainingTicks() - partialTick + 1.0F);
+                poseStack.mulPose(Axis.YP.rotationDegrees((float) i * 35.3F));
+                poseStack.mulPose(Axis.ZP.rotationDegrees((float) i * -9.785F));
+                float f8 = (float) itemInHand.getItem().getUseDuration(itemInHand)
+                        - ((float) player.getUseItemRemainingTicks() - partialTick + 1.0F);
                 float f12 = f8 / 20.0F;
                 f12 = (f12 * f12 + f12 * 2.0F) / 3.0F;
                 if (f12 > 1.0F) {
@@ -895,17 +956,17 @@ public class DarkWand extends Item implements IWand {
                     float f15 = Mth.sin((f8 - 0.1F) * 1.3F);
                     float f18 = f12 - 0.1F;
                     float f20 = f15 * f18;
-                    poseStack.translate((double)(f20 * 0.0F), (double)(f20 * 0.004F), (double)(f20 * 0.0F));
+                    poseStack.translate((double) (f20 * 0.0F), (double) (f20 * 0.004F), (double) (f20 * 0.0F));
                 }
 
-                poseStack.translate((double)(f12 * 0.0F), (double)(f12 * 0.0F), (double)(f12 * 0.04F));
+                poseStack.translate((double) (f12 * 0.0F), (double) (f12 * 0.0F), (double) (f12 * 0.04F));
                 poseStack.scale(1.0F, 1.0F, 1.0F + f12 * 0.2F);
-                poseStack.mulPose(Axis.YN.rotationDegrees((float)i * 45.0F));
+                poseStack.mulPose(Axis.YN.rotationDegrees((float) i * 45.0F));
             } else {
-                float f5 = -0.4F * Mth.sin(Mth.sqrt(swingProcess) * (float)Math.PI);
-                float f6 = 0.2F * Mth.sin(Mth.sqrt(swingProcess) * ((float)Math.PI * 2F));
-                float f10 = -0.2F * Mth.sin(swingProcess * (float)Math.PI);
-                poseStack.translate((double)((float)i * f5), (double)f6, (double)f10);
+                float f5 = -0.4F * Mth.sin(Mth.sqrt(swingProcess) * (float) Math.PI);
+                float f6 = 0.2F * Mth.sin(Mth.sqrt(swingProcess) * ((float) Math.PI * 2F));
+                float f10 = -0.2F * Mth.sin(swingProcess * (float) Math.PI);
+                poseStack.translate((double) ((float) i * f5), (double) f6, (double) f10);
                 this.applyItemArmTransform(poseStack, arm, equipProcess);
                 this.applyItemArmAttackTransform(poseStack, arm, swingProcess);
             }
@@ -914,17 +975,18 @@ public class DarkWand extends Item implements IWand {
 
         private void applyItemArmTransform(PoseStack poseStack, HumanoidArm arm, float equipProcess) {
             int i = arm == HumanoidArm.RIGHT ? 1 : -1;
-            poseStack.translate((double)((float)i * 0.56F), (double)(-0.52F + equipProcess * -0.6F), (double)-0.72F);
+            poseStack.translate((double) ((float) i * 0.56F), (double) (-0.52F + equipProcess * -0.6F),
+                    (double) -0.72F);
         }
 
         private void applyItemArmAttackTransform(PoseStack poseStack, HumanoidArm humanoidArm, float swingProcess) {
             int i = humanoidArm == HumanoidArm.RIGHT ? 1 : -1;
-            float f = Mth.sin(swingProcess * swingProcess * (float)Math.PI);
-            poseStack.mulPose(Axis.YP.rotationDegrees((float)i * (45.0F + f * -20.0F)));
-            float f1 = Mth.sin(Mth.sqrt(swingProcess) * (float)Math.PI);
-            poseStack.mulPose(Axis.ZP.rotationDegrees((float)i * f1 * -20.0F));
+            float f = Mth.sin(swingProcess * swingProcess * (float) Math.PI);
+            poseStack.mulPose(Axis.YP.rotationDegrees((float) i * (45.0F + f * -20.0F)));
+            float f1 = Mth.sin(Mth.sqrt(swingProcess) * (float) Math.PI);
+            poseStack.mulPose(Axis.ZP.rotationDegrees((float) i * f1 * -20.0F));
             poseStack.mulPose(Axis.XP.rotationDegrees(f1 * -80.0F));
-            poseStack.mulPose(Axis.YP.rotationDegrees((float)i * -45.0F));
+            poseStack.mulPose(Axis.YP.rotationDegrees((float) i * -45.0F));
         }
     }
 }

@@ -25,8 +25,9 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Stream;
 
-public abstract class AbstractMonolith extends Owned{
-    protected static final EntityDataAccessor<Integer> AGE = SynchedEntityData.defineId(AbstractMonolith.class, EntityDataSerializers.INT);
+public abstract class AbstractMonolith extends Owned {
+    protected static final EntityDataAccessor<Integer> AGE = SynchedEntityData.defineId(AbstractMonolith.class,
+            EntityDataSerializers.INT);
     private boolean activate;
     public int lifeSpan = 6;
 
@@ -69,7 +70,8 @@ public abstract class AbstractMonolith extends Owned{
     }
 
     @Nullable
-    public SpawnGroupData finalizeSpawn(ServerLevelAccessor pLevel, DifficultyInstance pDifficulty, MobSpawnType pReason, @Nullable SpawnGroupData pSpawnData, @Nullable CompoundTag pDataTag) {
+    public SpawnGroupData finalizeSpawn(ServerLevelAccessor pLevel, DifficultyInstance pDifficulty,
+            MobSpawnType pReason, @Nullable SpawnGroupData pSpawnData, @Nullable CompoundTag pDataTag) {
         pSpawnData = super.finalizeSpawn(pLevel, pDifficulty, pReason, pSpawnData, pDataTag);
         this.initRotate();
         if (pReason == MobSpawnType.MOB_SUMMONED) {
@@ -81,7 +83,7 @@ public abstract class AbstractMonolith extends Owned{
     }
 
     public void initRotate() {
-        switch (this.getRandom().nextInt(4)){
+        switch (this.getRandom().nextInt(4)) {
             case 1 -> this.setYRot(90.0F);
             case 2 -> this.setYRot(180.0F);
             case 3 -> this.setYRot(270.0F);
@@ -91,39 +93,40 @@ public abstract class AbstractMonolith extends Owned{
 
     public abstract BlockState getState();
 
-    public ParticleOptions getParticles(){
+    public ParticleOptions getParticles() {
         return new BlockParticleOption(ParticleTypes.BLOCK, this.getState());
     }
 
-    public void setAge(int age){
+    public void setAge(int age) {
         this.entityData.set(AGE, age);
     }
 
-    public int getAge(){
+    public int getAge() {
         return this.entityData.get(AGE);
     }
 
-    public void setActivate(boolean activate){
+    public void setActivate(boolean activate) {
         this.activate = activate;
     }
 
-    public boolean isActivate(){
+    public boolean isActivate() {
         return this.activate;
     }
 
-    public void setLifeSpan(int lifeSpan){
+    public void setLifeSpan(int lifeSpan) {
         this.lifeSpan = lifeSpan;
     }
 
-    public int getLifeSpan(){
+    public int getLifeSpan() {
         return this.lifeSpan;
     }
 
     public boolean isInvulnerableTo(DamageSource p_219427_) {
-        return this.isEmerging() && !p_219427_.is(DamageTypeTags.BYPASSES_INVULNERABILITY) || super.isInvulnerableTo(p_219427_);
+        return this.isEmerging() && !p_219427_.is(DamageTypeTags.BYPASSES_INVULNERABILITY)
+                || super.isInvulnerableTo(p_219427_);
     }
 
-    public static float getEmergingTime(){
+    public static float getEmergingTime() {
         return 60.0F;
     }
 
@@ -131,7 +134,7 @@ public abstract class AbstractMonolith extends Owned{
         return this.getAge() < getEmergingTime() && !this.isActivate();
     }
 
-    public boolean isDescending(){
+    public boolean isDescending() {
         return this.getAge() < getEmergingTime() && this.isActivate();
     }
 
@@ -143,7 +146,7 @@ public abstract class AbstractMonolith extends Owned{
         return super.canBeAffected(potioneffectIn) && canHaveEffects();
     }
 
-    public boolean canHaveEffects(){
+    public boolean canHaveEffects() {
         return false;
     }
 
@@ -151,7 +154,7 @@ public abstract class AbstractMonolith extends Owned{
         return false;
     }
 
-    public boolean canTarget(){
+    public boolean canTarget() {
         return false;
     }
 
@@ -159,7 +162,7 @@ public abstract class AbstractMonolith extends Owned{
     protected void pushEntities() {
         if (this.isPushable()) {
             super.pushEntities();
-        } else if (!this.level.isClientSide) {
+        } else if (!this.level().isClientSide) {
             List<Entity> list = this.level().getEntities(this, this.getBoundingBox().inflate(0.5D));
             for (Entity entity : list) {
                 this.doPush(entity);
@@ -169,7 +172,7 @@ public abstract class AbstractMonolith extends Owned{
 
     @Override
     protected void doPush(Entity entityIn) {
-        if (!this.level.isClientSide) {
+        if (!this.level().isClientSide) {
             if (this.getTrueOwner() != null) {
                 if (entityIn instanceof Mob mob) {
                     if (mob.getTarget() == this.getTrueOwner() && this.canBeSeenAsEnemy()) {
@@ -187,16 +190,17 @@ public abstract class AbstractMonolith extends Owned{
     public void move(MoverType p_213315_1_, Vec3 p_213315_2_) {
     }
 
-    public int getAgeSpeed(){
+    public int getAgeSpeed() {
         return 1;
     }
 
-    public AABB getInitialBB(){
+    public AABB getInitialBB() {
         return this.getType().getDimensions().makeBoundingBox(this.position());
     }
 
-    public boolean canSpawn(Level level){
-        return level.noCollision(this.getInitialBB().deflate(0.25D)) && level.getEntityCollisions(this, this.getInitialBB().deflate(0.25D)).isEmpty();
+    public boolean canSpawn(Level level) {
+        return level.noCollision(this.getInitialBB().deflate(0.25D))
+                && level.getEntityCollisions(this, this.getInitialBB().deflate(0.25D)).isEmpty();
     }
 
     @Override
@@ -209,12 +213,13 @@ public abstract class AbstractMonolith extends Owned{
         if (!this.isNoGravity()) {
             MobUtil.moveDownToGround(this);
         }
-        if (this.isEmerging()){
-            if (!this.level.isClientSide) {
+        if (this.isEmerging()) {
+            if (!this.level().isClientSide) {
                 this.setAge(this.getAge() + this.getAgeSpeed());
-                this.level.broadcastEntityEvent(this, (byte) 4);
-                for (AbstractMonolith abstractMonolith : this.level.getEntitiesOfClass(AbstractMonolith.class, this.getBoundingBox())){
-                    if (abstractMonolith != this){
+                this.level().broadcastEntityEvent(this, (byte) 4);
+                for (AbstractMonolith abstractMonolith : this.level().getEntitiesOfClass(AbstractMonolith.class,
+                        this.getBoundingBox())) {
+                    if (abstractMonolith != this) {
                         this.discard();
                     }
                 }
@@ -231,20 +236,22 @@ public abstract class AbstractMonolith extends Owned{
     }
 
     public void handleEntityEvent(byte pId) {
-        if (pId == 4){
+        if (pId == 4) {
             this.setAge(this.getAge() + this.getAgeSpeed());
-        } else if (pId == 5){
+        } else if (pId == 5) {
             this.setAge(this.getAge() - this.getAgeSpeed());
         } else {
             super.handleEntityEvent(pId);
         }
     }
 
-    public EntityDimensions getDimensions(Pose p_33113_) {
-        float i = (this.getAge() / getEmergingTime());
-        EntityDimensions entitydimensions = super.getDimensions(p_33113_);
-        return entitydimensions.scale(1, i);
-    }
+    /*
+     * public EntityDimensions getDimensions(Pose p_33113_) {
+     * float i = (this.getAge() / getEmergingTime());
+     * EntityDimensions entitydimensions = super.getDimensions(p_33113_);
+     * return entitydimensions.scale(1, i);
+     * }
+     */
 
     public Crackiness getCrackiness() {
         return Crackiness.byFraction(this.getHealth() / this.getMaxHealth());
@@ -256,9 +263,10 @@ public abstract class AbstractMonolith extends Owned{
         MEDIUM(0.5F),
         HIGH(0.25F);
 
-        private static final List<Crackiness> BY_DAMAGE = Stream.of(values()).sorted(Comparator.comparingDouble((p_28904_) -> {
-            return (double)p_28904_.fraction;
-        })).collect(ImmutableList.toImmutableList());
+        private static final List<Crackiness> BY_DAMAGE = Stream.of(values())
+                .sorted(Comparator.comparingDouble((p_28904_) -> {
+                    return (double) p_28904_.fraction;
+                })).collect(ImmutableList.toImmutableList());
         private final float fraction;
 
         private Crackiness(float p_28900_) {
@@ -266,7 +274,7 @@ public abstract class AbstractMonolith extends Owned{
         }
 
         public static Crackiness byFraction(float p_28902_) {
-            for(Crackiness irongolem$crackiness : BY_DAMAGE) {
+            for (Crackiness irongolem$crackiness : BY_DAMAGE) {
                 if (p_28902_ < irongolem$crackiness.fraction) {
                     return irongolem$crackiness;
                 }

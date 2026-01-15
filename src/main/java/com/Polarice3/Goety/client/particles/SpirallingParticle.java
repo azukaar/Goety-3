@@ -17,7 +17,8 @@ import org.lwjgl.opengl.GL11;
 public class SpirallingParticle extends TextureSheetParticle {
     private final float rotSpeed;
 
-    public SpirallingParticle(ClientLevel p_106610_, double p_106611_, double p_106612_, double p_106613_, float size, float red, float green, float blue, int life, SpriteSet p_106617_) {
+    public SpirallingParticle(ClientLevel p_106610_, double p_106611_, double p_106612_, double p_106613_, float size,
+            float red, float green, float blue, int life, SpriteSet p_106617_) {
         super(p_106610_, p_106611_, p_106612_, p_106613_);
         this.xd = 0.0F;
         this.yd = 0.0F;
@@ -50,7 +51,7 @@ public class SpirallingParticle extends TextureSheetParticle {
             this.remove();
         }
         this.oRoll = this.roll;
-        this.roll += (float)Math.PI * this.rotSpeed * 2.0F;
+        this.roll += (float) Math.PI * this.rotSpeed * 2.0F;
     }
 
     @Override
@@ -67,7 +68,6 @@ public class SpirallingParticle extends TextureSheetParticle {
         RenderSystem.setShaderTexture(0, TextureAtlas.LOCATION_PARTICLES);
         AbstractTexture tex = textureManager.getTexture(TextureAtlas.LOCATION_PARTICLES);
         tex.setBlurMipmap(true, false);
-        buffer.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.PARTICLE);
     }
 
     private static void endRenderCommon() {
@@ -79,14 +79,10 @@ public class SpirallingParticle extends TextureSheetParticle {
 
     public static final ParticleRenderType NORMAL_RENDER = new ParticleRenderType() {
         @Override
-        public void begin(BufferBuilder bufferBuilder, TextureManager textureManager) {
-            beginRenderCommon(bufferBuilder, textureManager);
-        }
-
-        @Override
-        public void end(Tesselator tessellator) {
-            tessellator.end();
-            endRenderCommon();
+        public BufferBuilder begin(Tesselator tesselator, TextureManager textureManager) {
+            BufferBuilder buffer = tesselator.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.PARTICLE);
+            beginRenderCommon(buffer, textureManager);
+            return buffer;
         }
 
         @Override
@@ -104,8 +100,10 @@ public class SpirallingParticle extends TextureSheetParticle {
 
         @Nullable
         @Override
-        public Particle createParticle(SpirallingParticleOption p_107421_, ClientLevel p_107422_, double p_107423_, double p_107424_, double p_107425_, double p_107426_, double p_107427_, double p_107428_) {
-            return new SpirallingParticle(p_107422_, p_107423_, p_107424_, p_107425_, p_107421_.size, p_107421_.r, p_107421_.g, p_107421_.b, p_107421_.life, this.sprite);
+        public Particle createParticle(SpirallingParticleOption p_107421_, ClientLevel p_107422_, double p_107423_,
+                double p_107424_, double p_107425_, double p_107426_, double p_107427_, double p_107428_) {
+            return new SpirallingParticle(p_107422_, p_107423_, p_107424_, p_107425_, p_107421_.size, p_107421_.r,
+                    p_107421_.g, p_107421_.b, p_107421_.life, this.sprite);
         }
     }
 }

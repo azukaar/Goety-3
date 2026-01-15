@@ -13,7 +13,8 @@ public class AoEParticle extends GroundCircleParticle {
    private float finalSize;
    private final SpriteSet spriteSet;
 
-   AoEParticle(ClientLevel p_233976_, double p_233977_, double p_233978_, double p_233979_, float red, float green, float blue, SpriteSet spriteSet) {
+   AoEParticle(ClientLevel p_233976_, double p_233977_, double p_233978_, double p_233979_, float red, float green,
+         float blue, SpriteSet spriteSet) {
       super(p_233976_, p_233977_, p_233978_, p_233979_, 0.0D, 0.0D, 0.0D);
       this.quadSize = 10.0F;
       this.lifetime = 100;
@@ -62,11 +63,6 @@ public class AoEParticle extends GroundCircleParticle {
       }
    }
 
-   @Override
-   public boolean shouldCull() {
-      return false;
-   }
-
    public static class Provider implements ParticleProvider<AoEParticleOption> {
       private final SpriteSet sprite;
 
@@ -74,8 +70,10 @@ public class AoEParticle extends GroundCircleParticle {
          this.sprite = p_234008_;
       }
 
-      public Particle createParticle(AoEParticleOption p_234019_, ClientLevel p_234020_, double p_234021_, double p_234022_, double p_234023_, double p_234024_, double p_234025_, double p_234026_) {
-         AoEParticle shockwaveParticle = new AoEParticle(p_234020_, p_234021_, p_234022_, p_234023_, (float) p_234024_, (float) p_234025_, (float) p_234026_, sprite);
+      public Particle createParticle(AoEParticleOption p_234019_, ClientLevel p_234020_, double p_234021_,
+            double p_234022_, double p_234023_, double p_234024_, double p_234025_, double p_234026_) {
+         AoEParticle shockwaveParticle = new AoEParticle(p_234020_, p_234021_, p_234022_, p_234023_, (float) p_234024_,
+               (float) p_234025_, (float) p_234026_, sprite);
          shockwaveParticle.initialSize = p_234019_.getSize();
          shockwaveParticle.quadSize = p_234019_.getSize();
          shockwaveParticle.growing = p_234019_.getGrowing();

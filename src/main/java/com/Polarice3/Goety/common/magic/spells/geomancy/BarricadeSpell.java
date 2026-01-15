@@ -48,7 +48,7 @@ public class BarricadeSpell extends Spell {
         return SoundEvents.EVOKER_PREPARE_ATTACK;
     }
 
-    public int spellCooldown(LivingEntity caster){
+    public int spellCooldown(LivingEntity caster) {
         return this.trueCooldown;
     }
 
@@ -66,7 +66,7 @@ public class BarricadeSpell extends Spell {
         return list;
     }
 
-    public void SpellResult(ServerLevel worldIn, LivingEntity caster, ItemStack staff, SpellStat spellStat){
+    public void SpellResult(ServerLevel worldIn, LivingEntity caster, ItemStack staff, SpellStat spellStat) {
         int range = spellStat.getRange();
         int potency = spellStat.getPotency();
         int duration = spellStat.getDuration();
@@ -76,18 +76,18 @@ public class BarricadeSpell extends Spell {
             potency += WandUtil.getPotencyLevel(caster);
             duration += WandUtil.getLevels(ModEnchantments.DURATION.get(), caster);
         }
-        if (this.rightStaff(staff)){
+        if (this.rightStaff(staff)) {
             chance += 0.2F;
         }
         HitResult rayTraceResult = this.rayTrace(worldIn, caster, range, 3);
         LivingEntity target = this.getTarget(caster, range);
         EntityType<? extends AbstractMonolith> entityType = ModEntityType.TOTEMIC_WALL.get();
-        if (this.typeStaff(staff, SpellType.FROST)){
+        if (this.typeStaff(staff, SpellType.FROST)) {
             entityType = ModEntityType.GLACIAL_WALL.get();
         }
-        if (target != null){
-            if (this.isShifting(caster)){
-                if (worldIn.random.nextFloat() <= chance){
+        if (target != null) {
+            if (this.isShifting(caster)) {
+                if (worldIn.random.nextFloat() <= chance) {
                     WandUtil.summonQuadOffensiveTrap(caster, target, ModEntityType.TOTEMIC_BOMB.get(), potency);
                     this.trueCooldown += MathHelper.secondsToTicks(3);
                 } else {
@@ -101,24 +101,25 @@ public class BarricadeSpell extends Spell {
                 if (random == 0) {
                     int[] rowToRemove = Util.getRandom(WandUtil.CONFIG_1_ROWS, caster.getRandom());
                     Direction direction = Direction.fromYRot(target.getYHeadRot());
-                    switch (direction){
+                    switch (direction) {
                         case NORTH -> rowToRemove = WandUtil.CONFIG_1_NORTH_ROW;
                         case SOUTH -> rowToRemove = WandUtil.CONFIG_1_SOUTH_ROW;
                         case WEST -> rowToRemove = WandUtil.CONFIG_1_WEST_ROW;
                         case EAST -> rowToRemove = WandUtil.CONFIG_1_EAST_ROW;
+                        default -> rowToRemove = WandUtil.CONFIG_1_NORTH_ROW;
                     }
                     WandUtil.summonSquareTrap(caster, target, entityType, rowToRemove, duration);
-                } else if (random == 1){
+                } else if (random == 1) {
                     WandUtil.summonWallTrap(caster, target, entityType, duration);
                 } else {
                     WandUtil.summonRandomPillarsTrap(caster, target, entityType, duration);
                 }
                 this.trueCooldown = this.defaultSpellCooldown();
             }
-        } else if (rayTraceResult instanceof BlockHitResult){
+        } else if (rayTraceResult instanceof BlockHitResult) {
             BlockPos blockPos = ((BlockHitResult) rayTraceResult).getBlockPos();
-            if (this.isShifting(caster)){
-                if (worldIn.random.nextFloat() <= chance){
+            if (this.isShifting(caster)) {
+                if (worldIn.random.nextFloat() <= chance) {
                     WandUtil.summonQuadOffensiveTrap(caster, blockPos, ModEntityType.TOTEMIC_BOMB.get(), potency);
                     this.trueCooldown += MathHelper.secondsToTicks(3);
                 } else {

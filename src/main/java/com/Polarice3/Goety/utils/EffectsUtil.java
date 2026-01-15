@@ -26,11 +26,12 @@ import java.util.List;
 
 public class EffectsUtil {
 
-    public static void amplifyEffect (LivingEntity infected, MobEffect effect, int duration){
+    public static void amplifyEffect(LivingEntity infected, MobEffect effect, int duration) {
         amplifyEffect(infected, effect, duration, 4, false, true);
     }
 
-    public static void amplifyEffect(LivingEntity infected, MobEffect effect, int duration, int maxAmp, boolean pAmbient, boolean pVisible){
+    public static void amplifyEffect(LivingEntity infected, MobEffect effect, int duration, int maxAmp,
+            boolean pAmbient, boolean pVisible) {
         MobEffectInstance MobEffectInstance1 = infected.getEffect(effect);
         int i = 1;
         if (MobEffectInstance1 != null) {
@@ -45,11 +46,12 @@ public class EffectsUtil {
         infected.addEffect(MobEffectInstance);
     }
 
-    public static void resetDuration(LivingEntity infected, MobEffect effect, int duration){
+    public static void resetDuration(LivingEntity infected, MobEffect effect, int duration) {
         resetDuration(infected, effect, duration, false, true);
     }
 
-    public static void resetDuration(LivingEntity infected, MobEffect effect, int duration, boolean pAmbient, boolean pVisible){
+    public static void resetDuration(LivingEntity infected, MobEffect effect, int duration, boolean pAmbient,
+            boolean pVisible) {
         MobEffectInstance MobEffectInstance1 = infected.getEffect(effect);
         int a = 0;
         if (MobEffectInstance1 != null) {
@@ -60,7 +62,7 @@ public class EffectsUtil {
         infected.addEffect(MobEffectInstance);
     }
 
-    public static void increaseDuration(LivingEntity infected, MobEffect effect, int duration){
+    public static void increaseDuration(LivingEntity infected, MobEffect effect, int duration) {
         MobEffectInstance MobEffectInstance1 = infected.getEffect(effect);
         int i = duration;
         int a = 0;
@@ -73,7 +75,8 @@ public class EffectsUtil {
         infected.addEffect(MobEffectInstance);
     }
 
-    public static void decreaseDuration(LivingEntity infected, MobEffect effect, float duration, boolean pAmbient, boolean pVisible){
+    public static void decreaseDuration(LivingEntity infected, MobEffect effect, float duration, boolean pAmbient,
+            boolean pVisible) {
         MobEffectInstance MobEffectInstance1 = infected.getEffect(effect);
         float i = duration;
         int a = 0;
@@ -86,15 +89,16 @@ public class EffectsUtil {
         infected.addEffect(MobEffectInstance);
     }
 
-    public static void deamplifyEffect(LivingEntity infected, MobEffect effect, int duration){
+    public static void deamplifyEffect(LivingEntity infected, MobEffect effect, int duration) {
         deamplifyEffect(infected, effect, 1, duration, false, true);
     }
 
-    public static void deamplifyEffect(LivingEntity infected, MobEffect effect, int deamp, int duration){
+    public static void deamplifyEffect(LivingEntity infected, MobEffect effect, int deamp, int duration) {
         deamplifyEffect(infected, effect, deamp, duration, false, true);
     }
 
-    public static void deamplifyEffect(LivingEntity infected, MobEffect effect, int deamp, int duration, boolean pAmbient, boolean pVisible){
+    public static void deamplifyEffect(LivingEntity infected, MobEffect effect, int deamp, int duration,
+            boolean pAmbient, boolean pVisible) {
         MobEffectInstance MobEffectInstance1 = infected.getEffect(effect);
         int i = 0;
         if (MobEffectInstance1 != null) {
@@ -108,32 +112,33 @@ public class EffectsUtil {
         infected.addEffect(MobEffectInstance);
     }
 
-    public static void halveDuration(LivingEntity infected, MobEffect effect, int duration){
+    public static void halveDuration(LivingEntity infected, MobEffect effect, int duration) {
         halveDuration(infected, effect, duration, false, true);
     }
 
-    public static void halveDuration(LivingEntity infected, MobEffect effect, int duration, boolean pAmbient, boolean pVisible){
+    public static void halveDuration(LivingEntity infected, MobEffect effect, int duration, boolean pAmbient,
+            boolean pVisible) {
         MobEffectInstance MobEffectInstance1 = infected.getEffect(effect);
         int a = 0;
         if (MobEffectInstance1 != null) {
             a = MobEffectInstance1.getAmplifier();
             infected.removeEffect(effect);
         }
-        MobEffectInstance MobEffectInstance = new MobEffectInstance(effect, duration/2, a, pAmbient, pVisible);
+        MobEffectInstance MobEffectInstance = new MobEffectInstance(effect, duration / 2, a, pAmbient, pVisible);
         infected.addEffect(MobEffectInstance);
     }
 
-    public static int getAmplifier(LivingEntity infected, MobEffect effect){
+    public static int getAmplifier(LivingEntity infected, MobEffect effect) {
         MobEffectInstance MobEffectInstance1 = infected.getEffect(effect);
-        if (MobEffectInstance1 != null){
+        if (MobEffectInstance1 != null) {
             return MobEffectInstance1.getAmplifier();
         }
         return 0;
     }
 
-    public static int getAmplifierPlus(LivingEntity infected, MobEffect effect){
+    public static int getAmplifierPlus(LivingEntity infected, MobEffect effect) {
         MobEffectInstance MobEffectInstance1 = infected.getEffect(effect);
-        if (MobEffectInstance1 != null){
+        if (MobEffectInstance1 != null) {
             return MobEffectInstance1.getAmplifier() + 1;
         }
         return 0;
@@ -151,7 +156,7 @@ public class EffectsUtil {
         Entity entity = lootContext.getParamOrNull(LootContextParams.THIS_ENTITY);
         if (entity instanceof LivingEntity livingEntity) {
             MobEffectInstance mobEffectInstance = livingEntity.getEffect(GoetyEffects.FORTUNATE.get());
-            if (mobEffectInstance != null){
+            if (mobEffectInstance != null) {
                 int level = mobEffectInstance.getAmplifier();
                 return level + 1;
             }
@@ -159,16 +164,23 @@ public class EffectsUtil {
         return 0;
     }
 
-    public static int infiniteEffect(){
+    public static int infiniteEffect() {
         return -1;
     }
 
-    public static List<LivingEntity> addEffectToAllAround(ServerLevel p_216947_, @org.jetbrains.annotations.Nullable Entity p_216948_, Vec3 p_216949_, double p_216950_, MobEffectInstance p_216951_, int p_216952_) {
+    public static List<LivingEntity> addEffectToAllAround(ServerLevel p_216947_,
+            @org.jetbrains.annotations.Nullable Entity p_216948_, Vec3 p_216949_, double p_216950_,
+            MobEffectInstance p_216951_, int p_216952_) {
         MobEffect mobeffect = p_216951_.getEffect();
         List<LivingEntity> list = new ArrayList<>();
-        for (Entity entity : p_216947_.getAllEntities()){
-            if (entity instanceof LivingEntity livingEntity){
-                if (EntitySelector.NO_CREATIVE_OR_SPECTATOR.test(livingEntity) && !MobUtil.areAllies(p_216948_, livingEntity) && p_216949_.closerThan(livingEntity.position(), p_216950_) && (!livingEntity.hasEffect(mobeffect) || livingEntity.getEffect(mobeffect).getAmplifier() < p_216951_.getAmplifier() || livingEntity.getEffect(mobeffect).endsWithin(p_216952_ - 1))){
+        for (Entity entity : p_216947_.getAllEntities()) {
+            if (entity instanceof LivingEntity livingEntity) {
+                if (EntitySelector.NO_CREATIVE_OR_SPECTATOR.test(livingEntity)
+                        && !MobUtil.areAllies(p_216948_, livingEntity)
+                        && p_216949_.closerThan(livingEntity.position(), p_216950_)
+                        && (!livingEntity.hasEffect(mobeffect)
+                                || livingEntity.getEffect(mobeffect).getAmplifier() < p_216951_.getAmplifier()
+                                || livingEntity.getEffect(mobeffect).endsWithin(p_216952_ - 1))) {
                     list.add(livingEntity);
                 }
             }
@@ -179,23 +191,30 @@ public class EffectsUtil {
         return list;
     }
 
-    public static void Illague(ServerLevel level, LivingEntity infected){
+    public static void Illague(ServerLevel level, LivingEntity infected) {
         MobEffectInstance illague = infected.getEffect(GoetyEffects.ILLAGUE.get());
         if (illague != null) {
             int duration = illague.getDuration() + 1;
             int amplifier = illague.getAmplifier();
             if (MobsConfig.IllagueSpread.get()) {
-                for (LivingEntity livingEntity : level.getEntitiesOfClass(LivingEntity.class, infected.getBoundingBox().inflate(8.0D), EntitySelector.NO_CREATIVE_OR_SPECTATOR)) {
-                    if (livingEntity.isAlive() && !(livingEntity instanceof PatrollingMonster) && !(livingEntity instanceof RaiderServant) && livingEntity.getMobType() != MobType.UNDEAD && !livingEntity.hasEffect(GoetyEffects.ILLAGUE.get())) {
+                for (LivingEntity livingEntity : level.getEntitiesOfClass(LivingEntity.class,
+                        infected.getBoundingBox().inflate(8.0D), EntitySelector.NO_CREATIVE_OR_SPECTATOR)) {
+                    if (livingEntity.isAlive() && !(livingEntity instanceof PatrollingMonster)
+                            && !(livingEntity instanceof RaiderServant)
+                            && !(livingEntity instanceof net.minecraft.world.entity.Mob mob
+                                    && mob.getMobType() == MobType.UNDEAD)
+                            && !livingEntity.hasEffect(GoetyEffects.ILLAGUE.get())) {
                         if (livingEntity.tickCount % 100 == 0 && livingEntity.getRandom().nextInt(20) == 0) {
-                            livingEntity.addEffect(new MobEffectInstance(GoetyEffects.ILLAGUE.get(), duration / 2, amplifier, false, false));
+                            livingEntity.addEffect(new MobEffectInstance(GoetyEffects.ILLAGUE.get(), duration / 2,
+                                    amplifier, false, false));
                         }
                     }
                 }
             }
             if (infected.tickCount % 20 == 0) {
                 for (int i = 0; i < 8; ++i) {
-                    level.sendParticles(ModParticleTypes.PLAGUE_EFFECT.get(), infected.getRandomX(0.5D), infected.getRandomY(), infected.getRandomZ(0.5D), 1, 0.0D, 0.5D, 0.0D, 0);
+                    level.sendParticles(ModParticleTypes.PLAGUE_EFFECT.get(), infected.getRandomX(0.5D),
+                            infected.getRandomY(), infected.getRandomZ(0.5D), 1, 0.0D, 0.5D, 0.0D, 0);
                 }
             }
             int i1 = Mth.clamp((amplifier * 50) * 10, 0, 2500);
@@ -213,25 +232,35 @@ public class EffectsUtil {
                     if (!infected.getType().is(EntityTypeTags.RAIDERS)) {
                         switch (r) {
                             case 0 ->
-                                    infected.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, 400 * r4, r3, false, false));
+                                infected.addEffect(
+                                        new MobEffectInstance(MobEffects.WEAKNESS, 400 * r4, r3, false, false));
                             case 1 ->
-                                    infected.addEffect(new MobEffectInstance(MobEffects.HUNGER, 400 * r4, r3, false, false));
+                                infected.addEffect(
+                                        new MobEffectInstance(MobEffects.HUNGER, 400 * r4, r3, false, false));
                             case 2 ->
-                                    infected.addEffect(new MobEffectInstance(MobEffects.CONFUSION, 400 * r4, 0, false, false));
+                                infected.addEffect(
+                                        new MobEffectInstance(MobEffects.CONFUSION, 400 * r4, 0, false, false));
                             case 3 ->
-                                    infected.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 400 * r4, r3, false, false));
+                                infected.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 400 * r4, r3,
+                                        false, false));
                             case 4 ->
-                                    infected.addEffect(new MobEffectInstance(MobEffects.DIG_SLOWDOWN, 400 * r4, r3, false, false));
+                                infected.addEffect(
+                                        new MobEffectInstance(MobEffects.DIG_SLOWDOWN, 400 * r4, r3, false, false));
                             case 5 ->
-                                    infected.addEffect(new MobEffectInstance(MobEffects.POISON, 400 * r4, r3, false, false));
+                                infected.addEffect(
+                                        new MobEffectInstance(MobEffects.POISON, 400 * r4, r3, false, false));
                             case 6 ->
-                                    infected.addEffect(new MobEffectInstance(GoetyEffects.SAPPED.get(), 400 * r4, r3, false, false));
+                                infected.addEffect(
+                                        new MobEffectInstance(GoetyEffects.SAPPED.get(), 400 * r4, r3, false, false));
                             case 7 ->
-                                    infected.addEffect(new MobEffectInstance(GoetyEffects.FREEZING.get(), 400 * r4, r3, false, false));
+                                infected.addEffect(
+                                        new MobEffectInstance(GoetyEffects.FREEZING.get(), 400 * r4, r3, false, false));
                             case 8 ->
-                                    infected.addEffect(new MobEffectInstance(GoetyEffects.FLAMMABLE.get(), 400 * r4, r3, false, false));
+                                infected.addEffect(new MobEffectInstance(GoetyEffects.FLAMMABLE.get(), 400 * r4, r3,
+                                        false, false));
                             case 9 ->
-                                    infected.addEffect(new MobEffectInstance(GoetyEffects.FLIMSY.get(), 400 * r4, r3, false, false));
+                                infected.addEffect(
+                                        new MobEffectInstance(GoetyEffects.FLIMSY.get(), 400 * r4, r3, false, false));
                         }
                     }
                 }
@@ -239,7 +268,8 @@ public class EffectsUtil {
         }
     }
 
-    public static void increaseEffect(LivingEntity infected, MobEffect effect, int maxAmp, boolean pAmbient, boolean pVisible){
+    public static void increaseEffect(LivingEntity infected, MobEffect effect, int maxAmp, boolean pAmbient,
+            boolean pVisible) {
         MobEffectInstance instance = infected.getEffect(effect);
         int i = 1;
         int d = MathHelper.secondsToTicks(1);

@@ -1,5 +1,6 @@
 package com.Polarice3.Goety.common.entities.ally.undead.zombie;
 
+import com.Polarice3.Goety.Goety;
 import com.Polarice3.Goety.api.items.magic.IWand;
 import com.Polarice3.Goety.client.particles.ModParticleTypes;
 import com.Polarice3.Goety.common.entities.ModEntityType;
@@ -54,10 +55,13 @@ import java.util.UUID;
 import java.util.function.Predicate;
 
 public class ZombieServant extends Summoned {
-    private static final UUID SPEED_MODIFIER_BABY_UUID = UUID.fromString("B9766B59-9566-4402-BC1F-2EE2A276D836");
-    private static final AttributeModifier SPEED_MODIFIER_BABY = new AttributeModifier(SPEED_MODIFIER_BABY_UUID, "Baby speed boost", 0.5D, AttributeModifier.Operation.MULTIPLY_BASE);
-    private static final EntityDataAccessor<Boolean> DATA_BABY_ID = SynchedEntityData.defineId(ZombieServant.class, EntityDataSerializers.BOOLEAN);
-    private static final EntityDataAccessor<Boolean> DATA_DROWNED_CONVERSION_ID = SynchedEntityData.defineId(ZombieServant.class, EntityDataSerializers.BOOLEAN);
+    private static final ResourceLocation SPEED_MODIFIER_BABY_ID = Goety.location("baby_speed_boost");
+    private static final AttributeModifier SPEED_MODIFIER_BABY = new AttributeModifier(SPEED_MODIFIER_BABY_ID,
+            0.5D, AttributeModifier.Operation.ADD_MULTIPLIED_BASE);
+    private static final EntityDataAccessor<Boolean> DATA_BABY_ID = SynchedEntityData.defineId(ZombieServant.class,
+            EntityDataSerializers.BOOLEAN);
+    private static final EntityDataAccessor<Boolean> DATA_DROWNED_CONVERSION_ID = SynchedEntityData
+            .defineId(ZombieServant.class, EntityDataSerializers.BOOLEAN);
     private int inWaterTime;
     private int conversionTime;
 
@@ -82,7 +86,7 @@ public class ZombieServant extends Summoned {
         this.goalSelector.addGoal(10, new LookAtPlayerGoal(this, Mob.class, 8.0F));
     }
 
-    public void attackGoal(){
+    public void attackGoal() {
         this.goalSelector.addGoal(4, new NeutralZombieAttackGoal(this, 1.0D, false));
     }
 
@@ -90,15 +94,16 @@ public class ZombieServant extends Summoned {
         return Mob.createMobAttributes()
                 .add(Attributes.MAX_HEALTH, AttributesConfig.ZombieServantHealth.get())
                 .add(Attributes.FOLLOW_RANGE, 35.0D)
-                .add(Attributes.MOVEMENT_SPEED, (double)0.23F)
+                .add(Attributes.MOVEMENT_SPEED, (double) 0.23F)
                 .add(Attributes.ATTACK_DAMAGE, AttributesConfig.ZombieServantDamage.get())
                 .add(Attributes.ARMOR, AttributesConfig.ZombieServantArmor.get());
     }
 
-    public void setConfigurableAttributes(){
+    public void setConfigurableAttributes() {
         MobUtil.setBaseAttributes(this.getAttribute(Attributes.MAX_HEALTH), AttributesConfig.ZombieServantHealth.get());
         MobUtil.setBaseAttributes(this.getAttribute(Attributes.ARMOR), AttributesConfig.ZombieServantArmor.get());
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ATTACK_DAMAGE), AttributesConfig.ZombieServantDamage.get());
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ATTACK_DAMAGE),
+                AttributesConfig.ZombieServantDamage.get());
     }
 
     protected void defineSynchedData() {
@@ -117,7 +122,7 @@ public class ZombieServant extends Summoned {
 
     public void setBaby(boolean pChildZombie) {
         this.getEntityData().set(DATA_BABY_ID, pChildZombie);
-        if (this.level != null && !this.level.isClientSide) {
+        if (this.level() != null && !this.level().isClientSide) {
             AttributeInstance modifiableattributeinstance = this.getAttribute(Attributes.MOVEMENT_SPEED);
             modifiableattributeinstance.removeModifier(SPEED_MODIFIER_BABY);
             if (pChildZombie) {
@@ -163,7 +168,7 @@ public class ZombieServant extends Summoned {
 
     @Override
     public boolean isAbleToRide(LivingEntity livingEntity) {
-        if (this.isBaby()){
+        if (this.isBaby()) {
             if (livingEntity instanceof Chicken chicken) {
                 return !chicken.isBaby();
             }
@@ -215,11 +220,13 @@ public class ZombieServant extends Summoned {
     }
 
     public void tick() {
-        if (!this.level.isClientSide && this.isAlive() && !this.isNoAi()) {
+        if (!this.level().isClientSide && this.isAlive() && !this.isNoAi()) {
             if (this.isUnderWaterConverting()) {
                 --this.conversionTime;
 
-                if (this.conversionTime < 0 && net.neoforged.event.net.neoforged.neoforge.event.EventHooks.canLivingConvert(this, ModEntityType.ZOMBIE_SERVANT.get(), (timer) -> this.conversionTime = timer)) {
+                if (this.conversionTime < 0
+                        && net.neoforged.neoforge.event.EventHooks.canLivingConvert(this,
+                                ModEntityType.ZOMBIE_SERVANT.get(), (timer) -> this.conversionTime = timer)) {
                     this.doUnderWaterConversion();
                 }
             } else if (this.convertsInWater()) {
@@ -237,7 +244,7 @@ public class ZombieServant extends Summoned {
         super.tick();
     }
 
-    public void populateDefaultWeapons(RandomSource randomSource, DifficultyInstance difficulty){
+    public void populateDefaultWeapons(RandomSource randomSource, DifficultyInstance difficulty) {
         if (randomSource.nextFloat() < (this.isUpgraded() ? 0.05F : 0.01F)) {
             int i = randomSource.nextInt(3);
             if (i == 0) {
@@ -249,7 +256,7 @@ public class ZombieServant extends Summoned {
         }
     }
 
-    public EntityType<?> getVariant(Level level, BlockPos blockPos){
+    public EntityType<?> getVariant(Level level, BlockPos blockPos) {
         EntityType<?> entityType = ModEntityType.ZOMBIE_SERVANT.get();
         if (level instanceof ServerLevel serverLevel) {
             if (level.isWaterAt(blockPos)) {
@@ -258,35 +265,39 @@ public class ZombieServant extends Summoned {
                 entityType = ModEntityType.HUSK_SERVANT.get();
             } else if (level.dimension() == Level.NETHER) {
                 EntityType<?> entityType1 = ModEntityType.ZPIGLIN_SERVANT.get();
-                if (level.random.nextFloat() <= 0.25F && BlockFinder.findStructure(serverLevel, blockPos, ModTags.Structures.CAN_SUMMON_BRUTES)) {
+                if (level.random.nextFloat() <= 0.25F
+                        && BlockFinder.findStructure(serverLevel, blockPos, ModTags.Structures.CAN_SUMMON_BRUTES)) {
                     entityType1 = ModEntityType.ZPIGLIN_BRUTE_SERVANT.get();
                 }
                 entityType = entityType1;
             } else if (BlockFinder.findStructure(serverLevel, blockPos, StructureTags.ON_WOODLAND_EXPLORER_MAPS)) {
                 entityType = ModEntityType.ZOMBIE_VINDICATOR_SERVANT.get();
-            } else if (BlockFinder.findStructure(serverLevel, blockPos, StructureTags.VILLAGE) || BlockFinder.findVillageSize(serverLevel, blockPos, 3)) {
+            } else if (BlockFinder.findStructure(serverLevel, blockPos, StructureTags.VILLAGE)
+                    || BlockFinder.findVillageSize(serverLevel, blockPos, 3)) {
                 entityType = ModEntityType.ZOMBIE_VILLAGER_SERVANT.get();
             } else if (level.getBiome(blockPos).get().coldEnoughToSnow(blockPos)) {
                 entityType = ModEntityType.FROZEN_ZOMBIE_SERVANT.get();
             } else if (level.getBiome(blockPos).is(BiomeTags.IS_JUNGLE) && level.random.nextBoolean()) {
                 entityType = ModEntityType.JUNGLE_ZOMBIE_SERVANT.get();
             }
-            if (level.getBiome(blockPos).is(BiomeTags.IS_SNOWY)){
+            if (level.getBiome(blockPos).is(BiomeTags.IS_SNOWY)) {
                 entityType = ModEntityType.FROZEN_ZOMBIE_SERVANT.get();
             }
         }
         return entityType;
     }
 
-    public SpawnGroupData finalizeSpawn(ServerLevelAccessor worldIn, DifficultyInstance difficultyIn, MobSpawnType reason, @Nullable SpawnGroupData spawnDataIn, @Nullable CompoundTag dataTag) {
-        spawnDataIn = super.finalizeSpawn(worldIn, difficultyIn, reason, spawnDataIn, dataTag);
+    public SpawnGroupData finalizeSpawn(ServerLevelAccessor worldIn, DifficultyInstance difficultyIn,
+            MobSpawnType reason, @Nullable SpawnGroupData spawnDataIn) {
+        spawnDataIn = super.finalizeSpawn(worldIn, difficultyIn, reason, spawnDataIn);
         float f = difficultyIn.getSpecialMultiplier();
         if (this.getItemBySlot(EquipmentSlot.HEAD).isEmpty()) {
             LocalDate localdate = LocalDate.now();
             int i = localdate.getDayOfMonth();
             int j = localdate.getMonthValue();
             if (j == 10 && i == 31 && this.random.nextFloat() < 0.25F) {
-                this.setItemSlot(EquipmentSlot.HEAD, new ItemStack(this.random.nextFloat() < 0.1F ? Blocks.JACK_O_LANTERN : Blocks.CARVED_PUMPKIN));
+                this.setItemSlot(EquipmentSlot.HEAD,
+                        new ItemStack(this.random.nextFloat() < 0.1F ? Blocks.JACK_O_LANTERN : Blocks.CARVED_PUMPKIN));
                 this.armorDropChances[EquipmentSlot.HEAD.getIndex()] = 0.0F;
             }
         }
@@ -294,7 +305,7 @@ public class ZombieServant extends Summoned {
         this.populateDefaultEquipmentEnchantments(worldIn.getRandom(), difficultyIn);
         this.handleAttributes(f);
         this.setBaby(getSpawnAsBabyOdds(worldIn.getRandom()));
-        for(EquipmentSlot equipmentslottype : EquipmentSlot.values()) {
+        for (EquipmentSlot equipmentslottype : EquipmentSlot.values()) {
             this.setDropChance(equipmentslottype, 0.0F);
         }
         return spawnDataIn;
@@ -305,22 +316,27 @@ public class ZombieServant extends Summoned {
     }
 
     protected void handleAttributes(float difficulty) {
-        Objects.requireNonNull(this.getAttribute(Attributes.KNOCKBACK_RESISTANCE)).addPermanentModifier(new AttributeModifier("random spawn bonus", this.random.nextDouble() * (double)0.05F, AttributeModifier.Operation.ADDITION));
-        double d0 = this.random.nextDouble() * 1.5D * (double)difficulty;
+        Objects.requireNonNull(this.getAttribute(Attributes.KNOCKBACK_RESISTANCE))
+                .addPermanentModifier(new AttributeModifier(Goety.location("zombie_servant_random_spawn_bonus"),
+                        this.random.nextDouble() * (double) 0.05F, AttributeModifier.Operation.ADD_VALUE));
+        double d0 = this.random.nextDouble() * 1.5D * (double) difficulty;
         if (d0 > 1.0D) {
-            Objects.requireNonNull(this.getAttribute(Attributes.FOLLOW_RANGE)).addPermanentModifier(new AttributeModifier("random zombie-spawn bonus", d0, AttributeModifier.Operation.MULTIPLY_TOTAL));
+            Objects.requireNonNull(this.getAttribute(Attributes.FOLLOW_RANGE)).addPermanentModifier(
+                    new AttributeModifier(Goety.location("zombie_servant_random_zombie_spawn_bonus"), d0,
+                            AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL));
         }
 
     }
 
     public boolean killedEntity(ServerLevel world, LivingEntity killedEntity) {
         boolean flag = super.killedEntity(world, killedEntity);
-        float random = this.level.random.nextFloat();
-        if (this.isUpgraded()){
+        float random = this.level().random.nextFloat();
+        if (this.isUpgraded()) {
             if (random <= 0.5F) {
                 ServantUtil.convertZombies(killedEntity, this.getTrueOwner(), false);
             }
-            if (killedEntity instanceof Mob mob && (killedEntity instanceof Villager || killedEntity instanceof Prisoner)){
+            if (killedEntity instanceof Mob mob
+                    && (killedEntity instanceof Villager || killedEntity instanceof Prisoner)) {
                 ServantUtil.infect(mob, this.getTrueOwner(), true, true);
             }
         }
@@ -335,7 +351,7 @@ public class ZombieServant extends Summoned {
     protected void doUnderWaterConversion() {
         this.convertToZombieType(ModEntityType.DROWNED_SERVANT.get());
         if (!this.isSilent()) {
-            this.level.levelEvent((Player) null, 1040, this.blockPosition(), 0);
+            this.level().levelEvent((Player) null, 1040, this.blockPosition(), 0);
         }
 
     }
@@ -343,14 +359,15 @@ public class ZombieServant extends Summoned {
     protected void convertToZombieType(EntityType<? extends ZombieServant> p_234341_1_) {
         ZombieServant zombieentity = this.convertTo(p_234341_1_, true);
         if (zombieentity != null) {
-            zombieentity.handleAttributes(zombieentity.level.getCurrentDifficultyAt(zombieentity.blockPosition()).getSpecialMultiplier());
+            zombieentity.handleAttributes(
+                    zombieentity.level().getCurrentDifficultyAt(zombieentity.blockPosition()).getSpecialMultiplier());
             if (this.getTrueOwner() != null) {
                 zombieentity.setTrueOwner(this.getTrueOwner());
             }
-            if (this.limitedLifeTicks > 0){
+            if (this.limitedLifeTicks > 0) {
                 zombieentity.setLimitedLife(this.limitedLifeTicks);
             }
-            net.neoforged.event.net.neoforged.neoforge.event.EventHooks.onLivingConvert(this, zombieentity);
+            net.neoforged.neoforge.event.EventHooks.onLivingConvert(this, zombieentity);
         }
 
     }
@@ -366,12 +383,13 @@ public class ZombieServant extends Summoned {
                 }
                 this.playSound(SoundEvents.GENERIC_EAT, 1.0F, 1.0F);
                 this.heal(2.0F);
-                if (this.level instanceof ServerLevel serverLevel) {
+                if (this.level() instanceof ServerLevel serverLevel) {
                     for (int i = 0; i < 7; ++i) {
                         double d0 = this.random.nextGaussian() * 0.02D;
                         double d1 = this.random.nextGaussian() * 0.02D;
                         double d2 = this.random.nextGaussian() * 0.02D;
-                        serverLevel.sendParticles(ModParticleTypes.HEAL_EFFECT.get(), this.getRandomX(1.0D), this.getRandomY() + 0.5D, this.getRandomZ(1.0D), 0, d0, d1, d2, 0.5F);
+                        serverLevel.sendParticles(ModParticleTypes.HEAL_EFFECT.get(), this.getRandomX(1.0D),
+                                this.getRandomY() + 0.5D, this.getRandomZ(1.0D), 0, d0, d1, d2, 0.5F);
                     }
                 }
                 return InteractionResult.SUCCESS;
@@ -386,7 +404,8 @@ public class ZombieServant extends Summoned {
                         double d0 = this.random.nextGaussian() * 0.02D;
                         double d1 = this.random.nextGaussian() * 0.02D;
                         double d2 = this.random.nextGaussian() * 0.02D;
-                        this.level.addParticle(ParticleTypes.HAPPY_VILLAGER, this.getRandomX(1.0D), this.getRandomY() + 0.5D, this.getRandomZ(1.0D), d0, d1, d2);
+                        this.level().addParticle(ParticleTypes.HAPPY_VILLAGER, this.getRandomX(1.0D),
+                                this.getRandomY() + 0.5D, this.getRandomZ(1.0D), d0, d1, d2);
                     }
                     if (!pPlayer.getAbilities().instabuild) {
                         itemstack.shrink(1);
@@ -402,7 +421,8 @@ public class ZombieServant extends Summoned {
                         double d0 = this.random.nextGaussian() * 0.02D;
                         double d1 = this.random.nextGaussian() * 0.02D;
                         double d2 = this.random.nextGaussian() * 0.02D;
-                        this.level.addParticle(ParticleTypes.HAPPY_VILLAGER, this.getRandomX(1.0D), this.getRandomY() + 0.5D, this.getRandomZ(1.0D), d0, d1, d2);
+                        this.level().addParticle(ParticleTypes.HAPPY_VILLAGER, this.getRandomX(1.0D),
+                                this.getRandomY() + 0.5D, this.getRandomZ(1.0D), d0, d1, d2);
                     }
                     if (!pPlayer.getAbilities().instabuild) {
                         itemstack.shrink(1);
@@ -418,7 +438,8 @@ public class ZombieServant extends Summoned {
                         double d0 = this.random.nextGaussian() * 0.02D;
                         double d1 = this.random.nextGaussian() * 0.02D;
                         double d2 = this.random.nextGaussian() * 0.02D;
-                        this.level.addParticle(ParticleTypes.HAPPY_VILLAGER, this.getRandomX(1.0D), this.getRandomY() + 0.5D, this.getRandomZ(1.0D), d0, d1, d2);
+                        this.level().addParticle(ParticleTypes.HAPPY_VILLAGER, this.getRandomX(1.0D),
+                                this.getRandomY() + 0.5D, this.getRandomZ(1.0D), d0, d1, d2);
                     }
                     if (!pPlayer.getAbilities().instabuild) {
                         itemstack.shrink(1);

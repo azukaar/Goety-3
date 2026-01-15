@@ -45,9 +45,12 @@ import java.util.List;
 import java.util.Objects;
 
 public class Cryologer extends HuntingIllagerEntity implements IBreathing {
-    private static final EntityDataAccessor<Byte> IS_CASTING_SPELL = SynchedEntityData.defineId(Cryologer.class, EntityDataSerializers.BYTE);
-    private static final EntityDataAccessor<Integer> ANIM_STATE = SynchedEntityData.defineId(Cryologer.class, EntityDataSerializers.INT);
-    private static final EntityDataAccessor<Boolean> BREATHING = SynchedEntityData.defineId(Cryologer.class, EntityDataSerializers.BOOLEAN);
+    private static final EntityDataAccessor<Byte> IS_CASTING_SPELL = SynchedEntityData.defineId(Cryologer.class,
+            EntityDataSerializers.BYTE);
+    private static final EntityDataAccessor<Integer> ANIM_STATE = SynchedEntityData.defineId(Cryologer.class,
+            EntityDataSerializers.INT);
+    private static final EntityDataAccessor<Boolean> BREATHING = SynchedEntityData.defineId(Cryologer.class,
+            EntityDataSerializers.BOOLEAN);
     protected int castingTime;
     public static ItemStack STAFF = new ItemStack(ModItems.FROST_STAFF.get());
     public AnimationState idleAnimationState = new AnimationState();
@@ -68,7 +71,7 @@ public class Cryologer extends HuntingIllagerEntity implements IBreathing {
         this.goalSelector.addGoal(2, new HailSpellGoal());
         this.goalSelector.addGoal(2, new ChunkSpellGoal());
         this.goalSelector.addGoal(3, new BreathGoal());
-        this.goalSelector.addGoal(4, new AvoidTargetGoal<>(this, LivingEntity.class, 8.0F, 0.6D, 1.0D){
+        this.goalSelector.addGoal(4, new AvoidTargetGoal<>(this, LivingEntity.class, 8.0F, 0.6D, 1.0D) {
             @Override
             public boolean canUse() {
                 return super.canUse() && Cryologer.this.getCurrentAnimation() < 2;
@@ -76,7 +79,7 @@ public class Cryologer extends HuntingIllagerEntity implements IBreathing {
         });
     }
 
-    public static AttributeSupplier.Builder setCustomAttributes(){
+    public static AttributeSupplier.Builder setCustomAttributes() {
         return Mob.createMobAttributes()
                 .add(Attributes.FOLLOW_RANGE, 16.0D)
                 .add(Attributes.MAX_HEALTH, AttributesConfig.CryologerHealth.get())
@@ -85,7 +88,7 @@ public class Cryologer extends HuntingIllagerEntity implements IBreathing {
                 .add(Attributes.ATTACK_DAMAGE, AttributesConfig.CryologerDamage.get());
     }
 
-    public void setConfigurableAttributes(){
+    public void setConfigurableAttributes() {
         MobUtil.setBaseAttributes(this.getAttribute(Attributes.MAX_HEALTH), AttributesConfig.CryologerHealth.get());
         MobUtil.setBaseAttributes(this.getAttribute(Attributes.ARMOR), AttributesConfig.CryologerArmor.get());
         MobUtil.setBaseAttributes(this.getAttribute(Attributes.ATTACK_DAMAGE), AttributesConfig.CryologerDamage.get());
@@ -93,7 +96,7 @@ public class Cryologer extends HuntingIllagerEntity implements IBreathing {
 
     protected void defineSynchedData() {
         super.defineSynchedData();
-        this.entityData.define(IS_CASTING_SPELL, (byte)0);
+        this.entityData.define(IS_CASTING_SPELL, (byte) 0);
         this.entityData.define(ANIM_STATE, 0);
         this.entityData.define(BREATHING, false);
     }
@@ -117,22 +120,22 @@ public class Cryologer extends HuntingIllagerEntity implements IBreathing {
     }
 
     public int getAnimationState(String animation) {
-        if (Objects.equals(animation, "idle")){
+        if (Objects.equals(animation, "idle")) {
             return 1;
-        } else if (Objects.equals(animation, "breath")){
+        } else if (Objects.equals(animation, "breath")) {
             return 2;
-        } else if (Objects.equals(animation, "cloud")){
+        } else if (Objects.equals(animation, "cloud")) {
             return 3;
-        } else if (Objects.equals(animation, "wall")){
+        } else if (Objects.equals(animation, "wall")) {
             return 4;
-        } else if (Objects.equals(animation, "chunk")){
+        } else if (Objects.equals(animation, "chunk")) {
             return 5;
         } else {
             return 0;
         }
     }
 
-    public List<AnimationState> getAllAnimations(){
+    public List<AnimationState> getAllAnimations() {
         List<AnimationState> list = new ArrayList<>();
         list.add(this.idleAnimationState);
         list.add(this.breathAnimationState);
@@ -142,22 +145,22 @@ public class Cryologer extends HuntingIllagerEntity implements IBreathing {
         return list;
     }
 
-    public void stopMostAnimation(AnimationState exception){
-        for (AnimationState state : this.getAllAnimations()){
-            if (state != exception){
+    public void stopMostAnimation(AnimationState exception) {
+        for (AnimationState state : this.getAllAnimations()) {
+            if (state != exception) {
                 state.stop();
             }
         }
     }
 
-    public int getCurrentAnimation(){
+    public int getCurrentAnimation() {
         return this.entityData.get(ANIM_STATE);
     }
 
     public void onSyncedDataUpdated(EntityDataAccessor<?> accessor) {
         if (ANIM_STATE.equals(accessor)) {
-            if (this.level.isClientSide){
-                switch (this.entityData.get(ANIM_STATE)){
+            if (this.level.isClientSide) {
+                switch (this.entityData.get(ANIM_STATE)) {
                     case 0:
                         break;
                     case 1:
@@ -194,7 +197,7 @@ public class Cryologer extends HuntingIllagerEntity implements IBreathing {
     }
 
     public void setIsCastingSpell(int id) {
-        this.entityData.set(IS_CASTING_SPELL, (byte)id);
+        this.entityData.set(IS_CASTING_SPELL, (byte) id);
     }
 
     protected void customServerAiStep() {
@@ -248,13 +251,13 @@ public class Cryologer extends HuntingIllagerEntity implements IBreathing {
     @Override
     public void tick() {
         super.tick();
-        if (this.level.isClientSide){
-            if (this.isAlive()){
-                if (this.getCurrentAnimation() < 2 && this.getCurrentAnimation() != 1){
+        if (this.level.isClientSide) {
+            if (this.isAlive()) {
+                if (this.getCurrentAnimation() < 2 && this.getCurrentAnimation() != 1) {
                     this.setAnimationState("idle");
                 }
 
-                if (this.isBreathing()){
+                if (this.isBreathing()) {
                     Vec3 look = this.getLookAngle();
 
                     double dist = 0.9D;
@@ -323,8 +326,10 @@ public class Cryologer extends HuntingIllagerEntity implements IBreathing {
             super(Cryologer.this, 8, 20, 1.0F);
         }
 
-        public boolean noWall(){
-            return MobUtil.getTargets(Cryologer.this.level, Cryologer.this, 16, 3, EntitySelector.NO_CREATIVE_OR_SPECTATOR).stream().noneMatch(entity -> entity instanceof AbstractMonolith);
+        public boolean noWall() {
+            return MobUtil
+                    .getTargets(Cryologer.this.level, Cryologer.this, 16, 3, EntitySelector.NO_CREATIVE_OR_SPECTATOR)
+                    .stream().noneMatch(entity -> entity instanceof AbstractMonolith);
         }
 
         @Override
@@ -347,7 +352,7 @@ public class Cryologer extends HuntingIllagerEntity implements IBreathing {
 
         @Override
         public void start() {
-            if (this.attackTarget != null){
+            if (this.attackTarget != null) {
                 this.spewX = this.attackTarget.getX();
                 this.spewY = this.attackTarget.getY() + this.attackTarget.getEyeHeight();
                 this.spewZ = this.attackTarget.getZ();
@@ -368,7 +373,7 @@ public class Cryologer extends HuntingIllagerEntity implements IBreathing {
 
         @Override
         public void tick() {
-            if (this.breathTime > 0){
+            if (this.breathTime > 0) {
                 --this.breathTime;
                 this.attacker.getLookControl().setLookAt(spewX, spewY, spewZ, 500.0F, 500.0F);
                 this.rotateAttacker(spewX, spewY, spewZ, 500.0F, 500.0F);
@@ -402,7 +407,8 @@ public class Cryologer extends HuntingIllagerEntity implements IBreathing {
 
         public void tick() {
             if (Cryologer.this.getTarget() != null) {
-                Cryologer.this.getLookControl().setLookAt(Cryologer.this.getTarget(), (float)Cryologer.this.getMaxHeadYRot(), (float)Cryologer.this.getMaxHeadXRot());
+                Cryologer.this.getLookControl().setLookAt(Cryologer.this.getTarget(),
+                        (float) Cryologer.this.getMaxHeadYRot(), (float) Cryologer.this.getMaxHeadXRot());
             }
 
         }
@@ -414,7 +420,8 @@ public class Cryologer extends HuntingIllagerEntity implements IBreathing {
 
         public boolean canUse() {
             LivingEntity livingentity = Cryologer.this.getTarget();
-            if (livingentity != null && livingentity.isAlive() && Cryologer.this.hasLineOfSight(livingentity) && Cryologer.this.getCurrentAnimation() != Cryologer.this.getAnimationState("breath")) {
+            if (livingentity != null && livingentity.isAlive() && Cryologer.this.hasLineOfSight(livingentity)
+                    && Cryologer.this.getCurrentAnimation() != Cryologer.this.getAnimationState("breath")) {
                 if (Cryologer.this.isCastingSpell()) {
                     return false;
                 } else if (livingentity.distanceTo(Cryologer.this) > 16.0F) {
@@ -430,7 +437,8 @@ public class Cryologer extends HuntingIllagerEntity implements IBreathing {
 
         public boolean canContinueToUse() {
             LivingEntity livingentity = Cryologer.this.getTarget();
-            return livingentity != null && livingentity.isAlive() && Cryologer.this.hasLineOfSight(livingentity) && this.attackWarmupDelay > 0;
+            return livingentity != null && livingentity.isAlive() && Cryologer.this.hasLineOfSight(livingentity)
+                    && this.attackWarmupDelay > 0;
         }
 
         public void start() {
@@ -486,7 +494,7 @@ public class Cryologer extends HuntingIllagerEntity implements IBreathing {
 
         @Override
         protected void performSpellCasting() {
-            if (Cryologer.this.getTarget() != null){
+            if (Cryologer.this.getTarget() != null) {
                 new HailSpell().mobSpellResult(Cryologer.this, ItemStack.EMPTY);
             }
         }
@@ -517,20 +525,22 @@ public class Cryologer extends HuntingIllagerEntity implements IBreathing {
 
         @Override
         protected void performSpellCasting() {
-            if (Cryologer.this.getTarget() != null){
+            if (Cryologer.this.getTarget() != null) {
                 LivingEntity target = Cryologer.this.getTarget();
                 int random = Cryologer.this.random.nextInt(3);
                 if (random == 0) {
                     int[] rowToRemove = Util.getRandom(WandUtil.CONFIG_1_ROWS, Cryologer.this.getRandom());
                     Direction direction = Direction.fromYRot(target.getYHeadRot());
-                    switch (direction){
+                    switch (direction) {
                         case NORTH -> rowToRemove = WandUtil.CONFIG_1_NORTH_ROW;
                         case SOUTH -> rowToRemove = WandUtil.CONFIG_1_SOUTH_ROW;
                         case WEST -> rowToRemove = WandUtil.CONFIG_1_WEST_ROW;
                         case EAST -> rowToRemove = WandUtil.CONFIG_1_EAST_ROW;
+                        default -> rowToRemove = WandUtil.CONFIG_1_NORTH_ROW;
                     }
-                    WandUtil.summonLesserSquareTrap(Cryologer.this, target.blockPosition(), ModEntityType.GLACIAL_WALL.get(), rowToRemove, 1);
-                } else if (random == 1){
+                    WandUtil.summonLesserSquareTrap(Cryologer.this, target.blockPosition(),
+                            ModEntityType.GLACIAL_WALL.get(), rowToRemove, 1);
+                } else if (random == 1) {
                     WandUtil.summonWallTrap(Cryologer.this, target, ModEntityType.GLACIAL_WALL.get(), 3, 1);
                 } else {
                     WandUtil.summonRandomPillarsTrap(Cryologer.this, target, ModEntityType.GLACIAL_WALL.get(), 6, 1);
@@ -559,13 +569,14 @@ public class Cryologer extends HuntingIllagerEntity implements IBreathing {
 
         @Override
         public boolean canUse() {
-            return super.canUse() && Cryologer.this.level.getDifficulty() == Difficulty.HARD && MobsConfig.CryologerIceChunk.get();
+            return super.canUse() && Cryologer.this.level.getDifficulty() == Difficulty.HARD
+                    && MobsConfig.CryologerIceChunk.get();
         }
 
         public void start() {
             super.start();
             Cryologer.this.setAnimationState("chunk");
-            if (Cryologer.this.getTarget() != null){
+            if (Cryologer.this.getTarget() != null) {
                 new IceChunkSpell().mobSpellResult(Cryologer.this, STAFF);
             }
         }

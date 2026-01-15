@@ -18,7 +18,8 @@ import javax.annotation.Nullable;
 import java.util.function.Function;
 
 /**
- * Stolen from @cerbon's Cerbon API codes:<a href="https://github.com/CERBON-MODS/CERBONs-API/blob/master/Common/src/main/java/com/cerbon/cerbons_api/api/general/particle/SimpleParticle.java">...</a>
+ * Stolen from @cerbon's Cerbon API codes:<a href=
+ * "https://github.com/CERBON-MODS/CERBONs-API/blob/master/Common/src/main/java/com/cerbon/cerbons_api/api/general/particle/SimpleParticle.java">...</a>
  */
 public class GeometricParticle extends TextureSheetParticle {
     private final ParticleContext particleContext;
@@ -37,7 +38,8 @@ public class GeometricParticle extends TextureSheetParticle {
     private float rotation = 0f;
     public float ageRatio = 1f;
 
-    public GeometricParticle(ParticleContext particleContext, int particleAge, IParticleGeometry particleGeometry, boolean cycleSprites, boolean doCollision) {
+    public GeometricParticle(ParticleContext particleContext, int particleAge, IParticleGeometry particleGeometry,
+            boolean cycleSprites, boolean doCollision) {
         super(particleContext.level, particleContext.pos().x(), particleContext.pos().y(), particleContext.pos().z());
         this.particleContext = particleContext;
         this.lifetime = particleAge;
@@ -71,7 +73,8 @@ public class GeometricParticle extends TextureSheetParticle {
     @Override
     public void tick() {
         super.tick();
-        if (!isAlive()) return;
+        if (!isAlive())
+            return;
 
         if (this.cycleSprites) {
             this.setSpriteFromAge(this.particleContext.spriteSet());
@@ -116,7 +119,8 @@ public class GeometricParticle extends TextureSheetParticle {
     }
 
     private void setScaleFromOverride(Function<Float, Float> scaleOverride, float ageRatio) {
-        if (scaleOverride == null) return;
+        if (scaleOverride == null)
+            return;
 
         this.quadSize = scaleOverride.apply(ageRatio);
         this.setSize(0.2f * this.quadSize, 0.2f * this.quadSize);
@@ -129,7 +133,8 @@ public class GeometricParticle extends TextureSheetParticle {
 
         ColorUtil color = colorOverride.apply(ageRatio);
         Vec3 vec3 = new Vec3(color.red, color.green, color.blue);
-        Vec3 variedColor = Vec3Util.coerceAtMost(Vec3Util.coerceAtLeast(vec3.add(colorVariation), Vec3.ZERO), Vec3Util.unit);
+        Vec3 variedColor = Vec3Util.coerceAtMost(Vec3Util.coerceAtLeast(vec3.add(colorVariation), Vec3.ZERO),
+                Vec3Util.unit);
         this.setColor((float) variedColor.x(), (float) variedColor.y(), (float) variedColor.z());
     }
 
@@ -171,7 +176,8 @@ public class GeometricParticle extends TextureSheetParticle {
 
     @Override
     protected int getLightColor(float partialTick) {
-        return this.brightnessOverride != null ? this.brightnessOverride.apply(this.ageRatio) : super.getLightColor(partialTick);
+        return this.brightnessOverride != null ? this.brightnessOverride.apply(this.ageRatio)
+                : super.getLightColor(partialTick);
     }
 
     @Override
@@ -182,8 +188,7 @@ public class GeometricParticle extends TextureSheetParticle {
                 this.xo, this.yo, this.zo,
                 this.x, this.y, this.z,
                 this.getQuadSize(partialTicks),
-                Mth.lerp(partialTicks, this.prevRotation, this.rotation)
-        );
+                Mth.lerp(partialTicks, this.prevRotation, this.rotation));
 
         float l = this.getU0();
         float m = this.getU1();
@@ -191,25 +196,21 @@ public class GeometricParticle extends TextureSheetParticle {
         float o = this.getV1();
         float p = getLightColor(partialTicks);
 
-        vertexConsumer.vertex(
+        vertexConsumer.addVertex(
                 vector3fs[0].x(), vector3fs[0].y(),
-                vector3fs[0].z()
-        ).uv(m, o).color(this.rCol, this.gCol, this.bCol, this.alpha).uv2((int) p).endVertex();
+                vector3fs[0].z()).setUv(m, o).setColor(this.rCol, this.gCol, this.bCol, this.alpha).setLight((int) p);
 
-        vertexConsumer.vertex(
+        vertexConsumer.addVertex(
                 vector3fs[1].x(), vector3fs[1].y(),
-                vector3fs[1].z()
-        ).uv(m, n).color(this.rCol, this.gCol, this.bCol, this.alpha).uv2((int) p).endVertex();
+                vector3fs[1].z()).setUv(m, n).setColor(this.rCol, this.gCol, this.bCol, this.alpha).setLight((int) p);
 
-        vertexConsumer.vertex(
+        vertexConsumer.addVertex(
                 vector3fs[2].x(), vector3fs[2].y(),
-                vector3fs[2].z()
-        ).uv(l, n).color(this.rCol, this.gCol, this.bCol, this.alpha).uv2((int) p).endVertex();
+                vector3fs[2].z()).setUv(l, n).setColor(this.rCol, this.gCol, this.bCol, this.alpha).setLight((int) p);
 
-        vertexConsumer.vertex(
+        vertexConsumer.addVertex(
                 vector3fs[3].x(), vector3fs[3].y(),
-                vector3fs[3].z()
-        ).uv(l, o).color(this.rCol, this.gCol, this.bCol, this.alpha).uv2((int) p).endVertex();
+                vector3fs[3].z()).setUv(l, o).setColor(this.rCol, this.gCol, this.bCol, this.alpha).setLight((int) p);
     }
 
     public static class Provider implements ParticleProvider<SimpleParticleType> {
@@ -223,8 +224,10 @@ public class GeometricParticle extends TextureSheetParticle {
 
         @Nullable
         @Override
-        public Particle createParticle(@NotNull SimpleParticleType type, @NotNull ClientLevel level, double x, double y, double z, double xSpeed, double ySpeed, double zSpeed) {
-            return particleProvider.apply(new ParticleContext(spriteSet, level, new Vec3(x, y, z), new Vec3(xSpeed, ySpeed, zSpeed), true));
+        public Particle createParticle(@NotNull SimpleParticleType type, @NotNull ClientLevel level, double x, double y,
+                double z, double xSpeed, double ySpeed, double zSpeed) {
+            return particleProvider.apply(
+                    new ParticleContext(spriteSet, level, new Vec3(x, y, z), new Vec3(xSpeed, ySpeed, zSpeed), true));
         }
     }
 
@@ -233,8 +236,7 @@ public class GeometricParticle extends TextureSheetParticle {
             ClientLevel level,
             Vec3 pos,
             Vec3 vel,
-            Boolean cycleSprites
-    ) {
+            Boolean cycleSprites) {
     }
 
     @FunctionalInterface
@@ -249,8 +251,7 @@ public class GeometricParticle extends TextureSheetParticle {
                 double y,
                 double z,
                 float scale,
-                float rotation
-        );
+                float rotation);
     }
 
     public static class Geometries {
@@ -265,8 +266,7 @@ public class GeometricParticle extends TextureSheetParticle {
                 double y,
                 double z,
                 float scale,
-                float rotation
-        ) {
+                float rotation) {
             Vec3 vec3 = camera.getPosition();
             float f = (float) (Mth.lerp(tickDelta, prevPosX, x) - vec3.x());
             float g = (float) (Mth.lerp(tickDelta, prevPosY, y) - vec3.y());
@@ -301,8 +301,7 @@ public class GeometricParticle extends TextureSheetParticle {
                 double y,
                 double z,
                 float scale,
-                float rotation
-        ) {
+                float rotation) {
             Vec3 vec3 = camera.getPosition();
             float f = (float) (Mth.lerp(tickDelta, prevPosX, x) - vec3.x());
             float g = (float) (Mth.lerp(tickDelta, prevPosY, y) - vec3.y());

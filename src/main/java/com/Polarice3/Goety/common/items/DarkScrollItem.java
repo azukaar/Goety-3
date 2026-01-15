@@ -32,15 +32,19 @@ public class DarkScrollItem extends Item {
     public ItemStack finishUsingItem(ItemStack stack, Level worldIn, LivingEntity entityLiving) {
         super.finishUsingItem(stack, worldIn, entityLiving);
         boolean flag = false;
-        if (worldIn instanceof ServerLevel serverWorld){
-            flag = serverWorld.structureManager().getStructureWithPieceAt(entityLiving.blockPosition(), ModTags.Structures.VIZIER_SPAWNS).isValid();
+        if (worldIn instanceof ServerLevel serverWorld) {
+            flag = serverWorld.structureManager()
+                    .getStructureWithPieceAt(entityLiving.blockPosition(), ModTags.Structures.VIZIER_SPAWNS).isValid();
         }
-        if (flag){
-            worldIn.playSound(null, entityLiving.getX(), entityLiving.getY(), entityLiving.getZ(), SoundEvents.EVOKER_CAST_SPELL, SoundSource.NEUTRAL, 1.0F, 1.0F);
+        if (flag) {
+            worldIn.playSound(null, entityLiving.getX(), entityLiving.getY(), entityLiving.getZ(),
+                    SoundEvents.EVOKER_CAST_SPELL, SoundSource.NEUTRAL, 1.0F, 1.0F);
             Vizier vizier = ModEntityType.VIZIER.get().create(worldIn);
             if (vizier != null) {
                 vizier.setPos(entityLiving.getX(), entityLiving.getEyeY(), entityLiving.getZ());
-                vizier.finalizeSpawn((ServerLevelAccessor) worldIn, worldIn.getCurrentDifficultyAt(entityLiving.blockPosition()), MobSpawnType.MOB_SUMMONED, null, null);
+                vizier.finalizeSpawn((ServerLevelAccessor) worldIn,
+                        worldIn.getCurrentDifficultyAt(entityLiving.blockPosition()), MobSpawnType.MOB_SUMMONED, null,
+                        null);
                 vizier.makeInvulnerable();
                 worldIn.addFreshEntity(vizier);
                 if (!(entityLiving instanceof Player && ((Player) entityLiving).isCreative())) {
@@ -51,13 +55,14 @@ public class DarkScrollItem extends Item {
             if (entityLiving instanceof Player player) {
                 player.displayClientMessage(Component.translatable("info.goety.items.dark_scroll.failure"), true);
             }
-            worldIn.playSound(null, entityLiving.getX(), entityLiving.getY(), entityLiving.getZ(), SoundEvents.FIRE_EXTINGUISH, SoundSource.NEUTRAL, 1.0F, 1.0F);
+            worldIn.playSound(null, entityLiving.getX(), entityLiving.getY(), entityLiving.getZ(),
+                    SoundEvents.FIRE_EXTINGUISH, SoundSource.NEUTRAL, 1.0F, 1.0F);
         }
 
         return stack;
     }
 
-    public int getUseDuration(ItemStack stack) {
+    public int getUseDuration(ItemStack stack, LivingEntity livingEntity) {
         return 25;
     }
 
@@ -72,9 +77,10 @@ public class DarkScrollItem extends Item {
     }
 
     public void onUseTick(Level worldIn, LivingEntity livingEntityIn, ItemStack stack, int count) {
-        if (!worldIn.isClientSide){
+        if (!worldIn.isClientSide) {
             ServerLevel serverWorld = (ServerLevel) worldIn;
-            serverWorld.sendParticles(ParticleTypes.ANGRY_VILLAGER, livingEntityIn.getX(), livingEntityIn.getY(), livingEntityIn.getZ(), 1, 0.0F, 0.0F, 0.0F, 0);
+            serverWorld.sendParticles(ParticleTypes.ANGRY_VILLAGER, livingEntityIn.getX(), livingEntityIn.getY(),
+                    livingEntityIn.getZ(), 1, 0.0F, 0.0F, 0.0F, 0);
         }
     }
 

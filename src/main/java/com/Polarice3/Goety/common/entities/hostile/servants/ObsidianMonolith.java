@@ -54,16 +54,18 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
-
 import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class ObsidianMonolith extends AbstractMonolith implements Enemy {
-    protected static final EntityDataAccessor<Float> DATA_PROGRESS = SynchedEntityData.defineId(ObsidianMonolith.class, EntityDataSerializers.FLOAT);
-    protected static final EntityDataAccessor<Integer> DATA_LEVEL = SynchedEntityData.defineId(ObsidianMonolith.class, EntityDataSerializers.INT);
-    protected static final EntityDataAccessor<Integer> DATA_LEVELING = SynchedEntityData.defineId(ObsidianMonolith.class, EntityDataSerializers.INT);
+    protected static final EntityDataAccessor<Float> DATA_PROGRESS = SynchedEntityData.defineId(ObsidianMonolith.class,
+            EntityDataSerializers.FLOAT);
+    protected static final EntityDataAccessor<Integer> DATA_LEVEL = SynchedEntityData.defineId(ObsidianMonolith.class,
+            EntityDataSerializers.INT);
+    protected static final EntityDataAccessor<Integer> DATA_LEVELING = SynchedEntityData
+            .defineId(ObsidianMonolith.class, EntityDataSerializers.INT);
     public int startUp;
     public int empowered;
     public int shieldTime;
@@ -75,7 +77,7 @@ public class ObsidianMonolith extends AbstractMonolith implements Enemy {
         super(type, worldIn);
     }
 
-    public static AttributeSupplier.Builder setCustomAttributes(){
+    public static AttributeSupplier.Builder setCustomAttributes() {
         return Mob.createMobAttributes()
                 .add(Attributes.MAX_HEALTH, AttributesConfig.ObsidianMonolithHealth.get())
                 .add(Attributes.MOVEMENT_SPEED, 0.0D)
@@ -84,8 +86,9 @@ public class ObsidianMonolith extends AbstractMonolith implements Enemy {
                 .add(Attributes.FOLLOW_RANGE, 32.0D);
     }
 
-    public void setConfigurableAttributes(){
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.MAX_HEALTH), AttributesConfig.ObsidianMonolithHealth.get());
+    public void setConfigurableAttributes() {
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.MAX_HEALTH),
+                AttributesConfig.ObsidianMonolithHealth.get());
         MobUtil.setBaseAttributes(this.getAttribute(Attributes.ARMOR), AttributesConfig.ObsidianMonolithArmor.get());
     }
 
@@ -152,11 +155,12 @@ public class ObsidianMonolith extends AbstractMonolith implements Enemy {
     }
 
     @Nullable
-    public SpawnGroupData finalizeSpawn(ServerLevelAccessor pLevel, DifficultyInstance pDifficulty, MobSpawnType pReason, @Nullable SpawnGroupData pSpawnData, @Nullable CompoundTag pDataTag) {
-        pSpawnData = super.finalizeSpawn(pLevel, pDifficulty, pReason, pSpawnData, pDataTag);
+    public SpawnGroupData finalizeSpawn(ServerLevelAccessor pLevel, DifficultyInstance pDifficulty,
+            MobSpawnType pReason, @Nullable SpawnGroupData pSpawnData) {
+        pSpawnData = super.finalizeSpawn(pLevel, pDifficulty, pReason, pSpawnData);
         if (pReason != MobSpawnType.STRUCTURE) {
             if (this.canSpawn(pLevel.getLevel())) {
-                if (pReason != MobSpawnType.MOB_SUMMONED && pReason != MobSpawnType.SPAWN_EGG){
+                if (pReason != MobSpawnType.MOB_SUMMONED && pReason != MobSpawnType.SPAWN_EGG) {
                     this.shouldSpawnHeretics = this.getTrueOwner() == null;
                 }
                 this.playSound(ModSounds.RUMBLE.get(), 10.0F, 1.0F);
@@ -168,9 +172,11 @@ public class ObsidianMonolith extends AbstractMonolith implements Enemy {
         return pSpawnData;
     }
 
-    public static boolean checkOMSpawnRules(EntityType<? extends Owned> p_217058_, LevelAccessor p_217059_, MobSpawnType p_217060_, BlockPos p_217061_, RandomSource p_217062_) {
-        List<ObsidianMonolith> monoliths = p_217059_.getEntitiesOfClass(ObsidianMonolith.class, new AABB(p_217061_).inflate(32.0D, 16.0D, 32.0D));
-        if (!monoliths.isEmpty()){
+    public static boolean checkOMSpawnRules(EntityType<? extends Owned> p_217058_, LevelAccessor p_217059_,
+            MobSpawnType p_217060_, BlockPos p_217061_, RandomSource p_217062_) {
+        List<ObsidianMonolith> monoliths = p_217059_.getEntitiesOfClass(ObsidianMonolith.class,
+                new AABB(p_217061_).inflate(32.0D, 16.0D, 32.0D));
+        if (!monoliths.isEmpty()) {
             return false;
         }
         if (p_217059_ instanceof ServerLevelAccessor serverLevelAccessor) {
@@ -180,7 +186,7 @@ public class ObsidianMonolith extends AbstractMonolith implements Enemy {
         }
     }
 
-    public BlockState getState(){
+    public BlockState getState() {
         return Blocks.OBSIDIAN.defaultBlockState();
     }
 
@@ -198,39 +204,39 @@ public class ObsidianMonolith extends AbstractMonolith implements Enemy {
         int particles = 5;
         int efficiency = 0;
         boolean damage = false;
-        if (!this.level.isClientSide && !this.isEmerging()) {
-            if (pSource.is(DamageTypeTags.IS_EXPLOSION) || pSource.is(DamageTypeTags.IS_FIRE)){
+        if (!this.level().isClientSide && !this.isEmerging()) {
+            if (pSource.is(DamageTypeTags.IS_EXPLOSION) || pSource.is(DamageTypeTags.IS_FIRE)) {
                 return false;
             }
-            if (this.empowered > 0 && !pSource.is(DamageTypeTags.BYPASSES_INVULNERABILITY)){
-                this.level.broadcastEntityEvent(this, (byte) 6);
+            if (this.empowered > 0 && !pSource.is(DamageTypeTags.BYPASSES_INVULNERABILITY)) {
+                this.level().broadcastEntityEvent(this, (byte) 6);
                 this.playSound(SoundEvents.LAVA_EXTINGUISH, 1.0F, 0.5F);
-                if (pSource.is(DamageTypes.IN_WALL)){
+                if (pSource.is(DamageTypes.IN_WALL)) {
                     if (this.destroyBlocksTick <= 0) {
                         this.destroyBlocksTick = 20;
                     }
                 }
                 return false;
             }
-            if (pSource.is(DamageTypes.IN_WALL) || pSource.is(DamageTypes.OUTSIDE_BORDER)){
+            if (pSource.is(DamageTypes.IN_WALL) || pSource.is(DamageTypes.OUTSIDE_BORDER)) {
                 if (this.getTrueOwner() instanceof Apostle apostle) {
                     this.teleportTowards(apostle);
                 }
             }
             if (ModDamageSource.physicalAttacks(pSource)) {
                 if (pSource.getDirectEntity() instanceof LivingEntity living) {
-                    if (living.getMainHandItem().isCorrectToolForDrops(this.getState())){
+                    if (living.getMainHandItem().isCorrectToolForDrops(this.getState())) {
                         damage = true;
                         efficiency += EnchantmentHelper.getBlockEfficiency(living);
                     }
                 }
             }
-            if (damage){
+            if (damage) {
                 pAmount *= 2.0F + (efficiency / 2.0F);
                 particles = 20;
             }
-            if (this.level instanceof ServerLevel serverLevel){
-                for(int i = 0; i < particles; ++i) {
+            if (this.level() instanceof ServerLevel serverLevel) {
+                for (int i = 0; i < particles; ++i) {
                     ServerParticleUtil.addParticlesAroundSelf(serverLevel, this.getParticles(), this);
                 }
             }
@@ -238,37 +244,45 @@ public class ObsidianMonolith extends AbstractMonolith implements Enemy {
         return super.hurt(pSource, pAmount);
     }
 
-    public void silentDie(DamageSource cause){
+    public void silentDie(DamageSource cause) {
         super.die(cause);
-        if (this.level instanceof ServerLevel serverLevel){
-            serverLevel.sendParticles(new PortalShockwaveParticleOption(), this.getX(), this.getY(), this.getZ(), 0, 0, 0, 0, 0);
-            ServerParticleUtil.blockBreakParticles(this.getParticles(), BlockPos.containing(this.position()), this.getState(), serverLevel);
-            ServerParticleUtil.blockBreakParticles(this.getParticles(), BlockPos.containing(this.position()).above(), this.getState(), serverLevel);
-            ServerParticleUtil.blockBreakParticles(this.getParticles(), BlockPos.containing(this.position()).above().above(), Blocks.CRYING_OBSIDIAN.defaultBlockState(), serverLevel);
-            new SpellExplosion(this.level, null, this.damageSources().magic(), this.blockPosition(), 16, 5.0F){
+        if (this.level() instanceof ServerLevel serverLevel) {
+            serverLevel.sendParticles(new PortalShockwaveParticleOption(), this.getX(), this.getY(), this.getZ(), 0, 0,
+                    0, 0, 0);
+            ServerParticleUtil.blockBreakParticles(this.getParticles(), BlockPos.containing(this.position()),
+                    this.getState(), serverLevel);
+            ServerParticleUtil.blockBreakParticles(this.getParticles(), BlockPos.containing(this.position()).above(),
+                    this.getState(), serverLevel);
+            ServerParticleUtil.blockBreakParticles(this.getParticles(),
+                    BlockPos.containing(this.position()).above().above(), Blocks.CRYING_OBSIDIAN.defaultBlockState(),
+                    serverLevel);
+            new SpellExplosion(this.level(), null, this.damageSources().magic(), this.blockPosition(), 16, 5.0F) {
                 @Override
-                public void explodeHurt(Entity target, DamageSource damageSource, double x, double y, double z, double seen, float actualDamage) {
-                    if (target instanceof IOwned owned && target instanceof LivingEntity living){
-                        if (owned.getTrueOwner() == ObsidianMonolith.this.getTrueOwner() || owned.getTrueOwner() == ObsidianMonolith.this){
+                public void explodeHurt(Entity target, DamageSource damageSource, double x, double y, double z,
+                        double seen, float actualDamage) {
+                    if (target instanceof IOwned owned && target instanceof LivingEntity living) {
+                        if (owned.getTrueOwner() == ObsidianMonolith.this.getTrueOwner()
+                                || owned.getTrueOwner() == ObsidianMonolith.this) {
                             if (!(owned instanceof ObsidianMonolith)) {
-                                if (living.hurt(living.damageSources().magic(), ObsidianMonolith.this.level.random.nextInt(10) + 5.0F)){
+                                if (living.hurt(living.damageSources().magic(),
+                                        ObsidianMonolith.this.level().random.nextInt(10) + 5.0F)) {
                                     ObsidianMonolith.this.launch(living, ObsidianMonolith.this);
                                 }
                             }
                         }
                     }
-                    if (target instanceof ZombifiedPiglin piglin){
-                        if (piglin.isAlive()){
+                    if (target instanceof ZombifiedPiglin piglin) {
+                        if (piglin.isAlive()) {
                             piglin.spawnAnim();
                             piglin.discard();
                         }
                     }
                 }
             };
-            if (cause.getEntity() instanceof Mob mob && mob.getTarget() == this && this.getTrueOwner() != null){
+            if (cause.getEntity() instanceof Mob mob && mob.getTarget() == this && this.getTrueOwner() != null) {
                 mob.setTarget(this.getTrueOwner());
             }
-            if (this.getTrueOwner() instanceof Apostle apostle && apostle.isAlive()){
+            if (this.getTrueOwner() instanceof Apostle apostle && apostle.isAlive()) {
                 apostle.setMonolithCoolDown(MathHelper.minutesToTicks(1));
             }
         }
@@ -277,14 +291,15 @@ public class ObsidianMonolith extends AbstractMonolith implements Enemy {
 
     public void die(DamageSource cause) {
         this.playSound(SoundEvents.RESPAWN_ANCHOR_DEPLETE.get(), 5.0F, 0.5F);
-        this.playSound(SoundEvents.ZOMBIE_BREAK_WOODEN_DOOR, 5.0F, (this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 1.0F);
+        this.playSound(SoundEvents.ZOMBIE_BREAK_WOODEN_DOOR, 5.0F,
+                (this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 1.0F);
         this.silentDie(cause);
     }
 
     protected void dropAllDeathLoot(DamageSource p_21192_) {
         if (ModDamageSource.physicalAttacks(p_21192_)) {
             if (p_21192_.getDirectEntity() instanceof LivingEntity living) {
-                if (living.getMainHandItem().isCorrectToolForDrops(this.getState())){
+                if (living.getMainHandItem().isCorrectToolForDrops(this.getState())) {
                     super.dropAllDeathLoot(p_21192_);
                 }
             }
@@ -313,7 +328,7 @@ public class ObsidianMonolith extends AbstractMonolith implements Enemy {
     protected SoundEvent getHurtSound(DamageSource p_34154_) {
         if (ModDamageSource.physicalAttacks(p_34154_)) {
             if (p_34154_.getDirectEntity() instanceof LivingEntity living) {
-                if (living.getMainHandItem().isCorrectToolForDrops(this.getState())){
+                if (living.getMainHandItem().isCorrectToolForDrops(this.getState())) {
                     return SoundEvents.ZOMBIE_ATTACK_IRON_DOOR;
                 }
             }
@@ -325,17 +340,19 @@ public class ObsidianMonolith extends AbstractMonolith implements Enemy {
         return null;
     }
 
-    public boolean canSpawn(Level level){
-        return level.noCollision(this.getInitialBB()) && level.getEntityCollisions(this, this.getInitialBB()).isEmpty() && !level.containsAnyLiquid(this.getInitialBB());
+    public boolean canSpawn(Level level) {
+        return level.noCollision(this.getInitialBB()) && level.getEntityCollisions(this, this.getInitialBB()).isEmpty()
+                && !level.containsAnyLiquid(this.getInitialBB());
     }
 
     public boolean isCurrentlyGlowing() {
-        return (!this.level.isClientSide() && !this.isEmerging() && this.getTrueOwner() != null) || super.isCurrentlyGlowing();
+        return (!this.level().isClientSide() && !this.isEmerging() && this.getTrueOwner() != null)
+                || super.isCurrentlyGlowing();
     }
 
     @Override
     public void handleEntityEvent(byte pId) {
-        if (pId == 6){
+        if (pId == 6) {
             this.shieldTime = 10;
         } else {
             super.handleEntityEvent(pId);
@@ -349,43 +366,52 @@ public class ObsidianMonolith extends AbstractMonolith implements Enemy {
 
     public void aiStep() {
         super.aiStep();
-        if (!this.isEmerging()){
-            if (this.level.isClientSide) {
-                for(int i = 0; i < 2; ++i) {
-                    this.level.addParticle(ParticleTypes.PORTAL, this.getRandomX(0.5D), this.getRandomY() - 0.25D, this.getRandomZ(0.5D), (this.random.nextDouble() - 0.5D) * 2.0D, -this.random.nextDouble(), (this.random.nextDouble() - 0.5D) * 2.0D);
+        if (!this.isEmerging()) {
+            if (this.level().isClientSide) {
+                for (int i = 0; i < 2; ++i) {
+                    this.level().addParticle(ParticleTypes.PORTAL, this.getRandomX(0.5D), this.getRandomY() - 0.25D,
+                            this.getRandomZ(0.5D), (this.random.nextDouble() - 0.5D) * 2.0D, -this.random.nextDouble(),
+                            (this.random.nextDouble() - 0.5D) * 2.0D);
                 }
                 if (this.getCrackiness() != Crackiness.NONE) {
-                    if (this.level.random.nextInt(5) == 0) {
-                        int j = this.getCrackiness() == Crackiness.LOW ? 1 : this.getCrackiness() == Crackiness.MEDIUM ? 3 : 5;
-                        for(int i = 0; i < j; ++i) {
-                            this.level.addParticle(ParticleTypes.DRIPPING_OBSIDIAN_TEAR, this.getRandomX(0.5D), this.getRandomY() - 0.25D, this.getRandomZ(0.5D), (this.random.nextDouble() - 0.5D) * 2.0D, -this.random.nextDouble(), (this.random.nextDouble() - 0.5D) * 2.0D);
+                    if (this.level().random.nextInt(5) == 0) {
+                        int j = this.getCrackiness() == Crackiness.LOW ? 1
+                                : this.getCrackiness() == Crackiness.MEDIUM ? 3 : 5;
+                        for (int i = 0; i < j; ++i) {
+                            this.level().addParticle(ParticleTypes.DRIPPING_OBSIDIAN_TEAR, this.getRandomX(0.5D),
+                                    this.getRandomY() - 0.25D, this.getRandomZ(0.5D),
+                                    (this.random.nextDouble() - 0.5D) * 2.0D, -this.random.nextDouble(),
+                                    (this.random.nextDouble() - 0.5D) * 2.0D);
                         }
                     }
                 }
-                if (this.shieldTime > 0){
+                if (this.shieldTime > 0) {
                     --this.shieldTime;
                 }
             }
-            if (!this.isActivate()){
+            if (!this.isActivate()) {
                 this.playSound(SoundEvents.RESPAWN_ANCHOR_CHARGE, 1.0F, 0.5F);
-                if (this.shouldSpawnHeretics){
+                if (this.shouldSpawnHeretics) {
                     this.spawnHeretics();
                 }
                 this.setActivate(true);
             } else {
-                if (this.empowered > 0){
+                if (this.empowered > 0) {
                     --this.empowered;
-                    if (this.tickCount % MathHelper.secondsToTicks(20) == 0){
+                    if (this.tickCount % MathHelper.secondsToTicks(20) == 0) {
                         this.playSound(ModSounds.SCARY_RECITE.get(), 1.0F, this.getVoicePitch());
                     }
                 }
                 if (this.tickCount % 50 == 0) {
-                    if (this.level instanceof ServerLevel serverLevel){
+                    if (this.level() instanceof ServerLevel serverLevel) {
                         ColorUtil colorUtil = new ColorUtil(ChatFormatting.DARK_RED);
-                        serverLevel.sendParticles(new ShockwaveParticleOption(colorUtil.red, colorUtil.green, colorUtil.blue, 5, 0, true), this.getX(), this.getEyeY(), this.getZ(), 0, 0, 0, 0, 0);
+                        serverLevel.sendParticles(
+                                new ShockwaveParticleOption(colorUtil.red, colorUtil.green, colorUtil.blue, 5, 0, true),
+                                this.getX(), this.getEyeY(), this.getZ(), 0, 0, 0, 0, 0);
                     }
-                    for (Cultist cultist : this.level.getEntitiesOfClass(Cultist.class, this.getBoundingBox().inflate(16.0D))){
-                        if (!(cultist instanceof Apostle)){
+                    for (Cultist cultist : this.level().getEntitiesOfClass(Cultist.class,
+                            this.getBoundingBox().inflate(16.0D))) {
+                        if (!(cultist instanceof Apostle)) {
                             if (cultist.getHealth() < cultist.getMaxHealth()) {
                                 cultist.heal(1.0F);
                             }
@@ -395,83 +421,104 @@ public class ObsidianMonolith extends AbstractMonolith implements Enemy {
             }
 
             int time = 160;
-            switch (this.level.getDifficulty()){
+            switch (this.level().getDifficulty()) {
                 case NORMAL -> time = 80;
                 case HARD -> time = 40;
             }
 
             if (this.getTrueOwner() instanceof Apostle apostle) {
                 this.setGlowingTag(true);
-                if (apostle.isDeadOrDying()){
+                if (apostle.isDeadOrDying()) {
                     this.silentDie(this.damageSources().starve());
                 }
-                if (!this.hasLineOfSight(apostle)){
+                if (!this.hasLineOfSight(apostle)) {
                     this.teleportTowards(apostle);
                 }
                 apostle.obsidianInvul = 10;
-                if (MobsConfig.ApocalypseMode.get()){
+                if (MobsConfig.ApocalypseMode.get()) {
                     this.spreadNether();
                 } else {
                     if (!this.netherSpreaderUtil.getCursors().isEmpty()) {
                         this.netherSpreaderUtil.clear();
                     }
                 }
-                if (apostle.getTarget() != null){
-                    int i = this.level.getEntitiesOfClass(Owned.class, this.getBoundingBox().inflate(16.0D), apostle.ZOMBIE_MINIONS).size();
-                    Integer[] difficulty = this.difficultyIntegerMap().get(this.level.getDifficulty());
-                    int j = this.getCrackiness() == Crackiness.NONE ? difficulty[0] : this.getCrackiness() == Crackiness.LOW ? difficulty[1] : this.getCrackiness() == Crackiness.MEDIUM ? difficulty[2] : 1;
-                    if (this.tickCount % time == 0 && i < j && this.level.random.nextFloat() <= 0.25F && !apostle.isSettingUpSecond()) {
-                        if (!this.level.isClientSide) {
-                            RandomSource r = this.level.random;
+                if (apostle.getTarget() != null) {
+                    int i = this.level().getEntitiesOfClass(Owned.class, this.getBoundingBox().inflate(16.0D),
+                            apostle.ZOMBIE_MINIONS).size();
+                    Integer[] difficulty = this.difficultyIntegerMap().get(this.level().getDifficulty());
+                    int j = this.getCrackiness() == Crackiness.NONE ? difficulty[0]
+                            : this.getCrackiness() == Crackiness.LOW ? difficulty[1]
+                                    : this.getCrackiness() == Crackiness.MEDIUM ? difficulty[2] : 1;
+                    if (this.tickCount % time == 0 && i < j && this.level().random.nextFloat() <= 0.25F
+                            && !apostle.isSettingUpSecond()) {
+                        if (!this.level().isClientSide) {
+                            RandomSource r = this.level().random;
                             int numbers = apostle.isSecondPhase() ? 4 : 2;
-                            for (ZombifiedPiglin zombifiedPiglin : this.level.getEntitiesOfClass(ZombifiedPiglin.class, this.getBoundingBox().inflate(16))) {
+                            for (ZombifiedPiglin zombifiedPiglin : this.level()
+                                    .getEntitiesOfClass(ZombifiedPiglin.class, this.getBoundingBox().inflate(16))) {
                                 if (zombifiedPiglin.getTarget() != apostle.getTarget()) {
                                     zombifiedPiglin.setTarget(apostle.getTarget());
                                 }
                             }
                             for (int p = 0; p < r.nextInt(numbers) + 1; ++p) {
                                 Owned summon;
-                                if (this.level.random.nextFloat() > 0.25F || !apostle.isSecondPhase()) {
-                                    summon = new ZPiglinServant(ModEntityType.ZPIGLIN_SERVANT.get(), this.level);
+                                if (this.level().random.nextFloat() > 0.25F || !apostle.isSecondPhase()) {
+                                    summon = new ZPiglinServant(ModEntityType.ZPIGLIN_SERVANT.get(), this.level());
                                 } else {
-                                    summon = new ZPiglinBruteServant(ModEntityType.ZPIGLIN_BRUTE_SERVANT.get(), this.level);
+                                    summon = new ZPiglinBruteServant(ModEntityType.ZPIGLIN_BRUTE_SERVANT.get(),
+                                            this.level());
                                 }
-                                BlockPos blockPos = BlockFinder.SummonRadius(this.blockPosition(), summon, this.level);
+                                BlockPos blockPos = BlockFinder.SummonRadius(this.blockPosition(), summon,
+                                        this.level());
                                 summon.moveTo(blockPos, 0.0F, 0.0F);
                                 summon.setTrueOwner(apostle);
-                                summon.setLimitedLife(MobUtil.getSummonLifespan(this.level));
-                                SummonCircle summonCircle = new SummonCircle(this.level, blockPos, summon, true, true, apostle);
-                                this.level.addFreshEntity(summonCircle);
+                                summon.setLimitedLife(MobUtil.getSummonLifespan(this.level()));
+                                SummonCircle summonCircle = new SummonCircle(this.level(), blockPos, summon, true, true,
+                                        apostle);
+                                this.level().addFreshEntity(summonCircle);
                             }
                         }
                     }
                 }
-            } else if (this.getTrueOwner() == null){
-                if (!this.level.isClientSide) {
-                    int heretics = this.level.getEntitiesOfClass(Heretic.class, this.getBoundingBox().inflate(32.0D, 16.0D, 32.0D), LivingEntity::isAlive).size();
-                    ServerLevel serverLevel = (ServerLevel) this.level;
-                    RandomSource random1 = this.level.random;
+            } else if (this.getTrueOwner() == null) {
+                if (!this.level().isClientSide) {
+                    int heretics = this.level().getEntitiesOfClass(Heretic.class,
+                            this.getBoundingBox().inflate(32.0D, 16.0D, 32.0D), LivingEntity::isAlive).size();
+                    ServerLevel serverLevel = (ServerLevel) this.level();
+                    RandomSource random1 = this.level().random;
                     int spawnChance = 256;
                     if (this.empowered > 0) {
                         this.spreadNether();
                         if (MobsConfig.ObsidianMonolithSpawner.get()) {
-                            int i = this.level.getEntitiesOfClass(LivingEntity.class, this.getBoundingBox().inflate(24.0D, 16.0D, 24.0D), livingEntity -> livingEntity.isAlive() && livingEntity instanceof Maverick).size();
+                            int i = this.level()
+                                    .getEntitiesOfClass(LivingEntity.class,
+                                            this.getBoundingBox().inflate(24.0D, 16.0D, 24.0D),
+                                            livingEntity -> livingEntity.isAlive() && livingEntity instanceof Maverick)
+                                    .size();
                             if (this.tickCount % time == 0) {
                                 if (random1.nextFloat() <= 0.25F && i < 8) {
-                                    Maverick maverick = new Maverick(ModEntityType.MAVERICK.get(), this.level);
-                                    int i1 = this.blockPosition().getX() + (Mth.randomBetweenInclusive(random1, 4, 12) * Mth.randomBetweenInclusive(random1, -1, 1));
-                                    int j1 = this.blockPosition().getY() + (Mth.randomBetweenInclusive(random1, 0, 3) * Mth.randomBetweenInclusive(random1, -1, 1));
-                                    int k1 = this.blockPosition().getZ() + (Mth.randomBetweenInclusive(random1, 4, 12) * Mth.randomBetweenInclusive(random1, -1, 1));
+                                    Maverick maverick = new Maverick(ModEntityType.MAVERICK.get(), this.level());
+                                    int i1 = this.blockPosition().getX() + (Mth.randomBetweenInclusive(random1, 4, 12)
+                                            * Mth.randomBetweenInclusive(random1, -1, 1));
+                                    int j1 = this.blockPosition().getY() + (Mth.randomBetweenInclusive(random1, 0, 3)
+                                            * Mth.randomBetweenInclusive(random1, -1, 1));
+                                    int k1 = this.blockPosition().getZ() + (Mth.randomBetweenInclusive(random1, 4, 12)
+                                            * Mth.randomBetweenInclusive(random1, -1, 1));
                                     BlockPos blockPos = BlockFinder.SummonPosition(maverick, new BlockPos(i1, j1, k1));
                                     maverick.setPos(blockPos.getX() + 0.5D, blockPos.getY(), blockPos.getZ() + 0.5D);
-                                    if (this.level.noCollision(maverick.getBoundingBox()) && this.level.getEntityCollisions(maverick, maverick.getBoundingBox()).isEmpty() && !this.level.containsAnyLiquid(maverick.getBoundingBox())) {
-                                        maverick.finalizeSpawn(serverLevel, this.level.getCurrentDifficultyAt(blockPos), MobSpawnType.MOB_SUMMONED, null, null);
+                                    if (this.level().noCollision(maverick.getBoundingBox())
+                                            && this.level().getEntityCollisions(maverick, maverick.getBoundingBox())
+                                                    .isEmpty()
+                                            && !this.level().containsAnyLiquid(maverick.getBoundingBox())) {
+                                        maverick.finalizeSpawn(serverLevel,
+                                                this.level().getCurrentDifficultyAt(blockPos),
+                                                MobSpawnType.MOB_SUMMONED, null);
                                         maverick.setLeader(this);
                                         if (this.getTarget() != null) {
                                             maverick.setTarget(this.getTarget());
                                         }
                                         maverick.spawnAnim();
-                                        this.level.addFreshEntity(maverick);
+                                        this.level().addFreshEntity(maverick);
                                     }
                                 }
                             }
@@ -482,23 +529,37 @@ public class ObsidianMonolith extends AbstractMonolith implements Enemy {
                     }
                     if (MobsConfig.ObsidianMonolithSpawner.get()) {
                         if (serverLevel.random.nextInt(spawnChance) == 0) {
-                            int j = serverLevel.getNearbyEntities(Mob.class, TargetingConditions.DEFAULT, this, this.getBoundingBox().inflate(32.0D, 16.0D, 32.0D)).size();
-                            if (j < 16){
-                                WeightedRandomList<MobSpawnSettings.SpawnerData> spawners = MobUtil.mobsAt(serverLevel, serverLevel.structureManager(), serverLevel.getChunkSource().getGenerator(), MobCategory.MONSTER, this.blockPosition(), serverLevel.getBiome(this.blockPosition()));
+                            int j = serverLevel.getNearbyEntities(Mob.class, TargetingConditions.DEFAULT, this,
+                                    this.getBoundingBox().inflate(32.0D, 16.0D, 32.0D)).size();
+                            if (j < 16) {
+                                WeightedRandomList<MobSpawnSettings.SpawnerData> spawners = MobUtil.mobsAt(serverLevel,
+                                        serverLevel.structureManager(), serverLevel.getChunkSource().getGenerator(),
+                                        MobCategory.MONSTER, this.blockPosition(),
+                                        serverLevel.getBiome(this.blockPosition()));
                                 if (!spawners.isEmpty()) {
-                                    MobSpawnSettings.SpawnerData spawner = spawners.getRandom(serverLevel.random).orElse(null);
+                                    MobSpawnSettings.SpawnerData spawner = spawners.getRandom(serverLevel.random)
+                                            .orElse(null);
                                     if (spawner != null) {
                                         Entity entity = spawner.type.create(serverLevel);
-                                        BlockPos blockPos = BlockFinder.SummonRadius(this.blockPosition(), entity, serverLevel, 24);
-                                        SpawnPlacements.Type spawnplacements$type = SpawnPlacements.getPlacementType(spawner.type);
-                                        if (NaturalSpawner.isSpawnPositionOk(spawnplacements$type, this.level, blockPos, spawner.type)
-                                                && SpawnPlacements.checkSpawnRules(spawner.type, serverLevel, MobSpawnType.SPAWNER, blockPos, serverLevel.random)) {
+                                        BlockPos blockPos = BlockFinder.SummonRadius(this.blockPosition(), entity,
+                                                serverLevel, 24);
+                                        SpawnPlacements.Type spawnplacements$type = SpawnPlacements
+                                                .getPlacementType(spawner.type);
+                                        if (NaturalSpawner.isSpawnPositionOk(spawnplacements$type, this.level(),
+                                                blockPos, spawner.type)
+                                                && SpawnPlacements.checkSpawnRules(spawner.type, serverLevel,
+                                                        MobSpawnType.SPAWNER, blockPos, serverLevel.random)) {
                                             if (entity instanceof Mob mob) {
-                                                if (!(entity instanceof Ghast) && !(entity instanceof AbstractPiglin) && !(entity instanceof Hoglin)) {
-                                                    mob.setPos(blockPos.getX() + 0.5F, blockPos.getY(), blockPos.getZ() + 0.5F);
-                                                    net.neoforged.neoforge.event.EventHooks.onFinalizeSpawn(mob, serverLevel, serverLevel.getCurrentDifficultyAt(blockPos), MobSpawnType.SPAWNER, null, null);
+                                                if (!(entity instanceof Ghast) && !(entity instanceof AbstractPiglin)
+                                                        && !(entity instanceof Hoglin)) {
+                                                    mob.setPos(blockPos.getX() + 0.5F, blockPos.getY(),
+                                                            blockPos.getZ() + 0.5F);
+                                                    net.neoforged.neoforge.event.EventHooks.finalizeMobSpawn(mob,
+                                                            serverLevel, serverLevel.getCurrentDifficultyAt(blockPos),
+                                                            MobSpawnType.SPAWNER, null);
                                                     if (serverLevel.addFreshEntity(mob)) {
-                                                        ServerParticleUtil.addParticlesAroundMiddleSelf(serverLevel, ParticleTypes.FLAME, mob);
+                                                        ServerParticleUtil.addParticlesAroundMiddleSelf(serverLevel,
+                                                                ParticleTypes.FLAME, mob);
                                                     }
                                                 }
                                             }
@@ -510,50 +571,61 @@ public class ObsidianMonolith extends AbstractMonolith implements Enemy {
                                     }
                                 }
                             }
-                            float f1 = this.getCrackiness() == Crackiness.NONE ? 0.125F : this.getCrackiness() == Crackiness.LOW ? 0.2F : this.getCrackiness() == Crackiness.MEDIUM ? 0.25F : 0.3F;
-                            if (heretics <= 2 && random1.nextFloat() <= f1){
-                                Heretic heretic = new Heretic(ModEntityType.HERETIC.get(), this.level);
-                                int i1 = this.blockPosition().getX() + (Mth.randomBetweenInclusive(random1, 4, 12) * Mth.randomBetweenInclusive(random1, -1, 1));
-                                int j1 = this.blockPosition().getY() + (Mth.randomBetweenInclusive(random1, 0, 3) * Mth.randomBetweenInclusive(random1, -1, 1));
-                                int k1 = this.blockPosition().getZ() + (Mth.randomBetweenInclusive(random1, 4, 12) * Mth.randomBetweenInclusive(random1, -1, 1));
+                            float f1 = this.getCrackiness() == Crackiness.NONE ? 0.125F
+                                    : this.getCrackiness() == Crackiness.LOW ? 0.2F
+                                            : this.getCrackiness() == Crackiness.MEDIUM ? 0.25F : 0.3F;
+                            if (heretics <= 2 && random1.nextFloat() <= f1) {
+                                Heretic heretic = new Heretic(ModEntityType.HERETIC.get(), this.level());
+                                int i1 = this.blockPosition().getX() + (Mth.randomBetweenInclusive(random1, 4, 12)
+                                        * Mth.randomBetweenInclusive(random1, -1, 1));
+                                int j1 = this.blockPosition().getY() + (Mth.randomBetweenInclusive(random1, 0, 3)
+                                        * Mth.randomBetweenInclusive(random1, -1, 1));
+                                int k1 = this.blockPosition().getZ() + (Mth.randomBetweenInclusive(random1, 4, 12)
+                                        * Mth.randomBetweenInclusive(random1, -1, 1));
                                 BlockPos blockPos = BlockFinder.SummonPosition(heretic, new BlockPos(i1, j1, k1));
                                 heretic.setPos(blockPos.getX() + 0.5D, blockPos.getY(), blockPos.getZ() + 0.5D);
-                                if (this.level.noCollision(heretic.getBoundingBox()) && this.level.getEntityCollisions(heretic, heretic.getBoundingBox()).isEmpty() && !this.level.containsAnyLiquid(heretic.getBoundingBox())) {
-                                    heretic.finalizeSpawn(serverLevel, this.level.getCurrentDifficultyAt(blockPos), MobSpawnType.MOB_SUMMONED, null, null);
+                                if (this.level().noCollision(heretic.getBoundingBox())
+                                        && this.level().getEntityCollisions(heretic, heretic.getBoundingBox()).isEmpty()
+                                        && !this.level().containsAnyLiquid(heretic.getBoundingBox())) {
+                                    heretic.finalizeSpawn(serverLevel, this.level().getCurrentDifficultyAt(blockPos),
+                                            MobSpawnType.MOB_SUMMONED, null);
                                     heretic.setPersistenceRequired();
                                     heretic.setLeader(this);
                                     heretic.setMonolith(this);
                                     heretic.spawnAnim();
-                                    this.level.addFreshEntity(heretic);
+                                    this.level().addFreshEntity(heretic);
                                 }
                             }
                         }
                     }
                     if (this.destroyBlocksTick > 0) {
                         --this.destroyBlocksTick;
-                        if (this.destroyBlocksTick == 0 && this.level.getGameRules().getBoolean(GameRules.RULE_MOB_GRIEFING)) {
+                        if (this.destroyBlocksTick == 0
+                                && this.level().getGameRules().getBoolean(GameRules.RULE_MOB_GRIEFING)) {
                             int x = Mth.floor(this.getX());
                             int y = Mth.floor(this.getY());
                             int z = Mth.floor(this.getZ());
                             boolean flag = false;
 
-                            for(int x1 = -3; x1 <= 3; ++x1) {
-                                for(int y1 = 0; y1 <= 4; ++y1) {
-                                    for(int z1 = -3; z1 <= 3; ++z1) {
+                            for (int x1 = -3; x1 <= 3; ++x1) {
+                                for (int y1 = 0; y1 <= 4; ++y1) {
+                                    for (int z1 = -3; z1 <= 3; ++z1) {
                                         int l2 = x + x1;
                                         int l = y + y1;
                                         int i1 = z + z1;
                                         BlockPos blockpos = new BlockPos(l2, l, i1);
-                                        BlockState blockstate = this.level.getBlockState(blockpos);
-                                        if (!blockstate.is(BlockTags.WITHER_IMMUNE) && net.neoforged.event.EventFactory.onEntityDestroyBlock(this, blockpos, blockstate)) {
-                                            flag = this.level.destroyBlock(blockpos, true, this) || flag;
+                                        BlockState blockstate = this.level().getBlockState(blockpos);
+                                        if (!blockstate.is(BlockTags.WITHER_IMMUNE)
+                                                && net.neoforged.neoforge.event.EventHooks
+                                                        .onEntityDestroyBlock(this, blockpos, blockstate)) {
+                                            flag = this.level().destroyBlock(blockpos, true, this) || flag;
                                         }
                                     }
                                 }
                             }
 
                             if (flag) {
-                                this.level.levelEvent(null, 1022, this.blockPosition(), 0);
+                                this.level().levelEvent(null, 1022, this.blockPosition(), 0);
                             }
                         }
                     }
@@ -566,18 +638,24 @@ public class ObsidianMonolith extends AbstractMonolith implements Enemy {
         return this.startUp >= MathHelper.minecraftDayToTicks(MobsConfig.ObsidianMonolithStartUpTime.get());
     }
 
-    public void spreadNether(){
-        if (this.level instanceof ServerLevel serverLevel) {
-            int activeHeretics = this.level.getEntitiesOfClass(Heretic.class, this.getBoundingBox().inflate(10.0D), living -> living.isAlive() && living.isCasting() && living.getMonolith() == this).size();
+    public void spreadNether() {
+        if (this.level() instanceof ServerLevel serverLevel) {
+            int activeHeretics = this.level().getEntitiesOfClass(Heretic.class, this.getBoundingBox().inflate(10.0D),
+                    living -> living.isAlive() && living.isCasting() && living.getMonolith() == this).size();
             Vec3 skyVec = new Vec3(this.getX(), this.getY() + 16.0D, this.getZ());
-            if (this.level.getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING) && MobsConfig.ObsidianMonolithSpread.get() && this.level.dimension() != Level.NETHER) {
+            if (this.level().getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING)
+                    && MobsConfig.ObsidianMonolithSpread.get() && this.level().dimension() != Level.NETHER) {
                 if (this.startSpreading()) {
-                    if (this.level.isEmptyBlock(BlockPos.containing(skyVec))) {
-                        ServerParticleUtil.addAuraParticles(serverLevel, ModParticleTypes.SPELL_CLOUD.get(), skyVec, 2.0F);
-                        ServerParticleUtil.addReverseAuraParticles(serverLevel, ModParticleTypes.SPELL_CLOUD.get(), skyVec, 6.0F);
-                        ServerParticleUtil.addAuraParticles(serverLevel, ModParticleTypes.SPELL_CLOUD.get(), skyVec, 10.0F);
+                    if (this.level().isEmptyBlock(BlockPos.containing(skyVec))) {
+                        ServerParticleUtil.addAuraParticles(serverLevel, ModParticleTypes.SPELL_CLOUD.get(), skyVec,
+                                2.0F);
+                        ServerParticleUtil.addReverseAuraParticles(serverLevel, ModParticleTypes.SPELL_CLOUD.get(),
+                                skyVec, 6.0F);
+                        ServerParticleUtil.addAuraParticles(serverLevel, ModParticleTypes.SPELL_CLOUD.get(), skyVec,
+                                10.0F);
                     }
-                    this.netherSpreaderUtil.updateCursors(this.level, this.blockPosition().below(), this.random, true);
+                    this.netherSpreaderUtil.updateCursors(this.level(), this.blockPosition().below(), this.random,
+                            true);
 
                     if (this.getSpreaderLeveling() >= 100) {
                         this.setSpreaderLeveling(0);
@@ -607,9 +685,10 @@ public class ObsidianMonolith extends AbstractMonolith implements Enemy {
                 } else {
                     ++this.startUp;
                     if (this.startUp > 0) {
-                        if (this.level.isEmptyBlock(BlockPos.containing(skyVec))) {
+                        if (this.level().isEmptyBlock(BlockPos.containing(skyVec))) {
                             float radius = 2.0F;
-                            float totalTime = MathHelper.minecraftDayToTicks(MobsConfig.ObsidianMonolithStartUpTime.get());
+                            float totalTime = MathHelper
+                                    .minecraftDayToTicks(MobsConfig.ObsidianMonolithStartUpTime.get());
                             if (this.startUp > totalTime / 4.0F) {
                                 radius = 4.0F;
                             }
@@ -619,8 +698,10 @@ public class ObsidianMonolith extends AbstractMonolith implements Enemy {
                             if (this.startUp > totalTime / 1.5F) {
                                 radius = 8.0F;
                             }
-                            ServerParticleUtil.addReverseAuraParticles(serverLevel, ModParticleTypes.SPELL_CLOUD.get(), skyVec, radius / 2.0F);
-                            ServerParticleUtil.addAuraParticles(serverLevel, ModParticleTypes.SPELL_CLOUD.get(), skyVec, radius);
+                            ServerParticleUtil.addReverseAuraParticles(serverLevel, ModParticleTypes.SPELL_CLOUD.get(),
+                                    skyVec, radius / 2.0F);
+                            ServerParticleUtil.addAuraParticles(serverLevel, ModParticleTypes.SPELL_CLOUD.get(), skyVec,
+                                    radius);
                         }
                     }
                 }
@@ -636,12 +717,12 @@ public class ObsidianMonolith extends AbstractMonolith implements Enemy {
         this.startUp = startUp;
     }
 
-    public Map<Difficulty, Integer[]> difficultyIntegerMap(){
+    public Map<Difficulty, Integer[]> difficultyIntegerMap() {
         Map<Difficulty, Integer[]> difficultyIntegerMap = new HashMap<>();
-        difficultyIntegerMap.put(Difficulty.PEACEFUL, new Integer[]{0, 0, 0});
-        difficultyIntegerMap.put(Difficulty.EASY, new Integer[]{6, 4, 2});
-        difficultyIntegerMap.put(Difficulty.NORMAL, new Integer[]{8, 6, 4});
-        difficultyIntegerMap.put(Difficulty.HARD, new Integer[]{12, 10, 8});
+        difficultyIntegerMap.put(Difficulty.PEACEFUL, new Integer[] { 0, 0, 0 });
+        difficultyIntegerMap.put(Difficulty.EASY, new Integer[] { 6, 4, 2 });
+        difficultyIntegerMap.put(Difficulty.NORMAL, new Integer[] { 8, 6, 4 });
+        difficultyIntegerMap.put(Difficulty.HARD, new Integer[] { 12, 10, 8 });
         return difficultyIntegerMap;
     }
 
@@ -650,7 +731,7 @@ public class ObsidianMonolith extends AbstractMonolith implements Enemy {
     }
 
     private void spawnHeretics() {
-        for(int i = 0; i < 4; ++i) {
+        for (int i = 0; i < 4; ++i) {
             int x = 2;
             int z = 2;
             switch (i) {
@@ -661,19 +742,22 @@ public class ObsidianMonolith extends AbstractMonolith implements Enemy {
                 case 1 -> x *= -1;
                 case 2 -> z *= -1;
             }
-            Heretic heretic = new Heretic(ModEntityType.HERETIC.get(), this.level);
+            Heretic heretic = new Heretic(ModEntityType.HERETIC.get(), this.level());
             BlockPos blockPos = BlockPos.containing(this.getX() + x, this.getY() - 1, this.getZ() + z);
-            if (!this.level.getBlockState(blockPos).getCollisionShape(this.level, blockPos).isEmpty()) {
+            if (!this.level().getBlockState(blockPos).getCollisionShape(this.level(), blockPos).isEmpty()) {
                 heretic.setPos(blockPos.getX() + 0.5D, this.getY(), blockPos.getZ() + 0.5D);
-                if (this.level.noCollision(heretic.getBoundingBox()) && this.level.getEntityCollisions(heretic, heretic.getBoundingBox()).isEmpty() && !this.level.containsAnyLiquid(heretic.getBoundingBox())) {
-                    if (this.level instanceof ServerLevel serverLevel) {
-                        heretic.finalizeSpawn(serverLevel, this.level.getCurrentDifficultyAt(blockPos), MobSpawnType.MOB_SUMMONED, null, null);
+                if (this.level().noCollision(heretic.getBoundingBox())
+                        && this.level().getEntityCollisions(heretic, heretic.getBoundingBox()).isEmpty()
+                        && !this.level().containsAnyLiquid(heretic.getBoundingBox())) {
+                    if (this.level() instanceof ServerLevel serverLevel) {
+                        heretic.finalizeSpawn(serverLevel, this.level().getCurrentDifficultyAt(blockPos),
+                                MobSpawnType.MOB_SUMMONED, null);
                     }
                     MobUtil.instaLook(heretic, this);
                     heretic.setPersistenceRequired();
                     heretic.spawnAnim();
                     heretic.setLeader(this);
-                    if (this.level.addFreshEntity(heretic)) {
+                    if (this.level().addFreshEntity(heretic)) {
                         heretic.setMonolith(this);
                     }
                 }

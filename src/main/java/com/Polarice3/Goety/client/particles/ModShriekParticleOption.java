@@ -1,5 +1,6 @@
 package com.Polarice3.Goety.client.particles;
 
+import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.particles.ParticleOptions;
@@ -14,9 +15,8 @@ public class ModShriekParticleOption implements ParticleOptions {
       })).apply(p_235952_, ModShriekParticleOption::new);
    });
    public static final StreamCodec<RegistryFriendlyByteBuf, ModShriekParticleOption> STREAM_CODEC = StreamCodec.of(
-           (buf, value) -> buf.writeVarInt(value.delay),
-           buf -> new ModShriekParticleOption(buf.readVarInt())
-   );
+         (buf, value) -> buf.writeVarInt(value.delay),
+         buf -> new ModShriekParticleOption(buf.readVarInt()));
    private final int delay;
 
    public ModShriekParticleOption(int p_235949_) {

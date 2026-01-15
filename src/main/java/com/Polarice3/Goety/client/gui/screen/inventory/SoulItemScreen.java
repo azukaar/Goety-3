@@ -22,7 +22,6 @@ public class SoulItemScreen extends AbstractContainerScreen<SoulItemContainer> {
     }
 
     public void render(GuiGraphics matrixStack, int mouseX, int mouseY, float partialTicks) {
-        this.renderBackground(matrixStack, mouseX, mouseY);
         super.render(matrixStack, mouseX, mouseY, partialTicks);
         this.renderTooltip(matrixStack, mouseX, mouseY);
     }

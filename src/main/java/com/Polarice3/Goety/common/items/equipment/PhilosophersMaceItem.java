@@ -26,10 +26,13 @@ public class PhilosophersMaceItem extends Item implements ISoulRepair {
     private final Multimap<Attribute, AttributeModifier> maceAttributes;
 
     public PhilosophersMaceItem() {
-        super(new Properties().rarity(Rarity.UNCOMMON).durability(ItemConfig.PhilosophersMaceDurability.get()).fireResistant());
+        super(new Properties().rarity(Rarity.UNCOMMON).durability(ItemConfig.PhilosophersMaceDurability.get())
+                .fireResistant());
         ImmutableMultimap.Builder<Attribute, AttributeModifier> builder = ImmutableMultimap.builder();
-        builder.put(Attributes.ATTACK_DAMAGE, new AttributeModifier(BASE_ATTACK_DAMAGE_UUID, "Tool modifier", ItemConfig.PhilosophersMaceDamage.get() - 1.0D, AttributeModifier.Operation.ADDITION));
-        builder.put(Attributes.ATTACK_SPEED, new AttributeModifier(BASE_ATTACK_SPEED_UUID, "Tool modifier", (double)-2.4F, AttributeModifier.Operation.ADDITION));
+        builder.put(Attributes.ATTACK_DAMAGE, new AttributeModifier(Item.BASE_ATTACK_DAMAGE_ID,
+                ItemConfig.PhilosophersMaceDamage.get() - 1.0D, AttributeModifier.Operation.ADDITION));
+        builder.put(Attributes.ATTACK_SPEED,
+                new AttributeModifier(Item.BASE_ATTACK_SPEED_ID, (double) -2.4F, AttributeModifier.Operation.ADDITION));
         this.maceAttributes = builder.build();
     }
 
@@ -38,29 +41,27 @@ public class PhilosophersMaceItem extends Item implements ISoulRepair {
     }
 
     public boolean hurtEnemy(ItemStack stack, LivingEntity target, LivingEntity attacker) {
-        stack.hurtAndBreak(1, attacker, (entity) -> {
-            entity.broadcastBreakEvent(EquipmentSlot.MAINHAND);
-        });
+        stack.hurtAndBreak(1, attacker, EquipmentSlot.MAINHAND);
         return true;
     }
 
-    public boolean mineBlock(ItemStack pStack, Level pLevel, BlockState pState, BlockPos pPos, LivingEntity pEntityLiving) {
+    public boolean mineBlock(ItemStack pStack, Level pLevel, BlockState pState, BlockPos pPos,
+            LivingEntity pEntityLiving) {
         if (!pLevel.isClientSide && pState.getDestroySpeed(pLevel, pPos) != 0.0F) {
-            pStack.hurtAndBreak(1, pEntityLiving, (p_220038_0_) -> {
-                p_220038_0_.broadcastBreakEvent(EquipmentSlot.MAINHAND);
-            });
+            pStack.hurtAndBreak(1, pEntityLiving, EquipmentSlot.MAINHAND);
         }
 
         return true;
     }
 
     public boolean isCorrectToolForDrops(BlockState pBlock) {
-        return pBlock.is(BlockTags.MINEABLE_WITH_PICKAXE) || pBlock.is(BlockTags.MINEABLE_WITH_AXE) || pBlock.is(BlockTags.MINEABLE_WITH_HOE) || pBlock.is(BlockTags.MINEABLE_WITH_SHOVEL);
+        return pBlock.is(BlockTags.MINEABLE_WITH_PICKAXE) || pBlock.is(BlockTags.MINEABLE_WITH_AXE)
+                || pBlock.is(BlockTags.MINEABLE_WITH_HOE) || pBlock.is(BlockTags.MINEABLE_WITH_SHOVEL);
     }
 
     public float getDestroySpeed(ItemStack p_41004_, BlockState p_41005_) {
         float blockHard = p_41005_.getBlock().defaultDestroyTime();
-        if (p_41005_.is(ModTags.Blocks.PHILOSOPHERS_MACE_HARD)){
+        if (p_41005_.is(ModTags.Blocks.PHILOSOPHERS_MACE_HARD)) {
             return 1.0F;
         } else if (this.isCorrectToolForDrops(p_41004_, p_41005_) && blockHard >= 1.0F) {
             return 8.0F * blockHard;
@@ -74,12 +75,15 @@ public class PhilosophersMaceItem extends Item implements ISoulRepair {
     }
 
     public boolean canApplyAtEnchantingTable(ItemStack stack, Enchantment enchantment) {
-        // TODO(1.21): Enchantments are data-driven; re-implement custom allowlist if needed.
+        // TODO(1.21): Enchantments are data-driven; re-implement custom allowlist if
+        // needed.
         return true;
     }
 
-    public Multimap<Attribute, AttributeModifier> getAttributeModifiers(EquipmentSlot equipmentSlot, ItemStack itemStack) {
-        return equipmentSlot == EquipmentSlot.MAINHAND ? this.maceAttributes : super.getAttributeModifiers(equipmentSlot, itemStack);
+    public Multimap<Attribute, AttributeModifier> getAttributeModifiers(EquipmentSlot equipmentSlot,
+            ItemStack itemStack) {
+        return equipmentSlot == EquipmentSlot.MAINHAND ? this.maceAttributes
+                : super.getAttributeModifiers(equipmentSlot, itemStack);
     }
 
     @Override

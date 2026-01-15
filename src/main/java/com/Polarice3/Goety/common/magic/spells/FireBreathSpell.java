@@ -61,13 +61,13 @@ public class FireBreathSpell extends BreathingSpell {
         return ModSounds.FIRE_BREATH_START.get();
     }
 
-    public SoundEvent loopSound(LivingEntity caster){
+    public SoundEvent loopSound(LivingEntity caster) {
         return ModSounds.FIRE_BREATH.get();
     }
 
     @Override
     public void useParticle(Level worldIn, LivingEntity caster, ItemStack stack) {
-        if (worldIn instanceof ServerLevel serverLevel){
+        if (worldIn instanceof ServerLevel serverLevel) {
             ServerParticleUtil.addParticlesAroundMiddleSelf(serverLevel, ParticleTypes.SMOKE, caster);
         }
     }
@@ -83,10 +83,10 @@ public class FireBreathSpell extends BreathingSpell {
 
     @Override
     public boolean conditionsMet(ServerLevel worldIn, LivingEntity caster, SpellStat spellStat) {
-        if (caster instanceof Mob mob){
-            if (mob.getTarget() != null){
+        if (caster instanceof Mob mob) {
+            if (mob.getTarget() != null) {
                 int range = spellStat.getRange();
-                if (WandUtil.enchantedFocus(caster)){
+                if (WandUtil.enchantedFocus(caster)) {
                     range += WandUtil.getRangeLevel(caster);
                 }
                 return mob.hasLineOfSight(mob.getTarget()) && mob.distanceTo(mob.getTarget()) <= range + 4.0D;
@@ -95,7 +95,7 @@ public class FireBreathSpell extends BreathingSpell {
         return super.conditionsMet(worldIn, caster, spellStat);
     }
 
-    public void SpellResult(ServerLevel worldIn, LivingEntity caster, ItemStack staff, SpellStat spellStat){
+    public void SpellResult(ServerLevel worldIn, LivingEntity caster, ItemStack staff, SpellStat spellStat) {
         float potency = spellStat.getPotency();
         int burning = spellStat.getBurning();
         int range = spellStat.getRange();
@@ -111,8 +111,12 @@ public class FireBreathSpell extends BreathingSpell {
                 if (SpellConfig.DragonFireGriefing.get()) {
                     float flameRange = range * ((float) Math.PI / 180.0F);
                     for (int i = 0; i < 3; i++) {
-                        Vec3 cast = caster.getLookAngle().normalize().xRot(worldIn.random.nextFloat() * flameRange * 2 - flameRange).yRot(worldIn.random.nextFloat() * flameRange * 2 - flameRange);
-                        HitResult hitResult = worldIn.clip(new ClipContext(caster.getEyePosition(), caster.getEyePosition().add(cast.scale(10)), ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, caster));
+                        Vec3 cast = caster.getLookAngle().normalize()
+                                .xRot(worldIn.random.nextFloat() * flameRange * 2 - flameRange)
+                                .yRot(worldIn.random.nextFloat() * flameRange * 2 - flameRange);
+                        HitResult hitResult = worldIn.clip(
+                                new ClipContext(caster.getEyePosition(), caster.getEyePosition().add(cast.scale(10)),
+                                        ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, caster));
                         if (hitResult.getType() == HitResult.Type.BLOCK) {
                             Vec3 pos = hitResult.getLocation().subtract(cast.scale(0.5D));
                             BlockPos blockPos = BlockPos.containing(pos.x, pos.y, pos.z);
@@ -129,11 +133,11 @@ public class FireBreathSpell extends BreathingSpell {
             for (Entity target : getBreathTarget(caster, range)) {
                 if (target != null) {
                     DamageSource damageSource = ModDamageSource.fireBreath(caster, caster);
-                    if (CuriosFinder.hasNetherRobe(caster)){
+                    if (CuriosFinder.hasNetherRobe(caster)) {
                         damageSource = ModDamageSource.magicFireBreath(caster, caster);
                     }
-                    if (target.hurt(damageSource, damage)){
-                        target.setSecondsOnFire(5 * burning);
+                    if (target.hurt(damageSource, damage)) {
+                        target.igniteForSeconds(5 * burning);
                     }
                 }
             }
@@ -143,12 +147,13 @@ public class FireBreathSpell extends BreathingSpell {
     @Override
     public void showWandBreath(LivingEntity entityLiving, ItemStack staff, SpellStat spellStat) {
         int range = spellStat.getRange();
-        if (WandUtil.enchantedFocus(entityLiving)){
+        if (WandUtil.enchantedFocus(entityLiving)) {
             range = WandUtil.getRangeLevel(entityLiving);
         }
 
         if (!CuriosFinder.hasCurio(entityLiving, ModItems.RING_OF_THE_DRAGON.get())) {
-            this.dragonBreathAttack(ModParticleTypes.SMALL_DRAGON_FLAME.get(), entityLiving, 10, ((double) range / 10) * 0.5D, 1.0D);
+            this.dragonBreathAttack(ModParticleTypes.SMALL_DRAGON_FLAME.get(), entityLiving, 10,
+                    ((double) range / 10) * 0.5D, 1.0D);
         } else {
             this.dragonBreathAttack(ModParticleTypes.DRAGON_FLAME.get(), entityLiving, ((double) range / 10) * 0.5D);
         }

@@ -76,7 +76,7 @@ import java.util.Map;
 public class ClientInitEvents {
 
     @SubscribeEvent
-    public static void clientInit(FMLClientSetupEvent event){
+    public static void clientInit(FMLClientSetupEvent event) {
         MenuScreens.register(ModContainerType.WAND.get(), SoulItemScreen::new);
         MenuScreens.register(ModContainerType.FOCUS_BAG.get(), FocusBagScreen::new);
         MenuScreens.register(ModContainerType.FOCUS_PACK.get(), FocusPackScreen::new);
@@ -100,15 +100,17 @@ public class ClientInitEvents {
             ItemProperties.register(ModItems.FLAME_CAPTURE.get(), new ResourceLocation("capture"),
                     (stack, world, living, seed) -> FlameCaptureItem.hasEntity(stack) ? 1.0F : 0.0F);
             ItemProperties.register(ModItems.SOUL_JAR.get(), new ResourceLocation("type"),
-                    (stack, world, living, seed) -> SoulJar.isDrowned(stack) ? 1.0F : SoulJar.isWither(stack) ? 2.0F : SoulJar.isCairn(stack) ? 3.0F : SoulJar.isMossy(stack) ? 4.0F : 0.0F);
+                    (stack, world, living, seed) -> SoulJar.isDrowned(stack) ? 1.0F
+                            : SoulJar.isWither(stack) ? 2.0F
+                                    : SoulJar.isCairn(stack) ? 3.0F : SoulJar.isMossy(stack) ? 4.0F : 0.0F);
             ItemProperties.register(ModItems.TAGLOCK_KIT.get(), new ResourceLocation("tagged"),
                     (stack, world, living, seed) -> TaglockKit.hasEntity(stack) ? 1.0F : 0.0F);
             ItemProperties.register(ModItems.WAYSTONE.get(), new ResourceLocation("store"),
                     (stack, world, living, seed) -> WaystoneItem.hasBlock(stack) ? 1.0F : 0.0F);
             ItemProperties.register(ModItems.TRANSFER_SCROLL.get(), new ResourceLocation("signed"),
                     (stack, world, living, seed) -> TransferScroll.hasSummon(stack) ? 1.0F : 0.0F);
-            ItemProperties.register(ModItems.ARCA_COMPASS.get(), new ResourceLocation("angle")
-                    , new CompassItemPropertyFunction((p_234992_, p_234993_, p_234994_) -> {
+            ItemProperties.register(ModItems.ARCA_COMPASS.get(), new ResourceLocation("angle"),
+                    new CompassItemPropertyFunction((p_234992_, p_234993_, p_234994_) -> {
                         return ArcaCompassItem.getArcaPosition(p_234993_.getOrCreateTag());
                     }));
             ItemProperties.register(ModItems.HUNTERS_BOW.get(), new ResourceLocation("pull"),
@@ -116,37 +118,56 @@ public class ClientInitEvents {
                         if (living == null) {
                             return 0.0F;
                         } else {
-                            return living.getUseItem() != stack ? 0.0F : (float)(stack.getUseDuration() - living.getUseItemRemainingTicks()) / 20;
+                            return living.getUseItem() != stack ? 0.0F
+                                    : (float) (stack.getItem().getUseDuration(stack, living)
+                                            - living.getUseItemRemainingTicks()) / 20;
                         }
                     });
-            ItemProperties.register(ModItems.HUNTERS_BOW.get(), new ResourceLocation("pulling")
-                    , (stack, world, living, seed) -> living != null && living.isUsingItem() && living.getUseItem() == stack ? 1.0F : 0.0F);
-            /*ItemProperties.register(ModItems.REVOLVER_CROSSBOW.get(), new ResourceLocation("pull")
-                    , (stack, world, living, seed) -> {
-                if (living == null) {
-                    return 0.0F;
-                } else {
-                    return RevolverCrossbowItem.isCharged(stack) ? 0.0F : (float)(stack.getUseDuration() - living.getUseItemRemainingTicks()) / (float)RevolverCrossbowItem.getChargeDuration(stack);
-                }
-            });
-            ItemProperties.register(ModItems.REVOLVER_CROSSBOW.get(), new ResourceLocation("pulling")
-                    , (stack, world, living, seed) -> living != null && living.isUsingItem() && living.getUseItem() == stack && !RevolverCrossbowItem.isCharged(stack) ? 1.0F : 0.0F);
-            ItemProperties.register(ModItems.REVOLVER_CROSSBOW.get(), new ResourceLocation("charged")
-                    , (stack, world, living, seed) -> RevolverCrossbowItem.isCharged(stack) ? 1.0F : 0.0F);
-            ItemProperties.register(ModItems.REVOLVER_CROSSBOW.get(), new ResourceLocation("firework")
-                    , (stack, world, living, seed) -> RevolverCrossbowItem.isCharged(stack) && RevolverCrossbowItem.containsChargedProjectile(stack, Items.FIREWORK_ROCKET) ? 1.0F : 0.0F);*/
-            ItemProperties.register(ModItems.CALL_FOCUS.get(), new ResourceLocation("active")
-                    , (stack, world, living, seed) -> CallFocus.hasSummon(stack) ? 1.0F : 0.0F);
-            ItemProperties.register(ModItems.TROOP_FOCUS.get(), new ResourceLocation("active")
-                    , (stack, world, living, seed) -> TroopFocus.hasSummonType(stack) ? 1.0F : 0.0F);
-            ItemProperties.register(ModItems.RECALL_FOCUS.get(), new ResourceLocation("active")
-                    , (stack, world, living, seed) -> RecallFocus.hasRecall(stack) ? 1.0F : 0.0F);
-            ItemProperties.register(ModItems.INFERNAL_TOME.get(), new ResourceLocation("active")
-                    , (stack, world, living, seed) -> living != null && living.isUsingItem() && (living.getUseItem() == stack || InfernalTome.isChanting(stack)) ? 1.0F : 0.0F);
-            ItemProperties.register(ModItems.OMINOUS_CHARM.get(), new ResourceLocation("active")
-                    , (stack, world, living, seed) -> OminousCharmItem.hasOmen(stack) ? 1.0F : 0.0F);
-            ItemProperties.register(ModItems.COMMAND_HORN.get(), new ResourceLocation("mode")
-                    , (stack, world, living, seed) -> {
+            ItemProperties.register(ModItems.HUNTERS_BOW.get(), new ResourceLocation("pulling"), (stack, world, living,
+                    seed) -> living != null && living.isUsingItem() && living.getUseItem() == stack ? 1.0F : 0.0F);
+            /*
+             * ItemProperties.register(ModItems.REVOLVER_CROSSBOW.get(), new
+             * ResourceLocation("pull")
+             * , (stack, world, living, seed) -> {
+             * if (living == null) {
+             * return 0.0F;
+             * } else return RevolverCrossbowItem.isCharged(stack) ? 0.0F :
+             * (float)(stack.getItem().getUseDuration(stack, living) -
+             * living.getUseItemRemainingTicks()) /
+             * (float)RevolverCrossbowItem.getChargeDuration(stack);
+             * }
+             * });
+             * ItemProperties.register(ModItems.REVOLVER_CROSSBOW.get(), new
+             * ResourceLocation("pulling")
+             * , (stack, world, living, seed) -> living != null && living.isUsingItem() &&
+             * living.getUseItem() == stack && !RevolverCrossbowItem.isCharged(stack) ? 1.0F
+             * : 0.0F);
+             * ItemProperties.register(ModItems.REVOLVER_CROSSBOW.get(), new
+             * ResourceLocation("charged")
+             * , (stack, world, living, seed) -> RevolverCrossbowItem.isCharged(stack) ?
+             * 1.0F : 0.0F);
+             * ItemProperties.register(ModItems.REVOLVER_CROSSBOW.get(), new
+             * ResourceLocation("firework")
+             * , (stack, world, living, seed) -> RevolverCrossbowItem.isCharged(stack) &&
+             * RevolverCrossbowItem.containsChargedProjectile(stack, Items.FIREWORK_ROCKET)
+             * ? 1.0F : 0.0F);
+             */
+            ItemProperties.register(ModItems.CALL_FOCUS.get(), new ResourceLocation("active"),
+                    (stack, world, living, seed) -> CallFocus.hasSummon(stack) ? 1.0F : 0.0F);
+            ItemProperties.register(ModItems.TROOP_FOCUS.get(), new ResourceLocation("active"),
+                    (stack, world, living, seed) -> TroopFocus.hasSummonType(stack) ? 1.0F : 0.0F);
+            ItemProperties.register(ModItems.RECALL_FOCUS.get(), new ResourceLocation("active"),
+                    (stack, world, living, seed) -> RecallFocus.hasRecall(stack) ? 1.0F : 0.0F);
+            ItemProperties
+                    .register(ModItems.INFERNAL_TOME.get(), new ResourceLocation("active"),
+                            (stack, world, living,
+                                    seed) -> living != null && living.isUsingItem()
+                                            && (living.getUseItem() == stack || InfernalTome.isChanting(stack)) ? 1.0F
+                                                    : 0.0F);
+            ItemProperties.register(ModItems.OMINOUS_CHARM.get(), new ResourceLocation("active"),
+                    (stack, world, living, seed) -> OminousCharmItem.hasOmen(stack) ? 1.0F : 0.0F);
+            ItemProperties.register(ModItems.COMMAND_HORN.get(), new ResourceLocation("mode"),
+                    (stack, world, living, seed) -> {
                         if (CommandHorn.isWander(stack)) {
                             return 1.0F;
                         } else if (CommandHorn.isStandBy(stack)) {
@@ -158,44 +179,48 @@ public class ClientInitEvents {
                         }
                         return 0.0F;
                     });
-            ItemProperties.register(ModItems.ESOTERIC_TESSERACT.get(), new ResourceLocation("active")
-                    , (stack, world, living, seed) -> EsotericTesseract.getServantsInTesseract(stack) > 0 ? 1.0F : 0.0F);
+            ItemProperties.register(ModItems.ESOTERIC_TESSERACT.get(), new ResourceLocation("active"),
+                    (stack, world, living, seed) -> EsotericTesseract.getServantsInTesseract(stack) > 0 ? 1.0F : 0.0F);
         });
     }
 
-    /*private static void copyOldArtIfMissing() {
-        File dir = new File(".", "resourcepacks");
-        File target = new File(dir, "Goety Old Textures.zip");
-
-        if(!target.exists())
-            try {
-                dir.mkdirs();
-                InputStream in = Goety.class.getResourceAsStream("/assets/goety/old_textures.zip");
-                FileOutputStream out = new FileOutputStream(target);
-
-                byte[] buf = new byte[16384];
-                int len;
-                if (in != null) {
-                    while ((len = in.read(buf)) > 0)
-                        out.write(buf, 0, len);
-
-                    in.close();
-                }
-                out.close();
-            } catch (IOException ignored) {
-
-            }
-    }*/
+    /*
+     * private static void copyOldArtIfMissing() {
+     * File dir = new File(".", "resourcepacks");
+     * File target = new File(dir, "Goety Old Textures.zip");
+     * 
+     * if(!target.exists())
+     * try {
+     * dir.mkdirs();
+     * InputStream in =
+     * Goety.class.getResourceAsStream("/assets/goety/old_textures.zip");
+     * FileOutputStream out = new FileOutputStream(target);
+     * 
+     * byte[] buf = new byte[16384];
+     * int len;
+     * if (in != null) {
+     * while ((len = in.read(buf)) > 0)
+     * out.write(buf, 0, len);
+     * 
+     * in.close();
+     * }
+     * out.close();
+     * } catch (IOException ignored) {
+     * 
+     * }
+     * }
+     */
 
     /**
-     * Ripped from @TeamTwilight's AddLayer codes: <a href="https://github.com/TeamTwilight/twilightforest/blob/1.20.x/src/main/java/twilightforest/client/TFClientSetup.java">...</a>
+     * Ripped from @TeamTwilight's AddLayer codes: <a href=
+     * "https://github.com/TeamTwilight/twilightforest/blob/1.20.x/src/main/java/twilightforest/client/TFClientSetup.java">...</a>
      */
     @Nullable
     private static Field fieldEntityRenderer;
 
     @SubscribeEvent
     @SuppressWarnings("unchecked")
-    public static void addLayers(EntityRenderersEvent.AddLayers event){
+    public static void addLayers(EntityRenderersEvent.AddLayers event) {
         if (fieldEntityRenderer == null) {
             try {
                 fieldEntityRenderer = EntityRenderersEvent.AddLayers.class.getDeclaredField("renderers");
@@ -212,20 +237,23 @@ public class ClientInitEvents {
                 }
             });
             try {
-                ((Map<EntityType<?>, EntityRenderer<?>>) fieldEntityRenderer.get(event)).values().stream().
-                        filter(LivingEntityRenderer.class::isInstance).map(LivingEntityRenderer.class::cast).forEach(ClientInitEvents::addLivingLayer);
+                ((Map<EntityType<?>, EntityRenderer<?>>) fieldEntityRenderer.get(event)).values().stream()
+                        .filter(LivingEntityRenderer.class::isInstance).map(LivingEntityRenderer.class::cast)
+                        .forEach(ClientInitEvents::addLivingLayer);
             } catch (IllegalAccessException e) {
                 e.printStackTrace();
             }
         }
     }
 
-    private static <T extends LivingEntity, M extends EntityModel<T>> void addLivingLayer(LivingEntityRenderer<T, M> renderer) {
+    private static <T extends LivingEntity, M extends EntityModel<T>> void addLivingLayer(
+            LivingEntityRenderer<T, M> renderer) {
         renderer.addLayer(new FreezeLayer<>(renderer));
         renderer.addLayer(new MagicShieldLayer<>(renderer));
     }
 
-    private static void addPlayerLayers(LivingEntityRenderer<Player, EntityModel<Player>> renderer, EntityModelSet entityModelSet) {
+    private static void addPlayerLayers(LivingEntityRenderer<Player, EntityModel<Player>> renderer,
+            EntityModelSet entityModelSet) {
         renderer.addLayer(new FreezeLayer<>(renderer));
         renderer.addLayer(new MagicShieldLayer<>(renderer));
         renderer.addLayer(new PlayerSoulArmorLayer<>(renderer, entityModelSet));
@@ -234,7 +262,7 @@ public class ClientInitEvents {
     }
 
     @SubscribeEvent
-    public static void registerGuiLayers(final RegisterGuiLayersEvent event){
+    public static void registerGuiLayers(final RegisterGuiLayersEvent event) {
         event.registerAbove(VanillaGuiLayers.TAB_LIST, DreadOverlay.LAYER_ID, DreadOverlay.LAYER);
         event.registerAbove(VanillaGuiLayers.HOTBAR, SoulEnergyGui.LAYER_ID, SoulEnergyGui.LAYER);
         event.registerAbove(VanillaGuiLayers.HOTBAR, RavagerRoarGui.LAYER_ID, RavagerRoarGui.LAYER);
@@ -247,7 +275,8 @@ public class ClientInitEvents {
         event.registerLayerDefinition(ModBlockLayer.TALL_SKULL, TallSkullModel::createBodyLayer);
         event.registerLayerDefinition(ModBlockLayer.REDSTONE_GOLEM_SKULL, RedstoneGolemSkullModel::createBodyLayer);
         event.registerLayerDefinition(ModBlockLayer.GRAVE_GOLEM_SKULL, GraveGolemSkullModel::createBodyLayer);
-        event.registerLayerDefinition(ModBlockLayer.REDSTONE_MONSTROSITY_HEAD, RedstoneMonstrosityHeadModel::createBodyLayer);
+        event.registerLayerDefinition(ModBlockLayer.REDSTONE_MONSTROSITY_HEAD,
+                RedstoneMonstrosityHeadModel::createBodyLayer);
         event.registerLayerDefinition(ModBlockLayer.LOFTY_CHEST, LoftyChestRenderer::createBodyLayer);
         event.registerLayerDefinition(ModBlockLayer.BLACK_CRYSTAL, BlackCrystalRenderer::createBodyLayer);
         event.registerLayerDefinition(ModModelLayer.SPIKE, SpikeModel::createBodyLayer);
@@ -288,7 +317,8 @@ public class ClientInitEvents {
         event.registerLayerDefinition(ModModelLayer.CRONE, CroneModel::createBodyLayer);
         event.registerLayerDefinition(ModModelLayer.MOD_WITCH, ModWitchModel::createBodyLayer);
         event.registerLayerDefinition(ModModelLayer.APOSTLE, ApostleModel::createBodyLayer);
-        event.registerLayerDefinition(ModModelLayer.APOSTLE_SHADE, ApostleShadeRenderer.ApostleShadeModel::createBodyLayer);
+        event.registerLayerDefinition(ModModelLayer.APOSTLE_SHADE,
+                ApostleShadeRenderer.ApostleShadeModel::createBodyLayer);
         event.registerLayerDefinition(ModModelLayer.ZOMBIE_VILLAGER_SERVANT, VillagerServantModel::createBodyLayer);
         event.registerLayerDefinition(ModModelLayer.SKELETON_VILLAGER_SERVANT, SkeletonVillagerModel::createBodyLayer);
         event.registerLayerDefinition(ModModelLayer.BOUND_ILLAGER, BoundIllagerModel::createBodyLayer);
@@ -381,7 +411,8 @@ public class ClientInitEvents {
         event.registerLayerDefinition(ModModelLayer.NECRO_SET, NecroCapeModel::createNecromancerLayer);
         event.registerLayerDefinition(ModModelLayer.NAMELESS_CROWN, NecroCapeModel::createBigHeadLayer);
         event.registerLayerDefinition(ModModelLayer.NAMELESS_SET, NecroCapeModel::createNamelessLayer);
-        event.registerLayerDefinition(ModModelLayer.LICH, () -> LayerDefinition.create(LichModeModel.createMesh(CubeDeformation.NONE), 64, 64));
+        event.registerLayerDefinition(ModModelLayer.LICH,
+                () -> LayerDefinition.create(LichModeModel.createMesh(CubeDeformation.NONE), 64, 64));
         event.registerLayerDefinition(ModModelLayer.GLOVE, GloveModel::createBodyLayer);
         event.registerLayerDefinition(ModModelLayer.FOCUS_BAG, MiscCuriosModel::createFocusBagLayer);
         event.registerLayerDefinition(ModModelLayer.BREW_BAG, MiscCuriosModel::createBrewBagLayer);
@@ -391,29 +422,38 @@ public class ClientInitEvents {
         event.registerLayerDefinition(ModModelLayer.MONOCLE, MiscCuriosModel::createMonocleLayer);
         event.registerLayerDefinition(ModModelLayer.VILLAGER_ARMOR_INNER, VillagerArmorModel::createInnerArmorLayer);
         event.registerLayerDefinition(ModModelLayer.VILLAGER_ARMOR_OUTER, VillagerArmorModel::createOuterArmorLayer);
-        event.registerLayerDefinition(ModModelLayer.CURSED_KNIGHT_ARMOR_INNER, CursedKnightArmorModel::createInnerLayer);
-        event.registerLayerDefinition(ModModelLayer.CURSED_KNIGHT_ARMOR_OUTER, CursedKnightArmorModel::createOuterLayer);
-        event.registerLayerDefinition(ModModelLayer.CURSED_PALADIN_ARMOR_INNER, CursedPaladinArmorModel::createInnerLayer);
-        event.registerLayerDefinition(ModModelLayer.CURSED_PALADIN_ARMOR_OUTER, CursedPaladinArmorModel::createOuterLayer);
+        event.registerLayerDefinition(ModModelLayer.CURSED_KNIGHT_ARMOR_INNER,
+                CursedKnightArmorModel::createInnerLayer);
+        event.registerLayerDefinition(ModModelLayer.CURSED_KNIGHT_ARMOR_OUTER,
+                CursedKnightArmorModel::createOuterLayer);
+        event.registerLayerDefinition(ModModelLayer.CURSED_PALADIN_ARMOR_INNER,
+                CursedPaladinArmorModel::createInnerLayer);
+        event.registerLayerDefinition(ModModelLayer.CURSED_PALADIN_ARMOR_OUTER,
+                CursedPaladinArmorModel::createOuterLayer);
         event.registerLayerDefinition(ModModelLayer.BLACK_IRON_ARMOR_INNER, BlackIronArmorModel::createInnerLayer);
         event.registerLayerDefinition(ModModelLayer.BLACK_IRON_ARMOR_OUTER, BlackIronArmorModel::createOuterLayer);
         event.registerLayerDefinition(ModModelLayer.DARK_ARMOR_INNER, DarkArmorModel::createInnerLayer);
         event.registerLayerDefinition(ModModelLayer.DARK_ARMOR_OUTER, DarkArmorModel::createOuterLayer);
-        event.registerLayerDefinition(ModModelLayer.SOUL_SHIELD, () -> LayerDefinition.create(PlayerModel.createMesh(new CubeDeformation(0.5F), false), 64, 64));
-        event.registerLayerDefinition(ModModelLayer.SOUL_ARMOR, () -> LayerDefinition.create(PlayerModel.createMesh(new CubeDeformation(0.3F), false), 64, 64));
+        event.registerLayerDefinition(ModModelLayer.SOUL_SHIELD,
+                () -> LayerDefinition.create(PlayerModel.createMesh(new CubeDeformation(0.5F), false), 64, 64));
+        event.registerLayerDefinition(ModModelLayer.SOUL_ARMOR,
+                () -> LayerDefinition.create(PlayerModel.createMesh(new CubeDeformation(0.3F), false), 64, 64));
         event.registerLayerDefinition(ModModelLayer.NAMELESS_STAFF, NamelessStaffModel::createBodyLayer);
         event.registerLayerDefinition(ModModelLayer.HAUNTED_ARMOR_STAND, HauntedArmorStandModel::createBodyLayer);
-        event.registerLayerDefinition(ModModelLayer.HAS_INNER, () -> HauntedArmorStandArmorModel.createBodyLayer(new CubeDeformation(0.5F)));
-        event.registerLayerDefinition(ModModelLayer.HAS_OUTER, () -> HauntedArmorStandArmorModel.createBodyLayer(new CubeDeformation(1.0F)));
+        event.registerLayerDefinition(ModModelLayer.HAS_INNER,
+                () -> HauntedArmorStandArmorModel.createBodyLayer(new CubeDeformation(0.5F)));
+        event.registerLayerDefinition(ModModelLayer.HAS_OUTER,
+                () -> HauntedArmorStandArmorModel.createBodyLayer(new CubeDeformation(1.0F)));
         event.registerLayerDefinition(ModModelLayer.SMALL_PAINTING, HauntedPaintingModel::createSmallFrameLayer);
         event.registerLayerDefinition(ModModelLayer.MEDIUM_PAINTING, HauntedPaintingModel::createMediumFrameLayer);
         event.registerLayerDefinition(ModModelLayer.LARGE_PAINTING, HauntedPaintingModel::createLargeFrameLayer);
         event.registerLayerDefinition(ModModelLayer.TALL_PAINTING, HauntedPaintingModel::createTallFrameLayer);
         event.registerLayerDefinition(ModModelLayer.WIDE_PAINTING, HauntedPaintingModel::createWideFrameLayer);
 
-        for(ModBoat.Type boatType : ModBoat.Type.values()) {
+        for (ModBoat.Type boatType : ModBoat.Type.values()) {
             event.registerLayerDefinition(ModBoatRenderer.createBoatModelName(boatType), BoatModel::createBodyModel);
-            event.registerLayerDefinition(ModBoatRenderer.createChestBoatModelName(boatType), ChestBoatModel::createBodyModel);
+            event.registerLayerDefinition(ModBoatRenderer.createChestBoatModelName(boatType),
+                    ChestBoatModel::createBodyModel);
         }
     }
 
@@ -457,9 +497,12 @@ public class ClientInitEvents {
         event.registerBlockEntityRenderer(ModBlockEntities.NIGHT_BEACON.get(), NightBeaconRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntities.VOID_BARREL.get(), ModBlockEntityRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntities.TALL_SKULL.get(), TallSkullBlockEntityRenderer::new);
-        event.registerBlockEntityRenderer(ModBlockEntities.REDSTONE_GOLEM_SKULL.get(), RedstoneGolemSkullBlockEntityRenderer::new);
-        event.registerBlockEntityRenderer(ModBlockEntities.GRAVE_GOLEM_SKULL.get(), GraveGolemSkullBlockEntityRenderer::new);
-        event.registerBlockEntityRenderer(ModBlockEntities.REDSTONE_MONSTROSITY_HEAD.get(), RedstoneMonstrosityHeadBlockEntityRenderer::new);
+        event.registerBlockEntityRenderer(ModBlockEntities.REDSTONE_GOLEM_SKULL.get(),
+                RedstoneGolemSkullBlockEntityRenderer::new);
+        event.registerBlockEntityRenderer(ModBlockEntities.GRAVE_GOLEM_SKULL.get(),
+                GraveGolemSkullBlockEntityRenderer::new);
+        event.registerBlockEntityRenderer(ModBlockEntities.REDSTONE_MONSTROSITY_HEAD.get(),
+                RedstoneMonstrosityHeadBlockEntityRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntities.MOD_CHEST.get(), ModChestRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntities.MOD_TRAPPED_CHEST.get(), ModChestRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntities.CRYPT_CHEST.get(), CryptChestRenderer::new);
@@ -467,12 +510,15 @@ public class ClientInitEvents {
         event.registerBlockEntityRenderer(ModBlockEntities.SIGN_BLOCK_ENTITIES.get(), SignRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntities.HANGING_SIGN_BLOCK_ENTITIES.get(), HangingSignRenderer::new);
         event.registerEntityRenderer(ModEntityType.NETHER_METEOR.get(), NetherMeteorRenderer::new);
-        event.registerEntityRenderer(ModEntityType.MOD_FIREBALL.get(), (rendererManager) -> new ModFireballRenderer<>(rendererManager, 0.75F, true));
-        event.registerEntityRenderer(ModEntityType.LAVABALL.get(), (rendererManager) -> new ModFireballRenderer<>(rendererManager, 3.0F, true));
+        event.registerEntityRenderer(ModEntityType.MOD_FIREBALL.get(),
+                (rendererManager) -> new ModFireballRenderer<>(rendererManager, 0.75F, true));
+        event.registerEntityRenderer(ModEntityType.LAVABALL.get(),
+                (rendererManager) -> new ModFireballRenderer<>(rendererManager, 3.0F, true));
         event.registerEntityRenderer(ModEntityType.HELL_BOLT.get(), HellBoltRenderer::new);
         event.registerEntityRenderer(ModEntityType.HELL_BLAST.get(), HellBlastRenderer::new);
         event.registerEntityRenderer(ModEntityType.HELL_CHANT.get(), HellChantRenderer::new);
-        event.registerEntityRenderer(ModEntityType.SWORD.get(), (rendererManager) -> new SwordProjectileRenderer<>(rendererManager, itemRenderer, 1.25F, true));
+        event.registerEntityRenderer(ModEntityType.SWORD.get(),
+                (rendererManager) -> new SwordProjectileRenderer<>(rendererManager, itemRenderer, 1.25F, true));
         event.registerEntityRenderer(ModEntityType.ICE_SPIKE.get(), IceSpikeRenderer::new);
         event.registerEntityRenderer(ModEntityType.ICE_SPEAR.get(), IceSpearRenderer::new);
         event.registerEntityRenderer(ModEntityType.ICE_STORM.get(), IceStormRenderer::new);
@@ -481,7 +527,8 @@ public class ClientInitEvents {
         event.registerEntityRenderer(ModEntityType.DEATH_ARROW.get(), DeathArrowRenderer::new);
         event.registerEntityRenderer(ModEntityType.HARPOON.get(), HarpoonRenderer::new);
         event.registerEntityRenderer(ModEntityType.POISON_QUILL.get(), PoisonQuillRenderer::new);
-        event.registerEntityRenderer(ModEntityType.BONE_SHARD.get(), (rendererManager) -> new BoneShardRenderer<>(rendererManager, itemRenderer));
+        event.registerEntityRenderer(ModEntityType.BONE_SHARD.get(),
+                (rendererManager) -> new BoneShardRenderer<>(rendererManager, itemRenderer));
         event.registerEntityRenderer(ModEntityType.BREW.get(), ThrownItemRenderer::new);
         event.registerEntityRenderer(ModEntityType.SCYTHE.get(), ScytheSlashRenderer::new);
         event.registerEntityRenderer(ModEntityType.MOD_DRAGON_FIREBALL.get(), ModDragonFireballRenderer::new);
@@ -502,9 +549,12 @@ public class ClientInitEvents {
         event.registerEntityRenderer(ModEntityType.FANG.get(), FangsRenderer::new);
         event.registerEntityRenderer(ModEntityType.SPIKE.get(), SpikeRenderer::new);
         event.registerEntityRenderer(ModEntityType.ILL_BOMB.get(), IllBombRenderer::new);
-        event.registerEntityRenderer(ModEntityType.CRYPTIC_EYE.get(), (rendererManager) -> new ThrownItemRenderer<>(rendererManager, 1.0F, true));
-        event.registerEntityRenderer(ModEntityType.VOID_EYE.get(), (rendererManager) -> new ThrownItemRenderer<>(rendererManager, 1.0F, true));
-        event.registerEntityRenderer(ModEntityType.FLYING_ITEM.get(), (rendererManager) -> new ThrownItemRenderer<>(rendererManager, 1.0F, true));
+        event.registerEntityRenderer(ModEntityType.CRYPTIC_EYE.get(),
+                (rendererManager) -> new ThrownItemRenderer<>(rendererManager, 1.0F, true));
+        event.registerEntityRenderer(ModEntityType.VOID_EYE.get(),
+                (rendererManager) -> new ThrownItemRenderer<>(rendererManager, 1.0F, true));
+        event.registerEntityRenderer(ModEntityType.FLYING_ITEM.get(),
+                (rendererManager) -> new ThrownItemRenderer<>(rendererManager, 1.0F, true));
         event.registerEntityRenderer(ModEntityType.ELECTRO_ORB.get(), ElectroOrbRenderer::new);
         event.registerEntityRenderer(ModEntityType.MINI_ELECTRO_ORB.get(), MiniElectroOrbRenderer::new);
         event.registerEntityRenderer(ModEntityType.BOUNCY_BUBBLE.get(), BouncyBubbleRenderer::new);
@@ -569,7 +619,8 @@ public class ClientInitEvents {
         event.registerEntityRenderer(ModEntityType.MAVERICK.get(), MaverickRenderer::new);
         event.registerEntityRenderer(ModEntityType.CRONE.get(), CroneRenderer::new);
         event.registerEntityRenderer(ModEntityType.APOSTLE.get(), ApostleRenderer::new);
-        event.registerEntityRenderer(ModEntityType.SKELETON_VILLAGER_SERVANT.get(), SkeletonVillagerServantRenderer::new);
+        event.registerEntityRenderer(ModEntityType.SKELETON_VILLAGER_SERVANT.get(),
+                SkeletonVillagerServantRenderer::new);
         event.registerEntityRenderer(ModEntityType.ZPIGLIN_SERVANT.get(), ZPiglinRenderer::new);
         event.registerEntityRenderer(ModEntityType.ZPIGLIN_BRUTE_SERVANT.get(), ZPiglinRenderer::new);
         event.registerEntityRenderer(ModEntityType.MALGHAST.get(), MalghastRenderer::new);
@@ -610,7 +661,8 @@ public class ClientInitEvents {
         event.registerEntityRenderer(ModEntityType.MOSSY_SKELETON_SERVANT.get(), SkeletonServantRenderer::new);
         event.registerEntityRenderer(ModEntityType.SUNKEN_SKELETON_SERVANT.get(), SunkenSkeletonServantRenderer::new);
         event.registerEntityRenderer(ModEntityType.NECROMANCER_SERVANT.get(), NecromancerRenderer::new);
-        event.registerEntityRenderer(ModEntityType.CAIRN_NECROMANCER_SERVANT.get(), AbstractCairnNecromancerRenderer::new);
+        event.registerEntityRenderer(ModEntityType.CAIRN_NECROMANCER_SERVANT.get(),
+                AbstractCairnNecromancerRenderer::new);
         event.registerEntityRenderer(ModEntityType.MOSSY_NECROMANCER_SERVANT.get(), MossyNecromancerRenderer::new);
         event.registerEntityRenderer(ModEntityType.DROWNED_NECROMANCER_SERVANT.get(), DrownedNecromancerRenderer::new);
         event.registerEntityRenderer(ModEntityType.WITHER_NECROMANCER_SERVANT.get(), WitherNecromancerRenderer::new);
@@ -630,7 +682,8 @@ public class ClientInitEvents {
         event.registerEntityRenderer(ModEntityType.BOUND_STORM_CASTER.get(), BoundStormCasterRenderer::new);
         event.registerEntityRenderer(ModEntityType.HAUNTED_ARMOR_SERVANT.get(), HauntedArmorRenderer::new);
         event.registerEntityRenderer(ModEntityType.HAUNTED_SKULL.get(), HauntedSkullRenderer::new);
-        event.registerEntityRenderer(ModEntityType.DOPPELGANGER.get(), (render) -> new DoppelgangerRenderer(render, false));
+        event.registerEntityRenderer(ModEntityType.DOPPELGANGER.get(),
+                (render) -> new DoppelgangerRenderer(render, false));
         event.registerEntityRenderer(ModEntityType.MINI_GHAST.get(), MiniGhastRenderer::new);
         event.registerEntityRenderer(ModEntityType.GHAST_SERVANT.get(), GhastServantRenderer::new);
         event.registerEntityRenderer(ModEntityType.BLAZE_SERVANT.get(), BlazeServantRenderer::new);
@@ -706,7 +759,8 @@ public class ClientInitEvents {
         event.registerEntityRenderer(ModEntityType.PREACHER.get(), PreacherRenderer::new);
         event.registerEntityRenderer(ModEntityType.MINISTER.get(), MinisterRenderer::new);
         event.registerEntityRenderer(ModEntityType.HOSTILE_REDSTONE_GOLEM.get(), HostileRedstoneGolemRenderer::new);
-        event.registerEntityRenderer(ModEntityType.HOSTILE_REDSTONE_MONSTROSITY.get(), RedstoneMonstrosityRenderer::new);
+        event.registerEntityRenderer(ModEntityType.HOSTILE_REDSTONE_MONSTROSITY.get(),
+                RedstoneMonstrosityRenderer::new);
         event.registerEntityRenderer(ModEntityType.VIZIER.get(), VizierRenderer::new);
         event.registerEntityRenderer(ModEntityType.VIZIER_CLONE.get(), VizierCloneRenderer::new);
         event.registerEntityRenderer(ModEntityType.IRK.get(), IrkRenderer::new);
@@ -743,61 +797,73 @@ public class ClientInitEvents {
     }
 
     @SubscribeEvent
-    public static void colorBlock(RegisterColorHandlersEvent.Block event){
+    public static void colorBlock(RegisterColorHandlersEvent.Block event) {
         event.register(
-                (state, lightReader, pos, color) ->
-                        lightReader != null && pos != null ?
-                                Minecraft.getInstance().level != null
-                                && Minecraft.getInstance().level.getBlockEntity(pos) instanceof BrewCauldronBlockEntity cauldronBlock
-                                        ? cauldronBlock.getColor() :
-                                BiomeColors.getAverageWaterColor(lightReader, pos) : -1, ModBlocks.BREWING_CAULDRON.get());
+                (state, lightReader, pos,
+                        color) -> lightReader != null && pos != null ? Minecraft.getInstance().level != null
+                                && Minecraft.getInstance().level
+                                        .getBlockEntity(pos) instanceof BrewCauldronBlockEntity cauldronBlock
+                                                ? cauldronBlock.getColor()
+                                                : BiomeColors.getAverageWaterColor(lightReader, pos)
+                                : -1,
+                ModBlocks.BREWING_CAULDRON.get());
         event.register(
-                (state, lightReader, pos, color) ->
-                        lightReader != null && pos != null ?
-                                BiomeColors.getAverageWaterColor(lightReader, pos) :
-                                -1, ModBlocks.HAUNTED_JUG.get());
+                (state, lightReader, pos, color) -> lightReader != null && pos != null
+                        ? BiomeColors.getAverageWaterColor(lightReader, pos)
+                        : -1,
+                ModBlocks.HAUNTED_JUG.get());
         event.register(
-                (state, lightReader, pos, color) ->
-                        lightReader != null && pos != null ?
-                                BiomeColors.getAverageFoliageColor(lightReader, pos) :
-                                FoliageColor.getDefaultColor(), ModBlocks.HARDENED_LEAVES.get(), ModBlocks.ROTTEN_LEAVES.get(), ModBlocks.WINDSWEPT_LEAVES.get(), ModBlocks.PINE_LEAVES.get());
+                (state, lightReader, pos, color) -> lightReader != null && pos != null
+                        ? BiomeColors.getAverageFoliageColor(lightReader, pos)
+                        : FoliageColor.getDefaultColor(),
+                ModBlocks.HARDENED_LEAVES.get(), ModBlocks.ROTTEN_LEAVES.get(), ModBlocks.WINDSWEPT_LEAVES.get(),
+                ModBlocks.PINE_LEAVES.get());
     }
 
     @SubscribeEvent
-    public static void colorItem(RegisterColorHandlersEvent.Item event){
+    public static void colorItem(RegisterColorHandlersEvent.Item event) {
         event.register((itemStack, i) -> i > 0 ? -1 : PotionUtils.getColor(itemStack),
-                ModItems.BREW.get(), ModItems.SPLASH_BREW.get(), ModItems.LINGERING_BREW.get(), ModItems.GAS_BREW.get());
+                ModItems.BREW.get(), ModItems.SPLASH_BREW.get(), ModItems.LINGERING_BREW.get(),
+                ModItems.GAS_BREW.get());
         event.register((itemStack, i) -> 3694022, ModBlocks.HAUNTED_JUG.get());
         event.register((itemStack, i) -> {
-            BlockState blockstate = ((BlockItem)itemStack.getItem()).getBlock().defaultBlockState();
+            BlockState blockstate = ((BlockItem) itemStack.getItem()).getBlock().defaultBlockState();
             return event.getBlockColors().getColor(blockstate, null, null, i);
-        }, ModBlocks.HARDENED_LEAVES.get(), ModBlocks.ROTTEN_LEAVES.get(), ModBlocks.WINDSWEPT_LEAVES.get(), ModBlocks.PINE_LEAVES.get());
+        }, ModBlocks.HARDENED_LEAVES.get(), ModBlocks.ROTTEN_LEAVES.get(), ModBlocks.WINDSWEPT_LEAVES.get(),
+                ModBlocks.PINE_LEAVES.get());
     }
 
     @SubscribeEvent
     public static void modelBake(ModelEvent.ModifyBakingResult event) {
-        List<Map.Entry<ResourceLocation, BakedModel>> models =  event.getModels().entrySet().stream()
+        List<Map.Entry<ResourceLocation, BakedModel>> models = event.getModels().entrySet().stream()
                 .filter(entry -> entry.getKey().getNamespace().equals(Goety.MOD_ID)
                         && entry.getKey().getPath().contains("leaves")
                         && !entry.getKey().getPath().contains("mcd")
-                        && !entry.getKey().getPath().contains("chorus")).toList();
+                        && !entry.getKey().getPath().contains("chorus"))
+                .toList();
 
         models.forEach(entry -> event.getModels().put(entry.getKey(), new BakedLeavesModel(entry.getValue())));
     }
 
     @SubscribeEvent
-    public static void registerModels(ModelEvent.RegisterAdditional event){
+    public static void registerModels(ModelEvent.RegisterAdditional event) {
         event.register(MagicShieldLayer.SHIELD);
     }
 
     @SubscribeEvent
-    public static void registerRecipeBookCategory(RegisterRecipeBookCategoriesEvent event){
-        event.registerRecipeCategoryFinder(ModRecipeSerializer.CURSED_INFUSER.get(), recipe -> RecipeBookCategories.UNKNOWN);
-        event.registerRecipeCategoryFinder(ModRecipeSerializer.SOUL_ABSORBER.get(), recipe -> RecipeBookCategories.UNKNOWN);
-        event.registerRecipeCategoryFinder(ModRecipeSerializer.RITUAL_TYPE.get(), recipe -> RecipeBookCategories.UNKNOWN);
-        event.registerRecipeCategoryFinder(ModRecipeSerializer.BRAZIER_TYPE.get(), recipe -> RecipeBookCategories.UNKNOWN);
-        event.registerRecipeCategoryFinder(ModRecipeSerializer.BREWING_TYPE.get(), recipe -> RecipeBookCategories.UNKNOWN);
-        event.registerRecipeCategoryFinder(ModRecipeSerializer.PULVERIZE_TYPE.get(), recipe -> RecipeBookCategories.UNKNOWN);
+    public static void registerRecipeBookCategory(RegisterRecipeBookCategoriesEvent event) {
+        event.registerRecipeCategoryFinder(ModRecipeSerializer.CURSED_INFUSER.get(),
+                recipe -> RecipeBookCategories.UNKNOWN);
+        event.registerRecipeCategoryFinder(ModRecipeSerializer.SOUL_ABSORBER.get(),
+                recipe -> RecipeBookCategories.UNKNOWN);
+        event.registerRecipeCategoryFinder(ModRecipeSerializer.RITUAL_TYPE.get(),
+                recipe -> RecipeBookCategories.UNKNOWN);
+        event.registerRecipeCategoryFinder(ModRecipeSerializer.BRAZIER_TYPE.get(),
+                recipe -> RecipeBookCategories.UNKNOWN);
+        event.registerRecipeCategoryFinder(ModRecipeSerializer.BREWING_TYPE.get(),
+                recipe -> RecipeBookCategories.UNKNOWN);
+        event.registerRecipeCategoryFinder(ModRecipeSerializer.PULVERIZE_TYPE.get(),
+                recipe -> RecipeBookCategories.UNKNOWN);
     }
 
     @SubscribeEvent

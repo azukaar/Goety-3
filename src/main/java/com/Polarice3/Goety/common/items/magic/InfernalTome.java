@@ -47,28 +47,28 @@ public class InfernalTome extends Item {
         super.onCraftedBy(pStack, pLevel, pPlayer);
     }
 
-    public static int getChantTimes(ItemStack pStack){
-        if (pStack.getTag() != null){
-            if (pStack.getTag().contains(CHANT_TIMES)){
+    public static int getChantTimes(ItemStack pStack) {
+        if (pStack.getTag() != null) {
+            if (pStack.getTag().contains(CHANT_TIMES)) {
                 return pStack.getTag().getInt(CHANT_TIMES);
             }
         }
         return 0;
     }
 
-    public static void setChantTimes(ItemStack pStack, int time){
-        if (pStack.getTag() != null){
+    public static void setChantTimes(ItemStack pStack, int time) {
+        if (pStack.getTag() != null) {
             pStack.getTag().putInt(CHANT_TIMES, time);
         }
     }
 
-    public static void increaseChantTimes(ItemStack pStack){
+    public static void increaseChantTimes(ItemStack pStack) {
         setChantTimes(pStack, getChantTimes(pStack) + 1);
     }
 
-    public static boolean isChanting(ItemStack pStack){
-        if (pStack.getTag() != null){
-            if (pStack.getTag().contains(CHANT_TIMES)){
+    public static boolean isChanting(ItemStack pStack) {
+        if (pStack.getTag() != null) {
+            if (pStack.getTag().contains(CHANT_TIMES)) {
                 return pStack.getTag().getInt(CHANT_TIMES) > 0;
             }
         }
@@ -79,13 +79,14 @@ public class InfernalTome extends Item {
     public void onUseTick(Level worldIn, LivingEntity livingEntityIn, ItemStack stack, int count) {
         super.onUseTick(worldIn, livingEntityIn, stack, count);
         if (stack.getItem() instanceof InfernalTome) {
-            int CastTime = stack.getUseDuration() - count;
+            int CastTime = stack.getUseDuration(livingEntityIn) - count;
             if (CastTime == 1) {
-                worldIn.playSound(null, livingEntityIn.getX(), livingEntityIn.getY(), livingEntityIn.getZ(), ModSounds.HERETIC_CHANT.get(), SoundSource.PLAYERS, 2.0F, 0.5F);
+                worldIn.playSound(null, livingEntityIn.getX(), livingEntityIn.getY(), livingEntityIn.getZ(),
+                        ModSounds.HERETIC_CHANT.get(), SoundSource.PLAYERS, 2.0F, 0.5F);
             }
             if (!worldIn.isClientSide) {
                 boolean nether = CuriosFinder.hasNetherRobe(livingEntityIn);
-                if (!nether){
+                if (!nether) {
                     livingEntityIn.addEffect(new MobEffectInstance(MobEffects.CONFUSION, 60, 0, false, false));
                 }
                 if (count % 10 == 0) {
@@ -104,7 +105,7 @@ public class InfernalTome extends Item {
 
     @Override
     public ItemStack finishUsingItem(ItemStack pStack, Level level, LivingEntity livingEntity) {
-        Player player = livingEntity instanceof Player ? (Player)livingEntity : null;
+        Player player = livingEntity instanceof Player ? (Player) livingEntity : null;
 
         if (player != null) {
             player.awardStat(Stats.ITEM_USED.get(this));
@@ -123,7 +124,7 @@ public class InfernalTome extends Item {
     @Override
     public void releaseUsing(ItemStack stack, Level level, LivingEntity livingEntity, int useTimeRemaining) {
         if (stack.getItem() instanceof InfernalTome) {
-            if (livingEntity instanceof Player player){
+            if (livingEntity instanceof Player player) {
                 player.getCooldowns().addCooldown(this, 100);
                 if (stack.getTag() != null) {
                     if (stack.getTag().getInt(CHANT_TIMES) != 0) {
@@ -135,7 +136,7 @@ public class InfernalTome extends Item {
     }
 
     @Override
-    public int getUseDuration(ItemStack p_41454_) {
+    public int getUseDuration(ItemStack p_41454_, LivingEntity livingEntity) {
         return 60;
     }
 

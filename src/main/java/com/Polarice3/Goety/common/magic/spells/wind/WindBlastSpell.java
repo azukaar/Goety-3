@@ -55,7 +55,7 @@ public class WindBlastSpell extends Spell {
         return SpellConfig.WindBlastCoolDown.get();
     }
 
-    public SpellType getSpellType(){
+    public SpellType getSpellType() {
         return SpellType.WIND;
     }
 
@@ -73,11 +73,11 @@ public class WindBlastSpell extends Spell {
         Vec3 lookVec = caster.getViewVector(1.0F);
         double knock = spellStat.getPotency();
         int range = spellStat.getRange();
-        if (rightStaff(staff)){
+        if (rightStaff(staff)) {
             range *= 2;
             knock *= 2;
         }
-        if (WandUtil.enchantedFocus(caster)){
+        if (WandUtil.enchantedFocus(caster)) {
             knock += WandUtil.getPotencyLevel(caster) / 4.0D;
             range += WandUtil.getRangeLevel(caster);
         }
@@ -90,40 +90,48 @@ public class WindBlastSpell extends Spell {
             double velocity = pVelocity + worldIn.getRandom().nextDouble() * pVelocity;
             Vec3 vec3 = lookVec.multiply(velocity, velocity, velocity);
             Vec3 pos = new Vec3(px, py, pz);
-            pos = pos.add(caster.getRandom().nextGaussian() / 2, caster.getRandom().nextGaussian() / 2, caster.getRandom().nextGaussian() / 2);
+            pos = pos.add(caster.getRandom().nextGaussian() / 2, caster.getRandom().nextGaussian() / 2,
+                    caster.getRandom().nextGaussian() / 2);
             int width = worldIn.getRandom().nextIntBetweenInclusive(1, 4);
             float height = worldIn.getRandom().nextFloat() * 0.5F;
-            worldIn.sendParticles(new WindBlowParticle.Option(ColorUtil.WHITE, width, height), pos.x, pos.y, pos.z, 0, vec3.x, vec3.y, vec3.z, 1.0F);
+            worldIn.sendParticles(new WindBlowParticle.Option(ColorUtil.WHITE, width, height), pos.x, pos.y, pos.z, 0,
+                    vec3.x, vec3.y, vec3.z, 1.0F);
         }
-        for(int i = 1; i < range; ++i) {
+        for (int i = 1; i < range; ++i) {
             Vec3 vector3d2 = srcVec.add(lookVec.scale(i));
-            if (typeStaff(staff, SpellType.FROST)){
-                worldIn.sendParticles(ModParticleTypes.FROST.get(), vector3d2.x, vector3d2.y, vector3d2.z, 1, 0.0D, 0.0D, 0.0D, 0.0D);
+            if (typeStaff(staff, SpellType.FROST)) {
+                worldIn.sendParticles(ModParticleTypes.FROST.get(), vector3d2.x, vector3d2.y, vector3d2.z, 1, 0.0D,
+                        0.0D, 0.0D, 0.0D);
             }
-            if (typeStaff(staff, SpellType.WILD)){
-                worldIn.sendParticles(ModParticleTypes.FLY.get(), vector3d2.x, vector3d2.y, vector3d2.z, 1, 0.0D, 0.0D, 0.0D, 0.0D);
+            if (typeStaff(staff, SpellType.WILD)) {
+                worldIn.sendParticles(ModParticleTypes.FLY.get(), vector3d2.x, vector3d2.y, vector3d2.z, 1, 0.0D, 0.0D,
+                        0.0D, 0.0D);
             }
-            if (typeStaff(staff, SpellType.NETHER)){
-                worldIn.sendParticles(ParticleTypes.FLAME, vector3d2.x, vector3d2.y, vector3d2.z, 1, 0.0D, 0.0D, 0.0D, 0.0D);
+            if (typeStaff(staff, SpellType.NETHER)) {
+                worldIn.sendParticles(ParticleTypes.FLAME, vector3d2.x, vector3d2.y, vector3d2.z, 1, 0.0D, 0.0D, 0.0D,
+                        0.0D);
             }
         }
         Vec3 rangeVec = new Vec3(lookVec.x * range, lookVec.y * range, lookVec.z * range);
         BlockHitResult result = this.blockResult(worldIn, caster, range);
-        if (result != null){
+        if (result != null) {
             BlockPos blockPos = result.getBlockPos();
             BlockEntity blockEntity = worldIn.getBlockEntity(blockPos);
-            if (blockEntity instanceof IWindPowered windPowered){
+            if (blockEntity instanceof IWindPowered windPowered) {
                 windPowered.activate(MathHelper.secondsToTicks(15));
             }
         }
-        List<Entity> entities = caster.level.getEntities(caster, caster.getBoundingBox().inflate(1.0D).expandTowards(rangeVec));
-        for (Entity entity : entities){
-            if (caster.hasLineOfSight(entity)){
-                if (!MobUtil.areAllies(entity, caster) && !entity.getType().is(ModTags.EntityTypes.UNBLOWABLE_ENTITIES)) {
+        List<Entity> entities = caster.level.getEntities(caster,
+                caster.getBoundingBox().inflate(1.0D).expandTowards(rangeVec));
+        for (Entity entity : entities) {
+            if (caster.hasLineOfSight(entity)) {
+                if (!MobUtil.areAllies(entity, caster)
+                        && !entity.getType().is(ModTags.EntityTypes.UNBLOWABLE_ENTITIES)) {
                     MobUtil.knockBack(entity, caster, 2.0D * knock, 0.2D * knock, 2.0D * knock);
                     if (entity instanceof LivingEntity living) {
                         if (typeStaff(staff, SpellType.FROST)) {
-                            living.addEffect(new MobEffectInstance(GoetyEffects.FREEZING.get(), MathHelper.secondsToTicks(5)));
+                            living.addEffect(
+                                    new MobEffectInstance(GoetyEffects.FREEZING.get(), MathHelper.secondsToTicks(5)));
                         }
                         if (typeStaff(staff, SpellType.WILD)) {
                             MobEffect mobEffect = MobEffects.POISON;
@@ -133,16 +141,19 @@ public class WindBlastSpell extends Spell {
                             living.addEffect(new MobEffectInstance(mobEffect, MathHelper.secondsToTicks(5)));
                         }
                         if (typeStaff(staff, SpellType.STORM)) {
-                            living.addEffect(new MobEffectInstance(GoetyEffects.SPASMS.get(), MathHelper.secondsToTicks(5)));
+                            living.addEffect(
+                                    new MobEffectInstance(GoetyEffects.SPASMS.get(), MathHelper.secondsToTicks(5)));
                         }
                         if (typeStaff(staff, SpellType.VOID)) {
-                            living.addEffect(new MobEffectInstance(GoetyEffects.VOID_TOUCHED.get(), MathHelper.secondsToTicks(5)));
+                            living.addEffect(new MobEffectInstance(GoetyEffects.VOID_TOUCHED.get(),
+                                    MathHelper.secondsToTicks(5)));
                         }
                         if (typeStaff(staff, SpellType.NETHER)) {
-                            living.setSecondsOnFire(5);
+                            living.igniteForSeconds(5);
                         }
                     }
-                    if (entity instanceof AbstractCyclone cyclone && (cyclone.getTrueOwner() == null || !MobUtil.areAllies(caster, cyclone.getTrueOwner()))) {
+                    if (entity instanceof AbstractCyclone cyclone
+                            && (cyclone.getTrueOwner() == null || !MobUtil.areAllies(caster, cyclone.getTrueOwner()))) {
                         cyclone.trueRemove();
                     }
                 }

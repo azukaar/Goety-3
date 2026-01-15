@@ -17,7 +17,8 @@ import net.minecraft.resources.ResourceLocation;
 
 public class AllyVexRenderer extends MobRenderer<AllyVex, MinionModel<AllyVex>> {
     private static final ResourceLocation VEX_LOCATION = new ResourceLocation("textures/entity/illager/vex.png");
-    private static final ResourceLocation VEX_CHARGING_LOCATION = new ResourceLocation("textures/entity/illager/vex_charging.png");
+    private static final ResourceLocation VEX_CHARGING_LOCATION = new ResourceLocation(
+            "textures/entity/illager/vex_charging.png");
 
     public AllyVexRenderer(EntityRendererProvider.Context p_174435_) {
         super(p_174435_, new MinionModel<>(p_174435_.bakeLayer(ModModelLayer.MINION)), 0.3F);
@@ -37,15 +38,20 @@ public class AllyVexRenderer extends MobRenderer<AllyVex, MinionModel<AllyVex>> 
         private static final ResourceLocation TEXTURES = Goety.location("textures/entity/servants/ally_vex_bands.png");
         private final MinionModel<AllyVex> layerModel;
 
-        public AllyVexBandsLayer(RenderLayerParent<AllyVex, MinionModel<AllyVex>> p_i50919_1_, EntityModelSet p_174555_) {
+        public AllyVexBandsLayer(RenderLayerParent<AllyVex, MinionModel<AllyVex>> p_i50919_1_,
+                EntityModelSet p_174555_) {
             super(p_i50919_1_);
             this.layerModel = new MinionModel<>(p_174555_.bakeLayer(ModModelLayer.MINION));
         }
 
         @Override
-        public void render(PoseStack pMatrixStack, MultiBufferSource pBuffer, int pPackedLight, AllyVex pLivingEntity, float pLimbSwing, float pLimbSwingAmount, float pPartialTicks, float pAgeInTicks, float pNetHeadYaw, float pHeadPitch) {
+        public void render(PoseStack pMatrixStack, MultiBufferSource pBuffer, int pPackedLight, AllyVex pLivingEntity,
+                float pLimbSwing, float pLimbSwingAmount, float pPartialTicks, float pAgeInTicks, float pNetHeadYaw,
+                float pHeadPitch) {
             if (MobsConfig.VexTexture.get() && !pLivingEntity.isHostile()) {
-                coloredCutoutModelCopyLayerRender(this.getParentModel(), this.layerModel, TEXTURES, pMatrixStack, pBuffer, pPackedLight, pLivingEntity, pLimbSwing, pLimbSwingAmount, pAgeInTicks, pNetHeadYaw, pHeadPitch, pPartialTicks, 1.0F, 1.0F, 1.0F);
+                coloredCutoutModelCopyLayerRender(this.getParentModel(), this.layerModel, TEXTURES, pMatrixStack,
+                        pBuffer, pPackedLight, pLivingEntity, pLimbSwing, pLimbSwingAmount, pAgeInTicks, pNetHeadYaw,
+                        pHeadPitch, pPartialTicks, -1);
             }
         }
     }

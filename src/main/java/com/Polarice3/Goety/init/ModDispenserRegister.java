@@ -12,7 +12,8 @@ import java.util.*;
 import java.util.function.BiPredicate;
 
 /**
- * Method and Registry based on TeamAbnormal codes: <a href="https://github.com/team-abnormals/blueprint/blob/1.19.x/src/main/java/com/teamabnormals/blueprint/core/util/DataUtil.java#L288">...</a>
+ * Method and Registry based on TeamAbnormal codes: <a href=
+ * "https://github.com/team-abnormals/blueprint/blob/1.19.x/src/main/java/com/teamabnormals/blueprint/core/util/DataUtil.java#L288">...</a>
  */
 public class ModDispenserRegister {
     private static final Vector<AlternativeDispenseBehavior> ALTERNATIVE_DISPENSE_BEHAVIORS = new Vector<>();
@@ -28,7 +29,7 @@ public class ModDispenserRegister {
     }
 
     public static BlockPos offsetPos(BlockSource source) {
-        return source.getPos().relative(source.getBlockState().getValue(DirectionalBlock.FACING));
+        return source.pos().relative(source.state().getValue(DirectionalBlock.FACING));
     }
 
     public static class AlternativeDispenseBehavior implements Comparable<AlternativeDispenseBehavior> {
@@ -38,11 +39,13 @@ public class ModDispenserRegister {
         protected final DispenseItemBehavior behavior;
         protected final Comparator<String> modIdComparator;
 
-        public AlternativeDispenseBehavior(String modId, Item item, BiPredicate<BlockSource, ItemStack> condition, DispenseItemBehavior behavior) {
+        public AlternativeDispenseBehavior(String modId, Item item, BiPredicate<BlockSource, ItemStack> condition,
+                DispenseItemBehavior behavior) {
             this(modId, item, condition, behavior, (id1, id2) -> 0);
         }
 
-        public AlternativeDispenseBehavior(String modId, Item item, BiPredicate<BlockSource, ItemStack> condition, DispenseItemBehavior behavior, Comparator<String> modIdComparator) {
+        public AlternativeDispenseBehavior(String modId, Item item, BiPredicate<BlockSource, ItemStack> condition,
+                DispenseItemBehavior behavior, Comparator<String> modIdComparator) {
             this.modId = modId;
             this.item = item;
             this.condition = condition;
@@ -57,7 +60,9 @@ public class ModDispenserRegister {
 
         public void register() {
             DispenseItemBehavior oldBehavior = DispenserBlock.DISPENSER_REGISTRY.get(item);
-            DispenserBlock.registerBehavior(item, (source, stack) -> condition.test(source, stack) ? behavior.dispense(source, stack) : oldBehavior.dispense(source, stack));
+            DispenserBlock.registerBehavior(item,
+                    (source, stack) -> condition.test(source, stack) ? behavior.dispense(source, stack)
+                            : oldBehavior.dispense(source, stack));
         }
     }
 }

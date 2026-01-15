@@ -20,7 +20,7 @@ import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.ChestBlock;
-import net.neoforged.neoforge.registries.RegistryObject;
+import net.neoforged.neoforge.registries.DeferredHolder;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -51,13 +51,14 @@ public class ModISTER extends BlockEntityWithoutLevelRenderer {
     }
 
     @Override
-    public void renderByItem(ItemStack pStack, ItemDisplayContext pCamera, PoseStack pMatrixStack, MultiBufferSource pBuffer, int pLight, int pOverlay) {
+    public void renderByItem(ItemStack pStack, ItemDisplayContext pCamera, PoseStack pMatrixStack,
+            MultiBufferSource pBuffer, int pLight, int pOverlay) {
         Item item = pStack.getItem();
 
         if (item instanceof BlockItem) {
             Block block = ((BlockItem) item).getBlock();
             if (block instanceof TallSkullBlock) {
-                if(pCamera == ItemDisplayContext.GUI) {
+                if (pCamera == ItemDisplayContext.GUI) {
                     pMatrixStack.pushPose();
                     pMatrixStack.translate(0.5F, 0.5F, 0.5F);
                     pMatrixStack.mulPose(Axis.XP.rotationDegrees(30));
@@ -70,66 +71,80 @@ public class ModISTER extends BlockEntityWithoutLevelRenderer {
                 } else {
                     TallSkullBlockEntityRenderer.renderSkull(null, 180.0F, pMatrixStack, pBuffer, pLight);
                 }
-            } else if (block instanceof RedstoneGolemSkullBlock){
-                if(pCamera == ItemDisplayContext.GUI) {
+            } else if (block instanceof RedstoneGolemSkullBlock) {
+                if (pCamera == ItemDisplayContext.GUI) {
                     pMatrixStack.pushPose();
                     pMatrixStack.translate(0.5F, 0.5F, 0.5F);
                     pMatrixStack.mulPose(Axis.XP.rotationDegrees(30));
                     pMatrixStack.mulPose(Axis.YN.rotationDegrees(-45));
                     pMatrixStack.translate(-0.5F, -0.5F, -0.5F);
                     pMatrixStack.translate(0.0F, 0.25F, 0.0F);
-                    RedstoneGolemSkullBlockEntityRenderer.renderItemSkull(pStack, null, 180.0F, pMatrixStack, pBuffer, pLight);
+                    RedstoneGolemSkullBlockEntityRenderer.renderItemSkull(pStack, null, 180.0F, pMatrixStack, pBuffer,
+                            pLight);
                     pMatrixStack.popPose();
 
                 } else {
-                    RedstoneGolemSkullBlockEntityRenderer.renderItemSkull(pStack, null, 180.0F, pMatrixStack, pBuffer, pLight);
+                    RedstoneGolemSkullBlockEntityRenderer.renderItemSkull(pStack, null, 180.0F, pMatrixStack, pBuffer,
+                            pLight);
                 }
-            } else if (block instanceof GraveGolemSkullBlock){
-                if(pCamera == ItemDisplayContext.GUI) {
+            } else if (block instanceof GraveGolemSkullBlock) {
+                if (pCamera == ItemDisplayContext.GUI) {
                     pMatrixStack.pushPose();
                     pMatrixStack.translate(0.5F, 0.5F, 0.5F);
                     pMatrixStack.mulPose(Axis.XP.rotationDegrees(30));
                     pMatrixStack.mulPose(Axis.YN.rotationDegrees(-45));
                     pMatrixStack.translate(-0.5F, -0.5F, -0.5F);
                     pMatrixStack.translate(0.0F, 0.25F, 0.0F);
-                    GraveGolemSkullBlockEntityRenderer.renderItemSkull(pStack, null, 180.0F, pMatrixStack, pBuffer, pLight);
+                    GraveGolemSkullBlockEntityRenderer.renderItemSkull(pStack, null, 180.0F, pMatrixStack, pBuffer,
+                            pLight);
                     pMatrixStack.popPose();
 
                 } else {
-                    GraveGolemSkullBlockEntityRenderer.renderItemSkull(pStack, null, 180.0F, pMatrixStack, pBuffer, pLight);
+                    GraveGolemSkullBlockEntityRenderer.renderItemSkull(pStack, null, 180.0F, pMatrixStack, pBuffer,
+                            pLight);
                 }
-            } else if (block instanceof RedstoneMonstrosityHeadBlock){
-                if(pCamera == ItemDisplayContext.GUI) {
+            } else if (block instanceof RedstoneMonstrosityHeadBlock) {
+                if (pCamera == ItemDisplayContext.GUI) {
                     pMatrixStack.pushPose();
                     pMatrixStack.translate(0.5F, 0.5F, 0.5F);
                     pMatrixStack.mulPose(Axis.XP.rotationDegrees(30));
                     pMatrixStack.mulPose(Axis.YN.rotationDegrees(-45));
                     pMatrixStack.translate(-0.5F, -0.5F, -0.5F);
                     pMatrixStack.translate(0.0F, 0.25F, 0.0F);
-                    RedstoneMonstrosityHeadBlockEntityRenderer.renderItemSkull(pStack, null, 180.0F, pMatrixStack, pBuffer, pLight);
+                    RedstoneMonstrosityHeadBlockEntityRenderer.renderItemSkull(pStack, null, 180.0F, pMatrixStack,
+                            pBuffer, pLight);
                     pMatrixStack.popPose();
 
                 } else {
-                    RedstoneMonstrosityHeadBlockEntityRenderer.renderItemSkull(pStack, null, 180.0F, pMatrixStack, pBuffer, pLight);
+                    RedstoneMonstrosityHeadBlockEntityRenderer.renderItemSkull(pStack, null, 180.0F, pMatrixStack,
+                            pBuffer, pLight);
                 }
             } else if (block instanceof BlackCrystalBlock) {
-                BlockEntityRenderer<?> renderer = Minecraft.getInstance().getBlockEntityRenderDispatcher().getRenderer(new BlackCrystalBlockEntity(BlockPos.ZERO, block.defaultBlockState()));
+                BlockEntityRenderer<?> renderer = Minecraft.getInstance().getBlockEntityRenderDispatcher()
+                        .getRenderer(new BlackCrystalBlockEntity(BlockPos.ZERO, block.defaultBlockState()));
                 if (renderer instanceof BlackCrystalRenderer crystalBlockRenderer) {
-                    crystalBlockRenderer.render(null, ClientEvents.PARTIAL_TICK, pMatrixStack, pBuffer, pLight, pOverlay);
+                    crystalBlockRenderer.render(null, ClientEvents.PARTIAL_TICK, pMatrixStack, pBuffer, pLight,
+                            pOverlay);
                 }
             } else if (block instanceof CryptChestBlock) {
-                Minecraft.getInstance().getBlockEntityRenderDispatcher().renderItem(new CryptChestBlockEntity(BlockPos.ZERO, block.defaultBlockState().setValue(CryptChestBlock.LOCKED, false)), pMatrixStack, pBuffer, pLight, pOverlay);
+                Minecraft.getInstance().getBlockEntityRenderDispatcher().renderItem(
+                        new CryptChestBlockEntity(BlockPos.ZERO,
+                                block.defaultBlockState().setValue(CryptChestBlock.LOCKED, false)),
+                        pMatrixStack, pBuffer, pLight, pOverlay);
             } else if (block instanceof LoftyChestBlock) {
-                Minecraft.getInstance().getBlockEntityRenderDispatcher().renderItem(new LoftyChestBlockEntity(BlockPos.ZERO, block.defaultBlockState()), pMatrixStack, pBuffer, pLight, pOverlay);
+                Minecraft.getInstance().getBlockEntityRenderDispatcher().renderItem(
+                        new LoftyChestBlockEntity(BlockPos.ZERO, block.defaultBlockState()), pMatrixStack, pBuffer,
+                        pLight, pOverlay);
             } else if (block instanceof ModChestBlock) {
-                Minecraft.getInstance().getBlockEntityRenderDispatcher().renderItem(this.chestEntities.get(block), pMatrixStack, pBuffer, pLight, pOverlay);
+                Minecraft.getInstance().getBlockEntityRenderDispatcher().renderItem(this.chestEntities.get(block),
+                        pMatrixStack, pBuffer, pLight, pOverlay);
             }
         }
     }
 
-    public static void makeInstance(Map<Block, ModChestBlockEntity> map, RegistryObject<? extends ChestBlock> registryObject) {
+    public static void makeInstance(Map<Block, ModChestBlockEntity> map,
+            DeferredHolder<Block, ? extends ChestBlock> registryObject) {
         ChestBlock block = registryObject.get();
         map.put(block, new ModChestBlockEntity(BlockPos.ZERO, block.defaultBlockState()));
     }
 }
-

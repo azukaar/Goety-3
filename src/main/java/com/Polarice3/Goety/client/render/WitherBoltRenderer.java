@@ -25,14 +25,15 @@ public class WitherBoltRenderer extends EntityRenderer<WitherBolt> {
       return 15;
    }
 
-   public void render(WitherBolt p_116484_, float p_116485_, float p_116486_, PoseStack p_116487_, MultiBufferSource p_116488_, int p_116489_) {
+   public void render(WitherBolt p_116484_, float p_116485_, float p_116486_, PoseStack p_116487_,
+         MultiBufferSource p_116488_, int p_116489_) {
       p_116487_.pushPose();
       p_116487_.scale(-1.25F, -1.25F, 1.25F);
       float f = Mth.rotLerp(p_116486_, p_116484_.yRotO, p_116484_.getYRot());
       float f1 = Mth.lerp(p_116486_, p_116484_.xRotO, p_116484_.getXRot());
       VertexConsumer vertexconsumer = p_116488_.getBuffer(RenderType.eyes(this.getTextureLocation(p_116484_)));
       this.model.setupAnim(0.0F, f, f1);
-      this.model.renderToBuffer(p_116487_, vertexconsumer, 15728640, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 0.5F);
+      this.model.renderToBuffer(p_116487_, vertexconsumer, 15728640, OverlayTexture.NO_OVERLAY, 0x80FFFFFF);
       p_116487_.popPose();
       super.render(p_116484_, p_116485_, p_116486_, p_116487_, p_116488_, p_116489_);
    }

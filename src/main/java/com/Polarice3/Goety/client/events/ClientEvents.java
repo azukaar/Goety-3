@@ -84,7 +84,9 @@ import net.minecraft.client.resources.sounds.AbstractTickableSoundInstance;
 import net.minecraft.client.sounds.SoundManager;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.GlobalPos;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ServerboundInteractPacket;
 import net.minecraft.resources.ResourceLocation;
@@ -682,14 +684,15 @@ public class ClientEvents {
         Player player = minecraft.player;
         Level level = minecraft.level;
         if (level != null) {
-            List<AbstractClientPlayer> players = minecraft.level().players();
+            List<? extends Player> players = level.players();
             if (player != null) {
                 Level world = player.level();
                 ItemStack stack = player.getMainHandItem();
                 Map<BlockPos, ColorUtil> renderCubes = new HashMap<>();
                 if (stack.getItem() instanceof WaystoneItem) {
-                    if (stack.getTag() != null) {
-                        GlobalPos loc = WaystoneItem.getPosition(stack);
+                    CompoundTag tag = stack.get(DataComponents.CUSTOM_DATA);
+                    if (tag != null) {
+                        GlobalPos loc = WaystoneItem.getPosition(tag);
                         if (loc != null) {
                             if (loc.dimension() == world.dimension()) {
                                 renderCubes.put(loc.pos(), new ColorUtil(ChatFormatting.GOLD));

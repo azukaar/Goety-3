@@ -18,21 +18,24 @@ public abstract class WaterHurtingProjectile extends AbstractHurtingProjectile i
         super(p_36833_, p_36834_);
     }
 
-    public WaterHurtingProjectile(EntityType<? extends AbstractHurtingProjectile> p_36817_, double p_36818_, double p_36819_, double p_36820_, double p_36821_, double p_36822_, double p_36823_, Level p_36824_) {
+    public WaterHurtingProjectile(EntityType<? extends AbstractHurtingProjectile> p_36817_, double p_36818_,
+            double p_36819_, double p_36820_, double p_36821_, double p_36822_, double p_36823_, Level p_36824_) {
         super(p_36817_, p_36818_, p_36819_, p_36820_, p_36821_, p_36822_, p_36823_, p_36824_);
     }
 
-    public WaterHurtingProjectile(EntityType<? extends AbstractHurtingProjectile> p_36826_, LivingEntity p_36827_, double p_36828_, double p_36829_, double p_36830_, Level p_36831_) {
+    public WaterHurtingProjectile(EntityType<? extends AbstractHurtingProjectile> p_36826_, LivingEntity p_36827_,
+            double p_36828_, double p_36829_, double p_36830_, Level p_36831_) {
         super(p_36826_, p_36827_, p_36828_, p_36829_, p_36830_, p_36831_);
     }
 
-    public boolean isAffectedByWater(){
+    public boolean isAffectedByWater() {
         return false;
     }
 
     public void tick() {
         Entity entity = this.getOwner();
-        if (this.level.isClientSide || (entity == null || !entity.isRemoved()) && this.level.isLoaded(this.blockPosition())) {
+        if (this.level.isClientSide
+                || (entity == null || !entity.isRemoved()) && this.level.isLoaded(this.blockPosition())) {
             if (!this.hasBeenShot) {
                 this.gameEvent(GameEvent.PROJECTILE_SHOOT, this.getOwner());
                 this.hasBeenShot = true;
@@ -43,7 +46,7 @@ public abstract class WaterHurtingProjectile extends AbstractHurtingProjectile i
             }
             this.baseTick();
             if (this.shouldBurn()) {
-                this.setSecondsOnFire(1);
+                this.igniteForSeconds(1);
             }
 
             this.hitDetection();
@@ -57,21 +60,23 @@ public abstract class WaterHurtingProjectile extends AbstractHurtingProjectile i
     }
 
     /**
-     * Stole these methods from @Iron:<a href="https://github.com/iron431/irons-spells-n-spellbooks/blob/1.20.1/src/main/java/io/redspace/ironsspellbooks/entity/spells/AbstractMagicProjectile.java">...</a>
+     * Stole these methods from @Iron:<a href=
+     * "https://github.com/iron431/irons-spells-n-spellbooks/blob/1.20.1/src/main/java/io/redspace/ironsspellbooks/entity/spells/AbstractMagicProjectile.java">...</a>
      * From here
      */
     public void shoot(Vec3 rotation) {
         this.setDeltaMovement(rotation.scale(this.getInertia()));
     }
 
-    public void hitDetection(){
+    public void hitDetection() {
         HitResult hitresult = ProjectileUtil.getHitResultOnMoveVector(this, this::canHitEntity);
-        if (hitresult.getType() != HitResult.Type.MISS && !net.neoforged.event.EventFactory.onProjectileImpact(this, hitresult)) {
+        if (hitresult.getType() != HitResult.Type.MISS
+                && !net.neoforged.event.EventFactory.onProjectileImpact(this, hitresult)) {
             this.onHit(hitresult);
         }
     }
 
-    public void travel(){
+    public void travel() {
         Vec3 vec3 = this.getDeltaMovement();
         double d0 = this.getX() + vec3.x;
         double d1 = this.getY() + vec3.y;
@@ -88,32 +93,36 @@ public abstract class WaterHurtingProjectile extends AbstractHurtingProjectile i
         this.setDeltaMovement(this.getDeltaMovement().subtract(0.0D, this.getGravity(), 0.0D));
         this.setPos(d0, d1, d2);
     }
+
     /**
      * To here
      */
 
-    public void trailParticle(){
+    public void trailParticle() {
         Vec3 vec3 = this.getDeltaMovement();
         double d0 = this.getX() + vec3.x;
         double d1 = this.getY() + vec3.y;
         double d2 = this.getZ() + vec3.z;
         if (this.isInWater()) {
-            for(int i = 0; i < 4; ++i) {
+            for (int i = 0; i < 4; ++i) {
                 float f1 = 0.25F;
-                this.level.addParticle(ParticleTypes.BUBBLE, d0 - vec3.x * f1, d1 - vec3.y * f1, d2 - vec3.z * f1, vec3.x, vec3.y, vec3.z);
+                this.level.addParticle(ParticleTypes.BUBBLE, d0 - vec3.x * f1, d1 - vec3.y * f1, d2 - vec3.z * f1,
+                        vec3.x, vec3.y, vec3.z);
             }
         }
         this.level.addParticle(this.getTrailParticle(), d0, d1 + 0.5D, d2, 0.0D, 0.0D, 0.0D);
     }
 
-    public float getGravity(){
+    public float getGravity() {
         return 0.0F;
     }
 
     private boolean checkLeftOwner() {
         Entity entity = this.getOwner();
         if (entity != null) {
-            for(Entity entity1 : this.level.getEntities(this, this.getBoundingBox().expandTowards(this.getDeltaMovement()).inflate(1.0D), (p_37272_) -> !p_37272_.isSpectator() && p_37272_.isPickable())) {
+            for (Entity entity1 : this.level.getEntities(this,
+                    this.getBoundingBox().expandTowards(this.getDeltaMovement()).inflate(1.0D),
+                    (p_37272_) -> !p_37272_.isSpectator() && p_37272_.isPickable())) {
                 if (entity1.getRootVehicle() == entity.getRootVehicle()) {
                     return false;
                 }

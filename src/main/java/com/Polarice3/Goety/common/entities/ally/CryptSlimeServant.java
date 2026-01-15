@@ -6,6 +6,9 @@ import com.Polarice3.Goety.utils.ModLootTables;
 import net.minecraft.core.particles.ItemParticleOption;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
+
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
@@ -24,7 +27,7 @@ import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 
-public class CryptSlimeServant extends SlimeServant{
+public class CryptSlimeServant extends SlimeServant {
     public CryptSlimeServant(EntityType<? extends Owned> type, Level worldIn) {
         super(type, worldIn);
     }
@@ -46,11 +49,19 @@ public class CryptSlimeServant extends SlimeServant{
 
     protected void dropCustomDeathLoot(DamageSource p_33574_, int p_33575_, boolean p_33576_) {
         super.dropCustomDeathLoot(p_33574_, p_33575_, p_33576_);
-        if (this.level.getServer() != null) {
-            LootTable loottable = this.level.getServer().getLootData().getLootTable(ModLootTables.CRYPT_SLIME);
-            LootParams.Builder lootparams$builder = (new LootParams.Builder((ServerLevel) this.level)).withParameter(LootContextParams.THIS_ENTITY, this).withParameter(LootContextParams.ORIGIN, this.position()).withParameter(LootContextParams.DAMAGE_SOURCE, p_33574_).withOptionalParameter(LootContextParams.KILLER_ENTITY, p_33574_.getEntity()).withOptionalParameter(LootContextParams.DIRECT_KILLER_ENTITY, p_33574_.getDirectEntity());
+        if (this.level().getServer() != null) {
+            LootTable loottable = this.level().getServer().reloadableRegistries()
+                    .getLootTable(ResourceKey.create(Registries.LOOT_TABLE, ModLootTables.CRYPT_SLIME));
+            LootParams.Builder lootparams$builder = (new LootParams.Builder((ServerLevel) this.level()))
+                    .withParameter(LootContextParams.THIS_ENTITY, this)
+                    .withParameter(LootContextParams.ORIGIN, this.position())
+                    .withParameter(LootContextParams.DAMAGE_SOURCE, p_33574_)
+                    .withOptionalParameter(LootContextParams.KILLER_ENTITY, p_33574_.getEntity())
+                    .withOptionalParameter(LootContextParams.DIRECT_KILLER_ENTITY, p_33574_.getDirectEntity());
             if (this.lastHurtByPlayerTime > 0 && this.lastHurtByPlayer != null) {
-                lootparams$builder = lootparams$builder.withParameter(LootContextParams.LAST_DAMAGE_PLAYER, this.lastHurtByPlayer).withLuck(this.lastHurtByPlayer.getLuck());
+                lootparams$builder = lootparams$builder
+                        .withParameter(LootContextParams.LAST_DAMAGE_PLAYER, this.lastHurtByPlayer)
+                        .withLuck(this.lastHurtByPlayer.getLuck());
             }
 
             LootParams lootparams = lootparams$builder.create(LootContextParamSets.ENTITY);
@@ -69,8 +80,11 @@ public class CryptSlimeServant extends SlimeServant{
     protected void dealDamage(LivingEntity livingEntity) {
         if (this.isAlive()) {
             int i = this.getSize();
-            if (this.distanceToSqr(livingEntity) < 0.6D * (double)i * 0.6D * (double)i && this.hasLineOfSight(livingEntity) && livingEntity.hurt(this.getServantAttack(), this.getAttackDamage())) {
-                this.playSound(SoundEvents.SLIME_ATTACK, 1.0F, (this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 1.0F);
+            if (this.distanceToSqr(livingEntity) < 0.6D * (double) i * 0.6D * (double) i
+                    && this.hasLineOfSight(livingEntity)
+                    && livingEntity.hurt(this.getServantAttack(), this.getAttackDamage())) {
+                this.playSound(SoundEvents.SLIME_ATTACK, 1.0F,
+                        (this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 1.0F);
                 this.doEnchantDamageEffects(this, livingEntity);
                 livingEntity.addEffect(new MobEffectInstance(GoetyEffects.SAPPED.get(), 60, this.getSize()));
             }

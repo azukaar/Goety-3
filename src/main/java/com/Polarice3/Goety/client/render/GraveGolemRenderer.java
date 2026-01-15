@@ -16,8 +16,10 @@ import net.minecraft.client.renderer.entity.layers.RenderLayer;
 import net.minecraft.resources.ResourceLocation;
 
 public class GraveGolemRenderer<T extends GraveGolem> extends MobRenderer<T, GraveGolemModel<T>> {
-    private static final ResourceLocation TEXTURES = Goety.location("textures/entity/servants/grave_golem/grave_golem.png");
-    private static final ResourceLocation GLOW = Goety.location("textures/entity/servants/grave_golem/grave_golem_glow.png");
+    private static final ResourceLocation TEXTURES = Goety
+            .location("textures/entity/servants/grave_golem/grave_golem.png");
+    private static final ResourceLocation GLOW = Goety
+            .location("textures/entity/servants/grave_golem/grave_golem_glow.png");
 
     public GraveGolemRenderer(EntityRendererProvider.Context renderManagerIn) {
         super(renderManagerIn, new GraveGolemModel<>(renderManagerIn.bakeLayer(ModModelLayer.GRAVE_GOLEM)), 1.5F);
@@ -33,17 +35,21 @@ public class GraveGolemRenderer<T extends GraveGolem> extends MobRenderer<T, Gra
         return TEXTURES;
     }
 
-    public static class GraveGolemEyesLayer<T extends GraveGolem, M extends GraveGolemModel<T>> extends EyesLayer<T, M>{
-        private static final ResourceLocation EYES = Goety.location("textures/entity/servants/grave_golem/grave_golem_eyes.png");
+    public static class GraveGolemEyesLayer<T extends GraveGolem, M extends GraveGolemModel<T>>
+            extends EyesLayer<T, M> {
+        private static final ResourceLocation EYES = Goety
+                .location("textures/entity/servants/grave_golem/grave_golem_eyes.png");
 
         public GraveGolemEyesLayer(RenderLayerParent<T, M> p_116981_) {
             super(p_116981_);
         }
 
         @Override
-        public void render(PoseStack p_116983_, MultiBufferSource p_116984_, int p_116985_, T p_116986_, float p_116987_, float p_116988_, float p_116989_, float p_116990_, float p_116991_, float p_116992_) {
+        public void render(PoseStack p_116983_, MultiBufferSource p_116984_, int p_116985_, T p_116986_,
+                float p_116987_, float p_116988_, float p_116989_, float p_116990_, float p_116991_, float p_116992_) {
             if (p_116986_.deathTime < 26 && !p_116986_.isInvisible()) {
-                super.render(p_116983_, p_116984_, p_116985_, p_116986_, p_116987_, p_116988_, p_116989_, p_116990_, p_116991_, p_116992_);
+                super.render(p_116983_, p_116984_, p_116985_, p_116986_, p_116987_, p_116988_, p_116989_, p_116990_,
+                        p_116991_, p_116992_);
             }
         }
 
@@ -53,16 +59,20 @@ public class GraveGolemRenderer<T extends GraveGolem> extends MobRenderer<T, Gra
         }
     }
 
-    public static class GraveGolemContainedLayer<T extends GraveGolem, M extends GraveGolemModel<T>> extends EyesLayer<T, M>{
-        private static final ResourceLocation EYES = Goety.location("textures/entity/servants/grave_golem/grave_golem_contained.png");
+    public static class GraveGolemContainedLayer<T extends GraveGolem, M extends GraveGolemModel<T>>
+            extends EyesLayer<T, M> {
+        private static final ResourceLocation EYES = Goety
+                .location("textures/entity/servants/grave_golem/grave_golem_contained.png");
 
         public GraveGolemContainedLayer(RenderLayerParent<T, M> p_116981_) {
             super(p_116981_);
         }
 
-        public void render(PoseStack p_116983_, MultiBufferSource p_116984_, int p_116985_, T p_116986_, float p_116987_, float p_116988_, float p_116989_, float p_116990_, float p_116991_, float p_116992_) {
-            if (p_116986_.hasInventory){
-                super.render(p_116983_, p_116984_, p_116985_, p_116986_, p_116987_, p_116988_, p_116989_, p_116990_, p_116991_, p_116992_);
+        public void render(PoseStack p_116983_, MultiBufferSource p_116984_, int p_116985_, T p_116986_,
+                float p_116987_, float p_116988_, float p_116989_, float p_116990_, float p_116991_, float p_116992_) {
+            if (p_116986_.hasInventory) {
+                super.render(p_116983_, p_116984_, p_116985_, p_116986_, p_116987_, p_116988_, p_116989_, p_116990_,
+                        p_116991_, p_116992_);
             }
         }
 
@@ -76,16 +86,23 @@ public class GraveGolemRenderer<T extends GraveGolem> extends MobRenderer<T, Gra
         private final ResourceLocation texture;
         private final AlphaFunction<T> alphaFunction;
 
-        public GGEmissiveLayer(RenderLayerParent<T, M> p_234885_, ResourceLocation p_234886_, AlphaFunction<T> p_234887_) {
+        public GGEmissiveLayer(RenderLayerParent<T, M> p_234885_, ResourceLocation p_234886_,
+                AlphaFunction<T> p_234887_) {
             super(p_234885_);
             this.texture = p_234886_;
             this.alphaFunction = p_234887_;
         }
 
-        public void render(PoseStack matrixStackIn, MultiBufferSource bufferIn, int packedLightIn, T entity, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch) {
+        public void render(PoseStack matrixStackIn, MultiBufferSource bufferIn, int packedLightIn, T entity,
+                float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw,
+                float headPitch) {
             if (!entity.isInvisible()) {
                 VertexConsumer vertexconsumer = bufferIn.getBuffer(RenderType.entityTranslucentEmissive(this.texture));
-                this.getParentModel().renderToBuffer(matrixStackIn, vertexconsumer, packedLightIn, LivingEntityRenderer.getOverlayCoords(entity, 0.0F), 1.0F, 1.0F, 1.0F, this.alphaFunction.apply(entity, partialTicks, ageInTicks));
+                this.getParentModel().renderToBuffer(matrixStackIn, vertexconsumer, packedLightIn,
+                        LivingEntityRenderer.getOverlayCoords(entity, 0.0F),
+                        net.minecraft.util.FastColor.ARGB32.color(
+                                (int) (this.alphaFunction.apply(entity, partialTicks, ageInTicks) * 255), 255, 255,
+                                255));
             }
         }
 

@@ -48,8 +48,10 @@ import java.util.List;
 import java.util.function.Predicate;
 
 public class VanguardServant extends AbstractSkeletonServant {
-    protected static final EntityDataAccessor<Byte> DATA_FLAGS_ID = SynchedEntityData.defineId(VanguardServant.class, EntityDataSerializers.BYTE);
-    private static final EntityDataAccessor<Boolean> HAS_SHIELD = SynchedEntityData.defineId(VanguardServant.class, EntityDataSerializers.BOOLEAN);
+    protected static final EntityDataAccessor<Byte> DATA_FLAGS_ID = SynchedEntityData.defineId(VanguardServant.class,
+            EntityDataSerializers.BYTE);
+    private static final EntityDataAccessor<Boolean> HAS_SHIELD = SynchedEntityData.defineId(VanguardServant.class,
+            EntityDataSerializers.BOOLEAN);
     public int attackTick;
     public int shieldHealth = 1;
     public AnimationState idleAnimationState = new AnimationState();
@@ -76,9 +78,11 @@ public class VanguardServant extends AbstractSkeletonServant {
                 .add(Attributes.ARMOR, AttributesConfig.VanguardServantArmor.get());
     }
 
-    public void setConfigurableAttributes(){
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.MAX_HEALTH), AttributesConfig.VanguardServantHealth.get());
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ATTACK_DAMAGE), AttributesConfig.VanguardServantDamage.get());
+    public void setConfigurableAttributes() {
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.MAX_HEALTH),
+                AttributesConfig.VanguardServantHealth.get());
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ATTACK_DAMAGE),
+                AttributesConfig.VanguardServantDamage.get());
         MobUtil.setBaseAttributes(this.getAttribute(Attributes.ARMOR), AttributesConfig.VanguardServantArmor.get());
     }
 
@@ -89,15 +93,15 @@ public class VanguardServant extends AbstractSkeletonServant {
     protected void defineSynchedData() {
         super.defineSynchedData();
         this.entityData.define(HAS_SHIELD, true);
-        this.entityData.define(DATA_FLAGS_ID, (byte)0);
+        this.entityData.define(DATA_FLAGS_ID, (byte) 0);
     }
 
     public void readAdditionalSaveData(CompoundTag pCompound) {
         super.readAdditionalSaveData(pCompound);
-        if (pCompound.contains("hasShield")){
+        if (pCompound.contains("hasShield")) {
             this.setShield(pCompound.getBoolean("hasShield"));
         }
-        if (pCompound.contains("ShieldHeath")){
+        if (pCompound.contains("ShieldHeath")) {
             this.setShieldHealth(pCompound.getInt("ShieldHeath"));
         }
     }
@@ -131,36 +135,37 @@ public class VanguardServant extends AbstractSkeletonServant {
             i = i & ~mask;
         }
 
-        this.entityData.set(DATA_FLAGS_ID, (byte)(i & 255));
+        this.entityData.set(DATA_FLAGS_ID, (byte) (i & 255));
     }
 
-    public boolean hasShield(){
+    public boolean hasShield() {
         return this.entityData.get(HAS_SHIELD);
     }
 
-    public void setShield(boolean shield){
+    public void setShield(boolean shield) {
         this.entityData.set(HAS_SHIELD, shield);
     }
 
-    public int getShieldHealth(){
+    public int getShieldHealth() {
         return this.shieldHealth;
     }
 
-    public void setShieldHealth(int shieldHealth){
+    public void setShieldHealth(int shieldHealth) {
         this.shieldHealth = shieldHealth;
     }
 
-    public void destroyShield(){
+    public void destroyShield() {
         if (this.hasShield()) {
-            if (this.getShieldHealth() > 1){
+            if (this.getShieldHealth() > 1) {
                 this.setShieldHealth(this.getShieldHealth() - 1);
                 this.playSound(SoundEvents.SHIELD_BLOCK);
             } else {
                 this.setShieldHealth(0);
                 this.setShield(false);
                 this.playSound(SoundEvents.SHIELD_BREAK);
-                if (this.level instanceof ServerLevel serverLevel){
-                    ServerParticleUtil.addParticlesAroundSelf(serverLevel, new ItemParticleOption(ParticleTypes.ITEM, new ItemStack(Items.SPRUCE_PLANKS)), this);
+                if (this.level() instanceof ServerLevel serverLevel) {
+                    ServerParticleUtil.addParticlesAroundSelf(serverLevel,
+                            new ItemParticleOption(ParticleTypes.ITEM, new ItemStack(Items.SPRUCE_PLANKS)), this);
                 }
             }
         }
@@ -173,7 +178,7 @@ public class VanguardServant extends AbstractSkeletonServant {
     public void setMeleeAttacking(boolean attacking) {
         this.setVanguardFlags(1, attacking);
         this.attackTick = 0;
-        this.level.broadcastEntityEvent(this, (byte) 5);
+        this.level().broadcastEntityEvent(this, (byte) 5);
     }
 
     protected SoundEvent getAmbientSound() {
@@ -206,7 +211,7 @@ public class VanguardServant extends AbstractSkeletonServant {
         return ModEntityType.VANGUARD_SERVANT.get();
     }
 
-    public List<AnimationState> getAnimations(){
+    public List<AnimationState> getAnimations() {
         List<AnimationState> animationStates = new ArrayList<>();
         animationStates.add(this.idleAnimationState);
         animationStates.add(this.walkAnimationState);
@@ -215,16 +220,16 @@ public class VanguardServant extends AbstractSkeletonServant {
         return animationStates;
     }
 
-    public void stopAllAnimations(){
-        for (AnimationState animationState : this.getAnimations()){
+    public void stopAllAnimations() {
+        for (AnimationState animationState : this.getAnimations()) {
             animationState.stop();
         }
     }
 
     public void tick() {
         super.tick();
-        if (this.level.isClientSide){
-            if (this.isAlive()){
+        if (this.level().isClientSide) {
+            if (this.isAlive()) {
                 if (!this.isMeleeAttacking()) {
                     this.attackAnimationState.stop();
                     if (!this.isMoving()) {
@@ -251,14 +256,14 @@ public class VanguardServant extends AbstractSkeletonServant {
         if (this.isMeleeAttacking()) {
             ++this.attackTick;
         }
-        if (this.attackTick > 20){
+        if (this.attackTick > 20) {
             this.setMeleeAttacking(false);
         }
     }
 
     @Override
     public boolean hurt(DamageSource source, float amount) {
-        if (!this.level.isClientSide) {
+        if (!this.level().isClientSide) {
             if (this.hasShield() && !source.is(DamageTypeTags.BYPASSES_INVULNERABILITY)) {
                 this.destroyShield();
                 return false;
@@ -288,12 +293,12 @@ public class VanguardServant extends AbstractSkeletonServant {
 
     @Override
     public void handleEntityEvent(byte p_21375_) {
-        if (p_21375_ == 4){
+        if (p_21375_ == 4) {
             this.stopAllAnimations();
             this.attackAnimationState.start(this.tickCount);
-        } else if (p_21375_ == 5){
+        } else if (p_21375_ == 5) {
             this.attackTick = 0;
-        } else if (p_21375_ == 6){
+        } else if (p_21375_ == 6) {
             this.setShield(true);
             this.setShieldHealth(1);
         } else {
@@ -302,22 +307,23 @@ public class VanguardServant extends AbstractSkeletonServant {
     }
 
     public boolean doHurtTarget(Entity p_21372_) {
-        float f = (float)this.getAttributeValue(Attributes.ATTACK_DAMAGE);
-        float f1 = (float)this.getAttributeValue(Attributes.ATTACK_KNOCKBACK);
+        float f = (float) this.getAttributeValue(Attributes.ATTACK_DAMAGE);
+        float f1 = (float) this.getAttributeValue(Attributes.ATTACK_KNOCKBACK);
         if (p_21372_ instanceof LivingEntity) {
-            f += EnchantmentHelper.getDamageBonus(this.getMainHandItem(), ((LivingEntity)p_21372_).getMobType());
-            f1 += (float)EnchantmentHelper.getKnockbackBonus(this);
+            f += EnchantmentHelper.getDamageBonus(this.getMainHandItem(), ((LivingEntity) p_21372_).getMobType());
+            f1 += (float) EnchantmentHelper.getKnockbackBonus(this);
         }
 
         int i = EnchantmentHelper.getFireAspect(this);
         if (i > 0) {
-            p_21372_.setSecondsOnFire(i * 4);
+            p_21372_.igniteForSeconds(i * 4);
         }
 
         boolean flag = p_21372_.hurt(this.getServantAttack(), f);
         if (flag) {
             if (f1 > 0.0F && p_21372_ instanceof LivingEntity living) {
-                living.knockback((double)(f1 * 0.5F), (double)Mth.sin(this.getYRot() * ((float)Math.PI / 180F)), (double)(-Mth.cos(this.getYRot() * ((float)Math.PI / 180F))));
+                living.knockback((double) (f1 * 0.5F), (double) Mth.sin(this.getYRot() * ((float) Math.PI / 180F)),
+                        (double) (-Mth.cos(this.getYRot() * ((float) Math.PI / 180F))));
             }
 
             this.doEnchantDamageEffects(this, p_21372_);
@@ -335,8 +341,9 @@ public class VanguardServant extends AbstractSkeletonServant {
         return this.getBbWidth() * 6.0F * this.getBbWidth() * 6.0F + enemy.getBbWidth();
     }
 
-    public boolean targetClose(LivingEntity enemy, double distToEnemySqr){
-        return (distToEnemySqr <= this.getAttackReachSqr(enemy) || this.getBoundingBox().intersects(enemy.getBoundingBox())) && this.hasLineOfSight(enemy);
+    public boolean targetClose(LivingEntity enemy, double distToEnemySqr) {
+        return (distToEnemySqr <= this.getAttackReachSqr(enemy)
+                || this.getBoundingBox().intersects(enemy.getBoundingBox())) && this.hasLineOfSight(enemy);
     }
 
     public InteractionResult mobInteract(Player pPlayer, InteractionHand pHand) {
@@ -349,24 +356,26 @@ public class VanguardServant extends AbstractSkeletonServant {
                 }
                 this.playSound(SoundEvents.SKELETON_STEP, 1.0F, 1.25F);
                 this.heal(2.0F);
-                if (this.level instanceof ServerLevel serverLevel) {
+                if (this.level() instanceof ServerLevel serverLevel) {
                     for (int i = 0; i < 7; ++i) {
                         double d0 = this.random.nextGaussian() * 0.02D;
                         double d1 = this.random.nextGaussian() * 0.02D;
                         double d2 = this.random.nextGaussian() * 0.02D;
-                        serverLevel.sendParticles(ModParticleTypes.HEAL_EFFECT.get(), this.getRandomX(1.0D), this.getRandomY() + 0.5D, this.getRandomZ(1.0D), 0, d0, d1, d2, 0.5F);
+                        serverLevel.sendParticles(ModParticleTypes.HEAL_EFFECT.get(), this.getRandomX(1.0D),
+                                this.getRandomY() + 0.5D, this.getRandomZ(1.0D), 0, d0, d1, d2, 0.5F);
                     }
                 }
                 return InteractionResult.SUCCESS;
             }
-            if (!this.level.isClientSide) {
-                if (!this.hasShield() && itemstack.is(ItemTags.PLANKS) && this.getTarget() == null && this.hurtTime <= 0) {
+            if (!this.level().isClientSide) {
+                if (!this.hasShield() && itemstack.is(ItemTags.PLANKS) && this.getTarget() == null
+                        && this.hurtTime <= 0) {
                     if (!pPlayer.getAbilities().instabuild) {
                         itemstack.shrink(1);
                     }
                     this.setShield(true);
                     this.setShieldHealth(1);
-                    this.level.broadcastEntityEvent(this, (byte) 6);
+                    this.level().broadcastEntityEvent(this, (byte) 6);
                     this.playSound(SoundEvents.ARMOR_EQUIP_GENERIC, 1.0F, 1.0F);
                     return InteractionResult.SUCCESS;
                 }
@@ -402,14 +411,16 @@ public class VanguardServant extends AbstractSkeletonServant {
             }
 
             VanguardServant.this.lookControl.setLookAt(livingentity, 30.0F, 30.0F);
-            double d0 = VanguardServant.this.distanceToSqr(livingentity.getX(), livingentity.getY(), livingentity.getZ());
+            double d0 = VanguardServant.this.distanceToSqr(livingentity.getX(), livingentity.getY(),
+                    livingentity.getZ());
 
             if (--this.delayCounter <= 0 && !VanguardServant.this.targetClose(livingentity, d0)) {
                 this.delayCounter = 10;
                 VanguardServant.this.getNavigation().moveTo(livingentity, SPEED);
             }
 
-            this.checkAndPerformAttack(livingentity, VanguardServant.this.distanceToSqr(livingentity.getX(), livingentity.getBoundingBox().minY, livingentity.getZ()));
+            this.checkAndPerformAttack(livingentity, VanguardServant.this.distanceToSqr(livingentity.getX(),
+                    livingentity.getBoundingBox().minY, livingentity.getZ()));
         }
 
         @Override
@@ -448,7 +459,7 @@ public class VanguardServant extends AbstractSkeletonServant {
         @Override
         public void start() {
             VanguardServant.this.setMeleeAttacking(true);
-            VanguardServant.this.level.broadcastEntityEvent(VanguardServant.this, (byte) 4);
+            VanguardServant.this.level().broadcastEntityEvent(VanguardServant.this, (byte) 4);
         }
 
         @Override
@@ -460,16 +471,23 @@ public class VanguardServant extends AbstractSkeletonServant {
         public void tick() {
             if (VanguardServant.this.getTarget() != null && VanguardServant.this.getTarget().isAlive()) {
                 LivingEntity livingentity = VanguardServant.this.getTarget();
-                double d0 = VanguardServant.this.distanceToSqr(livingentity.getX(), livingentity.getY(), livingentity.getZ());
-                VanguardServant.this.getLookControl().setLookAt(livingentity, VanguardServant.this.getMaxHeadYRot(), VanguardServant.this.getMaxHeadXRot());
+                double d0 = VanguardServant.this.distanceToSqr(livingentity.getX(), livingentity.getY(),
+                        livingentity.getZ());
+                VanguardServant.this.getLookControl().setLookAt(livingentity, VanguardServant.this.getMaxHeadYRot(),
+                        VanguardServant.this.getMaxHeadXRot());
                 VanguardServant.this.setYBodyRot(VanguardServant.this.getYHeadRot());
                 if (VanguardServant.this.attackTick == 8) {
                     if (VanguardServant.this.targetClose(livingentity, d0)) {
-                        if (VanguardServant.this.doHurtTarget(livingentity)){
+                        if (VanguardServant.this.doHurtTarget(livingentity)) {
                             VanguardServant.this.playSound(ModSounds.VANGUARD_SPEAR.get());
-                            for (Entity entity : getTargets(VanguardServant.this.level, VanguardServant.this, 3)){
-                                if (entity instanceof LivingEntity living && VanguardServant.this.hasLineOfSight(living)){
-                                    if (!living.isAlliedTo(VanguardServant.this) && !VanguardServant.this.isAlliedTo(living) && living != livingentity && (!(livingentity instanceof ArmorStand) || !((ArmorStand)livingentity).isMarker()) && VanguardServant.this.canAttack(livingentity)){
+                            for (Entity entity : getTargets(VanguardServant.this.level(), VanguardServant.this, 3)) {
+                                if (entity instanceof LivingEntity living
+                                        && VanguardServant.this.hasLineOfSight(living)) {
+                                    if (!living.isAlliedTo(VanguardServant.this)
+                                            && !VanguardServant.this.isAlliedTo(living) && living != livingentity
+                                            && (!(livingentity instanceof ArmorStand)
+                                                    || !((ArmorStand) livingentity).isMarker())
+                                            && VanguardServant.this.canAttack(livingentity)) {
                                         VanguardServant.this.doHurtTarget(living);
                                     }
                                 }
@@ -483,11 +501,13 @@ public class VanguardServant extends AbstractSkeletonServant {
         public static List<Entity> getTargets(Level level, LivingEntity pSource, double pRange) {
             List<Entity> list = new ArrayList<>();
             Vec3 lookVec = pSource.getViewVector(1.0F);
-            double[] lookRange = new double[] {lookVec.x() * pRange, lookVec.y() * pRange, lookVec.z() * pRange};
-            List<Entity> possibleList = level.getEntities(pSource, pSource.getBoundingBox().expandTowards(lookRange[0], lookRange[1], lookRange[2]));
+            double[] lookRange = new double[] { lookVec.x() * pRange, lookVec.y() * pRange, lookVec.z() * pRange };
+            List<Entity> possibleList = level.getEntities(pSource,
+                    pSource.getBoundingBox().expandTowards(lookRange[0], lookRange[1], lookRange[2]));
 
             for (Entity hit : possibleList) {
-                if (hit.isPickable() && hit != pSource && EntitySelector.NO_CREATIVE_OR_SPECTATOR.and(EntitySelector.LIVING_ENTITY_STILL_ALIVE).test(hit)) {
+                if (hit.isPickable() && hit != pSource && EntitySelector.NO_CREATIVE_OR_SPECTATOR
+                        .and(EntitySelector.LIVING_ENTITY_STILL_ALIVE).test(hit)) {
                     list.add(hit);
                 }
             }

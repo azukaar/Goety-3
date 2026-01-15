@@ -37,36 +37,50 @@ import org.jetbrains.annotations.Nullable;
 import java.util.UUID;
 
 public class ResonanceCrystalBlock extends BaseEntityBlock {
+    public static final com.mojang.serialization.MapCodec<ResonanceCrystalBlock> CODEC = simpleCodec(
+            ResonanceCrystalBlock::new);
     public static final BooleanProperty POWERED = BlockStateProperties.POWERED;
     public static final BooleanProperty UNSTABLE = BlockStateProperties.UNSTABLE;
 
+    @Override
+    public com.mojang.serialization.MapCodec<ResonanceCrystalBlock> codec() {
+        return CODEC;
+    }
+
     public ResonanceCrystalBlock() {
         super(ModBlocks.JadeStoneProperties());
-        this.registerDefaultState(this.stateDefinition.any().setValue(POWERED, Boolean.FALSE).setValue(UNSTABLE, Boolean.FALSE));
+        this.registerDefaultState(
+                this.stateDefinition.any().setValue(POWERED, Boolean.FALSE).setValue(UNSTABLE, Boolean.FALSE));
     }
 
     public RenderShape getRenderShape(BlockState state) {
         return RenderShape.MODEL;
     }
 
-    public InteractionResult use(BlockState pState, Level pLevel, BlockPos pPos, Player pPlayer, InteractionHand pHand, BlockHitResult pHit) {
-        if (pHand == InteractionHand.MAIN_HAND){
+    @Override
+    protected InteractionResult useWithoutItem(BlockState pState, Level pLevel, BlockPos pPos, Player pPlayer,
+            BlockHitResult pHit) {
+        InteractionHand pHand = InteractionHand.MAIN_HAND;
+        if (pHand == InteractionHand.MAIN_HAND) {
             BlockEntity tileEntity = pLevel.getBlockEntity(pPos);
             if (tileEntity instanceof ResonanceCrystalBlockEntity crystalBlock) {
-                if (pPlayer.getMainHandItem().getItem() instanceof WaystoneItem){
-                    if (WaystoneItem.hasBlock(pPlayer.getMainHandItem()) && WaystoneItem.isSameDimension(crystalBlock, pPlayer.getMainHandItem())){
+                if (pPlayer.getMainHandItem().getItem() instanceof WaystoneItem) {
+                    if (WaystoneItem.hasBlock(pPlayer.getMainHandItem())
+                            && WaystoneItem.isSameDimension(crystalBlock, pPlayer.getMainHandItem())) {
                         GlobalPos globalPos = WaystoneItem.getPosition(pPlayer.getMainHandItem());
-                        if (globalPos != null){
-                            if (globalPos.pos() != pPos && globalPos.pos().distToCenterSqr(pPos.getCenter()) <= Mth.square(64)){
+                        if (globalPos != null) {
+                            if (globalPos.pos() != pPos
+                                    && globalPos.pos().distToCenterSqr(pPos.getCenter()) <= Mth.square(64)) {
                                 crystalBlock.addBlockPos(globalPos.pos());
                                 pPlayer.playSound(SoundEvents.ARROW_HIT_PLAYER, 1.0F, 0.45F);
-                                pPlayer.level.playLocalSound(pPos.getX(), pPos.getY(), pPos.getZ(), SoundEvents.ARROW_HIT_PLAYER, SoundSource.PLAYERS, 1.0F, 0.45F, false);
+                                pPlayer.level().playLocalSound(pPos.getX(), pPos.getY(), pPos.getZ(),
+                                        SoundEvents.ARROW_HIT_PLAYER, SoundSource.PLAYERS, 1.0F, 0.45F, false);
                             }
                         }
                         return InteractionResult.sidedSuccess(pLevel.isClientSide);
                     }
-                } else if (pPlayer.getMainHandItem().isEmpty()){
-                    if (!crystalBlock.getBlockPosList().isEmpty()){
+                } else if (pPlayer.getMainHandItem().isEmpty()) {
+                    if (!crystalBlock.getBlockPosList().isEmpty()) {
                         if (pPlayer.isCrouching() || pPlayer.isShiftKeyDown()) {
                             crystalBlock.clearBlocks();
                             pLevel.playSound(null, pPos, ModSounds.SPELL_FAIL.get(), SoundSource.BLOCKS, 0.25F, 2.0F);
@@ -79,17 +93,18 @@ public class ResonanceCrystalBlock extends BaseEntityBlock {
                 }
             }
         }
-        return super.use(pState, pLevel, pPos, pPlayer, pHand, pHit);
+        return super.useWithoutItem(pState, pLevel, pPos, pPlayer, pHit);
     }
 
-    public void setPlacedBy(Level pLevel, BlockPos pPos, BlockState pState, @javax.annotation.Nullable LivingEntity pPlacer, ItemStack pStack) {
+    public void setPlacedBy(Level pLevel, BlockPos pPos, BlockState pState,
+            @javax.annotation.Nullable LivingEntity pPlacer, ItemStack pStack) {
         super.setPlacedBy(pLevel, pPos, pState, pPlacer, pStack);
         BlockEntity tileentity = pLevel.getBlockEntity(pPos);
-        if (pPlacer instanceof Player){
+        if (pPlacer instanceof Player) {
             if (pStack.getItem() instanceof ResonanceBlockItem) {
                 if (tileentity instanceof ResonanceCrystalBlockEntity blockEntity) {
-                    if (!ResonanceBlockItem.getGolems(pStack, pLevel).isEmpty()){
-                        for (SquallGolem squallGolem : ResonanceBlockItem.getGolems(pStack, pLevel)){
+                    if (!ResonanceBlockItem.getGolems(pStack, pLevel).isEmpty()) {
+                        for (SquallGolem squallGolem : ResonanceBlockItem.getGolems(pStack, pLevel)) {
                             blockEntity.addSquallGolem(squallGolem);
                         }
                     }
@@ -98,7 +113,8 @@ public class ResonanceCrystalBlock extends BaseEntityBlock {
         }
     }
 
-    public void playerDestroy(Level pLevel, Player pPlayer, BlockPos pPos, BlockState pState, @javax.annotation.Nullable BlockEntity pTe, ItemStack pStack) {
+    public void playerDestroy(Level pLevel, Player pPlayer, BlockPos pPos, BlockState pState,
+            @javax.annotation.Nullable BlockEntity pTe, ItemStack pStack) {
         ItemStack itemStack = new ItemStack(this);
         if (pState.getValue(UNSTABLE)) {
             for (int i = 0; i < 4; ++i) {
@@ -112,7 +128,8 @@ public class ResonanceCrystalBlock extends BaseEntityBlock {
         super.playerDestroy(pLevel, pPlayer, pPos, pState, pTe, pStack);
     }
 
-    public ItemStack getCloneItemStack(BlockState state, HitResult target, BlockGetter world, BlockPos pos, Player player) {
+    public ItemStack getCloneItemStack(BlockState state, HitResult target, BlockGetter world, BlockPos pos,
+            Player player) {
         ItemStack itemStack = new ItemStack(this);
         BlockEntity tileEntity = world.getBlockEntity(pos);
         if (tileEntity instanceof ResonanceCrystalBlockEntity blockEntity) {
@@ -121,8 +138,8 @@ public class ResonanceCrystalBlock extends BaseEntityBlock {
         return itemStack;
     }
 
-    public void setItemStackTags(ItemStack itemStack, ResonanceCrystalBlockEntity tileEntity){
-        if (!tileEntity.getUuids().isEmpty()){
+    public void setItemStackTags(ItemStack itemStack, ResonanceCrystalBlockEntity tileEntity) {
+        if (!tileEntity.getUuids().isEmpty()) {
             for (UUID uuid : tileEntity.getUuids()) {
                 ResonanceBlockItem.setUUIDs(itemStack, uuid);
             }
@@ -154,7 +171,8 @@ public class ResonanceCrystalBlock extends BaseEntityBlock {
 
     @Nullable
     @Override
-    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level p_153212_, BlockState p_153213_, BlockEntityType<T> p_153214_) {
+    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level p_153212_, BlockState p_153213_,
+            BlockEntityType<T> p_153214_) {
         return (world, pos, state, blockEntity) -> {
             if (blockEntity instanceof ResonanceCrystalBlockEntity blockEntity1)
                 blockEntity1.tick();

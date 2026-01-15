@@ -29,8 +29,9 @@ public class SoulAbsorberRecipes implements Recipe<Container> {
     }
 
     @Override
-    public ItemStack assemble(Container pInv, RegistryAccess pAccess) {
-        return ItemStack.EMPTY;
+
+    public ItemStack assemble(Container pInv, net.minecraft.core.HolderLookup.Provider pAccess) {
+        return this.getResultItem(pAccess);
     }
 
     public boolean canCraftInDimensions(int pWidth, int pHeight) {
@@ -47,7 +48,7 @@ public class SoulAbsorberRecipes implements Recipe<Container> {
         return this.cookingTime;
     }
 
-    public int getSoulIncrease(){
+    public int getSoulIncrease() {
         return this.soulIncrease;
     }
 

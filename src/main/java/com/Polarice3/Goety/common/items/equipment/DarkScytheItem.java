@@ -38,13 +38,17 @@ public class DarkScytheItem extends TieredItem {
         ImmutableMultimap.Builder<Attribute, AttributeModifier> builder = ImmutableMultimap.builder();
         initialDamage = ItemConfig.ScytheBaseDamage.get().floatValue() + itemTier.getAttackDamageBonus();
         double attackSpeed = 4.0D - ItemConfig.ScytheAttackSpeed.get();
-        builder.put(Attributes.ATTACK_DAMAGE, new AttributeModifier(BASE_ATTACK_DAMAGE_UUID, "Tool modifier", initialDamage - 1.0D, AttributeModifier.Operation.ADDITION));
-        builder.put(Attributes.ATTACK_SPEED, new AttributeModifier(BASE_ATTACK_SPEED_UUID, "Tool modifier", -attackSpeed, AttributeModifier.Operation.ADDITION));
-        builder.put(NeoForgeMod.ENTITY_REACH.get(), new AttributeModifier(ModUUIDUtil.createUUID("item.goety.scythe.reach"), "Tool modifier", 1.0F, AttributeModifier.Operation.ADDITION));
+        builder.put(Attributes.ATTACK_DAMAGE, new AttributeModifier(Item.BASE_ATTACK_DAMAGE_ID, initialDamage - 1.0D,
+                AttributeModifier.Operation.ADDITION));
+        builder.put(Attributes.ATTACK_SPEED,
+                new AttributeModifier(Item.BASE_ATTACK_SPEED_ID, -attackSpeed, AttributeModifier.Operation.ADDITION));
+        builder.put(NeoForgeMod.ENTITY_REACH.get(),
+                new AttributeModifier(ModUUIDUtil.createUUID("item.goety.scythe.reach"), "Tool modifier", 1.0F,
+                        AttributeModifier.Operation.ADDITION));
         this.scytheAttributes = builder.build();
     }
 
-    public DarkScytheItem(){
+    public DarkScytheItem() {
         this(ModTiers.SPECIAL);
     }
 
@@ -52,7 +56,7 @@ public class DarkScytheItem extends TieredItem {
         return initialDamage;
     }
 
-    public boolean getMineBlocks(Level pLevel, BlockState pState, BlockPos pPos){
+    public boolean getMineBlocks(Level pLevel, BlockState pState, BlockPos pPos) {
         if (pState.getDestroySpeed(pLevel, pPos) <= -1.0F) {
             return false;
         }
@@ -64,28 +68,29 @@ public class DarkScytheItem extends TieredItem {
     }
 
     public boolean hurtEnemy(ItemStack pStack, LivingEntity pTarget, LivingEntity pAttacker) {
-        pStack.hurtAndBreak(1, pAttacker, (p_220045_0_) ->
-                p_220045_0_.broadcastBreakEvent(EquipmentSlot.MAINHAND));
-        if (pAttacker instanceof Player player){
+        pStack.hurtAndBreak(1, pAttacker, (p_220045_0_) -> p_220045_0_.broadcastBreakEvent(EquipmentSlot.MAINHAND));
+        if (pAttacker instanceof Player player) {
             this.attackMobs(pStack, pTarget, player);
         }
         return true;
     }
 
-    public boolean mineBlock(ItemStack pStack, Level pLevel, BlockState pState, BlockPos pPos, LivingEntity pEntityLiving) {
+    public boolean mineBlock(ItemStack pStack, Level pLevel, BlockState pState, BlockPos pPos,
+            LivingEntity pEntityLiving) {
         if (pState.getDestroySpeed(pLevel, pPos) != 0.0F) {
-            pStack.hurtAndBreak(this.getMineBlocks(pLevel, pState, pPos) ? 1 : 2, pEntityLiving, (p_220044_0_) ->
-                    p_220044_0_.broadcastBreakEvent(EquipmentSlot.MAINHAND));
+            pStack.hurtAndBreak(this.getMineBlocks(pLevel, pState, pPos) ? 1 : 2, pEntityLiving,
+                    (p_220044_0_) -> p_220044_0_.broadcastBreakEvent(EquipmentSlot.MAINHAND));
         }
-        if (this.getMineBlocks(pLevel, pState, pPos)){
-            pLevel.playSound((Player) null, pPos.getX(), pPos.getY(), pPos.getZ(), ModSounds.SCYTHE_HIT.get(), pEntityLiving.getSoundSource(), 1.0F, 1.0F);
-            for (BlockPos blockPos : BlockFinder.multiBlockBreak(pEntityLiving, pPos, 2, 2, 2)){
+        if (this.getMineBlocks(pLevel, pState, pPos)) {
+            pLevel.playSound((Player) null, pPos.getX(), pPos.getY(), pPos.getZ(), ModSounds.SCYTHE_HIT.get(),
+                    pEntityLiving.getSoundSource(), 1.0F, 1.0F);
+            for (BlockPos blockPos : BlockFinder.multiBlockBreak(pEntityLiving, pPos, 2, 2, 2)) {
                 BlockState blockstate = pLevel.getBlockState(blockPos);
-                if (this.getMineBlocks(pLevel, blockstate, blockPos)){
-                    if (BlockFinder.breakBlock(pLevel, blockPos, pStack, pEntityLiving)){
+                if (this.getMineBlocks(pLevel, blockstate, blockPos)) {
+                    if (BlockFinder.breakBlock(pLevel, blockPos, pStack, pEntityLiving)) {
                         if (blockstate.getDestroySpeed(pLevel, blockPos) != 0) {
-                            pStack.hurtAndBreak(1, pEntityLiving, (p_220044_0_)
-                                    -> p_220044_0_.broadcastBreakEvent(EquipmentSlot.MAINHAND));
+                            pStack.hurtAndBreak(1, pEntityLiving,
+                                    (p_220044_0_) -> p_220044_0_.broadcastBreakEvent(EquipmentSlot.MAINHAND));
                         }
                     }
                 }
@@ -95,12 +100,12 @@ public class DarkScytheItem extends TieredItem {
         return true;
     }
 
-    public void attackMobs(ItemStack pStack, LivingEntity pTarget, Player pPlayer){
+    public void attackMobs(ItemStack pStack, LivingEntity pTarget, Player pPlayer) {
         int enchantment = pStack.getEnchantmentLevel(ModEnchantments.SOUL_EATER.get());
         int soulEater = Mth.clamp(enchantment + 1, 1, 10);
         SEHelper.increaseSouls(pPlayer, ItemConfig.DarkScytheSouls.get() * soulEater);
 
-        float f = (float)pPlayer.getAttributeValue(Attributes.ATTACK_DAMAGE);
+        float f = (float) pPlayer.getAttributeValue(Attributes.ATTACK_DAMAGE);
         float f1 = EnchantmentHelper.getDamageBonus(pPlayer.getMainHandItem(), pTarget.getMobType());
         float f2 = pPlayer.getAttackStrengthScale(0.5F);
         f = f * (0.2F + f2 * f2 * 0.8F);
@@ -114,17 +119,21 @@ public class DarkScytheItem extends TieredItem {
             if (f2 > 0.9F) {
                 area = 2.0D;
             }
-            for (LivingEntity livingentity : pPlayer.level.getEntitiesOfClass(LivingEntity.class, pTarget.getBoundingBox().inflate(area, 0.25D, area))) {
-                if (livingentity != pPlayer && livingentity != pTarget && !pPlayer.isAlliedTo(livingentity) && (!(livingentity instanceof ArmorStand) || !((ArmorStand) livingentity).isMarker()) && pPlayer.distanceToSqr(livingentity) < 16.0D && livingentity != pPlayer.getVehicle()) {
-                    livingentity.knockback(0.4F, (double) Mth.sin(pPlayer.getYRot() * ((float) Math.PI / 180F)), (double) (-Mth.cos(pPlayer.getYRot() * ((float) Math.PI / 180F))));
+            for (LivingEntity livingentity : pPlayer.level.getEntitiesOfClass(LivingEntity.class,
+                    pTarget.getBoundingBox().inflate(area, 0.25D, area))) {
+                if (livingentity != pPlayer && livingentity != pTarget && !pPlayer.isAlliedTo(livingentity)
+                        && (!(livingentity instanceof ArmorStand) || !((ArmorStand) livingentity).isMarker())
+                        && pPlayer.distanceToSqr(livingentity) < 16.0D && livingentity != pPlayer.getVehicle()) {
+                    livingentity.knockback(0.4F, (double) Mth.sin(pPlayer.getYRot() * ((float) Math.PI / 180F)),
+                            (double) (-Mth.cos(pPlayer.getYRot() * ((float) Math.PI / 180F))));
                     if (livingentity.hurt(livingentity.damageSources().playerAttack(pPlayer), f3)) {
                         if (j > 0) {
-                            livingentity.setSecondsOnFire(j * 4);
+                            livingentity.igniteForSeconds(j * 4);
                         }
-                        pStack.hurtAndBreak(1, pPlayer, (p_220045_0_) ->
-                                p_220045_0_.broadcastBreakEvent(EquipmentSlot.MAINHAND));
-                        if (livingentity instanceof IOwned){
-                            if (((IOwned) livingentity).getTrueOwner() != pPlayer){
+                        pStack.hurtAndBreak(1, pPlayer,
+                                (p_220045_0_) -> p_220045_0_.broadcastBreakEvent(EquipmentSlot.MAINHAND));
+                        if (livingentity instanceof IOwned) {
+                            if (((IOwned) livingentity).getTrueOwner() != pPlayer) {
                                 SEHelper.increaseSouls(pPlayer, ItemConfig.DarkScytheSouls.get() * soulEater);
                             }
                         } else {
@@ -137,7 +146,8 @@ public class DarkScytheItem extends TieredItem {
             }
         }
 
-        pPlayer.level.playSound((Player) null, pPlayer.getX(), pPlayer.getY(), pPlayer.getZ(), ModSounds.SCYTHE_SWING.get(), pPlayer.getSoundSource(), 1.0F, 1.0F);
+        pPlayer.level.playSound((Player) null, pPlayer.getX(), pPlayer.getY(), pPlayer.getZ(),
+                ModSounds.SCYTHE_SWING.get(), pPlayer.getSoundSource(), 1.0F, 1.0F);
         pPlayer.sweepAttack();
     }
 
@@ -151,12 +161,14 @@ public class DarkScytheItem extends TieredItem {
     }
 
     public boolean canApplyAtEnchantingTable(ItemStack stack, Enchantment enchantment) {
-        // TODO(1.21): Enchantments are data-driven; re-implement custom allowlist if needed.
+        // TODO(1.21): Enchantments are data-driven; re-implement custom allowlist if
+        // needed.
         return true;
     }
 
     public Multimap<Attribute, AttributeModifier> getDefaultAttributeModifiers(EquipmentSlot equipmentSlot) {
-        return equipmentSlot == EquipmentSlot.MAINHAND ? this.scytheAttributes : super.getDefaultAttributeModifiers(equipmentSlot);
+        return equipmentSlot == EquipmentSlot.MAINHAND ? this.scytheAttributes
+                : super.getDefaultAttributeModifiers(equipmentSlot);
     }
 
     @Override

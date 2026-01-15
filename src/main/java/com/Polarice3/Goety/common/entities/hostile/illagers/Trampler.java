@@ -46,6 +46,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.CropBlock;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.GameRules;
 import net.minecraft.world.phys.AABB;
 import net.neoforged.neoforge.common.NeoForgeMod;
 import org.jetbrains.annotations.NotNull;
@@ -55,8 +56,10 @@ import java.util.UUID;
 
 public class Trampler extends Raider implements ICharger, ICustomAttributes {
     private static final UUID ARMOR_MODIFIER_UUID = ModUUIDUtil.createUUID("entity.goety.trampler.armor");
-    private static final EntityDataAccessor<Boolean> DATA_STANDING_ID = SynchedEntityData.defineId(Trampler.class, EntityDataSerializers.BOOLEAN);
-    private static final EntityDataAccessor<Boolean> DATA_CHARGING = SynchedEntityData.defineId(Trampler.class, EntityDataSerializers.BOOLEAN);
+    private static final EntityDataAccessor<Boolean> DATA_STANDING_ID = SynchedEntityData.defineId(Trampler.class,
+            EntityDataSerializers.BOOLEAN);
+    private static final EntityDataAccessor<Boolean> DATA_CHARGING = SynchedEntityData.defineId(Trampler.class,
+            EntityDataSerializers.BOOLEAN);
     private float clientSideStandAnimationO;
     private float clientSideStandAnimation;
     private float standAnim;
@@ -80,14 +83,16 @@ public class Trampler extends Raider implements ICharger, ICustomAttributes {
         this.goalSelector.addGoal(10, new LookAtPlayerGoal(this, Mob.class, 8.0F));
         this.targetSelector.addGoal(2, (new HurtByTargetGoal(this, Raider.class)).setAlertOthers());
         this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, Player.class, true));
-        this.targetSelector.addGoal(4, new NearestAttackableTargetGoal<>(this, AbstractVillager.class, true, (p_199899_) -> {
-            return !p_199899_.isBaby();
-        }));
+        this.targetSelector.addGoal(4,
+                new NearestAttackableTargetGoal<>(this, AbstractVillager.class, true, (p_199899_) -> {
+                    return !p_199899_.isBaby();
+                }));
         this.targetSelector.addGoal(4, new NearestAttackableTargetGoal<>(this, IronGolem.class, true));
     }
 
     protected void updateControlFlags() {
-        boolean flag = !(this.getControllingPassenger() instanceof Mob) || this.getControllingPassenger().getType().is(EntityTypeTags.RAIDERS);
+        boolean flag = !(this.getControllingPassenger() instanceof Mob)
+                || this.getControllingPassenger().getType().is(EntityTypeTags.RAIDERS);
         boolean flag1 = !(this.getVehicle() instanceof Boat);
         this.goalSelector.setControlFlag(Goal.Flag.MOVE, flag);
         this.goalSelector.setControlFlag(Goal.Flag.JUMP, flag && flag1);
@@ -106,7 +111,7 @@ public class Trampler extends Raider implements ICharger, ICustomAttributes {
                 .add(Attributes.ATTACK_DAMAGE, AttributesConfig.TramplerDamage.get());
     }
 
-    public void setConfigurableAttributes(){
+    public void setConfigurableAttributes() {
         MobUtil.setBaseAttributes(this.getAttribute(Attributes.MAX_HEALTH), AttributesConfig.TramplerHealth.get());
         MobUtil.setBaseAttributes(this.getAttribute(Attributes.ARMOR), AttributesConfig.TramplerArmor.get());
         MobUtil.setBaseAttributes(this.getAttribute(Attributes.ATTACK_DAMAGE), AttributesConfig.TramplerDamage.get());
@@ -121,7 +126,7 @@ public class Trampler extends Raider implements ICharger, ICustomAttributes {
     public void addAdditionalSaveData(CompoundTag pCompound) {
         super.addAdditionalSaveData(pCompound);
         ItemStack itemStack = this.getItemBySlot(EquipmentSlot.CHEST);
-        if(!itemStack.isEmpty()) {
+        if (!itemStack.isEmpty()) {
             CompoundTag compoundTag = new CompoundTag();
             itemStack.save(compoundTag);
             pCompound.put("ArmorItem", compoundTag);
@@ -131,7 +136,7 @@ public class Trampler extends Raider implements ICharger, ICustomAttributes {
     public void readAdditionalSaveData(CompoundTag pCompound) {
         super.readAdditionalSaveData(pCompound);
         CompoundTag armorItem = pCompound.getCompound("ArmorItem");
-        if(!armorItem.isEmpty()) {
+        if (!armorItem.isEmpty()) {
             this.setArmorEquipment(ItemStack.of(armorItem));
         }
         this.setConfigurableAttributes();
@@ -153,11 +158,13 @@ public class Trampler extends Raider implements ICharger, ICustomAttributes {
     public void positionRider(Entity rider, Entity.MoveFunction p_19958_) {
         super.positionRider(rider, p_19958_);
         if (this.standAnimO > 0.0F) {
-            float f3 = Mth.sin(this.yBodyRot * ((float)Math.PI / 180F));
-            float f = Mth.cos(this.yBodyRot * ((float)Math.PI / 180F));
+            float f3 = Mth.sin(this.yBodyRot * ((float) Math.PI / 180F));
+            float f = Mth.cos(this.yBodyRot * ((float) Math.PI / 180F));
             float f1 = 0.7F * this.standAnimO;
             float f2 = 0.15F * this.standAnimO;
-            rider.setPos(this.getX() + (double)(f1 * f3), this.getY() + this.getPassengersRidingOffset() + rider.getMyRidingOffset() + (double)f2, this.getZ() - (double)(f1 * f));
+            rider.setPos(this.getX() + (double) (f1 * f3),
+                    this.getY() + this.getPassengersRidingOffset() + rider.getMyRidingOffset() + (double) f2,
+                    this.getZ() - (double) (f1 * f));
         }
         if (rider instanceof LivingEntity living) {
             living.yBodyRot = this.yBodyRot;
@@ -205,7 +212,8 @@ public class Trampler extends Raider implements ICharger, ICustomAttributes {
     }
 
     private boolean isWoodSoundType(SoundType p_278280_) {
-        return p_278280_ == SoundType.WOOD || p_278280_ == SoundType.NETHER_WOOD || p_278280_ == SoundType.STEM || p_278280_ == SoundType.CHERRY_WOOD || p_278280_ == SoundType.BAMBOO_WOOD;
+        return p_278280_ == SoundType.WOOD || p_278280_ == SoundType.NETHER_WOOD || p_278280_ == SoundType.STEM
+                || p_278280_ == SoundType.CHERRY_WOOD || p_278280_ == SoundType.BAMBOO_WOOD;
     }
 
     protected void playGallopSound(SoundType p_30560_) {
@@ -217,7 +225,7 @@ public class Trampler extends Raider implements ICharger, ICustomAttributes {
         if (!this.isNoAi()) {
             Entity entity = this.getFirstPassenger();
             if (entity instanceof LivingEntity) {
-                return (LivingEntity)entity;
+                return (LivingEntity) entity;
             }
         }
 
@@ -241,14 +249,15 @@ public class Trampler extends Raider implements ICharger, ICustomAttributes {
         }
     }
 
-    public void updateArmor(){
+    public void updateArmor() {
         AttributeInstance attribute = this.getAttribute(Attributes.ARMOR);
         if (attribute != null) {
             attribute.removeModifier(ARMOR_MODIFIER_UUID);
             if (this.isArmor(this.getArmor())) {
                 int i = ((TramplerArmorItem) this.getArmor().getItem()).getProtection();
                 if (i != 0) {
-                    attribute.addTransientModifier(new AttributeModifier(ARMOR_MODIFIER_UUID, "Ravager armor bonus", (double) i, AttributeModifier.Operation.ADDITION));
+                    attribute.addTransientModifier(new AttributeModifier(ARMOR_MODIFIER_UUID, "Ravager armor bonus",
+                            (double) i, AttributeModifier.Operation.ADDITION));
                 }
             }
         }
@@ -259,7 +268,8 @@ public class Trampler extends Raider implements ICharger, ICustomAttributes {
     }
 
     @Nullable
-    public SpawnGroupData finalizeSpawn(ServerLevelAccessor pLevel, DifficultyInstance pDifficulty, MobSpawnType pReason, @Nullable SpawnGroupData pSpawnData, @Nullable CompoundTag pDataTag) {
+    public SpawnGroupData finalizeSpawn(ServerLevelAccessor pLevel, DifficultyInstance pDifficulty,
+            MobSpawnType pReason, @Nullable SpawnGroupData pSpawnData, @Nullable CompoundTag pDataTag) {
         pSpawnData = super.finalizeSpawn(pLevel, pDifficulty, pReason, pSpawnData, pDataTag);
         if (MobsConfig.ArmoredTramplerRaid.get() && this.getCurrentRaid() != null) {
             int i = pLevel.getLevel().random.nextInt(2);
@@ -318,7 +328,8 @@ public class Trampler extends Raider implements ICharger, ICustomAttributes {
                 }
             } else {
                 this.clientSideStandAnimation = Mth.clamp(this.clientSideStandAnimation - 1.0F, 0.0F, 6.0F);
-                this.standAnim += (0.8F * this.standAnim * this.standAnim * this.standAnim - this.standAnim) * 0.6F - 0.05F;
+                this.standAnim += (0.8F * this.standAnim * this.standAnim * this.standAnim - this.standAnim) * 0.6F
+                        - 0.05F;
                 if (this.standAnim < 0.0F) {
                     this.standAnim = 0.0F;
                 }
@@ -340,7 +351,7 @@ public class Trampler extends Raider implements ICharger, ICustomAttributes {
                 instance.setBaseValue(Mth.lerp(0.1D, d1, d0));
             }
 
-            if (this.isCharging()){
+            if (this.isCharging()) {
                 this.walkAnimation.setSpeed(this.walkAnimation.speed() + 0.8F);
             }
 
@@ -348,7 +359,8 @@ public class Trampler extends Raider implements ICharger, ICustomAttributes {
                 boolean flag = false;
                 AABB aabb = this.getBoundingBox().inflate(0.2D);
 
-                for(BlockPos blockpos : BlockPos.betweenClosed(Mth.floor(aabb.minX), Mth.floor(aabb.minY), Mth.floor(aabb.minZ), Mth.floor(aabb.maxX), Mth.floor(aabb.maxY), Mth.floor(aabb.maxZ))) {
+                for (BlockPos blockpos : BlockPos.betweenClosed(Mth.floor(aabb.minX), Mth.floor(aabb.minY),
+                        Mth.floor(aabb.minZ), Mth.floor(aabb.maxX), Mth.floor(aabb.maxY), Mth.floor(aabb.maxZ))) {
                     BlockState blockstate = this.level.getBlockState(blockpos);
                     Block block = blockstate.getBlock();
                     if (block instanceof CropBlock) {
@@ -471,11 +483,11 @@ public class Trampler extends Raider implements ICharger, ICustomAttributes {
         }
 
         protected double getAttackReachSqr(LivingEntity p_29587_) {
-            return (double)(4.0F + p_29587_.getBbWidth());
+            return (double) (4.0F + p_29587_.getBbWidth());
         }
     }
 
-    public static class TramplerChargeGoal extends ChargeGoal{
+    public static class TramplerChargeGoal extends ChargeGoal {
 
         public TramplerChargeGoal(PathfinderMob mob) {
             super(mob, 1.2F, 4.0D, 32.0D, 5, 200);

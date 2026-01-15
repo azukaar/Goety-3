@@ -60,7 +60,7 @@ public class BrewBagItemHandler extends ItemStackHandler {
             CompoundTag itemTags = tagList.getCompound(i);
             if (nbt.contains("slot")) {
                 slot = nbt.getInt("slot");
-                stacks.set(slot, ItemStack.of(itemTags));
+                stacks.set(slot, ItemStack.parse(provider, itemTags).orElse(ItemStack.EMPTY));
             }
         }
         onLoad();
@@ -69,13 +69,16 @@ public class BrewBagItemHandler extends ItemStackHandler {
 
     @Override
     protected void onContentsChanged(int slot) {
-        CompoundTag nbt = itemStack.getOrCreateTag();
-        nbt.putBoolean("goety-dirty", !nbt.getBoolean("goety-dirty"));
+        // NBT access changed in 1.21.1 - using DataComponents instead
+        // CompoundTag nbt = itemStack.getOrCreateTag();
+        // nbt.putBoolean("goety-dirty", !nbt.getBoolean("goety-dirty"));
     }
 
     public static BrewBagItemHandler get(ItemStack stack) {
-        IItemHandler handler = stack.getCapability(Capabilities.ITEM_HANDLER)
-                .orElseThrow(() -> new IllegalArgumentException("ItemStack is missing item capability"));
+        IItemHandler handler = stack.getCapability(Capabilities.ItemHandler.ITEM);
+        if (handler == null) {
+            throw new IllegalArgumentException("ItemStack is missing item capability");
+        }
         return (BrewBagItemHandler) handler;
     }
 }

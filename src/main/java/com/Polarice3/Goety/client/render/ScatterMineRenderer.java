@@ -16,8 +16,10 @@ import net.minecraft.resources.ResourceLocation;
 public class ScatterMineRenderer<T extends ScatterMine> extends EntityRenderer<T> {
     private static final ResourceLocation TEXTURE = Goety.location("textures/entity/projectiles/scatter_mine.png");
     private static final ResourceLocation GLOW = Goety.location("textures/entity/projectiles/scatter_mine_glow.png");
-    private static final ResourceLocation GLOW_SPELL = Goety.location("textures/entity/projectiles/scatter_mine_glow_spell.png");
-    private static final ResourceLocation EXPLODE = Goety.location("textures/entity/projectiles/scatter_mine_explode.png");
+    private static final ResourceLocation GLOW_SPELL = Goety
+            .location("textures/entity/projectiles/scatter_mine_glow_spell.png");
+    private static final ResourceLocation EXPLODE = Goety
+            .location("textures/entity/projectiles/scatter_mine_explode.png");
     private final ScatterMineModel<T> model;
 
     public ScatterMineRenderer(EntityRendererProvider.Context p_i47208_1_) {
@@ -25,7 +27,8 @@ public class ScatterMineRenderer<T extends ScatterMine> extends EntityRenderer<T
         this.model = new ScatterMineModel<>(p_i47208_1_.bakeLayer(ModModelLayer.SCATTER_MINE));
     }
 
-    public void render(T pEntity, float entityYaw, float pPartialTicks, PoseStack pMatrixStack, MultiBufferSource bufferIn, int packedLightIn) {
+    public void render(T pEntity, float entityYaw, float pPartialTicks, PoseStack pMatrixStack,
+            MultiBufferSource bufferIn, int packedLightIn) {
         if (pEntity.growTick <= 0) {
             pMatrixStack.pushPose();
             pMatrixStack.mulPose(Axis.YP.rotationDegrees(90.0F - pEntity.getYRot()));
@@ -36,10 +39,12 @@ public class ScatterMineRenderer<T extends ScatterMine> extends EntityRenderer<T
             }
             pMatrixStack.scale(-scale, -scale, scale);
             pMatrixStack.translate(0.0D, -1.45D, 0.0D);
-            this.model.renderToBuffer(pMatrixStack, ivertexbuilder, packedLightIn, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 0.15F);
+            this.model.renderToBuffer(pMatrixStack, ivertexbuilder, packedLightIn, OverlayTexture.NO_OVERLAY,
+                    0x26FFFFFF);
             ResourceLocation resourceLocation = pEntity.isSpell() ? GLOW_SPELL : GLOW;
             VertexConsumer vertexconsumer = bufferIn.getBuffer(RenderType.entityTranslucentEmissive(resourceLocation));
-            this.model.renderToBuffer(pMatrixStack, vertexconsumer, packedLightIn, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, pEntity.getGlow);
+            this.model.renderToBuffer(pMatrixStack, vertexconsumer, packedLightIn, OverlayTexture.NO_OVERLAY,
+                    (int) (pEntity.getGlow * 255) << 24 | 0xFFFFFF);
             pMatrixStack.popPose();
         } else {
             pMatrixStack.pushPose();
@@ -48,8 +53,10 @@ public class ScatterMineRenderer<T extends ScatterMine> extends EntityRenderer<T
             pMatrixStack.scale(-scale2, -scale2, scale2);
             pMatrixStack.translate(0.0D, -1.45D, 0.0D);
             ResourceLocation resourceLocation3 = pEntity.isSpell() ? GLOW_SPELL : EXPLODE;
-            VertexConsumer vertexconsumer2 = bufferIn.getBuffer(RenderType.itemEntityTranslucentCull(resourceLocation3));
-            this.model.renderToBuffer(pMatrixStack, vertexconsumer2, packedLightIn, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, pEntity.getGlow);
+            VertexConsumer vertexconsumer2 = bufferIn
+                    .getBuffer(RenderType.itemEntityTranslucentCull(resourceLocation3));
+            this.model.renderToBuffer(pMatrixStack, vertexconsumer2, packedLightIn, OverlayTexture.NO_OVERLAY,
+                    (int) (pEntity.getGlow * 255) << 24 | 0xFFFFFF);
             pMatrixStack.popPose();
         }
         super.render(pEntity, entityYaw, pPartialTicks, pMatrixStack, bufferIn, packedLightIn);
@@ -57,8 +64,8 @@ public class ScatterMineRenderer<T extends ScatterMine> extends EntityRenderer<T
 
     @Override
     public ResourceLocation getTextureLocation(T pEntity) {
-        if (!pEntity.startGlow()){
-            if (pEntity.isSpell()){
+        if (!pEntity.startGlow()) {
+            if (pEntity.isSpell()) {
                 return GLOW_SPELL;
             }
             return GLOW;

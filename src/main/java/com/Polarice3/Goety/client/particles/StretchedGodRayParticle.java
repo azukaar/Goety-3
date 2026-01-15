@@ -14,7 +14,8 @@ import org.joml.Vector3f;
 
 public class StretchedGodRayParticle extends TextureSheetParticle {
 
-    public StretchedGodRayParticle(ClientLevel level, double x, double y, double z, double xSpeed, double ySpeed, double zSpeed) {
+    public StretchedGodRayParticle(ClientLevel level, double x, double y, double z, double xSpeed, double ySpeed,
+            double zSpeed) {
         super(level, x, y + 2.0, z);
         this.lifetime = 20;
         this.gravity = 0.0F;
@@ -51,16 +52,16 @@ public class StretchedGodRayParticle extends TextureSheetParticle {
     @Override
     public void render(VertexConsumer buffer, Camera camera, float partialTicks) {
         Vec3 camPos = camera.getPosition();
-        float x = (float)(Mth.lerp(partialTicks, this.xo, this.x) - camPos.x());
-        float y = (float)(Mth.lerp(partialTicks, this.yo, this.y) - camPos.y());
-        float z = (float)(Mth.lerp(partialTicks, this.zo, this.z) - camPos.z());
+        float x = (float) (Mth.lerp(partialTicks, this.xo, this.x) - camPos.x());
+        float y = (float) (Mth.lerp(partialTicks, this.yo, this.y) - camPos.y());
+        float z = (float) (Mth.lerp(partialTicks, this.zo, this.z) - camPos.z());
 
         Quaternionf quaternion = new Quaternionf().rotationY(-camera.getYRot() * Mth.DEG_TO_RAD);
 
         float xSize = 1.0F;
         float ySize = 4.0F;
 
-        Vector3f[] vector3fs = new Vector3f[]{
+        Vector3f[] vector3fs = new Vector3f[] {
                 new Vector3f(-xSize, -ySize, 0.0F),
                 new Vector3f(-xSize, ySize, 0.0F),
                 new Vector3f(xSize, ySize, 0.0F),
@@ -69,7 +70,7 @@ public class StretchedGodRayParticle extends TextureSheetParticle {
 
         float size = this.getQuadSize(partialTicks);
 
-        for(int i = 0; i < 4; ++i) {
+        for (int i = 0; i < 4; ++i) {
             Vector3f vertex = vector3fs[i];
             vertex.rotate(quaternion);
             vertex.mul(size);
@@ -82,28 +83,23 @@ public class StretchedGodRayParticle extends TextureSheetParticle {
         float v1 = this.getV1();
         int light = this.getLightColor(partialTicks);
 
-        buffer.vertex(vector3fs[0].x(), vector3fs[0].y(), vector3fs[0].z())
-                .uv(u1, v1).color(this.rCol, this.gCol, this.bCol, this.alpha).uv2(light).endVertex();
-        buffer.vertex(vector3fs[1].x(), vector3fs[1].y(), vector3fs[1].z())
-                .uv(u1, v0).color(this.rCol, this.gCol, this.bCol, this.alpha).uv2(light).endVertex();
-        buffer.vertex(vector3fs[2].x(), vector3fs[2].y(), vector3fs[2].z())
-                .uv(u0, v0).color(this.rCol, this.gCol, this.bCol, this.alpha).uv2(light).endVertex();
-        buffer.vertex(vector3fs[3].x(), vector3fs[3].y(), vector3fs[3].z())
-                .uv(u0, v1).color(this.rCol, this.gCol, this.bCol, this.alpha).uv2(light).endVertex();
+        buffer.addVertex(vector3fs[0].x(), vector3fs[0].y(), vector3fs[0].z())
+                .setUv(u1, v1).setColor(this.rCol, this.gCol, this.bCol, this.alpha).setLight(light);
+        buffer.addVertex(vector3fs[1].x(), vector3fs[1].y(), vector3fs[1].z())
+                .setUv(u1, v0).setColor(this.rCol, this.gCol, this.bCol, this.alpha).setLight(light);
+        buffer.addVertex(vector3fs[2].x(), vector3fs[2].y(), vector3fs[2].z())
+                .setUv(u0, v0).setColor(this.rCol, this.gCol, this.bCol, this.alpha).setLight(light);
+        buffer.addVertex(vector3fs[3].x(), vector3fs[3].y(), vector3fs[3].z())
+                .setUv(u0, v1).setColor(this.rCol, this.gCol, this.bCol, this.alpha).setLight(light);
 
-        buffer.vertex(vector3fs[3].x(), vector3fs[3].y(), vector3fs[3].z())
-                .uv(u0, v1).color(this.rCol, this.gCol, this.bCol, this.alpha).uv2(light).endVertex();
-        buffer.vertex(vector3fs[2].x(), vector3fs[2].y(), vector3fs[2].z())
-                .uv(u0, v0).color(this.rCol, this.gCol, this.bCol, this.alpha).uv2(light).endVertex();
-        buffer.vertex(vector3fs[1].x(), vector3fs[1].y(), vector3fs[1].z())
-                .uv(u1, v0).color(this.rCol, this.gCol, this.bCol, this.alpha).uv2(light).endVertex();
-        buffer.vertex(vector3fs[0].x(), vector3fs[0].y(), vector3fs[0].z())
-                .uv(u1, v1).color(this.rCol, this.gCol, this.bCol, this.alpha).uv2(light).endVertex();
-    }
-
-    @Override
-    public boolean shouldCull() {
-        return false;
+        buffer.addVertex(vector3fs[3].x(), vector3fs[3].y(), vector3fs[3].z())
+                .setUv(u0, v1).setColor(this.rCol, this.gCol, this.bCol, this.alpha).setLight(light);
+        buffer.addVertex(vector3fs[2].x(), vector3fs[2].y(), vector3fs[2].z())
+                .setUv(u0, v0).setColor(this.rCol, this.gCol, this.bCol, this.alpha).setLight(light);
+        buffer.addVertex(vector3fs[1].x(), vector3fs[1].y(), vector3fs[1].z())
+                .setUv(u1, v0).setColor(this.rCol, this.gCol, this.bCol, this.alpha).setLight(light);
+        buffer.addVertex(vector3fs[0].x(), vector3fs[0].y(), vector3fs[0].z())
+                .setUv(u1, v1).setColor(this.rCol, this.gCol, this.bCol, this.alpha).setLight(light);
     }
 
     @Override
@@ -119,7 +115,8 @@ public class StretchedGodRayParticle extends TextureSheetParticle {
         }
 
         @Override
-        public Particle createParticle(SimpleParticleType type, ClientLevel level, double x, double y, double z, double xSpeed, double ySpeed, double zSpeed) {
+        public Particle createParticle(SimpleParticleType type, ClientLevel level, double x, double y, double z,
+                double xSpeed, double ySpeed, double zSpeed) {
             StretchedGodRayParticle particle = new StretchedGodRayParticle(level, x, y, z, xSpeed, ySpeed, zSpeed);
             particle.pickSprite(this.sprites);
             return particle;

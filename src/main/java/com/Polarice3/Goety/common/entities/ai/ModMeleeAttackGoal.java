@@ -44,7 +44,7 @@ public class ModMeleeAttackGoal extends Goal {
          } else if (!livingentity.isAlive()) {
             return false;
          } else {
-           if (canPenalize) {
+            if (canPenalize) {
                if (--this.ticksUntilNextPathRecalculation <= 0) {
                   this.path = this.mob.getNavigation().createPath(livingentity, 0);
                   this.ticksUntilNextPathRecalculation = 4 + this.mob.getRandom().nextInt(7);
@@ -57,7 +57,8 @@ public class ModMeleeAttackGoal extends Goal {
             if (this.path != null) {
                return true;
             } else {
-               return this.getAttackReachSqr(livingentity) >= this.mob.distanceToSqr(livingentity.getX(), livingentity.getY(), livingentity.getZ());
+               return this.getAttackReachSqr(livingentity) >= this.mob.distanceToSqr(livingentity.getX(),
+                     livingentity.getY(), livingentity.getZ());
             }
          }
       }
@@ -74,7 +75,8 @@ public class ModMeleeAttackGoal extends Goal {
       } else if (!this.mob.isWithinRestriction(livingentity.blockPosition())) {
          return false;
       } else {
-         return !(livingentity instanceof Player) || !livingentity.isSpectator() && !((Player)livingentity).isCreative();
+         return !(livingentity instanceof Player)
+               || !livingentity.isSpectator() && !((Player) livingentity).isCreative();
       }
    }
 
@@ -88,7 +90,7 @@ public class ModMeleeAttackGoal extends Goal {
    public void stop() {
       LivingEntity livingentity = this.mob.getTarget();
       if (!EntitySelector.NO_CREATIVE_OR_SPECTATOR.test(livingentity)) {
-         this.mob.setTarget((LivingEntity)null);
+         this.mob.setTarget((LivingEntity) null);
       }
 
       this.mob.setAggressive(false);
@@ -103,25 +105,31 @@ public class ModMeleeAttackGoal extends Goal {
       LivingEntity livingentity = this.mob.getTarget();
       if (livingentity != null) {
          this.mob.getLookControl().setLookAt(livingentity, 30.0F, 30.0F);
-         double d0 = this.mob.getPerceivedTargetDistanceSquareForMeleeAttack(livingentity);
+         double d0 = this.mob.distanceToSqr(livingentity);
          this.ticksUntilNextPathRecalculation = Math.max(this.ticksUntilNextPathRecalculation - 1, 0);
-         if ((this.followingTargetEvenIfNotSeen || this.mob.getSensing().hasLineOfSight(livingentity)) && this.ticksUntilNextPathRecalculation <= 0 && (this.pathedTargetX == 0.0D && this.pathedTargetY == 0.0D && this.pathedTargetZ == 0.0D || livingentity.distanceToSqr(this.pathedTargetX, this.pathedTargetY, this.pathedTargetZ) >= 1.0D || this.mob.getRandom().nextFloat() < 0.05F)) {
+         if ((this.followingTargetEvenIfNotSeen || this.mob.getSensing().hasLineOfSight(livingentity))
+               && this.ticksUntilNextPathRecalculation <= 0
+               && (this.pathedTargetX == 0.0D && this.pathedTargetY == 0.0D && this.pathedTargetZ == 0.0D
+                     || livingentity.distanceToSqr(this.pathedTargetX, this.pathedTargetY, this.pathedTargetZ) >= 1.0D
+                     || this.mob.getRandom().nextFloat() < 0.05F)) {
             this.pathedTargetX = livingentity.getX();
             this.pathedTargetY = livingentity.getY();
             this.pathedTargetZ = livingentity.getZ();
             this.ticksUntilNextPathRecalculation = 4 + this.mob.getRandom().nextInt(7);
-         if (this.canPenalize) {
-            this.ticksUntilNextPathRecalculation += failedPathFindingPenalty;
-            if (this.mob.getNavigation().getPath() != null) {
-               net.minecraft.world.level.pathfinder.Node finalPathPoint = this.mob.getNavigation().getPath().getEndNode();
-               if (finalPathPoint != null && livingentity.distanceToSqr(finalPathPoint.x, finalPathPoint.y, finalPathPoint.z) < 1)
-                  failedPathFindingPenalty = 0;
-               else
+            if (this.canPenalize) {
+               this.ticksUntilNextPathRecalculation += failedPathFindingPenalty;
+               if (this.mob.getNavigation().getPath() != null) {
+                  net.minecraft.world.level.pathfinder.Node finalPathPoint = this.mob.getNavigation().getPath()
+                        .getEndNode();
+                  if (finalPathPoint != null
+                        && livingentity.distanceToSqr(finalPathPoint.x, finalPathPoint.y, finalPathPoint.z) < 1)
+                     failedPathFindingPenalty = 0;
+                  else
+                     failedPathFindingPenalty += 10;
+               } else {
                   failedPathFindingPenalty += 10;
-            } else {
-               failedPathFindingPenalty += 10;
+               }
             }
-         }
             if (d0 > 1024.0D) {
                this.ticksUntilNextPathRecalculation += 10;
             } else if (d0 > 256.0D) {

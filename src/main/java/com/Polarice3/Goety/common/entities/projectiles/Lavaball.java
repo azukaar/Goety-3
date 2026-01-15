@@ -26,12 +26,18 @@ import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 
 public class Lavaball extends LargeFireball implements ISpellEntity {
-    private static final EntityDataAccessor<Boolean> DATA_UPGRADED = SynchedEntityData.defineId(Lavaball.class, EntityDataSerializers.BOOLEAN);
-    public static final EntityDataAccessor<Boolean> DATA_DANGEROUS = SynchedEntityData.defineId(Lavaball.class, EntityDataSerializers.BOOLEAN);
-    public static final EntityDataAccessor<Float> DATA_EXPLOSION = SynchedEntityData.defineId(Lavaball.class, EntityDataSerializers.FLOAT);
-    public static final EntityDataAccessor<Float> DATA_DAMAGE = SynchedEntityData.defineId(Lavaball.class, EntityDataSerializers.FLOAT);
-    public static final EntityDataAccessor<Float> DATA_EXTRA_DAMAGE = SynchedEntityData.defineId(Lavaball.class, EntityDataSerializers.FLOAT);
-    public static final EntityDataAccessor<Integer> DATA_FIERY = SynchedEntityData.defineId(Lavaball.class, EntityDataSerializers.INT);
+    private static final EntityDataAccessor<Boolean> DATA_UPGRADED = SynchedEntityData.defineId(Lavaball.class,
+            EntityDataSerializers.BOOLEAN);
+    public static final EntityDataAccessor<Boolean> DATA_DANGEROUS = SynchedEntityData.defineId(Lavaball.class,
+            EntityDataSerializers.BOOLEAN);
+    public static final EntityDataAccessor<Float> DATA_EXPLOSION = SynchedEntityData.defineId(Lavaball.class,
+            EntityDataSerializers.FLOAT);
+    public static final EntityDataAccessor<Float> DATA_DAMAGE = SynchedEntityData.defineId(Lavaball.class,
+            EntityDataSerializers.FLOAT);
+    public static final EntityDataAccessor<Float> DATA_EXTRA_DAMAGE = SynchedEntityData.defineId(Lavaball.class,
+            EntityDataSerializers.FLOAT);
+    public static final EntityDataAccessor<Integer> DATA_FIERY = SynchedEntityData.defineId(Lavaball.class,
+            EntityDataSerializers.INT);
 
     public Lavaball(EntityType<? extends Lavaball> p_i50163_1_, Level p_i50163_2_) {
         super(p_i50163_1_, p_i50163_2_);
@@ -49,7 +55,8 @@ public class Lavaball extends LargeFireball implements ISpellEntity {
         }
     }
 
-    public Lavaball(Level p_i1769_1_, LivingEntity p_i1769_2_, double p_i1769_3_, double p_i1769_5_, double p_i1769_7_) {
+    public Lavaball(Level p_i1769_1_, LivingEntity p_i1769_2_, double p_i1769_3_, double p_i1769_5_,
+            double p_i1769_7_) {
         super(p_i1769_1_, p_i1769_2_, p_i1769_3_, p_i1769_5_, p_i1769_7_, 0);
     }
 
@@ -113,7 +120,7 @@ public class Lavaball extends LargeFireball implements ISpellEntity {
         return this.entityData.get(DATA_EXPLOSION);
     }
 
-    public void setExplosionPower(float pExplosionPower){
+    public void setExplosionPower(float pExplosionPower) {
         this.entityData.set(DATA_EXPLOSION, pExplosionPower);
     }
 
@@ -151,7 +158,7 @@ public class Lavaball extends LargeFireball implements ISpellEntity {
 
     public void tick() {
         super.tick();
-        if (this.tickCount >= MathHelper.secondsToTicks(10)){
+        if (this.tickCount >= MathHelper.secondsToTicks(10)) {
             this.discard();
         }
     }
@@ -159,13 +166,15 @@ public class Lavaball extends LargeFireball implements ISpellEntity {
     protected void onHit(HitResult pResult) {
         HitResult.Type hitresult$type = pResult.getType();
         if (hitresult$type == HitResult.Type.ENTITY) {
-            this.onHitEntity((EntityHitResult)pResult);
-            this.level().gameEvent(GameEvent.PROJECTILE_LAND, pResult.getLocation(), GameEvent.Context.of(this, (BlockState)null));
+            this.onHitEntity((EntityHitResult) pResult);
+            this.level().gameEvent(GameEvent.PROJECTILE_LAND, pResult.getLocation(),
+                    GameEvent.Context.of(this, (BlockState) null));
         } else if (hitresult$type == HitResult.Type.BLOCK) {
-            BlockHitResult blockhitresult = (BlockHitResult)pResult;
+            BlockHitResult blockhitresult = (BlockHitResult) pResult;
             this.onHitBlock(blockhitresult);
             BlockPos blockpos = blockhitresult.getBlockPos();
-            this.level().gameEvent(GameEvent.PROJECTILE_LAND, blockpos, GameEvent.Context.of(this, this.level().getBlockState(blockpos)));
+            this.level().gameEvent(GameEvent.PROJECTILE_LAND, blockpos,
+                    GameEvent.Context.of(this, this.level().getBlockState(blockpos)));
         }
         if (!this.level.isClientSide) {
             Entity owner = this.getOwner();
@@ -175,8 +184,11 @@ public class Lavaball extends LargeFireball implements ISpellEntity {
                     flag = false;
                 }
             }
-            LootingExplosion.Mode lootMode = CuriosFinder.hasWanting(owner) ? LootingExplosion.Mode.LOOT : LootingExplosion.Mode.REGULAR;
-            ExplosionUtil.lootExplode(this.level, owner, this.getX(), this.getY(), this.getZ(), this.getExplosionPower(), flag, flag ? Explosion.BlockInteraction.DESTROY : Explosion.BlockInteraction.KEEP, lootMode);
+            LootingExplosion.Mode lootMode = CuriosFinder.hasWanting(owner) ? LootingExplosion.Mode.LOOT
+                    : LootingExplosion.Mode.REGULAR;
+            ExplosionUtil.lootExplode(this.level, owner, this.getX(), this.getY(), this.getZ(),
+                    this.getExplosionPower(), flag,
+                    flag ? Explosion.BlockInteraction.DESTROY : Explosion.BlockInteraction.KEEP, lootMode);
             this.discard();
         }
 
@@ -189,49 +201,49 @@ public class Lavaball extends LargeFireball implements ISpellEntity {
             float damage = 6.0F;
             float enchantment = this.getExtraDamage();
             int flaming = this.getFiery();
-            if (entity1 instanceof Player){
+            if (entity1 instanceof Player) {
                 damage = SpellConfig.LavaballDamage.get().floatValue() * WandUtil.damageMultiply();
             } else if (entity1 instanceof LivingEntity) {
                 damage = this.getDamage();
             }
             DamageSource damageSource = this.damageSources().fireball(this, this.getOwner());
-            if (this.getOwner() instanceof LivingEntity livingEntity){
-                if (CuriosFinder.hasNetherRobe(livingEntity)){
+            if (this.getOwner() instanceof LivingEntity livingEntity) {
+                if (CuriosFinder.hasNetherRobe(livingEntity)) {
                     damageSource = ModDamageSource.magicFireball(this, this.getOwner(), this.level);
                 }
-                if (MobUtil.getOwner(livingEntity) != null){
-                    if (CuriosFinder.hasNetherRobe(MobUtil.getOwner(livingEntity))){
+                if (MobUtil.getOwner(livingEntity) != null) {
+                    if (CuriosFinder.hasNetherRobe(MobUtil.getOwner(livingEntity))) {
                         damageSource = ModDamageSource.magicFireball(this, this.getOwner(), this.level);
                     }
                 }
             }
             entity.hurt(damageSource, damage + enchantment);
 
-            if (flaming != 0){
-                entity.setSecondsOnFire(5 * flaming);
+            if (flaming != 0) {
+                entity.igniteForSeconds(5 * flaming);
             }
             if (entity1 instanceof LivingEntity) {
-                this.doEnchantDamageEffects((LivingEntity)entity1, entity);
+                this.doEnchantDamageEffects((LivingEntity) entity1, entity);
             }
         }
     }
 
     protected boolean canHitEntity(Entity pEntity) {
-        if (this.getOwner() instanceof IOwned owned){
-            if (pEntity instanceof IOwned owned1){
-                if (owned.getTrueOwner() == owned1.getTrueOwner()){
+        if (this.getOwner() instanceof IOwned owned) {
+            if (pEntity instanceof IOwned owned1) {
+                if (owned.getTrueOwner() == owned1.getTrueOwner()) {
                     return false;
                 }
             }
-            if (owned.getTrueOwner() == pEntity){
+            if (owned.getTrueOwner() == pEntity) {
                 return false;
             }
         }
-        if (MobUtil.areAllies(this.getOwner(), pEntity)){
+        if (MobUtil.areAllies(this.getOwner(), pEntity)) {
             return false;
         }
-        if (this.isUpgraded()){
-            if (pEntity instanceof AbstractHurtingProjectile){
+        if (this.isUpgraded()) {
+            if (pEntity instanceof AbstractHurtingProjectile) {
                 return false;
             }
         }
@@ -244,7 +256,7 @@ public class Lavaball extends LargeFireball implements ISpellEntity {
     }
 
     public boolean hurt(DamageSource p_36839_, float p_36840_) {
-        if (this.isUpgraded()){
+        if (this.isUpgraded()) {
             return false;
         } else {
             if (!SpellConfig.LavaballGriefing.get()) {

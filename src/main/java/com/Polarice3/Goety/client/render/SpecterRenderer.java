@@ -15,7 +15,7 @@ import net.minecraft.resources.ResourceLocation;
 public class SpecterRenderer<T extends Specter> extends MobRenderer<T, SpecterModel<T>> {
     protected static final ResourceLocation TEXTURE = Goety.location("textures/entity/specter/specter.png");
 
-    public SpecterRenderer(EntityRendererProvider.Context renderManagerIn){
+    public SpecterRenderer(EntityRendererProvider.Context renderManagerIn) {
         super(renderManagerIn, new SpecterModel<>(renderManagerIn.bakeLayer(ModModelLayer.SPECTER)), 0.0F);
         this.addLayer(new SpecterBandsLayer<>(this, renderManagerIn.getModelSet()));
     }
@@ -26,7 +26,8 @@ public class SpecterRenderer<T extends Specter> extends MobRenderer<T, SpecterMo
     }
 
     public static class SpecterBandsLayer<T extends Specter> extends RenderLayer<T, SpecterModel<T>> {
-        private static final ResourceLocation TEXTURES = Goety.location("textures/entity/specter/specter_servant_bands.png");
+        private static final ResourceLocation TEXTURES = Goety
+                .location("textures/entity/specter/specter_servant_bands.png");
         private final SpecterModel<T> layerModel;
 
         public SpecterBandsLayer(RenderLayerParent<T, SpecterModel<T>> p_i50919_1_, EntityModelSet p_174555_) {
@@ -35,9 +36,13 @@ public class SpecterRenderer<T extends Specter> extends MobRenderer<T, SpecterMo
         }
 
         @Override
-        public void render(PoseStack matrixStackIn, MultiBufferSource bufferIn, int packedLightIn, T wraith, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch) {
+        public void render(PoseStack matrixStackIn, MultiBufferSource bufferIn, int packedLightIn, T wraith,
+                float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw,
+                float headPitch) {
             if (!wraith.isHostile()) {
-                coloredCutoutModelCopyLayerRender(this.getParentModel(), this.layerModel, TEXTURES, matrixStackIn, bufferIn, packedLightIn, wraith, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, partialTicks, 1.0F, 1.0F, 1.0F);
+                coloredCutoutModelCopyLayerRender(this.getParentModel(), this.layerModel, TEXTURES, matrixStackIn,
+                        bufferIn, packedLightIn, wraith, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch,
+                        partialTicks, -1);
             }
         }
     }

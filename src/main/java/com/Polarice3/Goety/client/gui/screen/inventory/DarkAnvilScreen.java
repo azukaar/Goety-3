@@ -10,12 +10,13 @@ import net.minecraft.network.protocol.game.ServerboundRenameItemPacket;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 
 public class DarkAnvilScreen extends ItemCombinerScreen<DarkAnvilMenu> {
-   private static final ResourceLocation ANVIL_LOCATION = new ResourceLocation("textures/gui/container/anvil.png");
+   private static final ResourceLocation ANVIL_LOCATION = ResourceLocation.parse("textures/gui/container/anvil.png");
    private static final Component TOO_EXPENSIVE_TEXT = Component.translatable("container.repair.expensive");
    private EditBox name;
    private final Player player;
@@ -28,7 +29,9 @@ public class DarkAnvilScreen extends ItemCombinerScreen<DarkAnvilMenu> {
 
    public void containerTick() {
       super.containerTick();
-      this.name.tick();
+      if (this.name != null) {
+         // this.name.tick();
+      }
    }
 
    protected void subInit() {
@@ -58,14 +61,18 @@ public class DarkAnvilScreen extends ItemCombinerScreen<DarkAnvilMenu> {
          this.minecraft.player.closeContainer();
       }
 
-      return !this.name.keyPressed(p_97878_, p_97879_, p_97880_) && !this.name.canConsumeInput() ? super.keyPressed(p_97878_, p_97879_, p_97880_) : true;
+      return !this.name.keyPressed(p_97878_, p_97879_, p_97880_) && !this.name.canConsumeInput()
+            ? super.keyPressed(p_97878_, p_97879_, p_97880_)
+            : true;
    }
 
    private void onNameChanged(String p_97899_) {
       Slot slot = this.menu.getSlot(0);
       if (slot.hasItem()) {
          String s = p_97899_;
-         if (!slot.getItem().hasCustomHoverName() && p_97899_.equals(slot.getItem().getHoverName().getString())) {
+         Component hoverName = slot.getItem().get(DataComponents.CUSTOM_NAME);
+         Component defaultName = slot.getItem().getHoverName();
+         if (hoverName == null && p_97899_.equals(defaultName != null ? defaultName.getString() : "")) {
             s = "";
          }
 
@@ -106,7 +113,8 @@ public class DarkAnvilScreen extends ItemCombinerScreen<DarkAnvilMenu> {
 
    protected void renderBg(GuiGraphics p_283345_, float p_283412_, int p_282871_, int p_281306_) {
       super.renderBg(p_283345_, p_283412_, p_282871_, p_281306_);
-      p_283345_.blit(ANVIL_LOCATION, this.leftPos + 59, this.topPos + 20, 0, this.imageHeight + (this.menu.getSlot(0).hasItem() ? 0 : 16), 110, 16);
+      p_283345_.blit(ANVIL_LOCATION, this.leftPos + 59, this.topPos + 20, 0,
+            this.imageHeight + (this.menu.getSlot(0).hasItem() ? 0 : 16), 110, 16);
    }
 
    public void renderFg(GuiGraphics p_283449_, int p_283263_, int p_281526_, float p_282957_) {
@@ -114,7 +122,8 @@ public class DarkAnvilScreen extends ItemCombinerScreen<DarkAnvilMenu> {
    }
 
    protected void renderErrorIcon(GuiGraphics p_282905_, int p_283237_, int p_282237_) {
-      if ((this.menu.getSlot(0).hasItem() || this.menu.getSlot(1).hasItem()) && !this.menu.getSlot(this.menu.getResultSlot()).hasItem()) {
+      if ((this.menu.getSlot(0).hasItem() || this.menu.getSlot(1).hasItem())
+            && !this.menu.getSlot(this.menu.getResultSlot()).hasItem()) {
          p_282905_.blit(ANVIL_LOCATION, p_283237_ + 99, p_282237_ + 45, this.imageWidth, 0, 28, 21);
       }
 
@@ -122,7 +131,10 @@ public class DarkAnvilScreen extends ItemCombinerScreen<DarkAnvilMenu> {
 
    public void slotChanged(AbstractContainerMenu p_97882_, int p_97883_, ItemStack p_97884_) {
       if (p_97883_ == 0) {
-         this.name.setValue(p_97884_.isEmpty() ? "" : p_97884_.getHoverName().getString());
+         Component hoverName = p_97884_.get(DataComponents.CUSTOM_NAME);
+         Component defaultName = p_97884_.getHoverName();
+         this.name.setValue(p_97884_.isEmpty() ? ""
+               : (hoverName != null ? hoverName.getString() : (defaultName != null ? defaultName.getString() : "")));
          this.name.setEditable(!p_97884_.isEmpty());
          this.setFocused(this.name);
       }

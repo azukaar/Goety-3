@@ -75,8 +75,8 @@ public class ShockingSpell extends EverChargeSpell {
 
     @Override
     public boolean conditionsMet(ServerLevel worldIn, LivingEntity caster, SpellStat spellStat) {
-        if (caster instanceof Mob mob){
-            if (mob.getTarget() != null){
+        if (caster instanceof Mob mob) {
+            if (mob.getTarget() != null) {
                 int range = spellStat.getRange();
                 if (WandUtil.enchantedFocus(caster)) {
                     range += WandUtil.getRangeLevel(caster);
@@ -105,39 +105,45 @@ public class ShockingSpell extends EverChargeSpell {
         Vec3 vec3 = caster.getEyePosition();
         BlockHitResult rayTraceResult = this.blockResult(worldIn, caster, range);
         Entity target = MobUtil.getNearbyTarget(worldIn, caster, range, 1.0F);
-        Optional<BlockPos> lightningRod = BlockFinder.findLightningRod(worldIn, BlockPos.containing(rayTraceResult.getLocation()), range);
-        if (lightningRod.isPresent() && !this.rightStaff(staff)){
+        Optional<BlockPos> lightningRod = BlockFinder.findLightningRod(worldIn,
+                BlockPos.containing(rayTraceResult.getLocation()), range);
+        if (lightningRod.isPresent() && !this.rightStaff(staff)) {
             BlockPos blockPos = lightningRod.get();
-            ModNetwork.sendToALL(new SLightningPacket(vec3, new Vec3(blockPos.getX(), blockPos.getY(), blockPos.getZ()), colorUtil, 5));
-            worldIn.playSound(null, caster.getX(), caster.getY(), caster.getZ(), ModSounds.ZAP.get(), this.getSoundSource(), 1.0F, 1.0F);
+            ModNetwork.sendToALL(new SLightningPacket(vec3, new Vec3(blockPos.getX(), blockPos.getY(), blockPos.getZ()),
+                    colorUtil, 5));
+            worldIn.playSound(null, caster.getX(), caster.getY(), caster.getZ(), ModSounds.ZAP.get(),
+                    this.getSoundSource(), 1.0F, 1.0F);
         } else {
             LivingEntity livingEntity = MobUtil.getLivingTarget(target);
             if (livingEntity != null) {
-                Vec3 vec31 = new Vec3(livingEntity.getX(), livingEntity.getY() + livingEntity.getBbHeight() / 2, livingEntity.getZ());
+                Vec3 vec31 = new Vec3(livingEntity.getX(), livingEntity.getY() + livingEntity.getBbHeight() / 2,
+                        livingEntity.getZ());
                 ModNetwork.sendToALL(new SLightningPacket(vec3, vec31, colorUtil, 5));
-                if (livingEntity.hurt(ModDamageSource.directShock(caster), damage)){
+                if (livingEntity.hurt(ModDamageSource.directShock(caster), damage)) {
                     float chance = rightStaff(staff) ? 0.25F : 0.05F;
                     float chainDamage = damage / 2.0F;
-                    if (worldIn.isThundering() && worldIn.isRainingAt(livingEntity.blockPosition())){
+                    if (worldIn.isThundering() && worldIn.isRainingAt(livingEntity.blockPosition())) {
                         chance += 0.25F;
                         chainDamage = damage;
                     }
-                    if (worldIn.random.nextFloat() <= chance){
-                        livingEntity.addEffect(new MobEffectInstance(GoetyEffects.SPASMS.get(), MathHelper.secondsToTicks(5)));
+                    if (worldIn.random.nextFloat() <= chance) {
+                        livingEntity.addEffect(
+                                new MobEffectInstance(GoetyEffects.SPASMS.get(), MathHelper.secondsToTicks(5)));
                     }
-                    if (burning > 0){
-                        if (worldIn.random.nextFloat() < 0.05F){
-                            livingEntity.setSecondsOnFire(5 * burning);
+                    if (burning > 0) {
+                        if (worldIn.random.nextFloat() < 0.05F) {
+                            livingEntity.igniteForSeconds(5 * burning);
                         }
                     }
-                    if (this.rightStaff(staff)){
+                    if (this.rightStaff(staff)) {
                         WandUtil.chainLightning(livingEntity, caster, range / 4.0D, chainDamage, true);
                     }
                 }
                 this.playSound(worldIn, caster, ModSounds.ZAP.get());
             } else {
                 BlockPos blockPos = rayTraceResult.getBlockPos();
-                ModNetwork.sendToALL(new SLightningPacket(vec3, new Vec3(blockPos.getX(), blockPos.getY(), blockPos.getZ()), colorUtil, 5));
+                ModNetwork.sendToALL(new SLightningPacket(vec3,
+                        new Vec3(blockPos.getX(), blockPos.getY(), blockPos.getZ()), colorUtil, 5));
                 this.playSound(worldIn, caster, ModSounds.ZAP.get());
             }
         }

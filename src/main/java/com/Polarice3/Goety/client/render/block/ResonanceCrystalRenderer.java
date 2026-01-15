@@ -24,7 +24,8 @@ public class ResonanceCrystalRenderer implements BlockEntityRenderer<ResonanceCr
     public ResonanceCrystalRenderer(BlockEntityRendererProvider.Context p_i226007_1_) {
     }
 
-    public void render(ResonanceCrystalBlockEntity pBlockEntity, float pPartialTicks, PoseStack pMatrixStack, MultiBufferSource pBuffer, int pCombinedLight, int pCombinedOverlay) {
+    public void render(ResonanceCrystalBlockEntity pBlockEntity, float pPartialTicks, PoseStack pMatrixStack,
+            MultiBufferSource pBuffer, int pCombinedLight, int pCombinedOverlay) {
         if (pBlockEntity.isShowBlock()) {
             Map<BlockPos, ColorUtil> renderCubes = new HashMap<>();
             for (BlockPos blockPos : pBlockEntity.getBlockPosList()) {
@@ -42,14 +43,15 @@ public class ResonanceCrystalRenderer implements BlockEntityRenderer<ResonanceCr
     }
 
     /**
-     * Stolem from @lothrazar's codes:<a href="https://github.com/Lothrazar/Cyclic/blob/trunk/1.20.1/src/main/java/com/lothrazar/cyclic/block/laser/RenderLaser.java">...</a>
+     * Stolem from @lothrazar's codes:<a href=
+     * "https://github.com/Lothrazar/Cyclic/blob/trunk/1.20.1/src/main/java/com/lothrazar/cyclic/block/laser/RenderLaser.java">...</a>
      */
     public static void draw(ResonanceCrystalBlockEntity tile, PoseStack matrixStackIn, MultiBufferSource bufferIn) {
         for (BlockPos blockPos : tile.getBlockPosList()) {
             if (blockPos == null) {
                 return;
             }
-            if (tile.getLevel() == null){
+            if (tile.getLevel() == null) {
                 return;
             }
             if (blockPos.equals(BlockPos.ZERO)) {
@@ -65,14 +67,16 @@ public class ResonanceCrystalRenderer implements BlockEntityRenderer<ResonanceCr
             Vector3f to = new Vector3f(0.5F, 0.5F, 0.5F);
             VertexConsumer builder = bufferIn.getBuffer(BlockRenderType.LASER_MAIN_BEAM);
             ColorUtil colorUtil = new ColorUtil(0x678f92);
-            drawDirewolfLaser(builder, positionMatrix, from, to, colorUtil.red(), colorUtil.green(), colorUtil.blue(), colorUtil.alpha(), 0.065F, tilePos);
+            drawDirewolfLaser(builder, positionMatrix, from, to, colorUtil.red(), colorUtil.green(), colorUtil.blue(),
+                    colorUtil.alpha(), 0.065F, tilePos);
             matrixStackIn.popPose();
         }
     }
 
     public static Vector3f adjustBeamToEyes(Vector3f from, Vector3f to, BlockPos tile) {
         Player player = Minecraft.getInstance().player;
-        Vector3f vectP = new Vector3f((float) player.getX() - tile.getX(), (float) player.getEyeY() - tile.getY(), (float) player.getZ() - tile.getZ());
+        Vector3f vectP = new Vector3f((float) player.getX() - tile.getX(), (float) player.getEyeY() - tile.getY(),
+                (float) player.getZ() - tile.getZ());
         Vector3f vectS = new Vector3f(from);
         vectS.sub(vectP);
         Vector3f vectE = new Vector3f(to);
@@ -83,7 +87,8 @@ public class ResonanceCrystalRenderer implements BlockEntityRenderer<ResonanceCr
         return adjustedVec;
     }
 
-    public static void drawDirewolfLaser(VertexConsumer builder, Matrix4f positionMatrix, Vector3f from, Vector3f to, float r, float g, float b, float alpha, float thickness, BlockPos tilePos) {
+    public static void drawDirewolfLaser(VertexConsumer builder, Matrix4f positionMatrix, Vector3f from, Vector3f to,
+            float r, float g, float b, float alpha, float thickness, BlockPos tilePos) {
         final float v = 1;
         Vector3f adjustedVec = adjustBeamToEyes(from, to, tilePos);
         adjustedVec.mul(thickness);
@@ -95,30 +100,26 @@ public class ResonanceCrystalRenderer implements BlockEntityRenderer<ResonanceCr
         p3.add(adjustedVec);
         Vector3f p4 = new Vector3f(to);
         p4.sub(adjustedVec);
-        builder.vertex(positionMatrix, p1.x(), p1.y(), p1.z())
-                .color(r, g, b, alpha)
-                .uv(1, v)
-                .overlayCoords(OverlayTexture.NO_OVERLAY)
-                .uv2(15728880)
-                .endVertex();
-        builder.vertex(positionMatrix, p3.x(), p3.y(), p3.z())
-                .color(r, g, b, alpha)
-                .uv(1, v)
-                .overlayCoords(OverlayTexture.NO_OVERLAY)
-                .uv2(15728880)
-                .endVertex();
-        builder.vertex(positionMatrix, p4.x(), p4.y(), p4.z())
-                .color(r, g, b, alpha)
-                .uv(0, v)
-                .overlayCoords(OverlayTexture.NO_OVERLAY)
-                .uv2(15728880)
-                .endVertex();
-        builder.vertex(positionMatrix, p2.x(), p2.y(), p2.z())
-                .color(r, g, b, alpha)
-                .uv(0, v)
-                .overlayCoords(OverlayTexture.NO_OVERLAY)
-                .uv2(15728880)
-                .endVertex();
+        builder.addVertex(positionMatrix, p1.x(), p1.y(), p1.z())
+                .setColor(r, g, b, alpha)
+                .setUv(1, v)
+                .setOverlay(OverlayTexture.NO_OVERLAY)
+                .setLight(15728880);
+        builder.addVertex(positionMatrix, p3.x(), p3.y(), p3.z())
+                .setColor(r, g, b, alpha)
+                .setUv(1, v)
+                .setOverlay(OverlayTexture.NO_OVERLAY)
+                .setLight(15728880);
+        builder.addVertex(positionMatrix, p4.x(), p4.y(), p4.z())
+                .setColor(r, g, b, alpha)
+                .setUv(0, v)
+                .setOverlay(OverlayTexture.NO_OVERLAY)
+                .setLight(15728880);
+        builder.addVertex(positionMatrix, p2.x(), p2.y(), p2.z())
+                .setColor(r, g, b, alpha)
+                .setUv(0, v)
+                .setOverlay(OverlayTexture.NO_OVERLAY)
+                .setLight(15728880);
     }
 
 }

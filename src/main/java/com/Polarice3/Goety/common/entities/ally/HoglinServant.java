@@ -55,8 +55,10 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Optional;
 
 public class HoglinServant extends AnimalSummon implements HoglinBase, PlayerRideable, IAutoRideable {
-    private static final EntityDataAccessor<Boolean> DATA_IMMUNE_TO_ZOMBIFICATION = SynchedEntityData.defineId(HoglinServant.class, EntityDataSerializers.BOOLEAN);
-    private static final EntityDataAccessor<Boolean> AUTO_MODE = SynchedEntityData.defineId(HoglinServant.class, EntityDataSerializers.BOOLEAN);
+    private static final EntityDataAccessor<Boolean> DATA_IMMUNE_TO_ZOMBIFICATION = SynchedEntityData
+            .defineId(HoglinServant.class, EntityDataSerializers.BOOLEAN);
+    private static final EntityDataAccessor<Boolean> AUTO_MODE = SynchedEntityData.defineId(HoglinServant.class,
+            EntityDataSerializers.BOOLEAN);
     private int attackAnimationRemainingTicks;
     private int timeInOverworld;
     private int retreatTime;
@@ -82,20 +84,21 @@ public class HoglinServant extends AnimalSummon implements HoglinBase, PlayerRid
     public static AttributeSupplier.Builder setCustomAttributes() {
         return Monster.createMonsterAttributes()
                 .add(Attributes.MAX_HEALTH, AttributesConfig.HoglinServantHealth.get())
-                .add(Attributes.MOVEMENT_SPEED, (double)0.3F)
-                .add(Attributes.KNOCKBACK_RESISTANCE, (double)0.6F)
+                .add(Attributes.MOVEMENT_SPEED, (double) 0.3F)
+                .add(Attributes.KNOCKBACK_RESISTANCE, (double) 0.6F)
                 .add(Attributes.ATTACK_KNOCKBACK, 1.0D)
                 .add(Attributes.ARMOR, AttributesConfig.HoglinServantArmor.get())
                 .add(Attributes.ATTACK_DAMAGE, AttributesConfig.HoglinServantDamage.get());
     }
 
-    public void setConfigurableAttributes(){
+    public void setConfigurableAttributes() {
         MobUtil.setBaseAttributes(this.getAttribute(Attributes.MAX_HEALTH), AttributesConfig.HoglinServantHealth.get());
         MobUtil.setBaseAttributes(this.getAttribute(Attributes.ARMOR), AttributesConfig.HoglinServantArmor.get());
         if (this.isBaby()) {
             MobUtil.setBaseAttributes(this.getAttribute(Attributes.ATTACK_DAMAGE), 0.5D);
         } else {
-            MobUtil.setBaseAttributes(this.getAttribute(Attributes.ATTACK_DAMAGE), AttributesConfig.HoglinServantDamage.get());
+            MobUtil.setBaseAttributes(this.getAttribute(Attributes.ATTACK_DAMAGE),
+                    AttributesConfig.HoglinServantDamage.get());
         }
     }
 
@@ -126,7 +129,8 @@ public class HoglinServant extends AnimalSummon implements HoglinBase, PlayerRid
     }
 
     protected SoundEvent getAmbientSound() {
-        return isRetreating(this) ? SoundEvents.HOGLIN_RETREAT : this.isAggressive() ? SoundEvents.HOGLIN_ANGRY : SoundEvents.HOGLIN_AMBIENT;
+        return isRetreating(this) ? SoundEvents.HOGLIN_RETREAT
+                : this.isAggressive() ? SoundEvents.HOGLIN_ANGRY : SoundEvents.HOGLIN_AMBIENT;
     }
 
     protected SoundEvent getHurtSound(DamageSource p_34548_) {
@@ -142,7 +146,9 @@ public class HoglinServant extends AnimalSummon implements HoglinBase, PlayerRid
     }
 
     @Nullable
-    public SpawnGroupData finalizeSpawn(ServerLevelAccessor p_34508_, DifficultyInstance p_34509_, MobSpawnType p_34510_, @javax.annotation.Nullable SpawnGroupData p_34511_, @javax.annotation.Nullable CompoundTag p_34512_) {
+    public SpawnGroupData finalizeSpawn(ServerLevelAccessor p_34508_, DifficultyInstance p_34509_,
+            MobSpawnType p_34510_, @javax.annotation.Nullable SpawnGroupData p_34511_,
+            @javax.annotation.Nullable CompoundTag p_34512_) {
         if (p_34508_.getRandom().nextFloat() < 0.2F) {
             this.setBaby(true);
         }
@@ -170,9 +176,9 @@ public class HoglinServant extends AnimalSummon implements HoglinBase, PlayerRid
             return false;
         } else {
             this.attackAnimationRemainingTicks = 10;
-            this.level.broadcastEntityEvent(this, (byte)4);
+            this.level.broadcastEntityEvent(this, (byte) 4);
             this.playSound(SoundEvents.HOGLIN_ATTACK, 1.0F, this.getVoicePitch());
-            return HoglinBase.hurtAndThrowTarget(this, (LivingEntity)p_34491_);
+            return HoglinBase.hurtAndThrowTarget(this, (LivingEntity) p_34491_);
         }
     }
 
@@ -233,7 +239,7 @@ public class HoglinServant extends AnimalSummon implements HoglinBase, PlayerRid
         Zoglin zoglin = this.convertTo(EntityType.ZOGLIN, true);
         if (zoglin != null) {
             zoglin.addEffect(new MobEffectInstance(MobEffects.CONFUSION, 200, 0));
-            net.neoforged.event.net.neoforged.neoforge.event.EventHooks.onLivingConvert(this, zoglin);
+            net.neoforged.neoforge.event.EventHooks.onLivingConvert(this, zoglin);
         }
 
     }
@@ -269,21 +275,21 @@ public class HoglinServant extends AnimalSummon implements HoglinBase, PlayerRid
     }
 
     public double getPassengersRidingOffset() {
-        return (double)this.getBbHeight() - (this.isBaby() ? 0.2D : 0.15D);
+        return (double) this.getBbHeight() - (this.isBaby() ? 0.2D : 0.15D);
     }
 
     @Nullable
     public LivingEntity getControllingPassenger() {
         if (!this.isNoAi()) {
             Entity entity = this.getFirstPassenger();
-            if (entity instanceof Mob mob){
-                if (MobsConfig.ServantRideAutonomous.get()){
+            if (entity instanceof Mob mob) {
+                if (MobsConfig.ServantRideAutonomous.get()) {
                     return null;
                 }
                 return mob;
             } else if (entity instanceof LivingEntity
                     && !this.isAutonomous()) {
-                return (LivingEntity)entity;
+                return (LivingEntity) entity;
             }
         }
 
@@ -306,7 +312,8 @@ public class HoglinServant extends AnimalSummon implements HoglinBase, PlayerRid
         super.customServerAiStep();
         if (this.isConverting()) {
             ++this.timeInOverworld;
-            if (this.timeInOverworld > 300 && net.neoforged.event.net.neoforged.neoforge.event.EventHooks.canLivingConvert(this, EntityType.ZOGLIN, (timer) -> this.timeInOverworld = timer)) {
+            if (this.timeInOverworld > 300 && net.neoforged.neoforge.event.EventHooks.canLivingConvert(this,
+                    EntityType.ZOMBIE_SERVANT, (timer) -> this.timeInOverworld = timer)) {
                 this.playSound(SoundEvents.HOGLIN_CONVERTED_TO_ZOMBIFIED);
                 this.finishConversion();
             }
@@ -320,9 +327,9 @@ public class HoglinServant extends AnimalSummon implements HoglinBase, PlayerRid
         if (this.attackAnimationRemainingTicks > 0) {
             --this.attackAnimationRemainingTicks;
         }
-        if (this.level instanceof ServerLevel serverLevel){
-            if (this.findNearestRepellent(serverLevel, this).isPresent()){
-                if (this.nearestRepellent == null){
+        if (this.level instanceof ServerLevel serverLevel) {
+            if (this.findNearestRepellent(serverLevel, this).isPresent()) {
+                if (this.nearestRepellent == null) {
                     this.nearestRepellent = this.findNearestRepellent(serverLevel, this).get();
                     this.getNavigation().stop();
                     this.retreatTime = 200;
@@ -331,15 +338,16 @@ public class HoglinServant extends AnimalSummon implements HoglinBase, PlayerRid
                 this.nearestRepellent = null;
             }
 
-            if (this.isBaby()){
-                if (this.toAvoid != null && !this.toAvoid.isDeadOrDying()){
+            if (this.isBaby()) {
+                if (this.toAvoid != null && !this.toAvoid.isDeadOrDying()) {
                     Vec3 vec31 = this.toAvoid.position();
                     if (this.position().closerThan(vec31, 8)) {
                         if (this.getNavigation().isDone()) {
                             for (int i = 0; i < 10; ++i) {
                                 Vec3 vector3d2 = DefaultRandomPos.getPosAway(this, 16, 7, vec31);
                                 if (vector3d2 != null) {
-                                    Path path = this.getNavigation().createPath(vector3d2.x, vector3d2.y, vector3d2.z, 0);
+                                    Path path = this.getNavigation().createPath(vector3d2.x, vector3d2.y, vector3d2.z,
+                                            0);
                                     if (path != null && path.canReach()) {
                                         this.getNavigation().moveTo(path, 1.0F);
                                         break;
@@ -353,19 +361,19 @@ public class HoglinServant extends AnimalSummon implements HoglinBase, PlayerRid
                 this.toAvoid = null;
             }
 
-            if (this.retreatTime > 0){
+            if (this.retreatTime > 0) {
                 --this.retreatTime;
                 this.setTarget(null);
             }
 
-            if (this.avoidTime > 0){
+            if (this.avoidTime > 0) {
                 --this.avoidTime;
                 this.setTarget(null);
             } else {
                 this.toAvoid = null;
             }
 
-            if (this.nearestRepellent != null){
+            if (this.nearestRepellent != null) {
                 Vec3 vec31 = this.nearestRepellent.getCenter();
                 if (this.position().closerThan(vec31, 8)) {
                     if (this.getNavigation().isDone()) {
@@ -422,7 +430,8 @@ public class HoglinServant extends AnimalSummon implements HoglinBase, PlayerRid
     public InteractionResult mobInteract(Player pPlayer, InteractionHand pHand) {
         ItemStack itemstack = pPlayer.getItemInHand(pHand);
         if (this.getTrueOwner() != null && pPlayer == this.getTrueOwner()) {
-            if ((itemstack.is(Items.CRIMSON_ROOTS) || itemstack.is(Items.WEEPING_VINES)) && this.getHealth() < this.getMaxHealth()) {
+            if ((itemstack.is(Items.CRIMSON_ROOTS) || itemstack.is(Items.WEEPING_VINES))
+                    && this.getHealth() < this.getMaxHealth()) {
                 this.heal(2.0F);
                 if (!pPlayer.getAbilities().instabuild) {
                     itemstack.shrink(1);
@@ -435,7 +444,8 @@ public class HoglinServant extends AnimalSummon implements HoglinBase, PlayerRid
                         double d0 = this.random.nextGaussian() * 0.02D;
                         double d1 = this.random.nextGaussian() * 0.02D;
                         double d2 = this.random.nextGaussian() * 0.02D;
-                        serverLevel.sendParticles(ModParticleTypes.HEAL_EFFECT.get(), this.getRandomX(1.0D), this.getRandomY() + 0.5D, this.getRandomZ(1.0D), 0, d0, d1, d2, 0.5F);
+                        serverLevel.sendParticles(ModParticleTypes.HEAL_EFFECT.get(), this.getRandomX(1.0D),
+                                this.getRandomY() + 0.5D, this.getRandomZ(1.0D), 0, d0, d1, d2, 0.5F);
                     }
                 }
                 pPlayer.swing(pHand);

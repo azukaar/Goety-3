@@ -29,7 +29,7 @@ public class CombustBlockEffect extends BrewEffect {
 
     @Override
     public void applyBlockEffect(Level pLevel, BlockPos pPos, LivingEntity pSource, int pAmplifier, int pAreaOfEffect) {
-        for (BlockPos blockPos : this.getSpherePos(pPos, pAreaOfEffect + 2)){
+        for (BlockPos blockPos : this.getSpherePos(pPos, pAreaOfEffect + 2)) {
             if (BlockFinder.canBeReplaced(pLevel, blockPos)
                     && pLevel.getFluidState(blockPos).isEmpty()
                     && Blocks.FIRE.defaultBlockState().canSurvive(pLevel, blockPos)) {
@@ -38,7 +38,8 @@ public class CombustBlockEffect extends BrewEffect {
         }
     }
 
-    public void applyEntityEffect(LivingEntity pTarget, @Nullable Entity pSource, @Nullable Entity pIndirectSource, int pAmplifier){
-        pTarget.setSecondsOnFire(5 * (pAmplifier + 1));
+    public void applyEntityEffect(LivingEntity pTarget, @Nullable Entity pSource, @Nullable Entity pIndirectSource,
+            int pAmplifier) {
+        pTarget.igniteForSeconds(5 * (pAmplifier + 1));
     }
 }

@@ -47,9 +47,12 @@ import java.util.UUID;
 
 public class ZombieVillagerServant extends ZombieServant implements InventoryCarrier, VillagerDataHolder {
     private static final Logger LOGGER = LogUtils.getLogger();
-    private static final EntityDataAccessor<Boolean> DATA_CONVERTING_ID = SynchedEntityData.defineId(ZombieVillagerServant.class, EntityDataSerializers.BOOLEAN);
-    private static final EntityDataAccessor<VillagerData> DATA_VILLAGER_DATA = SynchedEntityData.defineId(ZombieVillagerServant.class, EntityDataSerializers.VILLAGER_DATA);
-    private static final Set<Item> WANTED_ITEMS = ImmutableSet.of(Items.POTATO, Items.CARROT, Items.WHEAT, Items.WHEAT_SEEDS, Items.BEETROOT, Items.BEETROOT_SEEDS, Items.TORCHFLOWER_SEEDS, Items.PITCHER_POD);
+    private static final EntityDataAccessor<Boolean> DATA_CONVERTING_ID = SynchedEntityData
+            .defineId(ZombieVillagerServant.class, EntityDataSerializers.BOOLEAN);
+    private static final EntityDataAccessor<VillagerData> DATA_VILLAGER_DATA = SynchedEntityData
+            .defineId(ZombieVillagerServant.class, EntityDataSerializers.VILLAGER_DATA);
+    private static final Set<Item> WANTED_ITEMS = ImmutableSet.of(Items.POTATO, Items.CARROT, Items.WHEAT,
+            Items.WHEAT_SEEDS, Items.BEETROOT, Items.BEETROOT_SEEDS, Items.TORCHFLOWER_SEEDS, Items.PITCHER_POD);
     public int villagerConversionTime;
     @Nullable
     private UUID conversionStarter;
@@ -70,8 +73,10 @@ public class ZombieVillagerServant extends ZombieServant implements InventoryCar
     @Override
     protected void registerGoals() {
         super.registerGoals();
-        /*this.goalSelector.addGoal(0, new HarvestGoal(this));
-        this.goalSelector.addGoal(1, new BonemealGoal(this));*/
+        /*
+         * this.goalSelector.addGoal(0, new HarvestGoal(this));
+         * this.goalSelector.addGoal(1, new BonemealGoal(this));
+         */
     }
 
     protected void defineSynchedData() {
@@ -82,9 +87,10 @@ public class ZombieVillagerServant extends ZombieServant implements InventoryCar
 
     public void addAdditionalSaveData(CompoundTag p_34397_) {
         super.addAdditionalSaveData(p_34397_);
-        VillagerData.CODEC.encodeStart(NbtOps.INSTANCE, this.getVillagerData()).resultOrPartial(LOGGER::error).ifPresent((p_204072_) -> {
-            p_34397_.put("VillagerData", p_204072_);
-        });
+        VillagerData.CODEC.encodeStart(NbtOps.INSTANCE, this.getVillagerData()).resultOrPartial(LOGGER::error)
+                .ifPresent((p_204072_) -> {
+                    p_34397_.put("VillagerData", p_204072_);
+                });
         if (this.tradeOffers != null) {
             p_34397_.put("Offers", this.tradeOffers);
         }
@@ -105,7 +111,8 @@ public class ZombieVillagerServant extends ZombieServant implements InventoryCar
     public void readAdditionalSaveData(CompoundTag p_34387_) {
         super.readAdditionalSaveData(p_34387_);
         if (p_34387_.contains("VillagerData", 10)) {
-            DataResult<VillagerData> dataresult = VillagerData.CODEC.parse(new Dynamic<>(NbtOps.INSTANCE, p_34387_.get("VillagerData")));
+            DataResult<VillagerData> dataresult = VillagerData.CODEC
+                    .parse(new Dynamic<>(NbtOps.INSTANCE, p_34387_.get("VillagerData")));
             dataresult.resultOrPartial(LOGGER::error).ifPresent(this::setVillagerData);
         }
 
@@ -118,7 +125,8 @@ public class ZombieVillagerServant extends ZombieServant implements InventoryCar
         }
 
         if (p_34387_.contains("ConversionTime", 99) && p_34387_.getInt("ConversionTime") > -1) {
-            this.startConverting(p_34387_.hasUUID("ConversionPlayer") ? p_34387_.getUUID("ConversionPlayer") : null, p_34387_.getInt("ConversionTime"));
+            this.startConverting(p_34387_.hasUUID("ConversionPlayer") ? p_34387_.getUUID("ConversionPlayer") : null,
+                    p_34387_.getInt("ConversionTime"));
         }
 
         if (p_34387_.contains("Xp", 3)) {
@@ -132,7 +140,8 @@ public class ZombieVillagerServant extends ZombieServant implements InventoryCar
         if (this.level instanceof ServerLevel serverLevel && this.isAlive() && this.isConverting()) {
             int i = this.getConversionProgress();
             this.villagerConversionTime -= i;
-            if (this.villagerConversionTime <= 0 && net.neoforged.event.net.neoforged.neoforge.event.EventHooks.canLivingConvert(this, EntityType.VILLAGER, (timer) -> this.villagerConversionTime = timer)) {
+            if (this.villagerConversionTime <= 0 && net.neoforged.neoforge.event.EventHooks.canLivingConvert(this,
+                    EntityType.VILLAGER, (timer) -> this.villagerConversionTime = timer)) {
                 this.finishConversion(serverLevel);
             }
         }
@@ -140,7 +149,7 @@ public class ZombieVillagerServant extends ZombieServant implements InventoryCar
         super.tick();
     }
 
-    public boolean canConvert(){
+    public boolean canConvert() {
         return this.isNatural();
     }
 
@@ -181,14 +190,17 @@ public class ZombieVillagerServant extends ZombieServant implements InventoryCar
         this.villagerConversionTime = p_34385_;
         this.getEntityData().set(DATA_CONVERTING_ID, true);
         this.removeEffect(MobEffects.WEAKNESS);
-        this.addEffect(new MobEffectInstance(MobEffects.DAMAGE_BOOST, p_34385_, Math.min(this.level().getDifficulty().getId() - 1, 0)));
-        this.level.broadcastEntityEvent(this, (byte)16);
+        this.addEffect(new MobEffectInstance(MobEffects.DAMAGE_BOOST, p_34385_,
+                Math.min(this.level().getDifficulty().getId() - 1, 0)));
+        this.level.broadcastEntityEvent(this, (byte) 16);
     }
 
     public void handleEntityEvent(byte p_34372_) {
         if (p_34372_ == 16) {
             if (!this.isSilent()) {
-                this.level.playLocalSound(this.getX(), this.getEyeY(), this.getZ(), SoundEvents.ZOMBIE_VILLAGER_CURE, this.getSoundSource(), 1.0F + this.random.nextFloat(), this.random.nextFloat() * 0.7F + 0.3F, false);
+                this.level.playLocalSound(this.getX(), this.getEyeY(), this.getZ(), SoundEvents.ZOMBIE_VILLAGER_CURE,
+                        this.getSoundSource(), 1.0F + this.random.nextFloat(), this.random.nextFloat() * 0.7F + 0.3F,
+                        false);
             }
 
         } else {
@@ -199,16 +211,16 @@ public class ZombieVillagerServant extends ZombieServant implements InventoryCar
     private void finishConversion(ServerLevel p_34399_) {
         Villager villager = this.convertTo(EntityType.VILLAGER, false);
 
-        if (villager == null){
+        if (villager == null) {
             return;
         }
-        for(EquipmentSlot equipmentslot : EquipmentSlot.values()) {
+        for (EquipmentSlot equipmentslot : EquipmentSlot.values()) {
             ItemStack itemstack = this.getItemBySlot(equipmentslot);
             if (!itemstack.isEmpty()) {
                 if (EnchantmentHelper.hasBindingCurse(itemstack)) {
                     villager.getSlot(equipmentslot.getIndex() + 300).set(itemstack);
                 } else {
-                    double d0 = (double)this.getEquipmentDropChance(equipmentslot);
+                    double d0 = (double) this.getEquipmentDropChance(equipmentslot);
                     if (d0 > 1.0D) {
                         this.spawnAtLocation(itemstack);
                     }
@@ -226,7 +238,8 @@ public class ZombieVillagerServant extends ZombieServant implements InventoryCar
         }
 
         villager.setVillagerXp(this.villagerXp);
-        villager.finalizeSpawn(p_34399_, p_34399_.getCurrentDifficultyAt(villager.blockPosition()), MobSpawnType.CONVERSION, (SpawnGroupData)null, (CompoundTag)null);
+        villager.finalizeSpawn(p_34399_, p_34399_.getCurrentDifficultyAt(villager.blockPosition()),
+                MobSpawnType.CONVERSION, (SpawnGroupData) null, (CompoundTag) null);
         villager.refreshBrain(p_34399_);
         if (this.conversionStarter != null) {
             Player player = p_34399_.getPlayerByUUID(this.conversionStarter);
@@ -237,7 +250,7 @@ public class ZombieVillagerServant extends ZombieServant implements InventoryCar
 
         villager.addEffect(new MobEffectInstance(MobEffects.CONFUSION, 200, 0));
         if (!this.isSilent()) {
-            p_34399_.levelEvent((Player)null, 1027, this.blockPosition(), 0);
+            p_34399_.levelEvent((Player) null, 1027, this.blockPosition(), 0);
         }
         net.neoforged.event.net.neoforged.neoforge.event.EventHooks.onLivingConvert(this, villager);
     }
@@ -248,9 +261,9 @@ public class ZombieVillagerServant extends ZombieServant implements InventoryCar
             int j = 0;
             BlockPos.MutableBlockPos blockpos$mutableblockpos = new BlockPos.MutableBlockPos();
 
-            for(int k = (int)this.getX() - 4; k < (int)this.getX() + 4 && j < 14; ++k) {
-                for(int l = (int)this.getY() - 4; l < (int)this.getY() + 4 && j < 14; ++l) {
-                    for(int i1 = (int)this.getZ() - 4; i1 < (int)this.getZ() + 4 && j < 14; ++i1) {
+            for (int k = (int) this.getX() - 4; k < (int) this.getX() + 4 && j < 14; ++k) {
+                for (int l = (int) this.getY() - 4; l < (int) this.getY() + 4 && j < 14; ++l) {
+                    for (int i1 = (int) this.getZ() - 4; i1 < (int) this.getZ() + 4 && j < 14; ++i1) {
                         BlockState blockstate = this.level().getBlockState(blockpos$mutableblockpos.set(k, l, i1));
                         if (blockstate.is(Blocks.IRON_BARS) || blockstate.getBlock() instanceof BedBlock) {
                             if (this.random.nextFloat() < 0.3F) {
@@ -273,7 +286,8 @@ public class ZombieVillagerServant extends ZombieServant implements InventoryCar
 
     public SlotAccess getSlot(int p_149995_) {
         int i = p_149995_ - 300;
-        return i >= 0 && i < this.inventory.getContainerSize() ? SlotAccess.forContainer(this.inventory, i) : super.getSlot(p_149995_);
+        return i >= 0 && i < this.inventory.getContainerSize() ? SlotAccess.forContainer(this.inventory, i)
+                : super.getSlot(p_149995_);
     }
 
     protected void pickUpItem(ItemEntity p_35467_) {
@@ -287,7 +301,8 @@ public class ZombieVillagerServant extends ZombieServant implements InventoryCar
 
     public boolean wantsToPickUp(ItemStack p_35543_) {
         Item item = p_35543_.getItem();
-        return (WANTED_ITEMS.contains(item) || this.getVillagerData().getProfession().requestedItems().contains(item)) && this.getInventory().canAddItem(p_35543_);
+        return (WANTED_ITEMS.contains(item) || this.getVillagerData().getProfession().requestedItems().contains(item))
+                && this.getInventory().canAddItem(p_35543_);
     }
 
     public boolean hasFarmSeeds() {
@@ -297,7 +312,8 @@ public class ZombieVillagerServant extends ZombieServant implements InventoryCar
     }
 
     public float getVoicePitch() {
-        return this.isBaby() ? (this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 2.0F : (this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 1.0F;
+        return this.isBaby() ? (this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 2.0F
+                : (this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 1.0F;
     }
 
     public SoundEvent getAmbientSound() {
@@ -325,9 +341,11 @@ public class ZombieVillagerServant extends ZombieServant implements InventoryCar
     }
 
     @Nullable
-    public SpawnGroupData finalizeSpawn(ServerLevelAccessor p_34378_, DifficultyInstance p_34379_, MobSpawnType p_34380_, @Nullable SpawnGroupData spawnDataIn, @Nullable CompoundTag p_34382_) {
+    public SpawnGroupData finalizeSpawn(ServerLevelAccessor p_34378_, DifficultyInstance p_34379_,
+            MobSpawnType p_34380_, @Nullable SpawnGroupData spawnDataIn, @Nullable CompoundTag p_34382_) {
         spawnDataIn = super.finalizeSpawn(p_34378_, p_34379_, p_34380_, spawnDataIn, p_34382_);
-        this.setVillagerData(this.getVillagerData().setType(VillagerType.byBiome(p_34378_.getBiome(this.blockPosition()))));
+        this.setVillagerData(
+                this.getVillagerData().setType(VillagerType.byBiome(p_34378_.getBiome(this.blockPosition()))));
         return spawnDataIn;
     }
 

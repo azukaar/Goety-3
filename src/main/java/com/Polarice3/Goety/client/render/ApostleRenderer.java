@@ -27,27 +27,34 @@ import org.joml.Matrix4f;
 import javax.annotation.Nullable;
 import java.util.Random;
 
-public class ApostleRenderer extends CultistRenderer<Apostle>{
+public class ApostleRenderer extends CultistRenderer<Apostle> {
     protected static final ResourceLocation TEXTURE = Goety.location("textures/entity/cultist/apostle.png");
     protected static final ResourceLocation TEXTURE_2 = Goety.location("textures/entity/cultist/apostle_second.png");
     protected static final ResourceLocation EXPLODE = Goety.location("textures/entity/cultist/apostle_explode.png");
-    private static final float HALF_SQRT_3 = (float)(Math.sqrt(3.0D) / 2.0D);
+    private static final float HALF_SQRT_3 = (float) (Math.sqrt(3.0D) / 2.0D);
 
     public ApostleRenderer(EntityRendererProvider.Context renderManagerIn) {
         super(renderManagerIn, new ApostleModel<>(renderManagerIn.bakeLayer(ModModelLayer.APOSTLE)), 0.5F);
         this.addLayer(new MonolithLayer<>(this, renderManagerIn.getModelSet()));
-        this.addLayer(new HumanoidArmorLayer<>(this, new VillagerArmorModel<>(renderManagerIn.bakeLayer(ModModelLayer.VILLAGER_ARMOR_INNER)), new VillagerArmorModel<>(renderManagerIn.bakeLayer(ModModelLayer.VILLAGER_ARMOR_OUTER)), renderManagerIn.getModelManager()));
+        this.addLayer(new HumanoidArmorLayer<>(this,
+                new VillagerArmorModel<>(renderManagerIn.bakeLayer(ModModelLayer.VILLAGER_ARMOR_INNER)),
+                new VillagerArmorModel<>(renderManagerIn.bakeLayer(ModModelLayer.VILLAGER_ARMOR_OUTER)),
+                renderManagerIn.getModelManager()));
         this.addLayer(new ItemInHandLayer<>(this, renderManagerIn.getItemInHandRenderer()) {
-            public void render(PoseStack p_116352_, MultiBufferSource p_116353_, int p_116354_, Apostle p_116355_, float p_116356_, float p_116357_, float p_116358_, float p_116359_, float p_116360_, float p_116361_) {
+            public void render(PoseStack p_116352_, MultiBufferSource p_116353_, int p_116354_, Apostle p_116355_,
+                    float p_116356_, float p_116357_, float p_116358_, float p_116359_, float p_116360_,
+                    float p_116361_) {
                 if (p_116355_.getArmPose() != Cultist.CultistArmPose.CROSSED) {
-                    super.render(p_116352_, p_116353_, p_116354_, p_116355_, p_116356_, p_116357_, p_116358_, p_116359_, p_116360_, p_116361_);
+                    super.render(p_116352_, p_116353_, p_116354_, p_116355_, p_116356_, p_116357_, p_116358_, p_116359_,
+                            p_116360_, p_116361_);
                 }
             }
         });
     }
 
     @Override
-    public void render(Apostle pEntity, float pEntityYaw, float pPartialTicks, PoseStack pMatrixStack, MultiBufferSource pBuffer, int pPackedLight) {
+    public void render(Apostle pEntity, float pEntityYaw, float pPartialTicks, PoseStack pMatrixStack,
+            MultiBufferSource pBuffer, int pPackedLight) {
         super.render(pEntity, pEntityYaw, pPartialTicks, pMatrixStack, pBuffer, pPackedLight);
         if (pEntity.deathTime > 0) {
             pMatrixStack.pushPose();
@@ -60,15 +67,18 @@ public class ApostleRenderer extends CultistRenderer<Apostle>{
             this.setupRotations(pEntity, pMatrixStack, f71, f, pPartialTicks);
             pMatrixStack.scale(-1.0F, -1.0F, 1.0F);
             this.scale(pEntity, pMatrixStack, pPartialTicks);
-            pMatrixStack.translate(0.0D, (double)-1.501F, 0.0D);
+            pMatrixStack.translate(0.0D, (double) -1.501F, 0.0D);
             this.model.prepareMobModel(pEntity, 0.0F, 0.0F, pPartialTicks);
             this.model.setupAnim(pEntity, 0.0F, 0.0F, f71, f2, f6);
-            float f8 = MobsConfig.FancierApostleDeath.get() || pEntity.level.dimension() == Level.NETHER ? 300.0F : 30.0F;
-            float f9 = (float)pEntity.deathTime / f8;
+            float f8 = MobsConfig.FancierApostleDeath.get() || pEntity.level.dimension() == Level.NETHER ? 300.0F
+                    : 30.0F;
+            float f9 = (float) pEntity.deathTime / f8;
             VertexConsumer vertexconsumer = pBuffer.getBuffer(RenderType.dragonExplosionAlpha(EXPLODE));
-            this.model.renderToBuffer(pMatrixStack, vertexconsumer, pPackedLight, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, f9);
-            VertexConsumer ivertexbuilder1 = pBuffer.getBuffer(RenderType.entityDecal(this.getTextureLocation(pEntity)));
-            this.model.renderToBuffer(pMatrixStack, ivertexbuilder1, pPackedLight, OverlayTexture.pack(0.0F, flag), 1.0F, 1.0F, 1.0F, 1.0F);
+            this.model.renderToBuffer(pMatrixStack, vertexconsumer, pPackedLight, OverlayTexture.NO_OVERLAY,
+                    net.minecraft.util.FastColor.ARGB32.color((int) (f9 * 255), 255, 255, 255));
+            VertexConsumer ivertexbuilder1 = pBuffer
+                    .getBuffer(RenderType.entityDecal(this.getTextureLocation(pEntity)));
+            this.model.renderToBuffer(pMatrixStack, ivertexbuilder1, pPackedLight, OverlayTexture.pack(0.0F, flag), -1);
             pMatrixStack.popPose();
 
             if (MobsConfig.FancierApostleDeath.get() || pEntity.level.dimension() == Level.NETHER) {
@@ -114,11 +124,13 @@ public class ApostleRenderer extends CultistRenderer<Apostle>{
     }
 
     private static void vertex2(VertexConsumer p_229060_0_, Matrix4f p_229060_1_, float pY, float p_229060_3_) {
-        p_229060_0_.vertex(p_229060_1_, -HALF_SQRT_3 * p_229060_3_, pY, -0.5F * p_229060_3_).color(255, 0, 0, 0).endVertex();
+        p_229060_0_.vertex(p_229060_1_, -HALF_SQRT_3 * p_229060_3_, pY, -0.5F * p_229060_3_).color(255, 0, 0, 0)
+                .endVertex();
     }
 
     private static void vertex3(VertexConsumer p_229062_0_, Matrix4f p_229062_1_, float pY, float p_229062_3_) {
-        p_229062_0_.vertex(p_229062_1_, HALF_SQRT_3 * p_229062_3_, pY, -0.5F * p_229062_3_).color(255, 0, 0, 0).endVertex();
+        p_229062_0_.vertex(p_229062_1_, HALF_SQRT_3 * p_229062_3_, pY, -0.5F * p_229062_3_).color(255, 0, 0, 0)
+                .endVertex();
     }
 
     private static void vertex4(VertexConsumer p_229063_0_, Matrix4f p_229063_1_, float pY, float p_229063_3_) {
@@ -126,8 +138,9 @@ public class ApostleRenderer extends CultistRenderer<Apostle>{
     }
 
     @Nullable
-    protected RenderType getRenderType(Apostle p_230496_1_, boolean p_230496_2_, boolean p_230496_3_, boolean p_230496_4_) {
-        if (p_230496_1_.deathTime > 0){
+    protected RenderType getRenderType(Apostle p_230496_1_, boolean p_230496_2_, boolean p_230496_3_,
+            boolean p_230496_4_) {
+        if (p_230496_1_.deathTime > 0) {
             return RenderType.dragonExplosionAlpha(EXPLODE);
         } else {
             return super.getRenderType(p_230496_1_, p_230496_2_, p_230496_3_, p_230496_4_);
@@ -153,16 +166,18 @@ public class ApostleRenderer extends CultistRenderer<Apostle>{
             this.model = new ApostleModel<>(p_174555_.bakeLayer(ModModelLayer.APOSTLE));
         }
 
-        public void render(PoseStack p_116970_, MultiBufferSource p_116971_, int p_116972_, T p_116973_, float p_116974_, float p_116975_, float p_116976_, float p_116977_, float p_116978_, float p_116979_) {
+        public void render(PoseStack p_116970_, MultiBufferSource p_116971_, int p_116972_, T p_116973_,
+                float p_116974_, float p_116975_, float p_116976_, float p_116977_, float p_116978_, float p_116979_) {
             if (p_116973_.isMonolithPower() && !p_116973_.isDeadOrDying()) {
-                float f = (float)p_116973_.tickCount + p_116976_;
+                float f = (float) p_116973_.tickCount + p_116976_;
                 CultistModel<T> entitymodel = this.model;
                 entitymodel.prepareMobModel(p_116973_, p_116974_, p_116975_, p_116976_);
                 this.getParentModel().copyPropertiesTo(entitymodel);
-                VertexConsumer vertexconsumer = p_116971_.getBuffer(RenderType.energySwirl(ARMOR, this.xOffset(f) % 1.0F, f * 0.01F % 1.0F));
+                VertexConsumer vertexconsumer = p_116971_
+                        .getBuffer(RenderType.energySwirl(ARMOR, this.xOffset(f) % 1.0F, f * 0.01F % 1.0F));
                 entitymodel.setupAnim(p_116973_, p_116974_, p_116975_, p_116977_, p_116978_, p_116979_);
-                entitymodel.renderToBuffer(p_116970_, vertexconsumer, p_116972_, OverlayTexture.NO_OVERLAY, 0.5F, 0.5F, 0.5F, 1.0F);
-                if (entitymodel instanceof ApostleModel<T> apostleModel){
+                entitymodel.renderToBuffer(p_116970_, vertexconsumer, p_116972_, OverlayTexture.NO_OVERLAY, 0xFF808080);
+                if (entitymodel instanceof ApostleModel<T> apostleModel) {
                     apostleModel.halo.visible = false;
                 }
             }

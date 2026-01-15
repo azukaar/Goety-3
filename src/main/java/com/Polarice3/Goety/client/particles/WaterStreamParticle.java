@@ -27,7 +27,8 @@ import static net.minecraft.client.renderer.texture.OverlayTexture.NO_OVERLAY;
 //Based on Rainbow Particle by @AlexModGuy: https://github.com/AlexModGuy/AlexsCaves/blob/main/src/main/java/com/github/alexmodguy/alexscaves/client/particle/RainbowParticle.java
 public class WaterStreamParticle extends Particle {
     public static final ParticleGroup PARTICLE_GROUP = new ParticleGroup(100);
-    private static final RenderType RENDER_TYPE = ModRenderType.getWaterStream(Goety.location("textures/particle/water_stream.png"));
+    private static final RenderType RENDER_TYPE = ModRenderType
+            .getWaterStream(Goety.location("textures/particle/water_stream.png"));
     public int vecCount;
     public int fadeSpeed = 10;
     public int fillSpeed = 10;
@@ -68,24 +69,22 @@ public class WaterStreamParticle extends Particle {
         this.angle = Math.atan2(vecForAngle.x, vecForAngle.z);
     }
 
-    public boolean shouldCull() {
-        return false;
-    }
-
     public void render(VertexConsumer consumer, Camera camera, float partialTick) {
-        MultiBufferSource.BufferSource multibuffersource$buffersource = Minecraft.getInstance().renderBuffers().bufferSource();
+        MultiBufferSource.BufferSource multibuffersource$buffersource = Minecraft.getInstance().renderBuffers()
+                .bufferSource();
         VertexConsumer vertexconsumer = multibuffersource$buffersource.getBuffer(RENDER_TYPE);
         Vec3 cameraPos = camera.getPosition();
         PoseStack posestack = new PoseStack();
         posestack.pushPose();
         posestack.translate(this.origin.x - cameraPos.x, this.origin.y - cameraPos.y, this.origin.z - cameraPos.z);
         float f = (float) this.angle;
-        posestack.mulPose(Axis.YP.rotation(f  - Mth.HALF_PI));
+        posestack.mulPose(Axis.YP.rotation(f - Mth.HALF_PI));
         int j = this.getLightColor(partialTick);
         int vertIndex = 0;
         float width = this.getWidth();
         float alphaLerped = this.prevAlpha + (this.alpha - this.prevAlpha) * partialTick;
-        float alphaProgressionLerped = this.prevAlphaProgression + (this.alphaProgression - this.prevAlphaProgression) * partialTick;
+        float alphaProgressionLerped = this.prevAlphaProgression
+                + (this.alphaProgression - this.prevAlphaProgression) * partialTick;
         while (vertIndex < this.bakedVecs.length - 1) {
             posestack.pushPose();
             float u1 = vertIndex / (float) this.bakedVecs.length;
@@ -98,10 +97,19 @@ public class WaterStreamParticle extends Particle {
             Matrix3f matrix3f = posestack$pose.normal();
             float alpha0 = calcAlphaForVertex(vertIndex, alphaProgressionLerped) * alphaLerped;
             float alpha1 = calcAlphaForVertex(vertIndex + 1, alphaProgressionLerped) * alphaLerped;
-            vertexconsumer.vertex(matrix4f, (float) draw1.x, (float) draw1.y, (float) draw1.z + width).color(1F, 1F, 1F, alpha0).uv(u1, 1F).overlayCoords(NO_OVERLAY).uv2(j).normal(matrix3f, 0.0F, 1.0F, 0.0F).endVertex();
-            vertexconsumer.vertex(matrix4f, (float) draw2.x, (float) draw2.y, (float) draw1.z + width).color(1F, 1F, 1F, alpha1).uv(u2, 1F).overlayCoords(NO_OVERLAY).uv2(j).normal(matrix3f, 0.0F, 1.0F, 0.0F).endVertex();
-            vertexconsumer.vertex(matrix4f, (float) draw2.x, (float) draw2.y, (float) draw2.z - width).color(1F, 1F, 1F, alpha1).uv(u2, 0).overlayCoords(NO_OVERLAY).uv2(j).normal(matrix3f, 0.0F, 1.0F, 0.0F).endVertex();
-            vertexconsumer.vertex(matrix4f, (float) draw1.x, (float) draw1.y, (float) draw2.z - width).color(1F, 1F, 1F, alpha0).uv(u1, 0).overlayCoords(NO_OVERLAY).uv2(j).normal(matrix3f, 0.0F, 1.0F, 0.0F).endVertex();
+            org.joml.Vector3f normal = new org.joml.Vector3f(0.0F, 1.0F, 0.0F).mul(matrix3f);
+            vertexconsumer.addVertex(matrix4f, (float) draw1.x, (float) draw1.y, (float) draw1.z + width)
+                    .setColor(1F, 1F, 1F, alpha0).setUv(u1, 1F).setOverlay(NO_OVERLAY).setLight(j)
+                    .setNormal(normal.x, normal.y, normal.z);
+            vertexconsumer.addVertex(matrix4f, (float) draw2.x, (float) draw2.y, (float) draw1.z + width)
+                    .setColor(1F, 1F, 1F, alpha1).setUv(u2, 1F).setOverlay(NO_OVERLAY).setLight(j)
+                    .setNormal(normal.x, normal.y, normal.z);
+            vertexconsumer.addVertex(matrix4f, (float) draw2.x, (float) draw2.y, (float) draw2.z - width)
+                    .setColor(1F, 1F, 1F, alpha1).setUv(u2, 0).setOverlay(NO_OVERLAY).setLight(j)
+                    .setNormal(normal.x, normal.y, normal.z);
+            vertexconsumer.addVertex(matrix4f, (float) draw1.x, (float) draw1.y, (float) draw2.z - width)
+                    .setColor(1F, 1F, 1F, alpha0).setUv(u1, 0).setOverlay(NO_OVERLAY).setLight(j)
+                    .setNormal(normal.x, normal.y, normal.z);
             vertIndex++;
             posestack.popPose();
         }
@@ -147,7 +155,8 @@ public class WaterStreamParticle extends Particle {
         public Provider() {
         }
 
-        public Particle createParticle(SimpleParticleType typeIn, ClientLevel worldIn, double x, double y, double z, double xSpeed, double ySpeed, double zSpeed) {
+        public Particle createParticle(SimpleParticleType typeIn, ClientLevel worldIn, double x, double y, double z,
+                double xSpeed, double ySpeed, double zSpeed) {
             return new WaterStreamParticle(worldIn, x, y, z, xSpeed, ySpeed, zSpeed);
         }
     }

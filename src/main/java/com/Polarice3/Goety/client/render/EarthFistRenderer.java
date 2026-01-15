@@ -21,7 +21,8 @@ public class EarthFistRenderer extends EntityRenderer<EarthFist> {
         this.model = new EarthFistModel<>(renderManagerIn.bakeLayer(ModModelLayer.EARTH_FIST));
     }
 
-    public void render(EarthFist pEntity, float entityYaw, float pPartialTicks, PoseStack pMatrixStack, MultiBufferSource bufferIn, int packedLightIn) {
+    public void render(EarthFist pEntity, float entityYaw, float pPartialTicks, PoseStack pMatrixStack,
+            MultiBufferSource bufferIn, int packedLightIn) {
         if (pEntity.isSentSpikeEvent()) {
             pMatrixStack.pushPose();
             pMatrixStack.mulPose(Axis.YP.rotationDegrees(90.0F - pEntity.getYRot()));
@@ -30,14 +31,15 @@ public class EarthFistRenderer extends EntityRenderer<EarthFist> {
             pMatrixStack.translate(0.0D, -1.0D, 0.0D);
             float f7 = this.getBob(pEntity, pPartialTicks);
             this.model.setupAnim(pEntity, 0.0F, 0.0F, f7, 0, 0);
-            this.model.renderToBuffer(pMatrixStack, ivertexbuilder, packedLightIn, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 0.15F);
+            this.model.renderToBuffer(pMatrixStack, ivertexbuilder, packedLightIn, OverlayTexture.NO_OVERLAY,
+                    net.minecraft.util.FastColor.ARGB32.color((int) (0.15F * 255), 255, 255, 255));
             pMatrixStack.popPose();
             super.render(pEntity, entityYaw, pPartialTicks, pMatrixStack, bufferIn, packedLightIn);
         }
     }
 
     protected float getBob(EarthFist p_115305_, float p_115306_) {
-        return (float)p_115305_.tickCount + p_115306_;
+        return (float) p_115305_.tickCount + p_115306_;
     }
 
     @Override

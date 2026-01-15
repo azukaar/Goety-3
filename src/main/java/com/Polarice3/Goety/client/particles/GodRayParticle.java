@@ -14,7 +14,8 @@ import org.joml.Vector3f;
 
 public class GodRayParticle extends TextureSheetParticle {
 
-    public GodRayParticle(ClientLevel level, double x, double y, double z, double xSpeed, double ySpeed, double zSpeed) {
+    public GodRayParticle(ClientLevel level, double x, double y, double z, double xSpeed, double ySpeed,
+            double zSpeed) {
         super(level, x, y + 2.0, z);
         this.lifetime = 20;
         this.gravity = 0.0F;
@@ -43,11 +44,13 @@ public class GodRayParticle extends TextureSheetParticle {
         } else {
             this.alpha = 1.0F;
         }
-        /*if (agePercent <= 0.81F) {
-            this.alpha = Math.min(1.0F, agePercent / 0.05F) * maxAlpha;
-        } else {
-            this.alpha = maxAlpha * (1.0F - ((agePercent - 0.81F) / 0.19F));
-        }*/
+        /*
+         * if (agePercent <= 0.81F) {
+         * this.alpha = Math.min(1.0F, agePercent / 0.05F) * maxAlpha;
+         * } else {
+         * this.alpha = maxAlpha * (1.0F - ((agePercent - 0.81F) / 0.19F));
+         * }
+         */
     }
 
     @Override
@@ -58,16 +61,16 @@ public class GodRayParticle extends TextureSheetParticle {
     @Override
     public void render(VertexConsumer buffer, Camera camera, float partialTicks) {
         Vec3 camPos = camera.getPosition();
-        float x = (float)(Mth.lerp(partialTicks, this.xo, this.x) - camPos.x());
-        float y = (float)(Mth.lerp(partialTicks, this.yo, this.y) - camPos.y());
-        float z = (float)(Mth.lerp(partialTicks, this.zo, this.z) - camPos.z());
+        float x = (float) (Mth.lerp(partialTicks, this.xo, this.x) - camPos.x());
+        float y = (float) (Mth.lerp(partialTicks, this.yo, this.y) - camPos.y());
+        float z = (float) (Mth.lerp(partialTicks, this.zo, this.z) - camPos.z());
 
         Quaternionf quaternion = new Quaternionf().rotationY(-camera.getYRot() * Mth.DEG_TO_RAD);
 
         float xSize = 1.0F;
         float ySize = 1.0F;
 
-        Vector3f[] vector3fs = new Vector3f[]{
+        Vector3f[] vector3fs = new Vector3f[] {
                 new Vector3f(-xSize, -ySize, 0.0F),
                 new Vector3f(-xSize, ySize, 0.0F),
                 new Vector3f(xSize, ySize, 0.0F),
@@ -76,7 +79,7 @@ public class GodRayParticle extends TextureSheetParticle {
 
         float size = this.getQuadSize(partialTicks);
 
-        for(int i = 0; i < 4; ++i) {
+        for (int i = 0; i < 4; ++i) {
             Vector3f vertex = vector3fs[i];
             vertex.rotate(quaternion);
             vertex.mul(size);
@@ -89,28 +92,23 @@ public class GodRayParticle extends TextureSheetParticle {
         float v1 = this.getV1();
         int light = this.getLightColor(partialTicks);
 
-        buffer.vertex(vector3fs[0].x(), vector3fs[0].y(), vector3fs[0].z())
-                .uv(u1, v1).color(this.rCol, this.gCol, this.bCol, this.alpha).uv2(light).endVertex();
-        buffer.vertex(vector3fs[1].x(), vector3fs[1].y(), vector3fs[1].z())
-                .uv(u1, v0).color(this.rCol, this.gCol, this.bCol, this.alpha).uv2(light).endVertex();
-        buffer.vertex(vector3fs[2].x(), vector3fs[2].y(), vector3fs[2].z())
-                .uv(u0, v0).color(this.rCol, this.gCol, this.bCol, this.alpha).uv2(light).endVertex();
-        buffer.vertex(vector3fs[3].x(), vector3fs[3].y(), vector3fs[3].z())
-                .uv(u0, v1).color(this.rCol, this.gCol, this.bCol, this.alpha).uv2(light).endVertex();
+        buffer.addVertex((float) vector3fs[0].x(), (float) vector3fs[0].y(), (float) vector3fs[0].z())
+                .setColor(this.rCol, this.gCol, this.bCol, this.alpha).setUv(u1, v1).setLight(light);
+        buffer.addVertex((float) vector3fs[1].x(), (float) vector3fs[1].y(), (float) vector3fs[1].z())
+                .setColor(this.rCol, this.gCol, this.bCol, this.alpha).setUv(u1, v0).setLight(light);
+        buffer.addVertex((float) vector3fs[2].x(), (float) vector3fs[2].y(), (float) vector3fs[2].z())
+                .setColor(this.rCol, this.gCol, this.bCol, this.alpha).setUv(u0, v0).setLight(light);
+        buffer.addVertex((float) vector3fs[3].x(), (float) vector3fs[3].y(), (float) vector3fs[3].z())
+                .setColor(this.rCol, this.gCol, this.bCol, this.alpha).setUv(u0, v1).setLight(light);
 
-        buffer.vertex(vector3fs[3].x(), vector3fs[3].y(), vector3fs[3].z())
-                .uv(u0, v1).color(this.rCol, this.gCol, this.bCol, this.alpha).uv2(light).endVertex();
-        buffer.vertex(vector3fs[2].x(), vector3fs[2].y(), vector3fs[2].z())
-                .uv(u0, v0).color(this.rCol, this.gCol, this.bCol, this.alpha).uv2(light).endVertex();
-        buffer.vertex(vector3fs[1].x(), vector3fs[1].y(), vector3fs[1].z())
-                .uv(u1, v0).color(this.rCol, this.gCol, this.bCol, this.alpha).uv2(light).endVertex();
-        buffer.vertex(vector3fs[0].x(), vector3fs[0].y(), vector3fs[0].z())
-                .uv(u1, v1).color(this.rCol, this.gCol, this.bCol, this.alpha).uv2(light).endVertex();
-    }
-
-    @Override
-    public boolean shouldCull() {
-        return false;
+        buffer.addVertex((float) vector3fs[3].x(), (float) vector3fs[3].y(), (float) vector3fs[3].z())
+                .setColor(this.rCol, this.gCol, this.bCol, this.alpha).setUv(u0, v1).setLight(light);
+        buffer.addVertex((float) vector3fs[2].x(), (float) vector3fs[2].y(), (float) vector3fs[2].z())
+                .setColor(this.rCol, this.gCol, this.bCol, this.alpha).setUv(u0, v0).setLight(light);
+        buffer.addVertex((float) vector3fs[1].x(), (float) vector3fs[1].y(), (float) vector3fs[1].z())
+                .setColor(this.rCol, this.gCol, this.bCol, this.alpha).setUv(u1, v0).setLight(light);
+        buffer.addVertex((float) vector3fs[0].x(), (float) vector3fs[0].y(), (float) vector3fs[0].z())
+                .setColor(this.rCol, this.gCol, this.bCol, this.alpha).setUv(u1, v1).setLight(light);
     }
 
     @Override
@@ -126,7 +124,8 @@ public class GodRayParticle extends TextureSheetParticle {
         }
 
         @Override
-        public Particle createParticle(SimpleParticleType type, ClientLevel level, double x, double y, double z, double xSpeed, double ySpeed, double zSpeed) {
+        public Particle createParticle(SimpleParticleType type, ClientLevel level, double x, double y, double z,
+                double xSpeed, double ySpeed, double zSpeed) {
             GodRayParticle particle = new GodRayParticle(level, x, y, z, xSpeed, ySpeed, zSpeed);
             particle.pickSprite(this.sprites);
             return particle;

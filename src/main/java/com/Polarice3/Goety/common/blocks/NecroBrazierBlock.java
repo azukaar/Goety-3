@@ -58,20 +58,21 @@ public class NecroBrazierBlock extends BaseEntityBlock implements SimpleWaterlog
                 .strength(3.5F)
                 .sound(SoundType.CHAIN)
                 .lightLevel(litBlockEmission())
-                .noOcclusion()
-        );
-        this.registerDefaultState(this.stateDefinition.any().setValue(WATERLOGGED, Boolean.FALSE).setValue(LIT, Boolean.FALSE));
+                .noOcclusion());
+        this.registerDefaultState(
+                this.stateDefinition.any().setValue(WATERLOGGED, Boolean.FALSE).setValue(LIT, Boolean.FALSE));
     }
 
     private static ToIntFunction<BlockState> litBlockEmission() {
         return (state) -> state.getValue(BlockStateProperties.LIT) ? 10 : 0;
     }
 
-    public InteractionResult use(BlockState pState, Level pLevel, BlockPos pPos, Player pPlayer, InteractionHand pHand, BlockHitResult pHit) {
+    public InteractionResult use(BlockState pState, Level pLevel, BlockPos pPos, Player pPlayer, InteractionHand pHand,
+            BlockHitResult pHit) {
         BlockEntity tileentity = pLevel.getBlockEntity(pPos);
         if (tileentity instanceof NecroBrazierBlockEntity burnerTileEntity) {
             ItemStack itemstack = pPlayer.getItemInHand(pHand);
-            if (itemstack.isEmpty() || MobUtil.isShifting(pPlayer)){
+            if (itemstack.isEmpty() || MobUtil.isShifting(pPlayer)) {
                 burnerTileEntity.removeItem(pPlayer);
                 return InteractionResult.SUCCESS;
             } else if (!pLevel.isClientSide && pState.getValue(LIT) && burnerTileEntity.addItem(pPlayer, itemstack)) {
@@ -88,7 +89,7 @@ public class NecroBrazierBlock extends BaseEntityBlock implements SimpleWaterlog
         if (!pState.is(pNewState.getBlock())) {
             BlockEntity tileentity = pLevel.getBlockEntity(pPos);
             if (tileentity instanceof NecroBrazierBlockEntity) {
-                Containers.dropContents(pLevel, pPos, ((NecroBrazierBlockEntity)tileentity).getItems());
+                Containers.dropContents(pLevel, pPos, ((NecroBrazierBlockEntity) tileentity).getItems());
             }
 
             super.onRemove(pState, pLevel, pPos, pNewState, pIsMoving);
@@ -103,7 +104,8 @@ public class NecroBrazierBlock extends BaseEntityBlock implements SimpleWaterlog
         if (pState.getValue(LIT)) {
             if (!pEntity.fireImmune()
                     && pEntity instanceof LivingEntity livingEntity
-                    && livingEntity.getMobType() != MobType.UNDEAD
+                    && ((net.minecraft.world.entity.LivingEntity) livingEntity)
+                            .getMobType() != net.minecraft.world.entity.MobType.UNDEAD
                     && !LichdomHelper.isInLichMode(livingEntity)
                     && !EnchantmentHelper.hasFrostWalker((LivingEntity) pEntity)
                     && pEntity.getY() >= pPos.getY() + 0.5F) {
@@ -113,10 +115,12 @@ public class NecroBrazierBlock extends BaseEntityBlock implements SimpleWaterlog
             if (tileentity instanceof NecroBrazierBlockEntity blockEntity) {
                 if (pEntity instanceof ItemEntity itemEntity) {
                     if (!pLevel.isClientSide) {
-                        if (itemEntity.isAlive() && !itemEntity.getItem().isEmpty() && !itemEntity.getTags().contains(ConstantPaths.resultItem())) {
+                        if (itemEntity.isAlive() && !itemEntity.getItem().isEmpty()
+                                && !itemEntity.getTags().contains(ConstantPaths.resultItem())) {
                             if (blockEntity.currentTime <= 0) {
                                 if (blockEntity.addItem(null, itemEntity.getItem())) {
-                                    pLevel.playSound(null, pPos, SoundEvents.ITEM_PICKUP, SoundSource.BLOCKS, 1.0F, 1.0F);
+                                    pLevel.playSound(null, pPos, SoundEvents.ITEM_PICKUP, SoundSource.BLOCKS, 1.0F,
+                                            1.0F);
                                     syncItem(itemEntity);
                                 }
                             }
@@ -143,7 +147,8 @@ public class NecroBrazierBlock extends BaseEntityBlock implements SimpleWaterlog
         return this.defaultBlockState().setValue(WATERLOGGED, flag);
     }
 
-    public BlockState updateShape(BlockState pState, Direction pFacing, BlockState pFacingState, LevelAccessor pLevel, BlockPos pCurrentPos, BlockPos pFacingPos) {
+    public BlockState updateShape(BlockState pState, Direction pFacing, BlockState pFacingState, LevelAccessor pLevel,
+            BlockPos pCurrentPos, BlockPos pFacingPos) {
         if (pState.getValue(WATERLOGGED)) {
             pLevel.scheduleTick(pCurrentPos, Fluids.WATER, Fluids.WATER.getTickDelay(pLevel));
         }
@@ -188,7 +193,8 @@ public class NecroBrazierBlock extends BaseEntityBlock implements SimpleWaterlog
     }
 
     @Nullable
-    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level p_152755_, BlockState p_152756_, BlockEntityType<T> p_152757_) {
+    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level p_152755_, BlockState p_152756_,
+            BlockEntityType<T> p_152757_) {
         return (world, pos, state, blockEntity) -> {
             if (blockEntity instanceof NecroBrazierBlockEntity brazierBlock)
                 brazierBlock.tick();

@@ -14,16 +14,32 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.network.codec.StreamCodec;
 
 public class PulverizeRecipe implements Recipe<Container> {
-    public static Serializer SERIALIZER = new Serializer();
-    protected final ResourceLocation id;
+    public static final Serializer SERIALIZER = new Serializer();
+    public static final MapCodec<PulverizeRecipe> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
+            Ingredient.CODEC_NONEMPTY.fieldOf("ingredient").forGetter(r -> r.ingredient),
+            ItemStack.CODEC.optionalFieldOf("item_result", ItemStack.EMPTY).forGetter(r -> r.itemResult),
+            net.minecraft.core.registries.BuiltInRegistries.BLOCK.byNameCodec()
+                    .optionalFieldOf("block_result", Blocks.CAVE_AIR).forGetter(r -> r.blockResult))
+            .apply(instance, PulverizeRecipe::new));
+
+    public static final StreamCodec<net.minecraft.network.RegistryFriendlyByteBuf, PulverizeRecipe> STREAM_CODEC = StreamCodec
+            .composite(
+                    Ingredient.CONTENTS_STREAM_CODEC, r -> r.ingredient,
+                    ItemStack.STREAM_CODEC, r -> r.itemResult,
+                    net.minecraft.network.codec.ByteBufCodecs.registry(net.minecraft.core.registries.Registries.BLOCK),
+                    r -> r.blockResult,
+                    PulverizeRecipe::new);
+
     public final Ingredient ingredient;
     protected final ItemStack itemResult;
     protected final Block blockResult;
 
-    public PulverizeRecipe(ResourceLocation pId, Ingredient pIngredient, ItemStack pResult, Block pBlock) {
-        this.id = pId;
+    public PulverizeRecipe(Ingredient pIngredient, ItemStack pResult, Block pBlock) {
         this.ingredient = pIngredient;
         this.itemResult = pResult;
         this.blockResult = pBlock;
@@ -35,7 +51,7 @@ public class PulverizeRecipe implements Recipe<Container> {
     }
 
     @Override
-    public ItemStack assemble(Container p_44001_, RegistryAccess p_267165_) {
+    public ItemStack assemble(Container p_44001_, net.minecraft.core.HolderLookup.Provider p_267165_) {
         return this.itemResult.copy();
     }
 
@@ -55,13 +71,8 @@ public class PulverizeRecipe implements Recipe<Container> {
         return nonnulllist;
     }
 
-    public Block getBlockResult(){
+    public Block getBlockResult() {
         return this.blockResult;
-    }
-
-    @Override
-    public ResourceLocation getId() {
-        return this.id;
     }
 
     @Override
@@ -74,45 +85,15 @@ public class PulverizeRecipe implements Recipe<Container> {
         return ModRecipeSerializer.PULVERIZE_TYPE.get();
     }
 
-    public static class Serializer implements RecipeSerializer<PulverizeRecipe>{
-
-        public PulverizeRecipe fromJson(ResourceLocation pRecipeId, JsonObject pJson) {
-            JsonElement jsonelement = GsonHelper.isArrayNode(pJson, "ingredient") ? GsonHelper.getAsJsonArray(pJson, "ingredient") : GsonHelper.getAsJsonObject(pJson, "ingredient");
-            Ingredient ingredient = Ingredient.fromJson(jsonelement);
-            ItemStack itemstack = ItemStack.EMPTY;
-            if (pJson.has("item_result")) {
-                if (pJson.get("item_result").isJsonObject()) {
-                    itemstack = ShapedRecipe.itemStackFromJson(GsonHelper.getAsJsonObject(pJson, "item_result"));
-                } else {
-                    String s1 = GsonHelper.getAsString(pJson, "item_result");
-                    ResourceLocation resourcelocation = new ResourceLocation(s1);
-                    itemstack = new ItemStack(NeoForgeRegistries.ITEMS.getValue(resourcelocation));
-                }
-            }
-            Block block = Blocks.CAVE_AIR;
-            if (pJson.has("block_result")){
-                String s1 = GsonHelper.getAsString(pJson, "block_result");
-                ResourceLocation resourcelocation = new ResourceLocation(s1);
-                block = NeoForgeRegistries.BLOCKS.getValue(resourcelocation);
-            }
-
-            return new PulverizeRecipe(pRecipeId, ingredient, itemstack, block);
+    public static class Serializer implements RecipeSerializer<PulverizeRecipe> {
+        @Override
+        public MapCodec<PulverizeRecipe> codec() {
+            return CODEC;
         }
 
-        public PulverizeRecipe fromNetwork(ResourceLocation pRecipeId, FriendlyByteBuf pBuffer) {
-            Ingredient ingredient = Ingredient.fromNetwork(pBuffer);
-            ItemStack itemstack = pBuffer.readItem();
-            Block block = NeoForgeRegistries.BLOCKS.getValue(pBuffer.readResourceLocation());
-            return new PulverizeRecipe(pRecipeId, ingredient, itemstack, block);
-        }
-
-        public void toNetwork(FriendlyByteBuf pBuffer, PulverizeRecipe pRecipe) {
-            pRecipe.ingredient.toNetwork(pBuffer);
-            pBuffer.writeItem(pRecipe.itemResult);
-            ResourceLocation resourceLocation = NeoForgeRegistries.BLOCKS.getKey(pRecipe.blockResult);
-            if (resourceLocation != null) {
-                pBuffer.writeResourceLocation(resourceLocation);
-            }
+        @Override
+        public StreamCodec<net.minecraft.network.RegistryFriendlyByteBuf, PulverizeRecipe> streamCodec() {
+            return STREAM_CODEC;
         }
     }
 }

@@ -13,20 +13,37 @@ import net.minecraft.world.Container;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.*;
 import net.minecraft.world.level.Level;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.network.codec.StreamCodec;
 
 import java.util.List;
 
 public class BrazierRecipe implements Recipe<Container> {
-    public static Serializer SERIALIZER = new Serializer();
-    private final ResourceLocation id;
+    public static final Serializer SERIALIZER = new Serializer();
+    public static final MapCodec<BrazierRecipe> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
+            ItemStack.CODEC.fieldOf("result").forGetter(r -> r.result),
+            Ingredient.CODEC_NONEMPTY.listOf().fieldOf("ingredients").forGetter(r -> r.ingredients),
+            net.minecraft.util.ExtraCodecs.NON_NEGATIVE_INT.fieldOf("soulCost").forGetter(r -> r.soulCost))
+            .apply(instance, BrazierRecipe::new));
+
+    public static final StreamCodec<net.minecraft.network.RegistryFriendlyByteBuf, BrazierRecipe> STREAM_CODEC = StreamCodec
+            .composite(
+                    ItemStack.STREAM_CODEC, r -> r.result,
+                    Ingredient.CONTENTS_STREAM_CODEC.apply(
+                            net.minecraft.network.codec.ByteBufCodecs.collection(NonNullList::createWithCapacity)),
+                    r -> r.ingredients,
+                    net.minecraft.network.codec.ByteBufCodecs.VAR_INT, r -> r.soulCost,
+                    BrazierRecipe::new);
+
     private final ItemStack result;
     private final NonNullList<Ingredient> ingredients;
     private final int soulCost;
 
-    public BrazierRecipe(ResourceLocation p_44246_, ItemStack p_44248_, NonNullList<Ingredient> p_44249_, int soulCost) {
-        this.id = p_44246_;
+    public BrazierRecipe(ItemStack p_44248_, List<Ingredient> p_44249_, int soulCost) {
         this.result = p_44248_;
-        this.ingredients = p_44249_;
+        this.ingredients = NonNullList.create();
+        this.ingredients.addAll(p_44249_);
         this.soulCost = soulCost;
     }
 
@@ -64,7 +81,7 @@ public class BrazierRecipe implements Recipe<Container> {
     }
 
     @Override
-    public ItemStack assemble(Container p_44001_, RegistryAccess pAccess) {
+    public ItemStack assemble(Container p_44001_, net.minecraft.core.HolderLookup.Provider pAccess) {
         return this.result.copy();
     }
 
@@ -84,11 +101,6 @@ public class BrazierRecipe implements Recipe<Container> {
     }
 
     @Override
-    public ResourceLocation getId() {
-        return this.id;
-    }
-
-    @Override
     public RecipeSerializer<?> getSerializer() {
         return SERIALIZER;
     }
@@ -104,58 +116,13 @@ public class BrazierRecipe implements Recipe<Container> {
 
     public static class Serializer implements RecipeSerializer<BrazierRecipe> {
         @Override
-        public BrazierRecipe fromJson(ResourceLocation recipeId, JsonObject json) {
-
-            NonNullList<Ingredient> ingredients = itemsFromJson(GsonHelper.getAsJsonArray(json, "ingredients"));
-            if (ingredients.isEmpty()) {
-                throw new JsonParseException("No ingredients for Brazier recipe");
-            }
-            ItemStack result = ShapedRecipe.itemStackFromJson(GsonHelper.getAsJsonObject(json, "result"));
-
-            int soulCost = GsonHelper.getAsInt(json, "soulCost", 0);
-
-            return new BrazierRecipe(recipeId, result, ingredients, soulCost);
-        }
-
-        private static NonNullList<Ingredient> itemsFromJson(JsonArray pIngredientArray) {
-            NonNullList<Ingredient> nonnulllist = NonNullList.create();
-
-            for(int i = 0; i < pIngredientArray.size(); ++i) {
-                Ingredient ingredient = Ingredient.fromJson(pIngredientArray.get(i));
-                if (!ingredient.isEmpty()) {
-                    nonnulllist.add(ingredient);
-                }
-            }
-
-            return nonnulllist;
+        public MapCodec<BrazierRecipe> codec() {
+            return CODEC;
         }
 
         @Override
-        public BrazierRecipe fromNetwork(ResourceLocation recipeId, FriendlyByteBuf buffer) {
-            int i = buffer.readVarInt();
-            NonNullList<Ingredient> ingredients1 = NonNullList.withSize(i, Ingredient.EMPTY);
-
-            for(int j = 0; j < ingredients1.size(); ++j) {
-                ingredients1.set(j, Ingredient.fromNetwork(buffer));
-            }
-
-            ItemStack result = buffer.readItem();
-
-            int soulCost = buffer.readVarInt();
-
-            return new BrazierRecipe(recipeId, result, ingredients1, soulCost);
-        }
-
-        @Override
-        public void toNetwork(FriendlyByteBuf buffer, BrazierRecipe recipe) {
-            buffer.writeVarInt(recipe.ingredients.size());
-
-            for(Ingredient ingredient : recipe.ingredients) {
-                ingredient.toNetwork(buffer);
-            }
-
-            buffer.writeItem(recipe.result);
-            buffer.writeVarInt(recipe.soulCost);
+        public StreamCodec<net.minecraft.network.RegistryFriendlyByteBuf, BrazierRecipe> streamCodec() {
+            return STREAM_CODEC;
         }
     }
 }

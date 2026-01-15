@@ -9,6 +9,7 @@ import com.Polarice3.Goety.config.AttributesConfig;
 import com.Polarice3.Goety.utils.MathHelper;
 import com.Polarice3.Goety.utils.MobUtil;
 import com.Polarice3.Goety.utils.ModDamageSource;
+import com.Polarice3.Goety.utils.ModMobType;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
@@ -56,10 +57,14 @@ import java.util.function.ToDoubleFunction;
 
 public class TwilightGoat extends AnimalSummon implements ICharger {
     public static final EntityDimensions LONG_JUMPING_DIMENSIONS = EntityDimensions.scalable(0.9F, 1.3F).scale(0.7F);
-    private static final EntityDataAccessor<Boolean> DATA_IS_SCREAMING_GOAT = SynchedEntityData.defineId(TwilightGoat.class, EntityDataSerializers.BOOLEAN);
-    private static final EntityDataAccessor<Boolean> DATA_HAS_LEFT_HORN = SynchedEntityData.defineId(TwilightGoat.class, EntityDataSerializers.BOOLEAN);
-    private static final EntityDataAccessor<Boolean> DATA_HAS_RIGHT_HORN = SynchedEntityData.defineId(TwilightGoat.class, EntityDataSerializers.BOOLEAN);
-    private static final EntityDataAccessor<Boolean> DATA_CHARGING = SynchedEntityData.defineId(TwilightGoat.class, EntityDataSerializers.BOOLEAN);
+    private static final EntityDataAccessor<Boolean> DATA_IS_SCREAMING_GOAT = SynchedEntityData
+            .defineId(TwilightGoat.class, EntityDataSerializers.BOOLEAN);
+    private static final EntityDataAccessor<Boolean> DATA_HAS_LEFT_HORN = SynchedEntityData.defineId(TwilightGoat.class,
+            EntityDataSerializers.BOOLEAN);
+    private static final EntityDataAccessor<Boolean> DATA_HAS_RIGHT_HORN = SynchedEntityData
+            .defineId(TwilightGoat.class, EntityDataSerializers.BOOLEAN);
+    private static final EntityDataAccessor<Boolean> DATA_CHARGING = SynchedEntityData.defineId(TwilightGoat.class,
+            EntityDataSerializers.BOOLEAN);
     private static final UniformInt TIME_BETWEEN_LONG_JUMPS = UniformInt.of(600, 1200);
     private boolean isLoweringHead;
     private int lowerHeadTick;
@@ -79,9 +84,13 @@ public class TwilightGoat extends AnimalSummon implements ICharger {
         this.goalSelector.addGoal(3, new GoatChargeGoal(this, (p_287490_) -> {
             return p_287490_.isBaby() ? 1.0D : 2.5D;
         }, (p_149468_) -> {
-            return p_149468_ instanceof TwilightGoat goat && goat.isScreamingGoat() ? SoundEvents.GOAT_SCREAMING_RAM_IMPACT : SoundEvents.GOAT_RAM_IMPACT;
+            return p_149468_ instanceof TwilightGoat goat && goat.isScreamingGoat()
+                    ? SoundEvents.GOAT_SCREAMING_RAM_IMPACT
+                    : SoundEvents.GOAT_RAM_IMPACT;
         }, (p_218772_) -> {
-            return p_218772_ instanceof TwilightGoat goat && goat.isScreamingGoat() ? SoundEvents.GOAT_SCREAMING_HORN_BREAK : SoundEvents.GOAT_HORN_BREAK;
+            return p_218772_ instanceof TwilightGoat goat && goat.isScreamingGoat()
+                    ? SoundEvents.GOAT_SCREAMING_HORN_BREAK
+                    : SoundEvents.GOAT_HORN_BREAK;
         }));
         this.goalSelector.addGoal(4, new MeleeAttackGoal(this, 1.0D, false));
         this.goalSelector.addGoal(5, new WanderGoal<>(this, 1.0D));
@@ -97,18 +106,19 @@ public class TwilightGoat extends AnimalSummon implements ICharger {
                 .add(Attributes.ATTACK_DAMAGE, AttributesConfig.TwilightGoatDamage.get());
     }
 
-    public void setConfigurableAttributes(){
+    public void setConfigurableAttributes() {
         MobUtil.setBaseAttributes(this.getAttribute(Attributes.MAX_HEALTH), AttributesConfig.TwilightGoatHealth.get());
         MobUtil.setBaseAttributes(this.getAttribute(Attributes.ARMOR), AttributesConfig.TwilightGoatArmor.get());
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ATTACK_DAMAGE), AttributesConfig.TwilightGoatDamage.get());
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ATTACK_DAMAGE),
+                AttributesConfig.TwilightGoatDamage.get());
     }
 
     protected void defineSynchedData() {
         super.defineSynchedData();
-        this.entityData.define(DATA_IS_SCREAMING_GOAT, false);
-        this.entityData.define(DATA_HAS_LEFT_HORN, true);
-        this.entityData.define(DATA_HAS_RIGHT_HORN, true);
-        this.entityData.define(DATA_CHARGING, false);
+        this.entityData.define(DATA_IS_SCREAMING_GOAT, Boolean.FALSE);
+        this.entityData.define(DATA_HAS_LEFT_HORN, Boolean.TRUE);
+        this.entityData.define(DATA_HAS_RIGHT_HORN, Boolean.TRUE);
+        this.entityData.define(DATA_CHARGING, Boolean.FALSE);
     }
 
     public void addAdditionalSaveData(CompoundTag p_149385_) {
@@ -157,7 +167,7 @@ public class TwilightGoat extends AnimalSummon implements ICharger {
     }
 
     public float getRammingXHeadRot() {
-        return (float)this.lowerHeadTick / 20.0F * 30.0F * ((float)Math.PI / 180F);
+        return (float) this.lowerHeadTick / 20.0F * 30.0F * ((float) Math.PI / 180F);
     }
 
     protected void ageBoundaryReached() {
@@ -205,7 +215,7 @@ public class TwilightGoat extends AnimalSummon implements ICharger {
     public void setYHeadRot(float p_149400_) {
         int i = this.getMaxHeadYRot();
         float f = Mth.degreesDifference(this.yBodyRot, p_149400_);
-        float f1 = Mth.clamp(f, (float)(-i), (float)i);
+        float f1 = Mth.clamp(f, (float) (-i), (float) i);
         super.setYHeadRot(this.yBodyRot + f1);
     }
 
@@ -213,24 +223,22 @@ public class TwilightGoat extends AnimalSummon implements ICharger {
         return this.isScreamingGoat() ? SoundEvents.GOAT_SCREAMING_EAT : SoundEvents.GOAT_EAT;
     }
 
-    public SpawnGroupData finalizeSpawn(ServerLevelAccessor p_149365_, DifficultyInstance p_149366_, MobSpawnType p_149367_, @Nullable SpawnGroupData p_149368_, @Nullable CompoundTag p_149369_) {
+    public SpawnGroupData finalizeSpawn(ServerLevelAccessor p_149365_, DifficultyInstance p_149366_,
+            MobSpawnType p_149367_, @Nullable SpawnGroupData p_149368_) {
         RandomSource randomsource = p_149365_.getRandom();
         this.setScreamingGoat(randomsource.nextDouble() < 0.02D);
         this.ageBoundaryReached();
-        if (!this.isBaby() && (double)randomsource.nextFloat() < (double)0.1F) {
-            EntityDataAccessor<Boolean> entitydataaccessor = randomsource.nextBoolean() ? DATA_HAS_LEFT_HORN : DATA_HAS_RIGHT_HORN;
+        if (!this.isBaby() && (double) randomsource.nextFloat() < (double) 0.1F) {
+            EntityDataAccessor<Boolean> entitydataaccessor = randomsource.nextBoolean() ? DATA_HAS_LEFT_HORN
+                    : DATA_HAS_RIGHT_HORN;
             this.entityData.set(entitydataaccessor, false);
         }
 
-        return super.finalizeSpawn(p_149365_, p_149366_, p_149367_, p_149368_, p_149369_);
+        return super.finalizeSpawn(p_149365_, p_149366_, p_149367_, p_149368_);
     }
 
     public float getScale() {
         return this.isUpgraded() ? 1.25F : super.getScale();
-    }
-
-    public EntityDimensions getDimensions(Pose p_149361_) {
-        return p_149361_ == Pose.LONG_JUMPING ? LONG_JUMPING_DIMENSIONS.scale(this.getScale()) : super.getDimensions(p_149361_);
     }
 
     public void handleEntityEvent(byte p_149356_) {
@@ -254,7 +262,7 @@ public class TwilightGoat extends AnimalSummon implements ICharger {
         this.lowerHeadTick = Mth.clamp(this.lowerHeadTick, 0, 20);
         super.aiStep();
 
-        if (this.longJumpCool > 0){
+        if (this.longJumpCool > 0) {
             --this.longJumpCool;
         }
     }
@@ -313,27 +321,30 @@ public class TwilightGoat extends AnimalSummon implements ICharger {
     public InteractionResult mobInteract(Player pPlayer, InteractionHand pHand) {
         ItemStack itemstack = pPlayer.getItemInHand(pHand);
         if (this.getTrueOwner() != null && pPlayer == this.getTrueOwner()) {
-            if (itemstack.isEdible() && itemstack.getFoodProperties(this) != null && this.getHealth() < this.getMaxHealth()) {
+            if (itemstack.getFoodProperties(this) != null && this.getHealth() < this.getMaxHealth()) {
                 this.heal(2.0F);
                 if (!pPlayer.getAbilities().instabuild) {
                     itemstack.shrink(1);
                 }
 
                 this.gameEvent(GameEvent.EAT, this);
-                this.eat(this.level, itemstack);
-                if (this.level instanceof ServerLevel serverLevel) {
+                this.eat(this.level(), itemstack);
+                if (this.level() instanceof ServerLevel serverLevel) {
                     for (int i = 0; i < 7; ++i) {
                         double d0 = this.random.nextGaussian() * 0.02D;
                         double d1 = this.random.nextGaussian() * 0.02D;
                         double d2 = this.random.nextGaussian() * 0.02D;
-                        serverLevel.sendParticles(ModParticleTypes.HEAL_EFFECT.get(), this.getRandomX(1.0D), this.getRandomY() + 0.5D, this.getRandomZ(1.0D), 0, d0, d1, d2, 0.5F);
+                        serverLevel.sendParticles(ModParticleTypes.HEAL_EFFECT.get(), this.getRandomX(1.0D),
+                                this.getRandomY() + 0.5D, this.getRandomZ(1.0D), 0, d0, d1, d2, 0.5F);
                     }
                 }
                 pPlayer.swing(pHand);
                 return InteractionResult.sidedSuccess(this.level().isClientSide);
-            } else if (itemstack.is(Items.BUCKET) && !this.isBaby() && !this.limitedLifespan && this.limitedLifeTicks <= 0) {
+            } else if (itemstack.is(Items.BUCKET) && !this.isBaby() && !this.limitedLifespan
+                    && this.limitedLifeTicks <= 0) {
                 pPlayer.playSound(this.getMilkingSound(), 1.0F, 1.0F);
-                ItemStack itemstack1 = ItemUtils.createFilledResult(itemstack, pPlayer, Items.MILK_BUCKET.getDefaultInstance());
+                ItemStack itemstack1 = ItemUtils.createFilledResult(itemstack, pPlayer,
+                        Items.MILK_BUCKET.getDefaultInstance());
                 pPlayer.setItemInHand(pHand, itemstack1);
                 return InteractionResult.sidedSuccess(this.level().isClientSide);
             }
@@ -347,12 +358,14 @@ public class TwilightGoat extends AnimalSummon implements ICharger {
         private final ToDoubleFunction<PathfinderMob> getKnockbackForce;
         private final Function<PathfinderMob, SoundEvent> getImpactSound;
         private final Function<PathfinderMob, SoundEvent> getHornBreakSound;
-        private static final TargetingConditions RAM_TARGET_CONDITIONS = TargetingConditions.forCombat().selector((p_289449_) -> {
-            return p_289449_.level.getWorldBorder().isWithinBounds(p_289449_.getBoundingBox());
-        });
+        private static final TargetingConditions RAM_TARGET_CONDITIONS = TargetingConditions.forCombat()
+                .selector((p_289449_) -> {
+                    return p_289449_.level.getWorldBorder().isWithinBounds(p_289449_.getBoundingBox());
+                });
         private static final UniformInt TIME_BETWEEN_RAMS = UniformInt.of(100, 300);
 
-        public GoatChargeGoal(PathfinderMob mob, ToDoubleFunction<PathfinderMob> p_217345_, Function<PathfinderMob, SoundEvent> p_217346_, Function<PathfinderMob, SoundEvent> p_217347_) {
+        public GoatChargeGoal(PathfinderMob mob, ToDoubleFunction<PathfinderMob> p_217345_,
+                Function<PathfinderMob, SoundEvent> p_217346_, Function<PathfinderMob, SoundEvent> p_217347_) {
             super(mob, 3.0F, 4, 7, 1, TIME_BETWEEN_RAMS.sample(mob.getRandom()));
             this.getKnockbackForce = p_217345_;
             this.getImpactSound = p_217346_;
@@ -371,49 +384,62 @@ public class TwilightGoat extends AnimalSummon implements ICharger {
 
         public void start() {
             this.windup = MathHelper.secondsToTicks(1) + this.charger.getRandom().nextInt(MathHelper.secondsToTicks(1));
-            this.charger.level.broadcastEntityEvent(this.charger, (byte)58);
+            this.charger.level.broadcastEntityEvent(this.charger, (byte) 58);
             BlockPos blockpos = this.charger.blockPosition();
             if (this.chargePos != null) {
-                this.ramDirection = (new Vec3((double) blockpos.getX() - this.chargePos.x(), 0.0D, (double) blockpos.getZ() - this.chargePos.z())).normalize();
+                this.ramDirection = (new Vec3((double) blockpos.getX() - this.chargePos.x(), 0.0D,
+                        (double) blockpos.getZ() - this.chargePos.z())).normalize();
             }
         }
 
         @Override
         public void tick() {
-            this.charger.getLookControl().setLookAt(this.chargePos.x(), this.chargePos.y() - 1, this.chargePos.z(), 10.0F, this.charger.getMaxHeadXRot());
+            this.charger.getLookControl().setLookAt(this.chargePos.x(), this.chargePos.y() - 1, this.chargePos.z(),
+                    10.0F, this.charger.getMaxHeadXRot());
 
             --this.windup;
-            if (this.windup == 0){
+            if (this.windup == 0) {
                 PathNavigation pathnavigation = this.charger.getNavigation();
                 Path path = pathnavigation.createPath(BlockPos.containing(this.chargePos), 0);
-                if (path != null && path.canReach()){
+                if (path != null && path.canReach()) {
                     pathnavigation.moveTo(path, this.speed);
                 } else {
                     pathnavigation.moveTo(this.chargePos.x(), this.chargePos.y(), this.chargePos.z(), this.speed);
                 }
             }
             if (this.windup <= 0) {
-                List<LivingEntity> list = this.charger.level.getNearbyEntities(LivingEntity.class, RAM_TARGET_CONDITIONS, this.charger, this.charger.getBoundingBox());
+                List<LivingEntity> list = this.charger.level.getNearbyEntities(LivingEntity.class,
+                        RAM_TARGET_CONDITIONS, this.charger, this.charger.getBoundingBox());
                 list.removeIf(livingEntity -> MobUtil.areAllies(this.charger, livingEntity));
                 if (!list.isEmpty()) {
                     LivingEntity livingentity = list.get(0);
-                    DamageSource damageSource = this.charger instanceof IOwned owned && owned.getTrueOwner() != null ? ModDamageSource.summonAttack(this.charger, owned.getTrueOwner()) : this.charger.damageSources().mobAttack(this.charger);
-                    livingentity.hurt(damageSource, (float)this.charger.getAttributeValue(Attributes.ATTACK_DAMAGE));
-                    int i = this.charger.hasEffect(MobEffects.MOVEMENT_SPEED) ? this.charger.getEffect(MobEffects.MOVEMENT_SPEED).getAmplifier() + 1 : 0;
-                    int j = this.charger.hasEffect(MobEffects.MOVEMENT_SLOWDOWN) ? this.charger.getEffect(MobEffects.MOVEMENT_SLOWDOWN).getAmplifier() + 1 : 0;
-                    float f = 0.25F * (float)(i - j);
+                    DamageSource damageSource = this.charger instanceof IOwned owned && owned.getTrueOwner() != null
+                            ? ModDamageSource.summonAttack(this.charger, owned.getTrueOwner())
+                            : this.charger.damageSources().mobAttack(this.charger);
+                    livingentity.hurt(damageSource, (float) this.charger.getAttributeValue(Attributes.ATTACK_DAMAGE));
+                    int i = this.charger.hasEffect(MobEffects.MOVEMENT_SPEED)
+                            ? this.charger.getEffect(MobEffects.MOVEMENT_SPEED).getAmplifier() + 1
+                            : 0;
+                    int j = this.charger.hasEffect(MobEffects.MOVEMENT_SLOWDOWN)
+                            ? this.charger.getEffect(MobEffects.MOVEMENT_SLOWDOWN).getAmplifier() + 1
+                            : 0;
+                    float f = 0.25F * (float) (i - j);
                     float f1 = Mth.clamp(this.charger.getSpeed() * 1.65F, 0.2F, 3.0F) + f;
                     float f2 = livingentity.isDamageSourceBlocked(damageSource) ? 0.5F : 1.0F;
                     if (this.ramDirection != null) {
-                        livingentity.knockback((double) (f2 * f1) * this.getKnockbackForce.applyAsDouble(this.charger), this.ramDirection.x(), this.ramDirection.z());
+                        livingentity.knockback((double) (f2 * f1) * this.getKnockbackForce.applyAsDouble(this.charger),
+                                this.ramDirection.x(), this.ramDirection.z());
                     }
                     this.stop();
-                    this.charger.level.playSound((Player)null, this.charger, this.getImpactSound.apply(this.charger), SoundSource.NEUTRAL, 1.0F, 1.0F);
+                    this.charger.level.playSound((Player) null, this.charger, this.getImpactSound.apply(this.charger),
+                            SoundSource.NEUTRAL, 1.0F, 1.0F);
                 } else if (this.hasRammedHornBreakingBlock()) {
-                    this.charger.level.playSound((Player)null, this.charger, this.getImpactSound.apply(this.charger), SoundSource.NEUTRAL, 1.0F, 1.0F);
+                    this.charger.level.playSound((Player) null, this.charger, this.getImpactSound.apply(this.charger),
+                            SoundSource.NEUTRAL, 1.0F, 1.0F);
                     boolean flag = this.charger instanceof TwilightGoat goat && goat.dropHorn();
                     if (flag) {
-                        this.charger.level.playSound((Player)null, this.charger, this.getHornBreakSound.apply(this.charger), SoundSource.NEUTRAL, 1.0F, 1.0F);
+                        this.charger.level.playSound((Player) null, this.charger,
+                                this.getHornBreakSound.apply(this.charger), SoundSource.NEUTRAL, 1.0F, 1.0F);
                     }
 
                     this.stop();
@@ -433,12 +459,13 @@ public class TwilightGoat extends AnimalSummon implements ICharger {
         private boolean hasRammedHornBreakingBlock() {
             Vec3 vec3 = this.charger.getDeltaMovement().multiply(1.0D, 0.0D, 1.0D).normalize();
             BlockPos blockpos = BlockPos.containing(this.charger.position().add(vec3));
-            return this.charger.level.getBlockState(blockpos).is(BlockTags.SNAPS_GOAT_HORN) || this.charger.level.getBlockState(blockpos.above()).is(BlockTags.SNAPS_GOAT_HORN);
+            return this.charger.level.getBlockState(blockpos).is(BlockTags.SNAPS_GOAT_HORN)
+                    || this.charger.level.getBlockState(blockpos.above()).is(BlockTags.SNAPS_GOAT_HORN);
         }
 
         @Override
         public void stop() {
-            this.charger.level.broadcastEntityEvent(this.charger, (byte)59);
+            this.charger.level.broadcastEntityEvent(this.charger, (byte) 59);
             this.charger.getNavigation().stop();
             this.windup = 0;
             this.chargeTarget = null;
