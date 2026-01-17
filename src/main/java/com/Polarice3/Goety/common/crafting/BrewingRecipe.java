@@ -8,6 +8,10 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.world.Container;
+import net.minecraft.core.Holder;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.ItemStack;
@@ -16,16 +20,17 @@ import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
-import net.neoforged.neoforge.registries.NeoForgeRegistries;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.world.item.crafting.RecipeInput;
 import org.jetbrains.annotations.Nullable;
 
-public class BrewingRecipe implements Recipe<Container> {
+public class BrewingRecipe implements Recipe<RecipeInput> {
     public static Serializer SERIALIZER = new Serializer();
     private final ResourceLocation id;
     public final Ingredient input;
     private final TagKey<EntityType<?>> entityTypeTag;
     private final EntityType<?> entityType;
-    public final MobEffect output;
+    public final Holder<MobEffect> output;
     public final int soulCost;
     public final int capacityExtra;
     public final int duration;
@@ -33,7 +38,7 @@ public class BrewingRecipe implements Recipe<Container> {
     public BrewingRecipe(ResourceLocation location,
             Ingredient ingredient,
             @Nullable TagKey<EntityType<?>> entityTypeTag,
-            @Nullable EntityType<?> entityType, MobEffect mobEffect, int soulCost, int capacityExtra, int duration) {
+            @Nullable EntityType<?> entityType, Holder<MobEffect> mobEffect, int soulCost, int capacityExtra, int duration) {
         this.id = location;
         this.input = ingredient;
         this.entityTypeTag = entityTypeTag;
@@ -45,12 +50,12 @@ public class BrewingRecipe implements Recipe<Container> {
     }
 
     @Override
-    public boolean matches(Container p_44002_, Level p_44003_) {
+    public boolean matches(RecipeInput p_44002_, Level p_44003_) {
         return false;
     }
 
     @Override
-    public ItemStack assemble(Container p_44001_, net.minecraft.core.HolderLookup.Provider p_267052_) {
+    public ItemStack assemble(RecipeInput p_44001_, net.minecraft.core.HolderLookup.Provider p_267052_) {
         return this.getResultItem(p_267052_);
     }
 
@@ -85,7 +90,7 @@ public class BrewingRecipe implements Recipe<Container> {
         return this.duration;
     }
 
-    public MobEffect getOutput() {
+    public Holder<MobEffect> getOutput() {
         return this.output;
     }
 
@@ -119,13 +124,13 @@ public class BrewingRecipe implements Recipe<Container> {
                 JsonObject data2 = json.getAsJsonObject("entity");
                 if (data2 != null) {
                     if (data2.has("entity_type")) {
-                        ResourceLocation resourceLocation = new ResourceLocation(
+                        ResourceLocation resourceLocation = ResourceLocation.parse(
                                 data2.getAsJsonPrimitive("entity_type").getAsString());
-                        entityType = NeoForgeRegistries.ENTITY_TYPES.getValue(resourceLocation);
+                        entityType = BuiltInRegistries.ENTITY_TYPE.get(resourceLocation);
                     } else if (data2.has("tag")) {
-                        ResourceLocation resourceLocation = new ResourceLocation(
+                        ResourceLocation resourceLocation = ResourceLocation.parse(
                                 data2.getAsJsonPrimitive("tag").getAsString());
-                        entityTag = TagKey.create(NeoForgeRegistries.ENTITY_TYPES.getRegistryKey(), resourceLocation);
+                        entityTag = TagKey.create(BuiltInRegistries.ENTITY_TYPE.key(), resourceLocation);
                     }
                 }
             }
@@ -133,8 +138,8 @@ public class BrewingRecipe implements Recipe<Container> {
                     ingredient,
                     entityTag,
                     entityType,
-                    NeoForgeRegistries.MOB_EFFECTS
-                            .getValue(new ResourceLocation(GsonHelper.getAsString(json, "effect"))),
+                    BuiltInRegistries.MOB_EFFECT
+                            .getHolderOrThrow(ResourceKey.create(Registries.MOB_EFFECT, ResourceLocation.parse(GsonHelper.getAsString(json, "effect")))),
                     GsonHelper.getAsInt(json, "soulCost"),
                     GsonHelper.getAsInt(json, "capacityExtra"),
                     GsonHelper.getAsInt(json, "duration"));
@@ -155,7 +160,7 @@ public class BrewingRecipe implements Recipe<Container> {
                 entityType = buf.readRegistryId();
             }
 
-            MobEffect mobEffect = NeoForgeRegistries.MOB_EFFECTS.getValue(new ResourceLocation(buf.readUtf()));
+            Holder<MobEffect> mobEffect = BuiltInRegistries.MOB_EFFECT.getHolderOrThrow(ResourceKey.create(Registries.MOB_EFFECT, ResourceLocation.parse(buf.readUtf())));
 
             int soulCost = buf.readInt();
             int capacityExtra = buf.readInt();
@@ -180,9 +185,9 @@ public class BrewingRecipe implements Recipe<Container> {
             }
             buf.writeBoolean(recipe.entityType != null);
             if (recipe.entityType != null) {
-                buf.writeRegistryId(NeoForgeRegistries.ENTITY_TYPES, recipe.entityType);
+                buf.writeRegistryId(BuiltInRegistries.ENTITY_TYPE, recipe.entityType);
             }
-            buf.writeUtf(NeoForgeRegistries.MOB_EFFECTS.getKey(recipe.output).toString());
+            buf.writeUtf(BuiltInRegistries.MOB_EFFECT.getKey(recipe.output.value()).toString());
             buf.writeInt(recipe.soulCost);
             buf.writeInt(recipe.capacityExtra);
             buf.writeInt(recipe.duration);

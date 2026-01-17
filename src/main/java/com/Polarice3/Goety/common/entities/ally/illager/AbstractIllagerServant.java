@@ -133,11 +133,11 @@ public abstract class AbstractIllagerServant extends RaiderServant implements IT
         this.goalSelector.addGoal(7, new IllagerLootFoodChestGoal<>(this));
     }
 
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.entityData.define(CURRENT_TRAIN, "None");
-        this.entityData.define(TRAIN_POS, Optional.empty());
-        this.entityData.define(STORED_TRAIN_POS, Optional.empty());
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(CURRENT_TRAIN, "None");
+        builder.define(TRAIN_POS, Optional.empty());
+        builder.define(STORED_TRAIN_POS, Optional.empty());
     }
 
     public void addAdditionalSaveData(CompoundTag compound) {

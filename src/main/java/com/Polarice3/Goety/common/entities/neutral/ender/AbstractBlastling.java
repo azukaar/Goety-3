@@ -87,9 +87,9 @@ public class AbstractBlastling extends AbstractEnderling implements RangedAttack
         MobUtil.setBaseAttributes(this.getAttribute(Attributes.ATTACK_DAMAGE), AttributesConfig.BlastlingDamage.get());
     }
 
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.entityData.define(ANIM_STATE, 0);
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(ANIM_STATE, 0);
     }
 
     @Override
@@ -108,7 +108,7 @@ public class AbstractBlastling extends AbstractEnderling implements RangedAttack
 
     public void onSyncedDataUpdated(EntityDataAccessor<?> p_33609_) {
         if (ANIM_STATE.equals(p_33609_)) {
-            if (this.level.isClientSide) {
+            if (this.level().isClientSide) {
                 switch (this.entityData.get(ANIM_STATE)) {
                     case 0:
                         this.stopAllAnimations();
@@ -215,13 +215,13 @@ public class AbstractBlastling extends AbstractEnderling implements RangedAttack
     @Override
     public void tick() {
         super.tick();
-        if (this.level.isClientSide) {
+        if (this.level().isClientSide) {
             if (!this.isHiding()) {
                 ColorUtil colorUtil = new ColorUtil(0xf169e9);
                 Vec3 vec3 = this.getHorizontalLookAngle();
                 if (this.tickCount % 2 == 0) {
-                    this.level.addParticle(new MagicSmokeParticle.Option(0xf4cdf6, 0xae00bc, 10 + this.level.getRandom().nextInt(10), 0.35F), this.getX() + (vec3.x / 2.0D), this.getEyeY() + 0.35F, this.getZ() + (vec3.z / 2.0D), 0.0D, 0.01D, 0.0D);
-                    this.level.addParticle(ModParticleTypes.SMALL_STATION_CULT_SPELL.get(), this.getX() + (vec3.x / 2.0D), this.getEyeY() + 0.35F, this.getZ() + (vec3.z / 2.0D), colorUtil.red(), colorUtil.green(), colorUtil.blue());
+                    this.level().addParticle(new MagicSmokeParticle.Option(0xf4cdf6, 0xae00bc, 10 + this.level().getRandom().nextInt(10), 0.35F), this.getX() + (vec3.x / 2.0D), this.getEyeY() + 0.35F, this.getZ() + (vec3.z / 2.0D), 0.0D, 0.01D, 0.0D);
+                    this.level().addParticle(ModParticleTypes.SMALL_STATION_CULT_SPELL.get(), this.getX() + (vec3.x / 2.0D), this.getEyeY() + 0.35F, this.getZ() + (vec3.z / 2.0D), colorUtil.red(), colorUtil.green(), colorUtil.blue());
                 }
             }
             this.idleAnimationState.animateWhen(!this.walkAnimation.isMoving() && this.getCurrentAnimation() == 0, this.tickCount);
@@ -307,11 +307,11 @@ public class AbstractBlastling extends AbstractEnderling implements RangedAttack
         double d3 = targetX - d0;
         double d4 = targetY - this.getEyeY();
         double d5 = targetZ - d2;
-        EnderGoo enderGoo = new EnderGoo(this, d3, d4, d5, this.level);
+        EnderGoo enderGoo = new EnderGoo(this, d3, d4, d5, this.level());
         enderGoo.setPos(d0, this.getY(0.75D), d2);
         enderGoo.setYRot(this.getYRot());
         enderGoo.setXRot(this.getXRot());
-        this.level.addFreshEntity(enderGoo);
+        this.level().addFreshEntity(enderGoo);
     }
 
     private double getHeadX(boolean leftArm) {

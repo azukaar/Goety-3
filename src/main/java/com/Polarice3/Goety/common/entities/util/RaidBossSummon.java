@@ -40,10 +40,10 @@ public class RaidBossSummon extends Raider {
         super(p_37839_, p_37840_);
     }
 
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.entityData.define(NEARBY_ILLAGERS, false);
-        this.entityData.define(ACTIVE, false);
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(NEARBY_ILLAGERS, false);
+        builder.define(ACTIVE, false);
     }
 
     public void addAdditionalSaveData(CompoundTag p_213281_1_) {

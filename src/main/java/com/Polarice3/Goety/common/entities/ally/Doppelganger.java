@@ -220,10 +220,11 @@ public class Doppelganger extends Summoned implements RangedAttackMob {
         return SoundEvents.GENERIC_DEATH;
     }
 
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.entityData.define(DOPPELGANGER_FLAGS, (byte) 0);
-        this.entityData.define(DATA_PLAYER_MODE_CUSTOMISATION, (byte) 0);
+    @Override
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(DOPPELGANGER_FLAGS, (byte) 0);
+        builder.define(DATA_PLAYER_MODE_CUSTOMISATION, (byte) 0);
     }
 
     public void readAdditionalSaveData(CompoundTag compound) {

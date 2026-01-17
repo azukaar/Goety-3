@@ -59,7 +59,7 @@ public class ModAvoidGoal<T extends LivingEntity> extends Goal {
     }
 
     public boolean canUse() {
-        this.toAvoid = this.mob.level.getNearestEntity(this.mob.level.getEntitiesOfClass(this.avoidClass, this.mob.getBoundingBox().inflate((double)this.avoidStart, 3.0D, (double)this.avoidStart), (p_148078_) -> {
+        this.toAvoid = this.mob.level().getNearestEntity(this.mob.level().getEntitiesOfClass(this.avoidClass, this.mob.getBoundingBox().inflate((double)this.avoidStart, 3.0D, (double)this.avoidStart), (p_148078_) -> {
             return true;
         }), this.avoidEntityTargeting, this.mob, this.mob.getX(), this.mob.getY(), this.mob.getZ());
         if (this.toAvoid == null) {

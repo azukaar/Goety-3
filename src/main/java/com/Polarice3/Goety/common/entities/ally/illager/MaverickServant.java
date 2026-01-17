@@ -113,9 +113,9 @@ public class MaverickServant extends CultistServant {
         MobUtil.setBaseAttributes(this.getAttribute(Attributes.ATTACK_DAMAGE), AttributesConfig.MaverickDamage.get());
     }
 
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.getEntityData().define(DATA_USING_ITEM, false);
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(DATA_USING_ITEM, false);
     }
 
     public void setUsingItem(boolean p_34164_) {

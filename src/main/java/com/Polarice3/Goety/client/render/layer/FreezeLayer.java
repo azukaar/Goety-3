@@ -30,7 +30,7 @@ public class FreezeLayer<T extends LivingEntity, M extends EntityModel<T>> exten
                 VertexConsumer ivertexbuilder = bufferIn.getBuffer(RenderType.entityTranslucent(TEXTURE));
                 int level = Math.min(MiscCapHelper.freezeLevel(entity), 5);
                 float alpha = level / 5.0F;
-                model.renderToBuffer(matrixStackIn, ivertexbuilder, packedLightIn, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, alpha);
+                model.renderToBuffer(matrixStackIn, ivertexbuilder, packedLightIn, OverlayTexture.NO_OVERLAY, net.minecraft.util.FastColor.ARGB32.color((int)(alpha * 255), 255, 255, 255));
             }
         }
     }

@@ -14,6 +14,13 @@ import net.minecraft.world.entity.Pose;
 import java.util.List;
 
 public class BlackBeastModel<T extends BlackBeast> extends HierarchicalModel<T> {
+	private float partialTicks;
+
+	@Override
+	public void prepareMobModel(T entity, float pLimbSwing, float pLimbSwingAmount, float pPartialTick) {
+		this.partialTicks = pPartialTick;
+		super.prepareMobModel(entity, pLimbSwing, pLimbSwingAmount, pPartialTick);
+	}
 	private final ModelPart root;
 	private final ModelPart stalker;
 	private final ModelPart body;
@@ -187,7 +194,7 @@ public class BlackBeastModel<T extends BlackBeast> extends HierarchicalModel<T> 
 	}
 
 	private void animateHeadLookTarget(T entity, float netHeadYaw, float headPitch) {
-		this.head.zRot = entity.getHeadRollAngle(Minecraft.getInstance().getPartialTick());
+		this.head.zRot = entity.getHeadRollAngle(this.partialTicks);
 		this.head.yRot = netHeadYaw * ((float)Math.PI / 180F);
 		this.head.xRot = headPitch * ((float)Math.PI / 180F);
 	}

@@ -15,6 +15,8 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Matrix3f;
 import org.joml.Matrix4f;
+import org.joml.Vector3f;
+import org.joml.Vector4f;
 
 import java.util.List;
 
@@ -92,7 +94,9 @@ public class NightBeaconRenderer implements BlockEntityRenderer<NightBeaconBlock
     }
 
     private static void addVertex(Matrix4f p_112107_, Matrix3f p_112108_, VertexConsumer p_112109_, float alpha, int p_112114_, float p_112115_, float p_112116_, float p_112117_, float p_112118_) {
-        p_112109_.vertex(p_112107_, p_112115_, (float)p_112114_, p_112116_).color(1.0F, 1.0F, 1.0F, alpha).uv(p_112117_, p_112118_).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(15728880).normal(p_112108_, 0.0F, 1.0F, 0.0F).endVertex();
+        Vector4f vector4f = p_112107_.transform(new Vector4f(p_112115_, (float)p_112114_, p_112116_, 1.0F));
+        Vector3f vector3f = p_112108_.transform(new Vector3f(0.0F, 1.0F, 0.0F));
+        p_112109_.addVertex(vector4f.x(), vector4f.y(), vector4f.z()).setColor(1.0F, 1.0F, 1.0F, alpha).setUv(p_112117_, p_112118_).setOverlay(OverlayTexture.NO_OVERLAY).setLight(15728880).setNormal(vector3f.x(), vector3f.y(), vector3f.z());
     }
 
     public boolean shouldRenderOffScreen(NightBeaconBlockEntity p_112138_) {

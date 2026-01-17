@@ -41,7 +41,7 @@ public class ModWitherSkullRenderer extends EntityRenderer<ModWitherSkull> {
             float f1 = Mth.lerp(p_116486_, p_116484_.xRotO, p_116484_.getXRot());
             VertexConsumer vertexconsumer = p_116488_.getBuffer(this.model.renderType(this.getTextureLocation(p_116484_)));
             this.model.setupAnim(0.0F, f, f1);
-            this.model.renderToBuffer(p_116487_, vertexconsumer, p_116489_, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 1.0F);
+            this.model.renderToBuffer(p_116487_, vertexconsumer, p_116489_, OverlayTexture.NO_OVERLAY, -1);
             p_116487_.popPose();
             super.render(p_116484_, p_116485_, p_116486_, p_116487_, p_116488_, p_116489_);
          }
@@ -52,7 +52,7 @@ public class ModWitherSkullRenderer extends EntityRenderer<ModWitherSkull> {
          float f1 = Mth.lerp(p_116486_, p_116484_.xRotO, p_116484_.getXRot());
          VertexConsumer vertexconsumer = p_116488_.getBuffer(this.model.renderType(this.getTextureLocation(p_116484_)));
          this.model.setupAnim(0.0F, f, f1);
-         this.model.renderToBuffer(p_116487_, vertexconsumer, p_116489_, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 1.0F);
+         this.model.renderToBuffer(p_116487_, vertexconsumer, p_116489_, OverlayTexture.NO_OVERLAY, -1);
          p_116487_.popPose();
          super.render(p_116484_, p_116485_, p_116486_, p_116487_, p_116488_, p_116489_);
       }

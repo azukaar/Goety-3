@@ -32,7 +32,7 @@ public class HarpoonRenderer extends EntityRenderer<Harpoon> {
          p_116114_.mulPose(Axis.ZP.rotationDegrees(f10));
       }
       VertexConsumer vertexconsumer = p_116115_.getBuffer(this.model.renderType(this.getTextureLocation(p_116111_)));
-      this.model.renderToBuffer(p_116114_, vertexconsumer, p_116116_, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 1.0F);
+      this.model.renderToBuffer(p_116114_, vertexconsumer, p_116116_, OverlayTexture.NO_OVERLAY, -1);
       p_116114_.popPose();
       super.render(p_116111_, p_116112_, p_116113_, p_116114_, p_116115_, p_116116_);
    }

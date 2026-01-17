@@ -54,20 +54,20 @@ public class CustomItemsRenderer extends BlockEntityWithoutLevelRenderer {
             matrixStackIn.translate(0.5F, 0.5F, 0.5F);
             matrixStackIn.scale(1.0F, -1.0F, -1.0F);
             VertexConsumer vertexconsumer = ItemRenderer.getArmorFoilBuffer(bufferIn, RenderType.entityCutoutNoCull(NAMELESS_STAFF_TEXTURE), false, itemStackIn.hasFoil());
-            this.staffModel.renderToBuffer(matrixStackIn, vertexconsumer, combinedLightIn, combinedOverlayIn, 1.0F, 1.0F, 1.0F, 1.0F);
+            this.staffModel.renderToBuffer(matrixStackIn, vertexconsumer, combinedLightIn, combinedOverlayIn, -1);
             matrixStackIn.popPose();
             matrixStackIn.pushPose();
             matrixStackIn.translate(0.5F, 0.5F, 0.5F);
             matrixStackIn.scale(1.0F, -1.0F, -1.0F);
             VertexConsumer vertexconsumer2 = bufferIn.getBuffer(RenderType.eyes(NAMELESS_STAFF_ORB_TEXTURE));
             this.staffModel.animate(tick + partialTick);
-            this.staffModel.renderToBuffer(matrixStackIn, vertexconsumer2, 15728640, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 1.0F);
+            this.staffModel.renderToBuffer(matrixStackIn, vertexconsumer2, 15728640, OverlayTexture.NO_OVERLAY, -1);
             matrixStackIn.popPose();
             matrixStackIn.pushPose();
             matrixStackIn.translate(0.5F, 0.5F, 0.5F);
             matrixStackIn.scale(1.0F, -1.0F, -1.0F);
             VertexConsumer vertexconsumer3 = bufferIn.getBuffer(ModRenderType.orbCenter(NAMELESS_STAFF_ORB_CENTER_TEXTURE));
-            this.staffModel.renderToBuffer(matrixStackIn, vertexconsumer3, 15728640, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 1.0F);
+            this.staffModel.renderToBuffer(matrixStackIn, vertexconsumer3, 15728640, OverlayTexture.NO_OVERLAY, -1);
             matrixStackIn.popPose();
         }
     }

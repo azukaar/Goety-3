@@ -46,10 +46,11 @@ public class SpiderEgg extends Owned {
                 .add(Attributes.FOLLOW_RANGE, 32.0D);
     }
 
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.entityData.define(DATA_SWELL_DIR, -1);
-        this.entityData.define(DATA_IS_HATCHING, false);
+    @Override
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(DATA_SWELL_DIR, -1);
+        builder.define(DATA_IS_HATCHING, false);
     }
 
     public void addAdditionalSaveData(CompoundTag p_32304_) {

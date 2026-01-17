@@ -1,6 +1,7 @@
 package com.Polarice3.Goety.client.render.block;
 
 import com.Polarice3.Goety.client.particles.ModParticleTypes;
+import net.minecraft.core.particles.ColorParticleOption;
 import com.Polarice3.Goety.common.blocks.entities.BrewCauldronBlockEntity;
 import com.Polarice3.Goety.common.blocks.properties.ModStateProperties;
 import com.Polarice3.Goety.utils.MathHelper;
@@ -16,7 +17,7 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.level.Level;
 
 public class BrewCauldronRenderer implements BlockEntityRenderer<BrewCauldronBlockEntity> {
-    public static final ResourceLocation WATER = new ResourceLocation("block/water_still");
+    public static final ResourceLocation WATER = ResourceLocation.fromNamespaceAndPath("minecraft", "block/water_still");
     private static final float[] HEIGHT = {0, 0.25f, 0.4375f, 0.625f};
 
     public BrewCauldronRenderer(BlockEntityRendererProvider.Context p_i226007_1_) {
@@ -49,7 +50,7 @@ public class BrewCauldronRenderer implements BlockEntityRenderer<BrewCauldronBlo
                                 world.addParticle(ParticleTypes.WITCH, pos.getX() + 0.5, pos.getY() + fluidHeight, pos.getZ() + 0.5, 0.0F, 0.0F, 0.0F);
                             }
                         } else if (entity.mode == BrewCauldronBlockEntity.Mode.COMPLETED){
-                            world.addParticle(ParticleTypes.ENTITY_EFFECT, pos.getX() + 0.5, pos.getY() + fluidHeight, pos.getZ() + 0.5, rgb[0], rgb[1], rgb[2]);
+                            world.addParticle(ColorParticleOption.create(ParticleTypes.ENTITY_EFFECT, (float) rgb[0], (float) rgb[1], (float) rgb[2]), pos.getX() + 0.5, pos.getY() + fluidHeight, pos.getZ() + 0.5, 0.0, 0.0, 0.0);
                         } else if (entity.mode == BrewCauldronBlockEntity.Mode.FAILED){
                             world.addParticle(ParticleTypes.SMOKE, pos.getX() + 0.5, pos.getY() + fluidHeight, pos.getZ() + 0.5, 0.0F, 0.0F, 0.0F);
                         }

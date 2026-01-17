@@ -163,8 +163,8 @@ public class HoleBlockEntity extends SaveBlockEntity{
     }
 
     @Override
-    public void readNetwork(CompoundTag compoundTag) {
-        super.readNetwork(compoundTag);
+    public void readNetwork(CompoundTag compoundTag, net.minecraft.core.HolderLookup.Provider pRegistries) {
+        super.readNetwork(compoundTag, pRegistries);
         if (compoundTag.contains("Life")) {
             this.life = compoundTag.getInt("Life");
         }
@@ -188,8 +188,8 @@ public class HoleBlockEntity extends SaveBlockEntity{
     }
 
     @Override
-    public CompoundTag writeNetwork(CompoundTag compoundTag) {
-        super.writeNetwork(compoundTag);
+    public CompoundTag writeNetwork(CompoundTag compoundTag, net.minecraft.core.HolderLookup.Provider pRegistries) {
+        super.writeNetwork(compoundTag, pRegistries);
         compoundTag.putInt("Life", this.life);
         compoundTag.putInt("Lifespan", this.lifespan);
         compoundTag.putInt("Count", this.count);

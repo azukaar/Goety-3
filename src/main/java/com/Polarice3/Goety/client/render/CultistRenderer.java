@@ -20,8 +20,8 @@ public abstract class CultistRenderer<T extends Cultist> extends MobRenderer<T, 
         matrixStackIn.scale(0.9375F, 0.9375F, 0.9375F);
     }
 
-    protected void setupRotations(T pEntityLiving, PoseStack pMatrixStack, float pAgeInTicks, float pRotationYaw, float pPartialTicks) {
-        super.setupRotations(pEntityLiving, pMatrixStack, pAgeInTicks, pRotationYaw, pPartialTicks);
+    protected void setupRotations(T pEntityLiving, PoseStack pMatrixStack, float pAgeInTicks, float pRotationYaw, float pPartialTicks, float pScale) {
+        super.setupRotations(pEntityLiving, pMatrixStack, pAgeInTicks, pRotationYaw, pPartialTicks, pScale);
         float f = pEntityLiving.getSwimAmount(pPartialTicks);
         if (f > 0.0F) {
             pMatrixStack.mulPose(Axis.XP.rotationDegrees(Mth.lerp(f, pEntityLiving.getXRot(), -10.0F - pEntityLiving.getXRot())));

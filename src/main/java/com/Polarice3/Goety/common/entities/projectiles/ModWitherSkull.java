@@ -60,14 +60,15 @@ public class ModWitherSkull extends WitherSkull {
       return ModEntityType.MOD_WITHER_SKULL.get();
    }
 
-   protected void defineSynchedData() {
-      super.defineSynchedData();
-      this.entityData.define(DATA_UPGRADED, false);
-      this.entityData.define(DATA_EXTRA_DAMAGE, 0.0F);
-      this.entityData.define(DATA_FIERY, 0);
-      this.entityData.define(DATA_EXPLOSION, 1.0F);
-      this.entityData.define(DATA_DAMAGE, 8.0F);
-   }
+    @Override
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(DATA_UPGRADED, false);
+        builder.define(DATA_EXTRA_DAMAGE, 0.0F);
+        builder.define(DATA_FIERY, 0);
+        builder.define(DATA_EXPLOSION, 1.0F);
+        builder.define(DATA_DAMAGE, 8.0F);
+    }
 
    public float getExplosionPower() {
       return this.entityData.get(DATA_EXPLOSION);

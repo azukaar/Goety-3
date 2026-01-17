@@ -24,8 +24,9 @@ public class Cushion extends Entity {
     }
 
     @Override
-    protected void defineSynchedData() {
-        this.getEntityData().define(DATA_RADIUS, 0);
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(DATA_RADIUS, 0);
     }
 
     public void setRadius(int p_19713_) {

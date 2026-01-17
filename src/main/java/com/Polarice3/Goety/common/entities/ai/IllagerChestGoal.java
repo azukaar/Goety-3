@@ -153,10 +153,10 @@ public abstract class IllagerChestGoal<T extends RaiderServant & ILooter> extend
     }
 
     public boolean hasLineOfSightChest() {
-        HitResult hitResult = this.illager.level.clip(new ClipContext(this.illager.getEyePosition(1.0F), new Vec3(this.blockPos.getX() + 0.5, this.blockPos.getY() + 0.5, this.blockPos.getZ() + 0.5), ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, this.illager));
+        HitResult hitResult = this.illager.level().clip(new ClipContext(this.illager.getEyePosition(1.0F), new Vec3(this.blockPos.getX() + 0.5, this.blockPos.getY() + 0.5, this.blockPos.getZ() + 0.5), ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, this.illager));
         if (hitResult instanceof BlockHitResult blockHitResult) {
             BlockPos pos = blockHitResult.getBlockPos();
-            return pos.equals(this.blockPos) || this.illager.level.isEmptyBlock(pos) || this.illager.level.getBlockEntity(pos) == this.illager.level.getBlockEntity(this.blockPos);
+            return pos.equals(this.blockPos) || this.illager.level().isEmptyBlock(pos) || this.illager.level().getBlockEntity(pos) == this.illager.level().getBlockEntity(this.blockPos);
         }
         return true;
     }
@@ -178,7 +178,7 @@ public abstract class IllagerChestGoal<T extends RaiderServant & ILooter> extend
         if(this.blockPos == null){
             this.stop();
         } else {
-            Container chest = this.getChest(this.illager.level, this.blockPos);
+            Container chest = this.getChest(this.illager.level(), this.blockPos);
             if (chest != null) {
                 double distance = this.illager.distanceToSqr(this.blockPos.getX() + 0.5F, this.blockPos.getY() + 0.5F, this.blockPos.getZ() + 0.5F);
                 if (this.hasLineOfSightChest()) {
@@ -203,7 +203,7 @@ public abstract class IllagerChestGoal<T extends RaiderServant & ILooter> extend
     public void stop() {
         super.stop();
         if (this.blockPos != null) {
-            BlockEntity blockEntity = this.illager.level.getBlockEntity(this.blockPos);
+            BlockEntity blockEntity = this.illager.level().getBlockEntity(this.blockPos);
             if (blockEntity instanceof Container container) {
                 this.toggleChest(container, false);
             }
@@ -220,12 +220,12 @@ public abstract class IllagerChestGoal<T extends RaiderServant & ILooter> extend
     public void toggleChest(Container container, boolean open) {
         if (container instanceof ChestBlockEntity chest) {
             if (open) {
-                this.illager.level.blockEvent(this.blockPos, chest.getBlockState().getBlock(), 1, 1);
+                this.illager.level().blockEvent(this.blockPos, chest.getBlockState().getBlock(), 1, 1);
             } else {
-                this.illager.level.blockEvent(this.blockPos, chest.getBlockState().getBlock(), 1, 0);
+                this.illager.level().blockEvent(this.blockPos, chest.getBlockState().getBlock(), 1, 0);
             }
-            this.illager.level.updateNeighborsAt(this.blockPos, chest.getBlockState().getBlock());
-            this.illager.level.updateNeighborsAt(this.blockPos.below(), chest.getBlockState().getBlock());
+            this.illager.level().updateNeighborsAt(this.blockPos, chest.getBlockState().getBlock());
+            this.illager.level().updateNeighborsAt(this.blockPos.below(), chest.getBlockState().getBlock());
         }
     }
 }

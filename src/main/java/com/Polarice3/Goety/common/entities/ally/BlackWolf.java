@@ -15,6 +15,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.util.FastColor;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
@@ -115,9 +116,10 @@ public class BlackWolf extends AnimalSummon{
         MobUtil.setBaseAttributes(this.getAttribute(Attributes.ATTACK_DAMAGE), AttributesConfig.BlackWolfDamage.get());
     }
 
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.entityData.define(DATA_INTERESTED_ID, false);
+    @Override
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(DATA_INTERESTED_ID, false);
     }
 
     @Override
@@ -199,8 +201,8 @@ public class BlackWolf extends AnimalSummon{
     }*/
 
     @Nullable
-    public SpawnGroupData finalizeSpawn(ServerLevelAccessor pLevel, DifficultyInstance pDifficulty, MobSpawnType pReason, @Nullable SpawnGroupData pSpawnData, @Nullable CompoundTag pDataTag) {
-        pSpawnData = super.finalizeSpawn(pLevel, pDifficulty, pReason, pSpawnData, pDataTag);
+    public SpawnGroupData finalizeSpawn(ServerLevelAccessor pLevel, DifficultyInstance pDifficulty, MobSpawnType pReason, @Nullable SpawnGroupData pSpawnData) {
+        pSpawnData = super.finalizeSpawn(pLevel, pDifficulty, pReason, pSpawnData);
         if (pReason == MobSpawnType.MOB_SUMMONED && this.getTrueOwner() != null){
             ServerParticleUtil.addParticlesAroundMiddleSelf(pLevel.getLevel(), ParticleTypes.LARGE_SMOKE, this);
             ColorUtil color = new ColorUtil(0);
@@ -211,11 +213,11 @@ public class BlackWolf extends AnimalSummon{
 
     public void aiStep() {
         super.aiStep();
-        if (!this.level.isClientSide && this.isWet() && !this.isShaking && !this.isPathFinding() && this.onGround()) {
+        if (!this.level().isClientSide && this.isWet() && !this.isShaking && !this.isPathFinding() && this.onGround()) {
             this.isShaking = true;
             this.shakeAnim = 0.0F;
             this.shakeAnimO = 0.0F;
-            this.level.broadcastEntityEvent(this, (byte)8);
+            this.level().broadcastEntityEvent(this, (byte)8);
         }
     }
 
@@ -231,14 +233,14 @@ public class BlackWolf extends AnimalSummon{
 
             if (this.isInWaterRainOrBubble()) {
                 this.isWet = true;
-                if (this.isShaking && !this.level.isClientSide) {
-                    this.level.broadcastEntityEvent(this, (byte)56);
+                if (this.isShaking && !this.level().isClientSide) {
+                    this.level().broadcastEntityEvent(this, (byte)56);
                     this.cancelShake();
                 }
             } else if ((this.isWet() || this.isShaking) && this.isShaking) {
                 if (this.shakeAnim == 0.0F) {
                     this.playSound(SoundEvents.WOLF_SHAKE, this.getSoundVolume(), (this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 1.0F);
-                    this.gameEvent(GameEvent.ENTITY_SHAKE);
+                    this.gameEvent(GameEvent.ENTITY_ACTION);
                 }
 
                 this.shakeAnimO = this.shakeAnim;
@@ -258,21 +260,21 @@ public class BlackWolf extends AnimalSummon{
                     for(int j = 0; j < i; ++j) {
                         float f1 = (this.random.nextFloat() * 2.0F - 1.0F) * this.getBbWidth() * 0.5F;
                         float f2 = (this.random.nextFloat() * 2.0F - 1.0F) * this.getBbWidth() * 0.5F;
-                        this.level.addParticle(ParticleTypes.SPLASH, this.getX() + (double)f1, (double)(f + 0.8F), this.getZ() + (double)f2, vec3.x, vec3.y, vec3.z);
+                        this.level().addParticle(ParticleTypes.SPLASH, this.getX() + (double)f1, (double)(f + 0.8F), this.getZ() + (double)f2, vec3.x, vec3.y, vec3.z);
                     }
                 }
             }
 
-            if (!this.level.isClientSide){
+            if (!this.level().isClientSide){
                 if (this.invisibleCool > 0){
                     --this.invisibleCool;
                 }
                 if (this.isStaying()){
                     this.isSitting = true;
-                    this.level.broadcastEntityEvent(this, (byte) 4);
+                    this.level().broadcastEntityEvent(this, (byte) 4);
                 } else {
                     this.isSitting = false;
-                    this.level.broadcastEntityEvent(this, (byte) 5);
+                    this.level().broadcastEntityEvent(this, (byte) 5);
                 }
             }
 
@@ -299,9 +301,9 @@ public class BlackWolf extends AnimalSummon{
 
     @Override
     public void lifeSpanDamage() {
-        if (!this.level.isClientSide){
-            for(int i = 0; i < this.level.random.nextInt(35) + 10; ++i) {
-                ServerParticleUtil.smokeParticles(ParticleTypes.POOF, this.getX(), this.getEyeY(), this.getZ(), this.level);
+        if (!this.level().isClientSide){
+            for(int i = 0; i < this.level().random.nextInt(35) + 10; ++i) {
+                ServerParticleUtil.smokeParticles(ParticleTypes.POOF, this.getX(), this.getEyeY(), this.getZ(), this.level());
             }
         }
         this.discard();
@@ -356,7 +358,7 @@ public class BlackWolf extends AnimalSummon{
     }
 
     protected float getStandingEyeHeight(Pose p_30409_, EntityDimensions p_30410_) {
-        return p_30410_.height * 0.8F;
+        return p_30410_.height() * 0.8F;
     }
 
     public int getMaxHeadXRot() {
@@ -372,7 +374,7 @@ public class BlackWolf extends AnimalSummon{
             }
             if (this.isUpgraded()){
                 if (entityIn instanceof LivingEntity livingEntity) {
-                    livingEntity.addEffect(new MobEffectInstance(GoetyEffects.CURSED.get(), MathHelper.secondsToTicks(5), 0), this);
+                    livingEntity.addEffect(new MobEffectInstance(GoetyEffects.CURSED.getHolder(), MathHelper.secondsToTicks(5), 0), this);
                 }
             }
         }
@@ -402,7 +404,7 @@ public class BlackWolf extends AnimalSummon{
 
     public boolean isFood(ItemStack p_30440_) {
         Item item = p_30440_.getItem();
-        return item.isEdible() && p_30440_.getFoodProperties(this).isMeat();
+        return p_30440_.getFoodProperties(this) != null && p_30440_.getFoodProperties(this).nutrition() > 0 && p_30440_.getFoodProperties(this).usingConvertsTo().isEmpty();
     }
 
     public InteractionResult mobInteract(Player pPlayer, InteractionHand pHand) {
@@ -411,14 +413,14 @@ public class BlackWolf extends AnimalSummon{
             if (this.isFood(itemstack) && this.getHealth() < this.getMaxHealth()) {
                 FoodProperties foodProperties = itemstack.getFoodProperties(this);
                 if (foodProperties != null){
-                    this.heal((float)foodProperties.getNutrition());
+                    this.heal((float)foodProperties.nutrition());
                     if (!pPlayer.getAbilities().instabuild) {
                         itemstack.shrink(1);
                     }
 
                     this.gameEvent(GameEvent.EAT, this);
-                    this.eat(this.level, itemstack);
-                    if (this.level instanceof ServerLevel serverLevel) {
+                    this.eat(this.level(), itemstack);
+                    if (this.level() instanceof ServerLevel serverLevel) {
                         for (int i = 0; i < 7; ++i) {
                             double d0 = this.random.nextGaussian() * 0.02D;
                             double d1 = this.random.nextGaussian() * 0.02D;

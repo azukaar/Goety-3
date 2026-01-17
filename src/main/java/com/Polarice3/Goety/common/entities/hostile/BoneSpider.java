@@ -34,7 +34,7 @@ import java.util.UUID;
 
 public class BoneSpider extends Spider implements RangedAttackMob {
     private static final UUID SPEED_MODIFIER_UUID = UUID.fromString("2a3ee720-61cb-402c-affa-2eef9343910d");
-    public static final AttributeModifier STOP_MODIFIER = new AttributeModifier(SPEED_MODIFIER_UUID, "Stop Moving Dammit", -1.0D, AttributeModifier.Operation.ADDITION);
+    public static final AttributeModifier STOP_MODIFIER = new AttributeModifier(net.minecraft.resources.ResourceLocation.parse("goety:bone_spider_stop"), -1.0D, AttributeModifier.Operation.ADD_VALUE);
     private static final EntityDataAccessor<Integer> ANIM_STATE = SynchedEntityData.defineId(BoneSpider.class, EntityDataSerializers.INT);
     public static String ATTACK = "attack";
     public int attackAnim;
@@ -60,9 +60,9 @@ public class BoneSpider extends Spider implements RangedAttackMob {
         MobUtil.setBaseAttributes(this.getAttribute(Attributes.ATTACK_DAMAGE), AttributesConfig.BoneSpiderServantDamage.get());
     }
 
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.entityData.define(ANIM_STATE, 0);
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(ANIM_STATE, 0);
     }
 
     public void setAnimationState(String input) {
@@ -87,7 +87,7 @@ public class BoneSpider extends Spider implements RangedAttackMob {
 
     public void onSyncedDataUpdated(EntityDataAccessor<?> accessor) {
         if (ANIM_STATE.equals(accessor)) {
-            if (this.level.isClientSide){
+            if (this.level().isClientSide){
                 switch (this.entityData.get(ANIM_STATE)){
                     case 0:
                         this.attackAnimationState.stop();
@@ -127,7 +127,7 @@ public class BoneSpider extends Spider implements RangedAttackMob {
     @Override
     public void tick() {
         super.tick();
-        if (!this.level.isClientSide) {
+        if (!this.level().isClientSide) {
             AttributeInstance modifiableattributeinstance = this.getAttribute(Attributes.MOVEMENT_SPEED);
             if (this.getCurrentAnimation() == this.getAnimationState(ATTACK)){
                 this.getNavigation().stop();
@@ -139,7 +139,7 @@ public class BoneSpider extends Spider implements RangedAttackMob {
                 }
             } else {
                 if (modifiableattributeinstance != null) {
-                    if (modifiableattributeinstance.hasModifier(STOP_MODIFIER)) {
+                    if (modifiableattributeinstance.hasModifier(STOP_MODIFIER.id())) {
                         modifiableattributeinstance.removeModifier(STOP_MODIFIER);
                     }
                 }
@@ -163,14 +163,14 @@ public class BoneSpider extends Spider implements RangedAttackMob {
 
     @Override
     public void performRangedAttack(LivingEntity target, float p_33318_) {
-        BoneShard boneShard = new BoneShard(this, this.level);
+        BoneShard boneShard = new BoneShard(this, this.level());
         double d0 = target.getX() - this.getX();
         double d1 = target.getY(0.3333333333333333D) - boneShard.getY();
         double d2 = target.getZ() - this.getZ();
         double d3 = Mth.sqrt((float) (d0 * d0 + d2 * d2));
         boneShard.setBaseDamage(boneShard.getBaseDamage() + AttributesConfig.BoneSpiderServantRangeDamage.get());
-        boneShard.shoot(d0, d1 + d3 * (double) 0.2F, d2, 1.6F, (float) (14 - this.level.getDifficulty().getId() * 4));
-        this.level.addFreshEntity(boneShard);
+        boneShard.shoot(d0, d1 + d3 * (double) 0.2F, d2, 1.6F, (float) (14 - this.level().getDifficulty().getId() * 4));
+        this.level().addFreshEntity(boneShard);
     }
 
     static class ShootBoneGoal extends Goal {

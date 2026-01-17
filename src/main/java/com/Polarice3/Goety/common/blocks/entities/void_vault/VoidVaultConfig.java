@@ -33,7 +33,7 @@ public record VoidVaultConfig (ResourceLocation lootTable, double activationRang
     }
 
     public VoidVaultConfig() {
-        this(ModLootTables.VOID_VAULT_REWARD, 4.0, 4.5, new ItemStack(ModItems.VOID_KEY.get()), Optional.empty(), PlayerDetector.INCLUDING_CREATIVE_PLAYERS, PlayerDetector.EntitySelector.SELECT_FROM_LEVEL);
+        this(ModLootTables.VOID_VAULT_REWARD.location(), 4.0, 4.5, new ItemStack(ModItems.VOID_KEY.get()), Optional.empty(), PlayerDetector.INCLUDING_CREATIVE_PLAYERS, PlayerDetector.EntitySelector.SELECT_FROM_LEVEL);
     }
 
 	public VoidVaultConfig(ResourceLocation lootTable, double activationRange, double deactivationRange, ItemStack keyItem, Optional<ResourceLocation> overrideLootTableToDisplay) {

@@ -33,6 +33,8 @@ import net.minecraft.world.phys.Vec3;
 import javax.annotation.Nullable;
 import java.util.UUID;
 
+import net.minecraft.network.syncher.SynchedEntityData;
+
 public class ViciousTooth extends Entity implements ISpellEntity {
     private LivingEntity owner;
     private UUID ownerUUID;
@@ -49,7 +51,8 @@ public class ViciousTooth extends Entity implements ISpellEntity {
         this.owner = pOwner;
     }
 
-    protected void defineSynchedData() {
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
     }
 
     @Override

@@ -142,7 +142,7 @@ public class VoidSpawnerData {
         if (this.nextSpawnData.isPresent()) {
             return this.nextSpawnData.get();
         } else {
-            this.nextSpawnData = Optional.of(this.spawnPotentials.getRandom(randomSource).map(WeightedEntry.Wrapper::getData).orElseGet(SpawnData::new));
+            this.nextSpawnData = Optional.of(this.spawnPotentials.getRandom(randomSource).map(WeightedEntry.Wrapper::data).orElseGet(SpawnData::new));
             trialSpawner.markUpdated();
             return this.nextSpawnData.get();
         }

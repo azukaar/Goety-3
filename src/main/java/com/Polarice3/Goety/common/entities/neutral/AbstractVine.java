@@ -42,9 +42,10 @@ public abstract class AbstractVine extends AbstractMonolith{
         super(type, worldIn);
     }
 
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.entityData.define(PERPETUAL, false);
+    @Override
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(PERPETUAL, false);
     }
 
     public void addAdditionalSaveData(CompoundTag p_31485_) {

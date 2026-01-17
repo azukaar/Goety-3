@@ -53,7 +53,7 @@ public class QuickGrowingVineRenderer<T extends QuickGrowingVine> extends MobRen
                 } else if (p_116986_.isHostile() || !MobsConfig.QuickGrowingVineTexture.get()) {
                     vertexconsumer = p_116984_.getBuffer(ORIGINAL);
                 }
-                this.getParentModel().renderToBuffer(p_116983_, vertexconsumer, 15728640, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 1.0F);
+                this.getParentModel().renderToBuffer(p_116983_, vertexconsumer, 15728640, OverlayTexture.NO_OVERLAY, -1);
             }
         }
 

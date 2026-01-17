@@ -71,11 +71,12 @@ public class ModFallingBlock extends Entity {
     }
 
     @Override
-    protected void defineSynchedData() {
-        this.entityData.define(BLOCK_STATE, Optional.of(Blocks.DIRT.defaultBlockState()));
-        this.entityData.define(DURATION, 70);
-        this.entityData.define(MODE, FallingBlockMode.MOBILE.toString());
-        this.entityData.define(POP_UP_LEVEL, 1.0F);
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(BLOCK_STATE, Optional.of(Blocks.DIRT.defaultBlockState()));
+        builder.define(DURATION, 70);
+        builder.define(MODE, FallingBlockMode.MOBILE.toString());
+        builder.define(POP_UP_LEVEL, 1.0F);
     }
 
     @Override

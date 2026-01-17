@@ -42,7 +42,7 @@ public class BlackBeastRenderer<T extends BlackBeast> extends MobRenderer<T, Bla
             float f2 = f1 - f;
             float f6 = Mth.lerp(pPartialTicks, pEntity.xRotO, pEntity.getXRot());
             float f71 = this.getBob(pEntity, pPartialTicks);
-            this.setupRotations(pEntity, pMatrixStack, f71, f, pPartialTicks);
+            this.setupRotations(pEntity, pMatrixStack, f71, f, pPartialTicks, 1.0F);
             pMatrixStack.scale(-1.0F, -1.0F, 1.0F);
             this.scale(pEntity, pMatrixStack, pPartialTicks);
             pMatrixStack.translate(0.0D, (double) -1.501F, 0.0D);

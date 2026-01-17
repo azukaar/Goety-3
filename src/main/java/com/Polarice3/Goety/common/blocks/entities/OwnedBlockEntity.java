@@ -14,6 +14,7 @@ import net.minecraft.world.level.block.state.BlockState;
 
 import javax.annotation.Nullable;
 import java.util.UUID;
+import net.minecraft.core.HolderLookup;
 
 public abstract class OwnedBlockEntity extends BlockEntity implements IOwnedBlock {
     private UUID ownerUUID;
@@ -24,21 +25,23 @@ public abstract class OwnedBlockEntity extends BlockEntity implements IOwnedBloc
     }
 
     @Override
-    public CompoundTag getUpdateTag() {
-        return this.writeNetwork(super.getUpdateTag());
+    public CompoundTag getUpdateTag(HolderLookup.Provider registries) {
+        return this.writeNetwork(super.getUpdateTag(registries), registries);
     }
 
-    public void load(CompoundTag nbt) {
-        this.readNetwork(nbt);
-        super.load(nbt);
+    @Override
+    public void loadAdditional(CompoundTag nbt, HolderLookup.Provider registries) {
+        super.loadAdditional(nbt, registries);
+        this.readNetwork(nbt, registries);
     }
 
-    public void saveAdditional(CompoundTag compound) {
-        this.writeNetwork(compound);
-        super.saveAdditional(compound);
+    @Override
+    public void saveAdditional(CompoundTag compound, HolderLookup.Provider registries) {
+        super.saveAdditional(compound, registries);
+        this.writeNetwork(compound, registries);
     }
 
-    public void readNetwork(CompoundTag tag) {
+    public void readNetwork(CompoundTag tag, HolderLookup.Provider registries) {
         if (tag.hasUUID("Owner")) {
             this.setOwnerUUID(tag.getUUID("Owner"));
         }
@@ -47,7 +50,7 @@ public abstract class OwnedBlockEntity extends BlockEntity implements IOwnedBloc
         }
     }
 
-    public CompoundTag writeNetwork(CompoundTag tag) {
+    public CompoundTag writeNetwork(CompoundTag tag, HolderLookup.Provider registries) {
         if (this.getOwnerUUID() != null) {
             tag.putUUID("Owner", this.getOwnerUUID());
         }
@@ -114,9 +117,9 @@ public abstract class OwnedBlockEntity extends BlockEntity implements IOwnedBloc
     }
 
     @Override
-    public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt) {
+    public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt, HolderLookup.Provider registries) {
         if (pkt.getTag() != null) {
-            this.readNetwork(pkt.getTag());
+            this.readNetwork(pkt.getTag(), registries);
         }
     }
 
@@ -125,8 +128,8 @@ public abstract class OwnedBlockEntity extends BlockEntity implements IOwnedBloc
     }
 
     @Override
-    public void handleUpdateTag(CompoundTag tag) {
-        super.load(tag);
-        this.readNetwork(tag);
+    public void handleUpdateTag(CompoundTag tag, HolderLookup.Provider registries) {
+        super.loadAdditional(tag, registries);
+        this.readNetwork(tag, registries);
     }
 }

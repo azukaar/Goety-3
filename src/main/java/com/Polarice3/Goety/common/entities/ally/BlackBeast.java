@@ -141,7 +141,7 @@ public class BlackBeast extends Summoned{
         return Mob.createMobAttributes()
                 .add(Attributes.MOVEMENT_SPEED, 0.28D)
                 .add(Attributes.FOLLOW_RANGE, 64.0D)
-                .add(NeoForgeMod.STEP_HEIGHT_ADDITION.get(), 2.0D)
+                .add(net.minecraft.world.entity.ai.attributes.Attributes.STEP_HEIGHT, 2.0D)
                 .add(Attributes.KNOCKBACK_RESISTANCE, 0.75D)
                 .add(Attributes.ATTACK_KNOCKBACK, 1.5D)
                 .add(Attributes.MAX_HEALTH, AttributesConfig.BlackBeastHealth.get())
@@ -155,11 +155,12 @@ public class BlackBeast extends Summoned{
         MobUtil.setBaseAttributes(this.getAttribute(Attributes.ATTACK_DAMAGE), AttributesConfig.BlackBeastDamage.get());
     }
 
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.entityData.define(DATA_INTERESTED_ID, false);
-        this.entityData.define(ANIM_STATE, 0);
-        this.entityData.define(PREY_ID, Optional.empty());
+    @Override
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(DATA_INTERESTED_ID, false);
+        builder.define(ANIM_STATE, 0);
+        builder.define(PREY_ID, Optional.empty());
     }
 
     public void addAdditionalSaveData(CompoundTag pCompound) {
@@ -283,7 +284,7 @@ public class BlackBeast extends Summoned{
 
     public void onSyncedDataUpdated(EntityDataAccessor<?> p_219422_) {
         if (ANIM_STATE.equals(p_219422_)) {
-            if (this.level.isClientSide){
+            if (this.level().isClientSide){
                 switch (this.entityData.get(ANIM_STATE)){
                     case 0:
                         break;
@@ -406,17 +407,17 @@ public class BlackBeast extends Summoned{
                 ItemStack itemStack = new ItemStack(ModItems.HOWLING_SOUL.get());
                 HowlingSoul.setOwnerName(this.getTrueOwner(), itemStack);
                 HowlingSoul.setSummon(this, itemStack);
-                FlyingItem flyingItem = new FlyingItem(ModEntityType.FLYING_ITEM.get(), this.level, this.getX(), this.getY(), this.getZ());
+                FlyingItem flyingItem = new FlyingItem(ModEntityType.FLYING_ITEM.get(), this.level(), this.getX(), this.getY(), this.getZ());
                 flyingItem.setOwner(this.getTrueOwner());
                 flyingItem.setItem(itemStack);
                 flyingItem.setParticle(ModParticleTypes.TOTEM_EFFECT.get());
                 flyingItem.setSecondsCool(30);
-                this.level.addFreshEntity(flyingItem);
+                this.level().addFreshEntity(flyingItem);
             }
             this.remove(RemovalReason.KILLED);
-            this.dropExperience();
+            this.dropExperience(null);
         }
-        if (this.level instanceof ServerLevel serverLevel){
+        if (this.level() instanceof ServerLevel serverLevel){
             double d0 = this.random.nextGaussian() * 0.02D;
             double d1 = this.random.nextGaussian() * 0.02D;
             double d2 = this.random.nextGaussian() * 0.02D;
@@ -437,7 +438,7 @@ public class BlackBeast extends Summoned{
     }
 
     @Override
-    public EntityDimensions getDimensions(Pose p_21047_) {
+    public EntityDimensions getDefaultDimensions(Pose p_21047_) {
         if (p_21047_ == Pose.CROUCHING){
             return super.getDimensions(p_21047_).scale(1.0F, 0.5F);
         } else {
@@ -483,7 +484,7 @@ public class BlackBeast extends Summoned{
 
         if (this.hasEffect(MobEffects.INVISIBILITY) && amount >= 1.0F){
             this.removeEffect(MobEffects.INVISIBILITY);
-            if (this.level instanceof ServerLevel serverLevel){
+            if (this.level() instanceof ServerLevel serverLevel){
                 for(int i = 0; i < 8; ++i) {
                     ColorUtil colorUtil = new ColorUtil(0x3e293c);
                     serverLevel.sendParticles(ModParticleTypes.BIG_CULT_SPELL.get(), this.getRandomX(1.0D), this.getRandomY(), this.getRandomZ(1.0D), 0, colorUtil.red, colorUtil.green, colorUtil.blue, 0.5F);
@@ -498,30 +499,30 @@ public class BlackBeast extends Summoned{
     public boolean doHurtTarget(Entity entityIn) {
         boolean flag = super.doHurtTarget(entityIn);
 
-        if (!this.level.isClientSide) {
+        if (!this.level().isClientSide) {
             if (flag) {
                 this.attackTick = 10;
                 this.setAnimationState(ATTACK);
-                this.level.broadcastEntityEvent(this, (byte) 101);
+                this.level().broadcastEntityEvent(this, (byte) 101);
                 this.playSound(ModSounds.BLACK_BEAST_CLAW.get(), this.getSoundVolume(), this.getVoicePitch());
                 if (entityIn instanceof LivingEntity target) {
-                    if (!target.hasEffect(GoetyEffects.DOOM.get()) && !MobUtil.isInSunlightNoRain(this)) {
+                    if (!target.hasEffect(GoetyEffects.DOOM.getHolder()) && !MobUtil.isInSunlightNoRain(this)) {
                         int debuffDuration = MathHelper.secondsToTicks(15);
                         int regenAmp = 2;
                         if (MobsConfig.BlackBeastDayStrength.get()) {
-                            if (this.level.dayTime() >= MathHelper.minecraftDayToTicks(50)) {
+                            if (this.level().dayTime() >= MathHelper.minecraftDayToTicks(50)) {
                                 regenAmp += 1;
                             }
 
-                            if (this.level.dayTime() >= MathHelper.minecraftDayToTicks(100)) {
+                            if (this.level().dayTime() >= MathHelper.minecraftDayToTicks(100)) {
                                 regenAmp += 1;
                             }
                         }
                         this.playSound(ModSounds.BLACK_BEAST_ROAR.get(), this.getSoundVolume(), 0.25F);
 
-                        target.addEffect(new MobEffectInstance(GoetyEffects.DOOM.get(), debuffDuration, 0, false, false), this);
+                        target.addEffect(new MobEffectInstance(GoetyEffects.DOOM.getHolder(), debuffDuration, 0, false, false), this);
                         target.addEffect(new MobEffectInstance(MobEffects.WITHER, debuffDuration, 1, false, false), this);
-                        target.addEffect(new MobEffectInstance(GoetyEffects.CURSED.get(), debuffDuration, 0, false, false), this);
+                        target.addEffect(new MobEffectInstance(GoetyEffects.CURSED.getHolder(), debuffDuration, 0, false, false), this);
                         this.addEffect(new MobEffectInstance(MobEffects.REGENERATION, MathHelper.secondsToTicks(5), regenAmp, false, false), this);
                     }
                 }
@@ -559,7 +560,7 @@ public class BlackBeast extends Summoned{
                 --this.happyCool;
             }
         }
-        if (!this.level.isClientSide()) {
+        if (!this.level().isClientSide()) {
             if (!this.isDeadOrDying()) {
                 if (!this.isMeleeAttacking() && !this.isSummoning()) {
                     if (this.isStaying()) {
@@ -577,7 +578,7 @@ public class BlackBeast extends Summoned{
                         }
                     } else {
                         this.isSittingDown = MathHelper.secondsToTicks(1);
-                        if (this.isStandingUp > 0 && this.level.getBlockState(this.blockPosition().above()).isAir()) {
+                        if (this.isStandingUp > 0 && this.level().getBlockState(this.blockPosition().above()).isAir()) {
                             --this.isStandingUp;
                             this.getNavigation().stop();
                             this.setAnimationState(TO_STAND);
@@ -585,7 +586,7 @@ public class BlackBeast extends Summoned{
                             if (this.isStandingUp > 0) {
                                 this.isStandingUp = 0;
                             }
-                            if (!this.level.getBlockState(this.blockPosition().above()).isAir()
+                            if (!this.level().getBlockState(this.blockPosition().above()).isAir()
                                     && this.isCrouching()
                                     && !this.isMoving()){
                                 this.setAnimationState(SIT);
@@ -599,12 +600,12 @@ public class BlackBeast extends Summoned{
                     int boostAmp = 1;
                     int resistAmp = 0;
 
-                    if (this.level.dayTime() >= MathHelper.minecraftDayToTicks(100)) {
+                    if (this.level().dayTime() >= MathHelper.minecraftDayToTicks(100)) {
                         boostAmp = 2;
                         resistAmp = 2;
                     }
 
-                    if (this.level.dayTime() >= MathHelper.minecraftDayToTicks(50) && !MobUtil.isInSunlightNoRain(this)) {
+                    if (this.level().dayTime() >= MathHelper.minecraftDayToTicks(50) && !MobUtil.isInSunlightNoRain(this)) {
                         this.addEffect(new MobEffectInstance(MobEffects.DAMAGE_BOOST, 20, boostAmp, false, false));
                         this.addEffect(new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 20, resistAmp, false, false));
                     }
@@ -632,12 +633,12 @@ public class BlackBeast extends Summoned{
                     --this.summonTick;
                 }
                 if (this.summonTick == MathHelper.secondsToTicks(1.17F)) {
-                    CameraShake.cameraShake(this.level, this.position(), 10.0F, 0.1F, 0, 20);
+                    CameraShake.cameraShake(this.level(), this.position(), 10.0F, 0.1F, 0, 20);
                     this.roar();
                 }
 
                 if (this.summonTick == MathHelper.secondsToTicks(1)){
-                    if (this.level instanceof ServerLevel serverLevel) {
+                    if (this.level() instanceof ServerLevel serverLevel) {
                         for (int i1 = 0; i1 < 3; ++i1) {
                             Summoned summonedentity = new BlackWolf(ModEntityType.BLACK_WOLF.get(), serverLevel);
                             BlockPos blockPos = BlockFinder.SummonRadius(this.blockPosition(), summonedentity, serverLevel);
@@ -645,7 +646,7 @@ public class BlackBeast extends Summoned{
                             summonedentity.moveTo(blockPos, this.getYRot(), this.getXRot());
                             MobUtil.moveDownToGround(summonedentity);
                             summonedentity.setPersistenceRequired();
-                            summonedentity.finalizeSpawn(serverLevel, serverLevel.getCurrentDifficultyAt(this.blockPosition()), MobSpawnType.MOB_SUMMONED, null, null);
+                            summonedentity.finalizeSpawn(serverLevel, serverLevel.getCurrentDifficultyAt(this.blockPosition()), MobSpawnType.MOB_SUMMONED, null);
                             if (this.getTrueOwner() != null) {
                                 summonedentity.setUpgraded(CuriosFinder.hasWildRobe(this.getTrueOwner()));
                             }
@@ -660,7 +661,7 @@ public class BlackBeast extends Summoned{
                     if (this.getTarget() == null){
                         if (EntitySelector.NO_CREATIVE_OR_SPECTATOR.test(this.getPrey())
                                 && MobUtil.sameDimension(this, this.getPrey())
-                                && this.level.isLoaded(this.getPrey().blockPosition())) {
+                                && this.level().isLoaded(this.getPrey().blockPosition())) {
                             this.setTarget(this.getPrey());
                         }
                     } else if (this.getTarget() == this.getPrey()){
@@ -685,7 +686,7 @@ public class BlackBeast extends Summoned{
             }
         }
 
-        boolean shouldCrouch = !this.level.getBlockState(this.blockPosition().above().relative(this.getDirection())).isAir() && this.level.getBlockState(this.blockPosition().relative(this.getDirection())).isAir();
+        boolean shouldCrouch = !this.level().getBlockState(this.blockPosition().above().relative(this.getDirection())).isAir() && this.level().getBlockState(this.blockPosition().relative(this.getDirection())).isAir();
 
         if (!shouldCrouch && !this.isInWall()) {
             this.setPose(Pose.STANDING);
@@ -709,12 +710,12 @@ public class BlackBeast extends Summoned{
         if (this.getTarget() == null){
             return;
         }
-        BeastHead beastHead = new BeastHead(ModEntityType.BEAST_HEAD.get(), this.level, this.getTarget());
+        BeastHead beastHead = new BeastHead(ModEntityType.BEAST_HEAD.get(), this.level(), this.getTarget());
         beastHead.setTrueOwner(this);
         beastHead.setTarget(this.getTarget());
         Vec3 vec3 = this.getTarget().position().offsetRandom(this.random, 8.0F);
         for (int i = 0; i < 16; ++i){
-            if (this.getTarget().distanceToSqr(vec3) <= Mth.square(3.0F) || !MobUtil.canPositionBeSeen(this.level, this.getTarget(), vec3)){
+            if (this.getTarget().distanceToSqr(vec3) <= Mth.square(3.0F) || !MobUtil.canPositionBeSeen(this.level(), this.getTarget(), vec3)){
                 vec3 = this.getTarget().position().offsetRandom(this.random, 8.0F);
             } else {
                 break;
@@ -722,11 +723,11 @@ public class BlackBeast extends Summoned{
         }
         beastHead.moveTo(vec3);
         MobUtil.instaLook(beastHead, this.getTarget());
-        this.level.addFreshEntity(beastHead);
+        this.level().addFreshEntity(beastHead);
     }
 
     public void teleportHits(){
-        if (this.level instanceof ServerLevel serverLevel) {
+        if (this.level() instanceof ServerLevel serverLevel) {
             int i = 8;
 
             for (int j = 0; j < i; ++j) {
@@ -751,7 +752,7 @@ public class BlackBeast extends Summoned{
                         } else {
                             this.addEffect(new MobEffectInstance(MobEffects.INVISIBILITY, MathHelper.secondsToTicks(30), 0, false, false));
                             this.invisibleCool = MathHelper.secondsToTicks(30);
-                            if (this.level instanceof ServerLevel serverLevel) {
+                            if (this.level() instanceof ServerLevel serverLevel) {
                                 for (int i = 0; i < 8; ++i) {
                                     ColorUtil colorUtil = new ColorUtil(0x3e293c);
                                     serverLevel.sendParticles(ModParticleTypes.BIG_CULT_SPELL.get(), this.getRandomX(1.0D), this.getRandomY(), this.getRandomZ(1.0D), 0, colorUtil.red, colorUtil.green, colorUtil.blue, 0.5F);
@@ -771,7 +772,7 @@ public class BlackBeast extends Summoned{
 
     private void roar() {
         if (this.isAlive()) {
-            for(LivingEntity livingentity : this.level.getEntitiesOfClass(LivingEntity.class, this.getBoundingBox().inflate(4.0D), target -> target.isAlive() && (target instanceof BlackBeast))) {
+            for(LivingEntity livingentity : this.level().getEntitiesOfClass(LivingEntity.class, this.getBoundingBox().inflate(4.0D), target -> target.isAlive() && (target instanceof BlackBeast))) {
                 if (!MobUtil.areAllies(this, livingentity)) {
                     this.strongKnockback(livingentity);
                 }
@@ -783,14 +784,14 @@ public class BlackBeast extends Summoned{
                 double d0 = this.random.nextGaussian() * 0.2D;
                 double d1 = this.random.nextGaussian() * 0.2D;
                 double d2 = this.random.nextGaussian() * 0.2D;
-                if (this.level instanceof ServerLevel serverLevel){
+                if (this.level() instanceof ServerLevel serverLevel){
                     serverLevel.sendParticles(ParticleTypes.POOF, vec3.x, vec3.y, vec3.z, 0, d0, d1, d2, 0.5F);
                 } else {
-                    this.level.addParticle(ParticleTypes.POOF, vec3.x, vec3.y, vec3.z, d0, d1, d2);
+                    this.level().addParticle(ParticleTypes.POOF, vec3.x, vec3.y, vec3.z, d0, d1, d2);
                 }
             }
 
-            this.gameEvent(GameEvent.ENTITY_ROAR);
+            this.gameEvent(net.minecraft.world.level.gameevent.GameEvent.ENTITY_ACTION);
         }
 
     }
@@ -808,7 +809,7 @@ public class BlackBeast extends Summoned{
 
     public boolean isFood(ItemStack p_30440_) {
         Item item = p_30440_.getItem();
-        return item.isEdible() && p_30440_.getFoodProperties(this).isMeat();
+        return item.getFoodProperties(p_30440_, this) != null && item.getFoodProperties(p_30440_, this).nutrition() > 0;
     }
 
     @Override
@@ -826,14 +827,14 @@ public class BlackBeast extends Summoned{
             if (this.isFood(itemstack) && this.getHealth() < this.getMaxHealth()) {
                 FoodProperties foodProperties = itemstack.getFoodProperties(this);
                 if (foodProperties != null){
-                    this.heal((float)foodProperties.getNutrition());
+                    this.heal((float)foodProperties.nutrition());
                     if (!pPlayer.getAbilities().instabuild) {
                         itemstack.shrink(1);
                     }
 
                     this.gameEvent(GameEvent.EAT, this);
-                    this.eat(this.level, itemstack);
-                    if (this.level instanceof ServerLevel serverLevel) {
+                    this.eat(this.level(), itemstack);
+                    if (this.level() instanceof ServerLevel serverLevel) {
                         for (int i = 0; i < 7; ++i) {
                             double d0 = this.random.nextGaussian() * 0.02D;
                             double d1 = this.random.nextGaussian() * 0.02D;
@@ -852,7 +853,7 @@ public class BlackBeast extends Summoned{
                 if (!pPlayer.getAbilities().instabuild) {
                     TaglockKit.removeEntity(pPlayer.getMainHandItem());
                 }
-                if (!this.level.isClientSide) {
+                if (!this.level().isClientSide) {
                     if (this.getPrey() instanceof ServerPlayer player) {
                         if (CuriosFinder.hasCurio(player, ModItems.ALARMING_CHARM.get())) {
                             player.displayClientMessage(Component.translatable("info.goety.summon.hunt").withStyle(ChatFormatting.RED), true);
@@ -872,7 +873,7 @@ public class BlackBeast extends Summoned{
                 return InteractionResult.SUCCESS;
             } else if (pPlayer.getMainHandItem().isEmpty() && this.happyCool <= 0){
                 this.happyCool = 40;
-                this.level.broadcastEntityEvent(this, (byte) 102);
+                this.level().broadcastEntityEvent(this, (byte) 102);
                 this.playSound(SoundEvents.WOLF_AMBIENT, 1.0F, 0.5F);
                 this.heal(1.0F);
                 return InteractionResult.SUCCESS;
@@ -898,7 +899,7 @@ public class BlackBeast extends Summoned{
             double d0 = this.random.nextGaussian() * 0.02D;
             double d1 = this.random.nextGaussian() * 0.02D;
             double d2 = this.random.nextGaussian() * 0.02D;
-            this.level.addParticle(pParticleData, this.getRandomX(1.0D), this.getRandomY() + 1.0D, this.getRandomZ(1.0D), d0, d1, d2);
+            this.level().addParticle(pParticleData, this.getRandomX(1.0D), this.getRandomY() + 1.0D, this.getRandomZ(1.0D), d0, d1, d2);
         }
     }
 
@@ -929,7 +930,7 @@ public class BlackBeast extends Summoned{
         }
 
         public boolean canUse() {
-            List<BlackWolf> list = BlackBeast.this.level.getEntitiesOfClass(BlackWolf.class, BlackBeast.this.getBoundingBox().inflate(32.0D), (blackWolf -> blackWolf.getTrueOwner() == BlackBeast.this));
+            List<BlackWolf> list = BlackBeast.this.level().getEntitiesOfClass(BlackWolf.class, BlackBeast.this.getBoundingBox().inflate(32.0D), (blackWolf -> blackWolf.getTrueOwner() == BlackBeast.this));
             if (BlackBeast.this.getTarget() != null
                     && BlackBeast.this.hasLineOfSight(BlackBeast.this.getTarget())
                     && BlackBeast.this.summonCool <= 0

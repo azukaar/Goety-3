@@ -45,9 +45,10 @@ public class VineHook extends Projectile {
     }
 
     @Override
-    protected void defineSynchedData() {
-        this.entityData.define(ATTACHED, false);
-        this.entityData.define(LENGTH, 0.0F);
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(ATTACHED, false);
+        builder.define(LENGTH, 0.0F);
     }
 
     @Override

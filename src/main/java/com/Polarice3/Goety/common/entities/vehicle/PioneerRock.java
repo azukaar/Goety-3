@@ -71,10 +71,10 @@ public class PioneerRock extends SpellEntity {
     }
 
     @Override
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.entityData.define(DATA_ID_HURT, 0);
-        this.entityData.define(DATA_ID_DAMAGE, 0.0F);
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(DATA_ID_HURT, 0);
+        builder.define(DATA_ID_DAMAGE, 0.0F);
     }
 
     public boolean hurt(DamageSource p_38319_, float p_38320_) {

@@ -83,9 +83,10 @@ public class BlazeServant extends Summoned {
         MobUtil.setBaseAttributes(this.getAttribute(Attributes.ARMOR), AttributesConfig.BlazeServantArmor.get());
     }
 
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.entityData.define(DATA_FLAGS_ID, (byte)0);
+    @Override
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(DATA_FLAGS_ID, (byte)0);
     }
 
     public void addAdditionalSaveData(CompoundTag pCompound) {
@@ -137,7 +138,7 @@ public class BlazeServant extends Summoned {
             this.setDeltaMovement(this.getDeltaMovement().multiply(1.0D, 0.6D, 1.0D));
         }
 
-        if (this.level.isClientSide) {
+        if (this.level().isClientSide) {
             this.clientTick();
         }
 
@@ -146,11 +147,11 @@ public class BlazeServant extends Summoned {
 
     public void clientTick(){
         if (this.random.nextInt(24) == 0 && !this.isSilent()) {
-            this.level.playLocalSound(this.getX() + 0.5D, this.getY() + 0.5D, this.getZ() + 0.5D, SoundEvents.BLAZE_BURN, this.getSoundSource(), 1.0F + this.random.nextFloat(), this.random.nextFloat() * 0.7F + 0.3F, false);
+            this.level().playLocalSound(this.getX() + 0.5D, this.getY() + 0.5D, this.getZ() + 0.5D, SoundEvents.BLAZE_BURN, this.getSoundSource(), 1.0F + this.random.nextFloat(), this.random.nextFloat() * 0.7F + 0.3F, false);
         }
 
         for(int i = 0; i < 2; ++i) {
-            this.level.addParticle(ParticleTypes.LARGE_SMOKE, this.getRandomX(0.5D), this.getRandomY(), this.getRandomZ(0.5D), 0.0D, 0.0D, 0.0D);
+            this.level().addParticle(ParticleTypes.LARGE_SMOKE, this.getRandomX(0.5D), this.getRandomY(), this.getRandomZ(0.5D), 0.0D, 0.0D, 0.0D);
         }
     }
 
@@ -208,7 +209,7 @@ public class BlazeServant extends Summoned {
     }
 
     public InteractionResult mobInteract(Player pPlayer, InteractionHand pHand) {
-        if (!this.level.isClientSide){
+        if (!this.level().isClientSide){
             ItemStack itemstack = pPlayer.getItemInHand(pHand);
             Item item = itemstack.getItem();
             if (this.getTrueOwner() != null && pPlayer == this.getTrueOwner()) {
@@ -222,7 +223,7 @@ public class BlazeServant extends Summoned {
                         healAmount = 4.0F;
                     }
                     this.heal(healAmount);
-                    if (this.level instanceof ServerLevel serverLevel) {
+                    if (this.level() instanceof ServerLevel serverLevel) {
                         for (int i = 0; i < 7; ++i) {
                             double d0 = this.random.nextGaussian() * 0.02D;
                             double d1 = this.random.nextGaussian() * 0.02D;
@@ -310,16 +311,16 @@ public class BlazeServant extends Summoned {
                         if (this.attackStep > 1) {
                             double d4 = Math.sqrt(Math.sqrt(d0)) * 0.5D;
                             if (!this.blaze.isSilent()) {
-                                this.blaze.level.levelEvent((Player)null, 1018, this.blaze.blockPosition(), 0);
+                                this.blaze.level().levelEvent((Player)null, 1018, this.blaze.blockPosition(), 0);
                             }
 
                             float damage = AttributesConfig.BlazeServantRangeDamage.get().floatValue() + this.blaze.getFireBallDamage();
 
                             for(int i = 0; i < 1; ++i) {
-                                ModFireball smallfireball = new ModFireball(this.blaze.level, this.blaze, this.blaze.getRandom().triangle(d1, 2.297D * d4), d2, this.blaze.getRandom().triangle(d3, 2.297D * d4));
+                                ModFireball smallfireball = new ModFireball(this.blaze.level(), this.blaze, this.blaze.getRandom().triangle(d1, 2.297D * d4), d2, this.blaze.getRandom().triangle(d3, 2.297D * d4));
                                 smallfireball.setPos(smallfireball.getX(), this.blaze.getY(0.5D) + 0.5D, smallfireball.getZ());
                                 smallfireball.setDamage(damage);
-                                this.blaze.level.addFreshEntity(smallfireball);
+                                this.blaze.level().addFreshEntity(smallfireball);
                             }
                         }
                     }

@@ -1,10 +1,12 @@
 package com.Polarice3.Goety.common.blocks.entities;
 
+
 import com.Polarice3.Goety.common.blocks.CursedInfuserBlock;
 import com.Polarice3.Goety.common.crafting.CursedInfuserRecipes;
 import com.Polarice3.Goety.common.crafting.ModRecipeSerializer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
@@ -17,6 +19,7 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.SingleRecipeInput;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
@@ -63,11 +66,11 @@ public class CursedInfuserBlockEntity extends ModBlockEntity implements Clearabl
             for(int i = 0; i < this.items.size(); ++i) {
                 ItemStack itemstack = this.items.get(i);
                 if (!itemstack.isEmpty()) {
-                    Container iinventory = new SimpleContainer(itemstack);
+                    SingleRecipeInput iinventory = new SingleRecipeInput(itemstack);
                     if (this.level != null) {
                         ItemStack itemstack1 = this.level.getRecipeManager()
                                 .getRecipeFor(ModRecipeSerializer.CURSED_INFUSER.get(), iinventory, this.level)
-                                .map((recipes) -> recipes.assemble(iinventory, this.level.registryAccess())).orElse(itemstack);
+                                .map((recipes) -> recipes.value().assemble(iinventory, this.level.registryAccess())).orElse(itemstack);
                         if (itemstack != itemstack1) {
                             this.cookingProgress[i]++;
                         }
@@ -114,7 +117,7 @@ public class CursedInfuserBlockEntity extends ModBlockEntity implements Clearabl
                     this.cookingTime[i] = pCookTime;
                     this.cookingProgress[i] = 0;
                     this.items.set(i, pStack.split(1));
-                    this.level.playSound(null, this.getBlockPos(), SoundEvents.ARMOR_EQUIP_GENERIC, SoundSource.BLOCKS, 1.0F, 1.0F);
+                    this.level.playSound(null, this.getBlockPos(), SoundEvents.ARMOR_EQUIP_GENERIC.value(), SoundSource.BLOCKS, 1.0F, 1.0F);
                     this.markUpdated();
                     return true;
                 }
@@ -228,9 +231,10 @@ public class CursedInfuserBlockEntity extends ModBlockEntity implements Clearabl
         return this.items;
     }
 
-    public void readNetwork(CompoundTag compoundNBT) {
+    @Override
+    public void readNetwork(CompoundTag compoundNBT, HolderLookup.Provider pRegistries) {
         this.items.clear();
-        ContainerHelper.loadAllItems(compoundNBT, this.items);
+        ContainerHelper.loadAllItems(compoundNBT, this.items, pRegistries);
         if (compoundNBT.contains("CookingTimes", 11)) {
             int[] aint = compoundNBT.getIntArray("CookingTimes");
             System.arraycopy(aint, 0, this.cookingProgress, 0, Math.min(this.cookingTime.length, aint.length));
@@ -243,15 +247,15 @@ public class CursedInfuserBlockEntity extends ModBlockEntity implements Clearabl
 
     }
 
-    public CompoundTag writeNetwork(CompoundTag pCompound) {
-        this.saveMetadataAndItems(pCompound);
+    public CompoundTag writeNetwork(CompoundTag pCompound, HolderLookup.Provider pRegistries) {
+        this.saveMetadataAndItems(pCompound, pRegistries);
         pCompound.putIntArray("CookingTimes", this.cookingProgress);
         pCompound.putIntArray("CookingTotalTimes", this.cookingTime);
         return pCompound;
     }
 
-    private CompoundTag saveMetadataAndItems(CompoundTag pCompound) {
-        ContainerHelper.saveAllItems(pCompound, this.items, true);
+    private CompoundTag saveMetadataAndItems(CompoundTag pCompound, HolderLookup.Provider pRegistries) {
+        ContainerHelper.saveAllItems(pCompound, this.items, true, pRegistries);
         return pCompound;
     }
 
@@ -260,7 +264,7 @@ public class CursedInfuserBlockEntity extends ModBlockEntity implements Clearabl
     }
 
     public Optional<CursedInfuserRecipes> getRecipes(ItemStack pStack) {
-        return this.items.stream().noneMatch(ItemStack::isEmpty) ? Optional.empty() : this.level.getRecipeManager().getRecipeFor(ModRecipeSerializer.CURSED_INFUSER.get(), new SimpleContainer(pStack), this.level);
+        return this.items.stream().noneMatch(ItemStack::isEmpty) ? Optional.empty() : this.level.getRecipeManager().getRecipeFor(ModRecipeSerializer.CURSED_INFUSER.get(), new SingleRecipeInput(pStack), this.level).map(net.minecraft.world.item.crafting.RecipeHolder::value);
     }
 
     @Override

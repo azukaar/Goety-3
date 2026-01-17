@@ -87,9 +87,10 @@ public class BeastHead extends Owned {
         this.setNoGravity(true);
 
         ++this.life;
-        if (!this.level.isClientSide) {
+        if (!this.level().isClientSide) {
             if (!this.sentSpawnEvent) {
-                this.level.broadcastEntityEvent(this, (byte)4);
+                this.level().broadcastEntityEvent(this, (byte)4);
+                this.level().broadcastEntityEvent(this, (byte)4);
                 this.sentSpawnEvent = true;
             }
             if (this.life < 30) {
@@ -116,14 +117,14 @@ public class BeastHead extends Owned {
                 this.setYRot(this.keepYRot);
                 this.setXRot(this.keepXRot);
                 if (!this.sentAttackEvent) {
-                    this.level.broadcastEntityEvent(this, (byte)5);
+                    this.level().broadcastEntityEvent(this, (byte)5);
                     this.sentAttackEvent = true;
                 }
                 if (this.chargePos != null) {
                     this.setDeltaMovement(this.chargePos);
                 }
                 if (this.life <= 40) {
-                    for (LivingEntity livingEntity : this.level.getEntitiesOfClass(LivingEntity.class, this.getBoundingBox().inflate(1.0D))) {
+                    for (LivingEntity livingEntity : this.level().getEntitiesOfClass(LivingEntity.class, this.getBoundingBox().inflate(1.0D))) {
                         if (!this.hitEntities.contains(livingEntity) && !MobUtil.areAllies(this.getOwner() != null ? this.getOwner() : this, livingEntity) && EntitySelector.NO_CREATIVE_OR_SPECTATOR.test(livingEntity)) {
                             DamageSource damageSource = this.damageSources().mobAttack(this);
                             if (this.getOwner() != null){

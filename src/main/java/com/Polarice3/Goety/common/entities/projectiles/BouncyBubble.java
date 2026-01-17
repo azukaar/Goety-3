@@ -12,10 +12,12 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ClientboundAddEntityPacket;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.server.level.ServerEntity;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
@@ -47,10 +49,11 @@ public class BouncyBubble extends SpellHurtingProjectile{
     }
 
     @Override
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.entityData.define(BOUNCE_TIMES, 0);
-        this.entityData.define(SIZE, 0.0F);
+    @Override
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(BOUNCE_TIMES, 0);
+        builder.define(SIZE, 0.0F);
     }
 
     @Override
@@ -100,7 +103,7 @@ public class BouncyBubble extends SpellHurtingProjectile{
     @Override
     public void tick() {
         super.tick();
-        if (!this.level.isLoaded(this.blockPosition())){
+        if (!this.level().isLoaded(this.blockPosition())){
             this.discard();
         }
         if (this.tickCount >= 100) {
@@ -111,7 +114,7 @@ public class BouncyBubble extends SpellHurtingProjectile{
     @Override
     public void trailParticle() {
         for (int j = 0; j < 3 + random.nextInt(2); ++j) {
-            this.level.addParticle(this.isInWaterOrBubble() ? ParticleTypes.BUBBLE_COLUMN_UP : ParticleTypes.FALLING_WATER, this.getRandomX(0.5D), this.getRandomY(), this.getRandomZ(0.5D), 0, -0.1F, 0);
+            this.level().addParticle(this.isInWaterOrBubble() ? ParticleTypes.BUBBLE_COLUMN_UP : ParticleTypes.FALLING_WATER, this.getRandomX(0.5D), this.getRandomY(), this.getRandomZ(0.5D), 0, -0.1F, 0);
         }
     }
 
@@ -120,7 +123,7 @@ public class BouncyBubble extends SpellHurtingProjectile{
         ProjectileUtil.rotateTowardsMovement(this, 1);
         if (!this.isNoGravity()) {
             Vec3 vec3 = this.getDeltaMovement();
-            this.setDeltaMovement(vec3.x, vec3.y - (double) this.getGravity(), vec3.z);
+            this.setDeltaMovement(vec3.x, vec3.y - (double) this.getDefaultGravity(), vec3.z);
         }
     }
 
@@ -133,10 +136,10 @@ public class BouncyBubble extends SpellHurtingProjectile{
         double motionZ = vec3.z();
         if (raytraceresult$type == HitResult.Type.BLOCK) {
             BlockHitResult hitResult = (BlockHitResult) result;
-            BlockState blockstate = this.level.getBlockState(hitResult.getBlockPos());
-            if (!blockstate.getCollisionShape(this.level, hitResult.getBlockPos()).isEmpty()) {
+            BlockState blockstate = this.level().getBlockState(hitResult.getBlockPos());
+            if (!blockstate.getCollisionShape(this.level(), hitResult.getBlockPos()).isEmpty()) {
                 Direction face = hitResult.getDirection();
-                blockstate.onProjectileHit(this.level, blockstate, hitResult, this);
+                blockstate.onProjectileHit(this.level(), blockstate, hitResult, this);
                 if (face.getAxis() == Direction.Axis.X) {
                     motionX = -motionX;
                 } else if (face.getAxis() == Direction.Axis.Z) {
@@ -155,7 +158,7 @@ public class BouncyBubble extends SpellHurtingProjectile{
             }
         } else if (raytraceresult$type == HitResult.Type.ENTITY) {
             Entity entity = ((EntityHitResult) result).getEntity();
-            if (!this.level.isClientSide) {
+            if (!this.level().isClientSide) {
                 if (this.canHitEntity(entity)) {
                     if (this.getBounceTimes() >= 6) {
                         this.explode();
@@ -170,12 +173,12 @@ public class BouncyBubble extends SpellHurtingProjectile{
     }
 
     public void explode() {
-        if (!this.level.isClientSide) {
+        if (!this.level().isClientSide) {
             Entity owner = this.getOwner();
             float radius = 1.0F + this.getSize();
             int radius2 = Mth.floor(radius);
-            new SpellExplosion(this.level, this, ModDamageSource.indirectDrench(this, owner == null ? this : owner), this.getX(), this.getY(), this.getZ(), radius, this.damage + this.getExtraDamage());
-            if (this.level instanceof ServerLevel serverLevel) {
+            new SpellExplosion(this.level(), this, ModDamageSource.indirectDrench(this, owner == null ? this : owner), this.getX(), this.getY(), this.getZ(), radius, this.damage + this.getExtraDamage());
+            if (this.level() instanceof ServerLevel serverLevel) {
                 for (int i = -radius2; i < radius2; ++i) {
                     for (int j = -radius2; j < radius2; ++j) {
                         for (int k = -radius2; k < radius2; ++k) {
@@ -224,7 +227,7 @@ public class BouncyBubble extends SpellHurtingProjectile{
     }
 
     @Override
-    public Packet<ClientGamePacketListener> getAddEntityPacket() {
-        return new net.minecraft.network.protocol.game.ClientboundAddEntityPacket(this);
+    public Packet<ClientGamePacketListener> getAddEntityPacket(ServerEntity p_345479_) {
+        return new ClientboundAddEntityPacket(this, p_345479_);
     }
 }

@@ -49,7 +49,7 @@ public class BearServantRenderer extends MobRenderer<BearServant, BearServantMod
       @Override
       public void render(PoseStack matrixStackIn, MultiBufferSource bufferIn, int packedLightIn, T bear, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch) {
          if (bear.isUpgraded()) {
-            coloredCutoutModelCopyLayerRender(this.getParentModel(), this.layerModel, TEXTURES, matrixStackIn, bufferIn, packedLightIn, bear, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, partialTicks, 1.0F, 1.0F, 1.0F);
+            coloredCutoutModelCopyLayerRender(this.getParentModel(), this.layerModel, TEXTURES, matrixStackIn, bufferIn, packedLightIn, bear, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, partialTicks, -1);
          }
       }
    }

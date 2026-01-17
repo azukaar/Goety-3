@@ -130,7 +130,7 @@ public class VoidSpawner {
             double d = i >= 1 ? listTag.getDouble(0) : blockPos.getX() + (randomSource.nextDouble() - randomSource.nextDouble()) * this.config.spawnRange() + 0.5;
             double e = i >= 2 ? listTag.getDouble(1) : blockPos.getY() + randomSource.nextInt(3) - 1;
             double f = i >= 3 ? listTag.getDouble(2) : blockPos.getZ() + (randomSource.nextDouble() - randomSource.nextDouble()) * this.config.spawnRange() + 0.5;
-            if (!serverLevel.noCollision(optional.get().getAABB(d, e, f))) {
+            if (!serverLevel.noCollision(optional.get().getDimensions().makeBoundingBox(d, e, f))) {
                 return Optional.empty();
             } else {
                 Vec3 vec3 = new Vec3(d, e, f);
@@ -156,7 +156,7 @@ public class VoidSpawner {
                             }
 
                             if (spawnData.getEntityToSpawn().size() == 1 && spawnData.getEntityToSpawn().contains("id", 8)) {
-                                net.neoforged.neoforge.event.EventHooks.onFinalizeSpawn(mob, serverLevel, serverLevel.getCurrentDifficultyAt(mob.blockPosition()), MobSpawnType.SPAWNER, null, null);
+                                net.neoforged.neoforge.event.EventHooks.finalizeMobSpawn(mob, serverLevel, serverLevel.getCurrentDifficultyAt(mob.blockPosition()), MobSpawnType.SPAWNER, null);
                                 mob.setPersistenceRequired();
                                 if (mob instanceof IServant servant) {
                                     servant.setBoundPos(blockPos);
@@ -181,7 +181,7 @@ public class VoidSpawner {
     }
 
     public void ejectReward(ServerLevel serverLevel, BlockPos blockPos, ResourceLocation resourceLocation) {
-        LootTable lootTable = serverLevel.getServer().getLootData().getLootTable(resourceLocation);
+        LootTable lootTable = serverLevel.getServer().reloadableRegistries().getLootTable(net.minecraft.resources.ResourceKey.create(net.minecraft.core.registries.Registries.LOOT_TABLE, resourceLocation));
         LootParams lootParams = new LootParams.Builder(serverLevel).create(LootContextParamSets.EMPTY);
         ObjectArrayList<ItemStack> objectArrayList = lootTable.getRandomItems(lootParams);
         if (!objectArrayList.isEmpty()) {
@@ -242,7 +242,7 @@ public class VoidSpawner {
     }
 
     private static boolean inLineOfSight(Level level, Vec3 vec3, Vec3 vec32) {
-        BlockHitResult blockHitResult = level.clip(new ClipContext(vec32, vec3, ClipContext.Block.VISUAL, ClipContext.Fluid.NONE, null));
+        BlockHitResult blockHitResult = level.clip(new ClipContext(vec32, vec3, ClipContext.Block.VISUAL, ClipContext.Fluid.NONE, net.minecraft.world.phys.shapes.CollisionContext.empty()));
         return blockHitResult.getBlockPos().equals(BlockPos.containing(vec3)) || blockHitResult.getType() == HitResult.Type.MISS;
     }
 

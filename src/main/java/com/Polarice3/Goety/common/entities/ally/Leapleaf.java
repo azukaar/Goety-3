@@ -109,10 +109,11 @@ public class Leapleaf extends Summoned{
         MobUtil.setBaseAttributes(this.getAttribute(Attributes.ATTACK_DAMAGE), AttributesConfig.LeapleafDamage.get());
     }
 
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.entityData.define(DATA_FLAGS_ID, (byte)0);
-        this.entityData.define(ANIM_STATE, 0);
+    @Override
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(DATA_FLAGS_ID, (byte)0);
+        builder.define(ANIM_STATE, 0);
     }
 
     @Override

@@ -82,10 +82,10 @@ public class BlackguardServant extends ZombieServant{
         MobUtil.setBaseAttributes(this.getAttribute(Attributes.ARMOR_TOUGHNESS), AttributesConfig.BlackguardServantToughness.get());
     }
 
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.entityData.define(HAS_SHIELD, true);
-        this.entityData.define(DATA_FLAGS_ID, (byte)0);
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(HAS_SHIELD, true);
+        builder.define(DATA_FLAGS_ID, (byte)0);
     }
 
     public void readAdditionalSaveData(CompoundTag pCompound) {
@@ -155,7 +155,7 @@ public class BlackguardServant extends ZombieServant{
                 this.setShieldHealth(0);
                 this.setShield(false);
                 this.playSound(SoundEvents.SHIELD_BREAK);
-                if (this.level instanceof ServerLevel serverLevel){
+                if (this.level() instanceof ServerLevel serverLevel){
                     ServerParticleUtil.addParticlesAroundSelf(serverLevel, new ItemParticleOption(ParticleTypes.ITEM, new ItemStack(Items.ANVIL)), this);
                 }
             }
@@ -169,7 +169,7 @@ public class BlackguardServant extends ZombieServant{
     public void setMeleeAttacking(boolean attacking) {
         this.setFlags(1, attacking);
         this.attackTick = 0;
-        this.level.broadcastEntityEvent(this, (byte) 5);
+        this.level().broadcastEntityEvent(this, (byte) 5);
     }
 
     @Override
@@ -229,7 +229,7 @@ public class BlackguardServant extends ZombieServant{
 
     public void tick() {
         super.tick();
-        if (this.level.isClientSide){
+        if (this.level().isClientSide){
             if (this.isAlive()){
                 this.idleAnimationState.animateWhen(!this.isMeleeAttacking() && !this.isStaying() && !this.isMoving(), this.tickCount);
                 this.standAnimationState.animateWhen(!this.isMeleeAttacking() && this.isStaying() && !this.isMoving(), this.tickCount);
@@ -245,7 +245,7 @@ public class BlackguardServant extends ZombieServant{
 
     @Override
     public boolean hurt(DamageSource source, float amount) {
-        if (!this.level.isClientSide) {
+        if (!this.level().isClientSide) {
             if (this.hasShield() && !source.is(DamageTypeTags.BYPASSES_INVULNERABILITY)) {
                 this.destroyShield();
                 return false;
@@ -310,7 +310,7 @@ public class BlackguardServant extends ZombieServant{
                 }
                 this.playSound(SoundEvents.GENERIC_EAT, 1.0F, 1.0F);
                 this.heal(2.0F);
-                if (this.level instanceof ServerLevel serverLevel) {
+                if (this.level() instanceof ServerLevel serverLevel) {
                     for (int i = 0; i < 7; ++i) {
                         double d0 = this.random.nextGaussian() * 0.02D;
                         double d1 = this.random.nextGaussian() * 0.02D;
@@ -320,15 +320,15 @@ public class BlackguardServant extends ZombieServant{
                 }
                 return InteractionResult.SUCCESS;
             }
-            if (!this.level.isClientSide) {
+            if (!this.level().isClientSide) {
                 if (!this.hasShield() && itemstack.is(Tags.Items.INGOTS_IRON) && this.getTarget() == null && this.hurtTime <= 0){
                     if (!pPlayer.getAbilities().instabuild) {
                         itemstack.shrink(1);
                     }
                     this.setShield(true);
                     this.setShieldHealth(1);
-                    this.level.broadcastEntityEvent(this, (byte) 6);
-                    this.playSound(SoundEvents.ARMOR_EQUIP_GENERIC, 1.0F, 1.0F);
+                    this.level().broadcastEntityEvent(this, (byte) 6);
+                    this.playSound(SoundEvents.ARMOR_EQUIP_GENERIC.value(), 1.0F, 1.0F);
                     return InteractionResult.SUCCESS;
                 }
             }
@@ -382,7 +382,6 @@ public class BlackguardServant extends ZombieServant{
             this.checkAndPerformAttack(livingentity, BlackguardServant.this.distanceToSqr(livingentity.getX(), livingentity.getBoundingBox().minY, livingentity.getZ()));
         }
 
-        @Override
         protected void checkAndPerformAttack(LivingEntity enemy, double distToEnemySqr) {
             if (BlackguardServant.this.targetClose(enemy, distToEnemySqr)) {
                 if (!BlackguardServant.this.isMeleeAttacking()) {
@@ -411,7 +410,7 @@ public class BlackguardServant extends ZombieServant{
         @Override
         public void start() {
             BlackguardServant.this.setMeleeAttacking(true);
-            BlackguardServant.this.level.broadcastEntityEvent(BlackguardServant.this, (byte) 4);
+            BlackguardServant.this.level().broadcastEntityEvent(BlackguardServant.this, (byte) 4);
         }
 
         @Override
@@ -439,12 +438,12 @@ public class BlackguardServant extends ZombieServant{
                 AABB aabb = MobUtil.makeAttackRange(x,
                         BlackguardServant.this.getY(),
                         z, 3, 3, 3);
-                for (LivingEntity target : BlackguardServant.this.level.getEntitiesOfClass(LivingEntity.class, aabb)) {
+                for (LivingEntity target : BlackguardServant.this.level().getEntitiesOfClass(LivingEntity.class, aabb)) {
                     if (target != BlackguardServant.this && !MobUtil.areAllies(target, BlackguardServant.this)) {
                         BlackguardServant.this.doHurtTarget(target);
                     }
                 }
-                if (BlackguardServant.this.level instanceof ServerLevel serverLevel){
+                if (BlackguardServant.this.level() instanceof ServerLevel serverLevel){
                     BlockPos blockPos = BlockPos.containing(x, BlackguardServant.this.getY() - 1.0F, z);
                     BlockParticleOption option = new BlockParticleOption(ParticleTypes.BLOCK, serverLevel.getBlockState(blockPos));
                     for (int i = 0; i < 2; ++i) {

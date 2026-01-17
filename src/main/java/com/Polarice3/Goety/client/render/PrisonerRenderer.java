@@ -159,7 +159,7 @@ public class PrisonerRenderer extends MobRenderer<Prisoner, PrisonerModel<Prison
 
       public void render(PoseStack matrixStackIn, MultiBufferSource bufferIn, int packedLightIn, T entitylivingbaseIn, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch) {
          if (!entitylivingbaseIn.isInvisible()) {
-            coloredCutoutModelCopyLayerRender(this.getParentModel(), this.layerModel, SHACKLES, matrixStackIn, bufferIn, packedLightIn, entitylivingbaseIn, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, partialTicks, 1.0F, 1.0F, 1.0F);
+            coloredCutoutModelCopyLayerRender(this.getParentModel(), this.layerModel, SHACKLES, matrixStackIn, bufferIn, packedLightIn, entitylivingbaseIn, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, partialTicks, -1);
          }
       }
    }

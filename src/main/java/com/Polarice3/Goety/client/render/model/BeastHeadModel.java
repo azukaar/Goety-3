@@ -63,8 +63,13 @@ public class BeastHeadModel<T extends BeastHead> extends HierarchicalModel<T> {
 		this.alpha = alpha;
 	}
 
-	public void renderToBuffer(PoseStack p_102424_, VertexConsumer p_102425_, int p_102426_, int p_102427_, float p_102428_, float p_102429_, float p_102430_, float p_102431_) {
-		super.renderToBuffer(p_102424_, p_102425_, p_102426_, p_102427_, p_102428_, p_102429_, p_102430_, this.alpha);
+	public void renderToBuffer(PoseStack p_102424_, VertexConsumer p_102425_, int p_102426_, int p_102427_, int pColor) {
+		int a = net.minecraft.util.FastColor.ARGB32.alpha(pColor);
+		int r = net.minecraft.util.FastColor.ARGB32.red(pColor);
+		int g = net.minecraft.util.FastColor.ARGB32.green(pColor);
+		int b = net.minecraft.util.FastColor.ARGB32.blue(pColor);
+		a = (int)(a * this.alpha);
+		super.renderToBuffer(p_102424_, p_102425_, p_102426_, p_102427_, net.minecraft.util.FastColor.ARGB32.color(a, r, g, b));
 	}
 
 	public static final AnimationDefinition SPAWN = AnimationDefinition.Builder.withLength(1.0F)

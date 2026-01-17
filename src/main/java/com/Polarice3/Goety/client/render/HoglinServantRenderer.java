@@ -40,7 +40,7 @@ public class HoglinServantRenderer extends MobRenderer<HoglinServant, HoglinMode
 
       @Override
       public void render(PoseStack matrixStackIn, MultiBufferSource bufferIn, int packedLightIn, T hoglin, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch) {
-         coloredCutoutModelCopyLayerRender(this.getParentModel(), this.layerModel, TEXTURES, matrixStackIn, bufferIn, packedLightIn, hoglin, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, partialTicks, 1.0F, 1.0F, 1.0F);
+         coloredCutoutModelCopyLayerRender(this.getParentModel(), this.layerModel, TEXTURES, matrixStackIn, bufferIn, packedLightIn, hoglin, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, partialTicks, -1);
       }
    }
 }

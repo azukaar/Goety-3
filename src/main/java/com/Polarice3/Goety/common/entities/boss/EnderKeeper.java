@@ -225,7 +225,7 @@ public class EnderKeeper extends AbstractEnderling implements Enemy {
             @Override
             public boolean canUse() {
                 return super.canUse()
-                        && EnderKeeper.this.level.getRandom().nextFloat() <= 0.25F
+                        && EnderKeeper.this.level().getRandom().nextFloat() <= 0.25F
                         && EnderKeeper.this.rapidSwingCool <= 0;
             }
 
@@ -269,19 +269,19 @@ public class EnderKeeper extends AbstractEnderling implements Enemy {
             public boolean canUse() {
                 return super.canUse()
                         && EnderKeeper.this.groundPoundCool <= 0
-                        && EnderKeeper.this.level.getRandom().nextBoolean();
+                        && EnderKeeper.this.level().getRandom().nextBoolean();
             }
 
             @Override
             public void start() {
                 super.start();
-                EnderKeeper.this.groundPoundSize = MobUtil.healthIsHalved(EnderKeeper.this) ? EnderKeeper.this.level.getRandom().nextIntBetweenInclusive(8, 10) : 6;
+                EnderKeeper.this.groundPoundSize = MobUtil.healthIsHalved(EnderKeeper.this) ? EnderKeeper.this.level().getRandom().nextIntBetweenInclusive(8, 10) : 6;
                 EnderKeeper.this.startHide();
                 if (EnderKeeper.this.getTarget() != null) {
                     Vec3 vec3 = EnderKeeper.this.getTarget().position();
                     Vec3 vec31 = BlockFinder.SummonPosition(EnderKeeper.this.getTarget(), vec3);
                     EnderKeeper.this.ownedTeleport(vec31.x, vec31.y, vec31.z);
-                    if (EnderKeeper.this.level instanceof ServerLevel serverLevel) {
+                    if (EnderKeeper.this.level() instanceof ServerLevel serverLevel) {
                         ColorUtil colorUtil = ColorUtil.WHITE;
                         serverLevel.sendParticles(new AoEParticleOption(EnderKeeper.this.groundPoundSize, 20), EnderKeeper.this.getX(), EnderKeeper.this.getY() + 0.25F, EnderKeeper.this.getZ(), 0, colorUtil.red(), colorUtil.green(), colorUtil.blue(), 1.0F);
                     }
@@ -300,19 +300,19 @@ public class EnderKeeper extends AbstractEnderling implements Enemy {
             public boolean canUse() {
                 return super.canUse()
                         && EnderKeeper.this.groundPoundCool <= 0
-                        && (EnderKeeper.this.level.getRandom().nextFloat() <= 0.05F || (MobUtil.healthIsHalved(EnderKeeper.this) && EnderKeeper.this.level.getRandom().nextFloat() <= 0.75F));
+                        && (EnderKeeper.this.level().getRandom().nextFloat() <= 0.05F || (MobUtil.healthIsHalved(EnderKeeper.this) && EnderKeeper.this.level().getRandom().nextFloat() <= 0.75F));
             }
 
             @Override
             public void start() {
                 super.start();
-                EnderKeeper.this.groundPoundSize = MobUtil.healthIsHalved(EnderKeeper.this) ? EnderKeeper.this.level.getRandom().nextIntBetweenInclusive(8, 10) : 6;
+                EnderKeeper.this.groundPoundSize = MobUtil.healthIsHalved(EnderKeeper.this) ? EnderKeeper.this.level().getRandom().nextIntBetweenInclusive(8, 10) : 6;
                 EnderKeeper.this.startHide();
                 if (EnderKeeper.this.getTarget() != null) {
                     Vec3 vec3 = EnderKeeper.this.getTarget().position();
                     Vec3 vec31 = BlockFinder.SummonPosition(EnderKeeper.this.getTarget(), vec3);
                     EnderKeeper.this.ownedTeleport(vec31.x, vec31.y, vec31.z);
-                    if (EnderKeeper.this.level instanceof ServerLevel serverLevel) {
+                    if (EnderKeeper.this.level() instanceof ServerLevel serverLevel) {
                         ColorUtil colorUtil = ColorUtil.WHITE;
                         serverLevel.sendParticles(new AoEParticleOption(EnderKeeper.this.groundPoundSize, 20), EnderKeeper.this.getX(), EnderKeeper.this.getY() + 0.25F, EnderKeeper.this.getZ(), 0, colorUtil.red(), colorUtil.green(), colorUtil.blue(), 1.0F);
                     }
@@ -330,7 +330,7 @@ public class EnderKeeper extends AbstractEnderling implements Enemy {
             @Override
             public boolean canUse() {
                 return super.canUse()
-                        && EnderKeeper.this.level.getRandom().nextBoolean()
+                        && EnderKeeper.this.level().getRandom().nextBoolean()
                         && EnderKeeper.this.getHealth() <= (EnderKeeper.this.getMaxHealth() / 2.0F)
                         && EnderKeeper.this.lifeStealCool <= 0;
             }
@@ -365,7 +365,7 @@ public class EnderKeeper extends AbstractEnderling implements Enemy {
             @Override
             public boolean canUse() {
                 return super.canUse()
-                        && EnderKeeper.this.level.getRandom().nextBoolean()
+                        && EnderKeeper.this.level().getRandom().nextBoolean()
                         && EnderKeeper.this.spell2Cool <= 0;
             }
 
@@ -379,7 +379,7 @@ public class EnderKeeper extends AbstractEnderling implements Enemy {
             @Override
             public boolean canUse() {
                 return super.canUse()
-                        && EnderKeeper.this.level.getRandom().nextBoolean()
+                        && EnderKeeper.this.level().getRandom().nextBoolean()
                         && EnderKeeper.this.spell3Cool <= 0;
             }
 
@@ -399,7 +399,7 @@ public class EnderKeeper extends AbstractEnderling implements Enemy {
             @Override
             public boolean canUse() {
                 return super.canUse()
-                        && EnderKeeper.this.level.getRandom().nextBoolean()
+                        && EnderKeeper.this.level().getRandom().nextBoolean()
                         && EnderKeeper.this.getHealth() > (EnderKeeper.this.getMaxHealth() / 2.0F)
                         && EnderKeeper.this.getHealth() < EnderKeeper.this.getMaxHealth()
                         && EnderKeeper.this.lifeStealCool <= 0;
@@ -547,9 +547,9 @@ public class EnderKeeper extends AbstractEnderling implements Enemy {
         MobUtil.setBaseAttributes(this.getAttribute(Attributes.ATTACK_DAMAGE), AttributesConfig.EnderKeeperDamage.get());
     }
 
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.entityData.define(ANIM_STATE, 0);
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(ANIM_STATE, 0);
     }
 
     @Override
@@ -753,7 +753,7 @@ public class EnderKeeper extends AbstractEnderling implements Enemy {
 
     public void onSyncedDataUpdated(EntityDataAccessor<?> p_219422_) {
         if (ANIM_STATE.equals(p_219422_)) {
-            if (this.level.isClientSide){
+            if (this.level().isClientSide){
                 switch (this.entityData.get(ANIM_STATE)){
                     case 0:
                     case 14:

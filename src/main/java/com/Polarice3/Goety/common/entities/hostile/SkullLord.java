@@ -128,7 +128,7 @@ public class SkullLord extends Monster implements ICustomAttributes {
 
     public BlockEntity getPithos() {
         if (this.getBoundOrigin() != null) {
-            return this.level.getBlockEntity(this.getBoundOrigin());
+            return this.level().getBlockEntity(this.getBoundOrigin());
         }
         return null;
     }
@@ -191,7 +191,7 @@ public class SkullLord extends Monster implements ICustomAttributes {
 
             for (int i = 1; i < p_220673_2_; ++i) {
                 axisalignedbb = axisalignedbb.move(p_220673_1_);
-                if (!this.skullLord.level.noCollision(this.skullLord, axisalignedbb)) {
+                if (!this.skullLord.level().noCollision(this.skullLord, axisalignedbb)) {
                     return false;
                 }
             }
@@ -207,7 +207,7 @@ public class SkullLord extends Monster implements ICustomAttributes {
         }
         this.bossInfo.setProgress(this.getHealth() / this.getMaxHealth());
         this.setNoGravity(true);
-        int delay = switch (this.level.getDifficulty()) {
+        int delay = switch (this.level().getDifficulty()) {
             case NORMAL -> 300;
             case HARD -> 150;
             default -> 400;
@@ -226,11 +226,11 @@ public class SkullLord extends Monster implements ICustomAttributes {
         } else if (this.isElectroOrb()) {
             particleData = ModParticleTypes.ELECTRIC.get();
         }
-        this.level.addParticle(particleData, d0 + this.random.nextGaussian() * (double) 0.3F,
+        this.level().addParticle(particleData, d0 + this.random.nextGaussian() * (double) 0.3F,
                 d1 + this.random.nextGaussian() * (double) 0.3F, d2 + this.random.nextGaussian() * (double) 0.3F, 0.0D,
                 0.0D, 0.0D);
         if (this.isInvulnerable()) {
-            int healFreq = switch (this.level.getDifficulty()) {
+            int healFreq = switch (this.level().getDifficulty()) {
                 case NORMAL -> 40;
                 case HARD -> 20;
                 default -> 60;
@@ -258,13 +258,13 @@ public class SkullLord extends Monster implements ICustomAttributes {
                 this.setTarget(null);
             }
         } else {
-            for (Player player : this.level.getEntitiesOfClass(Player.class, this.getBoundingBox().inflate(8),
+            for (Player player : this.level().getEntitiesOfClass(Player.class, this.getBoundingBox().inflate(8),
                     EntitySelector.NO_CREATIVE_OR_SPECTATOR)) {
                 this.setTarget(player);
             }
             if (this.getPithos() != null) {
                 if (this.getPithos() instanceof PithosBlockEntity pithosTile) {
-                    if (this.tickCount % 100 == 0 && this.level.isLoaded(pithosTile.getBlockPos())) {
+                    if (this.tickCount % 100 == 0 && this.level().isLoaded(pithosTile.getBlockPos())) {
                         this.setIsDespawn(true);
                         pithosTile.lock();
                         if (this.getBoneLord() != null) {
@@ -282,12 +282,12 @@ public class SkullLord extends Monster implements ICustomAttributes {
             this.oldSwell = 0;
             this.swell = 0;
         }
-        if (!this.level.isClientSide) {
-            ServerLevel serverWorld = (ServerLevel) this.level;
+        if (!this.level().isClientSide) {
+            ServerLevel serverWorld = (ServerLevel) this.level();
             int i = this.blockPosition().getX();
             int j = this.blockPosition().getY();
             int k = this.blockPosition().getZ();
-            List<LivingEntity> list = this.level.getEntitiesOfClass(LivingEntity.class,
+            List<LivingEntity> list = this.level().getEntitiesOfClass(LivingEntity.class,
                     (new AABB(i, j, k, i, j - 4, k)).inflate(8.0D, 8.0D, 8.0D),
                     (t -> t instanceof IOwned owned && owned.getTrueOwner() == this));
             if (list.size() < 8 && this.getTarget() != null && (this.isNotAbility() || this.isSpawning())) {
@@ -304,7 +304,7 @@ public class SkullLord extends Monster implements ICustomAttributes {
                         this.setSpawning(false);
                     }
                 } else {
-                    this.spawnDelay = this.level.random.nextInt(delay) + delay;
+                    this.spawnDelay = this.level().random.nextInt(delay) + delay;
                     this.setSpawning(false);
                     this.spawnMobs();
                 }
@@ -312,22 +312,22 @@ public class SkullLord extends Monster implements ICustomAttributes {
             if (this.getBoneLord() == null || (this.getBoneLord() != null && this.getBoneLord().isDeadOrDying())) {
                 --this.boneLordRegen;
                 this.setIsInvulnerable(false);
-                this.level.broadcastEntityEvent(this, (byte) 5);
-                for (BoneLord boneLord : this.level.getEntitiesOfClass(BoneLord.class,
+                this.level().broadcastEntityEvent(this, (byte) 5);
+                for (BoneLord boneLord : this.level().getEntitiesOfClass(BoneLord.class,
                         this.getBoundingBox().inflate(32))) {
                     if (boneLord.getSkullLord() == this) {
                         this.setBoneLord(boneLord);
                     }
                 }
                 if (this.boneLordRegen <= 0 && this.isNotAbility()) {
-                    BoneLord boneLord = ModEntityType.BONE_LORD.get().create(this.level);
+                    BoneLord boneLord = ModEntityType.BONE_LORD.get().create(this.level());
                     if (boneLord != null) {
-                        boneLord.finalizeSpawn(serverWorld, this.level.getCurrentDifficultyAt(this.blockPosition()),
-                                MobSpawnType.MOB_SUMMONED, null, null);
+                        boneLord.finalizeSpawn(serverWorld, this.level().getCurrentDifficultyAt(this.blockPosition()),
+                                MobSpawnType.MOB_SUMMONED, null);
                         boneLord.setPos(this.getX(), this.getY(), this.getZ());
                         boneLord.setSkullLord(this);
                         this.setBoneLord(boneLord);
-                        this.level.addFreshEntity(boneLord);
+                        this.level().addFreshEntity(boneLord);
                     }
                 }
             } else {
@@ -337,7 +337,7 @@ public class SkullLord extends Monster implements ICustomAttributes {
                         this.moveTo(this.getBoneLord().position());
                     }
                     this.setIsInvulnerable(true);
-                    this.level.broadcastEntityEvent(this, (byte) 4);
+                    this.level().broadcastEntityEvent(this, (byte) 4);
                     this.hitTimes = 0;
                     this.boneLordRegen = delay * 2;
                     this.stopAttackersFromAttacking();
@@ -345,12 +345,12 @@ public class SkullLord extends Monster implements ICustomAttributes {
             }
             if (this.isCharging()) {
                 ++this.chargeTime;
-                for (LivingEntity livingEntity : this.level.getEntitiesOfClass(LivingEntity.class,
+                for (LivingEntity livingEntity : this.level().getEntitiesOfClass(LivingEntity.class,
                         this.getBoundingBox().inflate(2.0F))) {
                     if (!(livingEntity instanceof BoneLord) && livingEntity != this
                             && livingEntity != this.getTarget()) {
                         if (this.getBoundingBox().intersects(livingEntity.getBoundingBox())) {
-                            this.level.explode(this, this.getX(), this.getY(), this.getZ(), explosionRadius,
+                            this.level().explode(this, this.getX(), this.getY(), this.getZ(), explosionRadius,
                                     Level.ExplosionInteraction.NONE);
                             if (this.random.nextFloat() < 0.25F) {
                                 this.setIsCharging(false);
@@ -359,7 +359,7 @@ public class SkullLord extends Monster implements ICustomAttributes {
                     }
                 }
                 if (this.horizontalCollision || this.verticalCollision) {
-                    this.level.explode(this, this.getX(), this.getY(), this.getZ(), explosionRadius,
+                    this.level().explode(this, this.getX(), this.getY(), this.getZ(), explosionRadius,
                             Level.ExplosionInteraction.NONE);
                     this.setIsCharging(false);
                 }
@@ -376,7 +376,7 @@ public class SkullLord extends Monster implements ICustomAttributes {
     }
 
     public void stopAttackersFromAttacking() {
-        List<Mob> list = this.level.getEntitiesOfClass(Mob.class, this.getBoundingBox().inflate(100.0F));
+        List<Mob> list = this.level().getEntitiesOfClass(Mob.class, this.getBoundingBox().inflate(100.0F));
         if (this.getBoneLord() != null) {
             for (Mob attacker : list) {
                 if (attacker.getLastHurtByMob() == this) {
@@ -419,9 +419,9 @@ public class SkullLord extends Monster implements ICustomAttributes {
         d0 = d0 / d3;
         d1 = d1 / d3;
         d2 = d2 / d3;
-        double d4 = pSource.level.random.nextDouble();
-        if (!pSource.level.isClientSide) {
-            ServerLevel serverWorld = (ServerLevel) pSource.level;
+        double d4 = pSource.level().random.nextDouble();
+        if (!pSource.level().isClientSide) {
+            ServerLevel serverWorld = (ServerLevel) pSource.level();
             while (d4 < d3) {
                 d4 += 1.0D;
                 serverWorld.sendParticles(ModParticleTypes.BONE.get(), pSource.getX() + d0 * d4,
@@ -432,11 +432,11 @@ public class SkullLord extends Monster implements ICustomAttributes {
 
     public void spawnMobs() {
         int spawnRange = 2;
-        boolean random = this.level.random.nextBoolean();
-        if (this.level instanceof ServerLevel serverLevel) {
-            double d0 = (double) this.blockPosition().getX() + this.level.random.nextDouble();
-            double d1 = (double) this.blockPosition().getY() + this.level.random.nextDouble();
-            double d2 = (double) this.blockPosition().getZ() + this.level.random.nextDouble();
+        boolean random = this.level().random.nextBoolean();
+        if (this.level() instanceof ServerLevel serverLevel) {
+            double d0 = (double) this.blockPosition().getX() + this.level().random.nextDouble();
+            double d1 = (double) this.blockPosition().getY() + this.level().random.nextDouble();
+            double d2 = (double) this.blockPosition().getZ() + this.level().random.nextDouble();
             for (int p = 0; p < 4; ++p) {
                 serverLevel.sendParticles(ParticleTypes.SOUL_FIRE_FLAME, d0, d1, d2, 1, 0, 0, 0, 0);
                 serverLevel.sendParticles(ParticleTypes.SMOKE, d0, d1, d2, 1, 0.0D, 5.0E-4D, 0.0D, 5.0E-4D);
@@ -481,7 +481,7 @@ public class SkullLord extends Monster implements ICustomAttributes {
                     summoned.setUpgraded(true);
                     summoned.moveTo(BlockFinder.SummonPosition(summoned, blockPos), this.getYRot(), this.getXRot());
                     summoned.finalizeSpawn(serverLevel, serverLevel.getCurrentDifficultyAt(summoned.blockPosition()),
-                            MobSpawnType.MOB_SUMMONED, null, null);
+                            MobSpawnType.MOB_SUMMONED, null);
                     serverLevel.addFreshEntityWithPassengers(summoned);
                 }
             }
@@ -490,14 +490,14 @@ public class SkullLord extends Monster implements ICustomAttributes {
 
     public void die(DamageSource cause) {
         super.die(cause);
-        for (int i = 0; i < this.level.random.nextInt(35) + 10; ++i) {
+        for (int i = 0; i < this.level().random.nextInt(35) + 10; ++i) {
             float f11 = (this.random.nextFloat() - 0.5F);
             float f13 = (this.random.nextFloat() - 0.5F);
             float f14 = (this.random.nextFloat() - 0.5F);
-            this.level.addParticle(ParticleTypes.EXPLOSION, this.getX() + (double) f11,
+            this.level().addParticle(ParticleTypes.EXPLOSION, this.getX() + (double) f11,
                     this.getY() + 2.0D + (double) f13, this.getZ() + (double) f14, 0.0D, 0.0D, 0.0D);
         }
-        if (!this.level.isClientSide) {
+        if (!this.level().isClientSide) {
             if (this.getBoneLord() != null) {
                 this.getBoneLord().die(cause);
             }
@@ -510,9 +510,10 @@ public class SkullLord extends Monster implements ICustomAttributes {
     }
 
     @Override
-    public void onRemovedFromWorld() {
-        super.onRemovedFromWorld();
-        if (!this.level.isClientSide) {
+    public void remove(Entity.RemovalReason reason) {
+        this.setStopSpawning(true);
+        super.remove(reason);
+        if (!this.level().isClientSide) {
             if (this.getBoneLord() != null) {
                 this.getBoneLord().discard();
             }
@@ -560,18 +561,19 @@ public class SkullLord extends Monster implements ICustomAttributes {
     public boolean isAlliedTo(Entity entityIn) {
         if (super.isAlliedTo(entityIn)) {
             return true;
-        } else if (entityIn instanceof Monster monster && monster.getMobType() == MobType.UNDEAD) {
+        } else if (entityIn instanceof Monster monster && monster.getType().is(net.minecraft.tags.EntityTypeTags.UNDEAD)) {
             return this.getTeam() == null && entityIn.getTeam() == null;
         } else {
             return false;
         }
     }
 
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.entityData.define(FLAGS, (byte) 0);
-        this.entityData.define(BONE_LORD, Optional.empty());
-        this.entityData.define(BONE_LORD_CLIENT_ID, -1);
+    @Override
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(FLAGS, (byte) 0);
+        builder.define(BONE_LORD, Optional.empty());
+        builder.define(BONE_LORD_CLIENT_ID, -1);
     }
 
     private boolean geFlags(int mask) {
@@ -601,12 +603,12 @@ public class SkullLord extends Monster implements ICustomAttributes {
 
     @Nullable
     public BoneLord getBoneLord() {
-        if (!this.level.isClientSide) {
+        if (!this.level().isClientSide) {
             UUID uuid = this.getBoneLordUUID();
             return EntityFinder.getLivingEntityByUuiD(uuid) instanceof BoneLord boneLord ? boneLord : null;
         } else {
             int id = this.getBoneLordClientId();
-            return id <= -1 ? null : this.level.getEntity(id) instanceof BoneLord boneLord ? boneLord : null;
+            return id <= -1 ? null : this.level().getEntity(id) instanceof BoneLord boneLord ? boneLord : null;
         }
     }
 
@@ -776,13 +778,13 @@ public class SkullLord extends Monster implements ICustomAttributes {
         this.populateDefaultEquipmentEnchantments(pLevel.getRandom(), pDifficulty);
         BoneLord boneLord = ModEntityType.BONE_LORD.get().create((Level) pLevel);
         if (boneLord != null) {
-            boneLord.finalizeSpawn(pLevel, pDifficulty, pReason, pSpawnData, pDataTag);
+            boneLord.finalizeSpawn(pLevel, pDifficulty, pReason, pSpawnData);
             boneLord.setPos(this.getX(), this.getY(), this.getZ());
             boneLord.setSkullLord(this);
             this.setBoneLord(boneLord);
             pLevel.addFreshEntity(boneLord);
         }
-        return super.finalizeSpawn(pLevel, pDifficulty, pReason, pSpawnData, pDataTag);
+        return super.finalizeSpawn(pLevel, pDifficulty, pReason, pSpawnData);
     }
 
     @Override
@@ -834,12 +836,12 @@ public class SkullLord extends Monster implements ICustomAttributes {
                     double d2 = livingentity.getY(0.5D) - SkullLord.this.getY(0.5D);
                     double d3 = livingentity.getZ() - SkullLord.this.getZ();
                     HauntedSkullProjectile soulSkull = new HauntedSkullProjectile(SkullLord.this, d1, d2, d3,
-                            SkullLord.this.level);
+                            SkullLord.this.level());
                     soulSkull.setPos(soulSkull.getX(), SkullLord.this.getY(0.75D), soulSkull.getZ());
                     soulSkull.setYRot(SkullLord.this.getYRot());
                     soulSkull.setXRot(SkullLord.this.getXRot());
                     this.shootTime = shoot;
-                    SkullLord.this.level.addFreshEntity(soulSkull);
+                    SkullLord.this.level().addFreshEntity(soulSkull);
                     SkullLord.this.playSound(ModSounds.SKULL_LORD_SHOOT.get(), 1.0F, 1.0F);
                 }
             }
@@ -922,9 +924,9 @@ public class SkullLord extends Monster implements ICustomAttributes {
                             livingentity.igniteForSeconds(5);
                         }
                         if (skullLord.isHalfHealth()) {
-                            livingentity.addEffect(new MobEffectInstance(GoetyEffects.SAPPED.get(), 100));
+                            livingentity.addEffect(new MobEffectInstance(GoetyEffects.SAPPED.getHolder(), 100));
                         }
-                        skullLord.level.explode(skullLord, skullLord.getX(), skullLord.getY(), skullLord.getZ(),
+                        skullLord.level().explode(skullLord, skullLord.getX(), skullLord.getY(), skullLord.getZ(),
                                 skullLord.explosionRadius, Level.ExplosionInteraction.NONE);
                         skullLord.setIsCharging(false);
                     }
@@ -986,7 +988,7 @@ public class SkullLord extends Monster implements ICustomAttributes {
         public void tick() {
             SkullLord skullLord = SkullLord.this;
             LivingEntity livingentity = SkullLord.this.getTarget();
-            if (livingentity != null && skullLord.level instanceof ServerLevel serverLevel) {
+            if (livingentity != null && skullLord.level() instanceof ServerLevel serverLevel) {
                 if (this.electroTime > 0) {
                     --this.electroTime;
                     if (!skullLord.hasLineOfSight(livingentity)) {
@@ -1053,7 +1055,7 @@ public class SkullLord extends Monster implements ICustomAttributes {
                 }
                 this.shockWave = time;
                 SkullLord.this.setShockWave(true);
-                SkullLord.this.level.broadcastEntityEvent(SkullLord.this, (byte) 6);
+                SkullLord.this.level().broadcastEntityEvent(SkullLord.this, (byte) 6);
                 SkullLord.this.playSound(ModSounds.BOMB_FUSE.get(), 3.0F, 1.0F);
                 SkullLord.this.playSound(ModSounds.SKULL_LORD_CHARGE.get(), 3.0F, 0.25F);
             }
@@ -1067,14 +1069,14 @@ public class SkullLord extends Monster implements ICustomAttributes {
                 SkullLord.this.shockWaveCool = 200;
             }
             SkullLord.this.setShockWave(false);
-            SkullLord.this.level.broadcastEntityEvent(SkullLord.this, (byte) 7);
+            SkullLord.this.level().broadcastEntityEvent(SkullLord.this, (byte) 7);
             SkullLord.this.setDeltaMovement(Vec3.ZERO);
         }
 
         public void tick() {
             SkullLord skullLord = SkullLord.this;
             LivingEntity livingentity = SkullLord.this.getTarget();
-            if (livingentity != null && skullLord.level instanceof ServerLevel serverLevel) {
+            if (livingentity != null && skullLord.level() instanceof ServerLevel serverLevel) {
                 if (this.shockWave > 0) {
                     --this.shockWave;
                     skullLord.setDeltaMovement(Vec3.ZERO);
@@ -1130,7 +1132,7 @@ public class SkullLord extends Monster implements ICustomAttributes {
                     double Z = vector3d.z + SkullLord.this.random.nextIntBetweenInclusive(-distance, distance);
 
                     BlockPos blockPos1 = BlockPos.containing(X, Y, Z);
-                    if (SkullLord.this.level.isEmptyBlock(blockPos1)) {
+                    if (SkullLord.this.level().isEmptyBlock(blockPos1)) {
                         SkullLord.this.getMoveControl().setWantedPosition(X, Y, Z, 0.05D);
                         break;
                     }
@@ -1143,7 +1145,7 @@ public class SkullLord extends Monster implements ICustomAttributes {
                     double d2 = SkullLord.this.getZ()
                             + SkullLord.this.random.nextIntBetweenInclusive(-distance, distance);
                     BlockPos blockPos1 = BlockPos.containing(d0, d1, d2);
-                    if (SkullLord.this.level.isEmptyBlock(blockPos1)) {
+                    if (SkullLord.this.level().isEmptyBlock(blockPos1)) {
                         SkullLord.this.getMoveControl().setWantedPosition(d0, d1, d2, 0.05D);
                         break;
                     }

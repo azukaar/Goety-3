@@ -34,7 +34,7 @@ public class HauntedSkullProjectileRenderer extends LayeredEntityRenderer<Haunte
         float f1 = Mth.lerp(pPartialTicks, pEntity.xRotO, pEntity.getXRot());
         VertexConsumer ivertexbuilder = pBuffer.getBuffer(this.model.renderType(this.getTextureLocation(pEntity)));
         this.model.setupAnim(0.0F, f, f1);
-        this.model.renderToBuffer(pMatrixStack, ivertexbuilder, pPackedLight, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 1.0F);
+        this.model.renderToBuffer(pMatrixStack, ivertexbuilder, pPackedLight, OverlayTexture.NO_OVERLAY, -1);
         pMatrixStack.popPose();
         super.render(pEntity, pEntityYaw, pPartialTicks, pMatrixStack, pBuffer, pPackedLight);
     }

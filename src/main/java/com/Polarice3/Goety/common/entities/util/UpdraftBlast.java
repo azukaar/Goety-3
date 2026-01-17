@@ -24,6 +24,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import net.minecraft.network.syncher.SynchedEntityData;
+
 public class UpdraftBlast extends Entity implements ISpellEntity {
     public LivingEntity owner;
     private UUID ownerUniqueId;
@@ -41,7 +43,8 @@ public class UpdraftBlast extends Entity implements ISpellEntity {
     }
 
     @Override
-    protected void defineSynchedData() {
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
     }
 
     @Override

@@ -31,7 +31,7 @@ public class HellChantRenderer<T extends HellChant> extends EntityRenderer<T> {
 
         VertexConsumer vertexConsumer = bufferIn.getBuffer(RenderType.entityTranslucent(this.getTextureLocation(scream)));
         this.model.setupAnim(scream, 0.0F, 0.0F, partialTicks, scream.getYRot(), scream.getXRot());
-        this.model.renderToBuffer(poseStack, vertexConsumer, 240, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 1.0F);
+        this.model.renderToBuffer(poseStack, vertexConsumer, packedLightIn, OverlayTexture.NO_OVERLAY, -1);
         poseStack.popPose();
         super.render(scream, entityYaw, partialTicks, poseStack, bufferIn, 240);
     }

@@ -62,11 +62,12 @@ public class BrewEffectCloud extends Entity {
         this.setPos(p_19708_, p_19709_, p_19710_);
     }
 
-    protected void defineSynchedData() {
-        this.getEntityData().define(DATA_COLOR, 0);
-        this.getEntityData().define(DATA_RADIUS, 0.5F);
-        this.getEntityData().define(DATA_WAITING, false);
-        this.getEntityData().define(DATA_PARTICLE, ParticleTypes.ENTITY_EFFECT);
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(DATA_COLOR, 0);
+        builder.define(DATA_RADIUS, 0.5F);
+        builder.define(DATA_WAITING, false);
+        builder.define(DATA_PARTICLE, ParticleTypes.ENTITY_EFFECT);
     }
 
     public void setRadius(float p_19713_) {

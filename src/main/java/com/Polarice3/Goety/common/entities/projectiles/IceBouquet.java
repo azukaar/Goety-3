@@ -67,13 +67,13 @@ public class IceBouquet extends GroundProjectile {
     }
 
     @Override
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.entityData.define(DATA_TYPE_ID, 0);
-        this.entityData.define(SOUL_EATING, false);
-        this.entityData.define(CONCENTRATE, true);
-        this.entityData.define(CENTER, true);
-        this.entityData.define(DATA_EXTRA_DAMAGE, 0.0F);
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(DATA_TYPE_ID, 0);
+        builder.define(SOUL_EATING, false);
+        builder.define(CONCENTRATE, true);
+        builder.define(CENTER, true);
+        builder.define(DATA_EXTRA_DAMAGE, 0.0F);
     }
 
     public int getAnimation() {

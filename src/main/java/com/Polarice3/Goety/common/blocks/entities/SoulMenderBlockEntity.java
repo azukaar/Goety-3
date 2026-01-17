@@ -38,8 +38,8 @@ public class SoulMenderBlockEntity extends ModBlockEntity implements Clearable, 
                 if (flag) {
                     if (!this.itemStack.isEmpty()) {
                         int i = 1;
-                        if (!this.itemStack.getAllEnchantments().isEmpty()) {
-                            i += this.itemStack.getAllEnchantments().size();
+                        if (!net.minecraft.world.item.enchantment.EnchantmentHelper.getEnchantmentsForCrafting(this.itemStack).isEmpty()) {
+                            i += net.minecraft.world.item.enchantment.EnchantmentHelper.getEnchantmentsForCrafting(this.itemStack).size();
                         }
                         if (this.cursedCageTile.getSouls() > (MainConfig.SoulMenderCost.get() * i)) {
                             this.makeWorkParticles();
@@ -56,8 +56,8 @@ public class SoulMenderBlockEntity extends ModBlockEntity implements Clearable, 
         if (this.level != null) {
             if (!this.itemStack.isEmpty()) {
                 int i = 1;
-                if (!this.itemStack.getAllEnchantments().isEmpty()) {
-                    i += this.itemStack.getAllEnchantments().size();
+                if (!net.minecraft.world.item.enchantment.EnchantmentHelper.getEnchantmentsForCrafting(this.itemStack).isEmpty()) {
+                    i += net.minecraft.world.item.enchantment.EnchantmentHelper.getEnchantmentsForCrafting(this.itemStack).size();
                 }
                 if (this.cursedCageTile.getSouls() > (MainConfig.SoulMenderCost.get() * i)) {
                     if (this.itemStack.getItem() instanceof ITotem){
@@ -197,17 +197,21 @@ public class SoulMenderBlockEntity extends ModBlockEntity implements Clearable, 
         return false;
     }
 
-    public void readNetwork(CompoundTag compoundNBT) {
-        this.itemStack = ItemStack.of(compoundNBT.getCompound("Item"));
+    public void readNetwork(CompoundTag compoundNBT, net.minecraft.core.HolderLookup.Provider pRegistries) {
+        if (compoundNBT.contains("Item")) {
+            this.itemStack = ItemStack.parse(pRegistries, compoundNBT.getCompound("Item")).orElse(ItemStack.EMPTY);
+        }
     }
 
-    public CompoundTag writeNetwork(CompoundTag pCompound) {
-        this.saveMetadataAndItems(pCompound);
+    public CompoundTag writeNetwork(CompoundTag pCompound, net.minecraft.core.HolderLookup.Provider pRegistries) {
+        this.saveMetadataAndItems(pCompound, pRegistries);
         return pCompound;
     }
 
-    private CompoundTag saveMetadataAndItems(CompoundTag pCompound) {
-        pCompound.put("Item", this.itemStack.save(new CompoundTag()));
+    private CompoundTag saveMetadataAndItems(CompoundTag pCompound, net.minecraft.core.HolderLookup.Provider pRegistries) {
+        if (!this.itemStack.isEmpty()) {
+            pCompound.put("Item", this.itemStack.save(pRegistries, new CompoundTag()));
+        }
         return pCompound;
     }
 

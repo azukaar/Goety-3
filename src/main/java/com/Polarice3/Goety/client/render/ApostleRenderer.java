@@ -64,13 +64,13 @@ public class ApostleRenderer extends CultistRenderer<Apostle> {
             float f2 = f1 - f;
             float f6 = Mth.lerp(pPartialTicks, pEntity.xRotO, pEntity.getXRot());
             float f71 = this.getBob(pEntity, pPartialTicks);
-            this.setupRotations(pEntity, pMatrixStack, f71, f, pPartialTicks);
+            this.setupRotations(pEntity, pMatrixStack, f71, f, pPartialTicks, 1.0F);
             pMatrixStack.scale(-1.0F, -1.0F, 1.0F);
             this.scale(pEntity, pMatrixStack, pPartialTicks);
             pMatrixStack.translate(0.0D, (double) -1.501F, 0.0D);
             this.model.prepareMobModel(pEntity, 0.0F, 0.0F, pPartialTicks);
             this.model.setupAnim(pEntity, 0.0F, 0.0F, f71, f2, f6);
-            float f8 = MobsConfig.FancierApostleDeath.get() || pEntity.level.dimension() == Level.NETHER ? 300.0F
+            float f8 = MobsConfig.FancierApostleDeath.get() || pEntity.level().dimension() == Level.NETHER ? 300.0F
                     : 30.0F;
             float f9 = (float) pEntity.deathTime / f8;
             VertexConsumer vertexconsumer = pBuffer.getBuffer(RenderType.dragonExplosionAlpha(EXPLODE));
@@ -81,7 +81,7 @@ public class ApostleRenderer extends CultistRenderer<Apostle> {
             this.model.renderToBuffer(pMatrixStack, ivertexbuilder1, pPackedLight, OverlayTexture.pack(0.0F, flag), -1);
             pMatrixStack.popPose();
 
-            if (MobsConfig.FancierApostleDeath.get() || pEntity.level.dimension() == Level.NETHER) {
+            if (MobsConfig.FancierApostleDeath.get() || pEntity.level().dimension() == Level.NETHER) {
                 if (pEntity.deathTime > 20) {
                     float f5 = ((float) pEntity.deathTime + pPartialTicks) / 200.0F;
                     float f7 = Math.min(f5 > 0.8F ? (f5 - 0.8F) / 0.2F : 0.0F, 1.0F);
@@ -119,22 +119,20 @@ public class ApostleRenderer extends CultistRenderer<Apostle> {
     }
 
     private static void vertex01(VertexConsumer p_229061_0_, Matrix4f p_229061_1_, int p_229061_2_) {
-        p_229061_0_.vertex(p_229061_1_, 0.0F, 0.0F, 0.0F).color(255, 255, 255, p_229061_2_).endVertex();
-        p_229061_0_.vertex(p_229061_1_, 0.0F, 0.0F, 0.0F).color(255, 255, 255, p_229061_2_).endVertex();
+        p_229061_0_.addVertex(p_229061_1_, 0.0F, 0.0F, 0.0F).setColor(255, 255, 255, p_229061_2_);
+        p_229061_0_.addVertex(p_229061_1_, 0.0F, 0.0F, 0.0F).setColor(255, 255, 255, p_229061_2_);
     }
 
     private static void vertex2(VertexConsumer p_229060_0_, Matrix4f p_229060_1_, float pY, float p_229060_3_) {
-        p_229060_0_.vertex(p_229060_1_, -HALF_SQRT_3 * p_229060_3_, pY, -0.5F * p_229060_3_).color(255, 0, 0, 0)
-                .endVertex();
+        p_229060_0_.addVertex(p_229060_1_, -HALF_SQRT_3 * p_229060_3_, pY, -0.5F * p_229060_3_).setColor(255, 0, 0, 0);
     }
 
     private static void vertex3(VertexConsumer p_229062_0_, Matrix4f p_229062_1_, float pY, float p_229062_3_) {
-        p_229062_0_.vertex(p_229062_1_, HALF_SQRT_3 * p_229062_3_, pY, -0.5F * p_229062_3_).color(255, 0, 0, 0)
-                .endVertex();
+        p_229062_0_.addVertex(p_229062_1_, HALF_SQRT_3 * p_229062_3_, pY, -0.5F * p_229062_3_).setColor(255, 0, 0, 0);
     }
 
     private static void vertex4(VertexConsumer p_229063_0_, Matrix4f p_229063_1_, float pY, float p_229063_3_) {
-        p_229063_0_.vertex(p_229063_1_, 0.0F, pY, 1.0F * p_229063_3_).color(255, 0, 0, 0).endVertex();
+        p_229063_0_.addVertex(p_229063_1_, 0.0F, pY, 1.0F * p_229063_3_).setColor(255, 0, 0, 0);
     }
 
     @Nullable

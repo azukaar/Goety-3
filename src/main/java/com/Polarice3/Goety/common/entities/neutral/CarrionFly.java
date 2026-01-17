@@ -10,10 +10,17 @@ import com.Polarice3.Goety.utils.BlockFinder;
 import com.Polarice3.Goety.utils.MobUtil;
 import com.Polarice3.Goety.utils.ServerParticleUtil;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.syncher.EntityDataAccessor;
+import net.minecraft.network.syncher.EntityDataSerializers;
+import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.util.Mth;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.InteractionHand;
@@ -25,10 +32,15 @@ import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.control.FlyingMoveControl;
 import net.minecraft.world.entity.ai.goal.FloatGoal;
+import net.minecraft.world.entity.ai.goal.FollowOwnerGoal;
 import net.minecraft.world.entity.ai.goal.LookAtPlayerGoal;
 import net.minecraft.world.entity.ai.goal.MeleeAttackGoal;
+import net.minecraft.world.entity.ai.goal.RandomStrollGoal;
+import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
+import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
 import net.minecraft.world.entity.ai.navigation.FlyingPathNavigation;
 import net.minecraft.world.entity.ai.navigation.PathNavigation;
+import net.minecraft.world.entity.monster.Enemy;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.food.FoodProperties;
@@ -37,11 +49,14 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.ServerLevelAccessor;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.gameevent.GameEvent;
+import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class CarrionFly extends Summoned {
+    private static final EntityDataAccessor<Boolean> NECRO = SynchedEntityData.defineId(CarrionFly.class, EntityDataSerializers.BOOLEAN);
 
     public CarrionFly(EntityType<? extends Owned> type, Level worldIn) {
         super(type, worldIn);
@@ -52,7 +67,7 @@ public class CarrionFly extends Summoned {
     protected void registerGoals() {
         super.registerGoals();
         this.goalSelector.addGoal(4, new MeleeAttackGoal(this, 1.5D, false));
-        this.goalSelector.addGoal(8, new WanderGoal<>(this, 1.0D, 10, 0.0F));
+        this.goalSelector.addGoal(8, new RandomStrollGoal(this, 1.0D, 10, 0.0F));
         this.goalSelector.addGoal(9, new FloatGoal(this));
         this.goalSelector.addGoal(9, new LookAtPlayerGoal(this, Player.class, 3.0F, 1.0F));
         this.goalSelector.addGoal(10, new LookAtPlayerGoal(this, Mob.class, 8.0F));
@@ -98,8 +113,21 @@ public class CarrionFly extends Summoned {
         return flyingpathnavigation;
     }
 
-    public @NotNull MobType getMobType() {
+    public MobType getMobType() {
         return MobType.ARTHROPOD;
+    }
+
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(NECRO, false);
+    }
+
+    public void setNecro(boolean necro) {
+        this.entityData.set(NECRO, necro);
+    }
+
+    public boolean isNecro() {
+        return this.entityData.get(NECRO);
     }
 
     public boolean causeFallDamage(float p_225503_1_, float p_225503_2_, @NotNull DamageSource damageSource) {
@@ -125,11 +153,13 @@ public class CarrionFly extends Summoned {
 
     @Nullable
     @Override
-    public SpawnGroupData finalizeSpawn(ServerLevelAccessor pLevel, DifficultyInstance pDifficulty, MobSpawnType pReason, @Nullable SpawnGroupData pSpawnData, @Nullable CompoundTag pDataTag) {
-        if (pReason == MobSpawnType.SPAWN_EGG){
-            this.setHostile(true);
+    public SpawnGroupData finalizeSpawn(ServerLevelAccessor pLevel, DifficultyInstance pDifficulty, MobSpawnType pReason, @Nullable SpawnGroupData pSpawnData) {
+        if (pReason == MobSpawnType.STRUCTURE){
+            if (pLevel.getRandom().nextFloat() <= 0.15F){
+                this.setNecro(true);
+            }
         }
-        return super.finalizeSpawn(pLevel, pDifficulty, pReason, pSpawnData, pDataTag);
+        return super.finalizeSpawn(pLevel, pDifficulty, pReason, pSpawnData);
     }
 
     public boolean isNoGravity() {
@@ -143,16 +173,19 @@ public class CarrionFly extends Summoned {
     @Override
     public void tick() {
         super.tick();
-        if (this.level.getDifficulty() == Difficulty.HARD){
-            if (this.getTarget() != null && this.getTarget().isAlive()){
-                this.noPhysics = true;
+        if (this.level().isClientSide) {
+            if (this.isNecro()) {
+                if (this.level().random.nextInt(12) == 0) {
+                    this.level().addParticle(ModParticleTypes.NECRO_EFFECT.get(), this.getRandomX(0.2D), this.getRandomY(), this.getRandomZ(0.2D), 0.0D, 0.0D, 0.0D);
+                }
             }
-        }
-        if (!this.level.isClientSide) {
-            if (this.getTrueOwner() != null) {
-                if (this.getTrueOwner() instanceof Mob mobOwner) {
-                    if (mobOwner.isRemoved() || mobOwner.isDeadOrDying()) {
-                        this.lifeSpanDamage();
+        } else {
+            if (this.getTrueOwner() != null){
+                if (this.getTrueOwner() instanceof Player player){
+                    if (!player.isCreative() && !player.isSpectator()){
+                        this.level().broadcastEntityEvent(this, (byte) 20);
+                    } else {
+                        this.level().broadcastEntityEvent(this, (byte) 21);
                     }
                 }
             }
@@ -161,9 +194,9 @@ public class CarrionFly extends Summoned {
 
     @Override
     public void lifeSpanDamage() {
-        if (!this.level.isClientSide){
-            for(int i = 0; i < this.level.random.nextInt(10) + 10; ++i) {
-                ServerParticleUtil.smokeParticles(ParticleTypes.SMOKE, this.getX(), this.getEyeY(), this.getZ(), this.level);
+        if (!this.level().isClientSide){
+            for(int i = 0; i < this.level().random.nextInt(10) + 10; ++i) {
+                ServerParticleUtil.smokeParticles(ParticleTypes.SMOKE, this.getX(), this.getEyeY(), this.getZ(), this.level());
             }
         }
         this.discard();
@@ -194,19 +227,19 @@ public class CarrionFly extends Summoned {
     @Override
     public void uncreditedKill(LivingEntity target) {
         if (!MobUtil.areAllies(this, target)) {
-            int total = this.level.getEntitiesOfClass(CarrionMaggot.class, this.getBoundingBox().inflate(16.0F), maggot -> MobUtil.areAllies(this, maggot)).size();
+            int total = this.level().getEntitiesOfClass(CarrionMaggot.class, this.getBoundingBox().inflate(16.0F), maggot -> MobUtil.areAllies(this, maggot)).size();
             if (total < SpellConfig.CarrionLimit.get()) {
                 int random = this.getRandom().nextIntBetweenInclusive(1, 3);
                 if (target.getMaxHealth() < 20.0F) {
                     random = 1;
                 }
                 for (int i = 0; i < random; ++i) {
-                    CarrionMaggot carrionMaggot = new CarrionMaggot(ModEntityType.CARRION_MAGGOT.get(), this.level);
+                    CarrionMaggot carrionMaggot = new CarrionMaggot(ModEntityType.CARRION_MAGGOT.get(), this.level());
                     carrionMaggot.setTrueOwner(this.getTrueOwner() != null ? this.getTrueOwner() : this);
-                    BlockPos blockPos = BlockFinder.SummonRadius(target.blockPosition(), carrionMaggot, this.level, 3);
+                    BlockPos blockPos = BlockFinder.SummonRadius(target.blockPosition(), carrionMaggot, this.level(), 3);
                     carrionMaggot.moveTo(blockPos.getCenter());
-                    if (this.level instanceof ServerLevel serverLevel) {
-                        carrionMaggot.finalizeSpawn(serverLevel, serverLevel.getCurrentDifficultyAt(carrionMaggot.blockPosition()), MobSpawnType.BREEDING, null, null);
+                    if (this.level() instanceof ServerLevel serverLevel) {
+                        carrionMaggot.finalizeSpawn(serverLevel, serverLevel.getCurrentDifficultyAt(carrionMaggot.blockPosition()), MobSpawnType.BREEDING, null);
                     }
                     carrionMaggot.setNatural(this.isNatural());
                     carrionMaggot.setHostile(this.isHostile());
@@ -214,7 +247,7 @@ public class CarrionFly extends Summoned {
                     if (this.isLimitedLife()) {
                         carrionMaggot.setLimitedLife(this.getLifespan());
                     }
-                    this.level.addFreshEntity(carrionMaggot);
+                    this.level().addFreshEntity(carrionMaggot);
                 }
             }
         }
@@ -223,7 +256,7 @@ public class CarrionFly extends Summoned {
     @Override
     public boolean doHurtTarget(float amount, Entity target) {
         if (target instanceof LivingEntity livingTarget) {
-            if (livingTarget.getMobType() == MobType.UNDEAD) {
+            if (livingTarget.getType().is(net.minecraft.tags.EntityTypeTags.UNDEAD)) {
                 amount *= 2;
             }
         }
@@ -231,24 +264,23 @@ public class CarrionFly extends Summoned {
     }
 
     public boolean isFood(ItemStack p_30440_) {
-        Item item = p_30440_.getItem();
-        return item.isEdible() && p_30440_.getFoodProperties(this).isMeat();
+        return p_30440_.has(DataComponents.FOOD);
     }
 
     public InteractionResult mobInteract(Player pPlayer, InteractionHand pHand) {
         ItemStack itemstack = pPlayer.getItemInHand(pHand);
         if (this.getTrueOwner() != null && pPlayer == this.getTrueOwner()) {
             if (this.isFood(itemstack) && this.getHealth() < this.getMaxHealth()) {
-                FoodProperties foodProperties = itemstack.getFoodProperties(this);
-                if (foodProperties != null){
-                    this.heal((float)foodProperties.getNutrition());
+                FoodProperties foodProperties = itemstack.get(DataComponents.FOOD);
+                if (foodProperties != null) {
+                    this.heal((float) foodProperties.nutrition());
                     if (!pPlayer.getAbilities().instabuild) {
                         itemstack.shrink(1);
                     }
 
                     this.gameEvent(GameEvent.EAT, this);
-                    this.eat(this.level, itemstack);
-                    if (this.level instanceof ServerLevel serverLevel) {
+                    this.eat(this.level(), itemstack);
+                    if (this.level() instanceof ServerLevel serverLevel) {
                         for (int i = 0; i < 7; ++i) {
                             double d0 = this.random.nextGaussian() * 0.02D;
                             double d1 = this.random.nextGaussian() * 0.02D;

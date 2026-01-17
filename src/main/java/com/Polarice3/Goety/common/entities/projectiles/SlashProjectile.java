@@ -56,8 +56,9 @@ public abstract class SlashProjectile extends Projectile implements ISpellEntity
     }
 
     @Override
-    protected void defineSynchedData() {
-        this.getEntityData().define(DATA_RADIUS, 0.5F);
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(DATA_RADIUS, 0.5F);
     }
 
     @Override

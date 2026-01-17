@@ -71,9 +71,9 @@ public class BoundIceologer extends AbstractBoundIllager{
         MobUtil.setBaseAttributes(this.getAttribute(Attributes.FOLLOW_RANGE), AttributesConfig.BoundIceologerFollowRange.get());
     }
 
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.entityData.define(ANIM_STATE, 0);
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(ANIM_STATE, 0);
     }
 
     public void addAdditionalSaveData(CompoundTag compound) {
@@ -127,7 +127,7 @@ public class BoundIceologer extends AbstractBoundIllager{
 
     public void onSyncedDataUpdated(EntityDataAccessor<?> accessor) {
         if (ANIM_STATE.equals(accessor)) {
-            if (this.level.isClientSide){
+            if (this.level().isClientSide){
                 switch (this.entityData.get(ANIM_STATE)){
                     case 0:
                         break;
@@ -173,13 +173,13 @@ public class BoundIceologer extends AbstractBoundIllager{
     @Override
     public void tick() {
         super.tick();
-        if (this.level.isClientSide){
+        if (this.level().isClientSide){
             this.idleAnimationState.animateWhen(this.getCurrentAnimation() != this.getAnimationState("attack") && !this.walkAnimation.isMoving(), this.tickCount);
             for(int i = 0; i < 2; ++i) {
-                this.level.addParticle(ParticleTypes.CLOUD, this.getRandomX(0.5D), this.getY() + 0.5D, this.getRandomZ(0.5D), (0.5D - this.random.nextDouble()) * 0.15D, 0.01F, (0.5D - this.random.nextDouble()) * 0.15D);
+                this.level().addParticle(ParticleTypes.CLOUD, this.getRandomX(0.5D), this.getY() + 0.5D, this.getRandomZ(0.5D), (0.5D - this.random.nextDouble()) * 0.15D, 0.01F, (0.5D - this.random.nextDouble()) * 0.15D);
             }
         }
-        if (!this.level.isClientSide) {
+        if (!this.level().isClientSide) {
             if (this.spellCool > 0) {
                 --this.spellCool;
             }

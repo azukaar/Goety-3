@@ -53,16 +53,16 @@ public class VoidVaultBlockEntity extends BlockEntity {
     }
 
     @Override
-    protected void saveAdditional(CompoundTag compoundTag) {
-        super.saveAdditional(compoundTag);
+    protected void saveAdditional(CompoundTag compoundTag, net.minecraft.core.HolderLookup.Provider pRegistries) {
+        super.saveAdditional(compoundTag, pRegistries);
         compoundTag.put("config", encodeValue(VoidVaultConfig.CODEC, this.config));
         compoundTag.put("shared_data", encodeValue(VoidVaultSharedData.CODEC, this.sharedData));
         compoundTag.put("server_data", encodeValue(VoidVaultServerData.CODEC, this.serverData));
     }
 
     @Override
-    public void load(CompoundTag compoundTag) {
-        super.load(compoundTag);
+    public void loadAdditional(CompoundTag compoundTag, net.minecraft.core.HolderLookup.Provider pRegistries) {
+        super.loadAdditional(compoundTag, pRegistries);
         if (compoundTag.contains("server_data")) {
             VoidVaultServerData.CODEC.parse(NbtOps.INSTANCE, compoundTag.get("server_data")).resultOrPartial(LOGGER::error).ifPresent(this.serverData::copyFrom);
         }
@@ -77,7 +77,7 @@ public class VoidVaultBlockEntity extends BlockEntity {
     }
 
     private static <T> Tag encodeValue(Codec<T> codec, T value) {
-        return Util.getOrThrow(codec.encodeStart(NbtOps.INSTANCE, value), IllegalStateException::new);
+        return codec.encodeStart(NbtOps.INSTANCE, value).getOrThrow(IllegalStateException::new);
     }
 
     @Nullable
@@ -103,7 +103,7 @@ public class VoidVaultBlockEntity extends BlockEntity {
     }
 
     @Override
-    public CompoundTag getUpdateTag() {
+    public CompoundTag getUpdateTag(net.minecraft.core.HolderLookup.Provider pRegistries) {
         return Util.make(new CompoundTag(), nbt -> nbt.put("shared_data", encodeValue(VoidVaultSharedData.CODEC, this.sharedData)));
     }
 
@@ -302,7 +302,7 @@ public class VoidVaultBlockEntity extends BlockEntity {
         }
 
         private static ItemStack generateDisplayItem(ServerLevel world, BlockPos pos, ResourceLocation lootTable) {
-            LootTable lootTable2 = world.getServer().getLootData().getLootTable(lootTable);
+            LootTable lootTable2 = world.getServer().reloadableRegistries().getLootTable(net.minecraft.resources.ResourceKey.create(net.minecraft.core.registries.Registries.LOOT_TABLE, lootTable));
             LootParams.Builder lootContextParameterSet = new LootParams.Builder(world).withParameter(LootContextParams.ORIGIN, Vec3.atCenterOf(pos));
             LootParams lootParams = lootContextParameterSet.create(LootContextParamSets.CHEST);
             List<ItemStack> list = lootTable2.getRandomItems(lootParams);
@@ -317,7 +317,7 @@ public class VoidVaultBlockEntity extends BlockEntity {
         }
 
         private static List<ItemStack> generateLoot(ServerLevel world, VoidVaultConfig config, BlockPos pos, Player player) {
-            LootTable lootTable = world.getServer().getLootData().getLootTable(config.lootTable());
+            LootTable lootTable = world.getServer().reloadableRegistries().getLootTable(net.minecraft.resources.ResourceKey.create(net.minecraft.core.registries.Registries.LOOT_TABLE, config.lootTable()));
             LootParams.Builder lootContextParameterSet = new LootParams.Builder(world)
                     .withParameter(LootContextParams.ORIGIN, Vec3.atCenterOf(pos))
                     .withLuck(player.getLuck())
@@ -331,7 +331,7 @@ public class VoidVaultBlockEntity extends BlockEntity {
         }
 
         private static boolean isValidKey(VoidVaultConfig config, ItemStack stack) {
-            return ItemStack.isSameItemSameTags(stack, config.keyItem()) && stack.getCount() >= config.keyItem().getCount();
+            return ItemStack.isSameItemSameComponents(stack, config.keyItem()) && stack.getCount() >= config.keyItem().getCount();
         }
 
         private static boolean shouldUpdateDisplayItem(long time, VoidVaultState state) {

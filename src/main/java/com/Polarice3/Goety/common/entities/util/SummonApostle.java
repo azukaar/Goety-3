@@ -22,6 +22,8 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.material.PushReaction;
 
+import net.minecraft.network.syncher.SynchedEntityData;
+
 public class SummonApostle extends Entity {
     public SummonApostle(EntityType<?> entityTypeIn, Level worldIn) {
         super(entityTypeIn, worldIn);
@@ -29,8 +31,8 @@ public class SummonApostle extends Entity {
     }
 
     @Override
-    protected void defineSynchedData() {
-
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
     }
 
     @Override

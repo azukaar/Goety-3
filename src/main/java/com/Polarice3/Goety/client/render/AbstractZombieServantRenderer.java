@@ -11,7 +11,7 @@ import net.minecraft.resources.ResourceLocation;
 
 public abstract class AbstractZombieServantRenderer<T extends ZombieServant, M extends ZombieServantModel<T>> extends HumanoidMobRenderer<T, M> {
    protected static final ResourceLocation TEXTURE = Goety.location("textures/entity/servants/zombie/zombie_servant.png");
-   private static final ResourceLocation ZOMBIE_LOCATION = new ResourceLocation("textures/entity/zombie/zombie.png");
+   private static final ResourceLocation ZOMBIE_LOCATION = ResourceLocation.withDefaultNamespace("textures/entity/zombie/zombie.png");
 
    protected AbstractZombieServantRenderer(EntityRendererProvider.Context p_173910_, M p_173911_, M p_173912_, M p_173913_) {
       super(p_173910_, p_173911_, 0.5F);

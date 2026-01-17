@@ -28,13 +28,19 @@ public abstract class SpellHurtingProjectile extends WaterHurtingProjectile {
         super(p_36817_, p_36818_, p_36819_, p_36820_, p_36821_, p_36822_, p_36823_, p_36824_);
     }
 
-    public SpellHurtingProjectile(EntityType<? extends AbstractHurtingProjectile> p_36826_, LivingEntity p_36827_, double p_36828_, double p_36829_, double p_36830_, Level p_36831_) {
-        super(p_36826_, p_36827_, p_36828_, p_36829_, p_36830_, p_36831_);
+    public SpellHurtingProjectile(EntityType<? extends SpellHurtingProjectile> p_36826_, double p_36827_, double p_36828_, double p_36829_, double p_36830_, double p_36831_, Level p_36832_) {
+        super(p_36826_, p_36827_, p_36828_, p_36829_, p_36830_, p_36831_, p_36832_);
     }
 
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.entityData.define(DATA_EXTRA_DAMAGE, 0.0F);
+    public SpellHurtingProjectile(EntityType<? extends WaterHurtingProjectile> p_36826_, LivingEntity p_36827_, double p_36828_, double p_36829_, double p_36830_, Level p_36831_) {
+        super(p_36826_, p_36827_.getX(), p_36827_.getY(), p_36827_.getZ(), new net.minecraft.world.phys.Vec3(p_36828_, p_36829_, p_36830_), p_36831_);
+        this.setOwner(p_36827_);
+        this.setGeneric(false);
+    }
+
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(DATA_EXTRA_DAMAGE, 0.0F);
     }
 
     public void readAdditionalSaveData(CompoundTag compound) {

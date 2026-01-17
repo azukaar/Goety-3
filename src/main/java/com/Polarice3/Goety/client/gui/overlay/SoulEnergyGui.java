@@ -51,9 +51,9 @@ public class SoulEnergyGui {
             SoulEnergy = SEHelper.getSESouls(minecraft.player);
             SoulEnergyTotal = MainConfig.MaxArcaSouls.get();
         } else if (!stack.isEmpty()) {
-            CompoundTag tag = stack.get(DataComponents.CUSTOM_DATA);
-            if (tag != null) {
-                SoulEnergy = ITotem.currentSouls(stack);
+            net.minecraft.world.item.component.CustomData tag = stack.get(net.minecraft.core.component.DataComponents.CUSTOM_DATA);
+            if (tag != null && tag.contains(ITotem.SOULS_AMOUNT)) {
+                SoulEnergy = tag.copyTag().getInt(ITotem.SOULS_AMOUNT);
                 if (tag.contains(ITotem.MAX_SOUL_AMOUNT)) {
                     SoulEnergyTotal = ITotem.maximumSouls(stack);
                 }

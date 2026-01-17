@@ -45,21 +45,21 @@ public abstract class SpellThrowableProjectile extends SpellTargetProjectile {
       boolean flag = false;
       if (hitresult.getType() == HitResult.Type.BLOCK) {
          BlockPos blockpos = ((BlockHitResult)hitresult).getBlockPos();
-         BlockState blockstate = this.level.getBlockState(blockpos);
+         BlockState blockstate = this.level().getBlockState(blockpos);
          if (blockstate.is(Blocks.NETHER_PORTAL)) {
-            this.handleInsidePortal(blockpos);
+            //this.handleInsidePortal(blockpos);
             flag = true;
          } else if (blockstate.is(Blocks.END_GATEWAY)) {
-            BlockEntity blockentity = this.level.getBlockEntity(blockpos);
-            if (blockentity instanceof TheEndGatewayBlockEntity && TheEndGatewayBlockEntity.canEntityTeleport(this)) {
-               TheEndGatewayBlockEntity.teleportEntity(this.level, blockpos, blockstate, this, (TheEndGatewayBlockEntity)blockentity);
-            }
+            BlockEntity blockentity = this.level().getBlockEntity(blockpos);
+            /*if (blockentity instanceof TheEndGatewayBlockEntity && TheEndGatewayBlockEntity.canEntityTeleport(this)) {
+               TheEndGatewayBlockEntity.teleportEntity(this.level(), blockpos, blockstate, this, (TheEndGatewayBlockEntity)blockentity);
+            }*/
 
             flag = true;
          }
       }
 
-      if (hitresult.getType() != HitResult.Type.MISS && !flag && !net.neoforged.event.EventFactory.onProjectileImpact(this, hitresult)) {
+      if (hitresult.getType() != HitResult.Type.MISS && !flag && !net.neoforged.neoforge.event.EventHooks.onProjectileImpact(this, hitresult)) {
          this.onHit(hitresult);
       }
 
@@ -73,7 +73,7 @@ public abstract class SpellThrowableProjectile extends SpellTargetProjectile {
       if (this.isInWater()) {
          for(int i = 0; i < 4; ++i) {
             float f1 = 0.25F;
-            this.level.addParticle(ParticleTypes.BUBBLE, d2 - vec3.x * 0.25D, d0 - vec3.y * 0.25D, d1 - vec3.z * 0.25D, vec3.x, vec3.y, vec3.z);
+            this.level().addParticle(ParticleTypes.BUBBLE, d2 - vec3.x * 0.25D, d0 - vec3.y * 0.25D, d1 - vec3.z * 0.25D, vec3.x, vec3.y, vec3.z);
          }
 
          f = 0.8F;
@@ -90,7 +90,7 @@ public abstract class SpellThrowableProjectile extends SpellTargetProjectile {
       this.setPos(d2, d0, d1);
    }
 
-   protected float getGravity() {
+   protected double getDefaultGravity() {
       return 0.03F;
    }
 }

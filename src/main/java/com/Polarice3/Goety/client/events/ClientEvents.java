@@ -690,9 +690,9 @@ public class ClientEvents {
                 ItemStack stack = player.getMainHandItem();
                 Map<BlockPos, ColorUtil> renderCubes = new HashMap<>();
                 if (stack.getItem() instanceof WaystoneItem) {
-                    CompoundTag tag = stack.get(DataComponents.CUSTOM_DATA);
-                    if (tag != null) {
-                        GlobalPos loc = WaystoneItem.getPosition(tag);
+                    net.minecraft.world.item.component.CustomData tag = stack.get(net.minecraft.core.component.DataComponents.CUSTOM_DATA);
+                    if (tag != null && tag.contains("Display")) {
+                        GlobalPos loc = WaystoneItem.getPosition(tag.copyTag());
                         if (loc != null) {
                             if (loc.dimension() == world.dimension()) {
                                 renderCubes.put(loc.pos(), new ColorUtil(ChatFormatting.GOLD));

@@ -111,11 +111,12 @@ public class Whisperer extends Summoned {
         MobUtil.setBaseAttributes(this.getAttribute(Attributes.ATTACK_DAMAGE), AttributesConfig.WhispererDamage.get());
     }
 
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.entityData.define(DATA_FLAGS_ID, (byte) 0);
-        this.entityData.define(ANIM_STATE, 0);
-        this.getEntityData().define(DATA_WAVE_CONVERSION_ID, false);
+    @Override
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(DATA_FLAGS_ID, (byte) 0);
+        builder.define(ANIM_STATE, 0);
+        builder.define(DATA_WAVE_CONVERSION_ID, false);
     }
 
     protected void dropFromLootTable(DamageSource p_21021_, boolean p_21022_) {

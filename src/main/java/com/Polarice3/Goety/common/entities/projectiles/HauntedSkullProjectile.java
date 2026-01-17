@@ -51,9 +51,9 @@ public class HauntedSkullProjectile extends ExplosiveProjectile {
         super(ModEntityType.HAUNTED_SKULL_SHOT.get(), p_i50168_2_, p_i50168_3_, p_i50168_5_, p_i50168_7_, p_i50168_9_);
     }
 
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.entityData.define(DATA_TYPE_ID, 9);
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(DATA_TYPE_ID, 9);
     }
 
     public ResourceLocation getResourceLocation() {

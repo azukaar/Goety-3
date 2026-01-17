@@ -38,7 +38,7 @@ public class PoisonBoltRenderer extends EntityRenderer<PoisonBolt> {
       float f1 = Mth.lerp(partialTicks, entityIn.xRotO, entityIn.getXRot());
       VertexConsumer vertexconsumer = bufferIn.getBuffer(RenderType.eyes(this.getTextureLocation(entityIn)));
       this.model.setupAnim(0.0F, f, f1);
-      this.model.renderToBuffer(matrixStackIn, vertexconsumer, 15728640, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 0.5F);
+      this.model.renderToBuffer(matrixStackIn, vertexconsumer, 15728640, OverlayTexture.NO_OVERLAY, net.minecraft.util.FastColor.ARGB32.color(128, 255, 255, 255));
       matrixStackIn.popPose();
       if (entityIn.hasTrail()) {
          double x = Mth.lerp(partialTicks, entityIn.xOld, entityIn.getX());

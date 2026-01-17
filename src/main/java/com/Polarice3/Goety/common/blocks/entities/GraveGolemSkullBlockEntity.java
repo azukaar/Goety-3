@@ -11,6 +11,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.entity.SkullBlockEntity;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.world.level.block.state.BlockState;
 
 import javax.annotation.Nullable;
@@ -30,18 +31,18 @@ public class GraveGolemSkullBlockEntity extends SkullBlockEntity {
     }
 
     @Override
-    public CompoundTag getUpdateTag() {
-        return this.writeNetwork(super.getUpdateTag());
+    public CompoundTag getUpdateTag(HolderLookup.Provider pRegistries) {
+        return this.writeNetwork(super.getUpdateTag(pRegistries), pRegistries);
     }
 
-    public void load(CompoundTag nbt) {
-        this.readNetwork(nbt);
-        super.load(nbt);
+    public void loadAdditional(CompoundTag nbt, HolderLookup.Provider pRegistries) {
+        this.readNetwork(nbt, pRegistries);
+        super.loadAdditional(nbt, pRegistries);
     }
 
-    public void saveAdditional(CompoundTag compound) {
-        this.writeNetwork(compound);
-        super.saveAdditional(compound);
+    public void saveAdditional(CompoundTag compound, HolderLookup.Provider pRegistries) {
+        this.writeNetwork(compound, pRegistries);
+        super.saveAdditional(compound, pRegistries);
     }
 
     @Nullable
@@ -58,7 +59,7 @@ public class GraveGolemSkullBlockEntity extends SkullBlockEntity {
         return this.customName;
     }
 
-    public void readNetwork(CompoundTag tag) {
+    public void readNetwork(CompoundTag tag, HolderLookup.Provider pRegistries) {
         UUID uuid;
         if (tag.hasUUID("Owner")) {
             uuid = tag.getUUID("Owner");
@@ -77,7 +78,7 @@ public class GraveGolemSkullBlockEntity extends SkullBlockEntity {
         }
     }
 
-    public CompoundTag writeNetwork(CompoundTag tag) {
+    public CompoundTag writeNetwork(CompoundTag tag, HolderLookup.Provider pRegistries) {
         if (this.getOwnerId() != null) {
             tag.putUUID("Owner", this.getOwnerId());
         }
@@ -119,15 +120,15 @@ public class GraveGolemSkullBlockEntity extends SkullBlockEntity {
     }
 
     @Override
-    public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt) {
+    public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt, HolderLookup.Provider pRegistries) {
         if (pkt.getTag() != null) {
-            this.readNetwork(pkt.getTag());
+            this.readNetwork(pkt.getTag(), pRegistries);
         }
     }
 
     @Override
-    public void handleUpdateTag(CompoundTag tag) {
-        super.load(tag);
-        this.readNetwork(tag);
+    public void handleUpdateTag(CompoundTag tag, HolderLookup.Provider pRegistries) {
+        super.loadAdditional(tag, pRegistries);
+        this.readNetwork(tag, pRegistries);
     }
 }

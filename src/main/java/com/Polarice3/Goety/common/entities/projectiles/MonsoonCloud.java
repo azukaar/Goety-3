@@ -53,9 +53,10 @@ public class MonsoonCloud extends AbstractSpellCloud{
         this.playSound(SoundEvents.LIGHTNING_BOLT_THUNDER, 0.5F, 1.25F);
     }
 
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.entityData.define(DATA_COLOR, 0xb1ebdc);
+    @Override
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(DATA_COLOR, 0xb1ebdc);
     }
 
     @Override

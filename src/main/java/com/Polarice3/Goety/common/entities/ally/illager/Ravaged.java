@@ -92,10 +92,10 @@ public class Ravaged extends RaiderServant {
                 .add(Attributes.ARMOR, 2.0D);
     }
 
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.entityData.define(ID_SIZE, 0);
-        this.getEntityData().define(DATA_CONVERSION_ID, false);
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(ID_SIZE, 0);
+        builder.define(DATA_CONVERSION_ID, false);
     }
 
     public void setRavagedSize(int p_33109_) {

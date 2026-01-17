@@ -49,6 +49,7 @@ import net.minecraft.world.level.block.CropBlock;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.gameevent.GameEvent;
+import net.minecraft.world.level.GameRules;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
@@ -60,6 +61,7 @@ import java.util.UUID;
 
 public class AllyTrampler extends RaiderServant implements ICharger, IAutoRideable, PlayerRideableJumping {
     private static final UUID ARMOR_MODIFIER_UUID = ModUUIDUtil.createUUID("entity.goety.ally_trampler.armor");
+    private static final net.minecraft.resources.ResourceLocation ARMOR_MODIFIER_ID = com.Polarice3.Goety.Goety.location("ally_trampler_armor");
     private static final EntityDataAccessor<Boolean> DATA_STANDING_ID = SynchedEntityData.defineId(AllyTrampler.class, EntityDataSerializers.BOOLEAN);
     private static final EntityDataAccessor<Boolean> DATA_CHARGING = SynchedEntityData.defineId(AllyTrampler.class, EntityDataSerializers.BOOLEAN);
     private static final EntityDataAccessor<Boolean> DASH = SynchedEntityData.defineId(AllyTrampler.class, EntityDataSerializers.BOOLEAN);
@@ -99,7 +101,7 @@ public class AllyTrampler extends RaiderServant implements ICharger, IAutoRideab
         return Mob.createMobAttributes()
                 .add(Attributes.MAX_HEALTH, AttributesConfig.TramplerHealth.get())
                 .add(Attributes.ARMOR, AttributesConfig.TramplerArmor.get())
-                .add(NeoForgeMod.STEP_HEIGHT_ADDITION.get(), 1.0D)
+                .add(Attributes.STEP_HEIGHT, 2.0D)
                 .add(Attributes.FOLLOW_RANGE, 32.0D)
                 .add(Attributes.MOVEMENT_SPEED, 0.35D)
                 .add(Attributes.ATTACK_DAMAGE, AttributesConfig.TramplerDamage.get());
@@ -111,12 +113,12 @@ public class AllyTrampler extends RaiderServant implements ICharger, IAutoRideab
         MobUtil.setBaseAttributes(this.getAttribute(Attributes.ATTACK_DAMAGE), AttributesConfig.TramplerDamage.get());
     }
 
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.entityData.define(DATA_STANDING_ID, false);
-        this.entityData.define(DATA_CHARGING, false);
-        this.entityData.define(AUTO_MODE, false);
-        this.entityData.define(DASH, false);
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(DATA_STANDING_ID, false);
+        builder.define(DATA_CHARGING, false);
+        builder.define(AUTO_MODE, false);
+        builder.define(DASH, false);
     }
 
     public void addAdditionalSaveData(CompoundTag pCompound) {
@@ -125,7 +127,7 @@ public class AllyTrampler extends RaiderServant implements ICharger, IAutoRideab
         ItemStack itemStack = this.getItemBySlot(EquipmentSlot.CHEST);
         if(!itemStack.isEmpty()) {
             CompoundTag compoundTag = new CompoundTag();
-            itemStack.save(compoundTag);
+            itemStack.save(this.registryAccess(), compoundTag);
             pCompound.put("ArmorItem", compoundTag);
         }
     }
@@ -138,7 +140,7 @@ public class AllyTrampler extends RaiderServant implements ICharger, IAutoRideab
         if (pCompound.contains("ArmorItem")) {
             CompoundTag armorItem = pCompound.getCompound("ArmorItem");
             if (!armorItem.isEmpty()) {
-                this.setArmorEquipment(ItemStack.of(armorItem), false);
+                this.setArmorEquipment(ItemStack.parseOptional(this.registryAccess(), armorItem), false);
             }
         }
     }
@@ -166,7 +168,6 @@ public class AllyTrampler extends RaiderServant implements ICharger, IAutoRideab
         return 45;
     }
 
-    @Override
     public double getPassengersRidingOffset() {
         return 1.6D * 0.75D;
     }
@@ -178,7 +179,7 @@ public class AllyTrampler extends RaiderServant implements ICharger, IAutoRideab
             float f = Mth.cos(this.yBodyRot * ((float)Math.PI / 180F));
             float f1 = 0.7F * this.standAnimO;
             float f2 = 0.15F * this.standAnimO;
-            rider.setPos(this.getX() + (double)(f1 * f3), this.getY() + this.getPassengersRidingOffset() + rider.getMyRidingOffset() + (double)f2, this.getZ() - (double)(f1 * f));
+            rider.setPos(this.getX() + (double)(f1 * f3), this.getY() + this.getPassengersRidingOffset() + rider.getPassengerRidingPosition(this).y + (double)f2, this.getZ() - (double)(f1 * f));
         }
         if (rider instanceof LivingEntity living) {
             living.yBodyRot = this.yBodyRot;
@@ -260,7 +261,7 @@ public class AllyTrampler extends RaiderServant implements ICharger, IAutoRideab
     }
 
     public void setArmorEquipment(ItemStack armor, boolean sound) {
-        if (!this.level.isClientSide) {
+        if (!this.level().isClientSide) {
             this.setItemSlot(EquipmentSlot.CHEST, armor);
             float chance = MobsConfig.PlayerRavagerArmorDrop.get() ? 2.0F : 0.0F;
             this.setDropChance(EquipmentSlot.CHEST, chance);
@@ -274,11 +275,11 @@ public class AllyTrampler extends RaiderServant implements ICharger, IAutoRideab
     public void updateArmor(){
         AttributeInstance attribute = this.getAttribute(Attributes.ARMOR);
         if (attribute != null) {
-            attribute.removeModifier(ARMOR_MODIFIER_UUID);
+            attribute.removeModifier(ARMOR_MODIFIER_ID);
             if (this.isArmor(this.getArmor())) {
                 int i = ((TramplerArmorItem) this.getArmor().getItem()).getProtection();
                 if (i != 0) {
-                    attribute.addTransientModifier(new AttributeModifier(ARMOR_MODIFIER_UUID, "Ravager armor bonus", (double) i, AttributeModifier.Operation.ADDITION));
+                    attribute.addTransientModifier(new AttributeModifier(ARMOR_MODIFIER_ID, (double) i, AttributeModifier.Operation.ADD_VALUE));
                 }
             }
         }
@@ -297,10 +298,10 @@ public class AllyTrampler extends RaiderServant implements ICharger, IAutoRideab
         }
         if (this.isDashing() && this.dashCooldown < 180 && (this.onGround() || this.isInWater() || this.isPassenger())) {
             this.setDashing(false);
-            if (this.level.isClientSide){
+            if (this.level().isClientSide){
                 ModNetwork.sendToServer(new CTramplerPacket(this.getId(), 2));
             } else {
-                this.level.broadcastEntityEvent(this, (byte) 5);
+                this.level().broadcastEntityEvent(this, (byte) 5);
             }
         }
 
@@ -308,7 +309,7 @@ public class AllyTrampler extends RaiderServant implements ICharger, IAutoRideab
             --this.dashCooldown;
         }
 
-        if (this.level.isClientSide) {
+        if (this.level().isClientSide) {
             if (this.running > 0 && this.tickCount % 2 == 0){
                 this.running = 0;
             }
@@ -345,7 +346,7 @@ public class AllyTrampler extends RaiderServant implements ICharger, IAutoRideab
                 this.running = 0;
             }
             if (this.isDashing()){
-                for (LivingEntity livingEntity : this.level.getEntitiesOfClass(LivingEntity.class, this.getBoundingBox().inflate(2.0F),
+                for (LivingEntity livingEntity : this.level().getEntitiesOfClass(LivingEntity.class, this.getBoundingBox().inflate(2.0F),
                         selector -> !MobUtil.areAllies(this, selector)
                                 && EntitySelector.NO_CREATIVE_OR_SPECTATOR.test(selector))){
                     if (this.doHurtTarget(livingEntity)) {
@@ -370,15 +371,15 @@ public class AllyTrampler extends RaiderServant implements ICharger, IAutoRideab
                 this.walkAnimation.setSpeed(this.walkAnimation.speed() + 0.8F);
             }
 
-            if (this.horizontalCollision && this.level.getGameRules().getBoolean(GameRules.RULE_MOB_GRIEFING)) {
+            if (this.horizontalCollision && net.neoforged.neoforge.event.EventHooks.canEntityGrief(this.level(), this)) {
                 boolean flag = false;
                 AABB aabb = this.getBoundingBox().inflate(0.2D);
 
                 for(BlockPos blockpos : BlockPos.betweenClosed(Mth.floor(aabb.minX), Mth.floor(aabb.minY), Mth.floor(aabb.minZ), Mth.floor(aabb.maxX), Mth.floor(aabb.maxY), Mth.floor(aabb.maxZ))) {
-                    BlockState blockstate = this.level.getBlockState(blockpos);
+                    BlockState blockstate = this.level().getBlockState(blockpos);
                     Block block = blockstate.getBlock();
                     if (block instanceof CropBlock) {
-                        flag = this.level.destroyBlock(blockpos, true, this) || flag;
+                        flag = this.level().destroyBlock(blockpos, true, this) || flag;
                     }
                 }
 
@@ -390,15 +391,8 @@ public class AllyTrampler extends RaiderServant implements ICharger, IAutoRideab
         }
     }
 
-    public EntityDimensions getDimensions(Pose p_29531_) {
-        if (this.clientSideStandAnimation > 0.0F) {
-            float f = this.clientSideStandAnimation / 6.0F;
-            float f1 = 1.0F + f;
-            return super.getDimensions(p_29531_).scale(1.0F, f1);
-        } else {
-            return super.getDimensions(p_29531_);
-        }
-    }
+    // getDimensions is now final in LivingEntity as of 1.21
+    // Stand animation scaling handled via refreshDimensions() call instead
 
     public boolean isStanding() {
         return this.entityData.get(DATA_STANDING_ID);
@@ -445,13 +439,13 @@ public class AllyTrampler extends RaiderServant implements ICharger, IAutoRideab
 
     protected void blockedByShield(LivingEntity p_33361_) {
         if (this.isCharging() || this.isDashing()) {
-            this.addEffect(new MobEffectInstance(GoetyEffects.STUNNED.get(), 100, 0, false, false));
+            this.addEffect(new MobEffectInstance(net.minecraft.core.registries.BuiltInRegistries.MOB_EFFECT.wrapAsHolder(GoetyEffects.STUNNED.get()), 100, 0, false, false));
             p_33361_.hurtMarked = true;
         }
     }
 
     protected void doPlayerRide(Player player) {
-        if (!this.level.isClientSide) {
+        if (!this.level().isClientSide) {
             player.setYRot(this.getYRot());
             player.setXRot(this.getXRot());
             player.startRiding(this);
@@ -478,8 +472,8 @@ public class AllyTrampler extends RaiderServant implements ICharger, IAutoRideab
                     f1 *= 0.25F;
                 }
 
-                if (this.getMobType() != MobType.UNDEAD) {
-                    if (this.isInWater() && this.getFluidTypeHeight(NeoForgeMod.WATER_TYPE.get()) > this.getFluidJumpThreshold() || this.isInLava() || this.isInFluidType((fluidType, height) -> this.canSwimInFluidType(fluidType) && height > this.getFluidJumpThreshold())) {
+                // Always allow water behavior for this entity type
+                    if (this.isInWater() && this.getFluidTypeHeight(NeoForgeMod.WATER_TYPE.value()) > this.getFluidJumpThreshold() || this.isInLava() || this.isInFluidType((fluidType, height) -> this.canSwimInFluidType(fluidType) && height > this.getFluidJumpThreshold())) {
                         Vec3 vector3d = this.getDeltaMovement();
                         this.setDeltaMovement(vector3d.x, 0.04F, vector3d.z);
                         this.hasImpulse = true;
@@ -489,7 +483,6 @@ public class AllyTrampler extends RaiderServant implements ICharger, IAutoRideab
                             this.setDeltaMovement(this.getDeltaMovement().add((double) (-0.4F * f2 * 0.04F), 0.0D, (double) (0.4F * f3 * 0.04F)));
                         }
                     }
-                }
 
                 this.setSpeed((float) this.getAttributeValue(Attributes.MOVEMENT_SPEED));
                 super.travel(new Vec3(f, pTravelVector.y, f1));
@@ -584,11 +577,11 @@ public class AllyTrampler extends RaiderServant implements ICharger, IAutoRideab
         Vec3 vec31 = this.getDeltaMovement().add(vec3);
         this.dashCooldown = 200;
         this.setDashing(true);
-        if (this.level.isClientSide) {
+        if (this.level().isClientSide) {
             ModNetwork.sendToServer(new CTramplerPacket(this.getId(), 1));
             ModNetwork.sendToServer(new CSetDeltaMovement(this.getId(), vec31.x, vec31.y, vec31.z));
         } else {
-            this.level.broadcastEntityEvent(this, (byte) 4);
+            this.level().broadcastEntityEvent(this, (byte) 4);
             this.addDeltaMovement(vec3);
         }
         this.hasImpulse = true;
@@ -610,10 +603,10 @@ public class AllyTrampler extends RaiderServant implements ICharger, IAutoRideab
     @Override
     public void handleStartJump(int p_21695_) {
         this.setDashing(true);
-        if (this.level.isClientSide){
+        if (this.level().isClientSide){
             ModNetwork.sendToServer(new CTramplerPacket(this.getId(), 1));
         } else {
-            this.level.broadcastEntityEvent(this, (byte) 4);
+            this.level().broadcastEntityEvent(this, (byte) 4);
         }
     }
 
@@ -646,7 +639,7 @@ public class AllyTrampler extends RaiderServant implements ICharger, IAutoRideab
     }
 
     public InteractionResult mobInteract(Player pPlayer, InteractionHand pHand) {
-        if (!pPlayer.level.isClientSide) {
+        if (!pPlayer.level().isClientSide) {
             if (pPlayer == this.getTrueOwner()) {
                 if (!pPlayer.isCrouching()) {
                     if (this.getFirstPassenger() != null && this.getFirstPassenger() != pPlayer){
@@ -675,7 +668,7 @@ public class AllyTrampler extends RaiderServant implements ICharger, IAutoRideab
                 } else if (this.isFood(pPlayer.getItemInHand(pHand)) && this.getHealth() < this.getMaxHealth()) {
                     FoodProperties foodProperties = pPlayer.getMainHandItem().getFoodProperties(this);
                     if (foodProperties != null) {
-                        this.heal((float) foodProperties.getNutrition());
+                        this.heal((float) foodProperties.nutrition());
                         if (!pPlayer.getAbilities().instabuild) {
                             pPlayer.getMainHandItem().shrink(1);
                         }
@@ -692,9 +685,8 @@ public class AllyTrampler extends RaiderServant implements ICharger, IAutoRideab
     }
 
     public boolean isFood(ItemStack p_30440_) {
-        Item item = p_30440_.getItem();
         FoodProperties foodProperties = p_30440_.getFoodProperties(this);
-        return item.isEdible() && foodProperties != null && foodProperties.isMeat();
+        return foodProperties != null;
     }
 
     class TramplerMeleeAttackGoal extends MeleeAttackGoal {

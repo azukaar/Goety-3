@@ -64,12 +64,13 @@ public class PoisonQuill extends Arrow implements ISpellEntity {
         return ModEntityType.POISON_QUILL.get();
     }
 
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.entityData.define(AQUA, false);
-        this.entityData.define(SPEAR, false);
-        this.entityData.define(PIERCE_LEVEL, 0);
-        this.entityData.define(DATA_EXTRA_DAMAGE, 0.0F);
+    @Override
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(AQUA, false);
+        builder.define(SPEAR, false);
+        builder.define(PIERCE_LEVEL, 0);
+        builder.define(DATA_EXTRA_DAMAGE, 0.0F);
     }
 
     public void addAdditionalSaveData(CompoundTag p_36881_) {

@@ -75,7 +75,7 @@ public abstract class HuntingIllagerEntity extends SpellcasterIllager implements
                 }
             }
         }
-        for (LivingEntity entity : this.level.getEntitiesOfClass(LivingEntity.class, this.getBoundingBox().inflate(8.0D), field_213690_b)) {
+        for (LivingEntity entity : this.level().getEntitiesOfClass(LivingEntity.class, this.getBoundingBox().inflate(8.0D), field_213690_b)) {
             if (this.isRider()){
                 if (entity instanceof Raider raider && (raider instanceof Ravager || raider instanceof Trampler)){
                     if (!raider.isVehicle() && !this.isPassenger()){
@@ -86,10 +86,10 @@ public abstract class HuntingIllagerEntity extends SpellcasterIllager implements
         }
     }
 
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.entityData.define(RIDER, false);
-        this.entityData.define(FLAGS, (byte)0);
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(RIDER, false);
+        builder.define(FLAGS, (byte)0);
     }
 
     private boolean getFlag(int mask) {
@@ -135,7 +135,7 @@ public abstract class HuntingIllagerEntity extends SpellcasterIllager implements
         for(int i = 0; i < this.inventory.getContainerSize(); ++i) {
             ItemStack itemstack = this.inventory.getItem(i);
             if (!itemstack.isEmpty()) {
-                listnbt.add(itemstack.save(new CompoundTag()));
+                listnbt.add(itemstack.save(this.registryAccess(), new CompoundTag()));
             }
         }
 
@@ -147,7 +147,7 @@ public abstract class HuntingIllagerEntity extends SpellcasterIllager implements
         ListTag listnbt = pCompound.getList("Inventory", 10);
 
         for(int i = 0; i < listnbt.size(); ++i) {
-            ItemStack itemstack = ItemStack.of(listnbt.getCompound(i));
+            ItemStack itemstack = ItemStack.parse(this.registryAccess(), listnbt.getCompound(i)).orElse(ItemStack.EMPTY);
             if (!itemstack.isEmpty()) {
                 this.inventory.addItem(itemstack);
             }
@@ -211,9 +211,9 @@ public abstract class HuntingIllagerEntity extends SpellcasterIllager implements
                     if (itemstack.getItem() instanceof ITotem){
                         ITotem.increaseSouls(itemstack, MainConfig.IllagerSouls.get());
                     }
-                    ItemEntity itemEntity = new ItemEntity(this.level, this.getX(), this.getY(), this.getZ(), itemstack);
+                    ItemEntity itemEntity = new ItemEntity(this.level(), this.getX(), this.getY(), this.getZ(), itemstack);
                     itemEntity.setDefaultPickUpDelay();
-                    this.level.addFreshEntity(itemEntity);
+                    this.level().addFreshEntity(itemEntity);
                 }
             }
 

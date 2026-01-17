@@ -42,11 +42,11 @@ public class MagicLightningTrap extends AbstractTrap {
         this.setPos(x, y, z);
     }
 
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.getEntityData().define(DATA_RADIUS, 1.5F);
-        this.getEntityData().define(DATA_DAMAGE, SpellConfig.ThunderboltDamage.get().floatValue() * WandUtil.damageMultiply());
-        this.getEntityData().define(DATA_COLOR, 0xb1ebdc);
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(DATA_RADIUS, 1.5F);
+        builder.define(DATA_DAMAGE, SpellConfig.ThunderboltDamage.get().floatValue() * WandUtil.damageMultiply());
+        builder.define(DATA_COLOR, 0xb1ebdc);
     }
 
     @Override

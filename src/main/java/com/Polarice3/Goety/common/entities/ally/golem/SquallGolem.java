@@ -102,7 +102,7 @@ public class SquallGolem extends AbstractGolemServant implements IWindPowered {
                 .add(Attributes.MOVEMENT_SPEED, 0.3D)
                 .add(Attributes.KNOCKBACK_RESISTANCE, 1.0D)
                 .add(Attributes.ATTACK_KNOCKBACK, 1.25D)
-                .add(NeoForgeMod.STEP_HEIGHT_ADDITION.get(), 1.0D)
+                .add(Attributes.STEP_HEIGHT, 1.0D)
                 .add(Attributes.ATTACK_DAMAGE, AttributesConfig.SquallGolemDamage.get())
                 .add(Attributes.FOLLOW_RANGE, AttributesConfig.SquallGolemFollowRange.get());
     }
@@ -114,9 +114,9 @@ public class SquallGolem extends AbstractGolemServant implements IWindPowered {
         MobUtil.setBaseAttributes(this.getAttribute(Attributes.FOLLOW_RANGE), AttributesConfig.SquallGolemFollowRange.get());
     }
 
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.entityData.define(DATA_FLAGS_ID, (byte)0);
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(DATA_FLAGS_ID, (byte)0);
     }
 
     public void addAdditionalSaveData(CompoundTag pCompound) {
@@ -207,7 +207,7 @@ public class SquallGolem extends AbstractGolemServant implements IWindPowered {
     public void setMeleeAttacking(boolean attacking) {
         this.setGolemFlags(1, attacking);
         this.attackTick = 0;
-        this.level.broadcastEntityEvent(this, (byte) 5);
+        this.level().broadcastEntityEvent(this, (byte) 5);
     }
 
     public boolean isStartingUp() {
@@ -272,7 +272,7 @@ public class SquallGolem extends AbstractGolemServant implements IWindPowered {
 
     @Nullable
     @Override
-    public SpawnGroupData finalizeSpawn(ServerLevelAccessor pLevel, DifficultyInstance pDifficulty, MobSpawnType pReason, @Nullable SpawnGroupData pSpawnData, @Nullable CompoundTag pDataTag) {
+    public SpawnGroupData finalizeSpawn(ServerLevelAccessor pLevel, DifficultyInstance pDifficulty, MobSpawnType pReason, @Nullable SpawnGroupData pSpawnData) {
         if (pReason == MobSpawnType.STRUCTURE) {
             this.setActivated(false);
             this.setRequiresPower(true);
@@ -287,7 +287,7 @@ public class SquallGolem extends AbstractGolemServant implements IWindPowered {
         }
         this.setStartingUp(false);
         this.setShuttingDown(false);
-        return super.finalizeSpawn(pLevel, pDifficulty, pReason, pSpawnData, pDataTag);
+        return super.finalizeSpawn(pLevel, pDifficulty, pReason, pSpawnData);
     }
 
     public List<AnimationState> getAnimations(){
@@ -321,7 +321,7 @@ public class SquallGolem extends AbstractGolemServant implements IWindPowered {
         if (this.isDeadOrDying()){
             this.stopAnimations();
         }
-        if (this.level.isClientSide){
+        if (this.level().isClientSide){
             if (this.isAlive()){
                 if (!this.isStartingUp() && !this.isShuttingDown()){
                     if (!this.isActivated()){
@@ -355,7 +355,7 @@ public class SquallGolem extends AbstractGolemServant implements IWindPowered {
                 }
             }
         }
-        if (!this.level.isClientSide) {
+        if (!this.level().isClientSide) {
             if (this.isAlive()){
                 if (this.isStartingUp() || this.isActivated()) {
                     if (this.tickCount % 7 == 0) {
@@ -368,7 +368,7 @@ public class SquallGolem extends AbstractGolemServant implements IWindPowered {
                 }
                 if (this.isProximity()){
                     LivingEntity livingEntity = null;
-                    for (LivingEntity living : this.level.getEntitiesOfClass(LivingEntity.class, this.getBoundingBox()
+                    for (LivingEntity living : this.level().getEntitiesOfClass(LivingEntity.class, this.getBoundingBox()
                             .inflate(6))){
                         if (MobUtil.isOwnedTargetable(this, living) && living.hasLineOfSight(this)){
                             livingEntity = living;
@@ -383,7 +383,7 @@ public class SquallGolem extends AbstractGolemServant implements IWindPowered {
                         --this.activeTime;
                         if (!this.isStartingUp() && !this.isActivated()) {
                             this.setStartingUp(true);
-                            this.level.broadcastEntityEvent(this, (byte) 25);
+                            this.level().broadcastEntityEvent(this, (byte) 25);
                         }
                     } else if (this.getBoundPos() != null && !this.reachedHome){
                         this.setTarget(null);
@@ -404,7 +404,7 @@ public class SquallGolem extends AbstractGolemServant implements IWindPowered {
                         if (!this.isShuttingDown() && this.isActivated()) {
                             this.getNavigation().stop();
                             this.setShuttingDown(true);
-                            this.level.broadcastEntityEvent(this, (byte) 26);
+                            this.level().broadcastEntityEvent(this, (byte) 26);
                         }
                     }
                 }
@@ -418,9 +418,9 @@ public class SquallGolem extends AbstractGolemServant implements IWindPowered {
                     }
                     if (this.startingUpTick >= MathHelper.secondsToTicks(2.6F)){
                         this.setStartingUp(false);
-                        this.level.broadcastEntityEvent(this, (byte) 27);
+                        this.level().broadcastEntityEvent(this, (byte) 27);
                         this.setActivated(true);
-                        this.level.broadcastEntityEvent(this, (byte) 29);
+                        this.level().broadcastEntityEvent(this, (byte) 29);
                         this.startingUpTick = 0;
                     }
                 } else if (this.isShuttingDown() && this.isActivated()){
@@ -432,9 +432,9 @@ public class SquallGolem extends AbstractGolemServant implements IWindPowered {
                     }
                     if (this.shuttingDownTick >= MathHelper.secondsToTicks(3.625F)){
                         this.setShuttingDown(false);
-                        this.level.broadcastEntityEvent(this, (byte) 28);
+                        this.level().broadcastEntityEvent(this, (byte) 28);
                         this.setActivated(false);
-                        this.level.broadcastEntityEvent(this, (byte) 30);
+                        this.level().broadcastEntityEvent(this, (byte) 30);
                         this.shuttingDownTick = 0;
                         this.reachedHome = false;
                     }
@@ -445,22 +445,22 @@ public class SquallGolem extends AbstractGolemServant implements IWindPowered {
                     }
                     if (this.isActivated() && !this.isMeleeAttacking() && !this.isMoving()) {
                         ++this.idleTime;
-                        if (this.level.random.nextFloat() <= 0.05F && this.hurtTime <= 0 && (this.getTarget() == null || this.getTarget().isDeadOrDying()) && !this.isNovelty && this.idleTime >= MathHelper.secondsToTicks(10)) {
+                        if (this.level().random.nextFloat() <= 0.05F && this.hurtTime <= 0 && (this.getTarget() == null || this.getTarget().isDeadOrDying()) && !this.isNovelty && this.idleTime >= MathHelper.secondsToTicks(10)) {
                             this.idleTime = 0;
                             this.isNovelty = true;
-                            this.level.broadcastEntityEvent(this, (byte) 22);
+                            this.level().broadcastEntityEvent(this, (byte) 22);
                         }
                     } else {
                         this.isNovelty = false;
-                        this.level.broadcastEntityEvent(this, (byte) 23);
+                        this.level().broadcastEntityEvent(this, (byte) 23);
                     }
                     if (this.isNovelty){
                         ++noveltyTick;
-                        this.level.broadcastEntityEvent(this, (byte) 24);
+                        this.level().broadcastEntityEvent(this, (byte) 24);
                         if (this.noveltyTick >= 150 || this.getTarget() != null || this.hurtTime > 0){
                             this.isNovelty = false;
                             this.noveltyTick = 0;
-                            this.level.broadcastEntityEvent(this, (byte) 23);
+                            this.level().broadcastEntityEvent(this, (byte) 23);
                         }
                     }
                 }
@@ -552,9 +552,9 @@ public class SquallGolem extends AbstractGolemServant implements IWindPowered {
     }
 
     public boolean doHurtTarget(Entity entityIn) {
-        if (!this.level.isClientSide && !this.isMeleeAttacking()) {
+        if (!this.level().isClientSide && !this.isMeleeAttacking()) {
             this.setMeleeAttacking(true);
-            this.level.broadcastEntityEvent(this, (byte) 17);
+            this.level().broadcastEntityEvent(this, (byte) 17);
         }
         return true;
     }
@@ -598,7 +598,7 @@ public class SquallGolem extends AbstractGolemServant implements IWindPowered {
     }
 
     public @NotNull InteractionResult mobInteract(@NotNull Player pPlayer, @NotNull InteractionHand pHand) {
-        if (!this.level.isClientSide) {
+        if (!this.level().isClientSide) {
             ItemStack itemstack = pPlayer.getItemInHand(pHand);
             Item item = itemstack.getItem();
             if (this.getTrueOwner() != null && pPlayer == this.getTrueOwner()) {
@@ -613,7 +613,7 @@ public class SquallGolem extends AbstractGolemServant implements IWindPowered {
                         this.heal((this.getMaxHealth() / 4.0F) / 8.0F);
                         this.playSound(SoundEvents.IRON_GOLEM_REPAIR, 0.25F, 1.0F);
                     }
-                    if (this.level instanceof ServerLevel serverLevel) {
+                    if (this.level() instanceof ServerLevel serverLevel) {
                         for (int i = 0; i < 7; ++i) {
                             double d0 = this.random.nextGaussian() * 0.02D;
                             double d1 = this.random.nextGaussian() * 0.02D;
@@ -652,7 +652,7 @@ public class SquallGolem extends AbstractGolemServant implements IWindPowered {
         @Override
         public void start() {
             SquallGolem.this.setAggressive(true);
-            SquallGolem.this.level.broadcastEntityEvent(SquallGolem.this, (byte) 19);
+            SquallGolem.this.level().broadcastEntityEvent(SquallGolem.this, (byte) 19);
             this.delayCounter = 0;
         }
 
@@ -660,7 +660,7 @@ public class SquallGolem extends AbstractGolemServant implements IWindPowered {
         public void stop() {
             SquallGolem.this.getNavigation().stop();
             SquallGolem.this.setAggressive(false);
-            SquallGolem.this.level.broadcastEntityEvent(SquallGolem.this, (byte) 31);
+            SquallGolem.this.level().broadcastEntityEvent(SquallGolem.this, (byte) 31);
         }
 
         @Override
@@ -680,7 +680,6 @@ public class SquallGolem extends AbstractGolemServant implements IWindPowered {
             this.checkAndPerformAttack(livingentity, SquallGolem.this.distanceToSqr(livingentity.getX(), livingentity.getY(), livingentity.getZ()));
         }
 
-        @Override
         protected void checkAndPerformAttack(@NotNull LivingEntity enemy, double distToEnemySqr) {
             if (SquallGolem.this.targetClose(enemy, distToEnemySqr)) {
                 SquallGolem.this.doHurtTarget(enemy);
@@ -710,7 +709,7 @@ public class SquallGolem extends AbstractGolemServant implements IWindPowered {
         @Override
         public void start() {
             SquallGolem.this.setMeleeAttacking(true);
-            SquallGolem.this.level.broadcastEntityEvent(SquallGolem.this, (byte) 17);
+            SquallGolem.this.level().broadcastEntityEvent(SquallGolem.this, (byte) 17);
             if (SquallGolem.this.getTarget() != null){
                 MobUtil.instaLook(SquallGolem.this, SquallGolem.this.getTarget());
             }
@@ -720,7 +719,7 @@ public class SquallGolem extends AbstractGolemServant implements IWindPowered {
         @Override
         public void stop() {
             SquallGolem.this.setMeleeAttacking(false);
-            SquallGolem.this.level.broadcastEntityEvent(SquallGolem.this, (byte) 18);
+            SquallGolem.this.level().broadcastEntityEvent(SquallGolem.this, (byte) 18);
         }
 
         @Override
@@ -730,18 +729,18 @@ public class SquallGolem extends AbstractGolemServant implements IWindPowered {
             SquallGolem.this.getNavigation().stop();
             if (SquallGolem.this.attackTick == 1) {
                 SquallGolem.this.playSound(ModSounds.SQUALL_GOLEM_ATTACK.get(), 5.0F, 1.0F);
-                SquallGolem.this.level.broadcastEntityEvent(SquallGolem.this, (byte) 6);
+                SquallGolem.this.level().broadcastEntityEvent(SquallGolem.this, (byte) 6);
             }
             if (SquallGolem.this.attackTick == 15) {
                 AABB aabb = MobUtil.makeAttackRange(SquallGolem.this.getX() + SquallGolem.this.getHorizontalLookAngle().x * 2,
                         SquallGolem.this.getY(),
                         SquallGolem.this.getZ() + SquallGolem.this.getHorizontalLookAngle().z * 2, 5, 3, 5);
-                for (LivingEntity target : SquallGolem.this.level.getEntitiesOfClass(LivingEntity.class, aabb)) {
+                for (LivingEntity target : SquallGolem.this.level().getEntitiesOfClass(LivingEntity.class, aabb)) {
                     if (target != SquallGolem.this && !target.isAlliedTo(SquallGolem.this) && !SquallGolem.this.isAlliedTo(target)) {
                         this.hurtTarget(target);
                     }
                 }
-                if (SquallGolem.this.level instanceof ServerLevel serverLevel){
+                if (SquallGolem.this.level() instanceof ServerLevel serverLevel){
                     ColorUtil colorUtil = new ColorUtil(0xCCC35C);
                     Vec3 vec3 = new Vec3(SquallGolem.this.getX() + SquallGolem.this.getHorizontalLookAngle().x * 2, SquallGolem.this.getY() - 1.0F, SquallGolem.this.getZ() + SquallGolem.this.getHorizontalLookAngle().z * 2);
                     BlockPos blockPos = BlockPos.containing(vec3);
@@ -769,7 +768,7 @@ public class SquallGolem extends AbstractGolemServant implements IWindPowered {
                     SquallGolem.this.setDeltaMovement(SquallGolem.this.getDeltaMovement().multiply(0.6D, 1.0D, 0.6D));
                 }
 
-                SquallGolem.this.doEnchantDamageEffects(SquallGolem.this, target);
+                net.minecraft.world.item.enchantment.EnchantmentHelper.doPostAttackEffects((ServerLevel) SquallGolem.this.level(), SquallGolem.this, target.damageSources().mobAttack(SquallGolem.this));
                 SquallGolem.this.setLastHurtMob(target);
             }
         }

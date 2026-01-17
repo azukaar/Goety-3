@@ -30,7 +30,7 @@ public record VoidSpawnerConfig(
             40,
             36000,
             SimpleWeightedRandomList.empty(),
-            SimpleWeightedRandomList.<ResourceLocation>builder().add(ModLootTables.VOID_SPAWNER_LOOT, 1).add(ModLootTables.VOID_SPAWNER_KEY, 1).build()
+            SimpleWeightedRandomList.<ResourceLocation>builder().add(ModLootTables.VOID_SPAWNER_LOOT.location(), 1).add(ModLootTables.VOID_SPAWNER_KEY.location(), 1).build()
     );
     public static MapCodec<VoidSpawnerConfig> MAP_CODEC = RecordCodecBuilder.mapCodec(
             instance -> instance.group(

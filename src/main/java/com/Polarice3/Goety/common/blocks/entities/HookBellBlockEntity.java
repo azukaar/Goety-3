@@ -133,7 +133,7 @@ public class HookBellBlockEntity extends BlockEntity {
     }
 
     private static boolean areRaidersClose(BlockPos origin, LivingEntity living){
-        return origin.closerToCenterThan(living.position(), maxRange) && !(origin.closerToCenterThan(living.position(), minRange) && MobUtil.canPositionBeSeen(living.level, living, Vec3.atCenterOf(origin)));
+        return origin.closerToCenterThan(living.position(), maxRange) && !(origin.closerToCenterThan(living.position(), minRange) && MobUtil.canPositionBeSeen(living.level(), living, Vec3.atCenterOf(origin)));
     }
 
     private static void teleportRaiders(Level p_155187_, BlockPos p_155188_, List<LivingEntity> p_155189_) {
@@ -166,8 +166,8 @@ public class HookBellBlockEntity extends BlockEntity {
             double d4 = blockPos.getY() + (double) (p_58841_.getRandom().nextInt(16) - 8);
             double d5 = blockPos.getZ() + (p_58841_.getRandom().nextDouble() - 0.5D) * 8;
             if (p_58841_.randomTeleport(d3, d4, d5, true)) {
-                p_58841_.level.gameEvent(GameEvent.TELEPORT, p_58841_.position(), GameEvent.Context.of(p_58841_));
-                p_58841_.level.playSound((Player) null, p_58841_.xo, p_58841_.yo, p_58841_.zo, SoundEvents.ENDERMAN_TELEPORT, p_58841_.getSoundSource(), 1.0F, 1.0F);
+                p_58841_.level().gameEvent(GameEvent.TELEPORT, p_58841_.position(), GameEvent.Context.of(p_58841_));
+                p_58841_.level().playSound((Player) null, p_58841_.xo, p_58841_.yo, p_58841_.zo, SoundEvents.ENDERMAN_TELEPORT, p_58841_.getSoundSource(), 1.0F, 1.0F);
                 p_58841_.playSound(SoundEvents.ENDERMAN_TELEPORT, 1.0F, 1.0F);
                 break;
             }

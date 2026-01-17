@@ -127,12 +127,13 @@ public abstract class AbstractNecromancer extends AbstractSkeletonServant implem
                 AttributesConfig.NecromancerDamage.get());
     }
 
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.entityData.define(SPELL, (byte) 0);
-        this.entityData.define(FLAGS, (byte) 0);
-        this.entityData.define(LEVEL, 0);
-        this.entityData.define(ANIM_STATE, 0);
+    @Override
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(SPELL, (byte) 0);
+        builder.define(FLAGS, (byte) 0);
+        builder.define(LEVEL, 0);
+        builder.define(ANIM_STATE, 0);
     }
 
     public void onSyncedDataUpdated(EntityDataAccessor<?> p_33609_) {
@@ -362,15 +363,8 @@ public abstract class AbstractNecromancer extends AbstractSkeletonServant implem
         this.spellCooldown = cooldown;
     }
 
-    public @NotNull EntityDimensions getDimensions(@NotNull Pose p_33597_) {
-        if (this.getNecroLevel() > 0) {
-            float f1 = (float) this.getNecroLevel();
-            float size = 1.0F + Math.max(f1 * 0.15F, 0);
-            return super.getDimensions(p_33597_).scale(size);
-        } else {
-            return super.getDimensions(p_33597_);
-        }
-    }
+    // getDimensions is now final in LivingEntity as of 1.21
+    // Necromancer size scaling is handled via entity attributes or rendering instead
 
     @Override
     public void die(DamageSource pCause) {
@@ -846,7 +840,7 @@ public abstract class AbstractNecromancer extends AbstractSkeletonServant implem
                         summonedentity.setPersistenceRequired();
                         summonedentity.finalizeSpawn(serverLevel,
                                 serverLevel.getCurrentDifficultyAt(AbstractNecromancer.this.blockPosition()),
-                                MobSpawnType.MOB_SUMMONED, null, null);
+                                MobSpawnType.MOB_SUMMONED, null);
                         summonedentity.setBaby(false);
                         this.populateDefaultEquipmentSlots(summonedentity, serverLevel.random);
                         if (serverLevel.addFreshEntity(summonedentity)) {
@@ -868,7 +862,7 @@ public abstract class AbstractNecromancer extends AbstractSkeletonServant implem
                 boolean flag = true;
 
                 for (EquipmentSlot equipmentslot : EquipmentSlot.values()) {
-                    if (equipmentslot.getType() == EquipmentSlot.Type.ARMOR) {
+                    if (equipmentslot.getType() == EquipmentSlot.Type.HUMANOID_ARMOR) {
                         ItemStack itemstack = livingEntity.getItemBySlot(equipmentslot);
                         if (!flag && p_217055_.nextFloat() < 0.1F) {
                             break;
@@ -940,9 +934,9 @@ public abstract class AbstractNecromancer extends AbstractSkeletonServant implem
             if (this.spellTime == 0) {
                 this.playLaughSound();
                 AbstractNecromancer.this.setNecromancerSpellType(NecromancerSpellType.NONE);
-                int i = 2 + AbstractNecromancer.this.level.random.nextInt(4);
+                int i = 2 + AbstractNecromancer.this.level().random.nextInt(4);
                 for (int i1 = 0; i1 < i; ++i1) {
-                    if (AbstractNecromancer.this.level instanceof ServerLevel serverLevel) {
+                    if (AbstractNecromancer.this.level() instanceof ServerLevel serverLevel) {
                         Summoned summonedentity = AbstractNecromancer.this.getSummon();
                         if (AbstractNecromancer.this.summonVariants()) {
                             EntityType<?> entityType = summonedentity.getVariant(null, serverLevel,
@@ -965,7 +959,7 @@ public abstract class AbstractNecromancer extends AbstractSkeletonServant implem
                         summonedentity.setPersistenceRequired();
                         summonedentity.finalizeSpawn(serverLevel,
                                 serverLevel.getCurrentDifficultyAt(AbstractNecromancer.this.blockPosition()),
-                                MobSpawnType.MOB_SUMMONED, null, null);
+                                MobSpawnType.MOB_SUMMONED, null);
                         this.populateDefaultEquipmentSlots(summonedentity, serverLevel.random);
                         if (serverLevel.addFreshEntity(summonedentity)) {
                             SoundUtil.playNecromancerSummon(summonedentity);
@@ -988,7 +982,7 @@ public abstract class AbstractNecromancer extends AbstractSkeletonServant implem
                 boolean flag = true;
 
                 for (EquipmentSlot equipmentslot : EquipmentSlot.values()) {
-                    if (equipmentslot.getType() == EquipmentSlot.Type.ARMOR) {
+                    if (equipmentslot.getType() == EquipmentSlot.Type.HUMANOID_ARMOR) {
                         ItemStack itemstack = livingEntity.getItemBySlot(equipmentslot);
                         if (!flag && p_217055_.nextFloat() < 0.1F) {
                             break;

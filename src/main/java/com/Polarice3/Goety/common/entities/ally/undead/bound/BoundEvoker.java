@@ -12,6 +12,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
@@ -71,8 +72,8 @@ public class BoundEvoker extends AbstractBoundIllager{
         MobUtil.setBaseAttributes(this.getAttribute(Attributes.FOLLOW_RANGE), AttributesConfig.BoundEvokerFollowRange.get());
     }
 
-    protected void defineSynchedData() {
-        super.defineSynchedData();
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
     }
 
     public void readAdditionalSaveData(CompoundTag p_32642_) {
@@ -135,9 +136,9 @@ public class BoundEvoker extends AbstractBoundIllager{
     @Override
     public void tick() {
         super.tick();
-        if (this.level.isClientSide){
+        if (this.level().isClientSide){
             for(int i = 0; i < 2; ++i) {
-                this.level.addParticle(ParticleTypes.CLOUD, this.getRandomX(0.5D), this.getY() + 0.5D, this.getRandomZ(0.5D), (0.5D - this.random.nextDouble()) * 0.15D, 0.01F, (0.5D - this.random.nextDouble()) * 0.15D);
+                this.level().addParticle(ParticleTypes.CLOUD, this.getRandomX(0.5D), this.getY() + 0.5D, this.getRandomZ(0.5D), (0.5D - this.random.nextDouble()) * 0.15D, 0.01F, (0.5D - this.random.nextDouble()) * 0.15D);
             }
         }
     }
@@ -194,11 +195,11 @@ public class BoundEvoker extends AbstractBoundIllager{
 
             do {
                 BlockPos blockpos1 = blockpos.below();
-                BlockState blockstate = BoundEvoker.this.level.getBlockState(blockpos1);
-                if (blockstate.isFaceSturdy(BoundEvoker.this.level, blockpos1, Direction.UP)) {
-                    if (!BoundEvoker.this.level.isEmptyBlock(blockpos)) {
-                        BlockState blockstate1 = BoundEvoker.this.level.getBlockState(blockpos);
-                        VoxelShape voxelshape = blockstate1.getCollisionShape(BoundEvoker.this.level, blockpos);
+                BlockState blockstate = BoundEvoker.this.level().getBlockState(blockpos1);
+                if (blockstate.isFaceSturdy(BoundEvoker.this.level(), blockpos1, Direction.UP)) {
+                    if (!BoundEvoker.this.level().isEmptyBlock(blockpos)) {
+                        BlockState blockstate1 = BoundEvoker.this.level().getBlockState(blockpos);
+                        VoxelShape voxelshape = blockstate1.getCollisionShape(BoundEvoker.this.level(), blockpos);
                         if (!voxelshape.isEmpty()) {
                             d0 = voxelshape.max(Direction.Axis.Y);
                         }
@@ -212,7 +213,7 @@ public class BoundEvoker extends AbstractBoundIllager{
             } while(blockpos.getY() >= Mth.floor(p_32675_) - 1);
 
             if (flag) {
-                BoundEvoker.this.level.addFreshEntity(new Fangs(BoundEvoker.this.level, p_32673_, (double)blockpos.getY() + d0, p_32674_, p_32677_, p_32678_, BoundEvoker.this));
+                BoundEvoker.this.level().addFreshEntity(new Fangs(BoundEvoker.this.level(), p_32673_, (double)blockpos.getY() + d0, p_32674_, p_32677_, p_32678_, BoundEvoker.this));
             }
 
         }
@@ -244,7 +245,7 @@ public class BoundEvoker extends AbstractBoundIllager{
             if (!super.canUse()) {
                 return false;
             } else {
-                int i = BoundEvoker.this.level.getNearbyEntities(AllyVex.class, this.vexCountTargeting, BoundEvoker.this, BoundEvoker.this.getBoundingBox().inflate(16.0D)).size();
+                int i = BoundEvoker.this.level().getEntitiesOfClass(AllyVex.class, BoundEvoker.this.getBoundingBox().inflate(16.0D)).size();
                 return BoundEvoker.this.random.nextInt(8) + 1 > i;
             }
         }
@@ -258,14 +259,14 @@ public class BoundEvoker extends AbstractBoundIllager{
         }
 
         protected void performSpellCasting() {
-            ServerLevel serverlevel = (ServerLevel)BoundEvoker.this.level;
+            ServerLevel serverlevel = (ServerLevel)BoundEvoker.this.level();
 
             for(int i = 0; i < 3; ++i) {
                 BlockPos blockpos = BoundEvoker.this.blockPosition().offset(-2 + BoundEvoker.this.random.nextInt(5), 1, -2 + BoundEvoker.this.random.nextInt(5));
-                AllyVex vex = ModEntityType.VEX_SERVANT.get().create(BoundEvoker.this.level);
+                AllyVex vex = ModEntityType.VEX_SERVANT.get().create(BoundEvoker.this.level());
                 if (vex != null) {
                     vex.moveTo(blockpos, 0.0F, 0.0F);
-                    vex.finalizeSpawn(serverlevel, BoundEvoker.this.level.getCurrentDifficultyAt(blockpos), MobSpawnType.MOB_SUMMONED, (SpawnGroupData) null, (CompoundTag) null);
+                    vex.finalizeSpawn(serverlevel, BoundEvoker.this.level().getCurrentDifficultyAt(blockpos), MobSpawnType.MOB_SUMMONED, (SpawnGroupData) null);
                     vex.setTrueOwner(BoundEvoker.this);
                     vex.setBoundOrigin(blockpos);
                     vex.setLimitedLife(20 * (30 + BoundEvoker.this.random.nextInt(90)));
@@ -296,10 +297,10 @@ public class BoundEvoker extends AbstractBoundIllager{
                 return false;
             } else if (BoundEvoker.this.tickCount < this.nextAttackTickCount) {
                 return false;
-            } else if (!net.neoforged.event.BoundEvoker.this.level.getGameRules().getBoolean(GameRules.RULE_MOB_GRIEFING)) {
+            } else if (!BoundEvoker.this.level().getGameRules().getBoolean(net.minecraft.world.level.GameRules.RULE_MOBGRIEFING)) {
                 return false;
             } else {
-                List<Sheep> list = BoundEvoker.this.level.getNearbyEntities(Sheep.class, this.wololoTargeting, BoundEvoker.this, BoundEvoker.this.getBoundingBox().inflate(16.0D, 4.0D, 16.0D));
+                List<Sheep> list = BoundEvoker.this.level().getNearbyEntities(Sheep.class, this.wololoTargeting, BoundEvoker.this, BoundEvoker.this.getBoundingBox().inflate(16.0D, 4.0D, 16.0D));
                 if (list.isEmpty()) {
                     return false;
                 } else {

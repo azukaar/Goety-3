@@ -72,9 +72,10 @@ public class AbstractSkeletonPillager extends AbstractSkeletonServant implements
         }
     }
 
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.entityData.define(IS_CHARGING_CROSSBOW, false);
+    @Override
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(IS_CHARGING_CROSSBOW, false);
     }
 
     public MobType getMobType() {

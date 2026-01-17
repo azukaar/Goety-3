@@ -11,7 +11,7 @@ import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
 
-public class SoulAbsorberRecipes implements Recipe<Container> {
+public class SoulAbsorberRecipes implements Recipe<net.minecraft.world.item.crafting.SingleRecipeInput> {
     protected final ResourceLocation id;
     protected final Ingredient ingredient;
     protected final int soulIncrease;
@@ -24,13 +24,13 @@ public class SoulAbsorberRecipes implements Recipe<Container> {
         this.cookingTime = pCookingTime;
     }
 
-    public boolean matches(Container pInv, Level pLevel) {
-        return this.ingredient.test(pInv.getItem(0));
+    public boolean matches(net.minecraft.world.item.crafting.SingleRecipeInput pInv, Level pLevel) {
+        return this.ingredient.test(pInv.item());
     }
 
     @Override
 
-    public ItemStack assemble(Container pInv, net.minecraft.core.HolderLookup.Provider pAccess) {
+    public ItemStack assemble(net.minecraft.world.item.crafting.SingleRecipeInput pInv, net.minecraft.core.HolderLookup.Provider pAccess) {
         return this.getResultItem(pAccess);
     }
 
@@ -53,7 +53,7 @@ public class SoulAbsorberRecipes implements Recipe<Container> {
     }
 
     @Override
-    public ItemStack getResultItem(RegistryAccess pAccess) {
+    public ItemStack getResultItem(net.minecraft.core.HolderLookup.Provider pAccess) {
         return ItemStack.EMPTY;
     }
 

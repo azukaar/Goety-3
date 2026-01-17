@@ -51,9 +51,10 @@ public class DragonBreathCloud extends Entity implements TraceableEntity {
         this.setPos(p_19708_, p_19709_, p_19710_);
     }
 
-    protected void defineSynchedData() {
-        this.getEntityData().define(DATA_RADIUS, 3.0F);
-        this.getEntityData().define(DATA_WAITING, false);
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(DATA_RADIUS, 3.0F);
+        builder.define(DATA_WAITING, false);
     }
 
     protected void readAdditionalSaveData(CompoundTag p_19727_) {

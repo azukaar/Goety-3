@@ -39,9 +39,9 @@ public class IceStorm extends SpellHurtingProjectile {
         this.noPhysics = true;
     }
 
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.entityData.define(ID_SIZE, 0.0F);
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(ID_SIZE, 0.0F);
     }
 
     public void onSyncedDataUpdated(EntityDataAccessor<?> p_33134_) {

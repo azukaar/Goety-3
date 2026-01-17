@@ -30,9 +30,13 @@ import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Vector3f;
 
-public class ScatterBomb extends Projectile {
+import net.minecraft.network.syncher.SynchedEntityData;
 
-    public ScatterBomb(EntityType<? extends Projectile> p_37466_, Level p_37467_) {
+import net.minecraft.network.syncher.SynchedEntityData;
+
+public class ScatterBomb extends SpellThrowableProjectile {
+
+    public ScatterBomb(EntityType<? extends SpellThrowableProjectile> p_37466_, Level p_37467_) {
         super(p_37466_, p_37467_);
     }
 
@@ -57,7 +61,8 @@ public class ScatterBomb extends Projectile {
     }
 
     @Override
-    protected void defineSynchedData() {
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
     }
 
     public void tick() {

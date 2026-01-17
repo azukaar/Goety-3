@@ -26,8 +26,8 @@ public class VoidSpawnerBlockEntity extends BlockEntity implements VoidSpawner.S
     }
 
     @Override
-    public void load(CompoundTag compoundTag) {
-        super.load(compoundTag);
+    public void loadAdditional(CompoundTag compoundTag, net.minecraft.core.HolderLookup.Provider pRegistries) {
+        super.loadAdditional(compoundTag, pRegistries);
         this.voidSpawner
                 .codec()
                 .parse(NbtOps.INSTANCE, compoundTag)
@@ -39,14 +39,13 @@ public class VoidSpawnerBlockEntity extends BlockEntity implements VoidSpawner.S
     }
 
     @Override
-    protected void saveAdditional(CompoundTag compoundTag) {
-        super.saveAdditional(compoundTag);
+    protected void saveAdditional(CompoundTag compoundTag, net.minecraft.core.HolderLookup.Provider pRegistries) {
+        super.saveAdditional(compoundTag, pRegistries);
         this.voidSpawner
                 .codec()
                 .encodeStart(NbtOps.INSTANCE, this.voidSpawner)
-                .get()
-                .ifLeft(tag -> compoundTag.merge((CompoundTag)tag))
-                .ifRight(param0x -> Goety.LOGGER.warn("Failed to encode VoidSpawner {}", param0x.message()));
+                .resultOrPartial(Goety.LOGGER::error)
+                .ifPresent(tag -> compoundTag.merge((CompoundTag)tag));
     }
 
     public ClientboundBlockEntityDataPacket getUpdatePacket() {
@@ -54,7 +53,7 @@ public class VoidSpawnerBlockEntity extends BlockEntity implements VoidSpawner.S
     }
 
     @Override
-    public CompoundTag getUpdateTag() {
+    public CompoundTag getUpdateTag(net.minecraft.core.HolderLookup.Provider pRegistries) {
         return this.voidSpawner.getData().getUpdateTag(this.getBlockState().getValue(VoidSpawnerBlock.STATE));
     }
 
@@ -86,11 +85,10 @@ public class VoidSpawnerBlockEntity extends BlockEntity implements VoidSpawner.S
     }
 
     @Override
-    public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt) {
+    public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt, net.minecraft.core.HolderLookup.Provider pRegistries) {
         if (pkt.getTag() != null) {
-            this.load(pkt.getTag());
+            this.loadAdditional(pkt.getTag(), pRegistries);
         }
-        super.onDataPacket(net, pkt);
     }
 
     @Override

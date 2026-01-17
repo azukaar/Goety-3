@@ -60,7 +60,7 @@ public class HostileRedstoneGolemRenderer<T extends HostileRedstoneGolem> extend
                     super.render(p_116983_, p_116984_, p_116985_, p_116986_, p_116987_, p_116988_, p_116989_, p_116990_, p_116991_, p_116992_);
                 } else {
                     VertexConsumer vertexconsumer = p_116984_.getBuffer(RenderType.entityTranslucentEmissive(SUPER_GLOW_TEXTURE));
-                    this.getParentModel().renderToBuffer(p_116983_, vertexconsumer, 15728640, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 1.0F);
+                    this.getParentModel().renderToBuffer(p_116983_, vertexconsumer, 15728640, OverlayTexture.NO_OVERLAY, -1);
                 }
             }
         }

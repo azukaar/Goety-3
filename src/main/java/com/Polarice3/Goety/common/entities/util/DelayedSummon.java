@@ -55,8 +55,9 @@ public class DelayedSummon extends Entity {
     }
 
     @Override
-    protected void defineSynchedData() {
-        this.entityData.define(OWNER_UNIQUE_ID, Optional.empty());
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(OWNER_UNIQUE_ID, Optional.empty());
     }
 
     @Override

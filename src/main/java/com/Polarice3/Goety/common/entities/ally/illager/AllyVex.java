@@ -74,8 +74,8 @@ public class AllyVex extends Minion {
     public SpawnGroupData finalizeSpawn(ServerLevelAccessor p_34002_, DifficultyInstance p_34003_, MobSpawnType p_34004_, @Nullable SpawnGroupData p_34005_, @Nullable CompoundTag p_34006_) {
         RandomSource randomsource = p_34002_.getRandom();
         this.populateDefaultEquipmentSlots(randomsource, p_34003_);
-        this.populateDefaultEquipmentEnchantments(randomsource, p_34003_);
-        return super.finalizeSpawn(p_34002_, p_34003_, p_34004_, p_34005_, p_34006_);
+        this.populateDefaultEquipmentEnchantments(p_34002_, randomsource, p_34003_);
+        return super.finalizeSpawn(p_34002_, p_34003_, p_34004_, p_34005_);
     }
 
     protected void populateDefaultEquipmentSlots(RandomSource p_219135_, DifficultyInstance p_219136_) {

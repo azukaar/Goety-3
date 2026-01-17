@@ -113,12 +113,13 @@ public class TwilightGoat extends AnimalSummon implements ICharger {
                 AttributesConfig.TwilightGoatDamage.get());
     }
 
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.entityData.define(DATA_IS_SCREAMING_GOAT, Boolean.FALSE);
-        this.entityData.define(DATA_HAS_LEFT_HORN, Boolean.TRUE);
-        this.entityData.define(DATA_HAS_RIGHT_HORN, Boolean.TRUE);
-        this.entityData.define(DATA_CHARGING, Boolean.FALSE);
+    @Override
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(DATA_IS_SCREAMING_GOAT, Boolean.FALSE);
+        builder.define(DATA_HAS_LEFT_HORN, Boolean.TRUE);
+        builder.define(DATA_HAS_RIGHT_HORN, Boolean.TRUE);
+        builder.define(DATA_CHARGING, Boolean.FALSE);
     }
 
     public void addAdditionalSaveData(CompoundTag p_149385_) {

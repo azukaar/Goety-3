@@ -62,12 +62,13 @@ public class HellBolt extends WaterHurtingProjectile {
         super(ModEntityType.HELL_BOLT.get(), pX, pY, pZ, pAccelX, pAccelY, pAccelZ, pWorld);
     }
 
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.entityData.define(DATA_DAMAGE, 5.0F);
-        this.entityData.define(DATA_TYPE_ID, 0);
-        this.entityData.define(DATA_FIERY, 0);
-        this.entityData.define(RAIN, false);
+    @Override
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(DATA_DAMAGE, 5.0F);
+        builder.define(DATA_TYPE_ID, 0);
+        builder.define(DATA_FIERY, 0);
+        builder.define(RAIN, false);
     }
 
     public void tick() {

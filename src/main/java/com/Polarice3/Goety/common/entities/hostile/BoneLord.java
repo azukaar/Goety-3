@@ -86,17 +86,20 @@ public class BoneLord extends AbstractSkeleton implements ICustomAttributes {
     protected void populateDefaultEquipmentEnchantments(DifficultyInstance pDifficulty) {
         if (pDifficulty.getDifficulty() != Difficulty.PEACEFUL && pDifficulty.getDifficulty() != Difficulty.EASY) {
             for (EquipmentSlot equipmentslottype : EquipmentSlot.values()) {
-                if (equipmentslottype.getType() == EquipmentSlot.Type.ARMOR) {
+                if (equipmentslottype.getType() == EquipmentSlot.Type.HUMANOID_ARMOR) {
                     ItemStack itemstack = this.getItemBySlot(equipmentslottype);
                     if (!itemstack.isEmpty()) {
-                        Map<Enchantment, Integer> map = EnchantmentHelper.getEnchantments(itemstack);
+                        net.minecraft.core.Holder<Enchantment> protection = this.registryAccess().lookupOrThrow(net.minecraft.core.registries.Registries.ENCHANTMENT).getOrThrow(Enchantments.PROTECTION);
+                        net.minecraft.world.item.enchantment.ItemEnchantments.Mutable mutable = new net.minecraft.world.item.enchantment.ItemEnchantments.Mutable(itemstack.getEnchantments());
                         switch (pDifficulty.getDifficulty()) {
                             case NORMAL:
-                                map.putIfAbsent(Enchantments.ALL_DAMAGE_PROTECTION, 2);
+                                if (mutable.getLevel(protection) == 0) mutable.set(protection, 2);
+                                break;
                             case HARD:
-                                map.putIfAbsent(Enchantments.ALL_DAMAGE_PROTECTION, 3);
+                                if (mutable.getLevel(protection) == 0) mutable.set(protection, 3);
+                                break;
                         }
-                        EnchantmentHelper.setEnchantments(map, itemstack);
+                        EnchantmentHelper.setEnchantments(itemstack, mutable.toImmutable());
                         this.setItemSlot(equipmentslottype, itemstack);
                     }
                 }
@@ -104,7 +107,7 @@ public class BoneLord extends AbstractSkeleton implements ICustomAttributes {
             if (pDifficulty.getDifficulty() == Difficulty.HARD){
                 ItemStack itemstack = this.getItemBySlot(EquipmentSlot.MAINHAND);
                 if (!itemstack.isEmpty()){
-                    this.setItemSlot(EquipmentSlot.MAINHAND, EnchantmentHelper.enchantItem(this.random, this.getMainHandItem(), 30, false));
+                    this.setItemSlot(EquipmentSlot.MAINHAND, EnchantmentHelper.enchantItem(this.random, this.getMainHandItem(), 30, this.registryAccess(), java.util.Optional.empty()));
                 }
             }
         }
@@ -117,7 +120,7 @@ public class BoneLord extends AbstractSkeleton implements ICustomAttributes {
     @Override
     public void tick() {
         super.tick();
-        if (!this.level.isClientSide) {
+        if (!this.level().isClientSide) {
             if (this.getSkullLord() == null || this.getSkullLord().isDeadOrDying()) {
                 if (this.tickCount % 100 == 0 && this.tickCount > 100) {
                     this.discard();
@@ -158,20 +161,20 @@ public class BoneLord extends AbstractSkeleton implements ICustomAttributes {
     }
 
     @Nullable
-    public SpawnGroupData finalizeSpawn(ServerLevelAccessor pLevel, DifficultyInstance pDifficulty, MobSpawnType pReason, @Nullable SpawnGroupData pSpawnData, @Nullable CompoundTag pDataTag) {
+    public SpawnGroupData finalizeSpawn(ServerLevelAccessor pLevel, DifficultyInstance pDifficulty, MobSpawnType pReason, @Nullable SpawnGroupData pSpawnData) {
         this.populateDefaultEquipmentSlots(pLevel.getRandom(), pDifficulty);
         this.populateDefaultEquipmentEnchantments(pDifficulty);
         this.setCanPickUpLoot(false);
         for(EquipmentSlot equipmentslottype : EquipmentSlot.values()) {
             this.setDropChance(equipmentslottype, 0.0F);
         }
-        return super.finalizeSpawn(pLevel, pDifficulty, pReason, pSpawnData, pDataTag);
+        return super.finalizeSpawn(pLevel, pDifficulty, pReason, pSpawnData);
     }
 
     public boolean isAlliedTo(Entity entityIn) {
         if (super.isAlliedTo(entityIn)) {
             return true;
-        } else if (entityIn instanceof Monster && ((Monster) entityIn).getMobType() == MobType.UNDEAD) {
+        } else if (entityIn instanceof Monster && entityIn.getType().is(net.minecraft.tags.EntityTypeTags.UNDEAD)) {
             return this.getTeam() == null && entityIn.getTeam() == null;
         } else {
             return false;
@@ -185,7 +188,6 @@ public class BoneLord extends AbstractSkeleton implements ICustomAttributes {
 
     }
 
-    @Override
     public boolean ignoreExplosion() {
         return true;
     }
@@ -206,10 +208,11 @@ public class BoneLord extends AbstractSkeleton implements ICustomAttributes {
         return SoundEvents.SKELETON_STEP;
     }
 
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.entityData.define(SKULL_LORD, Optional.empty());
-        this.entityData.define(SKULL_LORD_CLIENT_ID, -1);
+    @Override
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(SKULL_LORD, Optional.empty());
+        builder.define(SKULL_LORD_CLIENT_ID, -1);
     }
 
     public void readAdditionalSaveData(CompoundTag pCompound) {
@@ -235,12 +238,12 @@ public class BoneLord extends AbstractSkeleton implements ICustomAttributes {
 
     @Nullable
     public SkullLord getSkullLord() {
-        if (!this.level.isClientSide){
+        if (!this.level().isClientSide){
             UUID uuid = this.getSkullLordUUID();
             return EntityFinder.getLivingEntityByUuiD(uuid) instanceof SkullLord skullLord ? skullLord : null;
         } else {
             int id = this.getSkullLordClientId();
-            return id <= -1 ? null : this.level.getEntity(id) instanceof SkullLord skullLord ? skullLord : null;
+            return id <= -1 ? null : this.level().getEntity(id) instanceof SkullLord skullLord ? skullLord : null;
         }
     }
 
@@ -268,7 +271,7 @@ public class BoneLord extends AbstractSkeleton implements ICustomAttributes {
 
     @Override
     public void die(DamageSource p_21014_) {
-        if (this.level instanceof ServerLevel){
+        if (this.level() instanceof ServerLevel){
             if (this.getSkullLord() != null){
                 if (p_21014_.getEntity() instanceof Mob mob && mob.getTarget() == this){
                     mob.setTarget(this.getSkullLord());

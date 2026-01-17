@@ -32,12 +32,7 @@ public abstract class SpellEntity extends Entity implements OwnableEntity, ISpel
         super(p_19870_, p_19871_);
     }
 
-    protected void defineSynchedData() {
-        this.entityData.define(OWNER_UNIQUE_ID, Optional.empty());
-        this.entityData.define(OWNER_CLIENT_ID, -1);
-        this.entityData.define(TARGET_UNIQUE_ID, Optional.empty());
-        this.entityData.define(TARGET_CLIENT_ID, -1);
-        this.entityData.define(DATA_EXTRA_DAMAGE, 0.0F);
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
     }
 
     public void readAdditionalSaveData(CompoundTag compound) {
@@ -91,12 +86,12 @@ public abstract class SpellEntity extends Entity implements OwnableEntity, ISpel
 
     @Nullable
     public LivingEntity getOwner() {
-        if (!this.level.isClientSide){
+        if (!this.level().isClientSide){
             UUID uuid = this.getOwnerId();
             return uuid == null ? null : EntityFinder.getLivingEntityByUuiD(uuid);
         } else {
             int id = this.getOwnerClientId();
-            return id <= -1 ? null : this.level.getEntity(this.getOwnerClientId()) instanceof LivingEntity living ? living : null;
+            return id <= -1 ? null : this.level().getEntity(this.getOwnerClientId()) instanceof LivingEntity living ? living : null;
         }
     }
 
@@ -125,12 +120,12 @@ public abstract class SpellEntity extends Entity implements OwnableEntity, ISpel
 
     @Nullable
     public LivingEntity getTarget() {
-        if (!this.level.isClientSide){
+        if (!this.level().isClientSide){
             UUID uuid = this.getTargetId();
             return uuid == null ? null : EntityFinder.getLivingEntityByUuiD(uuid);
         } else {
             int id = this.getTargetClientId();
-            return id <= -1 ? null : this.level.getEntity(this.getTargetClientId()) instanceof LivingEntity living ? living : null;
+            return id <= -1 ? null : this.level().getEntity(this.getTargetClientId()) instanceof LivingEntity living ? living : null;
         }
     }
 
@@ -183,8 +178,5 @@ public abstract class SpellEntity extends Entity implements OwnableEntity, ISpel
         }
     }
 
-    @Override
-    public @NotNull Packet<ClientGamePacketListener> getAddEntityPacket() {
-        return new net.minecraft.network.protocol.game.ClientboundAddEntityPacket(this);
-    }
+
 }

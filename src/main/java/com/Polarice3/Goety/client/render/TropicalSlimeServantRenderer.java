@@ -75,7 +75,7 @@ public class TropicalSlimeServantRenderer
          if (entitylivingbaseIn.isInterested()) {
             coloredCutoutModelCopyLayerRender(this.getParentModel(), this.layerModel, TEXTURES, matrixStackIn, bufferIn,
                   packedLightIn, entitylivingbaseIn, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch,
-                  partialTicks, 1.0F, 1.0F, 1.0F);
+                  partialTicks, -1);
          }
       }
    }
@@ -95,7 +95,7 @@ public class TropicalSlimeServantRenderer
             float headPitch) {
          coloredCutoutModelCopyLayerRender(this.getParentModel(), this.layerModel,
                entitylivingbaseIn.getResourceLocation(), matrixStackIn, bufferIn, packedLightIn, entitylivingbaseIn,
-               limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, partialTicks, 1.0F, 1.0F, 1.0F);
+               limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, partialTicks, -1);
       }
    }
 

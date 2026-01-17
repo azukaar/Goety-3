@@ -23,10 +23,13 @@ import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biomes;
 import net.minecraft.world.level.block.state.BlockState;
 
+import net.minecraft.world.item.crafting.RecipeInput;
+import net.minecraft.core.HolderLookup;
 import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Optional;
@@ -75,21 +78,21 @@ public class NecroBrazierBlockEntity extends ModBlockEntity implements Clearable
         return i <= 0;
     }
 
-    public void readNetwork(CompoundTag compoundNBT) {
+    public void readNetwork(CompoundTag compoundNBT, HolderLookup.Provider pRegistries) {
         NonNullList<ItemStack> items = NonNullList.withSize(this.getContainer().getContainerSize(), ItemStack.EMPTY);
-        ContainerHelper.loadAllItems(compoundNBT, items);
+        ContainerHelper.loadAllItems(compoundNBT, items, pRegistries);
         this.setItems(items);
         this.currentTime = compoundNBT.getInt("currentTime");
     }
 
-    public CompoundTag writeNetwork(CompoundTag pCompound) {
-        this.saveMetadataAndItems(pCompound);
+    public CompoundTag writeNetwork(CompoundTag pCompound, HolderLookup.Provider pRegistries) {
+        this.saveMetadataAndItems(pCompound, pRegistries);
         pCompound.putInt("currentTime", this.currentTime);
         return pCompound;
     }
 
-    private CompoundTag saveMetadataAndItems(CompoundTag pCompound) {
-        ContainerHelper.saveAllItems(pCompound, this.getItems(), true);
+    private CompoundTag saveMetadataAndItems(CompoundTag pCompound, HolderLookup.Provider pRegistries) {
+        ContainerHelper.saveAllItems(pCompound, this.getItems(), true, pRegistries);
         return pCompound;
     }
 
@@ -115,7 +118,7 @@ public class NecroBrazierBlockEntity extends ModBlockEntity implements Clearable
         }
         if (did) {
             if (player != null && this.level != null){
-                this.level.playSound(null, this.getBlockPos(), SoundEvents.ARMOR_EQUIP_GENERIC, SoundSource.BLOCKS, 1.0F, 1.0F);
+                this.level.playSound(null, this.getBlockPos(), SoundEvents.ARMOR_EQUIP_GENERIC.value(), SoundSource.BLOCKS, 1.0F, 1.0F);
             }
             this.markUpdated();
         }
@@ -145,7 +148,7 @@ public class NecroBrazierBlockEntity extends ModBlockEntity implements Clearable
 
     public void updateRecipe(Level world){
         if (this.getRecipe() != null){
-            if (!this.getRecipe().matches(this.getContainer(), world)){
+            if (!this.getRecipe().matches(this.getRecipeInput(), world)){
                 this.stopBrazier(false);
             }
         } else {
@@ -155,8 +158,8 @@ public class NecroBrazierBlockEntity extends ModBlockEntity implements Clearable
 
     public boolean activate(Level world) {
         if (this.getRecipe() == null) {
-            BrazierRecipe brazierRecipe = world.getRecipeManager().getAllRecipesFor(ModRecipeSerializer.BRAZIER_TYPE.get()).stream().filter(
-                    r -> r.matches(this.getContainer(), world)
+            BrazierRecipe brazierRecipe = world.getRecipeManager().getAllRecipesFor(ModRecipeSerializer.BRAZIER_TYPE.get()).stream().map(RecipeHolder::value).filter(
+                    r -> r.matches(this.getRecipeInput(), world)
             ).findFirst().orElse(null);
             if (brazierRecipe != null) {
                 this.recipe = brazierRecipe;
@@ -170,7 +173,7 @@ public class NecroBrazierBlockEntity extends ModBlockEntity implements Clearable
     public BrazierRecipe getRecipe(){
         if(this.recipeId != null){
             if(this.level != null) {
-                Optional<? extends Recipe<?>> recipe = this.level.getRecipeManager().byKey(this.recipeId);
+                Optional<? extends Recipe<?>> recipe = this.level.getRecipeManager().byKey(this.recipeId).map(RecipeHolder::value);
                 recipe.map(r -> (BrazierRecipe) r).ifPresent(r -> this.recipe = r);
                 this.recipeId = null;
             }
@@ -250,8 +253,8 @@ public class NecroBrazierBlockEntity extends ModBlockEntity implements Clearable
                     this.level.playSound(null, this.getBlockPos(), SoundEvents.GENERIC_EXTINGUISH_FIRE, SoundSource.BLOCKS, 1.0F, 1.0F);
                     if (finished) {
                         ItemStack itemstack1 = this.level.getRecipeManager()
-                                .getRecipeFor(ModRecipeSerializer.BRAZIER_TYPE.get(), this.getContainer(), this.level)
-                                .map((recipes) -> recipes.assemble(this.getContainer(), this.level.registryAccess())).orElse(ItemStack.EMPTY);
+                                .getRecipeFor(ModRecipeSerializer.BRAZIER_TYPE.get(), this.getRecipeInput(), this.level)
+                                .map((recipes) -> recipes.value().assemble(this.getRecipeInput(), this.level.registryAccess())).orElse(ItemStack.EMPTY);
                         BlockPos blockpos = this.getBlockPos();
                         dropItemStack(this.level, blockpos.getX(), blockpos.getY() + 1, blockpos.getZ(), itemstack1);
                         this.level.playSound(null, this.getBlockPos(), ModSounds.CAST_SPELL.get(), SoundSource.BLOCKS, 2.0F, 0.5F);
@@ -347,5 +350,18 @@ public class NecroBrazierBlockEntity extends ModBlockEntity implements Clearable
                 }
             }
         }
+    }
+    private RecipeInput getRecipeInput() {
+        return new RecipeInput() {
+            @Override
+            public ItemStack getItem(int pIndex) {
+                return NecroBrazierBlockEntity.this.getContainer().getItem(pIndex);
+            }
+
+            @Override
+            public int size() {
+                return NecroBrazierBlockEntity.this.getContainer().getContainerSize();
+            }
+        };
     }
 }

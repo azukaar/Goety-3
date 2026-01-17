@@ -49,9 +49,9 @@ public class SteamMissile extends SpellHurtingProjectile {
         super(ModEntityType.STEAM_MISSILE.get(), pShooter, pXPower, pYPower, pZPower, pLevel);
     }
 
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.entityData.define(DATA_TYPE_ID, 0);
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(DATA_TYPE_ID, 0);
     }
 
     public void readAdditionalSaveData(CompoundTag compound) {

@@ -46,7 +46,7 @@ public class TallSkullBlockEntityRenderer implements BlockEntityRenderer<TallSku
         p_228879_5_.scale(-1.0F, -1.0F, 1.0F);
         VertexConsumer ivertexbuilder = p_228879_6_.getBuffer(RenderType.entityCutoutNoCullZOffset(TEXTURE));
         tallskullmodel.setupAnim(0, p_228879_1_, 0.0F);
-        tallskullmodel.renderToBuffer(p_228879_5_, ivertexbuilder, p_228879_7_, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 1.0F);
+        tallskullmodel.renderToBuffer(p_228879_5_, ivertexbuilder, p_228879_7_, OverlayTexture.NO_OVERLAY, -1);
         p_228879_5_.popPose();
     }
 }

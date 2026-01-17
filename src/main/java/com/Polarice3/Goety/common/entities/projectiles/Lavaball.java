@@ -65,14 +65,14 @@ public class Lavaball extends LargeFireball implements ISpellEntity {
         return ModEntityType.LAVABALL.get();
     }
 
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.entityData.define(DATA_UPGRADED, false);
-        this.entityData.define(DATA_DANGEROUS, true);
-        this.entityData.define(DATA_EXTRA_DAMAGE, 0.0F);
-        this.entityData.define(DATA_FIERY, 0);
-        this.entityData.define(DATA_EXPLOSION, 1.0F);
-        this.entityData.define(DATA_DAMAGE, 6.0F);
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(DATA_UPGRADED, false);
+        builder.define(DATA_DANGEROUS, true);
+        builder.define(DATA_EXTRA_DAMAGE, 0.0F);
+        builder.define(DATA_FIERY, 0);
+        builder.define(DATA_EXPLOSION, 1.0F);
+        builder.define(DATA_DAMAGE, 6.0F);
     }
 
     public void addAdditionalSaveData(CompoundTag pCompound) {

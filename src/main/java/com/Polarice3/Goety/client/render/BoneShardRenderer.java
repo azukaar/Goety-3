@@ -39,7 +39,7 @@ public class BoneShardRenderer<T extends AbstractArrow> extends EntityRenderer<T
             float f10 = -Mth.sin(f9 * 5.0F) * f9;
             pMatrixStack.mulPose(Axis.ZP.rotationDegrees(f10));
         }
-        this.itemRenderer.renderStatic(new ItemStack(ModItems.BONE_SHARD.get()), ItemDisplayContext.GROUND, pPackedLight, OverlayTexture.NO_OVERLAY, pMatrixStack, pBuffer, pEntity.level, 0);
+        this.itemRenderer.renderStatic(new ItemStack(ModItems.BONE_SHARD.get()), ItemDisplayContext.GROUND, pPackedLight, OverlayTexture.NO_OVERLAY, pMatrixStack, pBuffer, pEntity.level(), 0);
         pMatrixStack.popPose();
         super.render(pEntity, pEntityYaw, pPartialTicks, pMatrixStack, pBuffer, pPackedLight);
     }

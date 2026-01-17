@@ -79,7 +79,8 @@ public class SoulAbsorberBlockEntity extends ModBlockEntity implements Clearable
             } else {
                 Container iinventory = new SimpleContainer(this.itemStack);
                 int soulIncrease = this.level.getRecipeManager()
-                        .getRecipeFor(ModRecipeSerializer.SOUL_ABSORBER.get(), iinventory, this.level)
+                        .getRecipeFor(ModRecipeSerializer.SOUL_ABSORBER.get(), new net.minecraft.world.item.crafting.SingleRecipeInput(this.itemStack), this.level)
+                        .map(net.minecraft.world.item.crafting.RecipeHolder::value)
                         .map(SoulAbsorberRecipes::getSoulIncrease).orElse(25);
                 if (soulIncrease > 0){
                     this.cookingProgress++;
@@ -190,21 +191,25 @@ public class SoulAbsorberBlockEntity extends ModBlockEntity implements Clearable
         }
     }
 
-    public void readNetwork(CompoundTag compoundNBT) {
-        this.itemStack = ItemStack.of(compoundNBT.getCompound("Item"));
+    public void readNetwork(CompoundTag compoundNBT, net.minecraft.core.HolderLookup.Provider pRegistries) {
+        if (compoundNBT.contains("Item")) {
+            this.itemStack = ItemStack.parse(pRegistries, compoundNBT.getCompound("Item")).orElse(ItemStack.EMPTY);
+        }
         this.cookingProgress = compoundNBT.getInt("CookingTime");
         this.cookingTime = compoundNBT.getInt("CookingTotalTime");
     }
 
-    public CompoundTag writeNetwork(CompoundTag pCompound) {
-        this.saveMetadataAndItems(pCompound);
+    public CompoundTag writeNetwork(CompoundTag pCompound, net.minecraft.core.HolderLookup.Provider pRegistries) {
+        this.saveMetadataAndItems(pCompound, pRegistries);
         pCompound.putInt("CookingTime", this.cookingProgress);
         pCompound.putInt("CookingTotalTime", this.cookingTime);
         return pCompound;
     }
 
-    private CompoundTag saveMetadataAndItems(CompoundTag pCompound) {
-        pCompound.put("Item", this.itemStack.save(new CompoundTag()));
+    private CompoundTag saveMetadataAndItems(CompoundTag pCompound, net.minecraft.core.HolderLookup.Provider pRegistries) {
+        if (!this.itemStack.isEmpty()) {
+            pCompound.put("Item", this.itemStack.save(pRegistries, new CompoundTag()));
+        }
         return pCompound;
     }
 
@@ -227,7 +232,8 @@ public class SoulAbsorberBlockEntity extends ModBlockEntity implements Clearable
     }
 
     public Optional<SoulAbsorberRecipes> getRecipes(ItemStack pStack) {
-        return this.level.getRecipeManager().getRecipeFor(ModRecipeSerializer.SOUL_ABSORBER.get(), new SimpleContainer(pStack), this.level);
+        return this.level.getRecipeManager().getRecipeFor(ModRecipeSerializer.SOUL_ABSORBER.get(), new net.minecraft.world.item.crafting.SingleRecipeInput(pStack), this.level)
+                .map(net.minecraft.world.item.crafting.RecipeHolder::value);
     }
 
     @Override

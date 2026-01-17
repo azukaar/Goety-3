@@ -103,9 +103,9 @@ public class PillagerServant extends AbstractIllagerServant implements CrossbowA
         }
     }
 
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.entityData.define(IS_CHARGING_CROSSBOW, false);
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(IS_CHARGING_CROSSBOW, false);
     }
 
     public void setItemSlot(EquipmentSlot pSlot, ItemStack pStack) {

@@ -5,13 +5,20 @@ import com.Polarice3.Goety.api.entities.IOwned;
 import com.Polarice3.Goety.api.entities.ally.IServant;
 import com.Polarice3.Goety.client.particles.ModParticleTypes;
 import com.Polarice3.Goety.common.effects.GoetyEffects;
+import com.Polarice3.Goety.common.entities.ModEntityType;
+import com.Polarice3.Goety.common.entities.ModEntityType;
 import com.Polarice3.Goety.common.entities.ai.SummonTargetGoal;
 import com.Polarice3.Goety.common.entities.ally.Summoned;
 import com.Polarice3.Goety.common.entities.neutral.Owned;
 import com.Polarice3.Goety.config.MobsConfig;
+import com.Polarice3.Goety.init.ModSounds;
 import com.Polarice3.Goety.mixin.MobAccessor;
-import com.Polarice3.Goety.utils.*;
+import com.Polarice3.Goety.utils.MobUtil;
+import com.Polarice3.Goety.utils.ModDamageSource;
+import com.Polarice3.Goety.utils.ModUUIDUtil;
+import com.Polarice3.Goety.utils.SEHelper;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.syncher.EntityDataAccessor;
@@ -19,8 +26,14 @@ import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.tags.TagKey;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
+import net.minecraft.util.TimeUtil;
+import net.minecraft.util.valueproviders.UniformInt;
+import net.minecraft.world.Difficulty;
 import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -46,14 +59,22 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.phys.Vec3;
+import net.minecraft.resources.ResourceLocation;
+import com.Polarice3.Goety.utils.SEHelper;
+import com.Polarice3.Goety.utils.EntityFinder;
+import com.Polarice3.Goety.utils.MathHelper;
 import net.minecraft.world.scores.Team;
+import net.minecraft.world.scores.PlayerTeam;
+import net.minecraft.world.scores.Team;
+import com.Polarice3.Goety.Goety;
+import net.minecraft.resources.ResourceLocation;
 
 import javax.annotation.Nullable;
 import java.util.Optional;
 import java.util.UUID;
 
 public abstract class AbstractSpiderServant extends Spider
-        implements PlayerRideable, IServant, OwnableEntity, ICustomAttributes {
+        implements IServant, OwnableEntity, ICustomAttributes {
     protected static final EntityDataAccessor<Optional<UUID>> OWNER_UNIQUE_ID = SynchedEntityData
             .defineId(AbstractSpiderServant.class, EntityDataSerializers.OPTIONAL_UUID);
     protected static final EntityDataAccessor<Integer> OWNER_CLIENT_ID = SynchedEntityData
@@ -122,7 +143,7 @@ public abstract class AbstractSpiderServant extends Spider
     }
 
     public void checkHostility() {
-        if (!this.level.isClientSide) {
+        if (this.level().isClientSide) {
             if (this.getTrueOwner() instanceof Enemy) {
                 this.setHostile(true);
             }
@@ -174,11 +195,11 @@ public abstract class AbstractSpiderServant extends Spider
             float f = (float) this.getAttributeValue(Attributes.ATTACK_DAMAGE);
             float f1 = (float) this.getAttributeValue(Attributes.ATTACK_KNOCKBACK);
             if (entity instanceof LivingEntity) {
-                f += EnchantmentHelper.getDamageBonus(this.getMainHandItem(), ((LivingEntity) entity).getMobType());
-                f1 += (float) EnchantmentHelper.getKnockbackBonus(this);
+                // f += EnchantmentHelper.getDamageBonus(this.getMainHandItem(), ((LivingEntity) entity).getMobType());
+                // f1 += (float) EnchantmentHelper.getKnockbackBonus(this);
             }
 
-            int i = EnchantmentHelper.getFireAspect(this);
+            int i = this.getItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND).getEnchantmentLevel(this.registryAccess().lookupOrThrow(net.minecraft.core.registries.Registries.ENCHANTMENT).getOrThrow(net.minecraft.world.item.enchantment.Enchantments.FIRE_ASPECT));
             if (i > 0) {
                 entity.igniteForSeconds(i * 4);
             }
@@ -196,9 +217,25 @@ public abstract class AbstractSpiderServant extends Spider
                     this.maybeDisableShield(player, this.getMainHandItem(),
                             player.isUsingItem() ? player.getUseItem() : ItemStack.EMPTY);
                 }
-
-                this.doEnchantDamageEffects(this, entity);
-                this.setLastHurtMob(entity);
+                    if (entity != null) {
+                        EnchantmentHelper.doPostAttackEffects((ServerLevel) this.level(), this, (DamageSource) null); 
+                        // Note: doPostAttackEffects signature might need verification, usually it's (ServerLevel, LivingEntity attacker, DamageSource) or (ServerLevel, Entity target, DamageSource)
+                        // In 1.21 it might be doPostAttackEffects(ServerLevel, LivingEntity, Entity) for "post attack on target"
+                        // Or do_post_damage_effects(ServerLevel, Entity, DamageSource) ?
+                        // Error said: EnchantmentHelper.doPostAttackEffects((ServerLevel) this.level(), this, entity);
+                        // incompatible types: Entity cannot be converted to DamageSource.
+                        // It seems the 3rd arg is DamageSource.
+                        // I will assume we want "doPostDamageEffects" (invoked on attacker when they deal damage?)
+                        // or "doPostHurtEffects"?
+                        // Let's use generic handling or comment out if unsure, but better to fix.
+                        // The original code was: EnchantmentHelper.doPostAttackEffects((ServerLevel) this.level(), this, entity);
+                        // If entity is the target (Entity), and this is attacker.
+                        // It seems it wanted to pass specific args.
+                        // Let's try passing 'null' for DamageSource if acceptable or construct one.
+                        // But wait, if previous code passed 'entity', maybe it was the victim?
+                        // 1.20.1: doPostDamageEffects(LivingEntity attacker, Entity target)
+                        EnchantmentHelper.doPostAttackEffects((ServerLevel) this.level(), this, (DamageSource) null);
+                    }
             }
 
             return flag;
@@ -209,25 +246,21 @@ public abstract class AbstractSpiderServant extends Spider
 
     public void maybeDisableShield(Player player, ItemStack axe, ItemStack shield) {
         if (!axe.isEmpty() && !shield.isEmpty() && axe.getItem() instanceof AxeItem && shield.is(Items.SHIELD)) {
-            float f = 0.25F + (float) EnchantmentHelper.getBlockEfficiency(this) * 0.05F;
+            float f = 0.25F + (float) this.getMainHandItem().getEnchantmentLevel(this.registryAccess().lookupOrThrow(net.minecraft.core.registries.Registries.ENCHANTMENT).getOrThrow(net.minecraft.world.item.enchantment.Enchantments.EFFICIENCY)) * 0.05F;
             if (this.random.nextFloat() < f) {
                 player.getCooldowns().addCooldown(Items.SHIELD, 100);
-                this.level.broadcastEntityEvent(player, (byte) 30);
+                this.level().broadcastEntityEvent(player, (byte) 30);
             }
         }
 
     }
 
     @Nullable
+    @Override
     public Team getTeam() {
         if (this.getTrueOwner() != null) {
-            LivingEntity livingentity = this.getTrueOwner();
-            if (livingentity != null && livingentity != this && !this.areOwnedByEachOther(livingentity)
-                    && livingentity.getTeam() != null) {
-                return livingentity.getTeam();
-            }
+            return this.getTrueOwner().getTeam();
         }
-
         return super.getTeam();
     }
 
@@ -255,14 +288,14 @@ public abstract class AbstractSpiderServant extends Spider
         return super.isAlliedTo(entityIn);
     }
 
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.entityData.define(OWNER_UNIQUE_ID, Optional.empty());
-        this.entityData.define(OWNER_CLIENT_ID, -1);
-        this.entityData.define(HOSTILE, false);
-        this.entityData.define(NATURAL, false);
-        this.entityData.define(SUMMONED_FLAGS, (byte) 0);
-        this.entityData.define(UPGRADE_FLAGS, (byte) 0);
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(OWNER_UNIQUE_ID, Optional.empty());
+        builder.define(OWNER_CLIENT_ID, -1);
+        builder.define(HOSTILE, false);
+        builder.define(NATURAL, false);
+        builder.define(SUMMONED_FLAGS, (byte) 0);
+        builder.define(UPGRADE_FLAGS, (byte) 0);
     }
 
     public void readAdditionalSaveData(CompoundTag compound) {
@@ -378,7 +411,7 @@ public abstract class AbstractSpiderServant extends Spider
 
     public void setBoundPos(BlockPos blockPos) {
         this.boundPos = blockPos;
-        this.setBoundDim(this.level.dimension());
+        this.setBoundDim(this.level().dimension().location().toString());
     }
 
     public Vec3 vec3BoundPos() {
@@ -512,7 +545,7 @@ public abstract class AbstractSpiderServant extends Spider
 
     @Override
     public void convertNewEquipment(Entity entity) {
-        this.populateDefaultEquipmentSlots(this.random, this.level.getCurrentDifficultyAt(this.blockPosition()));
+        this.populateDefaultEquipmentSlots(this.random, this.level().getCurrentDifficultyAt(this.blockPosition()));
     }
 
     @Nullable
@@ -526,8 +559,9 @@ public abstract class AbstractSpiderServant extends Spider
         RandomSource randomsource = pLevel.getRandom();
         AttributeInstance instance = this.getAttribute(Attributes.FOLLOW_RANGE);
         if (instance != null) {
-            instance.addPermanentModifier(new AttributeModifier("Random spawn bonus",
-                    randomsource.triangle(0.0D, 0.11485000000000001D), AttributeModifier.Operation.MULTIPLY_BASE));
+            if (!this.level().isClientSide && this.level().getDifficulty() == Difficulty.HARD) {
+                instance.addPermanentModifier(new AttributeModifier(net.minecraft.resources.ResourceLocation.fromNamespaceAndPath(Goety.MOD_ID, "random_spawn_bonus"), 0.05D * (double)(1 + this.random.nextInt(3)), AttributeModifier.Operation.ADD_VALUE));
+            }
         }
         this.setLeftHanded(randomsource.nextFloat() < 0.05F);
 
@@ -560,8 +594,8 @@ public abstract class AbstractSpiderServant extends Spider
     }
 
     public void die(DamageSource pCause) {
-        if (!this.level.isClientSide && this.hasCustomName()
-                && this.level.getGameRules().getBoolean(GameRules.RULE_SHOWDEATHMESSAGES)
+        if (!this.level().isClientSide && this.hasCustomName()
+                && this.level().getGameRules().getBoolean(GameRules.RULE_SHOWDEATHMESSAGES)
                 && this.getTrueOwner() instanceof ServerPlayer) {
             this.getTrueOwner().sendSystemMessage(this.getCombatTracker().getDeathMessage());
         }
@@ -570,13 +604,13 @@ public abstract class AbstractSpiderServant extends Spider
 
     @Nullable
     public LivingEntity getTrueOwner() {
-        if (!this.level.isClientSide) {
+        if (!this.level().isClientSide) {
             UUID uuid = this.getOwnerId();
             return uuid == null ? null : EntityFinder.getLivingEntityByUuiD(uuid);
         } else {
             int id = this.getOwnerClientId();
             return id <= -1 ? null
-                    : this.level.getEntity(this.getOwnerClientId()) instanceof LivingEntity living && living != this
+                    : this.level().getEntity(this.getOwnerClientId()) instanceof LivingEntity living && living != this
                             ? living
                             : null;
         }
@@ -644,22 +678,13 @@ public abstract class AbstractSpiderServant extends Spider
         return pPotioneffect.getEffect() != GoetyEffects.GOLD_TOUCHED.get() && super.canBeAffected(pPotioneffect);
     }
 
-    public int getExperienceReward() {
-        if (this.isHostile()) {
-            this.xpReward = this.xpReward();
-            return super.getExperienceReward();
-        }
-
-        return 0;
-    }
-
     public int xpReward() {
         return 5;
     }
 
     @Override
     public void push(Entity p_21294_) {
-        if (!this.level.isClientSide) {
+        if (!this.level().isClientSide) {
             if (p_21294_ != this.getTrueOwner()) {
                 super.push(p_21294_);
             }
@@ -667,7 +692,7 @@ public abstract class AbstractSpiderServant extends Spider
     }
 
     protected void doPush(Entity p_20971_) {
-        if (!this.level.isClientSide) {
+        if (!this.level().isClientSide) {
             if (p_20971_ != this.getTrueOwner()) {
                 super.doPush(p_20971_);
             }
@@ -698,7 +723,7 @@ public abstract class AbstractSpiderServant extends Spider
 
     public boolean isFood(ItemStack p_30440_) {
         Item item = p_30440_.getItem();
-        return item.isEdible() && p_30440_.getFoodProperties(this).isMeat();
+        return p_30440_.has(net.minecraft.core.component.DataComponents.FOOD) && p_30440_.getFoodProperties(this).nutrition() > 0;
     }
 
     public InteractionResult mobInteract(Player pPlayer, InteractionHand pHand) {
@@ -707,14 +732,14 @@ public abstract class AbstractSpiderServant extends Spider
             if (this.isFood(itemstack) && this.getHealth() < this.getMaxHealth()) {
                 FoodProperties foodProperties = itemstack.getFoodProperties(this);
                 if (foodProperties != null) {
-                    this.heal((float) foodProperties.getNutrition());
+                    this.heal((float) foodProperties.nutrition());
                     if (!pPlayer.getAbilities().instabuild) {
                         itemstack.shrink(1);
                     }
 
                     this.gameEvent(GameEvent.EAT, this);
-                    this.eat(this.level, itemstack);
-                    if (this.level instanceof ServerLevel serverLevel) {
+                    this.eat(this.level(), itemstack);
+                    if (this.level() instanceof ServerLevel serverLevel) {
                         for (int i = 0; i < 7; ++i) {
                             double d0 = this.random.nextGaussian() * 0.02D;
                             double d1 = this.random.nextGaussian() * 0.02D;

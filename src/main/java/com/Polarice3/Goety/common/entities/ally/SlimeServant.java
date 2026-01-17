@@ -85,10 +85,11 @@ public class SlimeServant extends Summoned {
                 .add(Attributes.ATTACK_DAMAGE);
     }
 
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.entityData.define(ID_SIZE, 1);
-        this.entityData.define(DATA_INTERESTED_ID, false);
+    @Override
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(ID_SIZE, 1);
+        builder.define(DATA_INTERESTED_ID, false);
     }
 
     @Override

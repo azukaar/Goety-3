@@ -37,7 +37,7 @@ public class BioMineRenderer<T extends BioMine> extends LayeredEntityRenderer<T,
 
     @Override
     public ResourceLocation getTextureLocation(T entity) {
-        return Goety.location("textures/entity/projectiles/biomine/" + entity.level.getGameTime() % 19 + ".png");
+        return Goety.location("textures/entity/projectiles/biomine/" + entity.level().getGameTime() % 19 + ".png");
     }
 
     public static class GlowLayer<T extends BioMine, M extends BioMineModel<T>> extends RenderLayer<T, M> {

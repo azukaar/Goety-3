@@ -33,7 +33,7 @@ public class SummonCircleRenderer extends EntityRenderer<SummonCircle> {
         matrixStackIn.scale(1.5F, 1.5F, 1.5F);
         matrixStackIn.translate(0.0D, 1.6D, 0.0D);
         matrixStackIn.mulPose(Axis.ZP.rotationDegrees(180.0F));
-        this.model.renderToBuffer(matrixStackIn, ivertexbuilder, packedLightIn, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 0.15F);
+        this.model.renderToBuffer(matrixStackIn, ivertexbuilder, packedLightIn, OverlayTexture.NO_OVERLAY, net.minecraft.util.FastColor.ARGB32.color((int)(0.15F * 255), 255, 255, 255));
         matrixStackIn.popPose();
         super.render(entityIn, entityYaw, partialTicks, matrixStackIn, bufferIn, packedLightIn);
     }

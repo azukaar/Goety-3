@@ -205,16 +205,17 @@ public abstract class AbstractSkeletonServant extends Summoned implements Ranged
             } else if (level.isWaterAt(blockPos)) {
                 entityType = ModEntityType.SUNKEN_SKELETON_SERVANT.get();
             }
-            if (level.getBiome(blockPos).is(BiomeTags.IS_SNOWY)) {
+            if (level.getBiome(blockPos).is(Tags.Biomes.IS_SNOWY)) {
                 entityType = ModEntityType.STRAY_SERVANT.get();
             }
         }
         return entityType;
     }
 
+    @Override
     public SpawnGroupData finalizeSpawn(ServerLevelAccessor worldIn, DifficultyInstance difficultyIn,
-            MobSpawnType reason, @Nullable SpawnGroupData spawnDataIn, @Nullable CompoundTag dataTag) {
-        spawnDataIn = super.finalizeSpawn(worldIn, difficultyIn, reason, spawnDataIn, dataTag);
+            MobSpawnType reason, @Nullable SpawnGroupData spawnDataIn) {
+        spawnDataIn = super.finalizeSpawn(worldIn, difficultyIn, reason, spawnDataIn);
         this.reassessWeaponGoal();
         this.populateDefaultEquipmentSlots(worldIn.getRandom(), difficultyIn);
         this.populateDefaultEquipmentEnchantments(worldIn, worldIn.getRandom(), difficultyIn);
@@ -243,7 +244,7 @@ public abstract class AbstractSkeletonServant extends Summoned implements Ranged
                 this.getItemInHand(ProjectileUtil.getWeaponHoldingHand(this, item -> item instanceof BowItem)));
         AbstractArrow abstractarrowentity = this.getMobArrow(itemstack, distanceFactor);
         if (this.getMainHandItem().getItem() instanceof BowItem) {
-            abstractarrowentity = ((BowItem) this.getMainHandItem().getItem()).customArrow(abstractarrowentity);
+            abstractarrowentity = ((BowItem) this.getMainHandItem().getItem()).customArrow(abstractarrowentity, itemstack, this.getMainHandItem());
             ItemHelper.hurtAndBreak(this.getMainHandItem(), 1, this);
         }
         abstractarrowentity
@@ -261,7 +262,7 @@ public abstract class AbstractSkeletonServant extends Summoned implements Ranged
     }
 
     protected AbstractArrow getMobArrow(ItemStack arrowStack, float distanceFactor) {
-        AbstractArrow abstractarrowentity = ProjectileUtil.getMobArrow(this, arrowStack, distanceFactor);
+        AbstractArrow abstractarrowentity = ProjectileUtil.getMobArrow(this, arrowStack, distanceFactor, this.getMainHandItem());
         if (this.isUpgraded()) {
             abstractarrowentity = getGhostArrow(this, arrowStack, distanceFactor);
         }
@@ -271,8 +272,32 @@ public abstract class AbstractSkeletonServant extends Summoned implements Ranged
 
     public static AbstractArrow getGhostArrow(LivingEntity living, ItemStack stack, float distanceFactor) {
         Arrow arrow = new GhostArrow(living.level(), living);
-        arrow.setEnchantmentEffectsFromEntity(living, distanceFactor);
-        arrow.setEffectsFromItem(stack);
+        double d0 = arrow.getBaseDamage();
+        var registryAccess = living.level().registryAccess();
+        var enchantmentRegistry = registryAccess.registryOrThrow(net.minecraft.core.registries.Registries.ENCHANTMENT);
+        
+        var powerHolder = enchantmentRegistry.getHolder(net.minecraft.world.item.enchantment.Enchantments.POWER);
+        if (powerHolder.isPresent()) {
+            int i = stack.getEnchantmentLevel(powerHolder.get());
+            if (i > 0) {
+                arrow.setBaseDamage(d0 + (double) i * 0.5D + 0.5D);
+            }
+        }
+
+        var punchHolder = enchantmentRegistry.getHolder(net.minecraft.world.item.enchantment.Enchantments.PUNCH);
+        if (punchHolder.isPresent()) {
+            int j = stack.getEnchantmentLevel(punchHolder.get());
+            if (j > 0) {
+                // Arrow.setKnockback removed in 1.21 - knockback handled differently via enchantments
+                arrow.pickup = AbstractArrow.Pickup.DISALLOWED;
+            }
+        }
+
+        var flameHolder = enchantmentRegistry.getHolder(net.minecraft.world.item.enchantment.Enchantments.FLAME);
+        if (flameHolder.isPresent() && stack.getEnchantmentLevel(flameHolder.get()) > 0) {
+            arrow.igniteForSeconds(100);
+        }
+        arrow.pickup = AbstractArrow.Pickup.CREATIVE_ONLY;
         return arrow;
     }
 
@@ -280,6 +305,14 @@ public abstract class AbstractSkeletonServant extends Summoned implements Ranged
         return p_230280_1_ == Items.BOW;
     }
 
+    public AbstractArrow customArrow(AbstractArrow abstractarrow, ItemStack itemstack) {
+        if (abstractarrow instanceof Arrow arrow && this.isUpgraded()) {
+            arrow = new GhostArrow(this.level(), this);
+            arrow.pickup = AbstractArrow.Pickup.CREATIVE_ONLY;
+            return arrow;
+        }
+        return abstractarrow;
+    }
     protected float getStandingEyeHeight(Pose poseIn, EntityDimensions sizeIn) {
         return 1.74F;
     }

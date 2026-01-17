@@ -39,10 +39,11 @@ public class VampireBat extends Bat implements IOwned {
                 .add(Attributes.ATTACK_DAMAGE, 1.0F);
     }
 
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.entityData.define(OWNER_UNIQUE_ID, Optional.empty());
-        this.entityData.define(TARGET_ID, Optional.empty());
+    @Override
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(OWNER_UNIQUE_ID, Optional.empty());
+        builder.define(TARGET_ID, Optional.empty());
     }
 
     public void readAdditionalSaveData(CompoundTag compound) {

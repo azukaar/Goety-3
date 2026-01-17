@@ -60,9 +60,10 @@ public class SpellLightningBolt extends LightningBolt {
         this.flashes = this.random.nextInt(3) + 1;
     }
 
-    protected void defineSynchedData() {
-        this.entityData.define(OWNER_UNIQUE_ID, Optional.empty());
-        this.entityData.define(OWNER_CLIENT_ID, -1);
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(OWNER_UNIQUE_ID, Optional.empty());
+        builder.define(OWNER_CLIENT_ID, -1);
     }
 
     public void readAdditionalSaveData(CompoundTag compound) {

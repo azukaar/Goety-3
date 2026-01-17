@@ -75,7 +75,7 @@ public enum VoidSpawnerState implements StringRepresentable {
                             ++data.totalMobsSpawned;
                             data.nextMobSpawnsAt = serverLevel.getGameTime() + (long)config.ticksBetweenSpawn();
                             data.spawnPotentials.getRandom(serverLevel.getRandom()).ifPresent(data1 -> {
-                                data.nextSpawnData = Optional.of(data1.getData());
+                                data.nextSpawnData = Optional.of(data1.data());
                                 spawner.markUpdated();
                             });
                         });

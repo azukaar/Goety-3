@@ -96,11 +96,12 @@ public class BearServant extends AnimalSummon implements PlayerRideable, IAutoRi
         MobUtil.setBaseAttributes(this.getAttribute(Attributes.ATTACK_DAMAGE), AttributesConfig.BearServantDamage.get());
     }
 
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.entityData.define(DATA_STANDING_ID, false);
-        this.entityData.define(DATA_CAVE, false);
-        this.entityData.define(AUTO_MODE, false);
+    @Override
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(DATA_STANDING_ID, false);
+        builder.define(DATA_CAVE, false);
+        builder.define(AUTO_MODE, false);
     }
 
     protected SoundEvent getAmbientSound() {
@@ -129,7 +130,7 @@ public class BearServant extends AnimalSummon implements PlayerRideable, IAutoRi
 
     public void setBearCave(){
         this.setCave(true);
-        this.level.broadcastEntityEvent(this, (byte) 10);
+        this.level().broadcastEntityEvent(this, (byte) 10);
     }
 
     public void setCave(boolean cave){
@@ -173,8 +174,8 @@ public class BearServant extends AnimalSummon implements PlayerRideable, IAutoRi
 
     @Nullable
     @Override
-    public SpawnGroupData finalizeSpawn(ServerLevelAccessor pLevel, DifficultyInstance pDifficulty, MobSpawnType pReason, @Nullable SpawnGroupData pSpawnData, @Nullable CompoundTag pDataTag) {
-        pSpawnData = super.finalizeSpawn(pLevel, pDifficulty, pReason, pSpawnData, pDataTag);
+    public SpawnGroupData finalizeSpawn(ServerLevelAccessor pLevel, DifficultyInstance pDifficulty, MobSpawnType pReason, @Nullable SpawnGroupData pSpawnData) {
+        pSpawnData = super.finalizeSpawn(pLevel, pDifficulty, pReason, pSpawnData);
         if (this.blockPosition().getY() <= 64 && !pLevel.canSeeSky(this.blockPosition())){
             this.setBearCave();
         }
@@ -222,7 +223,7 @@ public class BearServant extends AnimalSummon implements PlayerRideable, IAutoRi
             float angle = (float) ((Math.PI / 180.0F) * this.yBodyRot);
             double x = radius * Mth.sin(Mth.PI + angle);
             double z = radius * Mth.cos(angle);
-            rider.setPos(this.getX() + x, this.getY() + this.getPassengersRidingOffset() + rider.getMyRidingOffset(), this.getZ() + z);
+            rider.setPos(this.getX() + x, this.getY() + this.getPassengersRidingOffset() + rider.getPassengerRidingPosition(this).y, this.getZ() + z);
         }
     }
 
@@ -234,7 +235,7 @@ public class BearServant extends AnimalSummon implements PlayerRideable, IAutoRi
     }
 
     protected void doPlayerRide(Player player) {
-        if (!this.level.isClientSide) {
+        if (!this.level().isClientSide) {
             player.setYRot(this.getYRot());
             player.setXRot(this.getXRot());
             player.startRiding(this);
@@ -247,7 +248,7 @@ public class BearServant extends AnimalSummon implements PlayerRideable, IAutoRi
 
     public void tick() {
         super.tick();
-        if (this.level.isClientSide) {
+        if (this.level().isClientSide) {
             if (this.clientSideStandAnimation != this.clientSideStandAnimationO) {
                 this.refreshDimensions();
             }
@@ -268,21 +269,22 @@ public class BearServant extends AnimalSummon implements PlayerRideable, IAutoRi
 
     @Override
     public void lifeSpanDamage() {
-        if (!this.level.isClientSide){
-            for(int i = 0; i < this.level.random.nextInt(35) + 10; ++i) {
-                ServerParticleUtil.smokeParticles(ParticleTypes.POOF, this.getX(), this.getEyeY(), this.getZ(), this.level);
+        if (!this.level().isClientSide){
+            for(int i = 0; i < this.level().random.nextInt(35) + 10; ++i) {
+                ServerParticleUtil.smokeParticles(ParticleTypes.POOF, this.getX(), this.getEyeY(), this.getZ(), this.level());
             }
         }
         this.discard();
     }
 
-    public EntityDimensions getDimensions(Pose p_29531_) {
+    @Override
+    public EntityDimensions getDefaultDimensions(Pose p_29531_) {
         if (this.clientSideStandAnimation > 0.0F) {
             float f = this.clientSideStandAnimation / 6.0F;
             float f1 = 1.0F + f;
-            return super.getDimensions(p_29531_).scale(1.0F, f1);
+            return super.getDefaultDimensions(p_29531_).scale(1.0F, f1);
         } else {
-            return super.getDimensions(p_29531_);
+            return super.getDefaultDimensions(p_29531_);
         }
     }
 
@@ -327,7 +329,7 @@ public class BearServant extends AnimalSummon implements PlayerRideable, IAutoRi
                     f1 *= 0.25F;
                 }
 
-                if (this.isInWater() && this.getFluidTypeHeight(NeoForgeMod.WATER_TYPE.get()) > this.getFluidJumpThreshold() || this.isInLava() || this.isInFluidType((fluidType, height) -> this.canSwimInFluidType(fluidType) && height > this.getFluidJumpThreshold())) {
+                if (this.isInWater() && this.getFluidTypeHeight(NeoForgeMod.WATER_TYPE.value()) > this.getFluidJumpThreshold() || this.isInLava() || this.isInFluidType((fluidType, height) -> this.canSwimInFluidType(fluidType) && height > this.getFluidJumpThreshold())) {
                     Vec3 vector3d = this.getDeltaMovement();
                     this.setDeltaMovement(vector3d.x, 0.04F, vector3d.z);
                     this.hasImpulse = true;
@@ -350,20 +352,20 @@ public class BearServant extends AnimalSummon implements PlayerRideable, IAutoRi
     }
 
     public InteractionResult mobInteract(Player pPlayer, InteractionHand pHand) {
-        if (!this.level.isClientSide){
+        if (!this.level().isClientSide){
             ItemStack itemstack = pPlayer.getItemInHand(pHand);
             if (this.getTrueOwner() != null && pPlayer == this.getTrueOwner()) {
                 if (itemstack.is(ItemTags.FISHES) && this.getHealth() < this.getMaxHealth()) {
                     FoodProperties foodProperties = itemstack.getFoodProperties(this);
                     if (foodProperties != null){
-                        this.heal((float)foodProperties.getNutrition());
+                        this.heal((float)foodProperties.nutrition());
                         if (!pPlayer.getAbilities().instabuild) {
                             itemstack.shrink(1);
                         }
 
                         this.gameEvent(GameEvent.EAT, this);
-                        this.eat(this.level, itemstack);
-                        if (this.level instanceof ServerLevel serverLevel) {
+                        this.eat(this.level(), itemstack);
+                        if (this.level() instanceof ServerLevel serverLevel) {
                             for (int i = 0; i < 7; ++i) {
                                 double d0 = this.random.nextGaussian() * 0.02D;
                                 double d1 = this.random.nextGaussian() * 0.02D;
@@ -394,7 +396,7 @@ public class BearServant extends AnimalSummon implements PlayerRideable, IAutoRi
         if (flag) {
             if (this.isUpgraded()){
                 if (entityIn instanceof LivingEntity livingEntity) {
-                    livingEntity.addEffect(new MobEffectInstance(GoetyEffects.SAPPED.get(), MathHelper.secondsToTicks(5), 0), this);
+                    livingEntity.addEffect(new MobEffectInstance(GoetyEffects.SAPPED.getHolder(), MathHelper.secondsToTicks(5), 0), this);
                 }
             }
         }

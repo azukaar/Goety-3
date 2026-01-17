@@ -48,7 +48,7 @@ public class GraveGolemSkullBlockEntityRenderer implements BlockEntityRenderer<G
         p_228879_5_.scale(-1.0F, -1.0F, 1.0F);
         VertexConsumer ivertexbuilder = p_228879_6_.getBuffer(RenderType.entityCutoutNoCullZOffset(TEXTURE));
         skullModel.setupAnim(0, p_228879_1_, 0.0F);
-        skullModel.renderToBuffer(p_228879_5_, ivertexbuilder, p_228879_7_, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 1.0F);
+        skullModel.renderToBuffer(p_228879_5_, ivertexbuilder, p_228879_7_, OverlayTexture.NO_OVERLAY, -1);
         p_228879_5_.popPose();
     }
 
@@ -66,7 +66,7 @@ public class GraveGolemSkullBlockEntityRenderer implements BlockEntityRenderer<G
         p_228879_5_.scale(0.5F, 0.5F, 0.5F);
         VertexConsumer vertexConsumer = ItemRenderer.getFoilBufferDirect(p_228879_6_, RenderType.entityTranslucent(TEXTURE), true, stack.hasFoil());
         skullModel.setupAnim(0, p_228879_1_, 0.0F);
-        skullModel.renderToBuffer(p_228879_5_, vertexConsumer, p_228879_7_, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 1.0F);
+        skullModel.renderToBuffer(p_228879_5_, vertexConsumer, p_228879_7_, OverlayTexture.NO_OVERLAY, -1);
         p_228879_5_.popPose();
     }
 }

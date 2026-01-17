@@ -20,6 +20,8 @@ import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 
+import net.minecraft.network.syncher.SynchedEntityData;
+
 public class WebShot extends ThrowableProjectile {
 
     public WebShot(EntityType<? extends ThrowableProjectile> p_37466_, Level p_37467_) {
@@ -72,7 +74,8 @@ public class WebShot extends ThrowableProjectile {
     }
 
     @Override
-    protected void defineSynchedData() {
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
     }
 
     @Override

@@ -102,10 +102,11 @@ public class HoglinServant extends AnimalSummon implements HoglinBase, PlayerRid
         }
     }
 
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.entityData.define(DATA_IMMUNE_TO_ZOMBIFICATION, false);
-        this.entityData.define(AUTO_MODE, false);
+    @Override
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(DATA_IMMUNE_TO_ZOMBIFICATION, false);
+        builder.define(AUTO_MODE, false);
     }
 
     public void addAdditionalSaveData(CompoundTag p_33353_) {

@@ -10,6 +10,7 @@ import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.core.Direction;
 import org.joml.Matrix4f;
+import org.joml.Vector4f;
 
 public class HoleBlockEntityRenderer<T extends HoleBlockEntity> implements BlockEntityRenderer<T> {
 
@@ -33,11 +34,16 @@ public class HoleBlockEntityRenderer<T extends HoleBlockEntity> implements Block
 
     private void renderFace(T entity, Matrix4f matrix4f, VertexConsumer consumer, float x1, float x2, float y1, float y2, float z1, float z2, float z3, float z4, Direction direction) {
         if (entity.shouldRenderFace(direction)) {
-            consumer.vertex(matrix4f, x1, y1, z1).endVertex();
-            consumer.vertex(matrix4f, x2, y1, z2).endVertex();
-            consumer.vertex(matrix4f, x2, y2, z3).endVertex();
-            consumer.vertex(matrix4f, x1, y2, z4).endVertex();
+            this.vertex(consumer, matrix4f, x1, y1, z1);
+            this.vertex(consumer, matrix4f, x2, y1, z2);
+            this.vertex(consumer, matrix4f, x2, y2, z3);
+            this.vertex(consumer, matrix4f, x1, y2, z4);
         }
+    }
+
+    private void vertex(VertexConsumer consumer, Matrix4f matrix4f, float x, float y, float z) {
+        Vector4f vector4f = matrix4f.transform(new Vector4f(x, y, z, 1.0F));
+        consumer.addVertex(vector4f.x(), vector4f.y(), vector4f.z());
     }
 
     protected RenderType renderType() {

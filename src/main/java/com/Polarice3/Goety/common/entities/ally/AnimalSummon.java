@@ -49,9 +49,10 @@ public abstract class AnimalSummon extends Summoned{
         this.setPathfindingMalus(PathType.DAMAGE_FIRE, -1.0F);
     }
 
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.entityData.define(DATA_BABY_ID, false);
+    @Override
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(DATA_BABY_ID, false);
     }
 
     public boolean canBreed() {
@@ -249,7 +250,7 @@ public abstract class AnimalSummon extends Summoned{
         if (this.getTrueOwner() != null && p_27584_ == this.getTrueOwner()) {
             if (this.isFood(itemstack)) {
                 int i = this.getAge();
-                if (!this.level.isClientSide && i == 0 && this.canFallInLove()) {
+                if (!this.level().isClientSide && i == 0 && this.canFallInLove()) {
                     this.usePlayerItem(p_27584_, p_27585_, itemstack);
                     this.setInLove(p_27584_);
                     return InteractionResult.SUCCESS;
@@ -258,10 +259,10 @@ public abstract class AnimalSummon extends Summoned{
                 if (this.isBaby()) {
                     this.usePlayerItem(p_27584_, p_27585_, itemstack);
                     this.ageUp(getSpeedUpSecondsWhenFeeding(-i), true);
-                    return InteractionResult.sidedSuccess(this.level.isClientSide);
+                    return InteractionResult.sidedSuccess(this.level().isClientSide);
                 }
 
-                if (this.level.isClientSide) {
+                if (this.level().isClientSide) {
                     return InteractionResult.CONSUME;
                 }
             }

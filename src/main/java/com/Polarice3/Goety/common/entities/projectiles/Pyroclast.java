@@ -45,8 +45,9 @@ public class Pyroclast extends ThrowableProjectile implements ISpellEntity {
     }
 
     @Override
-    protected void defineSynchedData() {
-        this.entityData.define(DATA_DANGEROUS, false);
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(DATA_DANGEROUS, false);
     }
 
     public boolean isDangerous() {

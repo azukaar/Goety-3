@@ -18,6 +18,7 @@ import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.WorldlyContainer;
 import net.minecraft.world.entity.*;
+import net.minecraft.world.entity.MobType;
 import net.minecraft.world.entity.monster.Creeper;
 import net.minecraft.world.entity.monster.Enemy;
 import net.minecraft.world.entity.player.Player;
@@ -103,7 +104,7 @@ public abstract class TrainingBlockEntity extends OwnedBlockEntity implements IT
                                 double d1 = blockPos.getY() + randomsource.nextInt(3) - 1;
                                 double d2 = (double) blockPos.getZ() + (randomsource.nextDouble() - randomsource.nextDouble()) * (double) 4 + 0.5D;
                                 BlockPos blockpos = BlockPos.containing(d0, d1, d2);
-                                if (serverLevel.noCollision(blockEntity.getTrainMob().getAABB(d0, d1, d2))) {
+                                if (serverLevel.noCollision(blockEntity.getTrainMob().getDimensions().makeBoundingBox(d0, d1, d2))) {
                                     Entity entity = blockEntity.getTrainMob().create(serverLevel);
                                     if (entity != null) {
                                         entity.moveTo((double)blockpos.getX() + 0.5D, (double)blockpos.getY(), (double)blockpos.getZ() + 0.5D, Mth.wrapDegrees(serverLevel.random.nextFloat() * 360.0F), 0.0F);
@@ -118,7 +119,7 @@ public abstract class TrainingBlockEntity extends OwnedBlockEntity implements IT
                                             mob.yHeadRot = mob.getYRot();
                                             mob.yBodyRot = mob.getYRot();
                                             mob.spawnAnim();
-                                            net.neoforged.neoforge.event.EventHooks.onFinalizeSpawn(mob, serverLevel, serverLevel.getCurrentDifficultyAt(blockPos), MobSpawnType.MOB_SUMMONED, null, null);
+                                            net.neoforged.neoforge.event.EventHooks.finalizeMobSpawn(mob, serverLevel, serverLevel.getCurrentDifficultyAt(blockPos), MobSpawnType.MOB_SUMMONED, null);
                                         }
                                         if (entity instanceof IServant servant){
                                             if (this.isGuarding()) {
@@ -158,7 +159,7 @@ public abstract class TrainingBlockEntity extends OwnedBlockEntity implements IT
         if (this.level != null) {
             BlockPos blockPos = this.worldPosition.offset(-RANGE, -RANGE, -RANGE);
             BlockPos blockPos1 = this.worldPosition.offset(RANGE, RANGE, RANGE);
-            AABB aabb = new AABB(blockPos, blockPos1);
+            AABB aabb = new AABB(blockPos.getX(), blockPos.getY(), blockPos.getZ(), blockPos1.getX(), blockPos1.getY(), blockPos1.getZ());
             List<LivingEntity> list = this.level.getEntitiesOfClass(LivingEntity.class, aabb);
             for (LivingEntity livingEntity : list) {
                 if (EntitySelector.NO_SPECTATORS.test(livingEntity) && EntitySelector.LIVING_ENTITY_STILL_ALIVE.test(livingEntity)) {
@@ -181,15 +182,15 @@ public abstract class TrainingBlockEntity extends OwnedBlockEntity implements IT
         } else {
             return (target) ->
                     (target instanceof Enemy
-                            && !((target.getMobType() == MobType.UNDEAD || target.getType().is(ModTags.EntityTypes.LICH_NEUTRAL)) && this.getTrueOwner() != null && LichdomHelper.isLich(this.getTrueOwner()) && MainConfig.LichUndeadFriends.get())
-                            && !((target.getMobType() == MobType.UNDEAD || target.getType().is(ModTags.EntityTypes.NECRO_SET_NEUTRAL)) && this.getTrueOwner() != null && CuriosFinder.hasUndeadSet(this.getTrueOwner()) && MobsConfig.NecroRobeUndead.get())
+//                            && !((((LivingEntity) target).getMobType() == MobType.UNDEAD || target.getType().is(ModTags.EntityTypes.LICH_NEUTRAL)) && this.getTrueOwner() != null && LichdomHelper.isLich(this.getTrueOwner()) && MainConfig.LichUndeadFriends.get())
+//                            && !((((LivingEntity) target).getMobType() == MobType.UNDEAD || target.getType().is(ModTags.EntityTypes.NECRO_SET_NEUTRAL)) && this.getTrueOwner() != null && CuriosFinder.hasUndeadSet(this.getTrueOwner()) && MobsConfig.NecroRobeUndead.get())
                             && !(MobUtil.isWitchType(target) && this.getTrueOwner() != null && CuriosFinder.isWitchFriendly(this.getTrueOwner()))
                             && !(CuriosFinder.validFrostMob(target) && this.getTrueOwner() != null && CuriosFinder.neutralFrostSet(this.getTrueOwner()))
                             && !(CuriosFinder.validWildMob(target) && this.getTrueOwner() != null && CuriosFinder.neutralWildSet(this.getTrueOwner()))
                             && !(CuriosFinder.validVoidMob(target) && this.getTrueOwner() != null && CuriosFinder.neutralVoidSet(this.getTrueOwner()))
                             && !(CuriosFinder.validNetherMob(target) && this.getTrueOwner() != null && CuriosFinder.neutralNetherSet(this.getTrueOwner()))
-                            && !(target.getMobType() == MobType.ARTHROPOD && this.getTrueOwner() != null && CuriosFinder.hasWarlockRobe(this.getTrueOwner()))
-                            && !(target instanceof Creeper && target.level.getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING) && MobsConfig.ServantsAttackCreepers.get())
+//                            && !(((LivingEntity) target).getMobType() == MobType.ARTHROPOD && this.getTrueOwner() != null && CuriosFinder.hasWarlockRobe(this.getTrueOwner()))
+                            && !(target instanceof Creeper && target.level().getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING) && MobsConfig.ServantsAttackCreepers.get())
                             && !(target instanceof NeutralMob && ((this.getTrueOwner() != null && ((NeutralMob) target).getTarget() != this.getTrueOwner())))
                             && !(target instanceof IOwned && this.getTrueOwner() != null && ((IOwned) target).getTrueOwner() == this.getTrueOwner()))
                             || (target instanceof IOwned owned && owned.isHostile())
@@ -200,7 +201,7 @@ public abstract class TrainingBlockEntity extends OwnedBlockEntity implements IT
     }
 
     public void setEntityType(EntityType<?> p_45463_) {
-        ResourceLocation location = NeoForgeRegistries.ENTITY_TYPES.getKey(p_45463_);
+        ResourceLocation location = net.minecraft.core.registries.BuiltInRegistries.ENTITY_TYPE.getKey(p_45463_);
         this.entityToSpawn.putString("id", location != null ? location.toString() : "minecraft:pig");
     }
 
@@ -317,7 +318,7 @@ public abstract class TrainingBlockEntity extends OwnedBlockEntity implements IT
 
     public boolean handleGameEvent(ServerLevel p_222777_, GameEvent p_282184_, GameEvent.Context p_283014_, Vec3 p_282350_) {
         if (!this.isRemoved()) {
-            if (p_282184_.is(ModTags.GameEvents.BLOCK_EVENTS)) {
+            if (net.minecraft.core.registries.BuiltInRegistries.GAME_EVENT.wrapAsHolder(p_282184_).is(ModTags.GameEvents.BLOCK_EVENTS)) {
                 this.updateVariant = 5;
                 return true;
             }
@@ -326,8 +327,8 @@ public abstract class TrainingBlockEntity extends OwnedBlockEntity implements IT
         return false;
     }
 
-    public void readNetwork(CompoundTag tag) {
-        super.readNetwork(tag);
+    public void readNetwork(CompoundTag tag, net.minecraft.core.HolderLookup.Provider pRegistries) {
+        super.readNetwork(tag, pRegistries);
         if (tag.contains("TrainTime")) {
             this.trainTime = tag.getInt("TrainTime");
         }
@@ -338,7 +339,7 @@ public abstract class TrainingBlockEntity extends OwnedBlockEntity implements IT
             this.trainAmount = tag.getInt("TrainAmount");
         }
         if (tag.contains("Item")) {
-            this.itemStack = ItemStack.of(tag.getCompound("Item"));
+            this.itemStack = ItemStack.parse(pRegistries, tag.getCompound("Item")).orElse(ItemStack.EMPTY);
         }
         if (tag.contains("EntityToSpawn")) {
             this.entityToSpawn = tag.getCompound("EntityToSpawn");
@@ -360,12 +361,12 @@ public abstract class TrainingBlockEntity extends OwnedBlockEntity implements IT
         }
     }
 
-    public CompoundTag writeNetwork(CompoundTag tag) {
-        CompoundTag tag1 = super.writeNetwork(tag);
+    public CompoundTag writeNetwork(CompoundTag tag, net.minecraft.core.HolderLookup.Provider pRegistries) {
+        CompoundTag tag1 = super.writeNetwork(tag, pRegistries);
         tag1.putInt("TrainTime", this.trainTime);
         tag1.putInt("TrainTimeTotal", this.trainTimeTotal);
         tag1.putInt("TrainAmount", this.trainAmount);
-        tag1.put("Item", this.itemStack.save(new CompoundTag()));
+        tag1.put("Item", this.itemStack.save(pRegistries, new CompoundTag()));
         tag1.put("EntityToSpawn", this.entityToSpawn);
         tag1.putBoolean("showArea", this.showArea);
         tag1.putBoolean("sensorSensitive", this.sensorSensitive);

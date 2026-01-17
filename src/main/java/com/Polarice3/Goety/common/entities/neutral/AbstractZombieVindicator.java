@@ -62,9 +62,10 @@ public class AbstractZombieVindicator extends ZombieServant {
         MobUtil.setBaseAttributes(this.getAttribute(Attributes.ATTACK_DAMAGE), AttributesConfig.ZombieVindicatorDamage.get());
     }
 
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.entityData.define(DATA_CONVERTING_ID, false);
+    @Override
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(DATA_CONVERTING_ID, false);
     }
 
     public void addAdditionalSaveData(CompoundTag pCompound) {

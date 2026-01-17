@@ -86,9 +86,10 @@ public class PoisonQuillVine extends AbstractVine {
                 AttributesConfig.PoisonQuillVineDamage.get());
     }
 
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.entityData.define(ANIM_STATE, 0);
+    @Override
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(ANIM_STATE, 0);
     }
 
     @Override

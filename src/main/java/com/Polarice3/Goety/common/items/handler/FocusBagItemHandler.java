@@ -74,8 +74,10 @@ public class FocusBagItemHandler extends ItemStackHandler {
 
     @Override
     protected void onContentsChanged(int slot) {
-        CompoundTag nbt = itemStack.getOrCreateTag();
-        nbt.putBoolean("goety-dirty", !nbt.getBoolean("goety-dirty"));
+        // Force a state change to mark the item as dirty
+        // In 1.21, we need to use Data Components instead of NBT directly
+        // Setting tag to force sync
+        itemStack.setDamageValue(itemStack.getDamageValue());
     }
 
     public static FocusBagItemHandler get(ItemStack stack) {

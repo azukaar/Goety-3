@@ -28,6 +28,9 @@ import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
@@ -55,9 +58,8 @@ public class AnimatorBlockEntity extends BlockEntity implements IWaystoneBlock, 
         return 0;
     }
 
-    @Override
     public AABB getRenderBoundingBox() {
-        return BlockEntity.INFINITE_EXTENT_AABB;
+        return AABB.INFINITE;
     }
 
     public void summonGolem(){
@@ -121,9 +123,9 @@ public class AnimatorBlockEntity extends BlockEntity implements IWaystoneBlock, 
     public Player getOwner(){
         if (this.level != null) {
             if (!this.getItem().isEmpty()) {
-                if (this.getItem().getItem() instanceof WaystoneItem && this.getItem().getTag() != null) {
-                    if (this.getItem().getTag().contains(WaystoneItem.TAG_OWNER)) {
-                        UUID owner = this.getItem().getTag().getUUID(WaystoneItem.TAG_OWNER);
+                if (this.getItem().getItem() instanceof WaystoneItem && this.getItem().has(DataComponents.CUSTOM_DATA)) {
+                    if (this.getItem().get(DataComponents.CUSTOM_DATA).contains(WaystoneItem.TAG_OWNER)) {
+                        UUID owner = this.getItem().get(DataComponents.CUSTOM_DATA).copyTag().getUUID(WaystoneItem.TAG_OWNER);
                         return this.level.getPlayerByUUID(owner);
                     }
                 }
@@ -135,8 +137,8 @@ public class AnimatorBlockEntity extends BlockEntity implements IWaystoneBlock, 
     @Nullable
     public GlobalPos getPosition(){
         if (!this.getItem().isEmpty()) {
-            if (this.getItem().getTag() != null) {
-                return WaystoneItem.getPosition(this.getItem().getTag());
+            if (this.getItem().has(DataComponents.CUSTOM_DATA)) {
+                return WaystoneItem.getPosition(this.getItem().get(DataComponents.CUSTOM_DATA).copyTag());
             }
         }
         return null;
@@ -201,30 +203,36 @@ public class AnimatorBlockEntity extends BlockEntity implements IWaystoneBlock, 
     }
 
     @Override
-    public CompoundTag getUpdateTag() {
-        return this.writeNetwork(super.getUpdateTag());
+    public CompoundTag getUpdateTag(HolderLookup.Provider pRegistries) {
+        return this.writeNetwork(super.getUpdateTag(pRegistries), pRegistries);
     }
 
     @Override
-    public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt) {
-        this.readNetwork(pkt.getTag());
+    public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt, HolderLookup.Provider lookupProvider) {
+        if (this.level != null) {
+            this.readNetwork(pkt.getTag(), lookupProvider);
+        }
     }
 
     @Override
-    public void handleUpdateTag(CompoundTag tag) {
-        super.load(tag);
-        this.readNetwork(tag);
+    public void handleUpdateTag(CompoundTag tag, HolderLookup.Provider pRegistries) {
+        super.loadAdditional(tag, pRegistries);
+        this.readNetwork(tag, pRegistries);
     }
 
-    public void readNetwork(CompoundTag tag) {
-        this.item = ItemStack.of(tag.getCompound("item"));
+    public void readNetwork(CompoundTag tag, HolderLookup.Provider pRegistries) {
+        if (tag.contains("item")) {
+            this.item = ItemStack.parse(pRegistries, tag.getCompound("item")).orElse(ItemStack.EMPTY);
+        }
         if (tag.contains("showBlock")) {
             this.showBlock = tag.getBoolean("showBlock");
         }
     }
 
-    public CompoundTag writeNetwork(CompoundTag tag) {
-        tag.put("item", item.save(new CompoundTag()));
+    public CompoundTag writeNetwork(CompoundTag tag, HolderLookup.Provider pRegistries) {
+        if (!this.item.isEmpty()) {
+            tag.put("item", item.save(pRegistries, new CompoundTag()));
+        }
         tag.putBoolean("showBlock", this.showBlock);
         return tag;
     }
@@ -241,15 +249,15 @@ public class AnimatorBlockEntity extends BlockEntity implements IWaystoneBlock, 
     }
 
     @Override
-    public void load(CompoundTag compound) {
-        this.readNetwork(compound);
-        super.load(compound);
+    public void loadAdditional(CompoundTag compound, HolderLookup.Provider pRegistries) {
+        this.readNetwork(compound, pRegistries);
+        super.loadAdditional(compound, pRegistries);
     }
 
     @Override
-    public void saveAdditional(CompoundTag compound) {
-        this.writeNetwork(compound);
-        super.saveAdditional(compound);
+    public void saveAdditional(CompoundTag compound, HolderLookup.Provider pRegistries) {
+        this.writeNetwork(compound, pRegistries);
+        super.saveAdditional(compound, pRegistries);
     }
 
     @Override

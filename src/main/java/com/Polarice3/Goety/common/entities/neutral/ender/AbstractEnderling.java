@@ -34,8 +34,10 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.alchemy.Potion;
+import net.minecraft.core.Holder;
 import net.minecraft.world.item.alchemy.PotionUtils;
 import net.minecraft.world.item.alchemy.Potions;
+import net.neoforged.neoforge.event.entity.EntityTeleportEvent;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.RespawnAnchorBlock;
 import net.minecraft.world.level.block.state.BlockState;
@@ -104,9 +106,9 @@ public abstract class AbstractEnderling extends Summoned implements IHiding {
         this.goalSelector.addGoal(10, new LookAtPlayerGoal(this, Mob.class, 8.0F));
     }
 
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.entityData.define(DATA_HIDE, false);
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(DATA_HIDE, false);
     }
 
     @Override
@@ -158,11 +160,11 @@ public abstract class AbstractEnderling extends Summoned implements IHiding {
         super.die(pCause);
     }
 
-    protected float getStandingEyeHeight(Pose p_32517_, EntityDimensions p_32518_) {
+    protected float getEyeHeight(Pose p_32517_, EntityDimensions p_32518_) {
         if (this.isHiding()){
             return 0.1F;
         } else {
-            return super.getStandingEyeHeight(p_32517_, p_32518_);
+            return p_32518_.height() * 0.85F;
         }
     }
 
@@ -251,7 +253,7 @@ public abstract class AbstractEnderling extends Summoned implements IHiding {
         if (this.mobHurtTime > 0) {
             --this.mobHurtTime;
         }
-        if (!this.level.isClientSide) {
+        if (!this.level().isClientSide) {
             this.hidingTick();
         }
     }
@@ -259,7 +261,7 @@ public abstract class AbstractEnderling extends Summoned implements IHiding {
     public void hidingTick() {
         if (!this.isHiding()) {
             this.hidingTime = 0;
-            if (this.level instanceof ServerLevel serverLevel) {
+            if (this.level() instanceof ServerLevel serverLevel) {
                 if (this.isGuardingArea()) {
                     if (this.distanceToSqr(this.vec3BoundPos()) > Mth.square(GUARDING_RANGE)) {
                         BlockPos blockPos = BlockFinder.SummonRadius(this.getBoundPos(), this, serverLevel);
@@ -286,13 +288,13 @@ public abstract class AbstractEnderling extends Summoned implements IHiding {
             this.teleportOut();
         }
         this.setHide(true);
-        this.level.broadcastEntityEvent(this, (byte) 4);
+        this.level().broadcastEntityEvent(this, (byte) 4);
         this.refreshDimensions();
     }
 
     public void stopHide() {
         this.setHide(false);
-        this.level.broadcastEntityEvent(this, (byte) 5);
+        this.level().broadcastEntityEvent(this, (byte) 5);
     }
 
     public int getHidingDuration() {
@@ -307,11 +309,11 @@ public abstract class AbstractEnderling extends Summoned implements IHiding {
     }
 
     @Override
-    public EntityDimensions getDimensions(Pose p_21047_) {
+    public EntityDimensions getDefaultDimensions(Pose p_21047_) {
         if (this.isHiding()){
             return EntityDimensions.scalable(0.1F, 0.1F);
         } else {
-            return super.getDimensions(p_21047_);
+            return super.getDefaultDimensions(p_21047_);
         }
     }
 
@@ -356,9 +358,9 @@ public abstract class AbstractEnderling extends Summoned implements IHiding {
 
     private boolean hurtWithCleanWater(DamageSource p_186273_, ThrownPotion p_186274_, float p_186275_) {
         ItemStack itemstack = p_186274_.getItem();
-        Potion potion = PotionUtils.getPotion(itemstack);
+        Holder<Potion> potion = PotionUtils.getPotion(itemstack);
         List<MobEffectInstance> list = PotionUtils.getMobEffects(itemstack);
-        boolean flag = potion == Potions.WATER && list.isEmpty();
+        boolean flag = potion.is(Potions.WATER) && list.isEmpty();
         return flag ? super.hurt(p_186273_, p_186275_) : false;
     }
 
@@ -367,7 +369,7 @@ public abstract class AbstractEnderling extends Summoned implements IHiding {
     }
 
     protected boolean teleport(double range) {
-        if (!this.level.isClientSide() && this.isAlive()) {
+        if (!this.level().isClientSide() && this.isAlive()) {
             double d0 = this.getX() + (this.random.nextDouble() - 0.5D) * range;
             double d1 = this.getY() + (RandomUtil.nextInt(this.random, Mth.floor(range)) - (range / 2.0D));
             double d2 = this.getZ() + (this.random.nextDouble() - 0.5D) * range;
@@ -388,15 +390,15 @@ public abstract class AbstractEnderling extends Summoned implements IHiding {
         boolean flag = blockstate.blocksMotion();
         boolean flag1 = blockstate.getFluidState().is(FluidTags.WATER);
         if (flag && !flag1) {
-            net.neoforged.event.entity.EntityTeleportEvent.EnderEntity event = new net.neoforged.event.entity.EntityTeleportEvent.EnderEntity(this, this.getX(), this.getY(), this.getZ()); net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(event);
+            EntityTeleportEvent.EnderEntity event = new EntityTeleportEvent.EnderEntity(this, this.getX(), this.getY(), this.getZ()); net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(event);
             if (event.isCanceled()) return false;
             Vec3 vec3 = this.position();
             boolean flag2 = this.randomTeleport(event.getTargetX(), event.getTargetY(), event.getTargetZ(), false);
             if (flag2) {
-                if (!this.level.isClientSide) {
+                if (!this.level().isClientSide) {
                     ModNetwork.sendToALL(new SRepositionPacket(this.getId(), this.getX(), this.getY(), this.getZ()));
                 }
-                this.level.gameEvent(GameEvent.TELEPORT, vec3, GameEvent.Context.of(this));
+                this.level().gameEvent(GameEvent.TELEPORT, vec3, GameEvent.Context.of(this));
                 if (this.getHidingDuration() > 0) {
                     this.teleportIn();
                 } else {
@@ -411,7 +413,7 @@ public abstract class AbstractEnderling extends Summoned implements IHiding {
     }
 
     public void teleportTowards(Entity entity, double range) {
-        if (!this.level.isClientSide() && this.isAlive()) {
+        if (!this.level().isClientSide() && this.isAlive()) {
             if (entity == null) {
                 this.teleportIn();
                 return;
@@ -423,7 +425,7 @@ public abstract class AbstractEnderling extends Summoned implements IHiding {
                     double d1 = this.getX() + (this.getRandom().nextDouble() - 0.5D) * (range / 2.0D) - vector3d.x * range;
                     double d2 = this.getY() + (RandomUtil.nextInt(this.getRandom(), Mth.floor(range)) - (range / 2.0D)) - vector3d.y * range;
                     double d3 = this.getZ() + (this.getRandom().nextDouble() - 0.5D) * (range / 2.0D) - vector3d.z * range;
-                    net.neoforged.event.entity.EntityTeleportEvent.EnderEntity event = new net.neoforged.event.entity.EntityTeleportEvent.EnderEntity(this, d1, d2, d3);
+                    EntityTeleportEvent.EnderEntity event = new EntityTeleportEvent.EnderEntity(this, d1, d2, d3);
                     net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(event);
                     if (event.isCanceled()) {
                         if (this.getHidingDuration() > 0) {
@@ -470,7 +472,7 @@ public abstract class AbstractEnderling extends Summoned implements IHiding {
     }
 
     protected boolean teleportAway(Entity entity, double range) {
-        if (!this.level.isClientSide() && this.isAlive()) {
+        if (!this.level().isClientSide() && this.isAlive()) {
             if (entity == null) {
                 this.teleportIn();
                 return false;
@@ -498,7 +500,7 @@ public abstract class AbstractEnderling extends Summoned implements IHiding {
                         if (!BlockFinder.canSeeBlock(this, this.vec3BoundPos())) {
                             flag = false;
                             if (i >= 120) {
-                                if (this.level instanceof ServerLevel serverLevel) {
+                                if (this.level() instanceof ServerLevel serverLevel) {
                                     Optional<Vec3> optional = RespawnAnchorBlock.findStandUpPosition(this.getType(), serverLevel, this.getBoundPos());
                                     if (optional.isPresent()) {
                                         return this.ownedTeleport(optional.get());
@@ -521,9 +523,9 @@ public abstract class AbstractEnderling extends Summoned implements IHiding {
 
     @Override
     public void teleportHits() {
-        this.level.broadcastEntityEvent(this, (byte) 46);
+        this.level().broadcastEntityEvent(this, (byte) 46);
         if (!this.isSilent()) {
-            this.level.playSound(null, this.xo, this.yo, this.zo, ModSounds.ENDERLING_TELEPORT_OUT.get(), this.getSoundSource(), 1.0F, 1.0F);
+            this.level().playSound(null, this.xo, this.yo, this.zo, ModSounds.ENDERLING_TELEPORT_OUT.get(), this.getSoundSource(), 1.0F, 1.0F);
             this.playSound(ModSounds.ENDERLING_TELEPORT_IN.get(), 1.0F, 1.0F);
         }
     }
@@ -543,7 +545,7 @@ public abstract class AbstractEnderling extends Summoned implements IHiding {
     }
 
     public void serverTeleportParticles() {
-        if (this.level instanceof ServerLevel serverLevel) {
+        if (this.level() instanceof ServerLevel serverLevel) {
             int i = 16;
 
             for(int j = 0; j < i; ++j) {
@@ -571,7 +573,7 @@ public abstract class AbstractEnderling extends Summoned implements IHiding {
                 double d1 = Mth.lerp(d0, this.xo, this.getX()) + (this.random.nextDouble() - 0.5D) * (double)this.getBbWidth() * 2.0D;
                 double d2 = Mth.lerp(d0, this.yo, this.getY()) + this.random.nextDouble() * (double)this.getBbHeight();
                 double d3 = Mth.lerp(d0, this.zo, this.getZ()) + (this.random.nextDouble() - 0.5D) * (double)this.getBbWidth() * 2.0D;
-                this.level.addParticle(ModParticleTypes.SMALL_SPELL_SQUARE.get(), d1, d2, d3, colorUtil.red(), colorUtil.green(), colorUtil.blue());
+                this.level().addParticle(ModParticleTypes.SMALL_SPELL_SQUARE.get(), d1, d2, d3, colorUtil.red(), colorUtil.green(), colorUtil.blue());
             }
         } else {
             super.handleEntityEvent(pByte);
@@ -579,7 +581,7 @@ public abstract class AbstractEnderling extends Summoned implements IHiding {
     }
 
     public InteractionResult mobInteract(Player pPlayer, InteractionHand p_230254_2_) {
-        if (!this.level.isClientSide){
+        if (!this.level().isClientSide){
             ItemStack itemstack = pPlayer.getItemInHand(p_230254_2_);
             Item item = itemstack.getItem();
             if (this.getTrueOwner() != null && pPlayer == this.getTrueOwner()) {
@@ -589,7 +591,7 @@ public abstract class AbstractEnderling extends Summoned implements IHiding {
                     }
                     this.playSound(this.getAmbientSound() != null ? this.getAmbientSound() : SoundEvents.GENERIC_EAT, 1.0F, 1.25F);
                     this.heal(5.0F);
-                    if (this.level instanceof ServerLevel serverLevel) {
+                    if (this.level() instanceof ServerLevel serverLevel) {
                         for (int i = 0; i < 7; ++i) {
                             double d0 = this.random.nextGaussian() * 0.02D;
                             double d1 = this.random.nextGaussian() * 0.02D;

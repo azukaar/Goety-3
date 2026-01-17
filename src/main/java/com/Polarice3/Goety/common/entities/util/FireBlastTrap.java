@@ -51,8 +51,9 @@ public class FireBlastTrap extends Entity implements ISpellEntity {
     }
 
     @Override
-    protected void defineSynchedData() {
-        this.entityData.define(IMMEDIATE, false);
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(IMMEDIATE, false);
     }
 
     @Override

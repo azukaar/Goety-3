@@ -33,20 +33,22 @@ public class CaveSpiderServant extends SpiderServant{
     public boolean doHurtTarget(Entity target) {
         if (super.doHurtTarget(target)) {
             if (target instanceof LivingEntity livingEntity) {
-                int i = this.getMasterOwner() instanceof Player ? 7 : 0;
-                if (this.level.getDifficulty() == Difficulty.NORMAL) {
+               if (livingEntity instanceof SpiderServant) {
+                int i = 0;
+                if (this.level().getDifficulty() == Difficulty.NORMAL) {
                     i = 7;
-                } else if (this.level.getDifficulty() == Difficulty.HARD) {
+                } else if (this.level().getDifficulty() == Difficulty.HARD) {
                     i = 15;
                 }
 
                 if (i > 0) {
-                    MobEffect effect = MobEffects.POISON;
-                    if (CuriosFinder.hasWildRobe(this.getMasterOwner())){
-                        effect = GoetyEffects.ACID_VENOM.get();
+                    Holder<MobEffect> effect = MobEffects.POISON;
+                    if (i == 15){
+                        effect = GoetyEffects.ACID_VENOM;
                     }
                     livingEntity.addEffect(new MobEffectInstance(effect, i * 20, 0), this);
                 }
+            }
             }
 
             return true;

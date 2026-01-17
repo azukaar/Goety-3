@@ -29,18 +29,18 @@ public class RedstoneGolemSkullBlockEntity extends SkullBlockEntity {
     }
 
     @Override
-    public CompoundTag getUpdateTag() {
-        return this.writeNetwork(super.getUpdateTag());
+    public CompoundTag getUpdateTag(net.minecraft.core.HolderLookup.Provider pRegistries) {
+        return this.writeNetwork(super.getUpdateTag(pRegistries), pRegistries);
     }
 
-    public void load(CompoundTag nbt) {
-        this.readNetwork(nbt);
-        super.load(nbt);
+    public void loadAdditional(CompoundTag nbt, net.minecraft.core.HolderLookup.Provider pRegistries) {
+        this.readNetwork(nbt, pRegistries);
+        super.loadAdditional(nbt, pRegistries);
     }
 
-    public void saveAdditional(CompoundTag compound) {
-        this.writeNetwork(compound);
-        super.saveAdditional(compound);
+    public void saveAdditional(CompoundTag compound, net.minecraft.core.HolderLookup.Provider pRegistries) {
+        this.writeNetwork(compound, pRegistries);
+        super.saveAdditional(compound, pRegistries);
     }
 
     @Nullable
@@ -57,7 +57,7 @@ public class RedstoneGolemSkullBlockEntity extends SkullBlockEntity {
         return this.customName;
     }
 
-    public void readNetwork(CompoundTag tag) {
+    public void readNetwork(CompoundTag tag, net.minecraft.core.HolderLookup.Provider pRegistries) {
         if (tag.hasUUID("Owner")) {
             this.setOwnerId(tag.getUUID("Owner"));
         }
@@ -66,7 +66,7 @@ public class RedstoneGolemSkullBlockEntity extends SkullBlockEntity {
         }
     }
 
-    public CompoundTag writeNetwork(CompoundTag tag) {
+    public CompoundTag writeNetwork(CompoundTag tag, net.minecraft.core.HolderLookup.Provider pRegistries) {
         if (this.getOwnerId() != null) {
             tag.putUUID("Owner", this.getOwnerId());
         }
@@ -108,15 +108,15 @@ public class RedstoneGolemSkullBlockEntity extends SkullBlockEntity {
     }
 
     @Override
-    public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt) {
+    public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt, net.minecraft.core.HolderLookup.Provider pRegistries) {
         if (pkt.getTag() != null) {
-            this.readNetwork(pkt.getTag());
+            this.readNetwork(pkt.getTag(), pRegistries);
         }
     }
 
     @Override
-    public void handleUpdateTag(CompoundTag tag) {
-        super.load(tag);
-        this.readNetwork(tag);
+    public void handleUpdateTag(CompoundTag tag, net.minecraft.core.HolderLookup.Provider pRegistries) {
+        super.loadAdditional(tag, pRegistries);
+        this.readNetwork(tag, pRegistries);
     }
 }

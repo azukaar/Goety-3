@@ -51,12 +51,13 @@ public class ModFireball extends SmallFireball implements ISpellEntity {
         return ModEntityType.MOD_FIREBALL.get();
     }
 
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.entityData.define(DATA_DANGEROUS, true);
-        this.entityData.define(DATA_EXTRA_DAMAGE, 0.0F);
-        this.entityData.define(DATA_FIERY, 0);
-        this.entityData.define(DATA_DAMAGE, 5.0F);
+    @Override
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(DATA_DANGEROUS, true);
+        builder.define(DATA_EXTRA_DAMAGE, 0.0F);
+        builder.define(DATA_FIERY, 0);
+        builder.define(DATA_DAMAGE, 5.0F);
     }
 
     public void addAdditionalSaveData(CompoundTag pCompound) {

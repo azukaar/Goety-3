@@ -36,9 +36,9 @@ public class NetherMeteor extends ExplosiveProjectile {
         super(ModEntityType.NETHER_METEOR.get(), shooter, accelX, accelY, accelZ, worldIn);
     }
 
-    public void defaultExplosionAndDamage() {
-        this.entityData.define(DATA_EXPLOSION, 4.0F);
-        this.entityData.define(DATA_DAMAGE, 6.0F);
+    public void defaultExplosionAndDamage(net.minecraft.network.syncher.SynchedEntityData.Builder builder) {
+        builder.define(DATA_EXPLOSION, 4.0F);
+        builder.define(DATA_DAMAGE, 6.0F);
     }
 
     public void tick() {
@@ -47,16 +47,16 @@ public class NetherMeteor extends ExplosiveProjectile {
         double d0 = this.getX() + vector3d.x;
         double d1 = this.getY() + vector3d.y;
         double d2 = this.getZ() + vector3d.z;
-        this.level.addParticle(ParticleTypes.LARGE_SMOKE, d0 + level.random.nextDouble()/2, d1 + 0.5D, d2 + level.random.nextDouble()/2, 0.0D, 0.0D, 0.0D);
-        this.level.addParticle(ParticleTypes.FLAME, d0 + level.random.nextDouble()/2, d1 + 0.5D, d2 + level.random.nextDouble()/2, 0.0D, 0.0D, 0.0D);
+        this.level().addParticle(ParticleTypes.LARGE_SMOKE, d0 + this.level().random.nextDouble()/2, d1 + 0.5D, d2 + this.level().random.nextDouble()/2, 0.0D, 0.0D, 0.0D);
+        this.level().addParticle(ParticleTypes.FLAME, d0 + this.level().random.nextDouble()/2, d1 + 0.5D, d2 + this.level().random.nextDouble()/2, 0.0D, 0.0D, 0.0D);
     }
 
     protected void onHit(HitResult result) {
         super.onHit(result);
-        if (!this.level.isClientSide) {
+        if (!this.level().isClientSide) {
             boolean flag = this.isDangerous();
             Explosion.BlockInteraction interaction = flag ? Explosion.BlockInteraction.DESTROY : Explosion.BlockInteraction.KEEP;
-            ExplosionUtil.lootExplode(this.level, this, this.getX(), this.getY(), this.getZ(), this.getExplosionPower(), flag, interaction, LootingExplosion.Mode.LOOT);
+            ExplosionUtil.lootExplode(this.level(), this, this.getX(), this.getY(), this.getZ(), this.getExplosionPower(), flag, interaction, LootingExplosion.Mode.LOOT);
             if (MobsConfig.ApocalypseMode.get() && flag){
                 if (this.getOwner() instanceof Apostle apostle){
                     apostle.netherSpreaderUtil.clear();
@@ -76,12 +76,12 @@ public class NetherMeteor extends ExplosiveProjectile {
 
     protected void onHitEntity(EntityHitResult pResult) {
         super.onHitEntity(pResult);
-        if (!this.level.isClientSide) {
+        if (!this.level().isClientSide) {
             Entity entity = pResult.getEntity();
             Entity entity1 = this.getOwner();
             entity.hurt(ModDamageSource.hellfire(this, this.getOwner()), this.getDamage() + this.getExtraDamage());
-            if (entity1 instanceof LivingEntity) {
-                this.doEnchantDamageEffects((LivingEntity)entity1, entity);
+            if (entity1 instanceof LivingEntity livingAttacker && entity instanceof LivingEntity livingTarget) {
+                 net.minecraft.world.item.enchantment.EnchantmentHelper.doPostAttackEffects((net.minecraft.server.level.ServerLevel) this.level(), livingTarget, ModDamageSource.hellfire(this, this.getOwner()));
             }
 
         }

@@ -9,6 +9,7 @@ import com.Polarice3.Goety.utils.BlockFinder;
 import com.Polarice3.Goety.utils.EntityFinder;
 import com.Polarice3.Goety.utils.ModTicketTypes;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.*;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
@@ -166,8 +167,8 @@ public class OminousIdolBlockEntity extends OwnedBlockEntity {
     }
 
     @Override
-    public void readNetwork(CompoundTag tag) {
-        super.readNetwork(tag);
+    public void readNetwork(CompoundTag tag, HolderLookup.Provider provider) {
+        super.readNetwork(tag, provider);
         if (tag.contains(ILLAGER_LIST)){
             ListTag list = tag.getList(ILLAGER_LIST, Tag.TAG_STRING);
             for(int i = 0; i < list.size(); ++i) {
@@ -191,8 +192,8 @@ public class OminousIdolBlockEntity extends OwnedBlockEntity {
     }
 
     @Override
-    public CompoundTag writeNetwork(CompoundTag tag) {
-        super.writeNetwork(tag);
+    public CompoundTag writeNetwork(CompoundTag tag, HolderLookup.Provider provider) {
+        super.writeNetwork(tag, provider);
         List<String> list = new ArrayList<>();
         List<Integer> list2 = new ArrayList<>();
         if (tag.contains(ILLAGER_LIST)) {

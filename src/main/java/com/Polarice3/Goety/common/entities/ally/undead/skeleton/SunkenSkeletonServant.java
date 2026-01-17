@@ -242,13 +242,25 @@ public class SunkenSkeletonServant extends AbstractSkeletonServant implements Cr
     public AbstractArrow getArrow(ItemStack pArrowStack, float pDistanceFactor) {
         Harpoon harpoon = new Harpoon(this.level, this);
         harpoon.setEffectsFromItem(pArrowStack);
-        harpoon.setEnchantmentEffectsFromEntity(this, pDistanceFactor);
+        ItemStack weapon = this.getItemInHand(ProjectileUtil.getWeaponHoldingHand(this, item -> item instanceof CrossbowItem));
+        double d0 = harpoon.getBaseDamage();
+        int p = net.minecraft.world.item.enchantment.EnchantmentHelper.getItemEnchantmentLevel(net.minecraft.world.item.enchantment.Enchantments.POWER, weapon);
+        if (p > 0) {
+            harpoon.setBaseDamage(d0 + (double) p * 0.5D + 0.5D);
+        }
+        int k = net.minecraft.world.item.enchantment.EnchantmentHelper.getItemEnchantmentLevel(net.minecraft.world.item.enchantment.Enchantments.PUNCH, weapon);
+        if (k > 0) {
+            harpoon.setKnockback(k);
+        }
+        if (net.minecraft.world.item.enchantment.EnchantmentHelper.getItemEnchantmentLevel(net.minecraft.world.item.enchantment.Enchantments.FLAME, weapon) > 0) {
+            harpoon.setSecondsOnFire(100);
+        }
         harpoon.setSoundEvent(SoundEvents.CROSSBOW_HIT);
         harpoon.setShotFromCrossbow(true);
         harpoon.setBaseDamage(harpoon.getBaseDamage() + this.getArrowPower() + this.getBaseRangeDamage());
-        int i = EnchantmentHelper.getTagEnchantmentLevel(Enchantments.PIERCING, this.getItemInHand(ProjectileUtil.getWeaponHoldingHand(this, item -> item instanceof CrossbowItem)));
+        int i = EnchantmentHelper.getItemEnchantmentLevel(Enchantments.PIERCING, weapon);
         if (i > 0) {
-            harpoon.setPierceLevel((byte)i);
+            harpoon.setPierceLevel((byte) i);
         }
         harpoon.pickup = Harpoon.Pickup.DISALLOWED;
 

@@ -21,6 +21,7 @@ import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.Heightmap;
@@ -67,7 +68,8 @@ public class NightBeaconBlockEntity extends BlockEntity {
 
         for(int i1 = 0; i1 < 10 && blockpos.getY() <= l; ++i1) {
             BlockState blockstate = p_155108_.getBlockState(blockpos);
-            float[] afloat = blockstate.getBeaconColorMultiplier(p_155108_, blockpos, p_155109_);
+            int color = blockstate.getBeaconColorMultiplier(p_155108_, blockpos, p_155109_);
+            float[] afloat = new float[]{(color >> 16 & 255) / 255.0F, (color >> 8 & 255) / 255.0F, (color & 255) / 255.0F};
             if (afloat != null) {
                 if (p_155111_.checkingBeamSections.size() <= 1) {
                     beaconblockentity$beaconbeamsection = new BeaconBeamSection();
@@ -168,16 +170,16 @@ public class NightBeaconBlockEntity extends BlockEntity {
         return !this.hasPortal ? ImmutableList.of() : this.beamSections;
     }
 
-    public void load(CompoundTag p_155113_) {
-        super.load(p_155113_);
+    public void loadAdditional(CompoundTag p_155113_, HolderLookup.Provider pRegistries) {
+        super.loadAdditional(p_155113_, pRegistries);
         this.daylightTrue = p_155113_.getBoolean("daylightTrue");
         this.isNight = p_155113_.getBoolean("isNight");
         this.hasPortal = p_155113_.getBoolean("hasPortal");
         this.isActive = p_155113_.getBoolean("isActive");
     }
 
-    protected void saveAdditional(CompoundTag p_187463_) {
-        super.saveAdditional(p_187463_);
+    protected void saveAdditional(CompoundTag p_187463_, HolderLookup.Provider pRegistries) {
+        super.saveAdditional(p_187463_, pRegistries);
         p_187463_.putBoolean("daylightTrue", this.daylightTrue);
         p_187463_.putBoolean("isNight", this.isNight);
         p_187463_.putBoolean("hasPortal", this.hasPortal);
@@ -189,20 +191,19 @@ public class NightBeaconBlockEntity extends BlockEntity {
     }
 
     @Override
-    public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt) {
+    public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt, HolderLookup.Provider pRegistries) {
         if (pkt.getTag() != null) {
-            this.load(pkt.getTag());
+            this.loadAdditional(pkt.getTag(), pRegistries);
         }
-        super.onDataPacket(net, pkt);
+        super.onDataPacket(net, pkt, pRegistries);
     }
 
-    public CompoundTag getUpdateTag() {
-        return this.saveWithoutMetadata();
+    public CompoundTag getUpdateTag(HolderLookup.Provider pRegistries) {
+        return this.saveWithoutMetadata(pRegistries);
     }
 
-    @Override
     public AABB getRenderBoundingBox() {
-        return BlockEntity.INFINITE_EXTENT_AABB;
+        return AABB.INFINITE;
     }
 
     public void setLevel(Level p_155091_) {

@@ -16,7 +16,7 @@ public class ItemBase extends Item {
     }
 
     @Override
-    @Override
+
     public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltip,
             TooltipFlag flagIn) {
         super.appendHoverText(stack, context, tooltip, flagIn);

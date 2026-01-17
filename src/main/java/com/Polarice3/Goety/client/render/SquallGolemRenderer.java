@@ -46,7 +46,7 @@ public class SquallGolemRenderer<T extends SquallGolem> extends MobRenderer<T, S
                 if (MobsConfig.SquallGolemTexture.get() && !p_116986_.isHostile()){
                     vertexconsumer = p_116984_.getBuffer(this.renderType());
                 }
-                this.getParentModel().renderToBuffer(p_116983_, vertexconsumer, 15728640, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 1.0F);
+                this.getParentModel().renderToBuffer(p_116983_, vertexconsumer, 15728640, OverlayTexture.NO_OVERLAY, -1);
             }
         }
 

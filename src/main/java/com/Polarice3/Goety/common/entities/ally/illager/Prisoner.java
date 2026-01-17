@@ -50,7 +50,9 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.PickaxeItem;
+import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.item.trading.MerchantOffers;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.ServerLevelAccessor;
@@ -113,7 +115,7 @@ public class Prisoner extends RaiderServant implements VillagerDataHolder, ILoot
                 return MobsConfig.PrisonerMiningRange.get() * 2;
             }
 
-            public boolean handleGameEvent(ServerLevel serverLevel, GameEvent p_282184_, GameEvent.Context p_283014_,
+            public boolean handleGameEvent(ServerLevel serverLevel, net.minecraft.core.Holder<GameEvent> p_282184_, GameEvent.Context p_283014_,
                     Vec3 p_282350_) {
                 if (!Prisoner.this.isRemoved() && (Prisoner.this.getMainHandItem().is(ItemTags.PICKAXES)
                         || Prisoner.this.getMainHandItem().getItem() instanceof PickaxeItem)) {
@@ -177,13 +179,13 @@ public class Prisoner extends RaiderServant implements VillagerDataHolder, ILoot
         this.goalSelector.addGoal(10, new LookAtPlayerGoal(this, Mob.class, 15.0F));
     }
 
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.entityData.define(LOOK_ANGLE, 0.0F);
-        this.entityData.define(IS_TRADER, false);
-        this.entityData.define(IS_MINING, false);
-        this.entityData.define(HAS_LOOK, false);
-        this.entityData.define(DATA_VILLAGER_DATA, new VillagerData(VillagerType.PLAINS, VillagerProfession.NONE, 1));
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(LOOK_ANGLE, 0.0F);
+        builder.define(IS_TRADER, false);
+        builder.define(IS_MINING, false);
+        builder.define(HAS_LOOK, false);
+        builder.define(DATA_VILLAGER_DATA, new VillagerData(VillagerType.PLAINS, VillagerProfession.NONE, 1));
     }
 
     public void addAdditionalSaveData(CompoundTag compound) {
@@ -209,7 +211,7 @@ public class Prisoner extends RaiderServant implements VillagerDataHolder, ILoot
         compound.putBoolean("Trader", this.isTrader());
         compound.putBoolean("Mining", this.isMining());
         this.saveLooterData(compound);
-        this.writeInventoryToTag(compound);
+        this.writeInventoryToTag(compound, this.registryAccess());
     }
 
     public void readAdditionalSaveData(CompoundTag compound) {
@@ -249,12 +251,12 @@ public class Prisoner extends RaiderServant implements VillagerDataHolder, ILoot
         }
 
         this.readLooterData(compound);
-        this.readInventoryFromTag(compound);
+        this.readInventoryFromTag(compound, this.registryAccess());
     }
 
     public void onSyncedDataUpdated(EntityDataAccessor<?> accessor) {
         if (IS_MINING.equals(accessor)) {
-            if (this.level.isClientSide) {
+            if (this.level().isClientSide) {
                 if (this.isMining()) {
                     this.miningAnimationState.startIfStopped(this.tickCount);
                 } else {
@@ -315,9 +317,8 @@ public class Prisoner extends RaiderServant implements VillagerDataHolder, ILoot
 
     @Nullable
     @Override
-    public SpawnGroupData finalizeSpawn(ServerLevelAccessor pLevel, DifficultyInstance pDifficulty,
-            MobSpawnType pReason, @Nullable SpawnGroupData pSpawnData, @Nullable CompoundTag pDataTag) {
-        pSpawnData = super.finalizeSpawn(pLevel, pDifficulty, pReason, pSpawnData, pDataTag);
+    public SpawnGroupData finalizeSpawn(ServerLevelAccessor pLevel, DifficultyInstance pDifficulty, MobSpawnType pReason, @Nullable SpawnGroupData pSpawnData) {
+        pSpawnData = super.finalizeSpawn(pLevel, pDifficulty, pReason, pSpawnData);
         if (pReason != MobSpawnType.CONVERSION) {
             this.setVillagerData(
                     this.getVillagerData().setType(VillagerType.byBiome(pLevel.getBiome(this.blockPosition()))));
@@ -372,27 +373,26 @@ public class Prisoner extends RaiderServant implements VillagerDataHolder, ILoot
 
     @Override
     public void die(DamageSource pCause) {
-        if (this.level instanceof ServerLevel serverLevel) {
+        if (this.level() instanceof ServerLevel serverLevel) {
             Entity entity = pCause.getEntity();
             if (entity instanceof Zombie zombie) {
-                if ((zombie.level.getDifficulty() == Difficulty.NORMAL
-                        || zombie.level.getDifficulty() == Difficulty.HARD)
+                if ((zombie.level().getDifficulty() == Difficulty.NORMAL
+                        || zombie.level().getDifficulty() == Difficulty.HARD)
                         && net.neoforged.neoforge.event.EventHooks.canLivingConvert(this, EntityType.ZOMBIE_VILLAGER,
                                 (timer) -> {
                                 })) {
-                    if (!(zombie.level.getDifficulty() != Difficulty.HARD && this.random.nextBoolean())) {
+                    if (!(zombie.level().getDifficulty() != Difficulty.HARD && this.random.nextBoolean())) {
                         ZombieVillager zombievillager = this.convertTo(EntityType.ZOMBIE_VILLAGER, false);
                         if (zombievillager != null) {
                             zombievillager.finalizeSpawn(serverLevel,
                                     serverLevel.getCurrentDifficultyAt(zombievillager.blockPosition()),
-                                    MobSpawnType.CONVERSION, new Zombie.ZombieGroupData(false, true),
-                                    (CompoundTag) null);
+                                    MobSpawnType.CONVERSION, new Zombie.ZombieGroupData(false, true));
                             zombievillager.setVillagerData(this.getVillagerData());
                             if (this.getGossips() != null) {
                                 zombievillager.setGossips(this.getGossips());
                             }
                             if (this.getOffers() != null) {
-                                zombievillager.setTradeOffers(this.getOffers());
+                                zombievillager.setTradeOffers(net.minecraft.world.item.trading.MerchantOffers.CODEC.parse(this.registryAccess().createSerializationContext(net.minecraft.nbt.NbtOps.INSTANCE), this.getOffers()).result().orElseGet(net.minecraft.world.item.trading.MerchantOffers::new));
                             }
                             zombievillager.setVillagerXp(this.getVillagerXp());
                             net.neoforged.neoforge.event.EventHooks.onLivingConvert(this, zombievillager);
@@ -410,12 +410,12 @@ public class Prisoner extends RaiderServant implements VillagerDataHolder, ILoot
     @Override
     public void tick() {
         super.tick();
-        if (this.level.isClientSide) {
+        if (this.level().isClientSide) {
             if (this.miningAnimationState.isStarted()) {
                 ++this.toMineTick;
                 if (this.toMineTick == 26) {
                     this.playSound(ModSounds.VILLAGER_CHOP.get());
-                    this.level.playLocalSound(this.getX(), this.getY(), this.getZ(), ModSounds.VILLAGER_CHOP.get(),
+                    this.level().playLocalSound(this.getX(), this.getY(), this.getZ(), ModSounds.VILLAGER_CHOP.get(),
                             this.getSoundSource(), 1.0F, 1.0F, false);
                     ModNetwork.sendToServer(new CPrisonerMinePacket(this.getId()));
                 }
@@ -426,11 +426,11 @@ public class Prisoner extends RaiderServant implements VillagerDataHolder, ILoot
                 this.toMineTick = 0;
             }
         }
-        if (!this.level.isClientSide) {
+        if (!this.level().isClientSide) {
             if (this.isFollowing()) {
-                this.level.broadcastEntityEvent(this, (byte) 4);
+                this.level().broadcastEntityEvent(this, (byte) 4);
             } else {
-                this.level.broadcastEntityEvent(this, (byte) 5);
+                this.level().broadcastEntityEvent(this, (byte) 5);
             }
             /*
              * if (this.getTrueOwner() instanceof Raider raider && raider.getCurrentRaid()
@@ -459,7 +459,7 @@ public class Prisoner extends RaiderServant implements VillagerDataHolder, ILoot
                     this.checkSlowFallDistance();
                 }
             }
-            if (this.level instanceof ServerLevel serverLevel) {
+            if (this.level() instanceof ServerLevel serverLevel) {
                 if (this.noBlockTick > 0) {
                     --this.noBlockTick;
                 }
@@ -536,7 +536,7 @@ public class Prisoner extends RaiderServant implements VillagerDataHolder, ILoot
                                 BlockState blockState = serverLevel.getBlockState(blockPos);
                                 if (this.getMainHandItem().isCorrectToolForDrops(blockState)) {
                                     for (ItemStack itemStack : Block.getDrops(blockState, serverLevel, blockPos,
-                                            this.level.getBlockEntity(blockPos), this, this.getMainHandItem())) {
+                                            this.level().getBlockEntity(blockPos), this, this.getMainHandItem())) {
                                         this.getInventory().addItem(itemStack);
                                     }
                                 }
@@ -565,7 +565,7 @@ public class Prisoner extends RaiderServant implements VillagerDataHolder, ILoot
     }
 
     public void updateDynamicGameEventListener(BiConsumer<DynamicGameEventListener<?>, ServerLevel> p_218348_) {
-        if (this.level instanceof ServerLevel serverlevel) {
+        if (this.level() instanceof ServerLevel serverlevel) {
             p_218348_.accept(this.gameEventListener, serverlevel);
         }
     }
@@ -719,7 +719,7 @@ public class Prisoner extends RaiderServant implements VillagerDataHolder, ILoot
                 }
                 if (flag) {
                     if ((this.getHealth() - amount) > 0.0F) {
-                        if (this.level.getRandom().nextFloat() <= (amount / this.getHealth())) {
+                        if (this.level().getRandom().nextFloat() <= (amount / this.getHealth())) {
                             Player player = null;
                             if (source.getEntity() instanceof Player player1) {
                                 player = player1;
@@ -734,7 +734,7 @@ public class Prisoner extends RaiderServant implements VillagerDataHolder, ILoot
     }
 
     public void unshackle(@Nullable Player player) {
-        if (this.level instanceof ServerLevel serverLevel) {
+        if (this.level() instanceof ServerLevel serverLevel) {
             serverLevel.playSound(null, this.getX(), this.getY(), this.getZ(), SoundEvents.CHAIN_BREAK,
                     this.getSoundSource(), 1.0F, 2.0F);
             AbstractVillager villager;
@@ -749,7 +749,8 @@ public class Prisoner extends RaiderServant implements VillagerDataHolder, ILoot
             for (EquipmentSlot equipmentslot : EquipmentSlot.values()) {
                 ItemStack itemstack = this.getItemBySlot(equipmentslot);
                 if (!itemstack.isEmpty()) {
-                    if (EnchantmentHelper.hasBindingCurse(itemstack)) {
+                    net.minecraft.core.Holder<Enchantment> bindingCurse = this.registryAccess().lookupOrThrow(net.minecraft.core.registries.Registries.ENCHANTMENT).getOrThrow(Enchantments.BINDING_CURSE);
+                    if (EnchantmentHelper.getItemEnchantmentLevel(bindingCurse, itemstack) > 0) {
                         villager.getSlot(equipmentslot.getIndex() + 300).set(itemstack);
                     } else {
                         double d0 = this.getEquipmentDropChance(equipmentslot);
@@ -766,7 +767,7 @@ public class Prisoner extends RaiderServant implements VillagerDataHolder, ILoot
                 }
 
                 if (this.tradeOffers != null) {
-                    villager1.setOffers(new MerchantOffers(this.tradeOffers));
+                    villager1.setOffers(net.minecraft.world.item.trading.MerchantOffers.CODEC.parse(this.registryAccess().createSerializationContext(net.minecraft.nbt.NbtOps.INSTANCE), this.tradeOffers).result().orElseGet(net.minecraft.world.item.trading.MerchantOffers::new));
                 }
                 villager1.setVillagerXp(this.villagerXp);
                 villager1.refreshBrain(serverLevel);
@@ -813,7 +814,7 @@ public class Prisoner extends RaiderServant implements VillagerDataHolder, ILoot
             ServerParticleUtil.addParticlesAroundMiddleSelf(serverLevel,
                     new BlockParticleOption(ParticleTypes.BLOCK, Blocks.CHAIN.defaultBlockState()), villager);
             villager.finalizeSpawn(serverLevel, serverLevel.getCurrentDifficultyAt(villager.blockPosition()),
-                    MobSpawnType.CONVERSION, (SpawnGroupData) null, (CompoundTag) null);
+                    MobSpawnType.CONVERSION, (SpawnGroupData) null);
             villager.setHealth(this.getHealth());
             net.neoforged.neoforge.event.EventHooks.onLivingConvert(this, villager);
         }
@@ -830,7 +831,7 @@ public class Prisoner extends RaiderServant implements VillagerDataHolder, ILoot
             return InteractionResult.SUCCESS;
         } else if (this.getMasterOwner() != null && this.getMasterOwner() == pPlayer) {
             if (MobsConfig.PrisonerMining.get() && (item instanceof PickaxeItem || itemInHand.is(ItemTags.PICKAXES))) {
-                this.playSound(SoundEvents.ARMOR_EQUIP_GENERIC, 1.0F, 1.0F);
+                this.playSound(SoundEvents.ARMOR_EQUIP_GENERIC.value(), 1.0F, 1.0F);
                 this.setItemSlot(EquipmentSlot.MAINHAND, itemInHand.copyWithCount(1));
                 this.dropEquipment(EquipmentSlot.MAINHAND, mainHandItem);
                 this.setGuaranteedDrop(EquipmentSlot.MAINHAND);
@@ -846,12 +847,12 @@ public class Prisoner extends RaiderServant implements VillagerDataHolder, ILoot
             } else if (pPlayer.getMainHandItem().is(ModItems.WAYSTONE.get())) {
                 if (WaystoneItem.isSameDimension(this, pPlayer.getMainHandItem())) {
                     if (WaystoneItem.getBlockEntity(pPlayer.getMainHandItem(),
-                            this.level) instanceof ChestBlockEntity chestBlock && chestBlock.canOpen(pPlayer)) {
-                        if (!this.level.isClientSide) {
+                            this.level()) instanceof ChestBlockEntity chestBlock && chestBlock.canOpen(pPlayer)) {
+                        if (!this.level().isClientSide) {
                             BlockPos blockPos = WaystoneItem.getBlockPos(pPlayer.getMainHandItem());
                             if (blockPos != null) {
                                 this.playSound(SoundEvents.ARROW_HIT_PLAYER, 1.0F, 0.45F);
-                                if (this.level instanceof ServerLevel serverLevel) {
+                                if (this.level() instanceof ServerLevel serverLevel) {
                                     for (int i = 0; i < 7; ++i) {
                                         double d0 = this.random.nextGaussian() * 0.02D;
                                         double d1 = this.random.nextGaussian() * 0.02D;
@@ -862,10 +863,9 @@ public class Prisoner extends RaiderServant implements VillagerDataHolder, ILoot
                                 }
                                 if (chestBlock.getBlockState().is(ModTags.Blocks.RAIDING_CHESTS)) {
                                     this.setDumpChestPos(blockPos);
-                                    this.setDumpChestDim(this.level.dimension());
+                                    this.setDumpChestDim(this.level().dimension());
                                 } else {
-                                    this.setChestPos(blockPos);
-                                    this.setChestDim(this.level.dimension());
+                                    this.setChestDim(this.level().dimension());
                                 }
                                 return InteractionResult.SUCCESS;
                             }
@@ -953,10 +953,10 @@ public class Prisoner extends RaiderServant implements VillagerDataHolder, ILoot
             if (this.prisoner.isGuardingArea()) {
                 if (this.prisoner.distanceToSqr(this.prisoner.vec3BoundPos()) <= Mth.square(2.0D)) {
                     BlockPos blockPos = this.prisoner.getBoundPos();
-                    if (!BlockFinder.isPassableBlock(this.prisoner.level, blockPos)) {
+                    if (!BlockFinder.isPassableBlock(this.prisoner.level(), blockPos)) {
                         blockPos = blockPos.above();
                     }
-                    if (BlockFinder.isPassableBlock(this.prisoner.level, blockPos)) {
+                    if (BlockFinder.isPassableBlock(this.prisoner.level(), blockPos)) {
                         this.prisoner.moveTo(blockPos, this.prisoner.getYRot(), this.prisoner.getXRot());
                     }
                 }
@@ -972,7 +972,7 @@ public class Prisoner extends RaiderServant implements VillagerDataHolder, ILoot
         @Override
         public void tick() {
             super.tick();
-            if (this.prisoner.level instanceof ServerLevel serverLevel) {
+            if (this.prisoner.level() instanceof ServerLevel serverLevel) {
                 if (this.prisoner.tickCount % 5 == 0) {
                     ColorUtil colorUtil = new ColorUtil(0xFFFB5A);
                     serverLevel.sendParticles(ModParticleTypes.RISING_SPIRAL.get(), this.prisoner.getRandomX(1.0D),
@@ -1061,7 +1061,7 @@ public class Prisoner extends RaiderServant implements VillagerDataHolder, ILoot
 
         @Nullable
         public LivingEntity getThrowTarget() {
-            List<LivingEntity> list = this.prisoner.level.getEntitiesOfClass(LivingEntity.class,
+            List<LivingEntity> list = this.prisoner.level().getEntitiesOfClass(LivingEntity.class,
                     this.prisoner.getBoundingBox().inflate(16.0D));
             list.sort(Comparator.comparingDouble(this.prisoner::distanceToSqr));
             LivingEntity target = null;
@@ -1213,7 +1213,7 @@ public class Prisoner extends RaiderServant implements VillagerDataHolder, ILoot
             if (this.illager.getChestPos() == null) {
                 return false;
             }
-            if (this.illager.getChestLevel() != this.illager.level.dimension()) {
+            if (this.illager.getChestLevel() != this.illager.level().dimension()) {
                 return false;
             }
             if (this.illager.getBoundPos() != null) {
@@ -1223,16 +1223,16 @@ public class Prisoner extends RaiderServant implements VillagerDataHolder, ILoot
                     }
                 }
             }
-            if (this.getChest(this.illager.level, this.illager.getChestPos()) == null) {
+            if (this.getChest(this.illager.level(), this.illager.getChestPos()) == null) {
                 return false;
             }
             if (!this.illager.getMainHandItem().isEmpty()) {
                 return false;
             }
-            if (!this.isChestRaidable(this.illager.level, this.illager.getChestPos())) {
+            if (!this.isChestRaidable(this.illager.level(), this.illager.getChestPos())) {
                 return false;
             }
-            if (this.illager.level.getEntitiesOfClass(LivingEntity.class, this.illager.getBoundingBox().inflate(16.0F),
+            if (this.illager.level().getEntitiesOfClass(LivingEntity.class, this.illager.getBoundingBox().inflate(16.0F),
                     livingEntity -> ((livingEntity instanceof IOwned owned
                             && owned.getTrueOwner() == this.illager.getTrueOwner())
                             || (this.illager.getMasterOwner() == livingEntity))

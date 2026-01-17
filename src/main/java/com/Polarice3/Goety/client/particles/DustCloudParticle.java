@@ -53,8 +53,8 @@ public class DustCloudParticle extends TextureSheetParticle {
             double p_105892_, double p_105893_, double p_105894_, double p_105895_, double p_105896_) {
          DustCloudParticle particle = new DustCloudParticle(p_105890_, p_105891_, p_105892_, p_105893_, p_105894_,
                p_105895_, p_105896_, this.sprites);
-         particle.setColor(p_105889_.getColor().x, p_105889_.getColor().y, p_105889_.getColor().z);
-         particle.quadSize = p_105889_.getScale();
+         particle.setColor(p_105889_.color().x, p_105889_.color().y, p_105889_.color().z);
+         particle.quadSize = p_105889_.scale();
          particle.setAlpha(0.9F);
          return particle;
       }

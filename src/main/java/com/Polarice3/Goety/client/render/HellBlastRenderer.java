@@ -32,7 +32,7 @@ public class HellBlastRenderer extends EntityRenderer<HellBlast> {
       float f1 = Mth.lerp(p_116486_, p_116484_.xRotO, p_116484_.getXRot());
       VertexConsumer vertexconsumer = p_116488_.getBuffer(RenderType.entityCutoutNoCull(this.getTextureLocation(p_116484_)));
       this.model.setupAnim(0.0F, f, f1);
-      this.model.renderToBuffer(p_116487_, vertexconsumer, 15728640, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 0.5F);
+      this.model.renderToBuffer(p_116487_, vertexconsumer, 15728640, OverlayTexture.NO_OVERLAY, -1);
       VertexConsumer vertexconsumer2 = p_116488_.getBuffer(ModRenderType.wraith(this.getTextureLocation(p_116484_)));
       this.model.setupAnim(0.0F, f, f1);
       this.model.renderToBuffer(p_116487_, vertexconsumer2, 15728640, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 0.5F);

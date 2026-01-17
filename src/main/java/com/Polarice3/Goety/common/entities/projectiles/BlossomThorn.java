@@ -75,20 +75,20 @@ public class BlossomThorn extends GroundProjectile {
 
     public void tick() {
         super.tick();
-        if (this.level.isClientSide) {
+        if (this.level().isClientSide) {
             if (this.sentTrapEvent) {
                 --this.lifeTicks;
             }
         } else if (--this.warmupDelayTicks < 0) {
             if (!this.playSound){
-                this.level.broadcastEntityEvent(this, (byte)5);
+                this.level().broadcastEntityEvent(this, (byte)5);
                 this.playSound = true;
             }
 
             if (!this.sentTrapEvent) {
-                this.level.broadcastEntityEvent(this, (byte)4);
+                this.level().broadcastEntityEvent(this, (byte)4);
                 this.sentTrapEvent = true;
-                for(Entity entity : this.level.getEntitiesOfClass(Entity.class, this.getBoundingBox().inflate(0.0F, 4.0F, 0.0F))) {
+                for(Entity entity : this.level().getEntitiesOfClass(Entity.class, this.getBoundingBox().inflate(0.0F, 4.0F, 0.0F))) {
                     LivingEntity livingEntity = MobUtil.getLivingTarget(entity);
                     if (livingEntity != null) {
                         this.dealDamageTo(livingEntity);
@@ -117,10 +117,10 @@ public class BlossomThorn extends GroundProjectile {
                 flag = target.hurt(this.damageSources().thorns(this), baseDamage + this.getExtraDamage());
             }
             if (flag){
-                MobEffect effect = MobEffects.POISON;
+                net.minecraft.core.Holder<MobEffect> effect = MobEffects.POISON;
                 if (livingentity != null){
                     if (CuriosFinder.hasWildRobe(livingentity)){
-                        effect = GoetyEffects.ACID_VENOM.get();
+                        effect = GoetyEffects.ACID_VENOM.getHolder();
                     }
                 }
                 target.addEffect(new MobEffectInstance(effect, 140 + MathHelper.secondsToTicks(this.duration)), this);
@@ -132,15 +132,15 @@ public class BlossomThorn extends GroundProjectile {
         super.handleEntityEvent(pId);
         if (pId == 5) {
             if (!this.isSilent()) {
-                this.level.playLocalSound(this.getX(), this.getY(), this.getZ(), ModSounds.VINE_TRAP_BURST.get(), this.getSoundSource(), 1.0F, 0.75F, false);
-                this.level.playLocalSound(this.getX(), this.getY(), this.getZ(), ModSounds.QUICK_GROWING_VINE_BURST.get(), this.getSoundSource(), 1.0F, 0.75F, false);
+                this.level().playLocalSound(this.getX(), this.getY(), this.getZ(), ModSounds.VINE_TRAP_BURST.get(), this.getSoundSource(), 1.0F, 0.75F, false);
+                this.level().playLocalSound(this.getX(), this.getY(), this.getZ(), ModSounds.QUICK_GROWING_VINE_BURST.get(), this.getSoundSource(), 1.0F, 0.75F, false);
             }
         }
 
     }
 
-    @Override
+    /*@Override
     public Packet<ClientGamePacketListener> getAddEntityPacket() {
         return new net.minecraft.network.protocol.game.ClientboundAddEntityPacket(this);
-    }
+    }*/
 }

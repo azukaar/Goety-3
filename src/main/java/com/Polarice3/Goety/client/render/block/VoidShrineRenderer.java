@@ -15,20 +15,19 @@ public class VoidShrineRenderer implements BlockEntityRenderer<VoidShrineBlockEn
     }
 
     public void render(VoidShrineBlockEntity pBlockEntity, float pPartialTicks, PoseStack pMatrixStack, MultiBufferSource pBuffer, int pCombinedLight, int pCombinedOverlay) {
-        pBlockEntity.itemStackHandler.ifPresent(handler -> {
-            ItemStack stack = handler.getStackInSlot(0);
-            Minecraft minecraft = Minecraft.getInstance();
-            if (!stack.isEmpty()) {
-                pMatrixStack.pushPose();
-                pMatrixStack.translate(0.5F, 1.1F, 0.5F);
-                pMatrixStack.scale(1.0F, 1.0F, 1.0F);
-                if (minecraft.level != null){
-                    pMatrixStack.mulPose(Axis.YP.rotationDegrees(3 * (minecraft.level.getGameTime() % 360 + pPartialTicks)));
-                }
-                minecraft.getItemRenderer().renderStatic(stack, ItemDisplayContext.GROUND, pCombinedLight, pCombinedOverlay, pMatrixStack, pBuffer, pBlockEntity.getLevel(), 0);
-                pMatrixStack.popPose();
+        net.neoforged.neoforge.items.ItemStackHandler handler = pBlockEntity.itemStackHandler;
+        ItemStack stack = handler.getStackInSlot(0);
+        Minecraft minecraft = Minecraft.getInstance();
+        if (!stack.isEmpty()) {
+            pMatrixStack.pushPose();
+            pMatrixStack.translate(0.5F, 1.1F, 0.5F);
+            pMatrixStack.scale(1.0F, 1.0F, 1.0F);
+            if (minecraft.level != null){
+                pMatrixStack.mulPose(Axis.YP.rotationDegrees(3 * (minecraft.level.getGameTime() % 360 + pPartialTicks)));
             }
-        });
+            minecraft.getItemRenderer().renderStatic(stack, ItemDisplayContext.GROUND, pCombinedLight, pCombinedOverlay, pMatrixStack, pBuffer, pBlockEntity.getLevel(), 0);
+            pMatrixStack.popPose();
+        }
     }
 
 }

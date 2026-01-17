@@ -55,7 +55,7 @@ public abstract class AbstractBeam extends Entity implements ISpellEntity {
     @Override
     public void tick() {
         LivingEntity owner = getOwner();
-        if (this.level.isClientSide) {
+        if (this.level().isClientSide) {
             if (this.owner instanceof Player) {
                 ModNetwork.INSTANCE.sendToServer(new CBeamPacket(this));
             }
@@ -68,7 +68,7 @@ public abstract class AbstractBeam extends Entity implements ISpellEntity {
             owner.zza = 0.0F;
         }
 
-        if (!this.level.isClientSide) {
+        if (!this.level().isClientSide) {
             if (owner == null || !owner.isAlive() || (this.itemBase && !MobUtil.isSpellCasting(owner))) {
                 this.discard();
                 return;
@@ -80,7 +80,7 @@ public abstract class AbstractBeam extends Entity implements ISpellEntity {
             double distanceToDestination = beamTraceDistance(MAX_RAYTRACE_DISTANCE, 1.0f, false);
             double distanceTraveled = 0;
             while (!(this.position().distanceTo(aabb.getCenter()) > distanceToDestination) && !(this.position().distanceTo(aabb.getCenter()) > MAX_RAYTRACE_DISTANCE)) {
-                for (Entity entity : this.level.getEntitiesOfClass(Entity.class, aabb)) {
+                for (Entity entity : this.level().getEntitiesOfClass(Entity.class, aabb)) {
                     LivingEntity livingEntity = MobUtil.getLivingTarget(entity);
                     if (livingEntity != null && canHitEntity(owner).test(livingEntity)) {
                         entities.add(livingEntity);
@@ -148,7 +148,7 @@ public abstract class AbstractBeam extends Entity implements ISpellEntity {
         Vec3 vector3d = this.getWorldPosition(ticks);
         Vec3 vector3d1 = this.getViewVector(ticks);
         Vec3 vector3d2 = vector3d.add(vector3d1.x * distance, vector3d1.y * distance, vector3d1.z * distance);
-        return level.clip(new ClipContext(vector3d, vector3d2, ClipContext.Block.COLLIDER, passesWater ? ClipContext.Fluid.ANY : ClipContext.Fluid.NONE, this));
+        return level().clip(new ClipContext(vector3d, vector3d2, ClipContext.Block.COLLIDER, passesWater ? ClipContext.Fluid.ANY : ClipContext.Fluid.NONE, this));
     }
 
     public double beamTraceDistance(double distance, float ticks, boolean passesWater) {
@@ -165,13 +165,13 @@ public abstract class AbstractBeam extends Entity implements ISpellEntity {
     @Nullable
     public LivingEntity getOwner() {
         if (this.owner == null && this.ownerUUID != null) {
-            if (this.level instanceof ServerLevel serverLevel) {
+            if (this.level() instanceof ServerLevel serverLevel) {
                 Entity entity = serverLevel.getEntity(this.ownerUUID);
                 if (entity instanceof LivingEntity) {
                     this.owner = (LivingEntity) entity;
                 }
-            } else if (this.level.isClientSide) {
-                this.owner = this.level.getPlayerByUUID(this.ownerUUID);
+            } else if (this.level().isClientSide) {
+                this.owner = this.level().getPlayerByUUID(this.ownerUUID);
             }
         }
         return this.owner;

@@ -28,9 +28,9 @@ public class FireRainTrap extends AbstractTrap {
     }
 
     @Override
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.entityData.define(HELLFIRE, false);
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(HELLFIRE, false);
     }
 
     @Override

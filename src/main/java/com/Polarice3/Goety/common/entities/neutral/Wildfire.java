@@ -137,11 +137,12 @@ public class Wildfire extends Summoned {
         MobUtil.setBaseAttributes(this.getAttribute(Attributes.ARMOR), AttributesConfig.WildfireArmor.get());
     }
 
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.entityData.define(ANIM_STATE, 0);
-        this.entityData.define(SHIELDS, 4);
-        this.entityData.define(SHIELD_HEALTH, AttributesConfig.WildfireShieldHealth.get().floatValue());
+    @Override
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(ANIM_STATE, 0);
+        builder.define(SHIELDS, 4);
+        builder.define(SHIELD_HEALTH, AttributesConfig.WildfireShieldHealth.get().floatValue());
     }
 
     public void onSyncedDataUpdated(EntityDataAccessor<?> accessor) {

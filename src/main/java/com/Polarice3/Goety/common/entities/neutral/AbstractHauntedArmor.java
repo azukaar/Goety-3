@@ -106,10 +106,11 @@ public abstract class AbstractHauntedArmor extends Summoned implements CrossbowA
         MobUtil.setBaseAttributes(this.getAttribute(Attributes.ATTACK_DAMAGE), AttributesConfig.HauntedArmorDamage.get());
     }
 
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.entityData.define(FLAGS, (byte)0);
-        this.entityData.define(DATA_CHARGING_STATE, false);
+    @Override
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(FLAGS, (byte)0);
+        builder.define(DATA_CHARGING_STATE, false);
     }
 
     public void readAdditionalSaveData(CompoundTag compound) {

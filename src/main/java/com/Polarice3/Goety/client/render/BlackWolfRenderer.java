@@ -69,7 +69,7 @@ public class BlackWolfRenderer extends MobRenderer<BlackWolf, BlackWolfModel<Bla
         @Override
         public void render(PoseStack matrixStackIn, MultiBufferSource bufferIn, int packedLightIn, T blackHound, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch) {
             if (!blackHound.isNatural()) {
-                coloredCutoutModelCopyLayerRender(this.getParentModel(), this.layerModel, TEXTURES, matrixStackIn, bufferIn, packedLightIn, blackHound, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, partialTicks, 1.0F, 1.0F, 1.0F);
+                coloredCutoutModelCopyLayerRender(this.getParentModel(), this.layerModel, TEXTURES, matrixStackIn, bufferIn, packedLightIn, blackHound, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, partialTicks, -1);
             }
         }
     }
@@ -89,7 +89,7 @@ public class BlackWolfRenderer extends MobRenderer<BlackWolf, BlackWolfModel<Bla
         public void render(PoseStack matrixStackIn, MultiBufferSource bufferIn, int packedLightIn, T blackHound, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch) {
             if (blackHound.isUpgraded()) {
                 ResourceLocation location = blackHound.isHostile() ? HOSTILE : TEXTURES;
-                coloredCutoutModelCopyLayerRender(this.getParentModel(), this.layerModel, location, matrixStackIn, bufferIn, packedLightIn, blackHound, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, partialTicks, 1.0F, 1.0F, 1.0F);
+                coloredCutoutModelCopyLayerRender(this.getParentModel(), this.layerModel, location, matrixStackIn, bufferIn, packedLightIn, blackHound, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, partialTicks, -1);
             }
         }
     }

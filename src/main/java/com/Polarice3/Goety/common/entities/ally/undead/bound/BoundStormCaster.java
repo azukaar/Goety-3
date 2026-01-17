@@ -80,7 +80,7 @@ public class BoundStormCaster extends AbstractBoundIllager {
     public static AttributeSupplier.Builder setCustomAttributes(){
         return Mob.createMobAttributes()
                 .add(Attributes.FOLLOW_RANGE, 16.0D)
-                .add(NeoForgeMod.STEP_HEIGHT_ADDITION.get(), 1.0D)
+                .add(Attributes.STEP_HEIGHT, 1.0D)
                 .add(Attributes.MAX_HEALTH, AttributesConfig.StormCasterHealth.get())
                 .add(Attributes.ARMOR, AttributesConfig.StormCasterArmor.get())
                 .add(Attributes.MOVEMENT_SPEED, 0.35D)
@@ -94,10 +94,10 @@ public class BoundStormCaster extends AbstractBoundIllager {
         MobUtil.setBaseAttributes(this.getAttribute(Attributes.ATTACK_DAMAGE), AttributesConfig.StormCasterDamage.get());
     }
 
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.entityData.define(IS_CASTING_SPELL, (byte)0);
-        this.entityData.define(ANIM_STATE, 0);
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(IS_CASTING_SPELL, (byte)0);
+        builder.define(ANIM_STATE, 0);
     }
 
     public void readAdditionalSaveData(CompoundTag p_33732_) {
@@ -155,7 +155,7 @@ public class BoundStormCaster extends AbstractBoundIllager {
 
     public void onSyncedDataUpdated(EntityDataAccessor<?> accessor) {
         if (ANIM_STATE.equals(accessor)) {
-            if (this.level.isClientSide){
+            if (this.level().isClientSide){
                 switch (this.entityData.get(ANIM_STATE)){
                     case 0:
                         break;
@@ -181,7 +181,7 @@ public class BoundStormCaster extends AbstractBoundIllager {
     }
 
     public boolean isCastingSpell() {
-        if (this.level.isClientSide) {
+        if (this.level().isClientSide) {
             return this.entityData.get(IS_CASTING_SPELL) > 0;
         } else {
             return this.castingTime > 0;
@@ -247,12 +247,12 @@ public class BoundStormCaster extends AbstractBoundIllager {
     @Override
     public void tick() {
         super.tick();
-        if (this.level.isClientSide){
+        if (this.level().isClientSide){
             this.idleAnimationState.animateWhen(!this.isAttacking() && !this.walkAnimation.isMoving(), this.tickCount);
             for(int i = 0; i < 2; ++i) {
-                this.level.addParticle(ParticleTypes.CLOUD, this.getRandomX(0.5D), this.getY() + 0.5D, this.getRandomZ(0.5D), (0.5D - this.random.nextDouble()) * 0.15D, 0.01F, (0.5D - this.random.nextDouble()) * 0.15D);
+                this.level().addParticle(ParticleTypes.CLOUD, this.getRandomX(0.5D), this.getY() + 0.5D, this.getRandomZ(0.5D), (0.5D - this.random.nextDouble()) * 0.15D, 0.01F, (0.5D - this.random.nextDouble()) * 0.15D);
             }
-        } else if (this.level instanceof ServerLevel serverLevel){
+        } else if (this.level() instanceof ServerLevel serverLevel){
             if (this.isAlive()) {
                 ServerParticleUtil.windParticle(serverLevel, ColorUtil.WHITE, 0.5F + serverLevel.random.nextFloat() * 0.5F, 0.0F, this.getId(), this.position());
                 if (serverLevel.random.nextInt(20) == 0){

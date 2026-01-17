@@ -43,14 +43,16 @@ public class BlackCrystalBlockEntity extends OwnedBlockEntity implements IEnchan
         super(ModBlockEntities.BLACK_CRYSTAL.get(), p_155229_, p_155230_);
     }
 
-    public void readNetwork(CompoundTag tag) {
-        super.readNetwork(tag);
+    @Override
+    public void readNetwork(CompoundTag tag, net.minecraft.core.HolderLookup.Provider pRegistries) {
+        super.readNetwork(tag, pRegistries);
         this.loadEnchants(tag);
     }
 
-    public CompoundTag writeNetwork(CompoundTag tag) {
+    @Override
+    public CompoundTag writeNetwork(CompoundTag tag, net.minecraft.core.HolderLookup.Provider pRegistries) {
         this.saveEnchants(tag, ModBlocks.BLACK_CRYSTAL.get().asItem());
-        return super.writeNetwork(tag);
+        return super.writeNetwork(tag, pRegistries);
     }
 
     public Object2IntMap<Enchantment> getEnchantments(){
@@ -83,7 +85,7 @@ public class BlackCrystalBlockEntity extends OwnedBlockEntity implements IEnchan
                         if (this.attackTick % 20 == 0) {
                             Vec3 vector3d1 = this.getBlockPos().getCenter();
                             DamageSource damageSource = this.getTrueOwner() != null ? ModDamageSource.soulLeech(this.getTrueOwner(), this.getTrueOwner()) : this.level.damageSources().magic();
-                            this.target.addEffect(new MobEffectInstance(GoetyEffects.CURSED.get(), 5, 0, false, false));
+                            this.target.addEffect(new MobEffectInstance(GoetyEffects.CURSED.getHolder(), 5, 0, false, false));
                             if (this.target.hurt(damageSource, this.target.getMaxHealth() * 0.1F)) {
                                 ColorUtil colorUtil1 = new ColorUtil(0x5038dd);
                                 serverLevel.sendParticles(new SpirallingParticleOption(1.0F, colorUtil1.red, colorUtil1.green, colorUtil1.blue, 5), vector3d1.x, vector3d1.y, vector3d1.z, 1, 0.0D, 0.0D, 0.0D, 1.0D);

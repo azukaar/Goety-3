@@ -38,8 +38,9 @@ public class SnarelingGoop extends TangleEntity {
     }
 
     @Override
-    protected void defineSynchedData() {
-        this.entityData.define(ANIM_STATE, 0);
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(ANIM_STATE, 0);
     }
 
     public void setAnimationState(String input) {

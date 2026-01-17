@@ -12,6 +12,8 @@ import net.minecraft.world.level.Level;
 import javax.annotation.Nullable;
 import java.util.UUID;
 
+import net.minecraft.network.syncher.SynchedEntityData;
+
 public abstract class GroundProjectile extends Entity implements ISpellEntity {
     public int warmupDelayTicks;
     public boolean sentTrapEvent;
@@ -32,8 +34,8 @@ public abstract class GroundProjectile extends Entity implements ISpellEntity {
 
     @Nullable
     public LivingEntity getOwner() {
-        if (this.owner == null && this.ownerUUID != null && this.level instanceof ServerLevel) {
-            Entity entity = ((ServerLevel)this.level).getEntity(this.ownerUUID);
+        if (this.owner == null && this.ownerUUID != null && this.level() instanceof ServerLevel) {
+            Entity entity = ((ServerLevel)this.level()).getEntity(this.ownerUUID);
             if (entity instanceof LivingEntity) {
                 this.owner = (LivingEntity)entity;
             }
@@ -43,7 +45,8 @@ public abstract class GroundProjectile extends Entity implements ISpellEntity {
     }
 
     @Override
-    protected void defineSynchedData() {
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        //super.defineSynchedData(builder);
     }
 
     protected void readAdditionalSaveData(CompoundTag pCompound) {
@@ -74,9 +77,9 @@ public abstract class GroundProjectile extends Entity implements ISpellEntity {
 
     public void tick() {
         super.tick();
-        if (!this.level.isClientSide){
+        if (!this.level().isClientSide){
             if (this.sentTrapEvent){
-                this.level.broadcastEntityEvent(this, (byte)4);
+                this.level().broadcastEntityEvent(this, (byte)4);
             }
         }
     }
@@ -101,8 +104,8 @@ public abstract class GroundProjectile extends Entity implements ISpellEntity {
         }
     }
 
-    @Override
+    /*@Override
     public Packet<ClientGamePacketListener> getAddEntityPacket() {
         return new net.minecraft.network.protocol.game.ClientboundAddEntityPacket(this);
-    }
+    }*/
 }

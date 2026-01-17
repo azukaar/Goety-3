@@ -12,6 +12,7 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.projectile.Fireball;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
 public abstract class ExplosiveProjectile extends Fireball implements ISpellEntity {
     private static final EntityDataAccessor<Boolean> DATA_UPGRADED = SynchedEntityData.defineId(ExplosiveProjectile.class, EntityDataSerializers.BOOLEAN);
     public static final EntityDataAccessor<Boolean> DATA_DANGEROUS = SynchedEntityData.defineId(ExplosiveProjectile.class, EntityDataSerializers.BOOLEAN);
@@ -25,25 +26,25 @@ public abstract class ExplosiveProjectile extends Fireball implements ISpellEnti
     }
 
     public ExplosiveProjectile(EntityType<? extends ExplosiveProjectile> p_i50167_1_, double p_i50167_2_, double p_i50167_4_, double p_i50167_6_, double p_i50167_8_, double p_i50167_10_, double p_i50167_12_, Level p_i50167_14_) {
-        super(p_i50167_1_, p_i50167_2_, p_i50167_4_, p_i50167_6_, p_i50167_8_, p_i50167_10_, p_i50167_12_, p_i50167_14_);
+        super(p_i50167_1_, p_i50167_2_, p_i50167_4_, p_i50167_6_, new Vec3(p_i50167_8_, p_i50167_10_, p_i50167_12_), p_i50167_14_);
     }
 
     public ExplosiveProjectile(EntityType<? extends ExplosiveProjectile> p_i50168_1_, LivingEntity p_i50168_2_, double p_i50168_3_, double p_i50168_5_, double p_i50168_7_, Level p_i50168_9_) {
-        super(p_i50168_1_, p_i50168_2_, p_i50168_3_, p_i50168_5_, p_i50168_7_, p_i50168_9_);
+        super(p_i50168_1_, p_i50168_2_, new Vec3(p_i50168_3_, p_i50168_5_, p_i50168_7_), p_i50168_9_);
     }
 
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.entityData.define(DATA_UPGRADED, false);
-        this.entityData.define(DATA_DANGEROUS, this.defaultDangerous());
-        this.entityData.define(DATA_EXTRA_DAMAGE, 0.0F);
-        this.entityData.define(DATA_FIERY, 0);
-        this.defaultExplosionAndDamage();
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(DATA_UPGRADED, false);
+        builder.define(DATA_DANGEROUS, this.defaultDangerous());
+        builder.define(DATA_EXTRA_DAMAGE, 0.0F);
+        builder.define(DATA_FIERY, 0);
+        this.defaultExplosionAndDamage(builder);
     }
 
-    public void defaultExplosionAndDamage(){
-        this.entityData.define(DATA_EXPLOSION, 1.0F);
-        this.entityData.define(DATA_DAMAGE, 6.0F);
+    public void defaultExplosionAndDamage(SynchedEntityData.Builder builder){
+        builder.define(DATA_EXPLOSION, 1.0F);
+        builder.define(DATA_DAMAGE, 6.0F);
     }
 
     public boolean defaultDangerous(){
@@ -134,11 +135,11 @@ public abstract class ExplosiveProjectile extends Fireball implements ISpellEnti
     @Override
     public void tick() {
         super.tick();
-        if (!this.level.isClientSide){
+        if (!this.level().isClientSide){
             if (this.isUpgraded()){
-                this.level.broadcastEntityEvent(this, (byte) 120);
+                this.level().broadcastEntityEvent(this, (byte) 120);
             } else {
-                this.level.broadcastEntityEvent(this, (byte) 121);
+                this.level().broadcastEntityEvent(this, (byte) 121);
             }
         }
     }
@@ -162,9 +163,6 @@ public abstract class ExplosiveProjectile extends Fireball implements ISpellEnti
         }
     }
 
-    @Override
-    public Packet<ClientGamePacketListener> getAddEntityPacket() {
-        return new net.minecraft.network.protocol.game.ClientboundAddEntityPacket(this);
-    }
+
 
 }

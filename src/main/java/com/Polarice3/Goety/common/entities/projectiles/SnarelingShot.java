@@ -25,6 +25,8 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
 
+import net.minecraft.network.syncher.SynchedEntityData;
+
 public class SnarelingShot extends ThrowableProjectile {
     private final Vec3[] trailPositions = new Vec3[64];
     private int trailPointer = -1;
@@ -124,7 +126,8 @@ public class SnarelingShot extends ThrowableProjectile {
     }
 
     @Override
-    protected void defineSynchedData() {
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
     }
 
     @Override

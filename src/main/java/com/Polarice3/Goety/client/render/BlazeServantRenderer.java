@@ -16,7 +16,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 
 public class BlazeServantRenderer extends MobRenderer<BlazeServant, BlazeModel<BlazeServant>> {
-    private static final ResourceLocation ORIGINAL = new ResourceLocation("textures/entity/blaze.png");
+    private static final ResourceLocation ORIGINAL = ResourceLocation.fromNamespaceAndPath("minecraft", "textures/entity/blaze.png");
 
    public BlazeServantRenderer(EntityRendererProvider.Context p_173933_) {
       super(p_173933_, new BlazeModel<>(p_173933_.bakeLayer(ModelLayers.BLAZE)), 0.5F);
@@ -43,7 +43,7 @@ public class BlazeServantRenderer extends MobRenderer<BlazeServant, BlazeModel<B
       @Override
       public void render(PoseStack pMatrixStack, MultiBufferSource pBuffer, int pPackedLight, BlazeServant pLivingEntity, float pLimbSwing, float pLimbSwingAmount, float pPartialTicks, float pAgeInTicks, float pNetHeadYaw, float pHeadPitch) {
          if (MobsConfig.BlazeServantTexture.get() && !pLivingEntity.isHostile()) {
-            coloredCutoutModelCopyLayerRender(this.getParentModel(), this.layerModel, TEXTURES, pMatrixStack, pBuffer, pPackedLight, pLivingEntity, pLimbSwing, pLimbSwingAmount, pAgeInTicks, pNetHeadYaw, pHeadPitch, pPartialTicks, 1.0F, 1.0F, 1.0F);
+            coloredCutoutModelCopyLayerRender(this.getParentModel(), this.layerModel, TEXTURES, pMatrixStack, pBuffer, pPackedLight, pLivingEntity, pLimbSwing, pLimbSwingAmount, pAgeInTicks, pNetHeadYaw, pHeadPitch, pPartialTicks, -1);
          }
       }
    }

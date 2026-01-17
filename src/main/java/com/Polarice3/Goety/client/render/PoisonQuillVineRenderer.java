@@ -53,7 +53,7 @@ public class PoisonQuillVineRenderer<T extends PoisonQuillVine> extends MobRende
                 } else if (p_116986_.isHostile() || !MobsConfig.PoisonQuillVineTexture.get()) {
                     vertexconsumer = p_116984_.getBuffer(ORIGINAL);
                 }
-                this.getParentModel().renderToBuffer(p_116983_, vertexconsumer, 15728640, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 1.0F);
+                this.getParentModel().renderToBuffer(p_116983_, vertexconsumer, 15728640, OverlayTexture.NO_OVERLAY, -1);
             }
         }
 

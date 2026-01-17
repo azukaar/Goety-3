@@ -62,9 +62,10 @@ public class ScatterMine extends Entity implements ISpellEntity {
     }
 
     @Override
-    protected void defineSynchedData() {
-        this.entityData.define(DATA_SPELL, false);
-        this.entityData.define(DATA_EXTRA_DAMAGE, 0.0F);
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(DATA_SPELL, false);
+        builder.define(DATA_EXTRA_DAMAGE, 0.0F);
     }
 
     @Override

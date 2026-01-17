@@ -28,9 +28,9 @@ public abstract class SpellcasterIllagerServant extends AbstractIllagerServant {
         super(type, worldIn);
     }
 
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.entityData.define(DATA_SPELL_CASTING_ID, (byte) 0);
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(DATA_SPELL_CASTING_ID, (byte) 0);
     }
 
     public void readAdditionalSaveData(CompoundTag compound) {

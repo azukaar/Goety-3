@@ -30,12 +30,13 @@ public abstract class SpellTargetProjectile extends Projectile implements ISpell
         super(p_37248_, p_37249_);
     }
 
-    protected void defineSynchedData() {
-        this.entityData.define(OWNER_UNIQUE_ID, Optional.empty());
-        this.entityData.define(OWNER_CLIENT_ID, -1);
-        this.entityData.define(TARGET_UNIQUE_ID, Optional.empty());
-        this.entityData.define(TARGET_CLIENT_ID, -1);
-        this.entityData.define(DATA_EXTRA_DAMAGE, 0.0F);
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        //super.defineSynchedData(builder);
+        builder.define(OWNER_UNIQUE_ID, Optional.empty());
+        builder.define(OWNER_CLIENT_ID, -1);
+        builder.define(TARGET_UNIQUE_ID, Optional.empty());
+        builder.define(TARGET_CLIENT_ID, -1);
+        builder.define(DATA_EXTRA_DAMAGE, 0.0F);
     }
 
     public void readAdditionalSaveData(CompoundTag compound) {
@@ -91,12 +92,12 @@ public abstract class SpellTargetProjectile extends Projectile implements ISpell
 
     @Nullable
     public LivingEntity getOwner() {
-        if (!this.level.isClientSide){
+        if (!this.level().isClientSide){
             UUID uuid = this.getOwnerId();
             return uuid == null ? null : EntityFinder.getLivingEntityByUuiD(uuid);
         } else {
             int id = this.getOwnerClientId();
-            return id <= -1 ? null : this.level.getEntity(this.getOwnerClientId()) instanceof LivingEntity living ? living : null;
+            return id <= -1 ? null : this.level().getEntity(this.getOwnerClientId()) instanceof LivingEntity living ? living : null;
         }
     }
 
@@ -124,12 +125,12 @@ public abstract class SpellTargetProjectile extends Projectile implements ISpell
 
     @Nullable
     public LivingEntity getTarget() {
-        if (!this.level.isClientSide){
+        if (!this.level().isClientSide){
             UUID uuid = this.getTargetId();
             return uuid == null ? null : EntityFinder.getLivingEntityByUuiD(uuid);
         } else {
             int id = this.getTargetClientId();
-            return id <= -1 ? null : this.level.getEntity(this.getTargetClientId()) instanceof LivingEntity living ? living : null;
+            return id <= -1 ? null : this.level().getEntity(this.getTargetClientId()) instanceof LivingEntity living ? living : null;
         }
     }
 
@@ -172,8 +173,8 @@ public abstract class SpellTargetProjectile extends Projectile implements ISpell
         this.entityData.set(DATA_EXTRA_DAMAGE, pDamage);
     }
 
-    @Override
+    /*@Override
     public @NotNull Packet<ClientGamePacketListener> getAddEntityPacket() {
-        return new net.minecraft.network.protocol.game.ClientboundAddEntityPacket(this);
-    }
+        return new net.minecraft.network.protocol.game.ClientboundAddEntityPacket(this, 0);
+    }*/
 }

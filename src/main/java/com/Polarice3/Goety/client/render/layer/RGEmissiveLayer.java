@@ -31,7 +31,7 @@ public class RGEmissiveLayer<T extends LivingEntity, M extends RedstoneGolemMode
         if (!entity.isInvisible()) {
             this.onlyDrawSelectedParts();
             VertexConsumer vertexconsumer = bufferIn.getBuffer(RenderType.entityTranslucentEmissive(this.texture));
-            this.getParentModel().renderToBuffer(matrixStackIn, vertexconsumer, packedLightIn, LivingEntityRenderer.getOverlayCoords(entity, 0.0F), 1.0F, 1.0F, 1.0F, this.alphaFunction.apply(entity, partialTicks, ageInTicks));
+            this.getParentModel().renderToBuffer(matrixStackIn, vertexconsumer, packedLightIn, LivingEntityRenderer.getOverlayCoords(entity, 0.0F), net.minecraft.util.FastColor.ARGB32.color((int)(this.alphaFunction.apply(entity, partialTicks, ageInTicks) * 255), 255, 255, 255));
             this.resetDrawForAllParts();
         }
     }

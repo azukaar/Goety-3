@@ -117,10 +117,10 @@ public class ModRavager extends RaiderServant implements PlayerRideable, IAutoRi
         this.goalSelector.setControlFlag(Goal.Flag.TARGET, flag);
     }
 
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.entityData.define(DATA_SADDLE_ID, false);
-        this.entityData.define(AUTO_MODE, false);
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(DATA_SADDLE_ID, false);
+        builder.define(AUTO_MODE, false);
     }
 
     public float getStepHeight() {

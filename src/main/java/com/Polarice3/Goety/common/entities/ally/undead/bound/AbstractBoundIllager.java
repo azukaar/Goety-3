@@ -8,6 +8,7 @@ import com.Polarice3.Goety.config.SpellConfig;
 import com.Polarice3.Goety.init.ModSounds;
 import com.Polarice3.Goety.utils.ServantUtil;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.ColorParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
@@ -48,9 +49,9 @@ public abstract class AbstractBoundIllager extends RaiderServant {
         this.moveControl = new FlyingMoveControl(this, 20, true);
     }
 
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.entityData.define(DATA_SPELL_CASTING_ID, (byte) 0);
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(DATA_SPELL_CASTING_ID, (byte) 0);
     }
 
     public void readAdditionalSaveData(CompoundTag p_33732_) {
@@ -80,7 +81,10 @@ public abstract class AbstractBoundIllager extends RaiderServant {
     protected PathNavigation createNavigation(Level pLevel) {
         FlyingPathNavigation flyingpathnavigation = new FlyingPathNavigation(this, pLevel) {
             public boolean isStableDestination(BlockPos blockPos) {
-                return !this.level().getBlockState(blockPos.below()).isAir();
+                if (pLevel.getBlockState(blockPos).isAir()) {
+                    return !pLevel.getBlockState(blockPos.below()).isAir();
+                }
+                return true; // Default return if the above condition is false
             }
 
             public void tick() {
@@ -187,10 +191,18 @@ public abstract class AbstractBoundIllager extends RaiderServant {
             float f = this.yBodyRot * ((float) Math.PI / 180F) + Mth.cos((float) this.tickCount * 0.6662F) * 0.25F;
             float f1 = Mth.cos(f);
             float f2 = Mth.sin(f);
-            this.level().addParticle(ParticleTypes.ENTITY_EFFECT, this.getX() + (double) f1 * 0.6D, this.getY() + 1.8D,
+            this.level().addParticle(ColorParticleOption.create(ParticleTypes.ENTITY_EFFECT, (float)d0, (float)d1, (float)d2), this.getX() + (double) f1 * 0.6D, this.getY() + 1.8D,
                     this.getZ() + (double) f2 * 0.6D, d0, d1, d2);
-            this.level().addParticle(ParticleTypes.ENTITY_EFFECT, this.getX() - (double) f1 * 0.6D, this.getY() + 1.8D,
+            this.level().addParticle(ColorParticleOption.create(ParticleTypes.ENTITY_EFFECT, (float)d0, (float)d1, (float)d2), this.getX() - (double) f1 * 0.6D, this.getY() + 1.8D,
                     this.getZ() - (double) f2 * 0.6D, d0, d1, d2);
+        }
+        if (this.level().isClientSide && this.tickCount % 5 == 0) {
+            float f = this.yBodyRot * ((float) Math.PI / 180F) + Mth.cos((float) this.tickCount * 0.6662F) * 0.25F;
+            float f1 = Mth.cos(f);
+            this.level().addParticle(ColorParticleOption.create(ParticleTypes.ENTITY_EFFECT, 0.0F, 0.0F, 0.0F), this.getX() + (double) f1 * 0.6D, this.getY() + 1.8D,
+                    this.getZ() + (double) f * 0.6D, 0.0D, 0.0D, 0.0D);
+            this.level().addParticle(ColorParticleOption.create(ParticleTypes.ENTITY_EFFECT, 0.0F, 0.0F, 0.0F), this.getX() - (double) f1 * 0.6D, this.getY() + 1.8D,
+                    this.getZ() - (double) f * 0.6D, 0.0D, 0.0D, 0.0D);
         }
         if (this.hasItemInSlot(EquipmentSlot.LEGS)) {
             if (this.getEquipmentDropChance(EquipmentSlot.LEGS) > 0.0F) {
@@ -226,7 +238,9 @@ public abstract class AbstractBoundIllager extends RaiderServant {
                 if (!pPlayer.getAbilities().instabuild) {
                     itemstack.shrink(1);
                 }
-                this.playSound(SoundEvents.SOUL_ESCAPE, 1.0F, 1.0F);
+                if (this.getHealth() <= this.getMaxHealth() / 2.0F) {
+                    this.playSound(SoundEvents.SOUL_ESCAPE.value(), 1.0F, 1.0F);
+                }
                 this.heal(2.0F);
                 if (this.level() instanceof ServerLevel serverLevel) {
                     for (int i = 0; i < 7; ++i) {

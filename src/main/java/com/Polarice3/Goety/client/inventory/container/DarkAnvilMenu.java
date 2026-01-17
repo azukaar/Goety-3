@@ -133,7 +133,7 @@ public class DarkAnvilMenu extends AnvilMenu {
             ItemStack itemstack2 = this.inputSlots.getItem(1);
             ItemEnchantments.Mutable map = new ItemEnchantments.Mutable(
                     EnchantmentHelper.getEnchantmentsForCrafting(itemstack1));
-            j += itemstack.getBaseRepairCost() + (itemstack2.isEmpty() ? 0 : itemstack2.getBaseRepairCost());
+            j += itemstack.getOrDefault(DataComponents.REPAIR_COST, 0) + (itemstack2.isEmpty() ? 0 : itemstack2.getOrDefault(DataComponents.REPAIR_COST, 0));
             this.repairItemCountCost = 0;
             boolean flag = false;
 
@@ -141,7 +141,7 @@ public class DarkAnvilMenu extends AnvilMenu {
             // anvil logic
             if (!itemstack2.isEmpty()) {
                 flag = itemstack2.getItem() == Items.ENCHANTED_BOOK
-                        && !EnchantedBookItem.getEnchantments(itemstack2).isEmpty();
+                        && !EnchantmentHelper.getEnchantmentsForCrafting(itemstack2).keySet().isEmpty();
                 if (itemstack1.isDamageableItem() && itemstack1.getItem().isValidRepairItem(itemstack, itemstack2)) {
                     int l2 = Math.min(itemstack1.getDamageValue(), itemstack1.getMaxDamage() / 4);
                     if (l2 <= 0) {
@@ -200,9 +200,9 @@ public class DarkAnvilMenu extends AnvilMenu {
 
                         for (Holder<Enchantment> enchantment : map.keySet()) {
                             if (!enchantment.equals(enchantment1)
-                                    && !enchantment1.value().isCompatibleWith(enchantment.value())) {
-                                flag1 = false;
-                                ++i;
+                                    /*&& !enchantment1.value().isCompatibleWith(enchantment.value())*/) {
+                                //flag1 = false;
+                                //++i;
                             }
                         }
 
@@ -221,12 +221,7 @@ public class DarkAnvilMenu extends AnvilMenu {
                             }
 
                             map.set(enchantment1, j2);
-                            int k3 = switch (enchantment1.value().getRarity()) {
-                                case COMMON -> 1;
-                                case UNCOMMON -> 2;
-                                case RARE -> 4;
-                                case VERY_RARE -> 8;
-                            };
+                            int k3 = enchantment1.value().getAnvilCost(); 
 
                             if (flag) {
                                 k3 = Math.max(1, k3 / 2);
@@ -247,7 +242,7 @@ public class DarkAnvilMenu extends AnvilMenu {
                 }
             }
 
-            if (this.itemName != null && !Util.isBlank(this.itemName)) {
+            if (this.itemName != null && !this.itemName.isBlank()) {
                 Component hoverName = itemstack.get(DataComponents.CUSTOM_NAME);
                 Component defaultName = itemstack.getHoverName();
                 String currentName = hoverName != null ? hoverName.getString()
@@ -285,17 +280,17 @@ public class DarkAnvilMenu extends AnvilMenu {
             }
 
             if (!itemstack1.isEmpty()) {
-                int k2 = itemstack1.getRepairCost();
-                if (!itemstack2.isEmpty() && k2 < itemstack2.getRepairCost()) {
-                    k2 = itemstack2.getRepairCost();
+                int k2 = itemstack1.getOrDefault(DataComponents.REPAIR_COST, 0);
+                if (!itemstack2.isEmpty() && k2 < itemstack2.getOrDefault(DataComponents.REPAIR_COST, 0)) {
+                    k2 = itemstack2.getOrDefault(DataComponents.REPAIR_COST, 0);
                 }
 
                 if (k != i || k == 0) {
                     k2 = calculateIncreasedRepairCost(k2);
                 }
 
-                itemstack1.setRepairCost(k2);
-                EnchantmentHelper.setEnchantments(itemstack1, map);
+                itemstack1.set(DataComponents.REPAIR_COST, k2);
+                EnchantmentHelper.setEnchantments(itemstack1, map.toImmutable());
             }
 
             this.resultSlots.setItem(0, itemstack1);
@@ -313,7 +308,7 @@ public class DarkAnvilMenu extends AnvilMenu {
             this.itemName = s;
             if (this.getSlot(2).hasItem()) {
                 ItemStack itemstack = this.getSlot(2).getItem();
-                if (Util.isBlank(s)) {
+                if (s.isBlank()) {
                     itemstack.remove(DataComponents.CUSTOM_NAME);
                 } else {
                     itemstack.set(DataComponents.CUSTOM_NAME, Component.literal(s));
@@ -329,7 +324,7 @@ public class DarkAnvilMenu extends AnvilMenu {
 
     @Nullable
     private static String validateName(String p_288995_) {
-        String s = SharedConstants.filterText(p_288995_);
+        String s = net.minecraft.util.StringUtil.filterText(p_288995_);
         return s.length() <= 50 ? s : null;
     }
 

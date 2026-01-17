@@ -8,6 +8,10 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.HitResult;
 
 public class BlastFungus extends ThrowableFungus {
+    @Override
+    protected net.minecraft.world.item.Item getDefaultItem() {
+        return com.Polarice3.Goety.common.items.ModItems.BLAST_FUNGUS.get();
+    }
 
     public BlastFungus(EntityType<? extends ThrowableFungus> p_37466_, Level p_37467_) {
         super(p_37466_, p_37467_);
@@ -23,8 +27,8 @@ public class BlastFungus extends ThrowableFungus {
 
     protected void onHit(HitResult p_37406_) {
         super.onHit(p_37406_);
-        if (!this.level.isClientSide) {
-            ExplosionUtil.fungusExplode(this.level, this, this.getX(), this.getY(), this.getZ(), 2.5F, this.isOnFire());
+        if (!this.level().isClientSide) {
+            ExplosionUtil.fungusExplode(this.level(), this, this.getX(), this.getY(), this.getZ(), 2.5F, this.isOnFire());
             this.discard();
         }
     }

@@ -60,9 +60,9 @@ public class Cultist extends Raider implements ICustomAttributes {
     public void setConfigurableAttributes(){
     }
 
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.entityData.define(LEADER_UUID, Optional.empty());
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(LEADER_UUID, Optional.empty());
     }
 
     public void readAdditionalSaveData(CompoundTag compound) {
@@ -112,7 +112,7 @@ public class Cultist extends Raider implements ICustomAttributes {
     protected void alertWitches(){
         double d0 = this.getAttributeValue(Attributes.FOLLOW_RANGE);
         AABB axisalignedbb = AABB.unitCubeFromLowerCorner(this.position()).inflate(d0, 10.0D, d0);
-        List<Mob> list = this.level.getEntitiesOfClass(Mob.class, axisalignedbb);
+        List<Mob> list = this.level().getEntitiesOfClass(Mob.class, axisalignedbb);
 
         for (Mob mob : list){
             if (mob.getTarget() == null && this.getLastHurtByMob() != null && !(this.getLastHurtByMob() instanceof Raider) && !MobUtil.areAllies(this.getLastHurtByMob(), this)) {
@@ -126,7 +126,7 @@ public class Cultist extends Raider implements ICustomAttributes {
     @Override
     public void tick() {
         super.tick();
-        if (!this.level.isClientSide) {
+        if (!this.level().isClientSide) {
             if (this.getLeader() != null) {
                 if (!this.getLeader().isAlive()) {
                     this.setLeader(null);
@@ -155,7 +155,7 @@ public class Cultist extends Raider implements ICustomAttributes {
     }
 
     @Override
-    public void applyRaidBuffs(int wave, boolean p_213660_2_) {
+    public void applyRaidBuffs(net.minecraft.server.level.ServerLevel pLevel, int wave, boolean p_213660_2_) {
     }
 
     @Override

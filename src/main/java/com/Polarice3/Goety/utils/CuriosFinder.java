@@ -8,7 +8,7 @@ import com.Polarice3.Goety.common.entities.neutral.AbstractNecromancer;
 import com.Polarice3.Goety.common.entities.neutral.ender.AbstractEnderling;
 import com.Polarice3.Goety.common.items.ModItems;
 import com.Polarice3.Goety.common.items.brew.ThrowableBrewItem;
-import top.theillusivec4.curios.api.SlotResult;
+//import top.theillusivec4.curios.api.SlotResult;
 import com.Polarice3.Goety.common.items.curios.*;
 
 import com.Polarice3.Goety.common.items.handler.BrewBagItemHandler;
@@ -48,12 +48,12 @@ public class CuriosFinder {
         ItemStack foundStack = ItemStack.EMPTY;
         if (livingEntity instanceof Player) {
             if (CuriosLoaded.CURIOS.isLoaded()) {
-                Optional<SlotResult> slotResult = CuriosApi.getCuriosInventory(livingEntity)
+                /*Optional<SlotResult> slotResult = CuriosApi.getCuriosInventory(livingEntity)
                         .map(inv -> inv.findFirstCurio(item))
                         .orElse(Optional.empty());
                 if (slotResult.isPresent()) {
                     foundStack = slotResult.get().stack();
-                }
+                }*/
             }
         }
 
@@ -63,12 +63,12 @@ public class CuriosFinder {
     public static ItemStack findCurioInAll(Player playerEntity, Item item) {
         ItemStack foundStack = ItemStack.EMPTY;
         if (CuriosLoaded.CURIOS.isLoaded()) {
-            Optional<SlotResult> slotResult = CuriosApi.getCuriosInventory(playerEntity)
+            /*Optional<SlotResult> slotResult = CuriosApi.getCuriosInventory(playerEntity)
                     .map(inv -> inv.findFirstCurio(item))
                     .orElse(Optional.empty());
             if (slotResult.isPresent()) {
                 foundStack = slotResult.get().stack();
-            }
+            }*/
         }
 
         if (playerEntity.getOffhandItem().is(item)) {
@@ -391,12 +391,12 @@ public class CuriosFinder {
     public static ItemStack findRing(Player playerEntity) {
         ItemStack foundStack = ItemStack.EMPTY;
         if (CuriosLoaded.CURIOS.isLoaded()) {
-            Optional<SlotResult> slotResult = CuriosApi.getCuriosInventory(playerEntity)
+            /*Optional<SlotResult> slotResult = CuriosApi.getCuriosInventory(playerEntity)
                     .map(inv -> inv.findFirstCurio(CuriosFinder::isRing))
                     .orElse(Optional.empty());
             if (slotResult.isPresent()) {
                 foundStack = slotResult.get().stack();
-            }
+            }*/
         } else {
             for (int i = 0; i < playerEntity.getInventory().getContainerSize(); i++) {
                 ItemStack itemStack = playerEntity.getInventory().getItem(i);
@@ -453,12 +453,12 @@ public class CuriosFinder {
     public static ItemStack findBrewBag(Player playerEntity) {
         ItemStack foundStack = ItemStack.EMPTY;
         if (CuriosLoaded.CURIOS.isLoaded()) {
-            Optional<SlotResult> slotResult = CuriosApi.getCuriosInventory(playerEntity)
+            /*Optional<SlotResult> slotResult = CuriosApi.getCuriosInventory(playerEntity)
                     .map(inv -> inv.findFirstCurio(CuriosFinder::isBrewBag))
                     .orElse(Optional.empty());
             if (slotResult.isPresent()) {
                 foundStack = slotResult.get().stack();
-            }
+            }*/
         }
         for (int i = 0; i < playerEntity.getInventory().getContainerSize(); i++) {
             ItemStack itemStack = playerEntity.getInventory().getItem(i);

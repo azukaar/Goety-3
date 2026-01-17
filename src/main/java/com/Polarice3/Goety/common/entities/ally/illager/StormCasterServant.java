@@ -93,10 +93,10 @@ public class StormCasterServant extends AbstractIllagerServant {
         MobUtil.setBaseAttributes(this.getAttribute(Attributes.ATTACK_DAMAGE), AttributesConfig.StormCasterDamage.get());
     }
 
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.entityData.define(IS_CASTING_SPELL, (byte)0);
-        this.entityData.define(ANIM_STATE, 0);
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(IS_CASTING_SPELL, (byte)0);
+        builder.define(ANIM_STATE, 0);
     }
 
     public void readAdditionalSaveData(CompoundTag p_33732_) {

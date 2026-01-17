@@ -88,10 +88,10 @@ public class Neollager extends AbstractIllagerServant {
         MobUtil.setBaseAttributes(this.getAttribute(Attributes.ARMOR), AttributesConfig.NeollagerArmor.get());
     }
 
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.entityData.define(DATA_BABY_ID, false);
-        this.entityData.define(IS_MAGIC, false);
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(DATA_BABY_ID, false);
+        builder.define(IS_MAGIC, false);
     }
 
     @Override

@@ -1,6 +1,8 @@
 package com.Polarice3.Goety.common.entities.neutral;
 
+import com.Polarice3.Goety.Goety;
 import com.Polarice3.Goety.api.entities.IAutoRideable;
+import com.Polarice3.Goety.api.entities.IOwned;
 import com.Polarice3.Goety.api.entities.ally.IServant;
 import com.Polarice3.Goety.api.items.magic.IWand;
 import com.Polarice3.Goety.client.particles.ModParticleTypes;
@@ -8,8 +10,10 @@ import com.Polarice3.Goety.common.effects.GoetyEffects;
 import com.Polarice3.Goety.common.entities.ModEntityType;
 import com.Polarice3.Goety.common.entities.ai.ModMeleeAttackGoal;
 import com.Polarice3.Goety.common.entities.ally.Summoned;
+import com.Polarice3.Goety.common.entities.ally.spider.AbstractSpiderServant;
 import com.Polarice3.Goety.common.entities.ally.spider.SpiderServant;
 import com.Polarice3.Goety.common.entities.projectiles.WebShot;
+import com.Polarice3.Goety.common.items.ModItems;
 import com.Polarice3.Goety.common.network.ModNetwork;
 import com.Polarice3.Goety.common.network.client.CSetDeltaMovement;
 import com.Polarice3.Goety.config.AttributesConfig;
@@ -19,7 +23,10 @@ import com.Polarice3.Goety.init.ModSounds;
 import com.Polarice3.Goety.utils.BlockFinder;
 import com.Polarice3.Goety.utils.MathHelper;
 import com.Polarice3.Goety.utils.MobUtil;
+import com.Polarice3.Goety.utils.ModDamageSource;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
@@ -51,9 +58,12 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.bus.api.Event;
+import net.neoforged.neoforge.common.CommonHooks;
 import net.neoforged.neoforge.common.NeoForgeMod;
 import org.jetbrains.annotations.NotNull;
 
@@ -64,12 +74,12 @@ import java.util.function.Predicate;
 public class AbstractBroodMother extends Summoned implements IAutoRideable, PlayerRideableJumping, RangedAttackMob {
     private static final EntityDataAccessor<Byte> DATA_FLAGS_ID = SynchedEntityData.defineId(AbstractBroodMother.class, EntityDataSerializers.BYTE);
     private static final UUID DETECTION_MODIFIER_UUID = UUID.fromString("858f6b2f-73e3-45a0-8bef-bb31e0d55be4");
-    public static final AttributeModifier DETECTION_MODIFIER = new AttributeModifier(DETECTION_MODIFIER_UUID, "Light Is Blinding", -1.0D, AttributeModifier.Operation.ADDITION);
+    public static final AttributeModifier DETECTION_MODIFIER = new AttributeModifier(ResourceLocation.fromNamespaceAndPath(Goety.MOD_ID, "detection"), 1.0D, AttributeModifier.Operation.ADD_VALUE);
     private static final EntityDataAccessor<Integer> ATTACK_TYPE = SynchedEntityData.defineId(AbstractBroodMother.class, EntityDataSerializers.INT);
     private static final EntityDataAccessor<Integer> ANIM_STATE = SynchedEntityData.defineId(AbstractBroodMother.class, EntityDataSerializers.INT);
     private static final EntityDataAccessor<Boolean> AUTO_MODE = SynchedEntityData.defineId(AbstractBroodMother.class, EntityDataSerializers.BOOLEAN);
     private static final UUID SPEED_STOP_UUID = UUID.fromString("e336b82c-bd58-4374-9875-0b50a602fef2");
-    private static final AttributeModifier SPEED_STOP = new AttributeModifier(SPEED_STOP_UUID, "Stop moving", -1.0D, AttributeModifier.Operation.ADDITION);
+    private static final AttributeModifier SPEED_STOP = new AttributeModifier(ResourceLocation.fromNamespaceAndPath(Goety.MOD_ID, "speed_stop"), 1.0D, AttributeModifier.Operation.ADD_VALUE);
     public static String ATTACK = "attack";
     public static String SHOOT = "shoot";
     public static String LAY_EGGS = "lay_eggs";
@@ -143,7 +153,7 @@ public class AbstractBroodMother extends Summoned implements IAutoRideable, Play
                     double radius = 2.0D;
                     double extraX = this.mob.getX() + 0.8D * Math.sin((double)(-this.mob.getYRot()) * Math.PI / 180.0D) + (double)angle * Math.sin((double)(-this.mob.yHeadRot) * Math.PI / 180.0D) * Math.cos((double)(-this.mob.getXRot()) * Math.PI / 180.0D);
                     double extraZ = this.mob.getZ() + 0.8D * Math.cos((double)(-this.mob.getYRot()) * Math.PI / 180.0D) + (double)angle * Math.cos((double)(-this.mob.yHeadRot) * Math.PI / 180.0D) * Math.cos((double)(-this.mob.getXRot()) * Math.PI / 180.0D);
-                    List<LivingEntity> list = this.mob.level.getEntitiesOfClass(LivingEntity.class, new AABB(extraX - radius, this.mob.getY(), extraZ - radius, extraX + radius, this.mob.getY() + radius, extraZ + radius));
+                    List<LivingEntity> list = this.mob.level().getEntitiesOfClass(LivingEntity.class, new AABB(extraX - radius, this.mob.getY(), extraZ - radius, extraX + radius, this.mob.getY() + radius, extraZ + radius));
                     for (LivingEntity target : list) {
                         if (EntitySelector.NO_CREATIVE_OR_SPECTATOR.test(target) && !MobUtil.areAllies(this.mob, target)) {
                             if (this.mob.doHurtTarget(target) || target.isBlocking()) {
@@ -175,7 +185,7 @@ public class AbstractBroodMother extends Summoned implements IAutoRideable, Play
                 .add(Attributes.ARMOR, AttributesConfig.BroodMotherArmor.get())
                 .add(Attributes.ATTACK_DAMAGE, AttributesConfig.BroodMotherDamage.get())
                 .add(Attributes.FOLLOW_RANGE, 32.0D)
-                .add(NeoForgeMod.STEP_HEIGHT_ADDITION.get(), 2.0D)
+                .add(Attributes.STEP_HEIGHT, 2.0D)
                 .add(Attributes.KNOCKBACK_RESISTANCE, 1.0D);
     }
 
@@ -185,17 +195,18 @@ public class AbstractBroodMother extends Summoned implements IAutoRideable, Play
         MobUtil.setBaseAttributes(this.getAttribute(Attributes.ATTACK_DAMAGE), AttributesConfig.BroodMotherDamage.get());
     }
 
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.entityData.define(DATA_FLAGS_ID, (byte)0);
-        this.entityData.define(ATTACK_TYPE, 0);
-        this.entityData.define(ANIM_STATE, 0);
-        this.entityData.define(AUTO_MODE, false);
+    @Override
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(DATA_FLAGS_ID, (byte)0);
+        builder.define(ATTACK_TYPE, 0);
+        builder.define(ANIM_STATE, 0);
+        builder.define(AUTO_MODE, false);
     }
 
     public void onSyncedDataUpdated(EntityDataAccessor<?> p_219422_) {
         if (ANIM_STATE.equals(p_219422_)) {
-            if (this.level.isClientSide){
+            if (this.level().isClientSide){
                 switch (this.entityData.get(ANIM_STATE)){
                     case 0:
                         break;
@@ -402,10 +413,10 @@ public class AbstractBroodMother extends Summoned implements IAutoRideable, Play
 
     @Override
     public boolean canBeAffected(MobEffectInstance instance) {
-        if (instance.getEffect() == GoetyEffects.ACID_VENOM.get() || instance.getEffect() == MobEffects.POISON) {
-            net.neoforged.event.entity.living.MobEffectEvent.Applicable event = new net.neoforged.event.entity.living.MobEffectEvent.Applicable(this, instance);
-            net.neoforged.common.NeoForge.EVENT_BUS.post(event);
-            return event.getResult() == net.neoforged.eventbus.api.Event.Result.ALLOW;
+        if (instance.getEffect() == GoetyEffects.ACID_VENOM.getHolder().unwrap().map(o -> o, o -> o) || instance.getEffect() == MobEffects.POISON) {
+            net.neoforged.neoforge.event.entity.living.MobEffectEvent.Applicable event = new net.neoforged.neoforge.event.entity.living.MobEffectEvent.Applicable(this, instance);
+            net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(event);
+            return event.getResult() == net.neoforged.bus.api.Event.Result.ALLOW;
         }
         return super.canBeAffected(instance);
     }
@@ -512,20 +523,20 @@ public class AbstractBroodMother extends Summoned implements IAutoRideable, Play
     @Override
     public void tick() {
         super.tick();
-        if (!this.level.isClientSide) {
+        if (!this.level().isClientSide) {
             this.setClimbing(this.horizontalCollision);
             AttributeInstance modifiableattributeinstance = this.getAttribute(Attributes.FOLLOW_RANGE);
             if (MobUtil.isInBrightLight(this)){
                 if (modifiableattributeinstance != null) {
                     if (this.getAttribute(Attributes.FOLLOW_RANGE) != null) {
-                        modifiableattributeinstance.removeModifier(DETECTION_MODIFIER);
+                        modifiableattributeinstance.removeModifier(DETECTION_MODIFIER.id());
                         modifiableattributeinstance.addTransientModifier(DETECTION_MODIFIER);
                     }
                 }
             } else {
                 if (modifiableattributeinstance != null) {
-                    if (modifiableattributeinstance.hasModifier(DETECTION_MODIFIER)) {
-                        modifiableattributeinstance.removeModifier(DETECTION_MODIFIER);
+                    if (modifiableattributeinstance.hasModifier(DETECTION_MODIFIER.id())) {
+                        modifiableattributeinstance.removeModifier(DETECTION_MODIFIER.id());
                     }
                 }
             }
@@ -558,22 +569,22 @@ public class AbstractBroodMother extends Summoned implements IAutoRideable, Play
         }
         if (this.getAttackType() > 0) {
             ++this.attackTicks;
-            if (!this.level.isClientSide) {
-                this.level.broadcastEntityEvent(this, (byte) 4);
+            if (!this.level().isClientSide) {
+                this.level().broadcastEntityEvent(this, (byte) 4);
             }
         } else {
-            if (!this.level.isClientSide) {
-                this.level.broadcastEntityEvent(this, (byte) 5);
+            if (!this.level().isClientSide) {
+                this.level().broadcastEntityEvent(this, (byte) 5);
             }
         }
         AttributeInstance modifiableattributeinstance = this.getAttribute(Attributes.MOVEMENT_SPEED);
         if (modifiableattributeinstance != null){
             if (this.getAttackType() > 0 || this.isMeleeAttacking()) {
-                modifiableattributeinstance.removeModifier(SPEED_STOP);
+                modifiableattributeinstance.removeModifier(SPEED_STOP.id());
                 modifiableattributeinstance.addTransientModifier(SPEED_STOP);
             } else {
-                if (modifiableattributeinstance.hasModifier(SPEED_STOP)) {
-                    modifiableattributeinstance.removeModifier(SPEED_STOP);
+                if (modifiableattributeinstance.hasModifier(SPEED_STOP.id())) {
+                    modifiableattributeinstance.removeModifier(SPEED_STOP.id());
                 }
             }
         }
@@ -591,7 +602,7 @@ public class AbstractBroodMother extends Summoned implements IAutoRideable, Play
         if (this.getTarget() != null) {
             Predicate<Entity> predicate = entity -> entity.isAlive()
                     && ((entity instanceof SpiderServant spiderServant && spiderServant.getTrueOwner() == this) || entity instanceof Spider spider && spider.getTarget() != null && spider.getTarget() == this.getTarget() && this.isHostile());
-            int i = this.level.getEntitiesOfClass(LivingEntity.class, this.getTarget().getBoundingBox().inflate(8.0D)
+            int i = this.level().getEntitiesOfClass(LivingEntity.class, this.getTarget().getBoundingBox().inflate(8.0D)
                     , predicate).size();
 
             if (this.getAttackType() == 0
@@ -610,7 +621,7 @@ public class AbstractBroodMother extends Summoned implements IAutoRideable, Play
     }
 
     public void attackAI(){
-        if (this.isAlive() && !this.level.isClientSide) {
+        if (this.isAlive() && !this.level().isClientSide) {
             if (this.getAttackType() == WEB_ATTACK){
                 if (this.getAttackTicks() == 7 && this.getTarget() != null) {
                     for (int i = 0; i < 8; ++i){
@@ -621,14 +632,14 @@ public class AbstractBroodMother extends Summoned implements IAutoRideable, Play
             }
             if (this.getAttackType() == LAY_EGG_ATTACK) {
                 if (this.getAttackTicks() == 10) {
-                    if (this.level instanceof ServerLevel serverLevel) {
+                    if (this.level() instanceof ServerLevel serverLevel) {
                         SpiderEgg spiderEgg = new SpiderEgg(ModEntityType.SPIDER_EGG.get(), serverLevel);
                         BlockPos blockPos = BlockFinder.SummonRadius(this.blockPosition(), spiderEgg, serverLevel, 1);
                         spiderEgg.setTrueOwner(this);
                         spiderEgg.moveTo(blockPos, this.getYRot(), this.getXRot());
                         spiderEgg.setPersistenceRequired();
                         spiderEgg.setLimitedLife(MathHelper.secondsToTicks(3 + serverLevel.getRandom().nextInt(3)));
-                        spiderEgg.finalizeSpawn(serverLevel, serverLevel.getCurrentDifficultyAt(blockPos), MobSpawnType.MOB_SUMMONED, null, null);
+                        spiderEgg.finalizeSpawn(serverLevel, serverLevel.getCurrentDifficultyAt(blockPos), MobSpawnType.MOB_SUMMONED, null);
                         if (serverLevel.addFreshEntity(spiderEgg)) {
                             spiderEgg.playSound(ModSounds.SPIDER_NEST_START.get());
                         }
@@ -684,7 +695,7 @@ public class AbstractBroodMother extends Summoned implements IAutoRideable, Play
     }
 
     public void areaAttack(){
-        for (LivingEntity livingEntity : this.level.getEntitiesOfClass(LivingEntity.class, this.getBoundingBox().inflate(16.0D),
+        for (LivingEntity livingEntity : this.level().getEntitiesOfClass(LivingEntity.class, this.getBoundingBox().inflate(16.0D),
                 living -> !MobUtil.areAllies(living, this) && living.isAlive())){
             double xPower = this.getX() - livingEntity.getX();
             double yPower = this.getY() - livingEntity.getY();
@@ -694,7 +705,7 @@ public class AbstractBroodMother extends Summoned implements IAutoRideable, Play
                 if (livingEntity.hurt(this.getServantAttack(), (float) this.getAttributeValue(Attributes.ATTACK_DAMAGE))) {
                     this.playSound(SoundEvents.PLAYER_ATTACK_KNOCKBACK, 1.0F, 1.0F);
                     livingEntity.hurtMarked = true;
-                    if (!livingEntity.hasEffect(GoetyEffects.TANGLED.get())) {
+                    if (!livingEntity.hasEffect(GoetyEffects.TANGLED)) {
                         MobUtil.push(livingEntity, -xPower / distance * 2.0D, -yPower / distance * 2.0D + 0.5D, -zPower / distance * 2.0D);
                     }
                 }
@@ -754,11 +765,11 @@ public class AbstractBroodMother extends Summoned implements IAutoRideable, Play
         if (super.doHurtTarget(target)) {
             if (target instanceof LivingEntity livingEntity) {
                 int i = 15;
-                if (this.level.getDifficulty() == Difficulty.HARD) {
+                if (this.level().getDifficulty() == Difficulty.HARD) {
                     i = 30;
                 }
 
-                livingEntity.addEffect(new MobEffectInstance(GoetyEffects.ACID_VENOM.get(), i * 20, 1), this);
+                livingEntity.addEffect(new MobEffectInstance(GoetyEffects.ACID_VENOM, i * 20, 1), this);
             }
             this.playSound(ModSounds.SPIDER_BITE.get(), this.getSoundVolume(), this.getVoicePitch() + 0.25F);
             return true;
@@ -773,7 +784,7 @@ public class AbstractBroodMother extends Summoned implements IAutoRideable, Play
     }
 
     protected void doPlayerRide(Player player) {
-        if (!this.level.isClientSide) {
+        if (!this.level().isClientSide) {
             player.setYRot(this.getYRot());
             player.setXRot(this.getXRot());
             player.startRiding(this);
@@ -817,7 +828,7 @@ public class AbstractBroodMother extends Summoned implements IAutoRideable, Play
                 }
 
                 if (this.getMobType() != MobType.UNDEAD) {
-                    if (this.isInWater() && this.getFluidTypeHeight(NeoForgeMod.WATER_TYPE.get()) > this.getFluidJumpThreshold() || this.isInLava() || this.isInFluidType((fluidType, height) -> this.canSwimInFluidType(fluidType) && height > this.getFluidJumpThreshold())) {
+                    if (this.isInWater() && this.getFluidTypeHeight(NeoForgeMod.WATER_TYPE.value()) > this.getFluidJumpThreshold() || this.isInLava() || this.isInFluidType((fluidType, height) -> this.canSwimInFluidType(fluidType) && height > this.getFluidJumpThreshold())) {
                         Vec3 vector3d = this.getDeltaMovement();
                         this.setDeltaMovement(vector3d.x, 0.04F, vector3d.z);
                         this.hasImpulse = true;
@@ -877,7 +888,7 @@ public class AbstractBroodMother extends Summoned implements IAutoRideable, Play
                 this.setIsJumping(false);
                 if (this.playerJumpPendingScale > 0.0F && !this.isJumping()) {
                     if (!this.isSilent()) {
-                        this.level.playLocalSound(this.getX(), this.getY(), this.getZ(), SoundEvents.PLAYER_ATTACK_STRONG, this.getSoundSource(), 2.0F, 0.75F, false);
+                        this.level().playLocalSound(this.getX(), this.getY(), this.getZ(), SoundEvents.PLAYER_ATTACK_STRONG, this.getSoundSource(), 2.0F, 0.75F, false);
                     }
                     this.executeRidersJump(this.playerJumpPendingScale, p_275693_);
                 }
@@ -895,7 +906,7 @@ public class AbstractBroodMother extends Summoned implements IAutoRideable, Play
         ModNetwork.sendToServer(new CSetDeltaMovement(this.getId(), vec3.x, d1, vec3.z));
         this.setIsJumping(true);
         this.hasImpulse = true;
-        net.neoforged.common.ForgeHooks.onLivingJump(this);
+        CommonHooks.onLivingJump(this);
         this.setAnimationState(JUMP);
         this.jumpTicks = 10;
         if (p_275435_.z > 0.0D) {
@@ -946,7 +957,7 @@ public class AbstractBroodMother extends Summoned implements IAutoRideable, Play
 
     @Override
     public void performRangedAttack(LivingEntity p_33317_, float p_33318_) {
-        WebShot webShot = new WebShot(this, this.level);
+        WebShot webShot = new WebShot(this, this.level());
         webShot.setPos(webShot.position().add(0.0D, 1.0D, 0.0D));
         Vec3 vec3 = p_33317_.getDeltaMovement();
         double d0 = p_33317_.getX() + vec3.x - this.getX();
@@ -955,12 +966,11 @@ public class AbstractBroodMother extends Summoned implements IAutoRideable, Play
         double d3 = Math.sqrt(d0 * d0 + d2 * d2);
         webShot.setXRot(webShot.getXRot() - -20.0F);
         webShot.shoot(d0, d1 + d3 * 0.2D, d2, 0.75F, 30);
-        this.level.addFreshEntity(webShot);
+        this.level().addFreshEntity(webShot);
     }
 
-    public boolean isFood(ItemStack p_30440_) {
-        Item item = p_30440_.getItem();
-        return item.isEdible() && p_30440_.getFoodProperties(this).isMeat();
+    public boolean isFood(ItemStack item) {
+        return item.has(DataComponents.FOOD);
     }
 
     public InteractionResult mobInteract(Player pPlayer, InteractionHand pHand) {
@@ -969,14 +979,14 @@ public class AbstractBroodMother extends Summoned implements IAutoRideable, Play
             if (this.isFood(itemstack) && this.getHealth() < this.getMaxHealth()) {
                 FoodProperties foodProperties = itemstack.getFoodProperties(this);
                 if (foodProperties != null){
-                    this.heal((float)foodProperties.getNutrition());
+                    this.heal((float)foodProperties.nutrition());
                     if (!pPlayer.getAbilities().instabuild) {
                         itemstack.shrink(1);
                     }
 
                     this.gameEvent(GameEvent.EAT, this);
-                    this.eat(this.level, itemstack);
-                    if (this.level instanceof ServerLevel serverLevel) {
+                    this.eat(this.level(), itemstack);
+                    if (this.level() instanceof ServerLevel serverLevel) {
                         for (int i = 0; i < 7; ++i) {
                             double d0 = this.random.nextGaussian() * 0.02D;
                             double d1 = this.random.nextGaussian() * 0.02D;
@@ -1017,7 +1027,7 @@ public class AbstractBroodMother extends Summoned implements IAutoRideable, Play
         @Override
         public boolean canUse() {
             Predicate<Entity> predicate = entity -> entity.isAlive() && entity instanceof SpiderServant spiderServant && spiderServant.getTrueOwner() instanceof AbstractBroodMother;
-            int i = AbstractBroodMother.this.level.getEntitiesOfClass(LivingEntity.class, AbstractBroodMother.this.getBoundingBox().inflate(32.0D, 16.0D, 32.0D)
+            int i = AbstractBroodMother.this.level().getEntitiesOfClass(LivingEntity.class, AbstractBroodMother.this.getBoundingBox().inflate(32.0D, 16.0D, 32.0D)
                     , predicate).size();
             return i < 4
                     && AbstractBroodMother.this.getSummonCooldown() <= 0
@@ -1111,7 +1121,7 @@ public class AbstractBroodMother extends Summoned implements IAutoRideable, Play
                     && AbstractBroodMother.this.getChargeCooldown() <= 0
                     && !AbstractBroodMother.this.isStaying()
                     && AbstractBroodMother.this.hasLineOfSight(AbstractBroodMother.this.getTarget())
-                    && AbstractBroodMother.this.getTarget().hasEffect(GoetyEffects.TANGLED.get());
+                    && AbstractBroodMother.this.getTarget().hasEffect(GoetyEffects.TANGLED);
         }
 
         public boolean canContinueToUse() {

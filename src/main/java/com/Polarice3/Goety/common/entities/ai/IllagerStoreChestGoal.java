@@ -29,13 +29,13 @@ public abstract class IllagerStoreChestGoal<T extends RaiderServant & ILooter> e
 
     public boolean hasDumpChest() {
         if (this.illager.getDumpChestPos() != null) {
-            if (this.illager.getDumpChestLevel() == this.illager.level.dimension()) {
+            if (this.illager.getDumpChestLevel() == this.illager.level().dimension()) {
                 boolean flag = true;
                 if (this.illager.getBoundPos() != null){
                     flag = this.illager.isWithinGuard(this.illager.getDumpChestPos());
                 }
                 if (flag) {
-                    return this.getChest(this.illager.level, this.illager.getDumpChestPos()) != null && !this.isFull(this.getItem(), this.illager.level, this.illager.getDumpChestPos());
+                    return this.getChest(this.illager.level(), this.illager.getDumpChestPos()) != null && !this.isFull(this.getItem(), this.illager.level(), this.illager.getDumpChestPos());
                 }
             }
         }
@@ -44,13 +44,13 @@ public abstract class IllagerStoreChestGoal<T extends RaiderServant & ILooter> e
 
     public boolean hasRegularChest() {
         if (this.illager.getChestPos() != null) {
-            if (this.illager.getChestLevel() == this.illager.level.dimension()) {
+            if (this.illager.getChestLevel() == this.illager.level().dimension()) {
                 boolean flag = true;
                 if (this.illager.getBoundPos() != null){
                     flag = this.illager.isWithinGuard(this.illager.getChestPos());
                 }
                 if (flag) {
-                    return this.getChest(this.illager.level, this.illager.getChestPos()) != null && !this.isFull(this.getItem(), this.illager.level, this.illager.getChestPos());
+                    return this.getChest(this.illager.level(), this.illager.getChestPos()) != null && !this.isFull(this.getItem(), this.illager.level(), this.illager.getChestPos());
                 }
             }
         }

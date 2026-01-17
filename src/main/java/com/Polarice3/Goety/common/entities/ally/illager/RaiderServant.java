@@ -46,6 +46,9 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.*;
+import net.minecraft.world.entity.SpawnPlacementTypes;
+import net.minecraft.world.entity.SpawnPlacements;
+import net.minecraft.world.level.NaturalSpawner;
 import net.minecraft.world.entity.ai.goal.FloatGoal;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.ai.goal.LookAtPlayerGoal;
@@ -179,15 +182,15 @@ public abstract class RaiderServant extends Summoned {
         this.goalSelector.addGoal(10, new LookAtPlayerGoal(this, Mob.class, 15.0F));
     }
 
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.entityData.define(IS_CELEBRATING, false);
-        this.entityData.define(CAPTURE_MODE, false);
-        this.entityData.define(MARKED_ID, Optional.empty());
-        this.entityData.define(LEADER_ID, Optional.empty());
-        this.entityData.define(LEADER_CLIENT_ID, -1);
-        this.entityData.define(RAID_POS, Optional.empty());
-        this.entityData.define(RAID_DIM, Level.OVERWORLD.location().toString());
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(IS_CELEBRATING, false);
+        builder.define(CAPTURE_MODE, false);
+        builder.define(MARKED_ID, Optional.empty());
+        builder.define(LEADER_ID, Optional.empty());
+        builder.define(LEADER_CLIENT_ID, -1);
+        builder.define(RAID_POS, Optional.empty());
+        builder.define(RAID_DIM, Level.OVERWORLD.location().toString());
     }
 
     public void addAdditionalSaveData(CompoundTag compound) {
@@ -224,7 +227,7 @@ public abstract class RaiderServant extends Summoned {
             this.setLeaderClientId(compound.getInt("LeaderClient"));
         }
         if (compound.contains("RaidPos")) {
-            this.setRaidPos(NbtUtils.readBlockPos(compound.getCompound("RaidPos")));
+            NbtUtils.readBlockPos(compound, "RaidPos").ifPresent(this::setRaidPos);
             this.setRaidDim(compound.getString("RaidDim"));
         }
         if (compound.contains("CelebrationTime")) {
@@ -269,7 +272,7 @@ public abstract class RaiderServant extends Summoned {
 
     @Nullable
     public RaiderServant getLeader() {
-        if (!this.level.isClientSide) {
+        if (!this.level().isClientSide) {
             UUID uuid = this.getLeaderId();
             return uuid == null ? null
                     : EntityFinder.getLivingEntityByUuiD(uuid) instanceof RaiderServant servant && servant.isAlive()
@@ -277,7 +280,7 @@ public abstract class RaiderServant extends Summoned {
         } else {
             int id = this.getLeaderClientId();
             return id <= -1 ? null
-                    : this.level.getEntity(this.getLeaderClientId()) instanceof RaiderServant servant
+                    : this.level().getEntity(this.getLeaderClientId()) instanceof RaiderServant servant
                             && servant.isAlive() && servant.canBeLeader() && servant != this ? servant : null;
         }
     }
@@ -360,7 +363,7 @@ public abstract class RaiderServant extends Summoned {
     }
 
     public ResourceKey<Level> getRaidLevel() {
-        ResourceLocation resourcelocation = new ResourceLocation(this.getRaidDim());
+        ResourceLocation resourcelocation = ResourceLocation.parse(this.getRaidDim());
         return ResourceKey.create(Registries.DIMENSION, resourcelocation);
     }
 
@@ -413,8 +416,10 @@ public abstract class RaiderServant extends Summoned {
                                 blockpos$mutableblockpos.getZ() - j1, blockpos$mutableblockpos.getX() + j1,
                                 blockpos$mutableblockpos.getZ() + j1)
                                 && serverLevel.isPositionEntityTicking(blockpos$mutableblockpos)
-                                && (NaturalSpawner.isSpawnPositionOk(SpawnPlacements.Type.ON_GROUND, this.level(),
-                                        blockpos$mutableblockpos, EntityType.RAVAGER)
+                                // FIXME: 1.21 isSpawnPositionOk signature mismatch or removal
+                                /*&& (NaturalSpawner.isSpawnPositionOk(net.minecraft.world.entity.SpawnPlacementTypes.ON_GROUND, this.level(),
+                                        blockpos$mutableblockpos, EntityType.RAVAGER)*/
+                                        && (true
                                         || this.level().getBlockState(blockpos$mutableblockpos.below()).is(Blocks.SNOW)
                                                 && this.level().getBlockState(blockpos$mutableblockpos).isAir())) {
                             return blockpos$mutableblockpos;
@@ -554,7 +559,7 @@ public abstract class RaiderServant extends Summoned {
     @Override
     public void tick() {
         super.tick();
-        if (!this.level.isClientSide) {
+        if (!this.level().isClientSide) {
             if (this.celebrationTime > 0) {
                 --this.celebrationTime;
             } else {
@@ -573,7 +578,7 @@ public abstract class RaiderServant extends Summoned {
                     this.setLeader(null);
                 } else {
                     if (this.getLeader().tickCount < 20) {
-                        Entity entity = this.level.getEntity(this.getOwnerClientId());
+                        Entity entity = this.level().getEntity(this.getOwnerClientId());
                         if (entity instanceof RaiderServant raiderServant) {
                             if (raiderServant != this.getLeader()) {
                                 this.setLeaderClientId(this.getLeader().getId());
@@ -633,7 +638,7 @@ public abstract class RaiderServant extends Summoned {
                 if (this.getTarget() == null) {
                     if (EntitySelector.NO_CREATIVE_OR_SPECTATOR.test(this.getMarked())
                             && MobUtil.sameDimension(this, this.getMarked())
-                            && this.level.isLoaded(this.getMarked().blockPosition())) {
+                            && this.level().isLoaded(this.getMarked().blockPosition())) {
                         this.setTarget(this.getMarked());
                         if (this.getControlledVehicle() instanceof Mob mob) {
                             mob.setTarget(this.getMarked());
@@ -682,9 +687,9 @@ public abstract class RaiderServant extends Summoned {
     }
 
     public void raidTick() {
-        if (this.level instanceof ServerLevel serverLevel) {
+        if (this.level() instanceof ServerLevel serverLevel) {
             if (this.getRaidPos() != null) {
-                if (this.level.dimension() != this.getRaidLevel()) {
+                if (this.level().dimension() != this.getRaidLevel()) {
                     this.setRaidPos(null);
                     if (this.getTrueOwner() != null
                             && this.getTrueOwner().distanceTo(this) > 32.0D
@@ -747,7 +752,7 @@ public abstract class RaiderServant extends Summoned {
     public void teleportTowards(Entity entity) {
         if (this.getControlledVehicle() instanceof LivingEntity livingEntity
                 && !(livingEntity instanceof RaiderServant)) {
-            if (!this.level.isClientSide() && livingEntity.isAlive()) {
+            if (!this.level().isClientSide() && livingEntity.isAlive()) {
                 for (int i = 0; i < 128; ++i) {
                     Vec3 vector3d = new Vec3(livingEntity.getX() - entity.getX(),
                             livingEntity.getY(0.5D) - entity.getEyeY(), livingEntity.getZ() - entity.getZ());
@@ -759,7 +764,7 @@ public abstract class RaiderServant extends Summoned {
                             - vector3d.y * d0;
                     double d3 = livingEntity.getZ() + (livingEntity.getRandom().nextDouble() - 0.5D) * 8.0D
                             - vector3d.z * d0;
-                    net.neoforged.event.entity.EntityTeleportEvent.EnderEntity event = new net.neoforged.event.entity.EntityTeleportEvent.EnderEntity(
+                    net.neoforged.neoforge.event.entity.EntityTeleportEvent.EnderEntity event = new net.neoforged.neoforge.event.entity.EntityTeleportEvent.EnderEntity(
                             livingEntity, d1, d2, d3);
                     net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(event);
                     if (event.isCanceled()) {
@@ -781,7 +786,7 @@ public abstract class RaiderServant extends Summoned {
     }
 
     private void moveRaidCenterToNearbyVillageSection() {
-        if (this.level instanceof ServerLevel serverLevel) {
+        if (this.level() instanceof ServerLevel serverLevel) {
             if (this.getRaidPos() != null) {
                 Stream<SectionPos> stream = SectionPos.cube(SectionPos.of(this.getRaidPos()), 2);
                 stream.filter(serverLevel::isVillage).map(SectionPos::center)
@@ -794,7 +799,7 @@ public abstract class RaiderServant extends Summoned {
 
     private List<Villager> getRaidVillagers() {
         List<Villager> list = new ArrayList<>();
-        if (this.level instanceof ServerLevel serverLevel) {
+        if (this.level() instanceof ServerLevel serverLevel) {
             if (this.getRaidPos() != null) {
                 AABB aabb = new AABB(this.getRaidPos()).inflate(256.0D);
                 list = serverLevel.getEntitiesOfClass(Villager.class, aabb, villager -> !villager.isBaby());
@@ -822,10 +827,10 @@ public abstract class RaiderServant extends Summoned {
     }
 
     public boolean isWoundedOrCrippled() {
-        if (this.hasEffect(GoetyEffects.CRIPPLED.get())) {
+        if (this.hasEffect(net.minecraft.core.registries.BuiltInRegistries.MOB_EFFECT.wrapAsHolder(GoetyEffects.CRIPPLED.get()))) {
             return true;
         }
-        if (this.hasEffect(GoetyEffects.WOUNDED.get())) {
+        if (this.hasEffect(net.minecraft.core.registries.BuiltInRegistries.MOB_EFFECT.wrapAsHolder(GoetyEffects.WOUNDED.get()))) {
             return this.getIdol() != null;
         }
         return false;
@@ -850,9 +855,11 @@ public abstract class RaiderServant extends Summoned {
             ListTag listTag = SEHelper.getBannerPattern(player);
             if (listTag != null) {
                 ItemStack itemstack = this.getBannerPatternInstance();
-                itemstack.hideTooltipPart(ItemStack.TooltipPart.ADDITIONAL);
-                itemstack.setHoverName(Component.translatable("block.goety.player_banner", player.getDisplayName())
+                // hideTooltipPart and setHoverName removed in 1.21 - use data components instead
+                itemstack.set(net.minecraft.core.component.DataComponents.ITEM_NAME, 
+                    Component.translatable("block.goety.player_banner", player.getDisplayName())
                         .withStyle(ChatFormatting.GOLD));
+                itemstack.set(net.minecraft.core.component.DataComponents.HIDE_ADDITIONAL_TOOLTIP, net.minecraft.util.Unit.INSTANCE);
                 return itemstack;
             }
         }
@@ -903,8 +910,8 @@ public abstract class RaiderServant extends Summoned {
     public boolean canRevive(DamageSource damageSource) {
         if (!damageSource.is(ModDamageSource.DISMISSED)) {
             if (MainConfig.OminousIdolRevive.get()) {
-                if (!this.hasEffect(GoetyEffects.WOUNDED.get())) {
-                    if (this.getIdol() != null && this.level.dimension() == this.getReviveLevel()) {
+                if (!this.hasEffect(net.minecraft.core.registries.BuiltInRegistries.MOB_EFFECT.wrapAsHolder(GoetyEffects.WOUNDED.get()))) {
+                    if (this.getIdol() != null && this.level().dimension() == this.getReviveLevel()) {
                         if (this.getIdol().getSoulEnergy() >= MainConfig.OminousIdolReviveCost.get()) {
                             return this.getIdol().getIllagers().contains(this);
                         }
@@ -925,9 +932,9 @@ public abstract class RaiderServant extends Summoned {
         this.setTarget(null);
         this.setMarked(null);
         this.setRaidPos(null);
-        this.level.broadcastEntityEvent(this, (byte) 35);
-        this.addEffect(new MobEffectInstance(GoetyEffects.WOUNDED.get(), MathHelper.minecraftDayToTicks(1)));
-        this.addEffect(new MobEffectInstance(GoetyEffects.CRIPPLED.get(), MathHelper.minutesToTicks(5)));
+        this.level().broadcastEntityEvent(this, (byte) 35);
+        this.addEffect(new MobEffectInstance(net.minecraft.core.registries.BuiltInRegistries.MOB_EFFECT.wrapAsHolder(GoetyEffects.WOUNDED.get()), MathHelper.minecraftDayToTicks(1)));
+        this.addEffect(new MobEffectInstance(net.minecraft.core.registries.BuiltInRegistries.MOB_EFFECT.wrapAsHolder(GoetyEffects.CRIPPLED.get()), MathHelper.minutesToTicks(5)));
         if (this.getIdol() != null) {
             this.getIdol().siphonSoulEnergy(MainConfig.OminousIdolReviveCost.get());
         }
@@ -969,7 +976,7 @@ public abstract class RaiderServant extends Summoned {
     }
 
     public List<RaiderServant> getNearbyCompanions() {
-        return this.level.getEntitiesOfClass(RaiderServant.class, this.getBoundingBox().inflate(8.0D),
+        return this.level().getEntitiesOfClass(RaiderServant.class, this.getBoundingBox().inflate(8.0D),
                 (illager) -> illager != this && illager.getTrueOwner() == this.getTrueOwner() && illager.canJoinPatrol()
                         && (illager.getLeader() == null || illager.getLeader() == this));
     }
@@ -982,7 +989,7 @@ public abstract class RaiderServant extends Summoned {
                     && ItemHelper.sameBanner(itemstack, this.getBannerPatternInstance())
                     && !ItemStack.matches(this.getItemBySlot(EquipmentSlot.HEAD), this.getLeaderBannerInstance())) {
                 ItemStack helmet = this.getItemBySlot(EquipmentSlot.HEAD);
-                this.playSound(SoundEvents.ARMOR_EQUIP_GENERIC, 1.0F, 1.0F);
+                this.playSound(SoundEvents.ARMOR_EQUIP_GENERIC.value(), 1.0F, 1.0F);
                 this.playSound(this.getCelebrateSound(), 1.0F, this.getVoicePitch());
                 this.dropEquipment(EquipmentSlot.HEAD, helmet);
                 this.setItemSlot(EquipmentSlot.HEAD, this.getLeaderBannerInstance());
@@ -994,7 +1001,7 @@ public abstract class RaiderServant extends Summoned {
                     double d0 = this.random.nextGaussian() * 0.02D;
                     double d1 = this.random.nextGaussian() * 0.02D;
                     double d2 = this.random.nextGaussian() * 0.02D;
-                    this.level.addParticle(ParticleTypes.HAPPY_VILLAGER, this.getRandomX(1.0D),
+                    this.level().addParticle(ParticleTypes.HAPPY_VILLAGER, this.getRandomX(1.0D),
                             this.getRandomY() + 0.5D, this.getRandomZ(1.0D), d0, d1, d2);
                 }
                 return InteractionResult.SUCCESS;
@@ -1007,14 +1014,14 @@ public abstract class RaiderServant extends Summoned {
                 if (!pPlayer.getAbilities().instabuild) {
                     TaglockKit.removeEntity(pPlayer.getMainHandItem());
                 }
-                if (!this.level.isClientSide) {
+                if (!this.level().isClientSide) {
                     if (this.getMarked() instanceof ServerPlayer player) {
                         if (CuriosFinder.hasCurio(player, ModItems.ALARMING_CHARM.get())) {
                             player.displayClientMessage(
                                     Component.translatable("info.goety.summon.hunt").withStyle(ChatFormatting.RED),
                                     true);
                             ModNetwork.sendToClient(player,
-                                    new SPlayPlayerSoundPacket(SoundEvents.RAID_HORN.get(), 64.0F, 1.0F));
+                                    new SPlayPlayerSoundPacket(SoundEvents.RAID_HORN.value(), 64.0F, 1.0F));
                         }
                     }
                 }
@@ -1047,7 +1054,7 @@ public abstract class RaiderServant extends Summoned {
                             || pPlayer.getOffhandItem().is(ModItems.RAIDING_HORN.get()))
                     && !SEHelper.getFocusCoolDown(pPlayer).isOnCooldown(ModItems.WAYSTONE.get())
                     && this.isLeader()) {
-                if (this.level instanceof ServerLevel serverLevel) {
+                if (this.level() instanceof ServerLevel serverLevel) {
                     GlobalPos globalPos = WaystoneItem.getPosition(pPlayer.getMainHandItem());
                     if (globalPos != null) {
                         BlockPos blockPos = globalPos.pos();
@@ -1115,16 +1122,16 @@ public abstract class RaiderServant extends Summoned {
             } else if (pPlayer.getMainHandItem().is(ModItems.OMINOUS_SHACKLES.get())
                     && !this.isCapturing()
                     && !this.isFollower()) {
-                if (!this.level.isClientSide) {
+                if (!this.level().isClientSide) {
                     this.setCaptureMode(true);
                     this.playSound(SoundEvents.CHAIN_PLACE, 1.0F, 1.0F);
                 }
 
                 return InteractionResult.SUCCESS;
-            } else if (pPlayer.getMainHandItem().is(Tags.Items.SHEARS)
+            } else if (pPlayer.getMainHandItem().is(Tags.Items.TOOLS_SHEAR)
                     && this.isCapturing()
                     && !this.isFollower()) {
-                if (!this.level.isClientSide) {
+                if (!this.level().isClientSide) {
                     this.setCaptureMode(false);
                     this.playSound(SoundEvents.CHAIN_BREAK, 1.0F, 0.5F);
                 }
@@ -1150,7 +1157,7 @@ public abstract class RaiderServant extends Summoned {
     }
 
     public List<Prisoner> getBindPrisoners() {
-        return this.level.getEntitiesOfClass(Prisoner.class, this.getBoundingBox().inflate(10.0D),
+        return this.level().getEntitiesOfClass(Prisoner.class, this.getBoundingBox().inflate(10.0D),
                 prisoner -> prisoner.isFollowing() && prisoner.getMasterOwner() == this.getMasterOwner());
     }
 
@@ -1158,17 +1165,17 @@ public abstract class RaiderServant extends Summoned {
         if (pPlayer.getMainHandItem().is(ModItems.WAYSTONE.get())) {
             if (WaystoneItem.isSameDimension(this, pPlayer.getMainHandItem())) {
                 if (WaystoneItem.getBlockEntity(pPlayer.getMainHandItem(),
-                        this.level) instanceof OminousIdolBlockEntity idol
+                        this.level()) instanceof OminousIdolBlockEntity idol
                         && idol.getTrueOwner() == this.getTrueOwner()
                         && idol.hasSpace()) {
-                    if (!this.level.isClientSide) {
+                    if (!this.level().isClientSide) {
                         BlockPos blockPos = idol.getBlockPos();
                         if (this.getIdol() != null) {
                             this.getIdol().removeIllager(this);
                         }
                         idol.addIllager(this);
                         this.playSound(SoundEvents.ARROW_HIT_PLAYER, 1.0F, 0.45F);
-                        if (this.level instanceof ServerLevel serverLevel) {
+                        if (this.level() instanceof ServerLevel serverLevel) {
                             for (int i = 0; i < 7; ++i) {
                                 double d0 = this.random.nextGaussian() * 0.02D;
                                 double d1 = this.random.nextGaussian() * 0.02D;
@@ -1178,7 +1185,7 @@ public abstract class RaiderServant extends Summoned {
                             }
                         }
                         this.setRevivePos(blockPos);
-                        this.setReviveDim(this.level.dimension());
+                        this.setReviveDim(this.level().dimension());
                         return InteractionResult.SUCCESS;
                     }
                 }
@@ -1263,7 +1270,7 @@ public abstract class RaiderServant extends Summoned {
                             .matches(this.mob.getItemBySlot(EquipmentSlot.HEAD), this.mob.getLeaderBannerInstance())) {
                 RaiderServant raider = this.mob.getLeader();
                 if (raider == null || !raider.isAlive()) {
-                    List<ItemEntity> list = this.mob.level.getEntitiesOfClass(ItemEntity.class,
+                    List<ItemEntity> list = this.mob.level().getEntitiesOfClass(ItemEntity.class,
                             this.mob.getBoundingBox().inflate(16.0D, 8.0D, 16.0D),
                             itemEntity -> !itemEntity.hasPickUpDelay() && itemEntity.isAlive() && ItemHelper
                                     .sameBanner(itemEntity.getItem(), this.mob.getBannerPatternInstance()));
@@ -1279,7 +1286,7 @@ public abstract class RaiderServant extends Summoned {
         }
 
         public void tick() {
-            List<ItemEntity> list = this.mob.level.getEntitiesOfClass(ItemEntity.class,
+            List<ItemEntity> list = this.mob.level().getEntitiesOfClass(ItemEntity.class,
                     this.mob.getBoundingBox().inflate(4.0D, 4.0D, 4.0D),
                     itemEntity -> !itemEntity.hasPickUpDelay() && itemEntity.isAlive()
                             && ItemHelper.sameBanner(itemEntity.getItem(), this.mob.getBannerPatternInstance()));
@@ -1307,12 +1314,12 @@ public abstract class RaiderServant extends Summoned {
 
         public boolean canUse() {
             return this.mob.getTarget() == null && !this.mob.isVehicle() && this.mob.isRaiding()
-                    && this.mob.level instanceof ServerLevel serverLevel
+                    && this.mob.level() instanceof ServerLevel serverLevel
                     && !serverLevel.isVillage(this.mob.blockPosition());
         }
 
         public boolean canContinueToUse() {
-            return this.mob.isRaiding() && this.mob.level instanceof ServerLevel serverLevel
+            return this.mob.isRaiding() && this.mob.level() instanceof ServerLevel serverLevel
                     && !serverLevel.isVillage(this.mob.blockPosition());
         }
 

@@ -13,6 +13,8 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.*;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.world.item.crafting.SingleRecipeInput;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Blocks;
@@ -58,11 +60,11 @@ public class GrimInfuserBlockEntity extends ModBlockEntity implements Clearable,
             for(int i = 0; i < this.items.size(); ++i) {
                 ItemStack itemstack = this.items.get(i);
                 if (!itemstack.isEmpty()) {
-                    Container iinventory = new SimpleContainer(itemstack);
+                    SingleRecipeInput iinventory = new SingleRecipeInput(itemstack);
                     if (this.level != null) {
                         ItemStack itemstack1 = this.level.getRecipeManager()
                                 .getRecipeFor(ModRecipeSerializer.CURSED_INFUSER.get(), iinventory, this.level)
-                                .map((recipes) -> recipes.assemble(iinventory, this.level.registryAccess())).orElse(itemstack);
+                                .map((recipes) -> recipes.value().assemble(iinventory, this.level.registryAccess())).orElse(itemstack);
                         if (itemstack != itemstack1) {
                             this.cookingProgress[i]++;
                         }
@@ -95,7 +97,7 @@ public class GrimInfuserBlockEntity extends ModBlockEntity implements Clearable,
                     if (this.isEmpty()) {
                         volume = 1.0F;
                     }
-                    this.level.playSound(null, this.getBlockPos(), SoundEvents.ARMOR_EQUIP_GENERIC, SoundSource.BLOCKS, volume, 1.0F);
+                    this.level.playSound(null, this.getBlockPos(), SoundEvents.ARMOR_EQUIP_GENERIC.value(), SoundSource.BLOCKS, volume, 1.0F);
                     this.items.set(i, pStack.split(1));
                     this.markUpdated();
                     return true;
@@ -204,9 +206,10 @@ public class GrimInfuserBlockEntity extends ModBlockEntity implements Clearable,
         return this.items;
     }
 
-    public void readNetwork(CompoundTag compoundNBT) {
+    @Override
+    public void readNetwork(CompoundTag compoundNBT, HolderLookup.Provider pRegistries) {
         this.items.clear();
-        ContainerHelper.loadAllItems(compoundNBT, this.items);
+        ContainerHelper.loadAllItems(compoundNBT, this.items, pRegistries);
         if (compoundNBT.contains("CookingTimes", 11)) {
             int[] aint = compoundNBT.getIntArray("CookingTimes");
             System.arraycopy(aint, 0, this.cookingProgress, 0, Math.min(this.cookingTime.length, aint.length));
@@ -219,15 +222,15 @@ public class GrimInfuserBlockEntity extends ModBlockEntity implements Clearable,
 
     }
 
-    public CompoundTag writeNetwork(CompoundTag pCompound) {
-        this.saveMetadataAndItems(pCompound);
+    public CompoundTag writeNetwork(CompoundTag pCompound, HolderLookup.Provider pRegistries) {
+        this.saveMetadataAndItems(pCompound, pRegistries);
         pCompound.putIntArray("CookingTimes", this.cookingProgress);
         pCompound.putIntArray("CookingTotalTimes", this.cookingTime);
         return pCompound;
     }
 
-    private CompoundTag saveMetadataAndItems(CompoundTag pCompound) {
-        ContainerHelper.saveAllItems(pCompound, this.items, true);
+    private CompoundTag saveMetadataAndItems(CompoundTag pCompound, HolderLookup.Provider pRegistries) {
+        ContainerHelper.saveAllItems(pCompound, this.items, true, pRegistries);
         return pCompound;
     }
 
@@ -236,7 +239,7 @@ public class GrimInfuserBlockEntity extends ModBlockEntity implements Clearable,
     }
 
     public Optional<CursedInfuserRecipes> getRecipes(ItemStack pStack) {
-        return this.items.stream().noneMatch(ItemStack::isEmpty) ? Optional.empty() : this.level.getRecipeManager().getRecipeFor(ModRecipeSerializer.CURSED_INFUSER.get(), new SimpleContainer(pStack), this.level);
+        return this.items.stream().noneMatch(ItemStack::isEmpty) ? Optional.empty() : this.level.getRecipeManager().getRecipeFor(ModRecipeSerializer.CURSED_INFUSER.get(), new SingleRecipeInput(pStack), this.level).map(net.minecraft.world.item.crafting.RecipeHolder::value);
     }
 
     @Override

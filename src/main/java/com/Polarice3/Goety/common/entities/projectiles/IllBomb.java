@@ -45,8 +45,9 @@ public class IllBomb extends ThrowableProjectile {
     }
 
     @Override
-    protected void defineSynchedData() {
-        this.entityData.define(BOUNCE_TIMES, 0);
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(BOUNCE_TIMES, 0);
     }
 
     @Override

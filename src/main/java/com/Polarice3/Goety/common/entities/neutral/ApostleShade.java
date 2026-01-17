@@ -56,9 +56,9 @@ public class ApostleShade extends SpellCastingCultist {
                 .add(Attributes.ATTACK_DAMAGE, 3.0D);
     }
 
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.entityData.define(SHADE_MOOD, "Idle");
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(SHADE_MOOD, "Idle");
     }
 
     @Override
@@ -117,9 +117,9 @@ public class ApostleShade extends SpellCastingCultist {
     }
 
     public void die(DamageSource cause) {
-        if (!this.level.isClientSide) {
-            for (int i = 0; i < this.level.random.nextInt(35) + 10; ++i) {
-                ServerParticleUtil.smokeParticles(ParticleTypes.LARGE_SMOKE, this.getX(), this.getEyeY(), this.getZ(), this.level);
+        if (!this.level().isClientSide) {
+            for (int i = 0; i < this.level().random.nextInt(35) + 10; ++i) {
+                ServerParticleUtil.smokeParticles(ParticleTypes.LARGE_SMOKE, this.getX(), this.getEyeY(), this.getZ(), this.level());
             }
         }
         this.discard();
@@ -150,7 +150,7 @@ public class ApostleShade extends SpellCastingCultist {
 
     public Player getDealingPlayer(){
         if (this.dealingPlayer != null){
-            return this.level.getPlayerByUUID(this.dealingPlayer);
+            return this.level().getPlayerByUUID(this.dealingPlayer);
         }
         return null;
     }
@@ -196,9 +196,9 @@ public class ApostleShade extends SpellCastingCultist {
         if (this.getMoodTime() > 0){
             --this.moodTime;
         }
-        if (this.level.isClientSide) {
+        if (this.level().isClientSide) {
             for(int i = 0; i < 2; ++i) {
-                this.level.addParticle(ParticleTypes.LARGE_SMOKE, this.getRandomX(0.5D), this.getRandomY(), this.getRandomZ(0.5D), 0.0D, 0.0D, 0.0D);
+                this.level().addParticle(ParticleTypes.LARGE_SMOKE, this.getRandomX(0.5D), this.getRandomY(), this.getRandomZ(0.5D), 0.0D, 0.0D, 0.0D);
             }
         }
         ItemStack itemStack = this.getMainHandItem();

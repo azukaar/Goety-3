@@ -16,7 +16,7 @@ import net.minecraft.world.entity.Entity;
 
 public class SpiderServantRenderer<T extends SpiderServant> extends MobRenderer<T, SpiderModel<T>> {
    private static final ResourceLocation SPIDER_LOCATION = Goety.location("textures/entity/servants/spider/spider_servant.png");
-   private static final ResourceLocation ORIGINAL = new ResourceLocation("textures/entity/spider/spider.png");
+   private static final ResourceLocation ORIGINAL = ResourceLocation.parse("textures/entity/spider/spider.png");
 
    public SpiderServantRenderer(EntityRendererProvider.Context p_174401_) {
       this(p_174401_, ModelLayers.SPIDER);

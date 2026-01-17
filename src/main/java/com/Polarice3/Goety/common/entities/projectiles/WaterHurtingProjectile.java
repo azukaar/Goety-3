@@ -11,40 +11,59 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
+import net.minecraft.sounds.SoundEvents;
 
 public abstract class WaterHurtingProjectile extends AbstractHurtingProjectile implements ISpellEntity {
+    private boolean started;
+    private boolean generic;
+
+    public void setGeneric(boolean p_36826_) {
+        this.generic = p_36826_;
+    }
+
+    public boolean isGeneric() {
+        return this.generic;
+    }
 
     protected WaterHurtingProjectile(EntityType<? extends AbstractHurtingProjectile> p_36833_, Level p_36834_) {
         super(p_36833_, p_36834_);
     }
 
-    public WaterHurtingProjectile(EntityType<? extends AbstractHurtingProjectile> p_36817_, double p_36818_,
-            double p_36819_, double p_36820_, double p_36821_, double p_36822_, double p_36823_, Level p_36824_) {
-        super(p_36817_, p_36818_, p_36819_, p_36820_, p_36821_, p_36822_, p_36823_, p_36824_);
-    }
 
-    public WaterHurtingProjectile(EntityType<? extends AbstractHurtingProjectile> p_36826_, LivingEntity p_36827_,
-            double p_36828_, double p_36829_, double p_36830_, Level p_36831_) {
-        super(p_36826_, p_36827_, p_36828_, p_36829_, p_36830_, p_36831_);
+
+    public WaterHurtingProjectile(EntityType<? extends WaterHurtingProjectile> p_36826_, double p_36827_, double p_36828_, double p_36829_, double p_36830_, double p_36831_, double p_36832_, Level p_36833_) {
+        super((EntityType<? extends AbstractHurtingProjectile>) p_36826_, p_36833_);
+        this.setPos(p_36827_, p_36828_, p_36829_);
+        this.setDeltaMovement(p_36830_, p_36831_, p_36832_);
+        this.setGeneric(true);
     }
 
     public boolean isAffectedByWater() {
         return false;
     }
 
+    @Override
     public void tick() {
-        Entity entity = this.getOwner();
-        if (this.level.isClientSide
-                || (entity == null || !entity.isRemoved()) && this.level.isLoaded(this.blockPosition())) {
-            if (!this.hasBeenShot) {
-                this.gameEvent(GameEvent.PROJECTILE_SHOOT, this.getOwner());
-                this.hasBeenShot = true;
+        super.tick();
+        if (this.tickCount == 1) {
+            if (this.isGeneric()) {
+                this.playSound(SoundEvents.GENERIC_SPLASH, 0.5F, 1.0F);
             }
+            // Original hasBeenShot logic, adapted for first tick
+            this.setDeltaMovement(this.getDeltaMovement().add(this.getDeltaMovement().normalize().scale(0.5D)));
+        }
 
-            if (!this.leftOwner) {
-                this.leftOwner = this.checkLeftOwner();
+        Entity entity = this.getOwner();
+        if (this.level().isClientSide
+                || (entity == null || !entity.isRemoved()) && this.level().isLoaded(this.blockPosition())) {
+            if (!this.started) {
+                this.setDeltaMovement(this.getDeltaMovement().add(this.getDeltaMovement().normalize().scale(0.5D)));
+                this.started = true;
             }
-            this.baseTick();
+            // if (!this.leftOwner) {
+            //     this.leftOwner = this.checkLeftOwner();
+            // }
+            // baseTick() is called by super.tick() in 1.20.1+
             if (this.shouldBurn()) {
                 this.igniteForSeconds(1);
             }
@@ -71,7 +90,7 @@ public abstract class WaterHurtingProjectile extends AbstractHurtingProjectile i
     public void hitDetection() {
         HitResult hitresult = ProjectileUtil.getHitResultOnMoveVector(this, this::canHitEntity);
         if (hitresult.getType() != HitResult.Type.MISS
-                && !net.neoforged.event.EventFactory.onProjectileImpact(this, hitresult)) {
+                && !net.neoforged.neoforge.event.EventHooks.onProjectileImpact(this, hitresult)) {
             this.onHit(hitresult);
         }
     }
@@ -89,8 +108,8 @@ public abstract class WaterHurtingProjectile extends AbstractHurtingProjectile i
             }
         }
 
-        this.setDeltaMovement(vec3.add(this.xPower, this.yPower, this.zPower).scale(f));
-        this.setDeltaMovement(this.getDeltaMovement().subtract(0.0D, this.getGravity(), 0.0D));
+        // this.setDeltaMovement(vec3.add(this.accelerationX, this.accelerationY, this.accelerationZ).scale(f));
+        this.setDeltaMovement(this.getDeltaMovement().subtract(0.0D, this.getDefaultGravity(), 0.0D));
         this.setPos(d0, d1, d2);
     }
 
@@ -106,21 +125,22 @@ public abstract class WaterHurtingProjectile extends AbstractHurtingProjectile i
         if (this.isInWater()) {
             for (int i = 0; i < 4; ++i) {
                 float f1 = 0.25F;
-                this.level.addParticle(ParticleTypes.BUBBLE, d0 - vec3.x * f1, d1 - vec3.y * f1, d2 - vec3.z * f1,
+                this.level().addParticle(ParticleTypes.BUBBLE, d0 - vec3.x * f1, d1 - vec3.y * f1, d2 - vec3.z * f1,
                         vec3.x, vec3.y, vec3.z);
             }
         }
-        this.level.addParticle(this.getTrailParticle(), d0, d1 + 0.5D, d2, 0.0D, 0.0D, 0.0D);
+        this.level().addParticle(this.getTrailParticle(), d0, d1 + 0.5D, d2, 0.0D, 0.0D, 0.0D);
     }
 
-    public float getGravity() {
-        return 0.0F;
+    @Override
+    public double getDefaultGravity() {
+        return 0.0D;
     }
 
     private boolean checkLeftOwner() {
         Entity entity = this.getOwner();
         if (entity != null) {
-            for (Entity entity1 : this.level.getEntities(this,
+            for (Entity entity1 : this.level().getEntities(this,
                     this.getBoundingBox().expandTowards(this.getDeltaMovement()).inflate(1.0D),
                     (p_37272_) -> !p_37272_.isSpectator() && p_37272_.isPickable())) {
                 if (entity1.getRootVehicle() == entity.getRootVehicle()) {

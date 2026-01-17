@@ -7,6 +7,8 @@ import com.Polarice3.Goety.common.entities.ModEntityType;
 import com.Polarice3.Goety.config.SpellConfig;
 import com.Polarice3.Goety.init.ModSounds;
 import com.Polarice3.Goety.utils.*;
+import net.minecraft.world.effect.MobEffectInstance;
+import com.Polarice3.Goety.common.effects.GoetyEffects;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.damagesource.DamageSource;
@@ -89,23 +91,22 @@ public class BioMine extends SpellEntity {
     public void tick() {
         super.tick();
         --this.lifeTicks;
-        if (!this.level.isClientSide) {
-            if (this.lifeTicks <= 0 && this.level.getRandom().nextInt(8) == 0){
-                this.trigger();
+        if (!this.level().isClientSide) {
+            float bbSize = this.getBbWidth();
+            if (this.lifeTicks <= 0 && this.level().getRandom().nextInt(8) == 0){
+                if (this.getOwner() != null && this.getOwner() instanceof LivingEntity livingEntity){
+                    livingEntity.heal(1.0F);
+                }
             }
-            if (!this.isNoGravity() && !this.isInWater()) {
-                MobUtil.moveDownToGround(this);
-            }
-            if (this.tickCount >= 20) {
-                double bbSize = 3.0D + this.getExtraRadius();
-                for (LivingEntity livingentity : this.level.getEntitiesOfClass(LivingEntity.class, this.getBoundingBox().inflate(bbSize, bbSize / 2.0D, bbSize))) {
-                    if (livingentity.isAlive() && !livingentity.isInvulnerable()) {
-                        if (this.getOwner() != null) {
-                            if (!MobUtil.areAllies(this.getOwner(), livingentity) && livingentity != this.getOwner()) {
-                                this.trigger();
-                            }
-                        } else {
-                            this.trigger();
+
+            if (this.lifeTicks > 0){
+                --this.lifeTicks;
+            } else {
+                for (LivingEntity livingentity : this.level().getEntitiesOfClass(LivingEntity.class, this.getBoundingBox().inflate(bbSize, bbSize / 2.0D, bbSize))) {
+
+                    if (livingentity.isAffectedByPotions()) {
+                        if (livingentity != this.getOwner() && !MobUtil.areAllies(livingentity, this.getOwner())) {
+                            this.detonate();
                         }
                     }
                 }
@@ -113,23 +114,26 @@ public class BioMine extends SpellEntity {
         }
     }
 
-    public void trigger(){
-        if (!this.level.isClientSide) {
+    public void detonate() {
+        if (!this.level().isClientSide) {
             double bbSize = 3.0D + this.getExtraRadius();
             float damage = SpellConfig.BiomineAcidDamage.get().floatValue() * WandUtil.damageMultiply();
             damage += this.getExtraDamage();
-            for (LivingEntity livingentity : this.level.getEntitiesOfClass(LivingEntity.class, this.getBoundingBox().inflate(bbSize, bbSize / 2.0D, bbSize))) {
+            for (LivingEntity livingentity : this.level().getEntitiesOfClass(LivingEntity.class, this.getBoundingBox().inflate(bbSize, bbSize / 2.0D, bbSize))) {
                 if (livingentity.isAlive() && !livingentity.isInvulnerable()) {
                     if (this.getOwner() != null) {
                         if (!MobUtil.areAllies(this.getOwner(), livingentity) && livingentity != this.getOwner()) {
-                            this.explodeDamage(livingentity);
+                            livingentity.hurt(ModDamageSource.acid(this, this.getOwner()), 0.0F);
+                            livingentity.addEffect(new MobEffectInstance(GoetyEffects.ACID_VENOM.getHolder(), 100, 1), this);
                         }
                     } else {
-                        this.explodeDamage(livingentity);
+                        livingentity.hurt(ModDamageSource.acid(this, this.getOwner()), 0.0F);
+                        livingentity.addEffect(new MobEffectInstance(GoetyEffects.ACID_VENOM.getHolder(), 100, 1), this);
                     }
                 }
             }
-            AcidPool acidPool = new AcidPool(ModEntityType.ACID_POOL.get(), this.level);
+            this.playSound(net.minecraft.sounds.SoundEvents.GENERIC_EXPLODE.value(), 1.0F, 1.0F);
+            AcidPool acidPool = new AcidPool(ModEntityType.ACID_POOL.get(), this.level());
             acidPool.setPos(this.position());
             acidPool.setRadius(2.0F + this.getExtraRadius());
             acidPool.setDamage(damage);
@@ -141,8 +145,7 @@ public class BioMine extends SpellEntity {
             if (this.getOwner() != null) {
                 acidPool.setOwner(this.getOwner());
             }
-            this.level.addFreshEntity(acidPool);
-            if (this.level instanceof ServerLevel serverLevel) {
+            if (this.level() instanceof ServerLevel serverLevel) {
                 ColorUtil colorUtil = ColorUtil.WHITE;
                 serverLevel.sendParticles(new VerticalCircleExplodeParticleOption(colorUtil.red, colorUtil.green, colorUtil.blue, (float) bbSize, 1), this.getX(), this.getY(), this.getZ(), 1, 0.0D, 0.0D, 0.0D, 0.0D);
                 serverLevel.sendParticles(new CircleExplodeParticleOption(colorUtil.red, colorUtil.green, colorUtil.blue, (float) bbSize, 1), this.getX(), this.getY(), this.getZ(), 1, 0.0D, 0.0D, 0.0D, 0.0D);
@@ -153,7 +156,7 @@ public class BioMine extends SpellEntity {
     }
 
     public void explodeDamage(LivingEntity livingEntity) {
-        if (!this.level.isClientSide) {
+        if (!this.level().isClientSide) {
             float damage = SpellConfig.BiomineDamage.get().floatValue() * WandUtil.damageMultiply();
             damage += this.getExtraDamage();
             if (this.getOwner() != null){
@@ -170,8 +173,8 @@ public class BioMine extends SpellEntity {
         } else if (MobUtil.areAllies(this, p_31050_.getEntity())) {
             return false;
         } else {
-            if (!this.isRemoved() && !this.level.isClientSide) {
-                this.trigger();
+            if (!this.isRemoved() && !this.level().isClientSide) {
+                this.detonate();
                 this.remove(Entity.RemovalReason.KILLED);
             }
 

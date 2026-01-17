@@ -13,7 +13,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EquipmentSlot;
 
 public class BoneLordRenderer extends HumanoidMobRenderer<BoneLord, SkeletonModel<BoneLord>> {
-    private static final ResourceLocation SKELETON_LOCATION = new ResourceLocation("textures/entity/skeleton/skeleton.png");
+    private static final ResourceLocation SKELETON_LOCATION = ResourceLocation.parse("textures/entity/skeleton/skeleton.png");
 
     public BoneLordRenderer(EntityRendererProvider.Context p_174380_) {
         this(p_174380_, ModelLayers.SKELETON, ModelLayers.SKELETON_INNER_ARMOR, ModelLayers.SKELETON_OUTER_ARMOR);

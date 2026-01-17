@@ -351,13 +351,13 @@ public class Vizier extends SpellcasterIllager implements PowerableMob, ICustomA
         MobUtil.setBaseAttributes(this.getAttribute(Attributes.ATTACK_DAMAGE), AttributesConfig.VizierDamage.get());
     }
 
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.entityData.define(VIZIER_FLAGS, (byte) 0);
-        this.entityData.define(CAST_TIMES, 0);
-        this.entityData.define(CASTING, 0);
-        this.entityData.define(CONFUSED, 0);
-        this.entityData.define(ANIM_STATE, 0);
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(VIZIER_FLAGS, (byte) 0);
+        builder.define(CAST_TIMES, 0);
+        builder.define(CASTING, 0);
+        builder.define(CONFUSED, 0);
+        builder.define(ANIM_STATE, 0);
     }
 
     public void setAnimationState(String input) {
@@ -566,7 +566,7 @@ public class Vizier extends SpellcasterIllager implements PowerableMob, ICustomA
                             irk.setOwner(this);
                             irk.finalizeSpawn((ServerLevelAccessor) this.level(),
                                     this.level().getCurrentDifficultyAt(this.blockPosition()),
-                                    MobSpawnType.MOB_SUMMONED, null, null);
+                                    MobSpawnType.MOB_SUMMONED, null);
                             this.level().addFreshEntity(irk);
                         }
                     }

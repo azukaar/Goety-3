@@ -10,7 +10,7 @@ import net.minecraft.resources.ResourceLocation;
 
 public class CaveSpiderServantRenderer extends SpiderServantRenderer<CaveSpiderServant> {
    private static final ResourceLocation CAVE_SPIDER_LOCATION = Goety.location("textures/entity/servants/spider/cave_spider_servant.png");
-   private static final ResourceLocation ORIGINAL = new ResourceLocation("textures/entity/spider/cave_spider.png");
+   private static final ResourceLocation ORIGINAL = ResourceLocation.parse("textures/entity/spider/cave_spider.png");
 
    public CaveSpiderServantRenderer(EntityRendererProvider.Context p_173946_) {
       super(p_173946_, ModelLayers.CAVE_SPIDER);

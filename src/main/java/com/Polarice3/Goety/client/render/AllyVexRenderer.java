@@ -16,8 +16,8 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 
 public class AllyVexRenderer extends MobRenderer<AllyVex, MinionModel<AllyVex>> {
-    private static final ResourceLocation VEX_LOCATION = new ResourceLocation("textures/entity/illager/vex.png");
-    private static final ResourceLocation VEX_CHARGING_LOCATION = new ResourceLocation(
+    private static final ResourceLocation VEX_LOCATION = ResourceLocation.withDefaultNamespace("textures/entity/illager/vex.png");
+    private static final ResourceLocation VEX_CHARGING_LOCATION = ResourceLocation.withDefaultNamespace(
             "textures/entity/illager/vex_charging.png");
 
     public AllyVexRenderer(EntityRendererProvider.Context p_174435_) {

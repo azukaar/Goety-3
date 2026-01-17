@@ -13,6 +13,8 @@ import net.minecraft.world.entity.projectile.ThrowableProjectile;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.HitResult;
 
+import net.minecraft.network.syncher.SynchedEntityData;
+
 public class SoulBomb extends ThrowableProjectile {
 
     public SoulBomb(EntityType<? extends ThrowableProjectile> p_37466_, Level p_37467_) {
@@ -28,7 +30,8 @@ public class SoulBomb extends ThrowableProjectile {
     }
 
     @Override
-    protected void defineSynchedData() {
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
     }
 
     protected void onHit(HitResult p_37406_) {

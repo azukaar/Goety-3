@@ -75,7 +75,7 @@ public class BoundWindCaller extends AbstractBoundIllager{
     public static AttributeSupplier.Builder setCustomAttributes() {
         return Monster.createMonsterAttributes()
                 .add(Attributes.MOVEMENT_SPEED, 0.35D)
-                .add(NeoForgeMod.STEP_HEIGHT_ADDITION.get(), 1.0D)
+                .add(Attributes.STEP_HEIGHT, 1.0D)
                 .add(Attributes.FLYING_SPEED, 0.15D)
                 .add(Attributes.FOLLOW_RANGE, AttributesConfig.WindCallerServantFollowRange.get())
                 .add(Attributes.ARMOR, AttributesConfig.WindCallerServantArmor.get())
@@ -88,9 +88,9 @@ public class BoundWindCaller extends AbstractBoundIllager{
         MobUtil.setBaseAttributes(this.getAttribute(Attributes.FOLLOW_RANGE), AttributesConfig.WindCallerServantFollowRange.get());
     }
 
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.entityData.define(ANIM_STATE, 0);
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(ANIM_STATE, 0);
     }
 
     public void addAdditionalSaveData(CompoundTag compound) {
@@ -151,7 +151,7 @@ public class BoundWindCaller extends AbstractBoundIllager{
 
     public void onSyncedDataUpdated(EntityDataAccessor<?> accessor) {
         if (ANIM_STATE.equals(accessor)) {
-            if (this.level.isClientSide){
+            if (this.level().isClientSide){
                 switch (this.entityData.get(ANIM_STATE)){
                     case 0:
                         break;
@@ -211,14 +211,14 @@ public class BoundWindCaller extends AbstractBoundIllager{
 
     @Override
     public void tick() {
-        if (this.level.isClientSide()) {
+        if (this.level().isClientSide()) {
             this.idleAnimationState.animateWhen(!this.isAttacking() && !this.walkAnimation.isMoving(), this.tickCount);
             for(int i = 0; i < 2; ++i) {
-                this.level.addParticle(ParticleTypes.CLOUD, this.getRandomX(0.5D), this.getY() + 0.5D, this.getRandomZ(0.5D), (0.5D - this.random.nextDouble()) * 0.15D, 0.01F, (0.5D - this.random.nextDouble()) * 0.15D);
+                this.level().addParticle(ParticleTypes.CLOUD, this.getRandomX(0.5D), this.getY() + 0.5D, this.getRandomZ(0.5D), (0.5D - this.random.nextDouble()) * 0.15D, 0.01F, (0.5D - this.random.nextDouble()) * 0.15D);
             }
         }
         super.tick();
-        if (this.level instanceof ServerLevel serverLevel){
+        if (this.level() instanceof ServerLevel serverLevel){
             if (this.blastCool > 0) {
                 --this.blastCool;
             }

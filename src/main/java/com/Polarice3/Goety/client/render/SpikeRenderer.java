@@ -37,7 +37,7 @@ public class SpikeRenderer extends EntityRenderer<Spike> {
             pMatrixStack.scale(0.5F, 0.5F, 0.5F);
             this.model.setupAnim(pEntity, f, 0.0F, pPartialTicks/10, pEntity.getYRot(), pEntity.getXRot());
             VertexConsumer ivertexbuilder = pBuffer.getBuffer(this.model.renderType(TEXTURE_LOCATION));
-            this.model.renderToBuffer(pMatrixStack, ivertexbuilder, pPackedLight, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 1.0F);
+            this.model.renderToBuffer(pMatrixStack, ivertexbuilder, pPackedLight, OverlayTexture.NO_OVERLAY, -1);
             pMatrixStack.popPose();
             super.render(pEntity, pEntityYaw, pPartialTicks, pMatrixStack, pBuffer, pPackedLight);
         }

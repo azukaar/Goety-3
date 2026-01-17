@@ -22,6 +22,8 @@ import net.minecraft.world.phys.Vec3;
 import javax.annotation.Nullable;
 import java.util.UUID;
 
+import net.minecraft.network.syncher.SynchedEntityData;
+
 public class ViciousPike extends Entity implements ISpellEntity {
     private LivingEntity owner;
     private UUID ownerUUID;
@@ -44,7 +46,8 @@ public class ViciousPike extends Entity implements ISpellEntity {
         this.setPos(x, y, z);
     }
 
-    protected void defineSynchedData() {
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
     }
 
     @Override

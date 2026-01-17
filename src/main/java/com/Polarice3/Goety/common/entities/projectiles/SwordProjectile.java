@@ -75,9 +75,9 @@ public class SwordProjectile extends AbstractArrow implements ItemSupplier {
         return itemstack.isEmpty() ? new ItemStack(this.getDefaultItem()) : itemstack;
     }
 
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.getEntityData().define(DATA_ITEM_STACK, ItemStack.EMPTY);
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(DATA_ITEM_STACK, ItemStack.EMPTY);
     }
 
     public void addAdditionalSaveData(CompoundTag pCompound) {

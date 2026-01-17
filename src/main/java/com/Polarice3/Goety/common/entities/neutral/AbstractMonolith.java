@@ -36,9 +36,9 @@ public abstract class AbstractMonolith extends Owned {
     }
 
     @Override
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.entityData.define(AGE, 0);
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(AGE, 0);
     }
 
     public void onSyncedDataUpdated(EntityDataAccessor<?> p_33134_) {
@@ -71,8 +71,8 @@ public abstract class AbstractMonolith extends Owned {
 
     @Nullable
     public SpawnGroupData finalizeSpawn(ServerLevelAccessor pLevel, DifficultyInstance pDifficulty,
-            MobSpawnType pReason, @Nullable SpawnGroupData pSpawnData, @Nullable CompoundTag pDataTag) {
-        pSpawnData = super.finalizeSpawn(pLevel, pDifficulty, pReason, pSpawnData, pDataTag);
+            MobSpawnType pReason, @Nullable SpawnGroupData pSpawnData) {
+        pSpawnData = super.finalizeSpawn(pLevel, pDifficulty, pReason, pSpawnData);
         this.initRotate();
         if (pReason == MobSpawnType.MOB_SUMMONED) {
             if (!this.canSpawn(pLevel.getLevel())) {

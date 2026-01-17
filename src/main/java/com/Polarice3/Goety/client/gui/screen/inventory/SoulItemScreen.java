@@ -10,7 +10,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 
 public class SoulItemScreen extends AbstractContainerScreen<SoulItemContainer> {
-    private static final ResourceLocation GUI_TEXTURES = new ResourceLocation(Goety.MOD_ID, "textures/gui/container/wand.png");
+    private static final ResourceLocation GUI_TEXTURES = ResourceLocation.fromNamespaceAndPath(Goety.MOD_ID, "textures/gui/container/wand.png");
 
     public SoulItemScreen(SoulItemContainer p_i51097_1_, Inventory p_i51097_2_, Component p_i51097_3_) {
         super(p_i51097_1_, p_i51097_2_, p_i51097_3_);

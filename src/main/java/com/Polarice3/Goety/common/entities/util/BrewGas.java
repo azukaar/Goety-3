@@ -18,6 +18,7 @@ import net.minecraft.network.protocol.game.ClientboundAddEntityPacket;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.server.level.ServerEntity;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.util.Mth;
@@ -78,8 +79,8 @@ public class BrewGas extends Entity {
     }
 
     @Override
-    protected void defineSynchedData() {
-        this.getEntityData().define(DATA_COLOR, 0xffffff);
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        builder.define(DATA_COLOR, 0xffffff);
     }
 
     @Override
@@ -129,7 +130,7 @@ public class BrewGas extends Entity {
             ListTag listtag = new ListTag();
 
             for(MobEffectInstance mobeffectinstance : this.effects) {
-                listtag.add(mobeffectinstance.save(new CompoundTag()));
+                listtag.add(mobeffectinstance.save());
             }
 
             p_20139_.put("Effects", listtag);
@@ -162,23 +163,23 @@ public class BrewGas extends Entity {
     }
 
     public boolean isInSolid() {
-        if (!this.level.getBlockState(this.blockPosition()).isAir() && !BlockFinder.canBeReplaced(this.level, this.blockPosition())){
+        if (!this.level().getBlockState(this.blockPosition()).isAir() && !BlockFinder.canBeReplaced(this.level(), this.blockPosition())){
             return true;
-        } else if (!this.level.getFluidState(this.blockPosition()).isEmpty() || this.level.getBlockState(this.blockPosition()).is(BlockTags.FIRE)){
+        } else if (!this.level().getFluidState(this.blockPosition()).isEmpty() || this.level().getBlockState(this.blockPosition()).is(BlockTags.FIRE)){
             return true;
         }
-        float f = this.getDimensions(Pose.STANDING).width * 0.8F;
+        float f = this.getDimensions(Pose.STANDING).width() * 0.8F;
         AABB aabb = AABB.ofSize(this.getEyePosition(), (double)f, 1.0E-6D, (double)f);
         return BlockPos.betweenClosedStream(aabb).anyMatch((p_201942_) -> {
-            BlockState blockstate = this.level.getBlockState(p_201942_);
-            return !blockstate.isAir() && blockstate.isSuffocating(this.level, p_201942_) && Shapes.joinIsNotEmpty(blockstate.getCollisionShape(this.level, p_201942_).move((double)p_201942_.getX(), (double)p_201942_.getY(), (double)p_201942_.getZ()), Shapes.create(aabb), BooleanOp.AND);
+            BlockState blockstate = this.level().getBlockState(p_201942_);
+            return !blockstate.isAir() && blockstate.isSuffocating(this.level(), p_201942_) && Shapes.joinIsNotEmpty(blockstate.getCollisionShape(this.level(), p_201942_).move((double)p_201942_.getX(), (double)p_201942_.getY(), (double)p_201942_.getZ()), Shapes.create(aabb), BooleanOp.AND);
         });
     }
 
     public void tick() {
         super.tick();
-        if (!this.level.isClientSide) {
-            if (this.level instanceof ServerLevel serverLevel){
+        if (!this.level().isClientSide) {
+            if (this.level() instanceof ServerLevel serverLevel){
                 serverLevel.sendParticles(ModParticleTypes.CULT_SPELL.get(), this.getRandomX(1.0D), this.getRandomY(), this.getRandomZ(1.0D), 0, MathHelper.rgbParticle(this.getColor())[0], MathHelper.rgbParticle(this.getColor())[1], MathHelper.rgbParticle(this.getColor())[2], 0.5F);
             }
             if (this.isInSolid()){
@@ -193,15 +194,15 @@ public class BrewGas extends Entity {
                         if (direction.getAxis().isHorizontal()) {
                             probability = 0.8D;
                         }
-                        if (this.level.random.nextDouble() < probability) {
+                        if (this.level().random.nextDouble() < probability) {
                             BlockPos blockPos = this.blockPosition().relative(direction);
-                            BlockState blockState = this.level.getBlockState(blockPos);
+                            BlockState blockState = this.level().getBlockState(blockPos);
                             if (blockState.isAir() || blockState.canBeReplaced(Fluids.FLOWING_WATER)) {
-                                if (this.level.getEntitiesOfClass(BrewGas.class, new AABB(blockPos)).isEmpty()) {
-                                    BrewGas brewGas = new BrewGas(ModEntityType.BREW_EFFECT_GAS.get(), this.level);
+                                if (this.level().getEntitiesOfClass(BrewGas.class, new AABB(blockPos)).isEmpty()) {
+                                    BrewGas brewGas = new BrewGas(ModEntityType.BREW_EFFECT_GAS.get(), this.level());
                                     brewGas.setPos(blockPos.getX(), blockPos.getY(), blockPos.getZ());
                                     brewGas.setGas(this.effects, this.brewEffects, this.duration, this.area - 1, this.owner != null ? this.owner : null);
-                                    if (this.level.addFreshEntity(brewGas)) {
+                                    if (this.level().addFreshEntity(brewGas)) {
                                         expanded = true;
                                     }
                                 } else {
@@ -214,17 +215,17 @@ public class BrewGas extends Entity {
                         --this.area;
                     }
                 }
-            } else if (this.tickCount >= this.duration || this.level.random.nextInt(i) == 0) {
+            } else if (this.tickCount >= this.duration || this.level().random.nextInt(i) == 0) {
                 this.discard();
             }
             if (!this.effects.isEmpty() || !this.brewEffects.isEmpty()) {
-                List<LivingEntity> list1 = this.level.getEntitiesOfClass(LivingEntity.class, this.getBoundingBox());
+                List<LivingEntity> list1 = this.level().getEntitiesOfClass(LivingEntity.class, this.getBoundingBox());
                 if (!list1.isEmpty()) {
                     for(LivingEntity livingentity : list1) {
                         if (livingentity.isAffectedByPotions() && !livingentity.getTags().contains(ConstantPaths.gassed())) {
                             for(MobEffectInstance mobEffectInstance : this.effects) {
-                                if (mobEffectInstance.getEffect().isInstantenous()) {
-                                    mobEffectInstance.getEffect().applyInstantenousEffect(this, this.getOwner(), livingentity, mobEffectInstance.getAmplifier(), 0.5D);
+                                if (mobEffectInstance.getEffect().value().isInstantenous()) {
+                                    mobEffectInstance.getEffect().value().applyInstantenousEffect(this, this.getOwner(), livingentity, mobEffectInstance.getAmplifier(), 0.5D);
                                 } else {
                                     livingentity.addEffect(new MobEffectInstance(mobEffectInstance), this);
                                 }
@@ -278,8 +279,8 @@ public class BrewGas extends Entity {
 
     @Nullable
     public LivingEntity getOwner() {
-        if (this.owner == null && this.ownerUUID != null && this.level instanceof ServerLevel) {
-            Entity entity = ((ServerLevel)this.level).getEntity(this.ownerUUID);
+        if (this.owner == null && this.ownerUUID != null && this.level() instanceof ServerLevel) {
+            Entity entity = ((ServerLevel)this.level()).getEntity(this.ownerUUID);
             if (entity instanceof LivingEntity) {
                 this.owner = (LivingEntity)entity;
             }
@@ -292,7 +293,8 @@ public class BrewGas extends Entity {
         return PushReaction.IGNORE;
     }
 
-    public Packet<ClientGamePacketListener> getAddEntityPacket() {
-        return new ClientboundAddEntityPacket(this);
+    @Override
+    public Packet<ClientGamePacketListener> getAddEntityPacket(ServerEntity p_345479_) {
+        return new ClientboundAddEntityPacket(this, p_345479_);
     }
 }

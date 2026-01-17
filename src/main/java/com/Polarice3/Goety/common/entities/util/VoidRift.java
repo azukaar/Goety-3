@@ -65,10 +65,10 @@ public class VoidRift extends CastSpellTrap {
         this.playSound(ModSounds.RUMBLE.get(), 2.0F, this.random.nextFloat() + 0.75F);
     }
 
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.entityData.define(DATA_TYPE_ID, 0);
-        this.entityData.define(ID_SIZE, 0.0F);
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(DATA_TYPE_ID, 0);
+        builder.define(ID_SIZE, 0.0F);
     }
 
     public void onSyncedDataUpdated(EntityDataAccessor<?> p_33134_) {

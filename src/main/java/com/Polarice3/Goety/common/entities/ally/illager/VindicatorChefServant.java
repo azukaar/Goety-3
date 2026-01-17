@@ -63,10 +63,10 @@ public class VindicatorChefServant extends VindicatorServant{
         this.goalSelector.addGoal(6, new LootUncookedFoodGoal<>(this));
     }
 
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.entityData.define(FURNACE_POS, Optional.empty());
-        this.entityData.define(COOKING, false);
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(FURNACE_POS, Optional.empty());
+        builder.define(COOKING, false);
     }
 
     public void addAdditionalSaveData(CompoundTag compound) {

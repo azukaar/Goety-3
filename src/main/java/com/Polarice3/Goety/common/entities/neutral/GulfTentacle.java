@@ -61,9 +61,9 @@ public class GulfTentacle extends Owned {
     }
 
     @Override
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.entityData.define(RANGE, 4.0F);
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(RANGE, 4.0F);
     }
 
     @Override

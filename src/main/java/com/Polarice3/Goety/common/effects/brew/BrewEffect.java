@@ -81,7 +81,7 @@ public abstract class BrewEffect {
 
     public void drinkBlockEffect(@Nullable Entity pSource, @Nullable Entity pIndirectSource, LivingEntity pLivingEntity, int pAmplifier, int pAreaOfEffect){
         this.applyInstantenousEffect(pSource, pIndirectSource, pLivingEntity, pAmplifier, 0);
-        this.applyBlockEffect(pLivingEntity.level, pLivingEntity.blockPosition(), pIndirectSource instanceof LivingEntity livingEntity ? livingEntity : pSource instanceof LivingEntity livingEntity ? livingEntity : null, pAmplifier, pAreaOfEffect);
+        this.applyBlockEffect(pLivingEntity.level(), pLivingEntity.blockPosition(), pIndirectSource instanceof LivingEntity livingEntity ? livingEntity : pSource instanceof LivingEntity livingEntity ? livingEntity : null, pAmplifier, pAreaOfEffect);
     }
 
     public boolean isInstantenous() {

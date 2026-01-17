@@ -98,7 +98,7 @@ public class HellhoundRenderer extends MobRenderer<Hellhound, BlackWolfModel<Hel
             if (blackHound.isUpgraded()) {
                 coloredCutoutModelCopyLayerRender(this.getParentModel(), this.layerModel, TEXTURES, matrixStackIn,
                         bufferIn, packedLightIn, blackHound, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw,
-                        headPitch, partialTicks, 1.0F, 1.0F, 1.0F);
+                        headPitch, partialTicks, -1);
             }
         }
     }

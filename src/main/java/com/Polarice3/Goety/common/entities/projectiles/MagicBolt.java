@@ -43,9 +43,9 @@ public class MagicBolt extends SpellHurtingProjectile {
         super(ModEntityType.MAGIC_BOLT.get(), p_i1795_2_, p_i1795_4_, p_i1795_6_, p_i1795_8_, p_i1795_10_, p_i1795_12_, p_i1795_1_);
     }
 
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.entityData.define(DATA_EXTRA_DURATION, 0);
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(DATA_EXTRA_DURATION, 0);
     }
 
     public void readAdditionalSaveData(CompoundTag compound) {

@@ -78,40 +78,40 @@ public class BlossomBall extends SpellThrowableProjectile{
         double d0 = this.getX() + vector3d.x;
         double d1 = this.getY() + vector3d.y;
         double d2 = this.getZ() + vector3d.z;
-        this.level.addParticle(ParticleTypes.DRAGON_BREATH, d0 + level.random.nextDouble()/2, d1 + 0.5D, d2 + level.random.nextDouble()/2, 0.0D, 0.0D, 0.0D);
+        this.level().addParticle(ParticleTypes.DRAGON_BREATH, d0 + level().random.nextDouble()/2, d1 + 0.5D, d2 + level().random.nextDouble()/2, 0.0D, 0.0D, 0.0D);
     }
 
     public void explode(HitResult pResult){
-        if (!this.level.isClientSide) {
+        if (!this.level().isClientSide) {
             this.playSound(ModSounds.QUICK_GROWING_VINE_BURROW.get(), 2.0F, 0.75F);
             if (this.getOwner() != null) {
                 Vec3 vec3 = Vec3.atCenterOf(this.blockPosition());
                 if (pResult instanceof BlockHitResult blockHitResult) {
                     BlockPos blockpos = blockHitResult.getBlockPos().relative(blockHitResult.getDirection());
-                    if (BlockFinder.canBeReplaced(this.level, blockpos)) {
+                    if (BlockFinder.canBeReplaced(this.level(), blockpos)) {
                         vec3 = Vec3.atCenterOf(blockpos);
                     }
                 } else if (pResult instanceof EntityHitResult entityHitResult) {
                     Entity entity1 = entityHitResult.getEntity();
                     vec3 = Vec3.atCenterOf(entity1.blockPosition());
                 }
-                BlossomThorn blossomThorn0 = new BlossomThorn(this.level, vec3.x, vec3.y, vec3.z, 30, this.getOwner());
+                BlossomThorn blossomThorn0 = new BlossomThorn(this.level(), vec3.x, vec3.y, vec3.z, 30, this.getOwner());
                 MobUtil.moveDownToGround(blossomThorn0);
                 blossomThorn0.setDuration(this.getDuration());
                 blossomThorn0.setExtraDamage(this.getExtraDamage());
-                this.level.addFreshEntity(blossomThorn0);
+                this.level().addFreshEntity(blossomThorn0);
                 List<Vec3> circlePoints = BlockFinder.buildBlockCircle(this.getRadius());
                 for (Vec3 point : circlePoints) {
                     Vec3 vec31 = vec3.add(point);
-                    BlossomThorn blossomThorn = new BlossomThorn(this.level, vec31.x, vec31.y, vec31.z, 30, this.getOwner());
+                    BlossomThorn blossomThorn = new BlossomThorn(this.level(), vec31.x, vec31.y, vec31.z, 30, this.getOwner());
                     MobUtil.moveDownToGround(blossomThorn);
                     blossomThorn.setDuration(this.getDuration());
                     blossomThorn.setExtraDamage(this.getExtraDamage());
-                    if (this.level instanceof ServerLevel serverLevel){
+                    if (this.level() instanceof ServerLevel serverLevel){
                         serverLevel.sendParticles(ModParticleTypes.BLOSSOM_THORN_INDICATOR.get(), blossomThorn.position().x, blossomThorn.position().y + 0.1F, blossomThorn.position().z, 1, 0.0F, 0.0F, 0.0F, 0.0F);
                     }
                     blossomThorn.setSilent(true);
-                    this.level.addFreshEntity(blossomThorn);
+                    this.level().addFreshEntity(blossomThorn);
                 }
             }
             this.discard();
@@ -130,9 +130,9 @@ public class BlossomBall extends SpellThrowableProjectile{
             if (this.getOwner() != null) {
                 float baseDamage = SpellConfig.BlossomDamage.get().floatValue() * WandUtil.damageMultiply();
                 if (target.hurt(this.damageSources().thorns(this.getOwner()), baseDamage + this.getExtraDamage())) {
-                    MobEffect effect = MobEffects.POISON;
+                    net.minecraft.core.Holder<MobEffect> effect = MobEffects.POISON;
                     if (CuriosFinder.hasWildRobe(this.getOwner())) {
-                        effect = GoetyEffects.ACID_VENOM.get();
+                        effect = GoetyEffects.ACID_VENOM.getHolder();
                     }
                     target.addEffect(new MobEffectInstance(effect, 140 + MathHelper.secondsToTicks(this.duration)), this);
                 }
@@ -159,8 +159,8 @@ public class BlossomBall extends SpellThrowableProjectile{
         return super.canHitEntity(pEntity);
     }
 
-    @Override
+    /*@Override
     public Packet<ClientGamePacketListener> getAddEntityPacket() {
         return new net.minecraft.network.protocol.game.ClientboundAddEntityPacket(this);
-    }
+    }*/
 }

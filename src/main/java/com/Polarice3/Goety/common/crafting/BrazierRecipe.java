@@ -19,7 +19,10 @@ import net.minecraft.network.codec.StreamCodec;
 
 import java.util.List;
 
-public class BrazierRecipe implements Recipe<Container> {
+import net.minecraft.core.HolderLookup;
+import net.minecraft.world.item.crafting.RecipeInput;
+
+public class BrazierRecipe implements Recipe<RecipeInput> {
     public static final Serializer SERIALIZER = new Serializer();
     public static final MapCodec<BrazierRecipe> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
             ItemStack.CODEC.fieldOf("result").forGetter(r -> r.result),
@@ -51,10 +54,10 @@ public class BrazierRecipe implements Recipe<Container> {
      * Based on Runic Altar Recipe code by @Vazkii
      */
     @Override
-    public boolean matches(Container container, Level p_44003_) {
+    public boolean matches(RecipeInput container, Level p_44003_) {
         List<Ingredient> missingIngredients = Lists.newArrayList(this.ingredients);
 
-        for (int i = 0; i < container.getContainerSize(); i++) {
+        for (int i = 0; i < container.size(); i++) {
             ItemStack itemStack = container.getItem(i);
             if (itemStack.isEmpty()) {
                 break;
@@ -81,7 +84,7 @@ public class BrazierRecipe implements Recipe<Container> {
     }
 
     @Override
-    public ItemStack assemble(Container p_44001_, net.minecraft.core.HolderLookup.Provider pAccess) {
+    public ItemStack assemble(RecipeInput p_44001_, HolderLookup.Provider pAccess) {
         return this.result.copy();
     }
 
@@ -96,7 +99,7 @@ public class BrazierRecipe implements Recipe<Container> {
     }
 
     @Override
-    public ItemStack getResultItem(RegistryAccess pAccess) {
+    public ItemStack getResultItem(HolderLookup.Provider pAccess) {
         return this.result;
     }
 

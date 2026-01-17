@@ -7,6 +7,7 @@ import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.core.HolderLookup;
 
 public abstract class ModBlockEntity extends BlockEntity {
 
@@ -14,34 +15,39 @@ public abstract class ModBlockEntity extends BlockEntity {
         super(p_155228_, p_155229_, p_155230_);
     }
 
-    public abstract void readNetwork(CompoundTag compoundNBT);
 
-    public abstract CompoundTag writeNetwork(CompoundTag pCompound);
+    public abstract void readNetwork(CompoundTag compoundNBT, HolderLookup.Provider pRegistries);
 
-    @Override
-    public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt) {
-        this.readNetwork(pkt.getTag());
-    }
+    public abstract CompoundTag writeNetwork(CompoundTag pCompound, HolderLookup.Provider pRegistries);
 
     @Override
-    public void handleUpdateTag(CompoundTag tag) {
-        super.load(tag);
-        this.readNetwork(tag);
+    public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt, HolderLookup.Provider lookupProvider) {
+        if (this.level != null) {
+            this.readNetwork(pkt.getTag(), lookupProvider);
+        }
     }
 
     @Override
-    public CompoundTag getUpdateTag() {
-        return this.writeNetwork(super.getUpdateTag());
+    public void handleUpdateTag(CompoundTag tag, HolderLookup.Provider pRegistries) {
+        super.loadAdditional(tag, pRegistries);
+        this.readNetwork(tag, pRegistries);
     }
 
-    public void load(CompoundTag nbt) {
-        this.readNetwork(nbt);
-        super.load(nbt);
+    @Override
+    public CompoundTag getUpdateTag(HolderLookup.Provider pRegistries) {
+        return this.writeNetwork(super.getUpdateTag(pRegistries), pRegistries);
     }
 
-    public void saveAdditional(CompoundTag compound) {
-        this.writeNetwork(compound);
-        super.saveAdditional(compound);
+    @Override
+    public void loadAdditional(CompoundTag nbt, HolderLookup.Provider pRegistries) {
+        this.readNetwork(nbt, pRegistries);
+        super.loadAdditional(nbt, pRegistries);
+    }
+
+    @Override
+    public void saveAdditional(CompoundTag compound, HolderLookup.Provider pRegistries) {
+        this.writeNetwork(compound, pRegistries);
+        super.saveAdditional(compound, pRegistries);
     }
 
     @Override

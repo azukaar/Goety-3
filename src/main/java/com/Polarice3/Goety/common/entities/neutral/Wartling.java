@@ -89,9 +89,10 @@ public class Wartling extends AbstractSpiderServant {
         return 1;
     }
 
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.entityData.define(MEGA, false);
+    @Override
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(MEGA, false);
     }
 
     public void addAdditionalSaveData(CompoundTag p_21145_) {

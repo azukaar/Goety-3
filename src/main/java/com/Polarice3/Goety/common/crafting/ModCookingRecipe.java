@@ -8,9 +8,11 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeType;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.item.crafting.SingleRecipeInput;
 
-public abstract class ModCookingRecipe implements Recipe<Container> {
+public abstract class ModCookingRecipe implements Recipe<SingleRecipeInput> {
     protected final RecipeType<?> type;
     protected final ResourceLocation id;
     protected final String group;
@@ -29,11 +31,11 @@ public abstract class ModCookingRecipe implements Recipe<Container> {
         this.cookingTime = pCookingTime;
     }
 
-    public boolean matches(Container pInv, Level pLevel) {
-        return this.ingredient.test(pInv.getItem(0));
+    public boolean matches(SingleRecipeInput pInv, Level pLevel) {
+        return this.ingredient.test(pInv.item());
     }
 
-    public ItemStack assemble(Container pInv, RegistryAccess pAccess) {
+    public ItemStack assemble(SingleRecipeInput pInv, HolderLookup.Provider pAccess) {
         return this.result.copy();
     }
 
@@ -51,7 +53,7 @@ public abstract class ModCookingRecipe implements Recipe<Container> {
         return this.experience;
     }
 
-    public ItemStack getResultItem(RegistryAccess pAccess) {
+    public ItemStack getResultItem(HolderLookup.Provider pAccess) {
         return this.result;
     }
 

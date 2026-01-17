@@ -53,9 +53,9 @@ public class Hellfire extends GroundProjectile {
     }
 
     @Override
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.entityData.define(DATA_EXTRA_DAMAGE, 0.0F);
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(DATA_EXTRA_DAMAGE, 0.0F);
     }
 
     public boolean isDying(){

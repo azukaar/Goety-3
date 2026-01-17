@@ -24,9 +24,9 @@ public class BlockRenderType extends RenderType {
 
     public final static ResourceLocation BEAM = Goety.location("textures/particle/block_beam.png");
     public static final RenderType LASER_MAIN_BEAM = create(Goety.MOD_ID + "block_beam",
-            DefaultVertexFormat.POSITION_COLOR_TEX, VertexFormat.Mode.QUADS, BUFFERSIZE, CRUMBLING, SORT,
+            DefaultVertexFormat.POSITION_TEX_COLOR, VertexFormat.Mode.QUADS, BUFFERSIZE, CRUMBLING, SORT,
             RenderType.CompositeState.builder()
-                    .setTextureState(new TextureStateShard(BEAM, BLUR, MIPMAP)).setShaderState(ShaderStateShard.POSITION_COLOR_TEX_SHADER)
+                    .setTextureState(new TextureStateShard(BEAM, BLUR, MIPMAP)).setShaderState(new ShaderStateShard(net.minecraft.client.renderer.GameRenderer::getPositionTexColorShader))
                     .setLayeringState(VIEW_OFFSET_Z_LAYERING)
                     .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
                     .setDepthTestState(NO_DEPTH_TEST)

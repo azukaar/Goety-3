@@ -89,7 +89,7 @@ public class ModBoatRenderer extends EntityRenderer<ModBoat> {
         pMatrixStack.mulPose(Axis.YP.rotationDegrees(90.0F));
         listmodel.setupAnim(pEntity, pPartialTicks, 0.0F, -0.1F, 0.0F, 0.0F);
         VertexConsumer ivertexbuilder = pBuffer.getBuffer(listmodel.renderType(this.getTextureLocation(pEntity)));
-        listmodel.renderToBuffer(pMatrixStack, ivertexbuilder, pPackedLight, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 1.0F);
+        listmodel.renderToBuffer(pMatrixStack, ivertexbuilder, pPackedLight, OverlayTexture.NO_OVERLAY, -1);
         if (!pEntity.isUnderWater()) {
             VertexConsumer vertexconsumer1 = pBuffer.getBuffer(RenderType.waterMask());
             if (listmodel instanceof WaterPatchModel waterpatchmodel) {

@@ -66,20 +66,20 @@ public class VoidShrineBlockEntity extends PedestalBlockEntity {
                         Vec3 vec3 = this.worldPosition.above().getCenter();
                         EnderKeeper keeper = new EnderKeeper(ModEntityType.ENDER_KEEPER.get(), serverLevel);
                         keeper.setPos(vec3);
-                        keeper.finalizeSpawn(serverLevel, serverLevel.getCurrentDifficultyAt(this.worldPosition), MobSpawnType.MOB_SUMMONED, null, null);
+                        keeper.finalizeSpawn(serverLevel, serverLevel.getCurrentDifficultyAt(this.worldPosition), MobSpawnType.MOB_SUMMONED, null);
                         keeper.setBoundPos(this.worldPosition);
                         keeper.setPersistenceRequired();
                         serverLevel.addFreshEntity(keeper);
                     }
                     if (this.coolTick < 20) {
                         for (Player player : serverLevel.getEntitiesOfClass(Player.class, new AABB(this.getBlockPos()).inflate(64.0F), EntitySelector.NO_CREATIVE_OR_SPECTATOR)) {
-                            player.addEffect(new MobEffectInstance(GoetyEffects.IMPAIRED.get(), 5, 0, false, false));
+                            player.addEffect(new MobEffectInstance(GoetyEffects.IMPAIRED.getHolder(), 5, 0, false, false));
                         }
                     }
                     ItemStack itemStack = ItemStack.EMPTY;
                     itemStack = this.itemStackHandler.getStackInSlot(0);
                     if (this.coolTick >= 20 && itemStack.isEmpty()) {
-                        serverLevel.playSound(null, this.worldPosition, SoundEvents.RESPAWN_ANCHOR_DEPLETE.get(), SoundSource.BLOCKS, 1.0F, 0.8F);
+                        serverLevel.playSound(null, this.worldPosition, SoundEvents.RESPAWN_ANCHOR_DEPLETE.value(), SoundSource.BLOCKS, 1.0F, 0.8F);
                         serverLevel.setBlockAndUpdate(this.worldPosition, this.getBlockState().setValue(VoidShrineBlock.CHARGE, 0).setValue(VoidShrineBlock.TRIGGERED, false));
                     }
                 }

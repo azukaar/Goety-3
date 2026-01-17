@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
+import net.minecraft.core.registries.BuiltInRegistries;
 
 public abstract class BarracksBlockEntity extends OwnedBlockEntity implements GameEventListener, IBarrack {
     public static String TRAIN_LIST = "trainList";
@@ -109,7 +110,7 @@ public abstract class BarracksBlockEntity extends OwnedBlockEntity implements Ga
                             if (!(mob instanceof ITrainable trainable)) {
                                 blockEntity.uuids.remove(mob.getUUID());
                                 return true;
-                            } else if (!mob.isAlive() || mob.level.dimension() != serverLevel.dimension() || trainable.isTrained() || !blockEntity.checkEligibility(mob, serverLevel, blockPos)) {
+                            } else if (!mob.isAlive() || mob.level().dimension() != serverLevel.dimension() || trainable.isTrained() || !blockEntity.checkEligibility(mob, serverLevel, blockPos)) {
                                 blockEntity.uuids.remove(mob.getUUID());
                                 return true;
                             }
@@ -142,7 +143,7 @@ public abstract class BarracksBlockEntity extends OwnedBlockEntity implements Ga
         if (entityType == null) {
             this.entityTrainTo = new CompoundTag();
         } else {
-            ResourceLocation location = NeoForgeRegistries.ENTITY_TYPES.getKey(entityType);
+            ResourceLocation location = BuiltInRegistries.ENTITY_TYPE.getKey(entityType);
             this.entityTrainTo.putString("id", location != null ? location.toString() : "minecraft:pig");
         }
     }
@@ -198,8 +199,9 @@ public abstract class BarracksBlockEntity extends OwnedBlockEntity implements Ga
         return this.mobCount;
     }
 
-    public void readNetwork(CompoundTag tag) {
-        super.readNetwork(tag);
+    @Override
+    public void readNetwork(CompoundTag tag, net.minecraft.core.HolderLookup.Provider pRegistries) {
+        super.readNetwork(tag, pRegistries);
         if (tag.contains("showArea")) {
             this.showArea = tag.getBoolean("showArea");
         }
@@ -223,8 +225,9 @@ public abstract class BarracksBlockEntity extends OwnedBlockEntity implements Ga
         }
     }
 
-    public CompoundTag writeNetwork(CompoundTag tag) {
-        CompoundTag tag1 = super.writeNetwork(tag);
+    @Override
+    public CompoundTag writeNetwork(CompoundTag tag, net.minecraft.core.HolderLookup.Provider pRegistries) {
+        CompoundTag tag1 = super.writeNetwork(tag, pRegistries);
         tag1.putBoolean("showArea", this.showArea);
         tag1.putString("CurrentWeather", this.currentWeather);
         tag1.putString("CurrentMob", this.currentMob);
@@ -266,7 +269,7 @@ public abstract class BarracksBlockEntity extends OwnedBlockEntity implements Ga
 
     public boolean handleGameEvent(ServerLevel p_222777_, GameEvent p_282184_, GameEvent.Context p_283014_, Vec3 p_282350_) {
         if (!this.isRemoved()) {
-            if (p_282184_.is(ModTags.GameEvents.BLOCK_EVENTS)) {
+            if (BuiltInRegistries.GAME_EVENT.wrapAsHolder(p_282184_).is(ModTags.GameEvents.BLOCK_EVENTS)) {
                 this.updateVariant = 5;
                 return true;
             }

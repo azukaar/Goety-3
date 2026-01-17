@@ -39,6 +39,8 @@ import net.minecraft.world.item.*;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.Enchantments;
+import net.minecraft.world.item.enchantment.ItemEnchantments;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.ServerLevelAccessor;
@@ -59,6 +61,10 @@ public class Conquillager extends HuntingIllagerEntity implements CrossbowAttack
     public Conquillager(EntityType<? extends Conquillager> p_i48556_1_, Level p_i48556_2_) {
         super(p_i48556_1_, p_i48556_2_);
         this.xpReward = 20;
+    }
+
+    @Override
+    public void applyRaidBuffs(ServerLevel p_37844_, int p_37845_, boolean p_37846_) {
     }
 
     protected void registerGoals() {
@@ -83,17 +89,17 @@ public class Conquillager extends HuntingIllagerEntity implements CrossbowAttack
 
     public void tick() {
         super.tick();
-        for (LivingEntity entity : this.level.getEntitiesOfClass(LivingEntity.class, this.getBoundingBox().inflate(8.0D), EntitySelector.NO_CREATIVE_OR_SPECTATOR)) {
-            if (entity.isAlive() && !(entity instanceof PatrollingMonster) && !(entity instanceof RaiderServant) && entity.getMobType() != MobType.UNDEAD) {
+        for (LivingEntity entity : this.level().getEntitiesOfClass(LivingEntity.class, this.getBoundingBox().inflate(8.0D), EntitySelector.NO_CREATIVE_OR_SPECTATOR)) {
+            if (entity.isAlive() && !(entity instanceof PatrollingMonster) && !(entity instanceof RaiderServant) && !entity.getType().is(net.minecraft.tags.EntityTypeTags.UNDEAD)) {
                 if (this.tickCount % 100 == 0 && this.getRandom().nextInt(20) == 0) {
-                    entity.addEffect(new MobEffectInstance(GoetyEffects.ILLAGUE.get(), 2000, 0, false, false));
+                    entity.addEffect(new MobEffectInstance(GoetyEffects.ILLAGUE, 2000, 0, false, false));
                 }
             }
         }
-        if (this.level.isClientSide) {
+        if (this.level().isClientSide) {
             if (this.tickCount % 20 == 0){
                 for(int i = 0; i < 8; ++i) {
-                    this.level.addParticle(ModParticleTypes.PLAGUE_EFFECT.get(), this.getRandomX(0.5D), this.getRandomY(), this.getRandomZ(0.5D), 0.0D, 0.5D, 0.0D);
+                    this.level().addParticle(ModParticleTypes.PLAGUE_EFFECT.get(), this.getRandomX(0.5D), this.getRandomY(), this.getRandomZ(0.5D), 0.0D, 0.5D, 0.0D);
                 }
             }
         }
@@ -110,9 +116,9 @@ public class Conquillager extends HuntingIllagerEntity implements CrossbowAttack
         return null;
     }
 
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.entityData.define(IS_CHARGING_CROSSBOW, false);
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(IS_CHARGING_CROSSBOW, false);
     }
 
     public boolean canFireProjectileWeapon(ProjectileWeaponItem p_230280_1_) {
@@ -147,33 +153,33 @@ public class Conquillager extends HuntingIllagerEntity implements CrossbowAttack
     }
 
     @Nullable
-    public SpawnGroupData finalizeSpawn(ServerLevelAccessor p_33282_, DifficultyInstance p_33283_, MobSpawnType p_33284_, @Nullable SpawnGroupData p_33285_, @Nullable CompoundTag p_33286_) {
+    public SpawnGroupData finalizeSpawn(ServerLevelAccessor p_33282_, DifficultyInstance p_33283_, MobSpawnType p_33284_, @Nullable SpawnGroupData p_33285_) {
         RandomSource randomsource = p_33282_.getRandom();
         this.populateDefaultEquipmentSlots(randomsource, p_33283_);
-        this.populateDefaultEquipmentEnchantments(randomsource, p_33283_);
+        this.populateDefaultEquipmentEnchantments(p_33282_, randomsource, p_33283_);
         if (p_33284_ == MobSpawnType.EVENT) {
             if (p_33282_.getLevel().random.nextFloat() <= 0.25F && !this.isPassenger()) {
                 Trampler trampler = new Trampler(ModEntityType.TRAMPLER.get(), p_33282_.getLevel());
-                trampler.finalizeSpawn(p_33282_, p_33282_.getLevel().getCurrentDifficultyAt(this.blockPosition()), MobSpawnType.EVENT, null, null);
+                trampler.finalizeSpawn(p_33282_, p_33282_.getLevel().getCurrentDifficultyAt(this.blockPosition()), MobSpawnType.EVENT, null);
                 trampler.setPos(this.position());
                 p_33282_.getLevel().addFreshEntity(trampler);
                 this.startRiding(trampler);
             }
         }
-        return super.finalizeSpawn(p_33282_, p_33283_, p_33284_, p_33285_, p_33286_);
+        return super.finalizeSpawn(p_33282_, p_33283_, p_33284_, p_33285_);
     }
 
     protected void populateDefaultEquipmentSlots(RandomSource randomSource, DifficultyInstance pDifficulty) {
         this.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.CROSSBOW));
     }
 
-    protected void enchantSpawnedWeapon(RandomSource randomsource, float p_241844_1_) {
-        super.enchantSpawnedWeapon(randomsource, p_241844_1_);
+    protected void enchantSpawnedWeapon(ServerLevelAccessor pLevel, RandomSource randomsource, DifficultyInstance pDifficulty) {
+        super.enchantSpawnedWeapon(pLevel, randomsource, pDifficulty);
         ItemStack itemstack = this.getMainHandItem();
         if (itemstack.getItem() == Items.CROSSBOW) {
-            Map<Enchantment, Integer> map = EnchantmentHelper.getEnchantments(itemstack);
-            map.putIfAbsent(Enchantments.PIERCING, 4);
-            EnchantmentHelper.setEnchantments(map, itemstack);
+             ItemEnchantments.Mutable mutable = new ItemEnchantments.Mutable(itemstack.getEnchantments());
+             mutable.set(pLevel.registryAccess().lookupOrThrow(Registries.ENCHANTMENT).getOrThrow(Enchantments.PIERCING), 4);
+             EnchantmentHelper.setEnchantments(itemstack, mutable.toImmutable());
             this.setItemSlot(EquipmentSlot.MAINHAND, itemstack);
         }
     }
@@ -201,24 +207,24 @@ public class Conquillager extends HuntingIllagerEntity implements CrossbowAttack
     public void performCrossbowAttack(LivingEntity shooter, float velocity) {
         InteractionHand hand = ProjectileUtil.getWeaponHoldingHand(shooter, item -> item instanceof CrossbowItem);
         ItemStack itemstack = shooter.getItemInHand(hand);
-        if (shooter.isHolding(itemStack -> itemStack.getItem() instanceof CrossbowItem)) {
-            CrossbowItem.performShooting(shooter.level, shooter, hand, itemstack, velocity, (float)(14 - shooter.level.getDifficulty().getId() * 4));
+        if (itemstack.getItem() instanceof CrossbowItem crossbow) {
+            crossbow.performShooting(shooter.level(), shooter, hand, itemstack, velocity, (float)(14 - shooter.level().getDifficulty().getId() * 4), null);
         }
-
-        this.onCrossbowAttackPerformed();
+        this.onCrossbowShot(shooter, velocity);
     }
 
     public void shootCrossbowProjectile(LivingEntity shooter, LivingEntity target, Projectile projectileEntity, float p_234279_4_, float velocity) {
         double d0 = target.getX() - shooter.getX();
         double d1 = target.getY(0.5F) - shooter.getY(0.5F);
         double d2 = target.getZ() - shooter.getZ();
-        Vector3f vector3f = this.getProjectileShotVector(shooter, new Vec3(d0, d1, d2), p_234279_4_);
-        projectileEntity.shoot(vector3f.x(), vector3f.y(), vector3f.z(), velocity, (float)(14 - shooter.level.getDifficulty().getId() * 4));
+        Vector3f vector3f = new Vector3f((float)d0, (float)d1, (float)d2);
+         // Simplified vector calculation or TODO: Find replacement for getProjectileShotVector
+        projectileEntity.shoot(vector3f.x(), vector3f.y(), vector3f.z(), velocity, (float)(14 - shooter.level().getDifficulty().getId() * 4));
         shooter.playSound(SoundEvents.CROSSBOW_SHOOT, 1.0F, 1.0F / (shooter.getRandom().nextFloat() * 0.4F + 0.8F));
     }
 
     public ItemStack getProjectile(ItemStack pShootable) {
-        int difficulty = this.level.getCurrentDifficultyAt(this.blockPosition()).getDifficulty().getId();
+        int difficulty = this.level().getCurrentDifficultyAt(this.blockPosition()).getDifficulty().getId();
         return MobUtil.createFirework(difficulty * 2, DyeColor.values());
     }
 
@@ -227,15 +233,15 @@ public class Conquillager extends HuntingIllagerEntity implements CrossbowAttack
         boolean flag = this.random.nextFloat() <= raid.getEnchantOdds();
         if (flag) {
             ItemStack itemstack = new ItemStack(Items.CROSSBOW);
-            Map<Enchantment, Integer> map = Maps.newHashMap();
+             ItemEnchantments.Mutable mutable = new ItemEnchantments.Mutable(itemstack.getEnchantments());
             if (pWave > raid.getNumGroups(Difficulty.NORMAL)) {
-                map.put(Enchantments.QUICK_CHARGE, 3);
+                mutable.set(this.registryAccess().lookupOrThrow(Registries.ENCHANTMENT).getOrThrow(Enchantments.QUICK_CHARGE), 3);
             } else if (pWave > raid.getNumGroups(Difficulty.EASY)) {
-                map.put(Enchantments.QUICK_CHARGE, 2);
+                mutable.set(this.registryAccess().lookupOrThrow(Registries.ENCHANTMENT).getOrThrow(Enchantments.QUICK_CHARGE), 2);
             }
 
-            map.put(Enchantments.MULTISHOT, 1);
-            EnchantmentHelper.setEnchantments(map, itemstack);
+            mutable.set(this.registryAccess().lookupOrThrow(Registries.ENCHANTMENT).getOrThrow(Enchantments.MULTISHOT), 1);
+            EnchantmentHelper.setEnchantments(itemstack, mutable.toImmutable());
             this.setItemSlot(EquipmentSlot.MAINHAND, itemstack);
         }
 

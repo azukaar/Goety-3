@@ -202,6 +202,7 @@ public class Owned extends PathfinderMob implements IOwned, OwnableEntity, ICust
         return super.isAlliedTo(entityIn);
     }
 
+    @Override
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
         super.defineSynchedData(builder);
         builder.define(OWNER_UNIQUE_ID, Optional.empty());

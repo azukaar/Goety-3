@@ -167,7 +167,7 @@ public class ResonanceCrystalBlockEntity extends ModBlockEntity implements IWind
     }
 
     @Override
-    public void readNetwork(CompoundTag tag) {
+    public void readNetwork(CompoundTag tag, net.minecraft.core.HolderLookup.Provider pRegistries) {
         if (tag.contains("active")){
             this.active = tag.getInt("active");
         }
@@ -177,7 +177,7 @@ public class ResonanceCrystalBlockEntity extends ModBlockEntity implements IWind
         if (tag.contains(BLOCK_LIST)){
             ListTag list = tag.getList(BLOCK_LIST, 10);
             for(int i = 0; i < list.size(); ++i) {
-                this.blockPosList.add(NbtUtils.readBlockPos(list.getCompound(i)));
+                NbtUtils.readBlockPos(list.getCompound(i), "Pos").ifPresent(this.blockPosList::add);
             }
         }
         if (tag.contains(GOLEM_LIST)){
@@ -192,7 +192,7 @@ public class ResonanceCrystalBlockEntity extends ModBlockEntity implements IWind
     }
 
     @Override
-    public CompoundTag writeNetwork(CompoundTag tag) {
+    public CompoundTag writeNetwork(CompoundTag tag, net.minecraft.core.HolderLookup.Provider pRegistries) {
         tag.putInt("active", this.active);
         List<String> list = new ArrayList<>();
         List<BlockPos> list2 = new ArrayList<>();
@@ -203,7 +203,7 @@ public class ResonanceCrystalBlockEntity extends ModBlockEntity implements IWind
         }
         if (tag.contains(BLOCK_LIST)) {
             for (int i = 0; i < tag.getList(BLOCK_LIST, 10).size(); ++i) {
-                list2.add(NbtUtils.readBlockPos(tag.getList(BLOCK_LIST, 10).getCompound(i)));
+                NbtUtils.readBlockPos(tag.getList(BLOCK_LIST, 10).getCompound(i), "Pos").ifPresent(list2::add);
             }
         }
         if (!this.blockPosList.isEmpty()){
@@ -214,7 +214,9 @@ public class ResonanceCrystalBlockEntity extends ModBlockEntity implements IWind
                         nbttaglist = tag.getList(BLOCK_LIST, 10);
                     }
 
-                    nbttaglist.add(NbtUtils.writeBlockPos(blockPos));
+                    CompoundTag posTag = new CompoundTag();
+                    posTag.put("Pos", NbtUtils.writeBlockPos(blockPos));
+                    nbttaglist.add(posTag);
                     tag.put(BLOCK_LIST, nbttaglist);
                 }
             }

@@ -18,6 +18,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Matrix3f;
 import org.joml.Matrix4f;
+import org.joml.Vector3f;
 
 import java.util.Random;
 import java.util.function.Function;
@@ -96,13 +97,15 @@ public class BlossomThornRenderer extends EntityRenderer<BlossomThorn> {
     }
 
     public static void vertex(VertexConsumer vertexConsumer, Matrix4f matrix4f, Matrix3f matrix3f, float f, float g, float h, int red, int green, int blue, float l, float m) {
-        vertexConsumer.vertex(matrix4f, f, g, h)
-                .color(red, green, blue, 255)
-                .uv(l, m)
-                .overlayCoords(OverlayTexture.NO_OVERLAY)
-                .uv2(15728800)
-                .normal(matrix3f, 0.0F, 0.0F, -1.0F)
-                .endVertex();
+        org.joml.Vector4f vector4f = matrix4f.transform(f, g, h, 1.0F, new org.joml.Vector4f());
+        Vector3f normal = new Vector3f(0.0F, 0.0F, -1.0F);
+        normal.mul(matrix3f);
+        vertexConsumer.addVertex(vector4f.x(), vector4f.y(), vector4f.z())
+                .setColor(red, green, blue, 255)
+                .setUv(l, m)
+                .setOverlay(OverlayTexture.NO_OVERLAY)
+                .setLight(15728800)
+                .setNormal(normal.x, normal.y, normal.z);
     }
 
     public Function<Float, Float> textureMultiplier(Float multiplier, float adjustment) {

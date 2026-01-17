@@ -12,7 +12,7 @@ import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
 
 public class BeastHeadRenderer<T extends BeastHead> extends MobRenderer<T, BeastHeadModel<T>> {
-    private static final ResourceLocation TEXTURE = new ResourceLocation(Goety.MOD_ID,"textures/entity/servants/black_wolf/beast_head.png");
+    private static final ResourceLocation TEXTURE = ResourceLocation.fromNamespaceAndPath(Goety.MOD_ID,"textures/entity/servants/black_wolf/beast_head.png");
 
     public BeastHeadRenderer(EntityRendererProvider.Context renderManagerIn) {
         super(renderManagerIn, new BeastHeadModel<>(renderManagerIn.bakeLayer(ModModelLayer.BEAST_HEAD)), 0.0F);

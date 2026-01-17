@@ -17,6 +17,10 @@ import net.minecraft.world.phys.HitResult;
 import java.util.List;
 
 public class BerserkFungus extends ThrowableFungus {
+    @Override
+    protected net.minecraft.world.item.Item getDefaultItem() {
+        return com.Polarice3.Goety.common.items.ModItems.BERSERK_FUNGUS.get();
+    }
 
     public BerserkFungus(EntityType<? extends ThrowableFungus> p_37466_, Level p_37467_) {
         super(p_37466_, p_37467_);
@@ -32,9 +36,9 @@ public class BerserkFungus extends ThrowableFungus {
 
     protected void onHit(HitResult p_37406_) {
         super.onHit(p_37406_);
-        if (!this.level.isClientSide) {
-            this.level.playLocalSound(this.getX(), this.getY(), this.getZ(), ModSounds.BLAST_FUNGUS_EXPLODE.get(), SoundSource.BLOCKS, 1.0F, (1.0F + (this.level.random.nextFloat() - this.level.random.nextFloat()) * 0.2F) * 0.7F, false);
-            this.level.broadcastEntityEvent(this, (byte) 15);
+        if (!this.level().isClientSide) {
+            this.level().playLocalSound(this.getX(), this.getY(), this.getZ(), ModSounds.BLAST_FUNGUS_EXPLODE.get(), SoundSource.BLOCKS, 1.0F, (2.0F + (this.level().random.nextFloat() - this.level().random.nextFloat()) * 0.2F) * 0.7F, false);
+            this.level().broadcastEntityEvent(this, (byte) 15);
             this.applySplash();
             this.discard();
         }
@@ -42,7 +46,7 @@ public class BerserkFungus extends ThrowableFungus {
 
     private void applySplash() {
         AABB aabb = this.getBoundingBox().inflate(1.5D, 1.5D, 1.5D);
-        List<LivingEntity> list = this.level.getEntitiesOfClass(LivingEntity.class, aabb);
+        List<LivingEntity> list = this.level().getEntitiesOfClass(LivingEntity.class, aabb);
         if (!list.isEmpty()) {
             for(LivingEntity livingentity : list) {
                 if (livingentity.isAffectedByPotions()) {
@@ -67,9 +71,9 @@ public class BerserkFungus extends ThrowableFungus {
                 float f7 = Mth.sqrt(this.random.nextFloat()) * f;
                 float f8 = Mth.cos(f6) * f7;
                 float f9 = Mth.sin(f6) * f7;
-                this.level.addParticle(ModParticleTypes.CULT_SPELL.get(), this.getX() + (double) f8, this.getY(), this.getZ() + (double) f9, MathHelper.rgbToSpeed(162), MathHelper.rgbToSpeed(28), 0.0D);
+                this.level().addParticle(ModParticleTypes.CULT_SPELL.get(), this.getX() + (double) f8, this.getY(), this.getZ() + (double) f9, MathHelper.rgbToSpeed(162), MathHelper.rgbToSpeed(28), 0.0D);
             }
-            this.level.playLocalSound(this.getX(), this.getY(), this.getZ(), ModSounds.BLAST_FUNGUS_EXPLODE.get(), SoundSource.BLOCKS, 1.0F, (2.0F + (this.level.random.nextFloat() - this.level.random.nextFloat()) * 0.2F) * 0.7F, false);
+            this.level().playLocalSound(this.getX(), this.getY(), this.getZ(), ModSounds.BLAST_FUNGUS_EXPLODE.get(), SoundSource.BLOCKS, 1.0F, (2.0F + (this.level().random.nextFloat() - this.level().random.nextFloat()) * 0.2F) * 0.7F, false);
         } else {
             super.handleEntityEvent(p_34138_);
         }

@@ -46,6 +46,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.common.Tags;
 
 import javax.annotation.Nullable;
@@ -55,7 +56,7 @@ import java.util.UUID;
 import java.util.function.Predicate;
 
 public class ZombieServant extends Summoned {
-    private static final ResourceLocation SPEED_MODIFIER_BABY_ID = Goety.location("baby_speed_boost");
+    private static final ResourceLocation SPEED_MODIFIER_BABY_ID = ResourceLocation.fromNamespaceAndPath(Goety.MOD_ID, "baby_speed_boost");
     private static final AttributeModifier SPEED_MODIFIER_BABY = new AttributeModifier(SPEED_MODIFIER_BABY_ID,
             0.5D, AttributeModifier.Operation.ADD_MULTIPLIED_BASE);
     private static final EntityDataAccessor<Boolean> DATA_BABY_ID = SynchedEntityData.defineId(ZombieServant.class,
@@ -106,10 +107,10 @@ public class ZombieServant extends Summoned {
                 AttributesConfig.ZombieServantDamage.get());
     }
 
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.getEntityData().define(DATA_BABY_ID, false);
-        this.getEntityData().define(DATA_DROWNED_CONVERSION_ID, false);
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(DATA_BABY_ID, false);
+        builder.define(DATA_DROWNED_CONVERSION_ID, false);
     }
 
     public boolean isUnderWaterConverting() {
@@ -275,12 +276,12 @@ public class ZombieServant extends Summoned {
             } else if (BlockFinder.findStructure(serverLevel, blockPos, StructureTags.VILLAGE)
                     || BlockFinder.findVillageSize(serverLevel, blockPos, 3)) {
                 entityType = ModEntityType.ZOMBIE_VILLAGER_SERVANT.get();
-            } else if (level.getBiome(blockPos).get().coldEnoughToSnow(blockPos)) {
+            } else if (level.getBiome(blockPos).value().coldEnoughToSnow(blockPos)) {
                 entityType = ModEntityType.FROZEN_ZOMBIE_SERVANT.get();
             } else if (level.getBiome(blockPos).is(BiomeTags.IS_JUNGLE) && level.random.nextBoolean()) {
                 entityType = ModEntityType.JUNGLE_ZOMBIE_SERVANT.get();
             }
-            if (level.getBiome(blockPos).is(BiomeTags.IS_SNOWY)) {
+            if (level.getBiome(blockPos).is(Tags.Biomes.IS_SNOWY)) {
                 entityType = ModEntityType.FROZEN_ZOMBIE_SERVANT.get();
             }
         }
@@ -302,7 +303,7 @@ public class ZombieServant extends Summoned {
             }
         }
         this.populateDefaultEquipmentSlots(worldIn.getRandom(), difficultyIn);
-        this.populateDefaultEquipmentEnchantments(worldIn.getRandom(), difficultyIn);
+        this.populateDefaultEquipmentEnchantments(worldIn, worldIn.getRandom(), difficultyIn);
         this.handleAttributes(f);
         this.setBaby(getSpawnAsBabyOdds(worldIn.getRandom()));
         for (EquipmentSlot equipmentslottype : EquipmentSlot.values()) {
@@ -396,7 +397,7 @@ public class ZombieServant extends Summoned {
             }
             if (!(pPlayer.getOffhandItem().getItem() instanceof IWand)) {
                 if (item instanceof SwordItem) {
-                    this.playSound(SoundEvents.ARMOR_EQUIP_GENERIC, 1.0F, 1.0F);
+                    this.playSound(SoundEvents.ARMOR_EQUIP_GENERIC.value(), 1.0F, 1.0F);
                     this.setItemSlot(EquipmentSlot.MAINHAND, itemstack.copyWithCount(1));
                     this.dropEquipment(EquipmentSlot.MAINHAND, itemstack2);
                     this.setGuaranteedDrop(EquipmentSlot.MAINHAND);
@@ -413,7 +414,7 @@ public class ZombieServant extends Summoned {
                     return InteractionResult.SUCCESS;
                 }
                 if (item instanceof AxeItem) {
-                    this.playSound(SoundEvents.ARMOR_EQUIP_GENERIC, 1.0F, 1.0F);
+                    this.playSound(SoundEvents.ARMOR_EQUIP_GENERIC.value(), 1.0F, 1.0F);
                     this.setItemSlot(EquipmentSlot.MAINHAND, itemstack.copyWithCount(1));
                     this.dropEquipment(EquipmentSlot.MAINHAND, itemstack2);
                     this.setGuaranteedDrop(EquipmentSlot.MAINHAND);
@@ -430,7 +431,7 @@ public class ZombieServant extends Summoned {
                     return InteractionResult.SUCCESS;
                 }
                 if (item instanceof TridentItem && this instanceof DrownedServant) {
-                    this.playSound(SoundEvents.ARMOR_EQUIP_GENERIC, 1.0F, 1.0F);
+                    this.playSound(SoundEvents.ARMOR_EQUIP_GENERIC.value(), 1.0F, 1.0F);
                     this.setItemSlot(EquipmentSlot.MAINHAND, itemstack.copyWithCount(1));
                     this.dropEquipment(EquipmentSlot.MAINHAND, itemstack2);
                     this.setGuaranteedDrop(EquipmentSlot.MAINHAND);

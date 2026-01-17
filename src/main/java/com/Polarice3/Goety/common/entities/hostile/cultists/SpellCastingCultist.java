@@ -26,9 +26,9 @@ public abstract class SpellCastingCultist extends Cultist{
         super(type, p_i48551_2_);
     }
 
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.entityData.define(SPELL, (byte)0);
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(SPELL, (byte)0);
     }
 
     public void readAdditionalSaveData(CompoundTag compound) {
@@ -42,7 +42,7 @@ public abstract class SpellCastingCultist extends Cultist{
     }
 
     public boolean isSpellcasting() {
-        if (this.level.isClientSide) {
+        if (this.level().isClientSide) {
             return this.entityData.get(SPELL) > 0;
         } else {
             return this.spellTicks > 0;
@@ -55,7 +55,7 @@ public abstract class SpellCastingCultist extends Cultist{
     }
 
     protected SpellType getSpellType() {
-        return !this.level.isClientSide ? this.activeSpell : SpellType.getFromId(this.entityData.get(SPELL));
+        return !this.level().isClientSide ? this.activeSpell : SpellType.getFromId(this.entityData.get(SPELL));
     }
 
     protected void customServerAiStep() {
@@ -68,7 +68,7 @@ public abstract class SpellCastingCultist extends Cultist{
 
     public void tick() {
         super.tick();
-        if (this.level.isClientSide && this.isSpellcasting() && this.isAlive()) {
+        if (this.level().isClientSide && this.isSpellcasting() && this.isAlive()) {
             SpellType SpellcastingCultistEntity$spelltype = this.getSpellType();
             double d0 = SpellcastingCultistEntity$spelltype.particleSpeed[0];
             double d1 = SpellcastingCultistEntity$spelltype.particleSpeed[1];
@@ -78,14 +78,14 @@ public abstract class SpellCastingCultist extends Cultist{
                 float f1 = Mth.cos(f);
                 float f2 = Mth.sin(f);
                 if (this.getMainArm() == HumanoidArm.RIGHT){
-                    this.level.addParticle(ModParticleTypes.CULT_SPELL.get(), this.getX() + (double)f1 * 0.6D, this.getY() + 1.8D, this.getZ() + (double)f2 * 0.6D, d0, d1, d2);
+                    this.level().addParticle(ModParticleTypes.CULT_SPELL.get(), this.getX() + (double)f1 * 0.6D, this.getY() + 1.8D, this.getZ() + (double)f2 * 0.6D, d0, d1, d2);
                 } else {
-                    this.level.addParticle(ModParticleTypes.CULT_SPELL.get(), this.getX() - (double)f1 * 0.6D, this.getY() + 1.8D, this.getZ() - (double)f2 * 0.6D, d0, d1, d2);
+                    this.level().addParticle(ModParticleTypes.CULT_SPELL.get(), this.getX() - (double)f1 * 0.6D, this.getY() + 1.8D, this.getZ() - (double)f2 * 0.6D, d0, d1, d2);
                 }
             } else {
-                for (int i = 0; i < this.level.random.nextInt(35) + 10; ++i) {
-                    double d = this.level.random.nextGaussian() * 0.2D;
-                    this.level.addParticle(ModParticleTypes.CULT_SPELL.get(), this.getX(), this.getEyeY(), this.getZ(), d0, d1, d2);
+                for (int i = 0; i < this.level().random.nextInt(35) + 10; ++i) {
+                    double d = this.level().random.nextGaussian() * 0.2D;
+                    this.level().addParticle(ModParticleTypes.CULT_SPELL.get(), this.getX(), this.getEyeY(), this.getZ(), d0, d1, d2);
                 }
             }
         }

@@ -44,9 +44,9 @@ import java.util.UUID;
 public class SpiderServant extends AbstractSpiderServant {
     private static final EntityDataAccessor<Byte> DATA_FLAGS_ID = SynchedEntityData.defineId(SpiderServant.class, EntityDataSerializers.BYTE);
     private static final UUID SPEED_MODIFIER_UUID = UUID.fromString("2a3ee720-61cb-402c-affa-2eef9343910d");
-    public static final AttributeModifier STOP_MODIFIER = new AttributeModifier(SPEED_MODIFIER_UUID, "Stop Moving Dammit", -1.0D, AttributeModifier.Operation.ADDITION);
+    public static final AttributeModifier STOP_MODIFIER = new AttributeModifier(net.minecraft.resources.ResourceLocation.parse("goety:spider_servant_stop"), -1.0D, AttributeModifier.Operation.ADD_VALUE);
     private static final UUID DETECTION_MODIFIER_UUID = UUID.fromString("858f6b2f-73e3-45a0-8bef-bb31e0d55be4");
-    public static final AttributeModifier DETECTION_MODIFIER = new AttributeModifier(DETECTION_MODIFIER_UUID, "Light Is Blinding", -1.0D, AttributeModifier.Operation.ADDITION);
+    public static final AttributeModifier DETECTION_MODIFIER = new AttributeModifier(net.minecraft.resources.ResourceLocation.parse("goety:spider_servant_detection"), -1.0D, AttributeModifier.Operation.ADD_VALUE);
 
     public SpiderServant(EntityType<? extends SpiderServant> type, Level worldIn) {
         super(type, worldIn);
@@ -66,14 +66,14 @@ public class SpiderServant extends AbstractSpiderServant {
         this.goalSelector.addGoal(4, new SpiderAttackGoal(this));
     }
 
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.entityData.define(DATA_FLAGS_ID, (byte)0);
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(DATA_FLAGS_ID, (byte)0);
     }
 
     public void tick() {
         super.tick();
-        if (!this.level.isClientSide) {
+        if (!this.level().isClientSide) {
             AttributeInstance modifiableattributeinstance = this.getAttribute(Attributes.FOLLOW_RANGE);
             if (MobUtil.isInBrightLight(this)){
                 if (modifiableattributeinstance != null) {
@@ -84,7 +84,7 @@ public class SpiderServant extends AbstractSpiderServant {
                 }
             } else {
                 if (modifiableattributeinstance != null) {
-                    if (modifiableattributeinstance.hasModifier(DETECTION_MODIFIER)) {
+                    if (modifiableattributeinstance.hasModifier(DETECTION_MODIFIER.id())) {
                         modifiableattributeinstance.removeModifier(DETECTION_MODIFIER);
                     }
                 }
@@ -129,7 +129,7 @@ public class SpiderServant extends AbstractSpiderServant {
             }
 
             if (p_33793_ instanceof SpiderEffectsGroupData) {
-                MobEffect mobeffect = ((SpiderEffectsGroupData) p_33793_).effect;
+                net.minecraft.core.Holder<MobEffect> mobeffect = ((SpiderEffectsGroupData) p_33793_).effect;
                 if (mobeffect != null) {
                     this.addEffect(new MobEffectInstance(mobeffect, EffectsUtil.infiniteEffect()));
                 }
@@ -175,7 +175,7 @@ public class SpiderServant extends AbstractSpiderServant {
 
     public static class SpiderEffectsGroupData implements SpawnGroupData {
         @Nullable
-        public MobEffect effect;
+        public net.minecraft.core.Holder<MobEffect> effect;
 
         public void setRandomEffect(RandomSource p_219119_) {
             int i = p_219119_.nextInt(5);

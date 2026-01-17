@@ -37,8 +37,9 @@ public abstract class AbstractTrap extends Entity implements ISpellEntity {
     }
 
     @Override
-    protected void defineSynchedData() {
-        this.getEntityData().define(DATA_PARTICLE, ParticleTypes.ENTITY_EFFECT);
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(DATA_PARTICLE, ParticleTypes.ENTITY_EFFECT);
     }
 
     @Override

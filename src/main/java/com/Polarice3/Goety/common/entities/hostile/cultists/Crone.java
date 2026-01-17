@@ -63,7 +63,10 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.common.NeoForgeMod;
+import net.minecraft.world.level.GameRules;
+import com.Polarice3.Goety.Goety;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -73,8 +76,8 @@ import java.util.function.Predicate;
 
 public class Crone extends Cultist implements RangedAttackMob {
     private static final UUID SPEED_MODIFIER_DRINKING_UUID = UUID.fromString("5CD17E52-A79A-43D3-A529-90FDE04B181E");
-    private static final AttributeModifier SPEED_MODIFIER_DRINKING = new AttributeModifier(SPEED_MODIFIER_DRINKING_UUID,
-            "Drinking speed penalty", -0.25D, AttributeModifier.Operation.ADDITION);
+    private static final AttributeModifier SPEED_MODIFIER_DRINKING = new AttributeModifier(
+            net.minecraft.resources.ResourceLocation.fromNamespaceAndPath(Goety.MOD_ID, "drinking_speed_penalty"), -0.25D, AttributeModifier.Operation.ADD_VALUE);
     private static final EntityDataAccessor<Boolean> DATA_USING_ITEM = SynchedEntityData.defineId(Crone.class,
             EntityDataSerializers.BOOLEAN);
     private int usingTime;
@@ -121,9 +124,10 @@ public class Crone extends Cultist implements RangedAttackMob {
         MobUtil.setBaseAttributes(this.getAttribute(Attributes.MAX_HEALTH), AttributesConfig.CroneHealth.get());
     }
 
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.getEntityData().define(DATA_USING_ITEM, false);
+    @Override
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(DATA_USING_ITEM, false);
     }
 
     public void addAdditionalSaveData(CompoundTag pCompound) {
@@ -162,9 +166,9 @@ public class Crone extends Cultist implements RangedAttackMob {
 
     @Nullable
     public SpawnGroupData finalizeSpawn(ServerLevelAccessor worldIn, DifficultyInstance difficultyIn,
-            MobSpawnType reason, @Nullable SpawnGroupData spawnDataIn, @Nullable CompoundTag dataTag) {
+            MobSpawnType reason, @Nullable SpawnGroupData spawnDataIn) {
         this.populateDefaultEquipmentSlots(worldIn.getRandom(), difficultyIn);
-        this.populateDefaultEquipmentEnchantments(worldIn.getRandom(), difficultyIn);
+        this.populateDefaultEquipmentEnchantments(worldIn, worldIn.getRandom(), difficultyIn);
         if (!this.hasCustomName()) {
             int random = this.random.nextInt(4);
             int random2;
@@ -177,7 +181,7 @@ public class Crone extends Cultist implements RangedAttackMob {
             Component component1 = Component.translatable("name.goety.crone." + random2);
             this.setCustomName(Component.translatable(component.getString() + " " + component1.getString()));
         }
-        return super.finalizeSpawn(worldIn, difficultyIn, reason, spawnDataIn, dataTag);
+        return super.finalizeSpawn(worldIn, difficultyIn, reason, spawnDataIn);
     }
 
     protected SoundEvent getAmbientSound() {
@@ -203,7 +207,7 @@ public class Crone extends Cultist implements RangedAttackMob {
     @Override
     public void die(DamageSource p_37847_) {
         if (p_37847_.getEntity() != null && p_37847_.getEntity() instanceof LivingEntity livingEntity) {
-            livingEntity.addEffect(new MobEffectInstance(GoetyEffects.CURSED.get(), MathHelper.minutesToTicks(1)));
+            livingEntity.addEffect(new MobEffectInstance(GoetyEffects.CURSED.getHolder().get(), MathHelper.minutesToTicks(1)));
         }
         super.die(p_37847_);
     }
@@ -227,7 +231,7 @@ public class Crone extends Cultist implements RangedAttackMob {
     }
 
     public void aiStep() {
-        if (!this.level.isClientSide && this.isAlive()) {
+        if (!this.level().isClientSide && this.isAlive()) {
             if (this.lastHitTime > 0) {
                 --this.lastHitTime;
             }
@@ -255,9 +259,9 @@ public class Crone extends Cultist implements RangedAttackMob {
                 }
             } else {
                 int amp = 0;
-                if (this.level.random.nextFloat() <= 0.05F && this.level.getDifficulty() == Difficulty.NORMAL) {
+                if (this.level().random.nextFloat() <= 0.05F && this.level().getDifficulty() == Difficulty.NORMAL) {
                     amp = 2;
-                } else if (this.level.random.nextFloat() <= 0.25F) {
+                } else if (this.level().random.nextFloat() <= 0.25F) {
                     amp = 1;
                 }
                 List<MobEffectInstance> mobEffectInstance = new ArrayList<>();
@@ -272,54 +276,56 @@ public class Crone extends Cultist implements RangedAttackMob {
                 } else if (this.random.nextFloat() < 0.15F && this.getHealth() < this.getMaxHealth()
                         && (this.getTarget() == null || this.lastHitTime == 0)) {
                     mobEffectInstance.add(new MobEffectInstance(MobEffects.HEAL, 1, amp));
-                } else if (this.random.nextFloat() < 0.15F && this.isEyeInFluidType(NeoForgeMod.WATER_TYPE.get())
-                        && !this.hasEffect(MobEffects.WATER_BREATHING)) {
+                } else if (this.isInWaterRainOrBubble() || this.isInFluidType((fluidType, height) -> this.canSwimInFluidType(fluidType))) {
                     mobEffectInstance.add(new MobEffectInstance(MobEffects.WATER_BREATHING, 3600));
-                    mobEffectInstance.add(new MobEffectInstance(GoetyEffects.SWIFT_SWIM.get(), 3600));
+                    mobEffectInstance.add(new MobEffectInstance(GoetyEffects.SWIFT_SWIM.getHolder().get(), 3600));
                 } else if (this.random.nextFloat() < 0.15F
                         && (this.isOnFire() || this.getLastDamageSource() != null
-                                && this.getLastDamageSource().is(DamageTypeTags.IS_FIRE))
-                        && !this.hasEffect(MobEffects.FIRE_RESISTANCE)) {
+                                && this.getLastDamageSource().is(DamageTypeTags.IS_FIRE))) {
                     mobEffectInstance.add(new MobEffectInstance(MobEffects.FIRE_RESISTANCE, 3600));
-                } else if (this.random.nextFloat() < 0.15F && this.getLastDamageSource() != null
-                        && this.getLastDamageSource().is(DamageTypeTags.IS_FALL)
-                        && !this.hasEffect(MobEffects.SLOW_FALLING)) {
-                    mobEffectInstance.add(new MobEffectInstance(MobEffects.SLOW_FALLING, 3600));
-                } else if (this.random.nextFloat() < 0.15F && this.getLastDamageSource() != null
-                        && ModDamageSource.physicalAttacks(this.getLastDamageSource())
-                        && !this.hasEffect(GoetyEffects.REPULSIVE.get())) {
-                    mobEffectInstance.add(new MobEffectInstance(GoetyEffects.REPULSIVE.get(), 1800 / (amp + 1), amp));
-                } else if (this.random.nextFloat() < 0.15F && this.getTarget() != null) {
+                } else if (this.random.nextFloat() < 0.05F && this.getHealth() < this.getMaxHealth()) {
+                    mobEffectInstance.add(new MobEffectInstance(MobEffects.HEAL, 1));
+                } else if (this.random.nextFloat() < 0.5F && this.getTarget() != null
+                        && !this.hasEffect(MobEffects.MOVEMENT_SPEED)
+                        && this.getTarget().distanceToSqr(this) > 121.0D) {
+                    mobEffectInstance.add(new MobEffectInstance(MobEffects.MOVEMENT_SPEED, 3600 / (amp + 1), amp));
+                } else if (this.random.nextFloat() <= 0.25F && this.getTarget() != null) {
+                    if (this.random.nextFloat() <= 0.05F
+                        && !this.hasEffect(GoetyEffects.REPULSIVE.getHolder().get())) {
+                    mobEffectInstance.add(new MobEffectInstance(GoetyEffects.REPULSIVE.getHolder().get(), 1800 / (amp + 1), amp));
+                } else if (this.random.nextFloat() <= 0.25F && this.getTarget() != null) {
                     if ((this.random.nextFloat() <= 0.15F && this.getTarget().distanceTo(this) <= 4.0F)
                             || this.getHealth() <= 15.0F) {
                         brewEffectInstance.add(new BrewEffectInstance(new BlindJumpBrewEffect(0), 1, amp));
                     } else if (this.random.nextFloat() <= 0.15F && !this.hasEffect(MobEffects.REGENERATION)) {
                         mobEffectInstance.add(new MobEffectInstance(MobEffects.REGENERATION, 900 / (amp + 1), amp));
-                        if (this.random.nextFloat() < 0.25F && MobUtil.isInSunlight(this)
-                                && !this.hasEffect(GoetyEffects.PHOTOSYNTHESIS.get())) {
-                            mobEffectInstance.add(new MobEffectInstance(GoetyEffects.PHOTOSYNTHESIS.get(), 1800));
-                        }
-                    } else if (this.random.nextFloat() < 0.05F && !this.hasEffect(MobEffects.DAMAGE_RESISTANCE)) {
-                        mobEffectInstance.add(new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 1800));
-                    } else if (this.random.nextFloat() < 0.05F && !this.hasEffect(GoetyEffects.FROSTY_AURA.get())
-                            && !this.hasEffect(GoetyEffects.FIERY_AURA.get())) {
-                        if (this.random.nextBoolean()) {
-                            if (!this.getTarget().hasEffect(GoetyEffects.FREEZING.get())
-                                    && !this.getTarget().hasEffect(MobEffects.FIRE_RESISTANCE)
-                                    && !this.getTarget().fireImmune()) {
-                                mobEffectInstance.add(
-                                        new MobEffectInstance(GoetyEffects.FIERY_AURA.get(), 1800 / (amp + 1), amp));
-                            }
+                        if (this.level().isDay() && this.level().canSeeSky(this.blockPosition())
+                                && !this.hasEffect(GoetyEffects.PHOTOSYNTHESIS.getHolder().get())) {
+                            mobEffectInstance.add(new MobEffectInstance(GoetyEffects.PHOTOSYNTHESIS.getHolder().get(), 1800));
                         } else {
-                            if (!this.getTarget().isOnFire() && this.getTarget().canFreeze()) {
-                                mobEffectInstance.add(
-                                        new MobEffectInstance(GoetyEffects.FROSTY_AURA.get(), 1800 / (amp + 1), amp));
+                            if (this.random.nextFloat() <= 0.5F) {
+                                mobEffectInstance.add(new MobEffectInstance(MobEffects.NIGHT_VISION, 3600));
+                            } else {
+                                mobEffectInstance.add(new MobEffectInstance(MobEffects.INVISIBILITY, 3600));
                             }
                         }
-                    }
-                } else if (this.random.nextFloat() <= 0.15F && MobUtil.isInWeb(this)
-                        && !this.hasEffect(GoetyEffects.CLIMBING.get())) {
-                    mobEffectInstance.add(new MobEffectInstance(GoetyEffects.CLIMBING.get(), 3600));
+                    } else if (this.random.nextFloat() < 0.05F && !this.hasEffect(GoetyEffects.FROSTY_AURA.getHolder().get())
+                            && !this.hasEffect(GoetyEffects.FIERY_AURA.getHolder().get())) {
+                        if (this.getTarget() != null) {
+                            if (!this.getTarget().hasEffect(GoetyEffects.FREEZING.getHolder().get())
+                                     && !this.getTarget().hasEffect(MobEffects.FIRE_RESISTANCE)
+                                     && !this.getTarget().fireImmune()) {
+                                 mobEffectInstance.add(
+                                         new MobEffectInstance(GoetyEffects.FIERY_AURA.getHolder().get(), 1800 / (amp + 1), amp));
+                             } else {
+                                 mobEffectInstance.add(
+                                         new MobEffectInstance(GoetyEffects.FROSTY_AURA.getHolder().get(), 1800 / (amp + 1), amp));
+                             }
+                         }
+                     }
+                 } else if (this.random.nextFloat() <= 0.15F && MobUtil.isInWeb(this)
+                            && !this.hasEffect(GoetyEffects.CLIMBING.getHolder().get())) {
+                    mobEffectInstance.add(new MobEffectInstance(GoetyEffects.CLIMBING.getHolder().get(), 3600));
                 } else if (this.random.nextFloat() < 0.05F && MobUtil.hasLongNegativeEffects(this)) {
                     brewEffectInstance.add(new BrewEffectInstance(
                             new PurifyBrewEffect("purify_debuff", 0, 0, MobEffectCategory.BENEFICIAL, 0x385858, true)));
@@ -328,15 +334,14 @@ public class Crone extends Cultist implements RangedAttackMob {
                 if (!mobEffectInstance.isEmpty() || !brewEffectInstance.isEmpty()) {
                     ItemStack brew = BrewUtils.setCustomEffects(new ItemStack(ModItems.BREW.get()), mobEffectInstance,
                             brewEffectInstance);
-                    BrewUtils.setAreaOfEffect(brew, this.level.random.nextInt(amp + 1));
-                    brew.getOrCreateTag().putInt("CustomPotionColor",
-                            BrewUtils.getColor(mobEffectInstance, brewEffectInstance));
+                    BrewUtils.setAreaOfEffect(brew, this.level().random.nextInt(amp + 1));
+                    brew.set(net.minecraft.core.component.DataComponents.POTION_CONTENTS, new net.minecraft.world.item.alchemy.PotionContents(java.util.Optional.empty(), java.util.Optional.of(BrewUtils.getColor(mobEffectInstance, brewEffectInstance)), java.util.List.of()));
                     this.setItemSlot(EquipmentSlot.MAINHAND, brew);
                     this.usingTime = this.overwhelmed > 0 ? this.getMainHandItem().getUseDuration(this) / 2
                             : this.getMainHandItem().getUseDuration(this);
                     this.setUsingItem(true);
                     if (!this.isSilent()) {
-                        this.level.playSound((Player) null, this.getX(), this.getY(), this.getZ(),
+                        this.level().playSound((Player) null, this.getX(), this.getY(), this.getZ(),
                                 SoundEvents.WITCH_DRINK, this.getSoundSource(), 1.0F,
                                 0.8F + this.random.nextFloat() * 0.4F);
                     }
@@ -355,7 +360,7 @@ public class Crone extends Cultist implements RangedAttackMob {
             }
 
             if (this.random.nextFloat() < 7.5E-4F) {
-                this.level.broadcastEntityEvent(this, (byte) 15);
+                this.level().broadcastEntityEvent(this, (byte) 15);
             }
         }
 
@@ -369,7 +374,7 @@ public class Crone extends Cultist implements RangedAttackMob {
     public void handleEntityEvent(byte p_34138_) {
         if (p_34138_ == 15) {
             for (int i = 0; i < this.random.nextInt(35) + 10; ++i) {
-                this.level.addParticle(ParticleTypes.WITCH, this.getX() + this.random.nextGaussian() * (double) 0.13F,
+                this.level().addParticle(ParticleTypes.WITCH, this.getX() + this.random.nextGaussian() * (double) 0.13F,
                         this.getBoundingBox().maxY + 0.5D + this.random.nextGaussian() * (double) 0.13F,
                         this.getZ() + this.random.nextGaussian() * (double) 0.13F, 0.0D, 0.0D, 0.0D);
             }
@@ -386,7 +391,7 @@ public class Crone extends Cultist implements RangedAttackMob {
                 double d2 = Mth.lerp(d0, this.yo, this.getY()) + this.random.nextDouble() * (double) this.getBbHeight();
                 double d3 = Mth.lerp(d0, this.zo, this.getZ())
                         + (this.random.nextDouble() - 0.5D) * (double) this.getBbWidth() * 2.0D;
-                this.level.addParticle(ParticleTypes.PORTAL, d1, d2, d3, (double) f, (double) f1, (double) f2);
+                this.level().addParticle(ParticleTypes.PORTAL, d1, d2, d3, (double) f, (double) f1, (double) f2);
             }
         } else {
             super.handleEntityEvent(p_34138_);
@@ -408,16 +413,16 @@ public class Crone extends Cultist implements RangedAttackMob {
 
     public void performRangedAttack(LivingEntity target, float p_34144_) {
         if (!this.isDrinkingPotion()) {
-            boolean grief = this.level.getGameRules().getBoolean(GameRules.RULE_MOB_GRIEFING);
+            boolean grief = this.level().getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING);
             Vec3 vec3 = target.getDeltaMovement();
             double d0 = target.getX() + vec3.x - this.getX();
             double d1 = target.getEyeY() - (double) 1.1F - this.getY();
             double d2 = target.getZ() + vec3.z - this.getZ();
             double d3 = Math.sqrt(d0 * d0 + d2 * d2);
             int amp = 0;
-            if (this.level.random.nextFloat() <= 0.05F && this.level.getDifficulty() != Difficulty.EASY) {
+            if (this.level().random.nextFloat() <= 0.05F && this.level().getDifficulty() != Difficulty.EASY) {
                 amp = 2;
-            } else if (this.level.random.nextFloat() <= 0.25F) {
+            } else if (this.level().random.nextFloat() <= 0.25F) {
                 amp = 1;
             }
             List<MobEffectInstance> mobEffectInstance = new ArrayList<>();
@@ -453,15 +458,15 @@ public class Crone extends Cultist implements RangedAttackMob {
                 if (this.random.nextFloat() <= 0.25F && !this.hasEffect(GoetyEffects.FIERY_AURA.get())
                         && !target.hasEffect(GoetyEffects.FREEZING.get())
                         && !target.getType().is(EntityTypeTags.FREEZE_IMMUNE_ENTITY_TYPES)) {
-                    mobEffectInstance.add(new MobEffectInstance(GoetyEffects.FREEZING.get(), 900 / (amp + 1), amp));
+                    mobEffectInstance.add(new MobEffectInstance(GoetyEffects.FREEZING, 900 / (amp + 1), amp));
                 } else if (this.random.nextFloat() <= 0.25F && !this.hasEffect(GoetyEffects.FROSTY_AURA.get())
                         && !target.hasEffect(GoetyEffects.FLAMMABLE.get()) && !target.fireImmune()) {
-                    mobEffectInstance.add(new MobEffectInstance(GoetyEffects.FLAMMABLE.get(), 900 / (amp + 1), amp));
+                    mobEffectInstance.add(new MobEffectInstance(GoetyEffects.FLAMMABLE, 900 / (amp + 1), amp));
                 } else if (this.random.nextFloat() <= 0.05F && !target.hasEffect(GoetyEffects.TRIPPING.get())) {
-                    mobEffectInstance.add(new MobEffectInstance(GoetyEffects.TRIPPING.get(), 1800 / (amp + 1), amp));
+                    mobEffectInstance.add(new MobEffectInstance(GoetyEffects.TRIPPING, 1800 / (amp + 1), amp));
                 }
             } else if (target.hasEffect(MobEffects.REGENERATION) && !target.hasEffect(GoetyEffects.CURSED.get())) {
-                mobEffectInstance.add(new MobEffectInstance(GoetyEffects.CURSED.get(), 600, 0));
+                mobEffectInstance.add(new MobEffectInstance(GoetyEffects.CURSED, 600, 0));
             } else if (this.getLastDamageSource() != null
                     && ModDamageSource.physicalAttacks(this.getLastDamageSource())
                     && !target.hasEffect(MobEffects.WEAKNESS) && this.random.nextFloat() < 0.25F) {
@@ -473,11 +478,11 @@ public class Crone extends Cultist implements RangedAttackMob {
                         && MobUtil.isInSunlight(target)
                         && !target.hasEffect(MobEffects.FIRE_RESISTANCE)
                         && !target.hasEffect(GoetyEffects.SUN_ALLERGY.get())) {
-                    mobEffectInstance.add(new MobEffectInstance(GoetyEffects.SUN_ALLERGY.get(), 3600 / (amp + 1), amp));
+                    mobEffectInstance.add(new MobEffectInstance(GoetyEffects.SUN_ALLERGY, 3600 / (amp + 1), amp));
                 } else if (this.random.nextFloat() <= 0.75F
-                        && target.level.getMaxLocalRawBrightness(target.blockPosition()) < 2
+                        && target.level().getMaxLocalRawBrightness(target.blockPosition()) < 2
                         && !target.hasEffect(GoetyEffects.NYCTOPHOBIA.get())) {
-                    mobEffectInstance.add(new MobEffectInstance(GoetyEffects.NYCTOPHOBIA.get(), 1800 / (amp + 1), amp));
+                    mobEffectInstance.add(new MobEffectInstance(GoetyEffects.NYCTOPHOBIA, 1800 / (amp + 1), amp));
                 } else if (!target.hasEffect(GoetyEffects.SAPPED.get())) {
                     mobEffectInstance.add(new MobEffectInstance(GoetyEffects.SAPPED.get(), 1800 / (amp + 1), amp));
                 }
@@ -491,7 +496,7 @@ public class Crone extends Cultist implements RangedAttackMob {
                         brewEffectInstance.add(new BrewEffectInstance(new ThornTrapBrewEffect(0), 1, amp));
                     } else if (!target.hasEffect(MobEffects.LEVITATION)
                             && !target.hasEffect(GoetyEffects.PLUNGE.get())) {
-                        mobEffectInstance.add(new MobEffectInstance(GoetyEffects.PLUNGE.get(), 900 / (amp + 1), amp));
+                        mobEffectInstance.add(new MobEffectInstance(GoetyEffects.PLUNGE, 900 / (amp + 1), amp));
                     }
                 } else if (this.random.nextFloat() <= 0.35F && !target.hasEffect(MobEffects.BLINDNESS)
                         && !MobUtil.isInWeb(target) && target.getMaxHealth() > 10.0F && this.noBrewMinions(target)) {
@@ -513,9 +518,8 @@ public class Crone extends Cultist implements RangedAttackMob {
                         && this.level.getDifficulty() == Difficulty.HARD ? new ItemStack(ModItems.GAS_BREW.get())
                                 : new ItemStack(ModItems.SPLASH_BREW.get());
                 ItemStack brew = BrewUtils.setCustomEffects(brew0, mobEffectInstance, brewEffectInstance);
-                BrewUtils.setAreaOfEffect(brew, this.level.random.nextInt(amp + 1));
-                brew.getOrCreateTag().putInt("CustomPotionColor",
-                        BrewUtils.getColor(mobEffectInstance, brewEffectInstance));
+                BrewUtils.setAreaOfEffect(brew, this.level().random.nextInt(amp + 1));
+                brew.set(net.minecraft.core.component.DataComponents.POTION_CONTENTS, new net.minecraft.world.item.alchemy.PotionContents(java.util.Optional.empty(), java.util.Optional.of(BrewUtils.getColor(mobEffectInstance, brewEffectInstance)), java.util.List.of()));
                 thrownBrew.setItem(brew);
                 float velocity = 0.75F;
                 if (target.distanceTo(this) >= 4.0F) {
@@ -526,18 +530,18 @@ public class Crone extends Cultist implements RangedAttackMob {
                 }
                 thrownBrew.shoot(d0, d1 + d3 * 0.2D, d2, velocity, 8.0F);
                 if (!this.isSilent()) {
-                    this.level.playSound((Player) null, this.getX(), this.getY(), this.getZ(), SoundEvents.WITCH_THROW,
+                    this.level().playSound((Player) null, this.getX(), this.getY(), this.getZ(), SoundEvents.WITCH_THROW,
                             this.getSoundSource(), 1.0F, 0.8F + this.random.nextFloat() * 0.4F);
                 }
 
-                this.level.addFreshEntity(thrownBrew);
+                this.level().addFreshEntity(thrownBrew);
             }
         }
     }
 
     public boolean noBrewMinions(LivingEntity livingEntity) {
-        return this.level.getEntitiesOfClass(VampireBat.class, livingEntity.getBoundingBox().inflate(2.0D)).isEmpty()
-                && this.level.getEntitiesOfClass(Bee.class, livingEntity.getBoundingBox().inflate(2.0D)).isEmpty();
+        return this.level().getEntitiesOfClass(VampireBat.class, livingEntity.getBoundingBox().inflate(2.0D)).isEmpty()
+                && this.level().getEntitiesOfClass(Bee.class, livingEntity.getBoundingBox().inflate(2.0D)).isEmpty();
     }
 
     public boolean hurt(DamageSource pSource, float pAmount) {
@@ -553,7 +557,7 @@ public class Crone extends Cultist implements RangedAttackMob {
             if (MobsConfig.CroneThornDefense.get()) {
                 if (!pSource.is(DamageTypeTags.AVOIDS_GUARDIAN_THORNS) && !pSource.is(DamageTypes.THORNS)) {
                     float thorn = 2.0F;
-                    if (this.level.getDifficulty() == Difficulty.HARD) {
+                    if (this.level().getDifficulty() == Difficulty.HARD) {
                         thorn *= 2.0F;
                     }
                     livingentity.hurt(this.damageSources().thorns(this), thorn);
@@ -568,7 +572,7 @@ public class Crone extends Cultist implements RangedAttackMob {
     }
 
     protected void teleport() {
-        if (!this.level.isClientSide() && this.isAlive()) {
+        if (!this.level().isClientSide() && this.isAlive()) {
             for (int i = 0; i < 128; ++i) {
                 double d3 = this.getX() + (this.getRandom().nextDouble() - 0.5D) * 32.0D;
                 double d4 = this.getY();
@@ -594,7 +598,7 @@ public class Crone extends Cultist implements RangedAttackMob {
     }
 
     private boolean teleportTowards(Entity entity) {
-        if (!this.level.isClientSide() && this.isAlive()) {
+        if (!this.level().isClientSide() && this.isAlive()) {
             for (int i = 0; i < 128; ++i) {
                 Vec3 vector3d = new Vec3(this.getX() - entity.getX(), this.getY(0.5D) - entity.getEyeY(),
                         this.getZ() - entity.getZ());
@@ -622,10 +626,10 @@ public class Crone extends Cultist implements RangedAttackMob {
     }
 
     public void teleportHits() {
-        this.level.broadcastEntityEvent(this, (byte) 46);
-        this.level.gameEvent(GameEvent.TELEPORT, this.position(), GameEvent.Context.of(this));
+        this.level().broadcastEntityEvent(this, (byte) 46);
+        this.level().gameEvent(GameEvent.TELEPORT, this.position(), GameEvent.Context.of(this));
         if (!this.isSilent()) {
-            this.level.playSound((Player) null, this.xo, this.yo, this.zo, SoundEvents.ENDERMAN_TELEPORT,
+            this.level().playSound((Player) null, this.xo, this.yo, this.zo, SoundEvents.ENDERMAN_TELEPORT,
                     this.getSoundSource(), 1.0F, 0.75F);
             this.playSound(SoundEvents.ENDERMAN_TELEPORT, 1.0F, 0.75F);
         }

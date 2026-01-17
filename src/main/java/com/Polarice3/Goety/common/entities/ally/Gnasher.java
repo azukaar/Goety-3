@@ -108,10 +108,11 @@ public class Gnasher extends AnimalSummon implements PlayerRideable, IAutoRideab
         MobUtil.setBaseAttributes(this.getAttribute(Attributes.ATTACK_DAMAGE), AttributesConfig.GnasherDamage.get());
     }
 
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.entityData.define(MOVING, false);
-        this.entityData.define(AUTO_MODE, false);
+    @Override
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(MOVING, false);
+        builder.define(AUTO_MODE, false);
     }
 
     @Override

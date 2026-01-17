@@ -123,30 +123,31 @@ public class AnimatorRenderer implements BlockEntityRenderer<AnimatorBlockEntity
         p3.add(adjustedVec);
         Vector3f p4 = new Vector3f(to);
         p4.sub(adjustedVec);
-        builder.vertex(positionMatrix, p1.x(), p1.y(), p1.z())
-                .color(r, g, b, alpha)
-                .uv(1, v)
-                .overlayCoords(OverlayTexture.NO_OVERLAY)
-                .uv2(15728880)
-                .endVertex();
-        builder.vertex(positionMatrix, p3.x(), p3.y(), p3.z())
-                .color(r, g, b, alpha)
-                .uv(1, v)
-                .overlayCoords(OverlayTexture.NO_OVERLAY)
-                .uv2(15728880)
-                .endVertex();
-        builder.vertex(positionMatrix, p4.x(), p4.y(), p4.z())
-                .color(r, g, b, alpha)
-                .uv(0, v)
-                .overlayCoords(OverlayTexture.NO_OVERLAY)
-                .uv2(15728880)
-                .endVertex();
-        builder.vertex(positionMatrix, p2.x(), p2.y(), p2.z())
-                .color(r, g, b, alpha)
-                .uv(0, v)
-                .overlayCoords(OverlayTexture.NO_OVERLAY)
-                .uv2(15728880)
-                .endVertex();
+        positionMatrix.transformPosition(p1);
+        positionMatrix.transformPosition(p3);
+        positionMatrix.transformPosition(p4);
+        positionMatrix.transformPosition(p2);
+
+        builder.addVertex(p1.x(), p1.y(), p1.z())
+                .setColor(r, g, b, alpha)
+                .setUv(1, v)
+                .setOverlay(OverlayTexture.NO_OVERLAY)
+                .setLight(15728880);
+        builder.addVertex(p3.x(), p3.y(), p3.z())
+                .setColor(r, g, b, alpha)
+                .setUv(1, v)
+                .setOverlay(OverlayTexture.NO_OVERLAY)
+                .setLight(15728880);
+        builder.addVertex(p4.x(), p4.y(), p4.z())
+                .setColor(r, g, b, alpha)
+                .setUv(0, v)
+                .setOverlay(OverlayTexture.NO_OVERLAY)
+                .setLight(15728880);
+        builder.addVertex(p2.x(), p2.y(), p2.z())
+                .setColor(r, g, b, alpha)
+                .setUv(0, v)
+                .setOverlay(OverlayTexture.NO_OVERLAY)
+                .setLight(15728880);
     }
 
 }

@@ -46,9 +46,10 @@ public class Minion extends Owned{
         this.checkInsideBlocks();
     }
 
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.entityData.define(VEX_FLAGS, (byte)0);
+    @Override
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(VEX_FLAGS, (byte)0);
     }
 
     public void readAdditionalSaveData(CompoundTag p_34008_) {
@@ -129,7 +130,7 @@ public class Minion extends Owned{
 
             for(int i = 0; i < 3; ++i) {
                 BlockPos blockpos1 = blockpos.offset(Minion.this.random.nextInt(15) - 7, Minion.this.random.nextInt(11) - 5, Minion.this.random.nextInt(15) - 7);
-                if (Minion.this.level.isEmptyBlock(blockpos1)) {
+                if (Minion.this.level().isEmptyBlock(blockpos1)) {
                     Minion.this.moveControl.setWantedPosition((double)blockpos1.getX() + 0.5D, (double)blockpos1.getY() + 0.5D, (double)blockpos1.getZ() + 0.5D, 0.25D);
                     if (Minion.this.getTarget() == null) {
                         Minion.this.getLookControl().setLookAt((double)blockpos1.getX() + 0.5D, (double)blockpos1.getY() + 0.5D, (double)blockpos1.getZ() + 0.5D, 180.0F, 20.0F);

@@ -70,13 +70,13 @@ public interface NetherBehaviour {
             }
         }
 
-        if (originalState.is(Tags.Blocks.ORES_IRON) || originalState.is(Tags.Blocks.ORES_GOLD)) {
+        if (originalState.is(Tags.Blocks.ORES) || originalState.is(Tags.Blocks.ORES)) {
             BlockState blockstate = Blocks.NETHER_GOLD_ORE.defaultBlockState();
             accessor.setBlock(blockPos, blockstate, 3);
             return true;
         }
 
-        if (originalState.is(Tags.Blocks.ORES_COAL) || originalState.is(Tags.Blocks.ORES_COPPER)) {
+        if (originalState.is(Tags.Blocks.ORES) || originalState.is(Tags.Blocks.ORES)) {
             BlockState blockstate = Blocks.NETHER_QUARTZ_ORE.defaultBlockState();
             accessor.setBlock(blockPos, blockstate, 3);
             return true;
@@ -127,19 +127,19 @@ public interface NetherBehaviour {
             accessor.levelEvent(2001, blockPos, Block.getId(blockstate));
             changeBiome(accessor, blockPos);
             return true;
-        } else if (originalState.is(Tags.Blocks.STONE)) {
+        } else if (originalState.is(BlockTags.BASE_STONE_OVERWORLD)) {
             BlockState blockstate = Blocks.BLACKSTONE.defaultBlockState();
             accessor.setBlock(blockPos, blockstate, 3);
             accessor.levelEvent(2001, blockPos, Block.getId(blockstate));
             changeBiome(accessor, blockPos);
             return true;
-        } else if (originalState.is(Blocks.MUD) || originalState.is(Tags.Blocks.SAND)) {
+        } else if (originalState.is(Blocks.MUD) || originalState.is(BlockTags.SAND)) {
             BlockState blockstate = Blocks.SOUL_SAND.defaultBlockState();
             accessor.setBlock(blockPos, blockstate, 3);
             accessor.levelEvent(2001, blockPos, Block.getId(blockstate));
             changeBiome(accessor, blockPos);
             return true;
-        } else if (originalState.is(Tags.Blocks.SANDSTONE)) {
+        } else if (originalState.is(net.minecraft.tags.BlockTags.SAND)) {
             BlockState blockstate = Blocks.SOUL_SOIL.defaultBlockState();
             accessor.setBlock(blockPos, blockstate, 3);
             accessor.levelEvent(2001, blockPos, Block.getId(blockstate));
