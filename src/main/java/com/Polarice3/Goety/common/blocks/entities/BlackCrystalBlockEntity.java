@@ -60,9 +60,9 @@ public class BlackCrystalBlockEntity extends OwnedBlockEntity implements IEnchan
     }
 
     public void tick() {
-        if (this.level != null) {
+        if (this.getLevel() != null) {
             ++this.tickCount;
-            if (this.level instanceof ServerLevel serverLevel) {
+            if (this.getLevel() instanceof ServerLevel serverLevel) {
                 int radius = 8 + this.enchantments.getOrDefault(ModEnchantments.RADIUS.get(), 0);
                 if (this.target == null) {
                     for (LivingEntity livingEntity : serverLevel.getEntitiesOfClass(LivingEntity.class, new AABB(this.worldPosition).inflate(radius * 2))) {
@@ -84,7 +84,7 @@ public class BlackCrystalBlockEntity extends OwnedBlockEntity implements IEnchan
                         ++this.attackTick;
                         if (this.attackTick % 20 == 0) {
                             Vec3 vector3d1 = this.getBlockPos().getCenter();
-                            DamageSource damageSource = this.getTrueOwner() != null ? ModDamageSource.soulLeech(this.getTrueOwner(), this.getTrueOwner()) : this.level.damageSources().magic();
+                            DamageSource damageSource = this.getTrueOwner() != null ? ModDamageSource.soulLeech(this.getTrueOwner(), this.getTrueOwner()) : this.getLevel().damageSources().magic();
                             this.target.addEffect(new MobEffectInstance(GoetyEffects.CURSED.getHolder(), 5, 0, false, false));
                             if (this.target.hurt(damageSource, this.target.getMaxHealth() * 0.1F)) {
                                 ColorUtil colorUtil1 = new ColorUtil(0x5038dd);
@@ -95,7 +95,7 @@ public class BlackCrystalBlockEntity extends OwnedBlockEntity implements IEnchan
                                     Vec3 vec31 = new Vec3(this.target.getRandomX(1.0F), this.target.getRandomY(), this.target.getRandomZ(1.0F));
                                     serverLevel.sendParticles(new AbsorbTrailParticleOption(vector3d1, 0x5038dd, 10), vec31.x, vec31.y, vec31.z, 1, 0.0, 0.0, 0.0, 0.0);
                                 }
-                                this.level.playSound(null, this.worldPosition, ModSounds.SOUL_EAT.get(), SoundSource.BLOCKS, 2.0F, 1.0F);
+                                this.getLevel().playSound(null, this.worldPosition, ModSounds.SOUL_EAT.get(), SoundSource.BLOCKS, 2.0F, 1.0F);
                                 if (this.getTrueOwner() instanceof Player player) {
                                     int enchantment = this.enchantments.getOrDefault(ModEnchantments.SOUL_EATER.get(), 0);
                                     int soulEater = Mth.clamp(enchantment + 1, 1, 10);

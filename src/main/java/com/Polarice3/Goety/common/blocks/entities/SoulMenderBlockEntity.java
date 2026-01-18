@@ -33,8 +33,8 @@ public class SoulMenderBlockEntity extends ModBlockEntity implements Clearable, 
 
     public void tick() {
         boolean flag = this.checkCage();
-        if (this.level != null) {
-            if (!this.level.isClientSide) {
+        if (this.getLevel() != null) {
+            if (!this.getLevel().isClientSide) {
                 if (flag) {
                     if (!this.itemStack.isEmpty()) {
                         int i = 1;
@@ -48,12 +48,12 @@ public class SoulMenderBlockEntity extends ModBlockEntity implements Clearable, 
                     this.work();
                 }
             }
-            this.level.setBlock(this.getBlockPos(), this.getBlockState().setValue(SoulMenderBlock.LIT, flag), 3);
+            this.getLevel().setBlock(this.getBlockPos(), this.getBlockState().setValue(SoulMenderBlock.LIT, flag), 3);
         }
     }
 
     private void work() {
-        if (this.level != null) {
+        if (this.getLevel() != null) {
             if (!this.itemStack.isEmpty()) {
                 int i = 1;
                 if (!net.minecraft.world.item.enchantment.EnchantmentHelper.getEnchantmentsForCrafting(this.itemStack).isEmpty()) {
@@ -62,31 +62,31 @@ public class SoulMenderBlockEntity extends ModBlockEntity implements Clearable, 
                 if (this.cursedCageTile.getSouls() > (MainConfig.SoulMenderCost.get() * i)) {
                     if (this.itemStack.getItem() instanceof ITotem){
                         if (!ITotem.isFull(this.itemStack)) {
-                            if (this.level.getGameTime() % (MathHelper.secondsToTicks(MainConfig.SoulMenderSeconds.get().floatValue()) + 1) == 0) {
+                            if (this.getLevel().getGameTime() % (MathHelper.secondsToTicks(MainConfig.SoulMenderSeconds.get().floatValue()) + 1) == 0) {
                                 ITotem.increaseSouls(this.itemStack, 1);
                                 this.cursedCageTile.decreaseSouls(1);
                             }
-                            if (this.level.random.nextInt(24) == 0) {
-                                this.level.playSound(null, this.getBlockPos(), SoundEvents.FIRE_AMBIENT, SoundSource.BLOCKS, 1.0F + this.level.random.nextFloat(), this.level.random.nextFloat() * 0.7F + 0.3F);
+                            if (this.getLevel().random.nextInt(24) == 0) {
+                                this.getLevel().playSound(null, this.getBlockPos(), SoundEvents.FIRE_AMBIENT, SoundSource.BLOCKS, 1.0F + this.getLevel().random.nextFloat(), this.getLevel().random.nextFloat() * 0.7F + 0.3F);
                             }
                         } else {
                             BlockPos blockpos = this.getBlockPos();
-                            Containers.dropItemStack(this.level, blockpos.getX(), blockpos.getY(), blockpos.getZ(), this.itemStack);
+                            Containers.dropItemStack(this.getLevel(), blockpos.getX(), blockpos.getY(), blockpos.getZ(), this.itemStack);
                             this.itemStack.shrink(1);
                             this.finishParticles();
                             this.markUpdated();
                         }
                     } else if (this.itemStack.isDamaged()) {
-                        if (this.level.getGameTime() % (MathHelper.secondsToTicks(MainConfig.SoulMenderSeconds.get().floatValue()) + 1) == 0) {
+                        if (this.getLevel().getGameTime() % (MathHelper.secondsToTicks(MainConfig.SoulMenderSeconds.get().floatValue()) + 1) == 0) {
                             this.itemStack.setDamageValue(this.itemStack.getDamageValue() - 1);
                             this.cursedCageTile.decreaseSouls(MainConfig.SoulMenderCost.get() * i);
                         }
-                        if (this.level.random.nextInt(24) == 0) {
-                            this.level.playSound(null, this.getBlockPos(), SoundEvents.FIRE_AMBIENT, SoundSource.BLOCKS, 1.0F + this.level.random.nextFloat(), this.level.random.nextFloat() * 0.7F + 0.3F);
+                        if (this.getLevel().random.nextInt(24) == 0) {
+                            this.getLevel().playSound(null, this.getBlockPos(), SoundEvents.FIRE_AMBIENT, SoundSource.BLOCKS, 1.0F + this.getLevel().random.nextFloat(), this.getLevel().random.nextFloat() * 0.7F + 0.3F);
                         }
                     } else {
                         BlockPos blockpos = this.getBlockPos();
-                        Containers.dropItemStack(this.level, blockpos.getX(), blockpos.getY(), blockpos.getZ(), this.itemStack);
+                        Containers.dropItemStack(this.getLevel(), blockpos.getX(), blockpos.getY(), blockpos.getZ(), this.itemStack);
                         this.itemStack.shrink(1);
                         this.finishParticles();
                         this.markUpdated();
@@ -129,7 +129,7 @@ public class SoulMenderBlockEntity extends ModBlockEntity implements Clearable, 
 
     @Override
     public boolean stillValid(Player pPlayer) {
-        if (this.level == null || this.level.getBlockEntity(this.worldPosition) != this) {
+        if (this.getLevel() == null || this.getLevel().getBlockEntity(this.worldPosition) != this) {
             return false;
         } else {
             return pPlayer.distanceToSqr((double)this.worldPosition.getX() + 0.5D, (double)this.worldPosition.getY() + 0.5D, (double)this.worldPosition.getZ() + 0.5D) <= 64.0D;
@@ -139,9 +139,9 @@ public class SoulMenderBlockEntity extends ModBlockEntity implements Clearable, 
     private void finishParticles() {
         BlockPos blockpos = this.getBlockPos();
 
-        if (this.level != null) {
-            if (!this.level.isClientSide) {
-                ServerLevel serverWorld = (ServerLevel) this.level;
+        if (this.getLevel() != null) {
+            if (!this.getLevel().isClientSide) {
+                ServerLevel serverWorld = (ServerLevel) this.getLevel();
                 serverWorld.sendParticles(ParticleTypes.LARGE_SMOKE, blockpos.getX() + 0.5D, blockpos.getY() + 0.5D, blockpos.getZ() + 0.5D, 1, 0, 0, 0, 0);
                 for (int p = 0; p < 6; ++p) {
                     double d0 = (double) blockpos.getX() + serverWorld.random.nextDouble();
@@ -156,7 +156,7 @@ public class SoulMenderBlockEntity extends ModBlockEntity implements Clearable, 
 
     private void makeWorkParticles() {
         BlockPos blockpos = this.getBlockPos();
-        if (this.level instanceof ServerLevel serverLevel) {
+        if (this.getLevel() instanceof ServerLevel serverLevel) {
             long t = serverLevel.getGameTime();
             if (t % 20 == 0) {
                 for (int p = 0; p < 6; ++p) {
@@ -170,10 +170,10 @@ public class SoulMenderBlockEntity extends ModBlockEntity implements Clearable, 
     }
 
     public boolean placeItem(ItemStack pStack) {
-        if (this.level != null) {
+        if (this.getLevel() != null) {
             if (this.itemStack.isEmpty()) {
                 this.itemStack = pStack.split(1);
-                this.level.playSound(null, this.getBlockPos(), SoundEvents.ANVIL_PLACE, SoundSource.BLOCKS, 1.0F, 0.5F);
+                this.getLevel().playSound(null, this.getBlockPos(), SoundEvents.ANVIL_PLACE, SoundSource.BLOCKS, 1.0F, 0.5F);
                 this.markUpdated();
                 return true;
             }
@@ -183,11 +183,11 @@ public class SoulMenderBlockEntity extends ModBlockEntity implements Clearable, 
     }
 
     private boolean checkCage() {
-        if (this.level != null) {
+        if (this.getLevel() != null) {
             BlockPos pos = new BlockPos(this.getBlockPos().getX(), this.getBlockPos().getY() - 1, this.getBlockPos().getZ());
-            BlockState blockState = this.level.getBlockState(pos);
+            BlockState blockState = this.getLevel().getBlockState(pos);
             if (blockState.is(ModBlocks.CURSED_CAGE_BLOCK.get())) {
-                BlockEntity tileentity = this.level.getBlockEntity(pos);
+                BlockEntity tileentity = this.getLevel().getBlockEntity(pos);
                 if (tileentity instanceof CursedCageBlockEntity) {
                     this.cursedCageTile = (CursedCageBlockEntity) tileentity;
                     return !cursedCageTile.getItem().isEmpty();
@@ -233,7 +233,7 @@ public class SoulMenderBlockEntity extends ModBlockEntity implements Clearable, 
         if (this.cursedCageTile == null) {
             return false;
         }
-        return this.level != null && !this.level.isClientSide && this.placeItem(pItemStack);
+        return this.getLevel() != null && !this.getLevel().isClientSide && this.placeItem(pItemStack);
     }
 
     @Override

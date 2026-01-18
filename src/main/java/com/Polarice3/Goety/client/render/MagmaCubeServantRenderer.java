@@ -18,7 +18,7 @@ import net.minecraft.util.Mth;
 
 public class MagmaCubeServantRenderer extends MobRenderer<MagmaCubeServant, MagmaCubeServantModel<MagmaCubeServant>> {
    private static final ResourceLocation MAGMACUBE_LOCATION = Goety.location("textures/entity/servants/slime/magma_cube_servant.png");
-   private static final ResourceLocation ORIGINAL = new ResourceLocation("textures/entity/slime/magmacube.png");
+   private static final ResourceLocation ORIGINAL = ResourceLocation.parse("textures/entity/slime/magmacube.png");
 
    public MagmaCubeServantRenderer(EntityRendererProvider.Context p_174298_) {
       super(p_174298_, new MagmaCubeServantModel<>(p_174298_.bakeLayer(ModModelLayer.MAGMA_CUBE)), 0.25F);
@@ -55,7 +55,7 @@ public class MagmaCubeServantRenderer extends MobRenderer<MagmaCubeServant, Magm
       @Override
       public void render(PoseStack matrixStackIn, MultiBufferSource bufferIn, int packedLightIn, T entitylivingbaseIn, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch) {
          if (entitylivingbaseIn.isInterested()) {
-            coloredCutoutModelCopyLayerRender(this.getParentModel(), this.layerModel, TEXTURES, matrixStackIn, bufferIn, packedLightIn, entitylivingbaseIn, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, partialTicks, 1.0F, 1.0F, 1.0F);
+            coloredCutoutModelCopyLayerRender(this.getParentModel(), this.layerModel, TEXTURES, matrixStackIn, bufferIn, packedLightIn, entitylivingbaseIn, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, partialTicks, 0xFFFFFFFF);
          }
       }
    }

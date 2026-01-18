@@ -59,8 +59,8 @@ public class MiniElectroOrb extends SpellHurtingProjectile{
     }
 
     protected void onHit(HitResult hitResult) {
-        if (!this.level.isClientSide) {
-            DamageSource damageSource = ModDamageSource.getDamageSource(this.level, ModDamageSource.SHOCK);
+        if (!this.level().isClientSide) {
+            DamageSource damageSource = ModDamageSource.getDamageSource(this.level(), ModDamageSource.SHOCK);
             float damage = SpellConfig.ElectroOrbDamage.get().floatValue() * WandUtil.damageMultiply();
             if (this.getOwner() != null) {
                 damageSource = ModDamageSource.indirectShock(this, this.getOwner());
@@ -70,11 +70,11 @@ public class MiniElectroOrb extends SpellHurtingProjectile{
                 Entity entity = result.getEntity();
                 entity.hurt(damageSource, damage);
                 float chance = this.isStaff() ? 0.25F : 0.05F;
-                if (this.level.isThundering() && this.level.isRainingAt(entity.blockPosition())) {
+                if (this.level().isThundering() && this.level().isRainingAt(entity.blockPosition())) {
                     chance += 0.25F;
                 }
-                if (entity instanceof LivingEntity livingEntity && this.level.random.nextFloat() <= chance) {
-                    livingEntity.addEffect(new MobEffectInstance(GoetyEffects.SPASMS.get(), MathHelper.secondsToTicks(5)));
+                if (entity instanceof LivingEntity livingEntity && this.level().random.nextFloat() <= chance) {
+                    livingEntity.addEffect(new MobEffectInstance(GoetyEffects.SPASMS.getHolder(), MathHelper.secondsToTicks(5)));
                 }
             }
             this.playSound(ModSounds.THUNDERBOLT.get(), 1.0F, 1.0F + (this.random.nextFloat() - this.random.nextFloat()) * 0.2F);
@@ -102,8 +102,5 @@ public class MiniElectroOrb extends SpellHurtingProjectile{
         return false;
     }
 
-    @Override
-    public @NotNull Packet<ClientGamePacketListener> getAddEntityPacket() {
-        return new net.minecraft.network.protocol.game.ClientboundAddEntityPacket(this);
-    }
+
 }

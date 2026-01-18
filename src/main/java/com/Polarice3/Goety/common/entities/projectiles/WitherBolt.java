@@ -102,7 +102,7 @@ public class WitherBolt extends SpellHurtingProjectile {
 
     protected void onHitEntity(EntityHitResult p_37626_) {
         super.onHitEntity(p_37626_);
-        if (!this.level.isClientSide) {
+        if (!this.level().isClientSide) {
             float baseDamage = SpellConfig.SoulBoltDamage.get().floatValue() * WandUtil.damageMultiply();
             Entity entity = p_37626_.getEntity();
             Entity entity1 = this.getOwner();
@@ -142,13 +142,13 @@ public class WitherBolt extends SpellHurtingProjectile {
 
     protected void onHit(HitResult pResult) {
         super.onHit(pResult);
-        if (!this.level.isClientSide) {
+        if (!this.level().isClientSide) {
             Entity entity = this.getOwner();
             Vec3 vec3 = Vec3.atCenterOf(this.blockPosition());
             if (entity instanceof LivingEntity) {
                 if (pResult instanceof BlockHitResult blockHitResult) {
                     BlockPos blockpos = blockHitResult.getBlockPos().relative(blockHitResult.getDirection());
-                    if (BlockFinder.canBeReplaced(this.level, blockpos)) {
+                    if (BlockFinder.canBeReplaced(this.level(), blockpos)) {
                         vec3 = Vec3.atCenterOf(blockpos);
                     }
                 } else if (pResult instanceof EntityHitResult entityHitResult) {
@@ -156,7 +156,7 @@ public class WitherBolt extends SpellHurtingProjectile {
                     vec3 = Vec3.atCenterOf(entity1.blockPosition());
                 }
             }
-            if (this.level instanceof ServerLevel serverLevel) {
+            if (this.level() instanceof ServerLevel serverLevel) {
                 ServerParticleUtil.addParticlesAroundSelf(serverLevel, ParticleTypes.LARGE_SMOKE, this);
                 ColorUtil colorUtil = new ColorUtil(0x1f1f1f);
                 serverLevel.sendParticles(new CircleExplodeParticleOption(colorUtil.red, colorUtil.green, colorUtil.blue, 2, 1), vec3.x, BlockFinder.moveDownToGround(this), vec3.z, 1, 0.0D, 0.0D, 0.0D, 0.0D);
@@ -167,7 +167,7 @@ public class WitherBolt extends SpellHurtingProjectile {
                 }
                 ServerParticleUtil.circularParticles(serverLevel, cloudParticleOptions2, vec3.x, this.getY() + 0.25D, vec3.z, 0, 0.14D, 0, 1.0F);
             }
-            new SpellExplosion(this.level, this.getOwner() != null ? this.getOwner() : this, this.damageSources().indirectMagic(this, this.getOwner()), vec3.x, vec3.y, vec3.z, 1.0F, 0){
+            new SpellExplosion(this.level(), this.getOwner() != null ? this.getOwner() : this, this.damageSources().indirectMagic(this, this.getOwner()), vec3.x, vec3.y, vec3.z, 1.0F, 0){
                 @Override
                 public void explodeHurt(Entity target, DamageSource damageSource, double x, double y, double z, double seen, float actualDamage) {
                     super.explodeHurt(target, damageSource, x, y, z, seen, actualDamage);
@@ -194,15 +194,15 @@ public class WitherBolt extends SpellHurtingProjectile {
         if (this.tickCount >= MathHelper.secondsToTicks(10)){
             this.discard();
         }
-        if (this.level.isClientSide || (entity == null || !entity.isRemoved()) && this.level.hasChunkAt(this.blockPosition())) {
+        if (this.level().isClientSide || (entity == null || !entity.isRemoved()) && this.level().hasChunkAt(this.blockPosition())) {
             Vec3 vec3 = this.getDeltaMovement();
             double d0 = this.getX() - vec3.x;
             double d1 = this.getY() - vec3.y;
             double d2 = this.getZ() - vec3.z;
-            this.level.addParticle(ModParticleTypes.TOTEM_EFFECT.get(),
-                    d0 + ((this.level.random.nextDouble() / 4) * (this.level.random.nextIntBetweenInclusive(-1, 1))),
+            this.level().addParticle(ModParticleTypes.TOTEM_EFFECT.get(),
+                    d0 + ((this.level().random.nextDouble() / 4) * (this.level().random.nextIntBetweenInclusive(-1, 1))),
                     d1 + 0.15D,
-                    d2 + ((this.level.random.nextDouble() / 4) * (this.level.random.nextIntBetweenInclusive(-1, 1))),
+                    d2 + ((this.level().random.nextDouble() / 4) * (this.level().random.nextIntBetweenInclusive(-1, 1))),
                     0.0D, 0.0D, 0.0D);
         }
     }

@@ -66,7 +66,7 @@ public class SummonCircle extends Entity {
 
     @Override
     protected void readAdditionalSaveData(CompoundTag pCompound) {
-        Entity entity = EntityType.loadEntityRecursive(pCompound, this.level, (p_58740_) -> {
+        Entity entity = EntityType.loadEntityRecursive(pCompound, this.level(), (p_58740_) -> {
             return p_58740_;
         });
         if (entity != null) {
@@ -133,9 +133,9 @@ public class SummonCircle extends Entity {
     public void setNoSpin(boolean spin){
         this.noSpin = spin;
         if (spin){
-            this.level.broadcastEntityEvent(this, (byte) 4);
+            this.level().broadcastEntityEvent(this, (byte) 4);
         } else {
-            this.level.broadcastEntityEvent(this, (byte) 5);
+            this.level().broadcastEntityEvent(this, (byte) 5);
         }
     }
 
@@ -155,7 +155,7 @@ public class SummonCircle extends Entity {
         if (!this.isNoGravity()) {
             MobUtil.moveDownToGround(this);
         }
-        if (this.level instanceof ServerLevel serverWorld) {
+        if (this.level() instanceof ServerLevel serverWorld) {
             float f = 1.5F;
             float f5 = (float) Math.PI * f * f;
             if (this.tickCount == this.getLifeSpan()){
@@ -182,7 +182,7 @@ public class SummonCircle extends Entity {
                             owned.setTrueOwner(this.getTrueOwner());
                         }
                         if (this.entity instanceof Mob mob) {
-                            net.neoforged.neoforge.event.EventHooks.onFinalizeSpawn(mob, serverWorld, this.level.getCurrentDifficultyAt(this.blockPosition()), MobSpawnType.MOB_SUMMONED, null, null);
+                            net.neoforged.neoforge.event.EventHooks.onFinalizeSpawn(mob, serverWorld, this.level().getCurrentDifficultyAt(this.blockPosition()), MobSpawnType.MOB_SUMMONED, null, null);
                             if (this.getTrueOwner() != null && this.getTrueOwner() instanceof Mob mob1) {
                                 if (mob1.getTarget() != null) {
                                     mob.setTarget(mob1.getTarget());

@@ -22,19 +22,19 @@ public class PartLiquidBlockEntity extends SaveBlockEntity{
     }
 
     public void tick() {
-        if (this.level == null){
+        if (this.getLevel() == null){
             return;
         }
-        if (!this.level.isClientSide) {
+        if (!this.getLevel().isClientSide) {
             ++this.life;
             if (this.life % 20 == 0) {
                 this.setChanged();
             }
             if (this.life >= this.lifespan) {
                 if (this.oldBlock.is(ModBlocks.PART_LIQUID.get()) || this.oldBlock == null){
-                    this.level.setBlock(this.getBlockPos(), Blocks.AIR.defaultBlockState(), 3);
+                    this.getLevel().setBlock(this.getBlockPos(), Blocks.AIR.defaultBlockState(), 3);
                 }
-                this.level.setBlock(this.getBlockPos(), this.oldBlock, 3);
+                this.getLevel().setBlock(this.getBlockPos(), this.oldBlock, 3);
             }
         }
     }

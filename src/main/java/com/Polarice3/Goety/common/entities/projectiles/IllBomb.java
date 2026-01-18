@@ -46,7 +46,6 @@ public class IllBomb extends ThrowableProjectile {
 
     @Override
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
-        super.defineSynchedData(builder);
         builder.define(BOUNCE_TIMES, 0);
     }
 
@@ -76,10 +75,10 @@ public class IllBomb extends ThrowableProjectile {
         HitResult.Type raytraceresult$type = result.getType();
         if (raytraceresult$type == HitResult.Type.BLOCK) {
             BlockHitResult hitResult = (BlockHitResult) result;
-            BlockState blockstate = this.level.getBlockState(hitResult.getBlockPos());
-            if (!blockstate.getCollisionShape(this.level, hitResult.getBlockPos()).isEmpty()) {
+            BlockState blockstate = this.level().getBlockState(hitResult.getBlockPos());
+            if (!blockstate.getCollisionShape(this.level(), hitResult.getBlockPos()).isEmpty()) {
                 Direction face = hitResult.getDirection();
-                blockstate.onProjectileHit(this.level, blockstate, hitResult, this);
+                blockstate.onProjectileHit(this.level(), blockstate, hitResult, this);
                 Vec3 vec3 = this.getDeltaMovement();
                 double motionX = vec3.x();
                 double motionY = vec3.y();
@@ -101,15 +100,15 @@ public class IllBomb extends ThrowableProjectile {
             }
         } else if (raytraceresult$type == HitResult.Type.ENTITY) {
             Entity entity = ((EntityHitResult) result).getEntity();
-            if (!this.level.isClientSide) {
+            if (!this.level().isClientSide) {
                 if (canHitEntity(entity)) {
                     if (entity instanceof LivingEntity living) {
                         if (living.isBlocking()) {
-                            IllBomb snowball = new IllBomb(living, this.level);
+                            IllBomb snowball = new IllBomb(living, this.level());
                             snowball.shootFromRotation(living, living.getXRot(), living.getYRot(), 0.0F, 1.5F, 1.0F);
-                            this.level.addFreshEntity(snowball);
+                            this.level().addFreshEntity(snowball);
                             MobUtil.hurtUsedShield(living, 1);
-                            this.level.broadcastEntityEvent(living, (byte)29);
+                            this.level().broadcastEntityEvent(living, (byte)29);
                             this.discard();
                         } else {
                             this.explode();
@@ -132,28 +131,28 @@ public class IllBomb extends ThrowableProjectile {
                 this.setDeltaMovement(this.getDeltaMovement().scale(1.01D));
             }
             for (int i = 0; i < 2; ++i) {
-                this.level.addParticle(ParticleTypes.SMOKE, this.getRandomX(0.5D), this.getRandomY(), this.getRandomZ(0.5D), this.random.nextGaussian() * 0.1D, 0.0D, this.random.nextGaussian() * 0.1D);
+                this.level().addParticle(ParticleTypes.SMOKE, this.getRandomX(0.5D), this.getRandomY(), this.getRandomZ(0.5D), this.random.nextGaussian() * 0.1D, 0.0D, this.random.nextGaussian() * 0.1D);
             }
         }
 
     }
 
     public void explode(){
-        if (!this.level.isClientSide) {
+        if (!this.level().isClientSide) {
             Entity owner = this.getOwner();
-            if (this.level.random.nextFloat() >= 0.25F) {
-                this.level.explode(owner != null ? owner : this, this.getX(), this.getY(), this.getZ(), 2.0F, Level.ExplosionInteraction.NONE);
+            if (this.level().random.nextFloat() >= 0.25F) {
+                this.level().explode(owner != null ? owner : this, this.getX(), this.getY(), this.getZ(), 2.0F, Level.ExplosionInteraction.NONE);
             } else {
-                if (this.level instanceof ServerLevel serverLevel){
+                if (this.level() instanceof ServerLevel serverLevel){
                     serverLevel.sendParticles(ParticleTypes.EXPLOSION_EMITTER, this.getX(), this.getY(), this.getZ(), 1, 0, 0, 0, 0);
-                    this.playSound(SoundEvents.GENERIC_EXPLODE);
+                    this.playSound(SoundEvents.GENERIC_EXPLODE.value());
                 }
-                for (int i = 0; i < 8 + this.level.random.nextInt(16); ++i){
-                    Projectile arrow = new FireworkRocketEntity(this.level, this.getProjectile(), owner != null ? owner : this, this.getX(), this.getY(), this.getZ(), true);
+                for (int i = 0; i < 8 + this.level().random.nextInt(16); ++i){
+                    Projectile arrow = new FireworkRocketEntity(this.level(), this.getProjectile(), owner != null ? owner : this, this.getX(), this.getY(), this.getZ(), true);
                     float yaw = this.random.nextFloat() * 360;
                     float pitch = this.random.nextFloat() * 90 - 75;
                     arrow.shootFromRotation(this, yaw, pitch, 0.0F, 3.0F, 0.1F);
-                    this.level.addFreshEntity(arrow);
+                    this.level().addFreshEntity(arrow);
                 }
             }
             this.discard();
@@ -170,12 +169,12 @@ public class IllBomb extends ThrowableProjectile {
     }
 
     public ItemStack getProjectile() {
-        int difficulty = this.level.getCurrentDifficultyAt(this.blockPosition()).getDifficulty().getId();
+        int difficulty = this.level().getCurrentDifficultyAt(this.blockPosition()).getDifficulty().getId();
         return MobUtil.createFirework(difficulty * 2, DyeColor.values());
     }
 
-    @Override
-    public Packet<ClientGamePacketListener> getAddEntityPacket() {
-        return new net.minecraft.network.protocol.game.ClientboundAddEntityPacket(this);
-    }
+    // @Override
+    // public Packet<ClientGamePacketListener> getAddEntityPacket() {
+    //     return new net.minecraft.network.protocol.game.ClientboundAddEntityPacket(this);
+    // }
 }

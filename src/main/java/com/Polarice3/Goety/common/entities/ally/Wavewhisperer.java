@@ -36,7 +36,7 @@ public class Wavewhisperer extends Whisperer{
 
     public Wavewhisperer(EntityType<? extends Owned> type, Level worldIn) {
         super(type, worldIn);
-        this.setMaxUpStep(1.25F);
+        this.getAttribute(Attributes.STEP_HEIGHT).setBaseValue(1.25D);
         this.moveControl = new MoveHelperController(this);
         this.setPathfindingMalus(PathType.WATER, 0.0F);
         this.setPathfindingMalus(PathType.WATER_BORDER, 0.0F);
@@ -115,7 +115,7 @@ public class Wavewhisperer extends Whisperer{
     }
 
     public void updateSwimming() {
-        if (!this.level.isClientSide) {
+        if (!this.level().isClientSide) {
             if (this.isEffectiveAi() && this.isInWater() && this.wantsToSwim()) {
                 this.navigation = this.waterNavigation;
                 this.setSwimming(true);
@@ -290,7 +290,7 @@ public class Wavewhisperer extends Whisperer{
                     return false;
                 }
             }
-            return super.canUse() && this.wavewhisperer.isInWater() && this.wavewhisperer.getY() >= (double)(this.wavewhisperer.level.getSeaLevel() - 3);
+            return super.canUse() && this.wavewhisperer.isInWater() && this.wavewhisperer.getY() >= (double)(this.wavewhisperer.level().getSeaLevel() - 3);
         }
 
         public boolean canContinueToUse() {

@@ -13,7 +13,7 @@ import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
 
 public class FangsRenderer extends EntityRenderer<Fangs> {
-    private static final ResourceLocation TEXTURE_LOCATION = new ResourceLocation(
+    private static final ResourceLocation TEXTURE_LOCATION = ResourceLocation.withDefaultNamespace(
             "textures/entity/illager/evoker_fangs.png");
     private final EvokerFangsModel<Fangs> model;
 

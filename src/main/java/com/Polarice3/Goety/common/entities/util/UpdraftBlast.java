@@ -88,8 +88,8 @@ public class UpdraftBlast extends Entity implements ISpellEntity {
 
     @Nullable
     public LivingEntity getOwner() {
-        if (this.owner == null && this.ownerUniqueId != null && this.level instanceof ServerLevel) {
-            Entity entity = ((ServerLevel)this.level).getEntity(this.ownerUniqueId);
+        if (this.owner == null && this.ownerUniqueId != null && this.level() instanceof ServerLevel) {
+            Entity entity = ((ServerLevel)this.level()).getEntity(this.ownerUniqueId);
             if (entity instanceof LivingEntity) {
                 this.owner = (LivingEntity)entity;
             }
@@ -101,7 +101,7 @@ public class UpdraftBlast extends Entity implements ISpellEntity {
     @Override
     public void tick() {
         super.tick();
-        if (this.level instanceof ServerLevel serverLevel) {
+        if (this.level() instanceof ServerLevel serverLevel) {
             float area = this.getAreaOfEffect() / 2;
             float f = 1.5F + area;
             ColorUtil color = new ColorUtil(0xffffff);
@@ -113,7 +113,7 @@ public class UpdraftBlast extends Entity implements ISpellEntity {
                 float area0 = 1.0F + area;
                 AABB aabb = this.getBoundingBox();
                 AABB aabb1 = new AABB(aabb.minX - area0, aabb.minY - 1.0F, aabb.minZ - area0, aabb.maxX + area0, aabb.maxY + 1.0F, aabb.maxZ + area0);
-                for (Entity entity : this.level.getEntitiesOfClass(Entity.class, aabb1)){
+                for (Entity entity : this.level().getEntitiesOfClass(Entity.class, aabb1)){
                     if (this.getOwner() != null) {
                         if (entity != this.getOwner() && !MobUtil.areAllies(entity, this.getOwner())) {
                             targets.add(entity);

@@ -64,7 +64,7 @@ public class HostileDrownedNecromancer extends DrownedNecromancer implements Ene
         if (pSource.getEntity() != null){
             if (pSource.getEntity() instanceof LivingEntity livingEntity){
                 if (!(livingEntity instanceof Drowned) && !livingEntity.isAlliedTo(this)){
-                    for (Drowned drowned : this.level.getEntitiesOfClass(Drowned.class, this.getBoundingBox().inflate(10))){
+                    for (Drowned drowned : this.level().getEntitiesOfClass(Drowned.class, this.getBoundingBox().inflate(10))){
                         if (drowned.getTarget() != livingEntity) {
                             if (drowned.canAttack(livingEntity)) {
                                 drowned.setTarget(livingEntity);

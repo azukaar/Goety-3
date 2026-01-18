@@ -33,7 +33,7 @@ public class MagicGround extends AbstractTrap{
 
     public void tick() {
         super.tick();
-        if (this.level instanceof ServerLevel serverLevel) {
+        if (this.level() instanceof ServerLevel serverLevel) {
             float f5 = (float) Math.PI * this.radius() * this.radius();
             if (serverLevel.random.nextFloat() <= 0.05F) {
                 for (int j1 = 0; j1 < serverLevel.random.nextInt(16) + 1; ++j1) {
@@ -48,7 +48,7 @@ public class MagicGround extends AbstractTrap{
             }
         }
         List<LivingEntity> targets = new ArrayList<>();
-        for (Entity entity : this.level.getEntitiesOfClass(Entity.class, this.getBoundingBox())) {
+        for (Entity entity : this.level().getEntitiesOfClass(Entity.class, this.getBoundingBox())) {
             LivingEntity livingEntity = MobUtil.getLivingTarget(entity);
             if (livingEntity != null) {
                 if (this.getOwner() != null) {

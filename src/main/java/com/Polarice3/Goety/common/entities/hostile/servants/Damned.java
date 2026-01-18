@@ -53,10 +53,10 @@ public class Damned extends Owned implements Enemy {
                 .add(Attributes.FOLLOW_RANGE, 48.0D);
     }
 
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.entityData.define(DATA_CHARGING_STATE, false);
-        this.entityData.define(DATA_HUMAN, false);
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(DATA_CHARGING_STATE, false);
+        builder.define(DATA_HUMAN, false);
     }
 
     @Override
@@ -84,8 +84,8 @@ public class Damned extends Owned implements Enemy {
     }
 
     @Nullable
-    public SpawnGroupData finalizeSpawn(ServerLevelAccessor pLevel, DifficultyInstance pDifficulty, MobSpawnType pReason, @javax.annotation.Nullable SpawnGroupData pSpawnData, @Nullable CompoundTag pDataTag) {
-        pSpawnData = super.finalizeSpawn(pLevel, pDifficulty, pReason, pSpawnData, pDataTag);
+    public SpawnGroupData finalizeSpawn(ServerLevelAccessor pLevel, DifficultyInstance pDifficulty, MobSpawnType pReason, @javax.annotation.Nullable SpawnGroupData pSpawnData) {
+        pSpawnData = super.finalizeSpawn(pLevel, pDifficulty, pReason, pSpawnData);
         this.setDeltaMovement(0.0D, 0.3D, 0.0D);
         if (pLevel.getRandom().nextBoolean()){
             this.setHuman(true);
@@ -127,14 +127,14 @@ public class Damned extends Owned implements Enemy {
                 double zPower = -(dz / d0 * velocity * 0.2D);
                 this.playSound(ModSounds.DAMNED_SCREAM.get(), 3.0F, this.getVoicePitch());
                 this.setCharge(xPower, yPower, zPower);
-                if (!this.level.isClientSide) {
+                if (!this.level().isClientSide) {
                     this.setCharging(true);
-                    this.level.broadcastEntityEvent(this, (byte) 100);
+                    this.level().broadcastEntityEvent(this, (byte) 100);
                     Vec3 vec3 = this.getDeltaMovement();
                     double mX = this.getX() - vec3.x;
                     double mY = this.getY() - vec3.y;
                     double mZ = this.getZ() - vec3.z;
-                    if (this.level instanceof ServerLevel serverLevel){
+                    if (this.level() instanceof ServerLevel serverLevel){
                         serverLevel.sendParticles(ModParticleTypes.BIG_FIRE.get(), mX, mY + 0.15D, mZ, 1, 0.0D, 0.0D, 0.0D, 0);
                     }
                 }
@@ -194,14 +194,15 @@ public class Damned extends Owned implements Enemy {
     }
 
     protected void onHitEntity(EntityHitResult pResult) {
-        if (!this.level.isClientSide) {
+        if (!this.level().isClientSide) {
             Entity entity = pResult.getEntity();
             Entity entity1 = this.getOwner();
             float damage = (float) this.getAttributeValue(Attributes.ATTACK_DAMAGE);
             entity.hurt(ModDamageSource.hellfire(this, entity1), damage);
-            if (entity1 instanceof LivingEntity living) {
-                this.doEnchantDamageEffects(living, entity);
-            }
+            // doEnchantDamageEffects is no longer available in 1.21
+            // if (entity1 instanceof LivingEntity living) {
+            //     this.doEnchantDamageEffects(living, entity);
+            // }
         }
     }
 
@@ -209,12 +210,12 @@ public class Damned extends Owned implements Enemy {
         if (pResult instanceof EntityHitResult entityHitResult){
             this.onHitEntity(entityHitResult);
         }
-        if (!this.level.isClientSide) {
+        if (!this.level().isClientSide) {
             Entity entity = this.getOwner();
             Vec3 vec3 = Vec3.atCenterOf(this.blockPosition());
             if (pResult instanceof BlockHitResult blockHitResult){
                 BlockPos blockpos = blockHitResult.getBlockPos().relative(blockHitResult.getDirection());
-                if (BlockFinder.canBeReplaced(this.level, blockpos)) {
+                if (BlockFinder.canBeReplaced(this.level(), blockpos)) {
                     vec3 = Vec3.atCenterOf(blockpos);
                 }
             } else if (pResult instanceof EntityHitResult entityHitResult){
@@ -222,17 +223,17 @@ public class Damned extends Owned implements Enemy {
                 vec3 = Vec3.atCenterOf(entity1.blockPosition());
             }
             LivingEntity livingEntity = entity instanceof LivingEntity living ? living : this;
-            Hellfire hellfire = new Hellfire(this.level, vec3, livingEntity);
-            if (this.level.addFreshEntity(hellfire)) {
+            Hellfire hellfire = new Hellfire(this.level(), vec3, livingEntity);
+            if (this.level().addFreshEntity(hellfire)) {
                 for (Direction direction : Direction.values()) {
                     if (direction.getAxis().isHorizontal()) {
-                        Hellfire hellfire1 = new Hellfire(this.level, Vec3.atCenterOf(hellfire.blockPosition().relative(direction)), livingEntity);
-                        this.level.addFreshEntity(hellfire1);
+                        Hellfire hellfire1 = new Hellfire(this.level(), Vec3.atCenterOf(hellfire.blockPosition().relative(direction)), livingEntity);
+                        this.level().addFreshEntity(hellfire1);
                     }
                 }
             }
-            MobUtil.explosionDamage(this.level, this.getOwner() != null ? this.getOwner() : this, ModDamageSource.hellfire(this, this.getOwner()), vec3.x, vec3.y, vec3.z, 1.5F, 0);
-            if (this.level instanceof ServerLevel serverLevel){
+            MobUtil.explosionDamage(this.level(), this.getOwner() != null ? this.getOwner() : this, ModDamageSource.hellfire(this, this.getOwner()), vec3.x, vec3.y, vec3.z, 1.5F, 0);
+            if (this.level() instanceof ServerLevel serverLevel){
                 ServerParticleUtil.addParticlesAroundSelf(serverLevel, ModParticleTypes.BIG_FIRE.get(), this);
                 ColorUtil colorUtil = new ColorUtil(0xdd9c16);
                 serverLevel.sendParticles(new CircleExplodeParticleOption(colorUtil.red, colorUtil.green, colorUtil.blue, 4, 1), vec3.x, BlockFinder.moveDownToGround(this), vec3.z, 1, 0.0D, 0.0D, 0.0D, 0.0D);
@@ -244,7 +245,7 @@ public class Damned extends Owned implements Enemy {
                 }
                 ServerParticleUtil.circularParticles(serverLevel, cloudParticleOptions2, vec3.x, this.getY() + 0.25D, vec3.z, 0, 0.14D, 0, 3.0F);
             }
-            this.playSound(SoundEvents.GENERIC_EXPLODE, 4.0F, 1.0F);
+            this.playSound(SoundEvents.GENERIC_EXPLODE.value(), 4.0F, 1.0F);
             this.playSound(ModSounds.HELL_BLAST_IMPACT.get(), 4.0F, 1.0F);
             this.discard();
         }

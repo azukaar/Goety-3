@@ -96,8 +96,8 @@ public abstract class TangleEntity extends Entity {
 
     @Nullable
     public LivingEntity getTarget() {
-        if (this.target == null && this.targetUUID != null && this.level instanceof ServerLevel) {
-            Entity entity = ((ServerLevel)this.level).getEntity(this.targetUUID);
+        if (this.target == null && this.targetUUID != null && this.level() instanceof ServerLevel) {
+            Entity entity = ((ServerLevel)this.level()).getEntity(this.targetUUID);
             if (entity instanceof LivingEntity) {
                 this.target = (LivingEntity)entity;
             }
@@ -113,8 +113,8 @@ public abstract class TangleEntity extends Entity {
 
     @Nullable
     public LivingEntity getOwner() {
-        if (this.owner == null && this.ownerUUID != null && this.level instanceof ServerLevel) {
-            Entity entity = ((ServerLevel)this.level).getEntity(this.ownerUUID);
+        if (this.owner == null && this.ownerUUID != null && this.level() instanceof ServerLevel) {
+            Entity entity = ((ServerLevel)this.level()).getEntity(this.ownerUUID);
             if (entity instanceof LivingEntity) {
                 this.owner = (LivingEntity)entity;
             }
@@ -130,13 +130,13 @@ public abstract class TangleEntity extends Entity {
 
     public void tick() {
         super.tick();
-        if (!this.level.isClientSide) {
+        if (!this.level().isClientSide) {
             MobUtil.moveDownToGround(this);
             if (this.warmupDelayTicks > 0){
                 --this.warmupDelayTicks;
             } else {
                 ++this.activeTick;
-                this.level.broadcastEntityEvent(this, (byte) 6);
+                this.level().broadcastEntityEvent(this, (byte) 6);
                 this.entangleTick();
             }
         }
@@ -164,7 +164,7 @@ public abstract class TangleEntity extends Entity {
 
     public void findTarget(){
         if (this.getTarget() == null) {
-            for (LivingEntity livingEntity : this.level.getEntitiesOfClass(LivingEntity.class, this.getBoundingBox())) {
+            for (LivingEntity livingEntity : this.level().getEntitiesOfClass(LivingEntity.class, this.getBoundingBox())) {
                 if (EntitySelector.NO_CREATIVE_OR_SPECTATOR.test(livingEntity)) {
                     LivingEntity target = livingEntity;
                     if (target.isPassenger() && target.getVehicle() instanceof LivingEntity vehicle){
@@ -183,19 +183,19 @@ public abstract class TangleEntity extends Entity {
                 && this.getTarget().isAlive()
                 && !this.getTarget().getType().is(ModTags.EntityTypes.UNTANGLEABLE)
                 && this.getTarget().getMaxHealth() <= 100.0F
-                && this.getTarget().canBeAffected(new MobEffectInstance(GoetyEffects.TANGLED.get()))){
+                && this.getTarget().canBeAffected(new MobEffectInstance(GoetyEffects.TANGLED.getHolder(), 100))){
             this.getTarget().setPos(this.position());
             this.getTarget().setDeltaMovement(Vec3.ZERO);
             this.getTarget().move(MoverType.SELF, Vec3.ZERO);
             this.getTarget().moveRelative(0.0F, Vec3.ZERO);
-            if (this.level.isClientSide){
+            if (this.level().isClientSide){
                 ModNetwork.sendToServer(new CSetDeltaMovement(this.getTarget().getId(), 0.0D, 0.0D, 0.0D));
             } else {
                 if (this.activeTick < 10){
                     ModNetwork.sentToTrackingEntityAndPlayer(this.getTarget(), new SRepositionPacket(this.getTarget().getId(), this.position().x, this.position().y, this.position().z));
                 }
             }
-            this.getTarget().addEffect(new MobEffectInstance(GoetyEffects.TANGLED.get(), 2, 0, false, false, false));
+            this.getTarget().addEffect(new MobEffectInstance(GoetyEffects.TANGLED.getHolder(), 2, 0, false, false, false));
         }
     }
 
@@ -230,8 +230,8 @@ public abstract class TangleEntity extends Entity {
         return true;
     }
 
-    @Override
-    public Packet<ClientGamePacketListener> getAddEntityPacket() {
-        return new net.minecraft.network.protocol.game.ClientboundAddEntityPacket(this);
-    }
+    // @Override
+    // public Packet<ClientGamePacketListener> getAddEntityPacket() {
+    //    return new net.minecraft.network.protocol.game.ClientboundAddEntityPacket(this);
+    // }
 }

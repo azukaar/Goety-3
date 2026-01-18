@@ -98,7 +98,7 @@ public class DragonBreathCloud extends Entity implements TraceableEntity {
     }
 
     public void setRadius(float p_19713_) {
-        if (!this.level.isClientSide) {
+        if (!this.level().isClientSide) {
             this.getEntityData().set(DATA_RADIUS, Mth.clamp(p_19713_, 0.0F, 32.0F));
         }
     }
@@ -178,8 +178,8 @@ public class DragonBreathCloud extends Entity implements TraceableEntity {
 
     @Nullable
     public LivingEntity getOwner() {
-        if (this.owner == null && this.ownerUUID != null && this.level instanceof ServerLevel) {
-            Entity entity = ((ServerLevel)this.level).getEntity(this.ownerUUID);
+        if (this.owner == null && this.ownerUUID != null && this.level() instanceof ServerLevel) {
+            Entity entity = ((ServerLevel)this.level()).getEntity(this.ownerUUID);
             if (entity instanceof LivingEntity) {
                 this.owner = (LivingEntity)entity;
             }
@@ -192,7 +192,7 @@ public class DragonBreathCloud extends Entity implements TraceableEntity {
         super.tick();
         boolean flag = this.isWaiting();
         float f = this.getRadius();
-        if (this.level.isClientSide) {
+        if (this.level().isClientSide) {
             if (flag && this.random.nextBoolean()) {
                 return;
             }
@@ -226,7 +226,7 @@ public class DragonBreathCloud extends Entity implements TraceableEntity {
                     d7 = (0.5D - this.random.nextDouble()) * 0.15D;
                 }
 
-                this.level.addAlwaysVisibleParticle(ParticleTypes.DRAGON_BREATH, d0, d2, d4, d5, d6, d7);
+                this.level().addAlwaysVisibleParticle(ParticleTypes.DRAGON_BREATH, d0, d2, d4, d5, d6, d7);
             }
         } else {
             if (this.tickCount >= this.waitTime + this.duration) {

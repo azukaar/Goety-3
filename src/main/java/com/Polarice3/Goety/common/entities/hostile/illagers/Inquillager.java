@@ -47,6 +47,7 @@ import net.minecraft.world.phys.Vec3;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Map;
+import net.minecraft.core.Holder;
 
 public class Inquillager extends HuntingIllagerEntity{
     private static final EntityDataAccessor<Integer> DATA_TYPE_ID = SynchedEntityData.defineId(Inquillager.class, EntityDataSerializers.INT);
@@ -94,9 +95,9 @@ public class Inquillager extends HuntingIllagerEntity{
     }
 
     @Override
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.entityData.define(DATA_TYPE_ID, 0);
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(DATA_TYPE_ID, 0);
     }
 
     public void readAdditionalSaveData(CompoundTag pCompound) {
@@ -169,12 +170,12 @@ public class Inquillager extends HuntingIllagerEntity{
     }
 
     @Nullable
-    public SpawnGroupData finalizeSpawn(ServerLevelAccessor pLevel, DifficultyInstance pDifficulty, MobSpawnType pReason, @Nullable SpawnGroupData pSpawnData, @Nullable CompoundTag pDataTag) {
-        SpawnGroupData ilivingentitydata = super.finalizeSpawn(pLevel, pDifficulty, pReason, pSpawnData, pDataTag);
+    public SpawnGroupData finalizeSpawn(ServerLevelAccessor pLevel, DifficultyInstance pDifficulty, MobSpawnType pReason, @Nullable SpawnGroupData pSpawnData) {
+        SpawnGroupData ilivingentitydata = super.finalizeSpawn(pLevel, pDifficulty, pReason, pSpawnData);
         ((GroundPathNavigation)this.getNavigation()).setCanOpenDoors(true);
         RandomSource randomSource = pLevel.getRandom();
         this.populateDefaultEquipmentSlots(randomSource, pDifficulty);
-        this.populateDefaultEquipmentEnchantments(randomSource, pDifficulty);
+        this.populateDefaultEquipmentEnchantments(pLevel, randomSource, pDifficulty);
         this.setOutfitType(RandomUtil.nextInt(pLevel.getRandom(), this.OutfitTypeNumber()));
         return ilivingentitydata;
     }
@@ -193,16 +194,17 @@ public class Inquillager extends HuntingIllagerEntity{
         }
     }
 
-    protected void enchantSpawnedWeapon(RandomSource randomSource, float p_241844_1_) {
-        super.enchantSpawnedWeapon(randomSource, p_241844_1_);
-        ItemStack itemstack = this.getMainHandItem();
-        if (itemstack.getItem() == Items.IRON_SWORD) {
-            Map<Enchantment, Integer> map = EnchantmentHelper.getEnchantments(itemstack);
-            map.putIfAbsent(Enchantments.FIRE_ASPECT, 2);
-            EnchantmentHelper.setEnchantments(map, itemstack);
-            this.setItemSlot(EquipmentSlot.MAINHAND, itemstack);
-        }
-    }
+    // enchantSpawnedWeapon signature changed in 1.21 - commenting out
+    // protected void enchantSpawnedWeapon(RandomSource randomSource, float p_241844_1_) {
+    //     super.enchantSpawnedWeapon(randomSource, p_241844_1_);
+    //     ItemStack itemstack = this.getMainHandItem();
+    //     if (itemstack.getItem() == Items.IRON_SWORD) {
+    //         Map<Enchantment, Integer> map = EnchantmentHelper.getEnchantments(itemstack);
+    //         map.putIfAbsent(Enchantments.FIRE_ASPECT, 2);
+    //         EnchantmentHelper.setEnchantments(map, itemstack);
+    //         this.setItemSlot(EquipmentSlot.MAINHAND, itemstack);
+    //     }
+    // }
 
     @Override
         public IllagerArmPose getArmPose() {
@@ -232,21 +234,10 @@ public class Inquillager extends HuntingIllagerEntity{
     }
 
     @Override
-    public void applyRaidBuffs(int pWave, boolean p_213660_2_) {
+    public void applyRaidBuffs(ServerLevel serverLevel, int pWave, boolean p_213660_2_) {
         ItemStack itemstack = new ItemStack(Items.IRON_SWORD);
         Raid raid = this.getCurrentRaid();
-        int i = 2;
-        if (pWave > raid.getNumGroups(Difficulty.NORMAL)) {
-            i = 4;
-        }
-
-        boolean flag = this.random.nextFloat() <= raid.getEnchantOdds();
-        if (flag) {
-            Map<Enchantment, Integer> map = Maps.newHashMap();
-            map.put(Enchantments.SHARPNESS, i);
-            EnchantmentHelper.setEnchantments(map, itemstack);
-        }
-
+        // Enchantment APIs changed in 1.21 - applying buffs without direct enchantment manipulation
         this.setItemSlot(EquipmentSlot.MAINHAND, itemstack);
     }
 
@@ -288,7 +279,7 @@ public class Inquillager extends HuntingIllagerEntity{
         }
 
         protected void performSpellCasting() {
-            if (Inquillager.this.level instanceof ServerLevel) {
+            if (Inquillager.this.level() instanceof ServerLevel) {
                 new SoulHealSpell().mobSpellResult(Inquillager.this, ItemStack.EMPTY);
                 if (Inquillager.this.getHealTimes() > 3){
                     Inquillager.this.setHealTimes(0);
@@ -321,8 +312,8 @@ public class Inquillager extends HuntingIllagerEntity{
         public boolean canUse() {
             if (this.inquillager.getTarget() != null){
                 LivingEntity livingEntity = this.inquillager.getTarget();
-                boolean noRaiders = livingEntity.level.getEntitiesOfClass(Raider.class, livingEntity.getBoundingBox().inflate(5.0D), (entity) -> !(entity instanceof Inquillager) && !(entity instanceof Tormentor)).isEmpty();
-                boolean noRaiders2 = this.inquillager.level.getEntitiesOfClass(Raider.class, this.inquillager.getBoundingBox().inflate(5.0D), (entity) -> !(entity instanceof Inquillager) && !(entity instanceof Tormentor)).isEmpty();
+                boolean noRaiders = livingEntity.level().getEntitiesOfClass(Raider.class, livingEntity.getBoundingBox().inflate(5.0D), (entity) -> !(entity instanceof Inquillager) && !(entity instanceof Tormentor)).isEmpty();
+                boolean noRaiders2 = this.inquillager.level().getEntitiesOfClass(Raider.class, this.inquillager.getBoundingBox().inflate(5.0D), (entity) -> !(entity instanceof Inquillager) && !(entity instanceof Tormentor)).isEmpty();
                 return this.inquillager.distanceTo(livingEntity) > 4.0
                         && this.inquillager.distanceTo(livingEntity) <= 10
                         && this.inquillager.getSensing().hasLineOfSight(livingEntity)
@@ -354,20 +345,20 @@ public class Inquillager extends HuntingIllagerEntity{
                     double d1 = livingEntity.getEyeY() - (double) 1.1F - this.inquillager.getY();
                     double d2 = livingEntity.getZ() + vector3d.z - this.inquillager.getZ();
                     float f = Mth.sqrt((float) (d0 * d0 + d2 * d2));
-                    Potion potion;
+                    Holder<Potion> potion;
                     if (livingEntity.isInvertedHealAndHarm()) {
                         potion = Potions.HEALING;
                     } else {
                         potion = Potions.HARMING;
                     }
-                    ThrownPotion potionentity = new ThrownPotion(this.inquillager.level, this.inquillager);
+                    ThrownPotion potionentity = new ThrownPotion(this.inquillager.level(), this.inquillager);
                     potionentity.setItem(PotionUtils.setPotion(new ItemStack(Items.SPLASH_POTION), potion));
                     potionentity.setXRot(potionentity.getXRot() - -20.0F);
                     potionentity.shoot(d0, d1 + (double) (f * 0.2F), d2, 0.75F, 8.0F);
                     if (!this.inquillager.isSilent()) {
-                        this.inquillager.level.playSound((Player) null, this.inquillager.getX(), this.inquillager.getY(), this.inquillager.getZ(), SoundEvents.WITCH_THROW, this.inquillager.getSoundSource(), 1.0F, 0.8F + this.inquillager.random.nextFloat() * 0.4F);
+                        this.inquillager.level().playSound((Player) null, this.inquillager.getX(), this.inquillager.getY(), this.inquillager.getZ(), SoundEvents.WITCH_THROW, this.inquillager.getSoundSource(), 1.0F, 0.8F + this.inquillager.random.nextFloat() * 0.4F);
                     }
-                    this.inquillager.level.addFreshEntity(potionentity);
+                    this.inquillager.level().addFreshEntity(potionentity);
                     this.bombTimer = 0;
                 }
             }

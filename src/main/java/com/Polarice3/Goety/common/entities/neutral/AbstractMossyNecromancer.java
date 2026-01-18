@@ -81,9 +81,9 @@ public class AbstractMossyNecromancer extends AbstractNecromancer{
         } else {
             for (int i = -this.getNecroLevel(); i <= this.getNecroLevel(); i++) {
                 Vec3 vector3d = this.getViewVector(1.0F);
-                PoisonBolt soulBolt = new PoisonBolt(this, vector3d.x + (i / 10.0F), vector3d.y, vector3d.z + (i / 10.0F), this.level);
+                PoisonBolt soulBolt = new PoisonBolt(this, vector3d.x + (i / 10.0F), vector3d.y, vector3d.z + (i / 10.0F), this.level());
                 soulBolt.setPos(this.getX() + vector3d.x / 2, this.getEyeY() - 0.2, this.getZ() + vector3d.z / 2);
-                if (this.level.addFreshEntity(soulBolt)) {
+                if (this.level().addFreshEntity(soulBolt)) {
                     SoundUtil.playSoulBolt(this);
                     this.swing(InteractionHand.MAIN_HAND);
                 }
@@ -92,39 +92,39 @@ public class AbstractMossyNecromancer extends AbstractNecromancer{
     }
 
     public Summoned getDefaultSummon(){
-        return new JungleZombieServant(ModEntityType.JUNGLE_ZOMBIE_SERVANT.get(), this.level);
+        return new JungleZombieServant(ModEntityType.JUNGLE_ZOMBIE_SERVANT.get(), this.level());
     }
 
     public Summoned getSummon(){
         Summoned summoned = getDefaultSummon();
         if (this.getSummonList().stream().anyMatch(entityType -> entityType.is(ModTags.EntityTypes.ZOMBIE_SERVANTS))) {
-            if (this.level.random.nextBoolean()) {
-                summoned = new JungleZombieServant(ModEntityType.JUNGLE_ZOMBIE_SERVANT.get(), this.level);
+            if (this.level().random.nextBoolean()) {
+                summoned = new JungleZombieServant(ModEntityType.JUNGLE_ZOMBIE_SERVANT.get(), this.level());
             }
         }
         if (this.getSummonList().stream().anyMatch(entityType -> entityType.is(ModTags.EntityTypes.SKELETON_SERVANTS))) {
-            if (this.level.random.nextBoolean()) {
-                summoned = new MossySkeletonServant(ModEntityType.MOSSY_SKELETON_SERVANT.get(), this.level);
+            if (this.level().random.nextBoolean()) {
+                summoned = new MossySkeletonServant(ModEntityType.MOSSY_SKELETON_SERVANT.get(), this.level());
             }
         }
         if (this.getSummonList().contains(ModEntityType.WRAITH_SERVANT.get())) {
-            if (this.level.random.nextFloat() <= 0.05F) {
-                summoned = new MuckWraithServant(ModEntityType.MUCK_WRAITH_SERVANT.get(), this.level);
+            if (this.level().random.nextFloat() <= 0.05F) {
+                summoned = new MuckWraithServant(ModEntityType.MUCK_WRAITH_SERVANT.get(), this.level());
             }
         }
         if (this.getSummonList().contains(ModEntityType.REAPER_SERVANT.get())) {
-            if (this.level.random.nextFloat() <= 0.05F) {
-                summoned = new ReaperServant(ModEntityType.REAPER_SERVANT.get(), this.level);
+            if (this.level().random.nextFloat() <= 0.05F) {
+                summoned = new ReaperServant(ModEntityType.REAPER_SERVANT.get(), this.level());
             }
         }
         if (this.getSummonList().contains(ModEntityType.VANGUARD_SERVANT.get())){
-            if (this.level.random.nextFloat() <= 0.15F) {
-                summoned = new VanguardServant(ModEntityType.VANGUARD_SERVANT.get(), this.level);
+            if (this.level().random.nextFloat() <= 0.15F) {
+                summoned = new VanguardServant(ModEntityType.VANGUARD_SERVANT.get(), this.level());
             }
         }
         if (this.getSummonList().contains(ModEntityType.BLACKGUARD_SERVANT.get())) {
-            if (this.level.random.nextFloat() <= 0.05F) {
-                summoned = new BlackguardServant(ModEntityType.BLACKGUARD_SERVANT.get(), this.level);
+            if (this.level().random.nextFloat() <= 0.05F) {
+                summoned = new BlackguardServant(ModEntityType.BLACKGUARD_SERVANT.get(), this.level());
             }
         }
         return summoned;
@@ -132,7 +132,7 @@ public class AbstractMossyNecromancer extends AbstractNecromancer{
 
     @Override
     public boolean summonVariants() {
-        return this.level.isWaterAt(this.blockPosition());
+        return this.level().isWaterAt(this.blockPosition());
     }
 
     public void spellCastParticles(){
@@ -141,8 +141,8 @@ public class AbstractMossyNecromancer extends AbstractNecromancer{
             double d0 = colors[0];
             double d1 = colors[1];
             double d2 = colors[2];
-            for (int i = 0; i < this.level.random.nextInt(4) + 4; ++i) {
-                this.level.addParticle(ModParticleTypes.BIG_CULT_SPELL.get(), this.getX(), this.getY(), this.getZ(), d0, d1, d2);
+            for (int i = 0; i < this.level().random.nextInt(4) + 4; ++i) {
+                this.level().addParticle(ModParticleTypes.BIG_CULT_SPELL.get(), this.getX(), this.getY(), this.getZ(), d0, d1, d2);
             }
         }*/
     }
@@ -151,13 +151,13 @@ public class AbstractMossyNecromancer extends AbstractNecromancer{
 
         public boolean canUse() {
             Predicate<Entity> predicate = entity -> entity.isAlive() && entity instanceof IOwned owned && owned.getTrueOwner() == AbstractMossyNecromancer.this;
-            int i = AbstractMossyNecromancer.this.level.getEntitiesOfClass(LivingEntity.class, AbstractMossyNecromancer.this.getBoundingBox().inflate(64.0D, 16.0D, 64.0D)
+            int i = AbstractMossyNecromancer.this.level().getEntitiesOfClass(LivingEntity.class, AbstractMossyNecromancer.this.getBoundingBox().inflate(64.0D, 16.0D, 64.0D)
                     , predicate).size();
             return super.canUse() && i < 6;
         }
 
         protected void castSpell(){
-            if (AbstractMossyNecromancer.this.level instanceof ServerLevel serverLevel) {
+            if (AbstractMossyNecromancer.this.level() instanceof ServerLevel serverLevel) {
                 for (int i1 = 0; i1 < 2; ++i1) {
                     Summoned summonedentity = AbstractMossyNecromancer.this.getSummon();
                     BlockPos blockPos = BlockFinder.SummonRadius(AbstractMossyNecromancer.this.blockPosition(), summonedentity, serverLevel);

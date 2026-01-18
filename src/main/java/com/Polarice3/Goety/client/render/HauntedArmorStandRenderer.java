@@ -35,7 +35,7 @@ public class HauntedArmorStandRenderer<T extends ArmorStand> extends LivingEntit
 
    protected void setupRotations(T p_113800_, PoseStack p_113801_, float p_113802_, float p_113803_, float p_113804_) {
       p_113801_.mulPose(Axis.YP.rotationDegrees(180.0F - p_113803_));
-      float f = (float)(p_113800_.level.getGameTime() - p_113800_.lastHit) + p_113804_;
+      float f = (float)(p_113800_.level().getGameTime() - p_113800_.lastHit) + p_113804_;
       if (f < 5.0F) {
          p_113801_.mulPose(Axis.YP.rotationDegrees(Mth.sin(f / 1.5F * (float)Math.PI) * 3.0F));
       }

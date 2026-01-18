@@ -58,7 +58,7 @@ public abstract class LightProjectile extends Arrow {
         Vec3 Vec32 = this.position();
         Vec3 Vec33 = Vec32.add(Vec3);
 
-        HitResult raytraceresult = this.level.clip(new ClipContext(Vec32, Vec33, ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, this));
+        HitResult raytraceresult = this.level().clip(new ClipContext(Vec32, Vec33, ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, this));
         if (raytraceresult.getType() != HitResult.Type.MISS) {
             Vec33 = raytraceresult.getLocation();
         }
@@ -91,13 +91,13 @@ public abstract class LightProjectile extends Arrow {
             double d0 = this.getX() + Vec3.x;
             double d1 = this.getY() + Vec3.y;
             double d2 = this.getZ() + Vec3.z;
-            this.level.addParticle(sourceParticle(), this.getX(), this.getY(), this.getZ(), 0.0F, 0.0F, 0.0F);
-            this.level.addParticle(trailParticle(), d0 + level.random.nextDouble()/2, d1 + 0.5D, d2 + level.random.nextDouble()/2, 0.0D, 0.0D, 0.0D);
+            this.level().addParticle(sourceParticle(), this.getX(), this.getY(), this.getZ(), 0.0F, 0.0F, 0.0F);
+            this.level().addParticle(trailParticle(), d0 + level.random.nextDouble()/2, d1 + 0.5D, d2 + level.random.nextDouble()/2, 0.0D, 0.0D, 0.0D);
         }
     }
 
     protected void onHitEntity(EntityHitResult pResult) {
-        if (!this.level.isClientSide) {
+        if (!this.level().isClientSide) {
             Entity target = pResult.getEntity();
             Entity owner = this.getOwner();
             if (owner instanceof LivingEntity) {
@@ -123,8 +123,8 @@ public abstract class LightProjectile extends Arrow {
         super.onHitBlock(pResult);
         BlockPos pos = pResult.getBlockPos().relative(pResult.getDirection());
         if (this.getOwner() != null) {
-            if (this.level.getBlockState(pos).canBeReplaced() && this.level.isUnobstructed(LightBlock().defaultBlockState(), pos, CollisionContext.of(this.getOwner()))) {
-                this.level.setBlockAndUpdate(pos, LightBlock().defaultBlockState());
+            if (this.level().getBlockState(pos).canBeReplaced() && this.level().isUnobstructed(LightBlock().defaultBlockState(), pos, CollisionContext.of(this.getOwner()))) {
+                this.level().setBlockAndUpdate(pos, LightBlock().defaultBlockState());
             }
         }
         this.discard();

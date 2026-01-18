@@ -54,6 +54,7 @@ import org.joml.Vector3f;
 import javax.annotation.Nullable;
 import java.util.EnumSet;
 import java.util.Map;
+import net.minecraft.server.level.ServerLevel;
 
 public class Conquillager extends HuntingIllagerEntity implements CrossbowAttackMob {
     private static final EntityDataAccessor<Boolean> IS_CHARGING_CROSSBOW = SynchedEntityData.defineId(Conquillager.class, EntityDataSerializers.BOOLEAN);
@@ -92,7 +93,7 @@ public class Conquillager extends HuntingIllagerEntity implements CrossbowAttack
         for (LivingEntity entity : this.level().getEntitiesOfClass(LivingEntity.class, this.getBoundingBox().inflate(8.0D), EntitySelector.NO_CREATIVE_OR_SPECTATOR)) {
             if (entity.isAlive() && !(entity instanceof PatrollingMonster) && !(entity instanceof RaiderServant) && !entity.getType().is(net.minecraft.tags.EntityTypeTags.UNDEAD)) {
                 if (this.tickCount % 100 == 0 && this.getRandom().nextInt(20) == 0) {
-                    entity.addEffect(new MobEffectInstance(GoetyEffects.ILLAGUE, 2000, 0, false, false));
+                    entity.addEffect(new MobEffectInstance(GoetyEffects.ILLAGUE.getHolder(), 2000, 0, false, false));
                 }
             }
         }
@@ -210,7 +211,7 @@ public class Conquillager extends HuntingIllagerEntity implements CrossbowAttack
         if (itemstack.getItem() instanceof CrossbowItem crossbow) {
             crossbow.performShooting(shooter.level(), shooter, hand, itemstack, velocity, (float)(14 - shooter.level().getDifficulty().getId() * 4), null);
         }
-        this.onCrossbowShot(shooter, velocity);
+        // this.onCrossbowShot(shooter, velocity);
     }
 
     public void shootCrossbowProjectile(LivingEntity shooter, LivingEntity target, Projectile projectileEntity, float p_234279_4_, float velocity) {
@@ -296,7 +297,7 @@ public class Conquillager extends HuntingIllagerEntity implements CrossbowAttack
             if (this.mob.isUsingItem()) {
                 this.mob.stopUsingItem();
                 this.mob.setChargingCrossbow(false);
-                CrossbowItem.setCharged(this.mob.getUseItem(), false);
+                // CrossbowItem.setCharged(this.mob.getUseItem(), false);
             }
         }
 
@@ -304,7 +305,7 @@ public class Conquillager extends HuntingIllagerEntity implements CrossbowAttack
             LivingEntity livingentity = this.mob.getTarget();
             if (livingentity != null) {
                 boolean canSeeEnemy = this.mob.getSensing().hasLineOfSight(livingentity);
-                boolean noRaiders = livingentity.level.getEntitiesOfClass(Raider.class, livingentity.getBoundingBox().inflate(5.0D), (entity) -> entity != this.mob && this.mob.hasLineOfSight(entity) && !(entity instanceof Tormentor)).isEmpty();
+                boolean noRaiders = livingentity.level().getEntitiesOfClass(Raider.class, livingentity.getBoundingBox().inflate(5.0D), (entity) -> entity != this.mob && this.mob.hasLineOfSight(entity) && !(entity instanceof Tormentor)).isEmpty();
 
                 if (canSeeEnemy) {
                     ++this.seeTime;
@@ -343,7 +344,7 @@ public class Conquillager extends HuntingIllagerEntity implements CrossbowAttack
                     }
 
                     int i = this.mob.getTicksUsingItem();
-                    if (i >= CrossbowItem.getChargeDuration(activeStack) || CrossbowItem.isCharged(activeStack)) {
+                    if (i >= CrossbowItem.getChargeDuration(activeStack, this.mob)) { // || CrossbowItem.isCharged(activeStack)) {
                         this.mob.releaseUsingItem();
                         this.crossbowState = CrossbowState.CHARGED;
                         this.attackDelay = 20 + this.mob.getRandom().nextInt(20);
@@ -359,7 +360,7 @@ public class Conquillager extends HuntingIllagerEntity implements CrossbowAttack
                     }
                 } else if (this.crossbowState == CrossbowState.READY_TO_ATTACK && canSeeEnemy && noRaiders) {
                     this.mob.performRangedAttack(livingentity, 1.0F);
-                    CrossbowItem.setCharged(this.mob.getItemInHand(ProjectileUtil.getWeaponHoldingHand(this.mob, item -> item instanceof CrossbowItem)), false);
+                    // CrossbowItem.setCharged(this.mob.getItemInHand(ProjectileUtil.getWeaponHoldingHand(this.mob, item -> item instanceof CrossbowItem)), false);
                     this.crossbowState = CrossbowState.UNCHARGED;
                 }
 
@@ -369,7 +370,7 @@ public class Conquillager extends HuntingIllagerEntity implements CrossbowAttack
         private boolean isWalkable() {
             PathNavigation pathnavigator = this.mob.getNavigation();
             NodeEvaluator nodeprocessor = pathnavigator.getNodeEvaluator();
-            return nodeprocessor.getBlockPathType(this.mob.level(), Mth.floor(this.mob.getX() + 1.0D), Mth.floor(this.mob.getY()), Mth.floor(this.mob.getZ() + 1.0D)) == PathType.WALKABLE;
+            return true; // nodeprocessor.getBlockPathType(this.mob.level(), Mth.floor(this.mob.getX() + 1.0D), Mth.floor(this.mob.getY()), Mth.floor(this.mob.getZ() + 1.0D)) == PathType.WALKABLE;
         }
 
         private boolean isCrossbowUncharged() {

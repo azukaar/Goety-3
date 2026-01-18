@@ -89,8 +89,8 @@ public class WitherNecromancer extends AbstractWitherNecromancer implements Enem
     @Override
     public void die(DamageSource pCause) {
         super.die(pCause);
-        if (!this.level.isClientSide){
-            if (this.level instanceof ServerLevel serverLevel){
+        if (!this.level().isClientSide){
+            if (this.level() instanceof ServerLevel serverLevel){
                 for (int k = 0; k < 64; ++k) {
                     float f2 = random.nextFloat() * 4.0F;
                     float f1 = random.nextFloat() * ((float) Math.PI * 2F);
@@ -101,7 +101,7 @@ public class WitherNecromancer extends AbstractWitherNecromancer implements Enem
                     serverLevel.sendParticles(ParticleTypes.FLAME, this.getX() + d1 * 0.1D, this.getY() + 0.3D, this.getZ() + d3 * 0.1D, 0, d1, d2, d3, 0.5F);
                 }
             }
-            if (this.level.getGameRules().getBoolean(GameRules.RULE_DOMOBLOOT)) {
+            if (this.level().getGameRules().getBoolean(GameRules.RULE_DOMOBLOOT)) {
                 ModLootTables.createLootChest(this,
                         ModBlocks.LOFTY_CHEST.get().defaultBlockState(),
                         this.blockPosition(),
@@ -114,7 +114,7 @@ public class WitherNecromancer extends AbstractWitherNecromancer implements Enem
         if (pSource.getEntity() != null){
             if (pSource.getEntity() instanceof LivingEntity livingEntity){
                 if (!(livingEntity instanceof WitherSkeleton) && !livingEntity.isAlliedTo(this)){
-                    for (WitherSkeleton witherSkeleton : this.level.getEntitiesOfClass(WitherSkeleton.class, this.getBoundingBox().inflate(10))){
+                    for (WitherSkeleton witherSkeleton : this.level().getEntitiesOfClass(WitherSkeleton.class, this.getBoundingBox().inflate(10))){
                         if (witherSkeleton.getTarget() != livingEntity) {
                             if (witherSkeleton.canAttack(livingEntity)) {
                                 witherSkeleton.setTarget(livingEntity);

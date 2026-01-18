@@ -26,6 +26,7 @@ import net.minecraft.world.entity.projectile.AbstractHurtingProjectile;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.GameRules;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
@@ -62,7 +63,7 @@ public class HauntedSkullProjectile extends ExplosiveProjectile {
 
     public void tick() {
         super.tick();
-        if (this.level.isClientSide) {
+        if (this.level().isClientSide) {
             Vec3 vector3d = this.getDeltaMovement();
             double d0 = this.getX() + vector3d.x;
             double d1 = this.getY() + vector3d.y;
@@ -73,15 +74,15 @@ public class HauntedSkullProjectile extends ExplosiveProjectile {
                 this.setAnimation(9);
             }
             for (int j = 0; j < 2; ++j) {
-                this.level.addParticle(ParticleTypes.SOUL_FIRE_FLAME, d0 + this.random.nextGaussian() * (double) 0.3F,
+                this.level().addParticle(ParticleTypes.SOUL_FIRE_FLAME, d0 + this.random.nextGaussian() * (double) 0.3F,
                         d1 + this.random.nextGaussian() * (double) 0.3F,
                         d2 + this.random.nextGaussian() * (double) 0.3F, 0.0D, 0.0D, 0.0D);
             }
         } else {
             if (this.isUpgraded()) {
-                this.level.broadcastEntityEvent(this, (byte) 4);
+                this.level().broadcastEntityEvent(this, (byte) 4);
             } else {
-                this.level.broadcastEntityEvent(this, (byte) 5);
+                this.level().broadcastEntityEvent(this, (byte) 5);
             }
         }
     }
@@ -100,7 +101,7 @@ public class HauntedSkullProjectile extends ExplosiveProjectile {
 
     protected void onHitEntity(EntityHitResult pResult) {
         super.onHitEntity(pResult);
-        if (!this.level.isClientSide) {
+        if (!this.level().isClientSide) {
             Entity target = pResult.getEntity();
             Entity owner = this.getOwner();
             boolean flag;
@@ -120,7 +121,7 @@ public class HauntedSkullProjectile extends ExplosiveProjectile {
                 }
                 if (flag) {
                     if (target.isAlive()) {
-                        this.doEnchantDamageEffects(livingentity, target);
+                        // this.doEnchantDamageEffects(livingentity, target);
                         if (flaming != 0) {
                             target.igniteForSeconds(5 * flaming);
                         }
@@ -164,14 +165,14 @@ public class HauntedSkullProjectile extends ExplosiveProjectile {
     }
 
     public void explode() {
-        if (!this.level.isClientSide) {
+        if (!this.level().isClientSide) {
             Entity owner = this.getOwner();
             boolean flaming = this.getFiery() > 0;
             boolean loot = false;
             if (owner instanceof Player player) {
                 if (CuriosFinder.findRing(player).getItem() == ModItems.RING_OF_WANT.get()) {
                     if (CuriosFinder.findRing(player).isEnchanted()) {
-                        float wanting = EnchantmentHelper.getTagEnchantmentLevel(ModEnchantments.WANTING.get(),
+                        float wanting = EnchantmentHelper.getItemEnchantmentLevel(ModEnchantments.WANTING,
                                 CuriosFinder.findRing(player));
                         if (wanting > 0) {
                             loot = true;
@@ -184,7 +185,7 @@ public class HauntedSkullProjectile extends ExplosiveProjectile {
             if (this.getOwner() instanceof Player) {
                 damaging = SpellConfig.HauntedSkullGriefing.get();
             } else {
-                damaging = this.level.getGameRules().getBoolean(GameRules.RULE_MOB_GRIEFING);
+                damaging = this.level().getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING);
             }
             if (!damaging) {
                 flaming = false;
@@ -197,7 +198,7 @@ public class HauntedSkullProjectile extends ExplosiveProjectile {
                 }
             }
             LootingExplosion.Mode lootMode = loot ? LootingExplosion.Mode.LOOT : LootingExplosion.Mode.REGULAR;
-            ExplosionUtil.lootExplode(this.level, this, this.getX(), this.getY(), this.getZ(), this.getExplosionPower(),
+            ExplosionUtil.lootExplode(this.level(), this, this.getX(), this.getY(), this.getZ(), this.getExplosionPower(),
                     flaming, explodeMode, lootMode);
             this.discard();
         }

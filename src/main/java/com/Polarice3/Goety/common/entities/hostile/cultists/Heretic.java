@@ -75,9 +75,9 @@ public class Heretic extends Cultist {
                 return GameEventListener.DeliveryMode.BY_DISTANCE;
             }
 
-            public boolean handleGameEvent(ServerLevel serverLevel, GameEvent p_282184_, GameEvent.Context p_283014_, Vec3 p_282350_) {
+            public boolean handleGameEvent(ServerLevel serverLevel, net.minecraft.core.Holder<GameEvent> p_282184_, GameEvent.Context p_283014_, Vec3 p_282350_) {
                 if (!Heretic.this.isRemoved()) {
-                    if (p_282184_ == GameEvent.ENTITY_DIE) {
+                    if (p_282184_.is(GameEvent.ENTITY_DIE)) {
                         Entity sourceEntity = p_283014_.sourceEntity();
                         if (sourceEntity instanceof Mob mob && !(mob instanceof IOwned) && !(mob instanceof Heretic)) {
                             Heretic.this.getConvokePos().add(mob.position());
@@ -115,10 +115,11 @@ public class Heretic extends Cultist {
         MobUtil.setBaseAttributes(this.getAttribute(Attributes.ATTACK_DAMAGE), AttributesConfig.HereticDamage.get());
     }
 
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.getEntityData().define(CHANTING, false);
-        this.getEntityData().define(CASTING, false);
+    @Override
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(CHANTING, false);
+        builder.define(CASTING, false);
     }
 
     public void addAdditionalSaveData(CompoundTag pCompound) {
@@ -241,7 +242,7 @@ public class Heretic extends Cultist {
 
     @Override
     public void push(Entity p_21294_) {
-        if (!this.level.isClientSide) {
+        if (!this.level().isClientSide) {
             if (!this.isCasting() && this.tickCount >= 20) {
                 super.push(p_21294_);
             }
@@ -249,7 +250,7 @@ public class Heretic extends Cultist {
     }
 
     protected void doPush(Entity p_20971_) {
-        if (!this.level.isClientSide) {
+        if (!this.level().isClientSide) {
             if (!this.isCasting() && this.tickCount >= 20) {
                 super.doPush(p_20971_);
             }
@@ -272,7 +273,7 @@ public class Heretic extends Cultist {
     @Override
     public void tick() {
         super.tick();
-        if (!this.level.isClientSide){
+        if (!this.level().isClientSide){
             if (this.chantCoolDown > 0){
                 --this.chantCoolDown;
             }
@@ -283,7 +284,7 @@ public class Heretic extends Cultist {
                 if (this.getLeader() instanceof ObsidianMonolith obsidianMonolith){
                     this.setMonolith(obsidianMonolith);
                 } else {
-                    for (ObsidianMonolith monolith1 : this.level.getEntitiesOfClass(ObsidianMonolith.class, this.getBoundingBox().inflate(64.0D, 8.0D, 64.0D))){
+                    for (ObsidianMonolith monolith1 : this.level().getEntitiesOfClass(ObsidianMonolith.class, this.getBoundingBox().inflate(64.0D, 8.0D, 64.0D))){
                         if (monolith1.getTrueOwner() == null || monolith1.getTrueOwner() instanceof Cultist){
                             this.setMonolith(monolith1);
                         }
@@ -306,7 +307,7 @@ public class Heretic extends Cultist {
     public void aiStep() {
         super.aiStep();
         if (this.random.nextFloat() < 7.5E-4F) {
-            this.level.broadcastEntityEvent(this, (byte)15);
+            this.level().broadcastEntityEvent(this, (byte)15);
         }
     }
 
@@ -355,7 +356,7 @@ public class Heretic extends Cultist {
         } else if (pId == 15) {
             for(int i = 0; i < this.random.nextInt(35) + 10; ++i) {
                 ColorUtil colorUtil = new ColorUtil(ChatFormatting.DARK_PURPLE);
-                this.level.addParticle(ModParticleTypes.RISING_ENCHANT.get(), this.getX() + this.random.nextGaussian() * (double)0.13F, this.getBoundingBox().maxY + 0.5D + this.random.nextGaussian() * (double)0.13F, this.getZ() + this.random.nextGaussian() * (double)0.13F, colorUtil.red(), colorUtil.green(), colorUtil.blue());
+                this.level().addParticle(ModParticleTypes.RISING_ENCHANT.get(), this.getX() + this.random.nextGaussian() * (double)0.13F, this.getBoundingBox().maxY + 0.5D + this.random.nextGaussian() * (double)0.13F, this.getZ() + this.random.nextGaussian() * (double)0.13F, colorUtil.red(), colorUtil.green(), colorUtil.blue());
             }
         } else {
             super.handleEntityEvent(pId);
@@ -396,7 +397,7 @@ public class Heretic extends Cultist {
             this.chantTime = 0;
             this.heretic.getNavigation().stop();
             this.heretic.setChanting(true);
-            this.heretic.level.broadcastEntityEvent(this.heretic, (byte) 4);
+            this.heretic.level().broadcastEntityEvent(this.heretic, (byte) 4);
             this.heretic.setChantTimes(0);
             this.heretic.playSound(ModSounds.HERETIC_CHANT.get(), 2.0F, 0.5F);
         }
@@ -405,7 +406,7 @@ public class Heretic extends Cultist {
         public void stop() {
             super.stop();
             this.heretic.setChanting(false);
-            this.heretic.level.broadcastEntityEvent(this.heretic, (byte) 5);
+            this.heretic.level().broadcastEntityEvent(this.heretic, (byte) 5);
             this.heretic.setChantCoolDown(100);
             this.heretic.setChantTimes(0);
         }
@@ -419,14 +420,14 @@ public class Heretic extends Cultist {
                 MobUtil.instaLook(this.heretic, this.heretic.getTarget());
             }
             if (this.chantTime % 10 == 0) {
-                HellChant hellChant = ModEntityType.HELL_CHANT.get().create(this.heretic.level);
+                HellChant hellChant = ModEntityType.HELL_CHANT.get().create(this.heretic.level());
                 if (hellChant != null) {
                     hellChant.setExtraDamage(3.0F);
-                    if (this.heretic.level.getDifficulty() == Difficulty.HARD){
+                    if (this.heretic.level().getDifficulty() == Difficulty.HARD){
                         hellChant.setBurning(1);
                     }
                     hellChant.chant(this.heretic);
-                    this.heretic.level.addFreshEntity(hellChant);
+                    this.heretic.level().addFreshEntity(hellChant);
                 }
             }
             super.tick();
@@ -473,7 +474,7 @@ public class Heretic extends Cultist {
         public void stop() {
             super.stop();
             this.heretic.setCasting(false);
-            this.heretic.level.broadcastEntityEvent(this.heretic, (byte) 7);
+            this.heretic.level().broadcastEntityEvent(this.heretic, (byte) 7);
         }
 
         public void findTargetPos(){
@@ -500,7 +501,7 @@ public class Heretic extends Cultist {
                 try {
                     if (this.targetPos != null) {
                         try {
-                            for (Heretic heretic1 : this.heretic.level.getEntitiesOfClass(Heretic.class, this.heretic.getBoundingBox().inflate(this.heretic.getAttributeValue(Attributes.FOLLOW_RANGE)))){
+                            for (Heretic heretic1 : this.heretic.level().getEntitiesOfClass(Heretic.class, this.heretic.getBoundingBox().inflate(this.heretic.getAttributeValue(Attributes.FOLLOW_RANGE)))){
                                 if (heretic1 != this.heretic) {
                                     if (!heretic1.getConvokePos().isEmpty()) {
                                         heretic1.getConvokePos().remove(this.targetPos);
@@ -520,7 +521,7 @@ public class Heretic extends Cultist {
         @Override
         public void tick() {
             if (this.targetPos != null) {
-                if (this.heretic.level instanceof ServerLevel serverLevel) {
+                if (this.heretic.level() instanceof ServerLevel serverLevel) {
                     ColorUtil colorUtil = new ColorUtil(ChatFormatting.DARK_PURPLE);
                     ServerParticleUtil.circularParticles(serverLevel, ModParticleTypes.RISING_ENCHANT.get(), this.targetPos.x, this.targetPos.y, this.targetPos.z, colorUtil.red, colorUtil.green, colorUtil.blue, 1.0F);
                 }
@@ -532,19 +533,19 @@ public class Heretic extends Cultist {
                     ++this.castingTime;
                     if (!this.heretic.isCasting()){
                         this.heretic.setCasting(true);
-                        this.heretic.level.broadcastEntityEvent(this.heretic, (byte) 6);
+                        this.heretic.level().broadcastEntityEvent(this.heretic, (byte) 6);
                     }
                     if (this.castingTime == TOTAL_CAST_TIME){
-                        Summoned summon = new ZPiglinServant(ModEntityType.ZPIGLIN_SERVANT.get(), this.heretic.level);
+                        Summoned summon = new ZPiglinServant(ModEntityType.ZPIGLIN_SERVANT.get(), this.heretic.level());
                         if (this.heretic.random.nextFloat() <= 0.25F){
-                            summon = new MagmaCubeServant(ModEntityType.MAGMA_CUBE_SERVANT.get(), this.heretic.level);
+                            summon = new MagmaCubeServant(ModEntityType.MAGMA_CUBE_SERVANT.get(), this.heretic.level());
                         } else if (this.heretic.random.nextFloat() <= 0.05F){
-                            summon = new BlazeServant(ModEntityType.BLAZE_SERVANT.get(), this.heretic.level);
+                            summon = new BlazeServant(ModEntityType.BLAZE_SERVANT.get(), this.heretic.level());
                         }
                         summon.moveTo(this.targetPos);
                         summon.setTrueOwner(this.heretic);
-                        if (this.heretic.level instanceof ServerLevel serverLevel) {
-                            summon.finalizeSpawn(serverLevel, this.heretic.level.getCurrentDifficultyAt(BlockPos.containing(this.targetPos)), MobSpawnType.MOB_SUMMONED, null, null);
+                        if (this.heretic.level() instanceof ServerLevel serverLevel) {
+                            summon.finalizeSpawn(serverLevel, this.heretic.level().getCurrentDifficultyAt(BlockPos.containing(this.targetPos)), MobSpawnType.MOB_SUMMONED, null);
                             ServerParticleUtil.addParticlesAroundMiddleSelf(serverLevel, ParticleTypes.FLAME, summon);
                         }
                         if (summon instanceof MagmaCubeServant cube){
@@ -554,7 +555,7 @@ public class Heretic extends Cultist {
                             summon.setTarget(this.heretic.getTarget());
                         }
                         summon.setLimitedLife(MathHelper.minecraftDayToTicks(5));
-                        if (this.heretic.level.addFreshEntity(summon)){
+                        if (this.heretic.level().addFreshEntity(summon)){
                             summon.playSound(ModSounds.SUMMON_SPELL_FIERY.get(), 1.0F, 1.0F);
                             this.heretic.getConvokePos().remove(this.targetPos);
                             this.heretic.setCastCoolDown(100);
@@ -628,9 +629,9 @@ public class Heretic extends Cultist {
             d0 = d0 / d3;
             d1 = d1 / d3;
             d2 = d2 / d3;
-            double d4 = pSource.level.random.nextDouble();
-            if (!pSource.level.isClientSide) {
-                ServerLevel serverWorld = (ServerLevel) pSource.level;
+            double d4 = pSource.level().random.nextDouble();
+            if (!pSource.level().isClientSide) {
+                ServerLevel serverWorld = (ServerLevel) pSource.level();
                 while (d4 < d3) {
                     d4 += 0.5D;
                     serverWorld.sendParticles(ModParticleTypes.CHANT.get(), pSource.getX() + d0 * d4, pSource.getY() + d1 * d4 + (double) pSource.getEyeHeight(), pSource.getZ() + d2 * d4, 1, 0.0D, 0.0D, 0.0D, 0.0D);

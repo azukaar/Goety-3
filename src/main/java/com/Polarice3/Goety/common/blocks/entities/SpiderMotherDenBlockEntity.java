@@ -26,10 +26,10 @@ public class SpiderMotherDenBlockEntity extends ModBlockEntity{
     }
 
     public void tick(){
-        if (this.level == null){
+        if (this.getLevel() == null){
             return;
         }
-        if (this.level instanceof ServerLevel serverLevel) {
+        if (this.getLevel() instanceof ServerLevel serverLevel) {
             if (this.isNearPlayer(serverLevel, this.worldPosition) && serverLevel.isLoaded(this.worldPosition)) {
                 if (this.spawnDelay == -1) {
                     this.delay(serverLevel);
@@ -54,7 +54,7 @@ public class SpiderMotherDenBlockEntity extends ModBlockEntity{
                                         this.delay(serverLevel);
                                         return;
                                     }
-                                    int k = this.level.getEntitiesOfClass(entity.getClass(), (new AABB((double) this.worldPosition.getX(), (double) this.worldPosition.getY(), (double) this.worldPosition.getZ(), this.worldPosition.getX() + 1, this.worldPosition.getY() + 1, this.worldPosition.getZ() + 1)).inflate(4.0D)).size();
+                                    int k = this.getLevel().getEntitiesOfClass(entity.getClass(), (new AABB((double) this.worldPosition.getX(), (double) this.worldPosition.getY(), (double) this.worldPosition.getZ(), this.worldPosition.getX() + 1, this.worldPosition.getY() + 1, this.worldPosition.getZ() + 1)).inflate(4.0D)).size();
                                     if (k >= 6) {
                                         this.delay(serverLevel);
                                         return;

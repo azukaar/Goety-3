@@ -42,42 +42,42 @@ public class HoleBlockEntity extends SaveBlockEntity{
     }
 
     public void tick() {
-        if (this.level == null){
+        if (this.getLevel() == null){
             return;
         }
-        if (this.level.isClientSide){
+        if (this.getLevel().isClientSide){
             for (int a = 0; a < 2; ++a) {
                 this.sparkle();
             }
         }
-        if (!this.level.isClientSide) {
+        if (!this.getLevel().isClientSide) {
             if (this.life == 0 && this.count > 1 && this.direction != null) {
                 int j = this.radius >> 1;
                 switch (this.direction.getAxis()) {
                     case Y -> {
                         for (int i = 0; i < Mth.square(this.radius); ++i) {
                             if (i / this.radius != j || i % this.radius != j) {
-                                TunnelSpell.createHole(this.level, this.getBlockPos().offset(-j + i / this.radius, 0, -j + i % this.radius), null, 1, this.radius >= 5, this.lifespan);
+                                TunnelSpell.createHole(this.getLevel(), this.getBlockPos().offset(-j + i / this.radius, 0, -j + i % this.radius), null, 1, this.radius >= 5, this.lifespan);
                             }
                         }
                     }
                     case Z -> {
                         for (int i = 0; i < Mth.square(this.radius); ++i) {
                             if (i / this.radius != j || i % this.radius != j) {
-                                TunnelSpell.createHole(this.level, this.getBlockPos().offset(-j + i / this.radius, -j + i % this.radius, 0), null, 1, this.radius >= 5, this.lifespan);
+                                TunnelSpell.createHole(this.getLevel(), this.getBlockPos().offset(-j + i / this.radius, -j + i % this.radius, 0), null, 1, this.radius >= 5, this.lifespan);
                             }
                         }
                     }
                     case X -> {
                         for (int i = 0; i < Mth.square(this.radius); ++i) {
                             if (i / this.radius != j || i % this.radius != j) {
-                                TunnelSpell.createHole(this.level, this.getBlockPos().offset(0, -j + i / this.radius, -j + i % this.radius), null, 1, this.radius >= 5, this.lifespan);
+                                TunnelSpell.createHole(this.getLevel(), this.getBlockPos().offset(0, -j + i / this.radius, -j + i % this.radius), null, 1, this.radius >= 5, this.lifespan);
                             }
                         }
                     }
                 }
                 if (this.count > 2) {
-                    if (!TunnelSpell.createHole(this.level, this.getBlockPos().relative(this.direction.getOpposite()), this.direction, this.count - 1, this.radius >= 5, this.lifespan)) {
+                    if (!TunnelSpell.createHole(this.getLevel(), this.getBlockPos().relative(this.direction.getOpposite()), this.direction, this.count - 1, this.radius >= 5, this.lifespan)) {
                         this.count = 0;
                     }
                 }
@@ -91,35 +91,35 @@ public class HoleBlockEntity extends SaveBlockEntity{
                 if (this.oldBlock != null) {
                     blockState = this.oldBlock;
                 }
-                this.level.setBlock(this.getBlockPos(), blockState, 3);
+                this.getLevel().setBlock(this.getBlockPos(), blockState, 3);
             }
         }
     }
 
     public boolean shouldRenderFace(Direction direction) {
-        if (this.level == null){
+        if (this.getLevel() == null){
             return false;
         }
         BlockPos blockPos = this.getBlockPos().relative(direction);
-        BlockState blockState = this.level.getBlockState(blockPos);
+        BlockState blockState = this.getLevel().getBlockState(blockPos);
         return !blockState.isAir()
                 && !(blockState.getBlock() instanceof HoleBlock)
-                && blockState.isSolidRender(this.level, blockPos);
+                && blockState.isSolidRender(this.getLevel(), blockPos);
     }
 
     private void sparkle() {
-        if (this.level == null){
+        if (this.getLevel() == null){
             return;
         }
         for (Direction direction : Direction.values()) {
             BlockPos blockPos = this.getBlockPos().relative(direction);
-            BlockState blockState = this.level.getBlockState(this.getBlockPos().relative(direction));
-            if (blockState.getBlock() != ModBlocks.HOLE.get() && !blockState.isSolidRender(this.level, blockPos)) {
+            BlockState blockState = this.getLevel().getBlockState(this.getBlockPos().relative(direction));
+            if (blockState.getBlock() != ModBlocks.HOLE.get() && !blockState.isSolidRender(this.getLevel(), blockPos)) {
                 for (Direction direction1 : Direction.values()) {
                     BlockPos blockPos1 = this.getBlockPos().relative(direction1);
                     if (direction.getAxis() != direction1.getAxis()
-                            && (this.level.getBlockState(blockPos1).isSolidRender(this.level, blockPos1)
-                            || this.level.getBlockState(blockPos.relative(direction1)).isSolidRender(this.level, blockPos.relative(direction1)))) {
+                            && (this.getLevel().getBlockState(blockPos1).isSolidRender(this.getLevel(), blockPos1)
+                            || this.getLevel().getBlockState(blockPos.relative(direction1)).isSolidRender(this.getLevel(), blockPos.relative(direction1)))) {
                         float x = 0.5F * direction.getStepX();
                         float y = 0.5F * direction.getStepY();
                         float z = 0.5F * direction.getStepZ();
@@ -133,25 +133,25 @@ public class HoleBlockEntity extends SaveBlockEntity{
                             z = 0.5F * direction1.getStepZ();
                         }
                         if (x == 0.0F) {
-                            x = this.level.random.nextFloat();
+                            x = this.getLevel().random.nextFloat();
                         } else {
                             x += 0.5F;
                         }
                         if (y == 0.0F) {
-                            y = this.level.random.nextFloat();
+                            y = this.getLevel().random.nextFloat();
                         } else {
                             y += 0.5F;
                         }
                         if (z == 0.0F) {
-                            z = this.level.random.nextFloat();
+                            z = this.getLevel().random.nextFloat();
                         } else {
                             z += 0.5F;
                         }
-                        if (this.level.random.nextInt(6) == 0){
+                        if (this.getLevel().random.nextInt(6) == 0){
                             float[] color = MathHelper.rgbFloat(0x355b9e);
-                            this.level.addParticle(new SparkleParticleOption(0.6F + this.level.random.nextFloat() * 0.2F,
+                            this.getLevel().addParticle(new SparkleParticleOption(0.6F + this.getLevel().random.nextFloat() * 0.2F,
                                             color[0], color[1], color[2],
-                                    6 + this.level.random.nextInt(4)),
+                                    6 + this.getLevel().random.nextInt(4)),
                                     this.getBlockPos().getX() + x,
                                     this.getBlockPos().getY() + y,
                                     this.getBlockPos().getZ() + z, 0.0D, 0.0D, 0.0D);

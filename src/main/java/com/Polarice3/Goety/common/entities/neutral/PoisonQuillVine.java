@@ -174,7 +174,7 @@ public class PoisonQuillVine extends AbstractVine {
 
     public void onSyncedDataUpdated(EntityDataAccessor<?> accessor) {
         if (ANIM_STATE.equals(accessor)) {
-            if (this.level.isClientSide) {
+            if (this.level().isClientSide) {
                 switch (this.entityData.get(ANIM_STATE)) {
                     case 0:
                         break;
@@ -226,8 +226,8 @@ public class PoisonQuillVine extends AbstractVine {
 
     @Nullable
     public SpawnGroupData finalizeSpawn(ServerLevelAccessor pLevel, DifficultyInstance pDifficulty,
-            MobSpawnType pReason, @Nullable SpawnGroupData pSpawnData, @Nullable CompoundTag pDataTag) {
-        pSpawnData = super.finalizeSpawn(pLevel, pDifficulty, pReason, pSpawnData, pDataTag);
+            MobSpawnType pReason, @Nullable SpawnGroupData pSpawnData) {
+        pSpawnData = super.finalizeSpawn(pLevel, pDifficulty, pReason, pSpawnData);
         if (pReason != MobSpawnType.MOB_SUMMONED) {
             this.setPerpetual(true);
         }
@@ -303,7 +303,7 @@ public class PoisonQuillVine extends AbstractVine {
     }
 
     public void shootQuill(@NotNull LivingEntity target) {
-        PoisonQuill quill = new PoisonQuill(this.level, this);
+        PoisonQuill quill = new PoisonQuill(this.level(), this);
         Vec3 vector3d = this.getViewVector(1.0F);
         quill.setPos(this.getX() + vector3d.x,
                 this.getEyeY(),
@@ -313,7 +313,7 @@ public class PoisonQuillVine extends AbstractVine {
         double d2 = target.getZ() - this.getZ();
         double d3 = Mth.sqrt((float) (d0 * d0 + d2 * d2));
         quill.shoot(d0, d1 + d3 * (double) 0.2F, d2, 1.6F, 1.0F);
-        if (this.level.addFreshEntity(quill)) {
+        if (this.level().addFreshEntity(quill)) {
             this.playSound(ModSounds.POISON_QUILL_VINE_SHOOT.get());
         }
     }
@@ -330,7 +330,7 @@ public class PoisonQuillVine extends AbstractVine {
     @Override
     public void aiStep() {
         super.aiStep();
-        if (!this.level.isClientSide) {
+        if (!this.level().isClientSide) {
             if (this.getCurrentAnimation() == this.getAnimationState("target")) {
                 if (this.getTarget() == null) {
                     this.setAnimationState("close");

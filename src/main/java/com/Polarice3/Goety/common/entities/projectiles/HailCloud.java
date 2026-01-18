@@ -34,7 +34,7 @@ public class HailCloud extends AbstractSpellCloud{
         if (pTarget != null){
             BlockPos.MutableBlockPos blockpos$mutable = new BlockPos.MutableBlockPos(pTarget.getX(), pTarget.getY(), pTarget.getZ());
 
-            while(blockpos$mutable.getY() < pTarget.getY() + 4.0D && !this.level.getBlockState(blockpos$mutable).blocksMotion()) {
+            while(blockpos$mutable.getY() < pTarget.getY() + 4.0D && !this.level().getBlockState(blockpos$mutable).blocksMotion()) {
                 blockpos$mutable.move(Direction.UP);
             }
             this.setPos(pTarget.getX(), blockpos$mutable.getY(), pTarget.getZ());
@@ -45,10 +45,10 @@ public class HailCloud extends AbstractSpellCloud{
     @Override
     public void tick() {
         super.tick();
-        if (!this.level.isClientSide) {
+        if (!this.level().isClientSide) {
             if (this.isStaff()) {
                 if (this.getTarget() == null) {
-                    for (Entity entity : this.level.getEntitiesOfClass(Entity.class, this.getBoundingBox().inflate(16.0F))) {
+                    for (Entity entity : this.level().getEntitiesOfClass(Entity.class, this.getBoundingBox().inflate(16.0F))) {
                         LivingEntity livingEntity = MobUtil.getLivingTarget(entity);
                         if (livingEntity != null) {
                             if (MobUtil.ownedPredicate(this).test(livingEntity)){

@@ -242,7 +242,7 @@ public class Trampler extends Raider implements ICharger, ICustomAttributes {
     }
 
     public void setArmorEquipment(ItemStack armor) {
-        if (!this.level.isClientSide) {
+        if (!this.level().isClientSide) {
             this.setItemSlot(EquipmentSlot.CHEST, armor);
             this.setDropChance(EquipmentSlot.CHEST, 0.0F);
             this.updateArmor();
@@ -308,7 +308,7 @@ public class Trampler extends Raider implements ICharger, ICustomAttributes {
 
     public void tick() {
         super.tick();
-        if (this.level.isClientSide) {
+        if (this.level().isClientSide) {
             if (this.clientSideStandAnimation != this.clientSideStandAnimationO) {
                 this.refreshDimensions();
             }
@@ -355,16 +355,16 @@ public class Trampler extends Raider implements ICharger, ICustomAttributes {
                 this.walkAnimation.setSpeed(this.walkAnimation.speed() + 0.8F);
             }
 
-            if (this.horizontalCollision && this.level.getGameRules().getBoolean(GameRules.RULE_MOB_GRIEFING)) {
+            if (this.horizontalCollision && this.level().getGameRules().getBoolean(GameRules.RULE_MOB_GRIEFING)) {
                 boolean flag = false;
                 AABB aabb = this.getBoundingBox().inflate(0.2D);
 
                 for (BlockPos blockpos : BlockPos.betweenClosed(Mth.floor(aabb.minX), Mth.floor(aabb.minY),
                         Mth.floor(aabb.minZ), Mth.floor(aabb.maxX), Mth.floor(aabb.maxY), Mth.floor(aabb.maxZ))) {
-                    BlockState blockstate = this.level.getBlockState(blockpos);
+                    BlockState blockstate = this.level().getBlockState(blockpos);
                     Block block = blockstate.getBlock();
                     if (block instanceof CropBlock) {
-                        flag = this.level.destroyBlock(blockpos, true, this) || flag;
+                        flag = this.level().destroyBlock(blockpos, true, this) || flag;
                     }
                 }
 

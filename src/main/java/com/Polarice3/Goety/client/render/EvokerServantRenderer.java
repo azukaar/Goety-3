@@ -14,7 +14,7 @@ import net.minecraft.resources.ResourceLocation;
 
 public class EvokerServantRenderer<T extends EvokerServant> extends MobRenderer<T, IllagerServantModel<T>> {
     protected static final ResourceLocation TEXTURE = Goety.location("textures/entity/servants/illager/evoker.png");
-    protected static final ResourceLocation ORIGINAL = new ResourceLocation("textures/entity/illager/evoker.png");
+    protected static final ResourceLocation ORIGINAL = ResourceLocation.fromNamespaceAndPath("minecraft", "textures/entity/illager/evoker.png");
 
     public EvokerServantRenderer(EntityRendererProvider.Context renderManagerIn) {
         super(renderManagerIn, new IllagerServantModel<>(renderManagerIn.bakeLayer(ModModelLayer.ILLAGER_SERVANT)), 0.5F);

@@ -77,7 +77,7 @@ public class MagicLightningTrap extends AbstractTrap {
     }
 
     public void setRadius(float p_19713_) {
-        if (!this.level.isClientSide) {
+        if (!this.level().isClientSide) {
             this.getEntityData().set(DATA_RADIUS, Mth.clamp(p_19713_, 0.0F, 32.0F));
         }
     }
@@ -111,14 +111,14 @@ public class MagicLightningTrap extends AbstractTrap {
 
     public void aoeIndicate() {
         float size = this.radius() * 2.0F;
-        if (this.level instanceof ServerLevel serverLevel) {
+        if (this.level() instanceof ServerLevel serverLevel) {
             ColorUtil colorUtil = new ColorUtil(ChatFormatting.WHITE);
             serverLevel.sendParticles(new AoEParticleOption(size, size / this.getDuration(), 0.0F, this.getDuration()), this.getX(), this.getY() + 0.1F, this.getZ(), 0, colorUtil.red(), colorUtil.green(), colorUtil.blue(), 1.0F);
         }
     }
 
     public void damageEntities() {
-        List<Entity> list1 = this.level.getEntities(this, new AABB(this.getX() - 3.0D, this.getY() - 3.0D, this.getZ() - 3.0D, this.getX() + 3.0D, this.getY() + 6.0D + 3.0D, this.getZ() + 3.0D), this::canHitEntity);
+        List<Entity> list1 = this.level().getEntities(this, new AABB(this.getX() - 3.0D, this.getY() - 3.0D, this.getZ() - 3.0D, this.getX() + 3.0D, this.getY() + 6.0D + 3.0D, this.getZ() + 3.0D), this::canHitEntity);
         for(Entity entity : list1) {
             if (entity instanceof LivingEntity livingEntity) {
                 if (EntitySelector.NO_CREATIVE_OR_SPECTATOR.test(livingEntity)) {
@@ -145,29 +145,29 @@ public class MagicLightningTrap extends AbstractTrap {
 
     public void hurtEffect(LivingEntity livingEntity) {
         float chance = 0.25F;
-        if (this.level.isThundering() && this.level.isRainingAt(livingEntity.blockPosition())){
+        if (this.level().isThundering() && this.level().isRainingAt(livingEntity.blockPosition())){
             chance += 0.25F;
         }
-        if (this.level.getRandom().nextFloat() <= chance){
+        if (this.level().getRandom().nextFloat() <= chance){
             livingEntity.addEffect(new MobEffectInstance(GoetyEffects.SPASMS.get(), MathHelper.secondsToTicks(5)));
         }
     }
 
     public void finalizeAttack(){
-        if (this.level instanceof ServerLevel serverLevel) {
+        if (this.level() instanceof ServerLevel serverLevel) {
             ColorUtil colorUtil = new ColorUtil(this.getColor());
             serverLevel.sendParticles(new CircleExplodeParticleOption(colorUtil.red, colorUtil.green, colorUtil.blue, 3.0F, 1), this.getX(), this.getY(), this.getZ(), 1, 0.0D, 0.0D, 0.0D, 0.0D);
             serverLevel.sendParticles(new VerticalCircleExplodeParticleOption(colorUtil.red, colorUtil.green, colorUtil.blue, 3.0F, 1), this.getX(), this.getY(), this.getZ(), 1, 0.0D, 0.0D, 0.0D, 0.0D);
             ModNetwork.sendToALL(new SLightningBoltPacket(new Vec3(this.getX(), this.getY() + 250, this.getZ()), this.position(), colorUtil, 10));
             for (int i = 0; i < 8; ++i) {
-                Vec3 vector3d1 = this.position().add((this.level.getRandom().nextFloat() - 0.5F) * 6.0D, 3.0D, (this.level.getRandom().nextFloat() - 0.5F) * 6.0D);
+                Vec3 vector3d1 = this.position().add((this.level().getRandom().nextFloat() - 0.5F) * 6.0D, 3.0D, (this.level().getRandom().nextFloat() - 0.5F) * 6.0D);
                 serverLevel.sendParticles(new GatherTrailParticle.Option(colorUtil, vector3d1), this.getX(), this.getY(), this.getZ(), 0, 0.0F, 0.0F, 0.0F, 0.5F);
             }
             for (int i = 0; i < 16; ++i) {
                 Vec3 vec3 = this.position().add(0.0D, 1.0D, 0.0D);
-                int random1 = this.level.getRandom().nextIntBetweenInclusive(-4, 4);
-                int random2 = this.level.getRandom().nextIntBetweenInclusive(-4, 4);
-                Vec3 vec31 = vec3.add(this.level.getRandom().nextDouble() * random1, this.level.getRandom().nextDouble(), this.level.getRandom().nextDouble() * random2);
+                int random1 = this.level().getRandom().nextIntBetweenInclusive(-4, 4);
+                int random2 = this.level().getRandom().nextIntBetweenInclusive(-4, 4);
+                Vec3 vec31 = vec3.add(this.level().getRandom().nextDouble() * random1, this.level().getRandom().nextDouble(), this.level().getRandom().nextDouble() * random2);
                 ModNetwork.sendToALL(new SLightningPacket(vec3, vec31, colorUtil, 12));
             }
         }

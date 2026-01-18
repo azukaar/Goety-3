@@ -257,7 +257,7 @@ public abstract class AbstractSpiderServant extends Spider
 
     @Nullable
     @Override
-    public Team getTeam() {
+    public PlayerTeam getTeam() {
         if (this.getTrueOwner() != null) {
             return this.getTrueOwner().getTeam();
         }

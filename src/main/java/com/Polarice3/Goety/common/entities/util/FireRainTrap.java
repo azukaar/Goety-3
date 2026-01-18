@@ -59,21 +59,21 @@ public class FireRainTrap extends AbstractTrap {
         super.tick();
         BlockPos.MutableBlockPos blockpos$mutable = new BlockPos.MutableBlockPos(this.getX(), this.getY(), this.getZ());
 
-        while(blockpos$mutable.getY() < this.getY() + 32.0D && !this.level.getBlockState(blockpos$mutable).blocksMotion()) {
+        while(blockpos$mutable.getY() < this.getY() + 32.0D && !this.level().getBlockState(blockpos$mutable).blocksMotion()) {
             blockpos$mutable.move(Direction.UP);
         }
         if (this.getOwner() != null) {
             AbstractHurtingProjectile fireballEntity;
             if (this.isHellfire()){
-                fireballEntity = new HellBolt(this.getOwner(), 0, -900D, 0, this.level);
+                fireballEntity = new HellBolt(this.getOwner(), 0, -900D, 0, this.level());
             } else {
-                fireballEntity = new SmallFireball(this.level, this.getOwner(), 0, -900D, 0);
+                fireballEntity = new SmallFireball(this.level(), this.getOwner(), 0, -900D, 0);
             }
             fireballEntity.setPos(this.getX() + this.random.nextInt(5), blockpos$mutable.getY(), this.getZ() + this.random.nextInt(5));
             if (fireballEntity instanceof HellBolt hellBolt){
                 hellBolt.setRain(true);
             }
-            this.level.addFreshEntity(fireballEntity);
+            this.level().addFreshEntity(fireballEntity);
         } else {
             this.discard();
         }

@@ -107,20 +107,20 @@ public class ScatterBomb extends SpellThrowableProjectile {
 
     protected void onHit(HitResult p_37406_) {
         super.onHit(p_37406_);
-        if (!this.level.isClientSide) {
-            this.playSound(SoundEvents.GENERIC_EXPLODE, 4.0F, (1.0F + (this.level.random.nextFloat() - this.level.random.nextFloat()) * 0.2F) * 0.7F);
+        if (!this.level().isClientSide) {
+            this.playSound(SoundEvents.GENERIC_EXPLODE, 4.0F, (1.0F + (this.level().random.nextFloat() - this.level().random.nextFloat()) * 0.2F) * 0.7F);
             float damage = 12.5F;
             if (this.getOwner() instanceof Mob mob && mob.getAttribute(Attributes.ATTACK_DAMAGE) != null){
                 damage = (float) mob.getAttributeValue(Attributes.ATTACK_DAMAGE) / 2.0F;
             }
-            new SpellExplosion(this.level, this, this.damageSources().explosion(this, this.getOwner()), this.getX(), this.getY(), this.getZ(), 4.5F, damage){
+            new SpellExplosion(this.level(), this, this.damageSources().explosion(this, this.getOwner()), this.getX(), this.getY(), this.getZ(), 4.5F, damage){
                 @Override
                 public void explodeHurt(Entity target, DamageSource damageSource, double x, double y, double z, double seen, float actualDamage) {
                     super.explodeHurt(target, damageSource, x, y, z, seen, actualDamage);
                     target.invulnerableTime = 15;
                 }
             };
-            if (this.level instanceof ServerLevel serverLevel) {
+            if (this.level() instanceof ServerLevel serverLevel) {
                 ServerParticleUtil.addParticlesAroundSelf(serverLevel, ModParticleTypes.BIG_FIRE.get(), this);
                 ServerParticleUtil.addAuraParticles(serverLevel, ModParticleTypes.BIG_FIRE_GROUND.get(), this, 2.0F);
                 ColorUtil colorUtil = new ColorUtil(0xffe183);

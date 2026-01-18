@@ -107,7 +107,7 @@ public class Spike extends GroundProjectile {
 
     public void tick() {
         super.tick();
-        if (this.level.isClientSide) {
+        if (this.level().isClientSide) {
             if (this.sentTrapEvent) {
                 --this.lifeTicks;
                 if (this.animationTicks > 9) {
@@ -115,7 +115,7 @@ public class Spike extends GroundProjectile {
                 }
             }
         } else if (--this.warmupDelayTicks < 0) {
-            for (Entity entity : this.level.getEntitiesOfClass(Entity.class,
+            for (Entity entity : this.level().getEntitiesOfClass(Entity.class,
                     this.getBoundingBox().move(0.0F, 0.2F, 0.0F).inflate(0.1F, 0.0F, 0.1F))) {
                 LivingEntity livingEntity = MobUtil.getLivingTarget(entity);
                 if (livingEntity != null) {
@@ -124,12 +124,12 @@ public class Spike extends GroundProjectile {
             }
 
             if (!this.playSound) {
-                this.level.broadcastEntityEvent(this, (byte) 5);
+                this.level().broadcastEntityEvent(this, (byte) 5);
                 this.playSound = true;
             }
 
             if (!this.sentTrapEvent) {
-                this.level.broadcastEntityEvent(this, (byte) 4);
+                this.level().broadcastEntityEvent(this, (byte) 4);
                 this.sentTrapEvent = true;
             }
 
@@ -169,7 +169,7 @@ public class Spike extends GroundProjectile {
     public void handleEntityEvent(byte pId) {
         super.handleEntityEvent(pId);
         if (pId == 5) {
-            this.level.playLocalSound(this.getX(), this.getY(), this.getZ(), SoundEvents.GRINDSTONE_USE,
+            this.level().playLocalSound(this.getX(), this.getY(), this.getZ(), SoundEvents.GRINDSTONE_USE,
                     this.getSoundSource(), 1.0F, this.random.nextFloat() * 0.2F + 0.85F, false);
         }
     }

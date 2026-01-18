@@ -20,8 +20,8 @@ public class ArcaBlockEntity extends OwnedBlockEntity {
     public void tick() {
         ++this.tickCount;
         ++this.activeRotation;
-        if (this.level instanceof ServerLevel world) {
-            ChunkPos chunkPos = this.level.getChunkAt(this.worldPosition).getPos();
+        if (this.getLevel() instanceof ServerLevel world) {
+            ChunkPos chunkPos = this.getLevel().getChunkAt(this.worldPosition).getPos();
             if (--this.ticketTime <= 0L) {
                 world.getChunkSource().addRegionTicket(ModTicketTypes.BLOCK, chunkPos, 5, this.worldPosition);
                 this.ticketTime = ModTicketTypes.BLOCK.timeout() - 1L;
@@ -39,12 +39,12 @@ public class ArcaBlockEntity extends OwnedBlockEntity {
         }
         BlockPos blockpos = this.getBlockPos();
 
-        if (this.level != null) {
-            if (!this.level.isClientSide) {
-                ServerLevel serverWorld = (ServerLevel) this.level;
-                double d0 = (double) blockpos.getX() + this.level.random.nextDouble();
-                double d1 = (double) blockpos.getY() + this.level.random.nextDouble();
-                double d2 = (double) blockpos.getZ() + this.level.random.nextDouble();
+        if (this.getLevel() != null) {
+            if (!this.getLevel().isClientSide) {
+                ServerLevel serverWorld = (ServerLevel) this.getLevel();
+                double d0 = (double) blockpos.getX() + this.getLevel().random.nextDouble();
+                double d1 = (double) blockpos.getY() + this.getLevel().random.nextDouble();
+                double d2 = (double) blockpos.getZ() + this.getLevel().random.nextDouble();
                 for (int p = 0; p < 4; ++p) {
                     serverWorld.sendParticles(ParticleTypes.SOUL_FIRE_FLAME, d0, d1, d2, 1, 0, 0, 0, 0);
                     serverWorld.sendParticles(ParticleTypes.SMOKE, d0, d1, d2, 1, 0.0D, 5.0E-4D, 0.0D, 5.0E-4D);

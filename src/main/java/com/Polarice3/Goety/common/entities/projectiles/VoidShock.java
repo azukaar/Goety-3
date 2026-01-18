@@ -159,7 +159,7 @@ public class VoidShock extends SpellEntity {
         this.setXRot(MathHelper.lerpRotation(this.xRotO, (float)(Mth.atan2(vec3.y, d3) * (double)(180F / (float)Math.PI))));
         this.setYRot(MathHelper.lerpRotation(this.yRotO, (float)(Mth.atan2(vec3.x, vec3.z) * (double)(180F / (float)Math.PI))));
 
-        this.level.addParticle(ParticleTypes.PORTAL, d0 - vec3.x * 0.25D + this.random.nextDouble() * 0.6D - 0.3D, d1 - vec3.y * 0.25D - 0.5D, d2 - vec3.z * 0.25D + this.random.nextDouble() * 0.6D - 0.3D, vec3.x, vec3.y, vec3.z);
+        this.level().addParticle(ParticleTypes.PORTAL, d0 - vec3.x * 0.25D + this.random.nextDouble() * 0.6D - 0.3D, d1 - vec3.y * 0.25D - 0.5D, d2 - vec3.z * 0.25D + this.random.nextDouble() * 0.6D - 0.3D, vec3.x, vec3.y, vec3.z);
 
         Vec3 trailAt = this.position().add(0.0D, 0.0D, 0.0D);
         if (this.trailPointer == -1) {
@@ -174,7 +174,7 @@ public class VoidShock extends SpellEntity {
 
         ++this.life;
 
-        if (!this.level.isClientSide) {
+        if (!this.level().isClientSide) {
             this.setPos(d0, d1, d2);
             if (this.life >= this.initTime) {
                 if (!this.hasTarget) {
@@ -189,8 +189,8 @@ public class VoidShock extends SpellEntity {
                         this.yPower = -(dy / ds * velocity * 0.2D);
                         this.zPower = -(dz / ds * velocity * 0.2D);
                         this.hasTarget = true;
-                        this.level.broadcastEntityEvent(this, (byte) 4);
-                        if (this.level instanceof ServerLevel serverLevel) {
+                        this.level().broadcastEntityEvent(this, (byte) 4);
+                        if (this.level() instanceof ServerLevel serverLevel) {
                             ColorUtil colorUtil = new ColorUtil(0xffffff);
                             Vec3 vec31 = this.position();
                             serverLevel.sendParticles(new SparkleParticleOption(4.0F, colorUtil, 2), vec31.x, vec31.y, vec31.z, 0, 0.0F, 0.0F, 0.0F, 1.0F);
@@ -221,7 +221,7 @@ public class VoidShock extends SpellEntity {
                         }
                     }
                 }
-                if (this.level.isLoaded(this.blockPosition())) {
+                if (this.level().isLoaded(this.blockPosition())) {
                     HitResult hitresult = ProjectileUtil.getHitResultOnMoveVector(this, this::canHitEntity);
                     if (hitresult.getType() != HitResult.Type.MISS) {
                         this.onHit(hitresult);
@@ -248,7 +248,7 @@ public class VoidShock extends SpellEntity {
         if (pResult instanceof EntityHitResult entityHitResult && !this.isExplode()){
             this.onHitEntity(entityHitResult);
         }
-        if (this.level instanceof ServerLevel serverLevel){
+        if (this.level() instanceof ServerLevel serverLevel){
             if (this.isExplode()) {
                 Vec3 vec3 = Vec3.atCenterOf(this.blockPosition());
                 if (pResult instanceof BlockHitResult blockHitResult) {
@@ -265,9 +265,9 @@ public class VoidShock extends SpellEntity {
                     @Override
                     public void explodeHurt(Entity target, DamageSource damageSource, double x, double y, double z, double seen, float actualDamage) {
                         super.explodeHurt(target, damageSource, x, y, z, seen, actualDamage);
-                        if (target.level.getRandom().nextFloat() <= 0.25F) {
-                            if (target instanceof LivingEntity livingEntity && !livingEntity.hasEffect(GoetyEffects.VOID_TOUCHED.get())) {
-                                livingEntity.addEffect(new MobEffectInstance(GoetyEffects.VOID_TOUCHED.get(), MathHelper.secondsToTicks(3), 2, false, true));
+                        if (target.level().getRandom().nextFloat() <= 0.25F) {
+                            if (target instanceof LivingEntity livingEntity && !livingEntity.hasEffect(GoetyEffects.VOID_TOUCHED.getHolder())) {
+                                livingEntity.addEffect(new MobEffectInstance(GoetyEffects.VOID_TOUCHED.getHolder(), MathHelper.secondsToTicks(3), 2, false, true));
                             }
                         }
                     }
@@ -288,17 +288,17 @@ public class VoidShock extends SpellEntity {
     }
 
     protected void onHitEntity(EntityHitResult pResult) {
-        if (!this.level.isClientSide) {
+        if (!this.level().isClientSide) {
             Entity entity = pResult.getEntity();
             Entity entity1 = this.getOwner();
             float damage = this.baseDamage + this.getExtraDamage();
             entity.hurt(this.damageSources().indirectMagic(this, entity1), damage);
             if (entity1 instanceof LivingEntity living) {
-                this.doEnchantDamageEffects(living, entity);
+                // this.doEnchantDamageEffects(living, entity); // Removed in 1.21
                 if (EntitySelector.NO_CREATIVE_OR_SPECTATOR.test(living)) {
-                    if (living.level.getRandom().nextFloat() <= 0.25F) {
-                        if (!living.hasEffect(GoetyEffects.VOID_TOUCHED.get())) {
-                            living.addEffect(new MobEffectInstance(GoetyEffects.VOID_TOUCHED.get(), MathHelper.secondsToTicks(3), 2, false, true));
+                    if (living.level().getRandom().nextFloat() <= 0.25F) {
+                        if (!living.hasEffect(GoetyEffects.VOID_TOUCHED.getHolder())) {
+                            living.addEffect(new MobEffectInstance(GoetyEffects.VOID_TOUCHED.getHolder(), MathHelper.secondsToTicks(3), 2, false, true));
                         }
                     }
                 }

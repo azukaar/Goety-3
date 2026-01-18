@@ -13,6 +13,7 @@ import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
+import net.minecraft.core.Holder;
 
 public class CaveSpiderServant extends SpiderServant{
     public CaveSpiderServant(EntityType<? extends SpiderServant> type, Level worldIn) {
@@ -44,7 +45,7 @@ public class CaveSpiderServant extends SpiderServant{
                 if (i > 0) {
                     Holder<MobEffect> effect = MobEffects.POISON;
                     if (i == 15){
-                        effect = GoetyEffects.ACID_VENOM;
+                        effect = GoetyEffects.ACID_VENOM.getHolder();
                     }
                     livingEntity.addEffect(new MobEffectInstance(effect, i * 20, 0), this);
                 }

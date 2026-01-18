@@ -74,10 +74,10 @@ public class IceChunk extends SpellEntity {
         boolean flag1 = p_20273_.y != vec3.y;
         boolean flag2 = p_20273_.z != vec3.z;
         boolean flag3 = this.onGround() || flag1 && p_20273_.y < 0.0D;
-        float stepHeight = getStepHeight();
+        float stepHeight = this.maxUpStep();
         if (stepHeight > 0.0F && flag3 && (flag || flag2)) {
-            Vec3 vec31 = collideBoundingBox(this, new Vec3(p_20273_.x, (double)stepHeight, p_20273_.z), aabb, this.level, list);
-            Vec3 vec32 = collideBoundingBox(this, new Vec3(0.0D, (double)stepHeight, 0.0D), aabb.expandTowards(p_20273_.x, 0.0D, p_20273_.z), this.level, list);
+            Vec3 vec31 = collideBoundingBox(this, new Vec3(p_20273_.x, (double)stepHeight, p_20273_.z), aabb, this.level(), list);
+            Vec3 vec32 = collideBoundingBox(this, new Vec3(0.0D, (double)stepHeight, 0.0D), aabb.expandTowards(p_20273_.x, 0.0D, p_20273_.z), this.level(), list);
             if (vec32.y < (double)stepHeight) {
                 Vec3 vec33 = collideBoundingBox(this, new Vec3(p_20273_.x, 0.0D, p_20273_.z), aabb.move(vec32), this.level(), list).add(vec32);
                 if (vec33.horizontalDistanceSqr() > vec31.horizontalDistanceSqr()) {
@@ -94,8 +94,8 @@ public class IceChunk extends SpellEntity {
     }
 
     private void onHit(HitResult hitResult) {
-        if (!this.level.isClientSide()) {
-            ServerLevel serverWorld = (ServerLevel) this.level;
+        if (!this.level().isClientSide()) {
+            ServerLevel serverWorld = (ServerLevel) this.level();
             BlockState blockState = Blocks.PACKED_ICE.defaultBlockState();
             double y = this.getY();
             if (hitResult instanceof EntityHitResult entityHitResult){
@@ -118,7 +118,7 @@ public class IceChunk extends SpellEntity {
                 serverWorld.sendParticles(ParticleTypes.POOF, this.getX() + d1 * 0.1D, this.getY() + 0.3D, this.getZ() + d3 * 0.1D, 0, d1, d2, d3, 0.25F);
             }
             if (this.isDropping){
-                for (LivingEntity livingEntity : this.level.getEntitiesOfClass(LivingEntity.class, this.getBoundingBox().inflate(2.5D, 1.0D, 2.5D), this::canHitEntity)){
+                for (LivingEntity livingEntity : this.level().getEntitiesOfClass(LivingEntity.class, this.getBoundingBox().inflate(2.5D, 1.0D, 2.5D), this::canHitEntity)){
                     this.damageTargets(livingEntity);
                 }
             }
@@ -131,14 +131,14 @@ public class IceChunk extends SpellEntity {
         damage += this.getExtraDamage();
         if (livingEntity != null) {
             if (livingEntity.hurt(ModDamageSource.indirectFreeze(this, this.getOwner()), damage)) {
-                livingEntity.addEffect(new MobEffectInstance(GoetyEffects.STUNNED.get(), MathHelper.secondsToTicks(2)));
+                livingEntity.addEffect(new MobEffectInstance(GoetyEffects.STUNNED.getHolder(), MathHelper.secondsToTicks(2)));
             }
         }
     }
 
     public void setParticleAura(ParticleOptions particleAura, float radius, double pX, double pY, double pZ){
-        if (!this.level.isClientSide){
-            ServerLevel serverWorld = (ServerLevel) this.level;
+        if (!this.level().isClientSide){
+            ServerLevel serverWorld = (ServerLevel) this.level();
             float f5 = (float) Math.PI * radius * radius;
             for (int k1 = 0; (float) k1 < f5; ++k1) {
                 float f6 = this.random.nextFloat() * ((float) Math.PI * 2F);
@@ -153,9 +153,9 @@ public class IceChunk extends SpellEntity {
     @Override
     public void tick() {
         super.tick();
-        if (!this.level.isClientSide){
+        if (!this.level().isClientSide){
             ++this.hovering;
-            ServerLevel serverWorld = (ServerLevel) this.level;
+            ServerLevel serverWorld = (ServerLevel) this.level();
             HitResult result = ProjectileUtil.getHitResultOnMoveVector(this, this::canHitEntity);
             if (result.getType() != HitResult.Type.MISS) {
                 if (result.getType() == HitResult.Type.ENTITY){

@@ -87,13 +87,13 @@ public abstract class OwnedBlockEntity extends BlockEntity implements IOwnedBloc
 
     @Nullable
     public LivingEntity getTrueOwner() {
-        if (this.level != null) {
-            if (!this.level.isClientSide){
+        if (this.getLevel() != null) {
+            if (!this.getLevel().isClientSide){
                 UUID uuid = this.getOwnerUUID();
                 return uuid == null ? null : EntityFinder.getLivingEntityByUuiD(uuid);
             } else {
                 int id = this.getOwnerId();
-                return id <= -1 ? null : this.level.getEntity(this.getOwnerId()) instanceof LivingEntity living ? living : null;
+                return id <= -1 ? null : this.getLevel().getEntity(this.getOwnerId()) instanceof LivingEntity living ? living : null;
             }
         } else {
             return null;
@@ -102,14 +102,14 @@ public abstract class OwnedBlockEntity extends BlockEntity implements IOwnedBloc
 
     @Nullable
     public Player getPlayer(){
-        if (this.level != null) {
-            if (!this.level.isClientSide) {
+        if (this.getLevel() != null) {
+            if (!this.getLevel().isClientSide) {
                 if (this.getTrueOwner() instanceof Player player) {
                     return player;
                 }
             } else {
                 if (this.getOwnerUUID() != null) {
-                    return this.level.getPlayerByUUID(this.getOwnerUUID());
+                    return this.getLevel().getPlayerByUUID(this.getOwnerUUID());
                 }
             }
         }

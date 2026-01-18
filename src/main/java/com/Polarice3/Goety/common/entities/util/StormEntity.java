@@ -38,8 +38,8 @@ public class StormEntity extends Entity {
 
     public void tick() {
         super.tick();
-        if (!this.level.isClientSide) {
-            ServerLevel serverWorld = (ServerLevel) this.level;
+        if (!this.level().isClientSide) {
+            ServerLevel serverWorld = (ServerLevel) this.level();
             if (this.tickCount % 20 == 0) {
                 if (!serverWorld.isThundering()) {
                     serverWorld.setWeatherParameters(0, 6000, true, true);

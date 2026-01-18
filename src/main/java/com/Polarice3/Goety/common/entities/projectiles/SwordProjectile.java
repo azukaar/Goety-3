@@ -110,7 +110,7 @@ public class SwordProjectile extends AbstractArrow implements ItemSupplier {
             double d5 = this.getX() + d3;
             double d1 = this.getY() + d4;
             double d2 = this.getZ() + d0;
-            this.level.addParticle(ParticleTypes.ENCHANT, d5 - d3 * 0.25D, d1 - d4 * 0.25D, d2 - d0 * 0.25D, d3, d4,
+            this.level().addParticle(ParticleTypes.ENCHANT, d5 - d3 * 0.25D, d1 - d4 * 0.25D, d2 - d0 * 0.25D, d3, d4,
                     d0);
         }
     }

@@ -74,9 +74,9 @@ public class InsectSwarm extends Owned{
     @Override
     public void tick() {
         super.tick();
-        if (!this.level.isClientSide) {
+        if (!this.level().isClientSide) {
             if (this.tickCount % 2 == 0) {
-                if (this.level instanceof ServerLevel serverLevel) {
+                if (this.level() instanceof ServerLevel serverLevel) {
                     ServerParticleUtil.addParticlesAroundMiddleSelf(serverLevel, ModParticleTypes.FLY.get(), this);
                 }
             }
@@ -91,7 +91,7 @@ public class InsectSwarm extends Owned{
                     this.navigation.moveTo(vec3.x, vec3.y, vec3.z, 1.0D);
                 }
             }
-            if (this.level.collidesWithSuffocatingBlock(this, this.getBoundingBox().move(0.0D, -1.0D, 0.0D))) {
+            if (this.level().collidesWithSuffocatingBlock(this, this.getBoundingBox().move(0.0D, -1.0D, 0.0D))) {
                 this.setDeltaMovement(this.getDeltaMovement().add(0.0D, 0.02D, 0.0D));
             } else {
                 this.setDeltaMovement(this.getDeltaMovement().add(0.0D, -0.008D, 0.0D));
@@ -100,7 +100,7 @@ public class InsectSwarm extends Owned{
                 this.setDeltaMovement(this.getDeltaMovement().multiply(0.95F, 1.0F, 0.95F));
             }
             float inflate = 2.0F - this.getBbWidth() * 0.5F;
-            for (LivingEntity living : this.level.getEntitiesOfClass(LivingEntity.class, this.getBoundingBox().inflate(inflate))) {
+            for (LivingEntity living : this.level().getEntitiesOfClass(LivingEntity.class, this.getBoundingBox().inflate(inflate))) {
                 if (living != this && !MobUtil.areAllies(this, living) && SummonTargetGoal.predicate(this).test(living)) {
                     if (living.hurt(ModDamageSource.swarm(this, this.getTrueOwner()), (float) this.getAttributeValue(Attributes.ATTACK_DAMAGE))) {
                         this.playSound(ModSounds.INSECT_SWARM_BITE.get(), 1.0F, this.getVoicePitch());

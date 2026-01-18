@@ -89,18 +89,18 @@ public class BrewCauldronBlockEntity extends BlockEntity implements Container, R
     }
 
     public void tick(){
-        if (this.level != null) {
-            if (!this.level.isClientSide) {
+        if (this.getLevel() != null) {
+            if (!this.getLevel().isClientSide) {
                 if (this.checkFire()) {
                     if (!this.isHeated()) {
                         ++this.heatTime;
                     } else if (this.getBlockState().getValue(ModStateProperties.LEVEL_BREW) > 0){
-                        if (this.level.getGameTime() % 60 == 0 || this.isBrewing) {
-                            this.level.playSound(null, this.getBlockPos(), ModSounds.CAULDRON_BUBBLES.get(), SoundSource.BLOCKS, 0.33F, this.mode == Mode.FAILED ? 0.5F : 1);
+                        if (this.getLevel().getGameTime() % 60 == 0 || this.isBrewing) {
+                            this.getLevel().playSound(null, this.getBlockPos(), ModSounds.CAULDRON_BUBBLES.get(), SoundSource.BLOCKS, 0.33F, this.mode == Mode.FAILED ? 0.5F : 1);
                         }
                         if (this.mode == Mode.BREWING){
-                            if (this.level.getGameTime() % 60 == 0 && this.level.random.nextBoolean()){
-                                this.level.playSound(null, this.getBlockPos(), ModSounds.CAULDRON_CHIMES.get(), SoundSource.BLOCKS, 0.15F, this.level.random.nextFloat() * 0.4F + 0.8F);
+                            if (this.getLevel().getGameTime() % 60 == 0 && this.getLevel().random.nextBoolean()){
+                                this.getLevel().playSound(null, this.getBlockPos(), ModSounds.CAULDRON_CHIMES.get(), SoundSource.BLOCKS, 0.15F, this.getLevel().random.nextFloat() * 0.4F + 0.8F);
                             }
                         }
                         this.findCandlesticks();
@@ -115,7 +115,7 @@ public class BrewCauldronBlockEntity extends BlockEntity implements Container, R
                                     }
                                 } else {
                                     this.setColor(PotionUtils.getColor(this.getBrew()));
-                                    this.level.playSound(null, this.getBlockPos(), ModSounds.CAST_SPELL.get(), SoundSource.BLOCKS, 1.0F, 1.0F);
+                                    this.getLevel().playSound(null, this.getBlockPos(), ModSounds.CAST_SPELL.get(), SoundSource.BLOCKS, 1.0F, 1.0F);
                                     this.soulTime = 0;
                                     this.totalCost = 0;
                                     this.isBrewing = false;
@@ -126,7 +126,7 @@ public class BrewCauldronBlockEntity extends BlockEntity implements Container, R
                             }
                         }
                         if (mode == Mode.COMPLETED){
-                            if (this.level instanceof ServerLevel serverLevel){
+                            if (this.getLevel() instanceof ServerLevel serverLevel){
                                 float f = 1.0F;
                                 serverLevel.sendParticles(ParticleTypes.WITCH, this.worldPosition.getX() + 0.5F + Math.cos(serverLevel.getGameTime() * 0.25) * f, this.worldPosition.getY(), this.worldPosition.getZ() + 0.5F + Math.sin(serverLevel.getGameTime() * 0.25) * f, 0, 0, 0, 0, 0.5F);
                                 serverLevel.sendParticles(ParticleTypes.WITCH, this.worldPosition.getX() + 0.5F + Math.cos(serverLevel.getGameTime() * 0.25 + Math.PI) * f, this.worldPosition.getY(), this.worldPosition.getZ() + 0.5F + Math.sin(serverLevel.getGameTime() * 0.25 + Math.PI) * f, 0, 0, 0, 0, 0.5F);
@@ -147,11 +147,11 @@ public class BrewCauldronBlockEntity extends BlockEntity implements Container, R
                 if (this.update > 0){
                     --this.update;
                     if (this.update <= 1) {
-                        this.level.setBlockAndUpdate(this.getBlockPos(), this.getBlockState().setValue(ModStateProperties.LEVEL_BREW, 3));
+                        this.getLevel().setBlockAndUpdate(this.getBlockPos(), this.getBlockState().setValue(ModStateProperties.LEVEL_BREW, 3));
                         this.update = 0;
                     }
                 }
-                this.level.setBlockAndUpdate(this.getBlockPos(), this.getBlockState().setValue(ModStateProperties.FAILED, this.mode == Mode.FAILED));
+                this.getLevel().setBlockAndUpdate(this.getBlockPos(), this.getBlockState().setValue(ModStateProperties.FAILED, this.mode == Mode.FAILED));
                 this.markUpdated();
             }
         }
@@ -171,22 +171,22 @@ public class BrewCauldronBlockEntity extends BlockEntity implements Container, R
     }
 
     public void brew(){
-        if (this.level != null && !this.level.isClientSide) {
+        if (this.getLevel() != null && !this.getLevel().isClientSide) {
             if (this.mode == Mode.BREWING && !this.isBrewing) {
                 this.isBrewing = true;
-                this.level.playSound(null, this.getBlockPos(), ModSounds.PREPARE_SPELL.get(), SoundSource.BLOCKS, 1.0F, 1.0F);
+                this.getLevel().playSound(null, this.getBlockPos(), ModSounds.PREPARE_SPELL.get(), SoundSource.BLOCKS, 1.0F, 1.0F);
             }
             this.markUpdated();
         }
     }
 
     public Mode addSacrifice(Entity entity){
-        if (this.level != null && !this.level.isClientSide){
+        if (this.getLevel() != null && !this.getLevel().isClientSide){
             int firstEmpty = getFirstEmptySlot();
             if (firstEmpty != -1) {
                 this.setSacrificed(firstEmpty, entity.getType());
                 if (this.mode == Mode.BREWING) {
-                    BrewingRecipe brewingRecipe = this.level.getRecipeManager().getAllRecipesFor(ModRecipeSerializer.BREWING_TYPE.get()).stream()
+                    BrewingRecipe brewingRecipe = this.getLevel().getRecipeManager().getAllRecipesFor(ModRecipeSerializer.BREWING_TYPE.get()).stream()
                             .filter(holder -> {
                                 BrewingRecipe recipe = holder.value();
                                 if (recipe.getEntityTypeTag() != null){
@@ -221,7 +221,7 @@ public class BrewCauldronBlockEntity extends BlockEntity implements Container, R
     }
 
     public Mode insertItem(ItemStack itemStack){
-        if (this.level != null && !this.level.isClientSide){
+        if (this.getLevel() != null && !this.getLevel().isClientSide){
             Item ingredient = itemStack.getItem();
             BrewModifier brewModifier = new BrewEffects().getModifier(ingredient);
             int modLevel = brewModifier != null ? brewModifier.getLevel() : -1;
@@ -232,7 +232,7 @@ public class BrewCauldronBlockEntity extends BlockEntity implements Container, R
                 if (this.mode == Mode.IDLE && this.getCapacity() < 4 && activate) {
                     this.clearContent();
                     this.capacity = 4;
-                    if (this.level instanceof ServerLevel serverLevel){
+                    if (this.getLevel() instanceof ServerLevel serverLevel){
                         for(int k = 0; k < 20; ++k) {
                             float f2 = serverLevel.random.nextFloat() * 4.0F;
                             float f1 = serverLevel.random.nextFloat() * ((float)Math.PI * 2F);
@@ -245,7 +245,7 @@ public class BrewCauldronBlockEntity extends BlockEntity implements Container, R
                     return Mode.BREWING;
                 }
                 if (this.mode == Mode.BREWING) {
-                    BrewingRecipe brewingRecipe = this.level.getRecipeManager().getAllRecipesFor(ModRecipeSerializer.BREWING_TYPE.get()).stream().filter(holder -> holder.value().input.test(itemStack)).findFirst().map(net.minecraft.world.item.crafting.RecipeHolder::value).orElse(null);
+                    BrewingRecipe brewingRecipe = this.getLevel().getRecipeManager().getAllRecipesFor(ModRecipeSerializer.BREWING_TYPE.get()).stream().filter(holder -> holder.value().input.test(itemStack)).findFirst().map(net.minecraft.world.item.crafting.RecipeHolder::value).orElse(null);
                     BrewEffect brewEffect = new BrewEffects().getEffectFromCatalyst(ingredient);
                     if (this.hasNoAugmentation()) {
                         if (brewingRecipe != null || brewEffect != null) {
@@ -422,7 +422,7 @@ public class BrewCauldronBlockEntity extends BlockEntity implements Container, R
             } else if (this.mode == Mode.IDLE && this.getCapacity() < 4 && activate) {
                 this.clearContent();
                 this.capacity = 4;
-                if (this.level instanceof ServerLevel serverLevel){
+                if (this.getLevel() instanceof ServerLevel serverLevel){
                     for(int k = 0; k < 20; ++k) {
                         float f2 = serverLevel.random.nextFloat() * 4.0F;
                         float f1 = serverLevel.random.nextFloat() * ((float)Math.PI * 2F);
@@ -440,7 +440,7 @@ public class BrewCauldronBlockEntity extends BlockEntity implements Container, R
     }
 
     public void commonReset(){
-        if (this.level != null && !this.level.isClientSide) {
+        if (this.getLevel() != null && !this.getLevel().isClientSide) {
             this.setColor(WATER_COLOR, false);
             this.isBrewing = false;
             this.capacity = 0;
@@ -458,12 +458,12 @@ public class BrewCauldronBlockEntity extends BlockEntity implements Container, R
             this.isFireProof = false;
             this.clearContent();
             this.markUpdated();
-            this.level.setBlock(this.worldPosition, this.getBlockState().setValue(ModStateProperties.LEVEL_BREW, 0), 3);
+            this.getLevel().setBlock(this.worldPosition, this.getBlockState().setValue(ModStateProperties.LEVEL_BREW, 0), 3);
         }
     }
 
     public void fullReset(){
-        if (this.level != null && !this.level.isClientSide) {
+        if (this.getLevel() != null && !this.getLevel().isClientSide) {
             this.commonReset();
             this.mode = Mode.IDLE;
         }
@@ -475,13 +475,13 @@ public class BrewCauldronBlockEntity extends BlockEntity implements Container, R
     }
 
     public Mode fail() {
-        if (this.level != null && !this.level.isClientSide) {
+        if (this.getLevel() != null && !this.getLevel().isClientSide) {
             this.setColor(FAILED_COLOR);
             this.isBrewing = false;
             this.capacity = 0;
             this.soulTime = 0;
             this.totalCost = 0;
-            this.level.playSound(null, this.worldPosition, SoundEvents.NOTE_BLOCK_SNARE.value(), SoundSource.BLOCKS, 5.0F, 0.75F);
+            this.getLevel().playSound(null, this.worldPosition, SoundEvents.NOTE_BLOCK_SNARE.value(), SoundSource.BLOCKS, 5.0F, 0.75F);
             this.markUpdated();
         }
         return Mode.FAILED;
@@ -492,12 +492,12 @@ public class BrewCauldronBlockEntity extends BlockEntity implements Container, R
     }
 
     public void setColor(int color, boolean update) {
-        if (this.level != null) {
+        if (this.getLevel() != null) {
             this.liquidColor = color;
-            if (!this.level.isClientSide) {
+            if (!this.getLevel().isClientSide) {
                 if (update) {
-                    if (this.level.getBlockState(this.getBlockPos()).getValue(ModStateProperties.LEVEL_BREW) == 3) {
-                        this.level.setBlockAndUpdate(this.getBlockPos(), this.getBlockState().setValue(ModStateProperties.LEVEL_BREW, 4));
+                    if (this.getLevel().getBlockState(this.getBlockPos()).getValue(ModStateProperties.LEVEL_BREW) == 3) {
+                        this.getLevel().setBlockAndUpdate(this.getBlockPos(), this.getBlockState().setValue(ModStateProperties.LEVEL_BREW, 4));
                         this.update = 3;
                     }
                 }
@@ -512,7 +512,7 @@ public class BrewCauldronBlockEntity extends BlockEntity implements Container, R
 
     public ItemStack getBrew() {
         ItemStack brew = new ItemStack(ModItems.BREW.get());
-        if (this.level != null && !this.level.isClientSide) {
+        if (this.getLevel() != null && !this.getLevel().isClientSide) {
             List<MobEffectInstance> effects = new ArrayList<>();
             List<BrewEffectInstance> blockEffects = new ArrayList<>();
             int hidden = 0;
@@ -521,10 +521,10 @@ public class BrewCauldronBlockEntity extends BlockEntity implements Container, R
                 Item item = itemStack.getItem();
                 BrewModifier brewModifier = new BrewEffects().getModifier(item);
                 BrewEffect brewEffect = new BrewEffects().getEffectFromCatalyst(item);
-                BrewingRecipe brewingRecipe = this.level.getRecipeManager().getAllRecipesFor(ModRecipeSerializer.BREWING_TYPE.get()).stream().filter(holder -> holder.value().input.test(itemStack)).findFirst().map(net.minecraft.world.item.crafting.RecipeHolder::value).orElse(null);
+                BrewingRecipe brewingRecipe = this.getLevel().getRecipeManager().getAllRecipesFor(ModRecipeSerializer.BREWING_TYPE.get()).stream().filter(holder -> holder.value().input.test(itemStack)).findFirst().map(net.minecraft.world.item.crafting.RecipeHolder::value).orElse(null);
                 EntityType<?> entityType = this.getSacrificed(i);
                 if (entityType != null){
-                    brewingRecipe = this.level.getRecipeManager().getAllRecipesFor(ModRecipeSerializer.BREWING_TYPE.get()).stream()
+                    brewingRecipe = this.getLevel().getRecipeManager().getAllRecipesFor(ModRecipeSerializer.BREWING_TYPE.get()).stream()
                             .filter(holder -> {
                                 BrewingRecipe recipe = holder.value();
                                 if (recipe.getEntityTypeTag() != null){
@@ -624,8 +624,8 @@ public class BrewCauldronBlockEntity extends BlockEntity implements Container, R
                 totalCost *= 0.99F;
             }
         }
-        if (this.level != null){
-            if (this.level.getBiome(this.worldPosition).is(BiomeTags.HAS_SWAMP_HUT)){
+        if (this.getLevel() != null){
+            if (this.getLevel().getBiome(this.worldPosition).is(BiomeTags.HAS_SWAMP_HUT)){
                 totalCost *= 0.99F;
             }
         }
@@ -850,9 +850,9 @@ public class BrewCauldronBlockEntity extends BlockEntity implements Container, R
     }
 
     public int getTargetLevel(ItemStack stack, Player player) {
-        if (this.level != null) {
+        if (this.getLevel() != null) {
             Item item = stack.getItem();
-            int waterLevel = this.level.getBlockState(this.worldPosition).getValue(ModStateProperties.LEVEL_BREW);
+            int waterLevel = this.getLevel().getBlockState(this.worldPosition).getValue(ModStateProperties.LEVEL_BREW);
             if (mode == Mode.IDLE || mode == Mode.FAILED) {
                 if (item == Items.BUCKET && waterLevel == 3) {
                     return 0;
@@ -919,9 +919,9 @@ public class BrewCauldronBlockEntity extends BlockEntity implements Container, R
     }
 
     private boolean checkFire() {
-        if (this.level != null) {
+        if (this.getLevel() != null) {
             BlockPos pos = new BlockPos(this.getBlockPos().getX(), this.getBlockPos().getY() - 1, this.getBlockPos().getZ());
-            BlockState blockState = this.level.getBlockState(pos);
+            BlockState blockState = this.getLevel().getBlockState(pos);
             return blockState.getBlock() instanceof BaseFireBlock || blockState.getBlock() instanceof LiquidBlock liquidBlock && liquidBlock.fluid instanceof LavaFluid || blockState.getBlock() instanceof MagmaBlock || (blockState.getBlock() instanceof CampfireBlock && blockState.getValue(BlockStateProperties.LIT));
         } else {
             return false;
@@ -929,13 +929,13 @@ public class BrewCauldronBlockEntity extends BlockEntity implements Container, R
     }
 
     public void findWitchPoles(){
-        if (this.level != null){
+        if (this.getLevel() != null){
             this.witchPoles.clear();
             for (int i = -8; i <= 8; ++i) {
                 for (int j = -8; j <= 8; ++j) {
                     for (int k = -8; k <= 8; ++k) {
                         BlockPos blockpos1 = this.getBlockPos().offset(i, j, k);
-                        if (this.level.getBlockState(blockpos1).is(ModBlocks.WITCH_POLE.get())) {
+                        if (this.getLevel().getBlockState(blockpos1).is(ModBlocks.WITCH_POLE.get())) {
                             this.witchPoles.add(blockpos1);
                         }
                     }
@@ -950,13 +950,13 @@ public class BrewCauldronBlockEntity extends BlockEntity implements Container, R
     }
 
     private void findCandlesticks(){
-        if (this.level != null){
+        if (this.getLevel() != null){
             this.candlestickBlockEntityList.clear();
             for (int i = -8; i <= 8; ++i) {
                 for (int j = -8; j <= 8; ++j) {
                     for (int k = -8; k <= 8; ++k) {
                         BlockPos blockpos1 = this.getBlockPos().offset(i, j, k);
-                        if (this.level.getBlockEntity(blockpos1) instanceof SoulCandlestickBlockEntity soulCandlestickBlockEntity) {
+                        if (this.getLevel().getBlockEntity(blockpos1) instanceof SoulCandlestickBlockEntity soulCandlestickBlockEntity) {
                             if (soulCandlestickBlockEntity.getSouls() > 0) {
                                 this.candlestickBlockEntityList.add(soulCandlestickBlockEntity);
                             }
@@ -986,8 +986,8 @@ public class BrewCauldronBlockEntity extends BlockEntity implements Container, R
 
     public void markUpdated() {
         this.setChanged();
-        if (this.level != null && !this.level.isClientSide) {
-            this.level.sendBlockUpdated(this.getBlockPos(), this.getBlockState(), this.getBlockState(), Block.UPDATE_ALL);
+        if (this.getLevel() != null && !this.getLevel().isClientSide) {
+            this.getLevel().sendBlockUpdated(this.getBlockPos(), this.getBlockState(), this.getBlockState(), Block.UPDATE_ALL);
         }
     }
 

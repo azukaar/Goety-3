@@ -14,8 +14,7 @@ import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
 
 public class FireTornadoRenderer extends EntityRenderer<FireTornado> {
-    private static final ResourceLocation TEXTURES = new ResourceLocation(Goety.MOD_ID,
-            "textures/entity/projectiles/fire_tornado.png");
+    private static final ResourceLocation TEXTURES = ResourceLocation.fromNamespaceAndPath(Goety.MOD_ID, "textures/entity/servants/fire_tornado.png");
     private final CycloneModel<FireTornado> model;
 
     public FireTornadoRenderer(EntityRendererProvider.Context p_i46179_1_) {

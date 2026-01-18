@@ -63,35 +63,35 @@ public class VoidShockBomb extends SpellThrowableProjectile {
 
     protected void onHit(HitResult result) {
         super.onHit(result);
-        if (!this.level.isClientSide) {
+        if (!this.level().isClientSide) {
             if (this.growTick <= 0) {
                 Entity entity = this.getOwner();
                 Vec3 vec30 = Vec3.atCenterOf(this.blockPosition());
                 if (entity instanceof LivingEntity livingEntity) {
                     if (result instanceof BlockHitResult blockHitResult){
                         BlockPos blockpos = blockHitResult.getBlockPos().relative(blockHitResult.getDirection());
-                        if (BlockFinder.canBeReplaced(this.level, blockpos)) {
+                        if (BlockFinder.canBeReplaced(this.level(), blockpos)) {
                             vec30 = Vec3.atCenterOf(blockpos);
                         }
                     } else if (result instanceof EntityHitResult entityHitResult){
                         Entity entity1 = entityHitResult.getEntity();
                         vec30 = Vec3.atCenterOf(entity1.blockPosition());
                     }
-                    MagicFire magicFire = new MagicFire(this.level, vec30, livingEntity);
-                    if (this.level.addFreshEntity(magicFire)) {
+                    MagicFire magicFire = new MagicFire(this.level(), vec30, livingEntity);
+                    if (this.level().addFreshEntity(magicFire)) {
                         for (Direction direction : Direction.values()) {
                             if (direction.getAxis().isHorizontal()) {
-                                MagicFire magicFire1 = new MagicFire(this.level, Vec3.atCenterOf(magicFire.blockPosition().relative(direction)), livingEntity);
-                                this.level.addFreshEntity(magicFire1);
+                                MagicFire magicFire1 = new MagicFire(this.level(), Vec3.atCenterOf(magicFire.blockPosition().relative(direction)), livingEntity);
+                                this.level().addFreshEntity(magicFire1);
                             }
                         }
                     }
                 }
                 this.playSound(SoundEvents.DRAGON_FIREBALL_EXPLODE, 1.5F, 0.75F);
                 for (int i = 0; i < 8; ++i) {
-                    VoidShock voidShock = new VoidShock(ModEntityType.VOID_SHOCK.get(), this.level);
+                    VoidShock voidShock = new VoidShock(ModEntityType.VOID_SHOCK.get(), this.level());
                     voidShock.setPos(this.getX(), this.getY(), this.getZ());
-                    Vec3 vec3 = this.position().add(this.level.getRandom().nextInt(-3, 3), this.level.getRandom().nextInt(3, 6), this.level.getRandom().nextInt(-3, 3));
+                    Vec3 vec3 = this.position().add(this.level().getRandom().nextInt(-3, 3), this.level().getRandom().nextInt(3, 6), this.level().getRandom().nextInt(-3, 3));
                     voidShock.signalTo(vec3, MathHelper.secondsToTicks(2) + (i * 5));
                     voidShock.setBaseDamage(this.baseDamage);
                     voidShock.setExtraDamage(this.getExtraDamage());
@@ -101,12 +101,12 @@ public class VoidShockBomb extends SpellThrowableProjectile {
                             voidShock.setTarget(mob.getTarget());
                         }
                     }
-                    this.level.addFreshEntity(voidShock);
+                    this.level().addFreshEntity(voidShock);
                 }
-                this.level.broadcastEntityEvent(this, (byte) 6);
+                this.level().broadcastEntityEvent(this, (byte) 6);
                 this.growTick = 1;
                 float damage = this.baseDamage + this.getExtraDamage();
-                new SpellExplosion(this.level, this, this.damageSources().indirectMagic(this, this.getOwner()), this.getX(), this.getY(), this.getZ(), 2.0F, damage);
+                new SpellExplosion(this.level(), this, this.damageSources().indirectMagic(this, this.getOwner()), this.getX(), this.getY(), this.getZ(), 2.0F, damage);
             }
         }
 
@@ -116,14 +116,14 @@ public class VoidShockBomb extends SpellThrowableProjectile {
         super.onHitEntity(result);
         Entity shooter = this.getOwner();
         Entity entity = result.getEntity();
-        if (!this.level.isClientSide && !MobUtil.areAllies(shooter, entity)) {
+        if (!this.level().isClientSide && !MobUtil.areAllies(shooter, entity)) {
             boolean flag;
             float damage = this.baseDamage + this.getExtraDamage();
             if (shooter instanceof LivingEntity livingentity) {
                 flag = entity.hurt(this.damageSources().indirectMagic(this, livingentity), damage);
                 if (flag) {
                     if (entity.isAlive()) {
-                        this.doEnchantDamageEffects(livingentity, entity);
+                        // this.doEnchantDamageEffects(livingentity, entity); // Removed in 1.21
                     }
                 }
             } else {
@@ -141,11 +141,11 @@ public class VoidShockBomb extends SpellThrowableProjectile {
 
         this.setYRot(-((float) Mth.atan2(this.getDeltaMovement().x, this.getDeltaMovement().z)) * (180F / (float)Math.PI)) ;
 
-        if (!this.level.isClientSide) {
+        if (!this.level().isClientSide) {
             if (this.growTick >= 1){
                 this.setDeltaMovement(Vec3.ZERO);
                 ++this.growTick;
-                this.level.broadcastEntityEvent(this, (byte) 8);
+                this.level().broadcastEntityEvent(this, (byte) 8);
                 if (this.growTick >= 5){
                     this.discard();
                 }
@@ -217,13 +217,13 @@ public class VoidShockBomb extends SpellThrowableProjectile {
         return 1.0F;
     }
 
-    @Override
-    protected float getGravity() {
-        return 0.025F;
-    }
+    // getGravity is now final in Entity, cannot override
+    // protected float getGravity() {
+    //     return 0.025F;
+    // }
 
-    @Override
+    /*@Override
     public Packet<ClientGamePacketListener> getAddEntityPacket() {
         return new net.minecraft.network.protocol.game.ClientboundAddEntityPacket(this);
-    }
+    }*/
 }

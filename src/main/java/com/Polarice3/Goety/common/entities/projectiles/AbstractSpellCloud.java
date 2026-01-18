@@ -41,7 +41,7 @@ public abstract class AbstractSpellCloud extends SpellEntity {
         if (pTarget != null){
             BlockPos.MutableBlockPos blockpos$mutable = new BlockPos.MutableBlockPos(pTarget.getX(), pTarget.getY(), pTarget.getZ());
 
-            while(blockpos$mutable.getY() < pTarget.getY() + 4.0D && !this.level.getBlockState(blockpos$mutable).blocksMotion()) {
+            while(blockpos$mutable.getY() < pTarget.getY() + 4.0D && !this.level().getBlockState(blockpos$mutable).blocksMotion()) {
                 blockpos$mutable.move(Direction.UP);
             }
             this.setPos(pTarget.getX(), blockpos$mutable.getY(), pTarget.getZ());
@@ -115,7 +115,7 @@ public abstract class AbstractSpellCloud extends SpellEntity {
     @Override
     public void tick() {
         super.tick();
-        if (!this.level.isClientSide){
+        if (!this.level().isClientSide){
             this.cloudParticles(this.getColor());
             if (this.activated) {
                 if (this.lifeSpan > 0) {
@@ -123,7 +123,7 @@ public abstract class AbstractSpellCloud extends SpellEntity {
                     this.rainParticles(this.getRainParticle());
                     AABB below = this.getBoundingBox().move(0, -16, 0).inflate(0, 16, 0);
 
-                    for (Entity entity : this.level.getEntitiesOfClass(Entity.class, below)) {
+                    for (Entity entity : this.level().getEntitiesOfClass(Entity.class, below)) {
                         LivingEntity livingEntity = MobUtil.getLivingTarget(entity);
                         if (livingEntity != null) {
                             boolean flag = false;
@@ -136,7 +136,7 @@ public abstract class AbstractSpellCloud extends SpellEntity {
                             }
                             if (flag) {
                                 int distance = (int) (this.getY() - livingEntity.getY());
-                                if (BlockFinder.emptySpaceBetween(this.level, livingEntity.blockPosition(), distance, true)) {
+                                if (BlockFinder.emptySpaceBetween(this.level(), livingEntity.blockPosition(), distance, true)) {
                                     this.hurtEntities(livingEntity);
                                 }
                             }
@@ -154,7 +154,7 @@ public abstract class AbstractSpellCloud extends SpellEntity {
     }
 
     public void setRadius(float radius){
-        if (!this.level.isClientSide) {
+        if (!this.level().isClientSide) {
             this.getEntityData().set(DATA_RADIUS, Mth.clamp(radius, 0.0F, 32.0F));
         }
     }
@@ -172,7 +172,7 @@ public abstract class AbstractSpellCloud extends SpellEntity {
     }
 
     public void cloudParticles(int color){
-        if (this.level instanceof ServerLevel serverWorld) {
+        if (this.level() instanceof ServerLevel serverWorld) {
             float f = getRadius();
             float f5 = (float) Math.PI * f * f;
             for (int k1 = 0; (float) k1 < f5; ++k1) {
@@ -190,7 +190,7 @@ public abstract class AbstractSpellCloud extends SpellEntity {
     }
 
     public void rainParticles(ParticleOptions particleRain){
-        if (this.level instanceof ServerLevel serverWorld){
+        if (this.level() instanceof ServerLevel serverWorld){
             float f = getRadius();
             float f5 = (float) Math.PI * f * f;
             for (int k1 = 0; (float) k1 < f5; ++k1) {

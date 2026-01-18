@@ -117,8 +117,8 @@ public class NecroBrazierBlockEntity extends ModBlockEntity implements Clearable
             }
         }
         if (did) {
-            if (player != null && this.level != null){
-                this.level.playSound(null, this.getBlockPos(), SoundEvents.ARMOR_EQUIP_GENERIC.value(), SoundSource.BLOCKS, 1.0F, 1.0F);
+            if (player != null && this.getLevel() != null){
+                this.getLevel().playSound(null, this.getBlockPos(), SoundEvents.ARMOR_EQUIP_GENERIC.value(), SoundSource.BLOCKS, 1.0F, 1.0F);
             }
             this.markUpdated();
         }
@@ -172,8 +172,8 @@ public class NecroBrazierBlockEntity extends ModBlockEntity implements Clearable
 
     public BrazierRecipe getRecipe(){
         if(this.recipeId != null){
-            if(this.level != null) {
-                Optional<? extends Recipe<?>> recipe = this.level.getRecipeManager().byKey(this.recipeId).map(RecipeHolder::value);
+            if(this.getLevel() != null) {
+                Optional<? extends Recipe<?>> recipe = this.getLevel().getRecipeManager().byKey(this.recipeId).map(RecipeHolder::value);
                 recipe.map(r -> (BrazierRecipe) r).ifPresent(r -> this.recipe = r);
                 this.recipeId = null;
             }
@@ -182,26 +182,26 @@ public class NecroBrazierBlockEntity extends ModBlockEntity implements Clearable
     }
 
     public void tick() {
-        if (this.level != null) {
-            boolean flag = this.level.getBiome(this.getBlockPos()).is(Biomes.DEEP_DARK);
+        if (this.getLevel() != null) {
+            boolean flag = this.getLevel().getBiome(this.getBlockPos()).is(Biomes.DEEP_DARK);
             if (flag) {
                 this.findCandlesticks();
-                if (!this.level.isClientSide) {
-                    if (this.level.random.nextFloat() < 0.3F) {
-                        if (this.level.random.nextFloat() < 0.17F) {
-                            ModNetwork.sendToALL(new SPlayWorldSoundPacket(this.worldPosition, SoundEvents.FURNACE_FIRE_CRACKLE, 0.5F + this.level.random.nextFloat(), this.level.random.nextFloat() * 0.7F + 0.3F));
+                if (!this.getLevel().isClientSide) {
+                    if (this.getLevel().random.nextFloat() < 0.3F) {
+                        if (this.getLevel().random.nextFloat() < 0.17F) {
+                            ModNetwork.sendToALL(new SPlayWorldSoundPacket(this.worldPosition, SoundEvents.FURNACE_FIRE_CRACKLE, 0.5F + this.getLevel().random.nextFloat(), this.getLevel().random.nextFloat() * 0.7F + 0.3F));
                         }
                     }
                 }
                 if (!this.candlestickBlockEntityList.isEmpty()){
                     BrazierRecipe recipe = this.getRecipe();
-                    double d0 = (double)this.worldPosition.getX() + this.level.random.nextDouble();
-                    double d1 = (double)this.worldPosition.getY() + 0.5D + this.level.random.nextDouble();
-                    double d2 = (double)this.worldPosition.getZ() + this.level.random.nextDouble();
-                    if (!this.level.isClientSide) {
-                        ServerLevel serverWorld = (ServerLevel) this.level;
+                    double d0 = (double)this.worldPosition.getX() + this.getLevel().random.nextDouble();
+                    double d1 = (double)this.worldPosition.getY() + 0.5D + this.getLevel().random.nextDouble();
+                    double d2 = (double)this.worldPosition.getZ() + this.getLevel().random.nextDouble();
+                    if (!this.getLevel().isClientSide) {
+                        ServerLevel serverWorld = (ServerLevel) this.getLevel();
                         this.makeParticles();
-                        if (this.activate(this.level)) {
+                        if (this.activate(this.getLevel())) {
                             if (recipe != null) {
                                 for (int p = 0; p < 2; ++p) {
                                     serverWorld.sendParticles(ModParticleTypes.SMALL_NECRO_FIRE.get(), d0, this.worldPosition.getY() + 0.5F, d2, 1, 0, 0, 0, 0);
@@ -215,59 +215,59 @@ public class NecroBrazierBlockEntity extends ModBlockEntity implements Clearable
                                     }
                                 }
                                 if (this.currentTime == 1) {
-                                    ModNetwork.sendToALL(new SPlayWorldSoundPacket(this.worldPosition, SoundEvents.BLAZE_AMBIENT, 1.0F, this.level.random.nextFloat() * 0.1F + 0.9F));
+                                    ModNetwork.sendToALL(new SPlayWorldSoundPacket(this.worldPosition, SoundEvents.BLAZE_AMBIENT, 1.0F, this.getLevel().random.nextFloat() * 0.1F + 0.9F));
                                 }
-                                if (this.level.getGameTime() % 20 == 0) {
-                                    ModNetwork.sendToALL(new SPlayWorldSoundPacket(this.worldPosition, SoundEvents.FIRE_AMBIENT, 1.0F + this.level.random.nextFloat(), this.level.random.nextFloat() * 0.7F + 0.3F));
-                                    ModNetwork.sendToALL(new SPlayWorldSoundPacket(this.worldPosition, SoundEvents.SCULK_CATALYST_BLOOM, 1.0F, this.level.random.nextFloat() * 0.1F + 0.9F));
+                                if (this.getLevel().getGameTime() % 20 == 0) {
+                                    ModNetwork.sendToALL(new SPlayWorldSoundPacket(this.worldPosition, SoundEvents.FIRE_AMBIENT, 1.0F + this.getLevel().random.nextFloat(), this.getLevel().random.nextFloat() * 0.7F + 0.3F));
+                                    ModNetwork.sendToALL(new SPlayWorldSoundPacket(this.worldPosition, SoundEvents.SCULK_CATALYST_BLOOM, 1.0F, this.getLevel().random.nextFloat() * 0.1F + 0.9F));
                                     serverWorld.sendParticles(ParticleTypes.SCULK_SOUL, (double) this.worldPosition.getX() + 0.5D, (double) this.worldPosition.getY() + 1.15D, (double) this.worldPosition.getZ() + 0.5D, 2, 0.2D, 0.0D, 0.2D, 0.0D);
                                 }
 
                                 if (this.currentTime >= recipe.getSoulCost()) {
                                     this.stopBrazier(true);
                                 } else {
-                                    this.updateRecipe(this.level);
+                                    this.updateRecipe(this.getLevel());
                                 }
                             }
                         }
                     }
                 } else {
-                    if (!this.level.isClientSide) {
+                    if (!this.getLevel().isClientSide) {
                         this.stopBrazier(false);
                     }
                 }
             } else {
-                if (!this.level.isClientSide) {
+                if (!this.getLevel().isClientSide) {
                     this.stopBrazier(false);
                 }
             }
-            this.level.setBlock(this.getBlockPos(), this.getBlockState().setValue(NecroBrazierBlock.LIT, flag), 3);
+            this.getLevel().setBlock(this.getBlockPos(), this.getBlockState().setValue(NecroBrazierBlock.LIT, flag), 3);
         }
     }
 
     public void stopBrazier(boolean finished) {
-        if (this.level != null) {
-            if (!this.level.isClientSide) {
+        if (this.getLevel() != null) {
+            if (!this.getLevel().isClientSide) {
                 BrazierRecipe recipe = this.getRecipe();
                 if (recipe != null) {
-                    this.level.playSound(null, this.getBlockPos(), SoundEvents.GENERIC_EXTINGUISH_FIRE, SoundSource.BLOCKS, 1.0F, 1.0F);
+                    this.getLevel().playSound(null, this.getBlockPos(), SoundEvents.GENERIC_EXTINGUISH_FIRE, SoundSource.BLOCKS, 1.0F, 1.0F);
                     if (finished) {
-                        ItemStack itemstack1 = this.level.getRecipeManager()
-                                .getRecipeFor(ModRecipeSerializer.BRAZIER_TYPE.get(), this.getRecipeInput(), this.level)
-                                .map((recipes) -> recipes.value().assemble(this.getRecipeInput(), this.level.registryAccess())).orElse(ItemStack.EMPTY);
+                        ItemStack itemstack1 = this.getLevel().getRecipeManager()
+                                .getRecipeFor(ModRecipeSerializer.BRAZIER_TYPE.get(), this.getRecipeInput(), this.getLevel())
+                                .map((recipes) -> recipes.value().assemble(this.getRecipeInput(), this.getLevel().registryAccess())).orElse(ItemStack.EMPTY);
                         BlockPos blockpos = this.getBlockPos();
-                        dropItemStack(this.level, blockpos.getX(), blockpos.getY() + 1, blockpos.getZ(), itemstack1);
-                        this.level.playSound(null, this.getBlockPos(), ModSounds.CAST_SPELL.get(), SoundSource.BLOCKS, 2.0F, 0.5F);
+                        dropItemStack(this.getLevel(), blockpos.getX(), blockpos.getY() + 1, blockpos.getZ(), itemstack1);
+                        this.getLevel().playSound(null, this.getBlockPos(), ModSounds.CAST_SPELL.get(), SoundSource.BLOCKS, 2.0F, 0.5F);
                     } else {
                         if (!this.isEmpty()) {
-                            Containers.dropContents(this.level, this.getBlockPos(), this.getItems());
-                            this.level.playSound(null, this.getBlockPos(), ModSounds.SPELL_FAIL.get(), SoundSource.BLOCKS, 2.0F, 0.5F);
+                            Containers.dropContents(this.getLevel(), this.getBlockPos(), this.getItems());
+                            this.getLevel().playSound(null, this.getBlockPos(), ModSounds.SPELL_FAIL.get(), SoundSource.BLOCKS, 2.0F, 0.5F);
                         }
                     }
                 } else {
                     if (!this.isEmpty()) {
-                        Containers.dropContents(this.level, this.getBlockPos(), this.getItems());
-                        this.level.playSound(null, this.getBlockPos(), ModSounds.SPELL_FAIL.get(), SoundSource.BLOCKS, 2.0F, 0.5F);
+                        Containers.dropContents(this.getLevel(), this.getBlockPos(), this.getItems());
+                        this.getLevel().playSound(null, this.getBlockPos(), ModSounds.SPELL_FAIL.get(), SoundSource.BLOCKS, 2.0F, 0.5F);
                     }
                 }
                 this.removeAllItems();
@@ -303,7 +303,7 @@ public class NecroBrazierBlockEntity extends ModBlockEntity implements Clearable
 
     private void makeParticles() {
         BlockPos blockpos = this.getBlockPos();
-        ServerLevel serverLevel = (ServerLevel) this.level;
+        ServerLevel serverLevel = (ServerLevel) this.getLevel();
 
         if (serverLevel != null) {
             long t = serverLevel.getGameTime();
@@ -335,13 +335,13 @@ public class NecroBrazierBlockEntity extends ModBlockEntity implements Clearable
     }
 
     private void findCandlesticks(){
-        if (this.level != null){
+        if (this.getLevel() != null){
             this.candlestickBlockEntityList.clear();
             for (int i = -8; i <= 8; ++i) {
                 for (int j = -8; j <= 8; ++j) {
                     for (int k = -8; k <= 8; ++k) {
                         BlockPos blockpos1 = this.getBlockPos().offset(i, j, k);
-                        if (this.level.getBlockEntity(blockpos1) instanceof SoulCandlestickBlockEntity soulCandlestickBlockEntity) {
+                        if (this.getLevel().getBlockEntity(blockpos1) instanceof SoulCandlestickBlockEntity soulCandlestickBlockEntity) {
                             if (soulCandlestickBlockEntity.getSouls() > 0) {
                                 this.candlestickBlockEntityList.add(soulCandlestickBlockEntity);
                             }

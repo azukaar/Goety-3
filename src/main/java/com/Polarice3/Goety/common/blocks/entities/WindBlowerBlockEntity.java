@@ -35,37 +35,37 @@ public class WindBlowerBlockEntity extends BlockEntity {
     }
 
     public void tick() {
-        if (this.level != null) {
-            if (this.level.getBlockState(this.getBlockPos()).getBlock() instanceof WindBlowerBlock){
-                Direction facing = this.level.getBlockState(this.getBlockPos()).getValue(WindBlowerBlock.FACING);
-                double power = this.level.getBlockState(this.getBlockPos()).getValue(WindBlowerBlock.POWER);
+        if (this.getLevel() != null) {
+            if (this.getLevel().getBlockState(this.getBlockPos()).getBlock() instanceof WindBlowerBlock){
+                Direction facing = this.getLevel().getBlockState(this.getBlockPos()).getValue(WindBlowerBlock.FACING);
+                double power = this.getLevel().getBlockState(this.getBlockPos()).getValue(WindBlowerBlock.POWER);
                 boolean active = power > 0;
-                if (this.level.getBlockEntity(this.worldPosition) instanceof WindBlowerBlockEntity fan) {
-                    if (this.level.getGameTime() % 2 == 0 && this.level.getBlockState(this.worldPosition).getBlock() instanceof WindBlowerBlock){
+                if (this.getLevel().getBlockEntity(this.worldPosition) instanceof WindBlowerBlockEntity fan) {
+                    if (this.getLevel().getGameTime() % 2 == 0 && this.getLevel().getBlockState(this.worldPosition).getBlock() instanceof WindBlowerBlock){
                         if (active) {
                             fan.blowEntities();
                         }
                     }
-                    if (!this.level.isClientSide) {
-                        this.level.sendBlockUpdated(this.getBlockPos(), this.level.getBlockState(this.getBlockPos()), this.level.getBlockState(this.getBlockPos()), 8);
+                    if (!this.getLevel().isClientSide) {
+                        this.getLevel().sendBlockUpdated(this.getBlockPos(), this.getLevel().getBlockState(this.getBlockPos()), this.getLevel().getBlockState(this.getBlockPos()), 8);
                     }
                     //Particle codes based of Create mod's Air Flow Particle: https://github.com/Creators-of-Create/Create/blob/mc1.18/dev/src/main/java/com/simibubi/create/content/kinetics/fan/AirFlowParticle.java
-                    if (this.level.isClientSide){
-                        if (active && this.level.random.nextFloat() <= 0.25F) {
+                    if (this.getLevel().isClientSide){
+                        if (active && this.getLevel().random.nextFloat() <= 0.25F) {
                             Vec3 pos = getCenterOf(this.getBlockPos()).add(Vec3.atLowerCornerOf(facing.getNormal()).scale(0.5D));
                             Vec3 direction = Vec3.atLowerCornerOf(facing.getNormal());
                             Vec3 motion = direction.scale(1 / 8.0F);
                             double distance = new Vec3(this.getBlockPos().getX(), this.getBlockPos().getY(), this.getBlockPos().getZ()).subtract(getCenterOf(this.getBlockPos())).multiply(direction).length() - 0.5F;
                             motion = motion.scale(power - (distance - 1.0F)).scale(0.5F);
-                            this.level.addParticle(ModParticleTypes.FAN_CLOUD.get(), pos.x, pos.y, pos.z, motion.x, motion.y, motion.z);
-                            pos = pos.offsetRandom(this.level.getRandom(), 1.01F);
-                            int width = this.level.getRandom().nextIntBetweenInclusive(1, 4);
-                            float height = this.level.getRandom().nextFloat() * 0.5F;
-                            this.level.addParticle(new WindBlowParticle.Option(ColorUtil.WHITE, width, height), pos.x, pos.y, pos.z, motion.x, motion.y, motion.z);
+                            this.getLevel().addParticle(ModParticleTypes.FAN_CLOUD.get(), pos.x, pos.y, pos.z, motion.x, motion.y, motion.z);
+                            pos = pos.offsetRandom(this.getLevel().getRandom(), 1.01F);
+                            int width = this.getLevel().getRandom().nextIntBetweenInclusive(1, 4);
+                            float height = this.getLevel().getRandom().nextFloat() * 0.5F;
+                            this.getLevel().addParticle(new WindBlowParticle.Option(ColorUtil.WHITE, width, height), pos.x, pos.y, pos.z, motion.x, motion.y, motion.z);
                         }
                     }
                 }
-                this.level.setBlock(this.getBlockPos(), this.getBlockState().setValue(WindBlowerBlock.POWERED, active), 3);
+                this.getLevel().setBlock(this.getBlockPos(), this.getBlockState().setValue(WindBlowerBlock.POWERED, active), 3);
             }
         }
     }
@@ -78,8 +78,8 @@ public class WindBlowerBlockEntity extends BlockEntity {
     }
 
     public AABB getAABB() {
-        if (this.level != null) {
-            BlockState state = this.level.getBlockState(getBlockPos());
+        if (this.getLevel() != null) {
+            BlockState state = this.getLevel().getBlockState(getBlockPos());
             if (!(state.getBlock() instanceof WindBlowerBlock)) {
                 return new AABB(0.0D, 0.0D, 0.0D, 0.0D, 0.0D, 0.0D);
             }
@@ -88,16 +88,16 @@ public class WindBlowerBlockEntity extends BlockEntity {
             int distance;
             for (distance = 1; distance < state.getValue(WindBlowerBlock.POWER); distance++) {
                 BlockPos blockPos = getBlockPos().relative(facing, distance);
-                BlockState state2 = this.level.getBlockState(blockPos);
-                if (this.level.getBlockEntity(blockPos) instanceof IWindPowered windPowered){
+                BlockState state2 = this.getLevel().getBlockState(blockPos);
+                if (this.getLevel().getBlockEntity(blockPos) instanceof IWindPowered windPowered){
                     windPowered.activate(20);
                     windPowered.setWindPower(distance);
                 }
-                if (state2.getBlock() instanceof BaseFireBlock && !this.level.getBlockState(blockPos.below()).isFireSource(this.level, blockPos.below(), Direction.UP)){
-                    this.level.removeBlock(blockPos, false);
-                    this.level.levelEvent((Player)null, 1009, blockPos, 0);
+                if (state2.getBlock() instanceof BaseFireBlock && !this.getLevel().getBlockState(blockPos.below()).isFireSource(this.getLevel(), blockPos.below(), Direction.UP)){
+                    this.getLevel().removeBlock(blockPos, false);
+                    this.getLevel().levelEvent((Player)null, 1009, blockPos, 0);
                 }
-                if ((state2.isSolid() && state2.isSolidRender(this.level, blockPos)) || state2.liquid()) {
+                if ((state2.isSolid() && state2.isSolidRender(this.getLevel(), blockPos)) || state2.liquid()) {
                     break;
                 }
             }
@@ -115,13 +115,13 @@ public class WindBlowerBlockEntity extends BlockEntity {
     }
 
     protected void blowEntities() {
-        if (this.level != null) {
-            BlockState state = this.level.getBlockState(getBlockPos());
+        if (this.getLevel() != null) {
+            BlockState state = this.getLevel().getBlockState(getBlockPos());
             if (!(state.getBlock() instanceof WindBlowerBlock)) {
                 return;
             }
             Direction facing = state.getValue(WindBlowerBlock.FACING);
-            List<Entity> list = this.level.getEntitiesOfClass(Entity.class, getAABB(), EntitySelector.NO_CREATIVE_OR_SPECTATOR);
+            List<Entity> list = this.getLevel().getEntitiesOfClass(Entity.class, getAABB(), EntitySelector.NO_CREATIVE_OR_SPECTATOR);
             for (Entity entity : list) {
                 if ((entity instanceof LivingEntity || entity instanceof AbstractArrow) && !entity.getType().is(ModTags.EntityTypes.UNBLOWABLE_ENTITIES)) {
                     Vec3 vec3d = entity.getDeltaMovement();

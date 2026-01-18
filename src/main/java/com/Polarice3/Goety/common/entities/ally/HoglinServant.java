@@ -154,7 +154,7 @@ public class HoglinServant extends AnimalSummon implements HoglinBase, PlayerRid
             this.setBaby(true);
         }
 
-        return super.finalizeSpawn(p_34508_, p_34509_, p_34510_, p_34511_, p_34512_);
+        return super.finalizeSpawn(p_34508_, p_34509_, p_34510_, p_34511_);
     }
 
     @Override
@@ -177,7 +177,7 @@ public class HoglinServant extends AnimalSummon implements HoglinBase, PlayerRid
             return false;
         } else {
             this.attackAnimationRemainingTicks = 10;
-            this.level.broadcastEntityEvent(this, (byte) 4);
+            this.level().broadcastEntityEvent(this, (byte) 4);
             this.playSound(SoundEvents.HOGLIN_ATTACK, 1.0F, this.getVoicePitch());
             return HoglinBase.hurtAndThrowTarget(this, (LivingEntity) p_34491_);
         }
@@ -201,10 +201,10 @@ public class HoglinServant extends AnimalSummon implements HoglinBase, PlayerRid
 
     }
 
-    @Override
-    public MobType getMobType() {
-        return ModMobType.NATURAL;
-    }
+    // @Override
+    // public MobType getMobType() {
+    //    return ModMobType.NATURAL;
+    // }
 
     public void setAutonomous(boolean autonomous) {
         this.entityData.set(AUTO_MODE, autonomous);
@@ -230,7 +230,7 @@ public class HoglinServant extends AnimalSummon implements HoglinBase, PlayerRid
     }
 
     public boolean isConverting() {
-        return !this.level.dimensionType().piglinSafe()
+        return !this.level().dimensionType().piglinSafe()
                 && !this.isImmuneToZombification()
                 && !this.isNoAi()
                 && !(this.getTrueOwner() != null && CuriosFinder.hasNetherRobe(this.getTrueOwner()));
@@ -302,7 +302,7 @@ public class HoglinServant extends AnimalSummon implements HoglinBase, PlayerRid
     }
 
     protected void doPlayerRide(Player player) {
-        if (!this.level.isClientSide) {
+        if (!this.level().isClientSide) {
             player.setYRot(this.getYRot());
             player.setXRot(this.getXRot());
             player.startRiding(this);
@@ -314,7 +314,7 @@ public class HoglinServant extends AnimalSummon implements HoglinBase, PlayerRid
         if (this.isConverting()) {
             ++this.timeInOverworld;
             if (this.timeInOverworld > 300 && net.neoforged.neoforge.event.EventHooks.canLivingConvert(this,
-                    EntityType.ZOMBIE_SERVANT, (timer) -> this.timeInOverworld = timer)) {
+                    ModEntityType.ZOMBIE_SERVANT.get(), (timer) -> this.timeInOverworld = timer)) {
                 this.playSound(SoundEvents.HOGLIN_CONVERTED_TO_ZOMBIFIED);
                 this.finishConversion();
             }
@@ -328,7 +328,7 @@ public class HoglinServant extends AnimalSummon implements HoglinBase, PlayerRid
         if (this.attackAnimationRemainingTicks > 0) {
             --this.attackAnimationRemainingTicks;
         }
-        if (this.level instanceof ServerLevel serverLevel) {
+        if (this.level() instanceof ServerLevel serverLevel) {
             if (this.findNearestRepellent(serverLevel, this).isPresent()) {
                 if (this.nearestRepellent == null) {
                     this.nearestRepellent = this.findNearestRepellent(serverLevel, this).get();
@@ -439,8 +439,8 @@ public class HoglinServant extends AnimalSummon implements HoglinBase, PlayerRid
                 }
 
                 this.gameEvent(GameEvent.EAT, this);
-                this.eat(this.level, itemstack);
-                if (this.level instanceof ServerLevel serverLevel) {
+                this.eat(this.level(), itemstack);
+                if (this.level() instanceof ServerLevel serverLevel) {
                     for (int i = 0; i < 7; ++i) {
                         double d0 = this.random.nextGaussian() * 0.02D;
                         double d1 = this.random.nextGaussian() * 0.02D;

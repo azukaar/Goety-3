@@ -38,7 +38,8 @@ public class DrownedServant extends ZombieServant implements RangedAttackMob {
 
     public DrownedServant(EntityType<? extends ZombieServant> type, Level worldIn) {
         super(type, worldIn);
-        this.setMaxUpStep(1.0F);
+        // setMaxUpStep removed in 1.21, step height handled by attributes now
+        // this.setMaxUpStep(1.0F);
         this.moveControl = new MoveHelperController(this);
         this.setPathfindingMalus(PathType.WATER, 0.0F);
         this.setPathfindingMalus(PathType.WATER_BORDER, 0.0F);
@@ -51,7 +52,7 @@ public class DrownedServant extends ZombieServant implements RangedAttackMob {
         this.goalSelector.addGoal(1, new GoToWaterGoal(this, 1.0D));
         this.goalSelector.addGoal(2, new TridentAttackGoal(this, 1.0D, 40, 10.0F));
         this.goalSelector.addGoal(5, new GoToBeachGoal(this, 1.0D));
-        this.goalSelector.addGoal(6, new SwimUpGoal(this, 1.0D, this.level.getSeaLevel()));
+        this.goalSelector.addGoal(6, new SwimUpGoal(this, 1.0D, this.level().getSeaLevel()));
         this.goalSelector.addGoal(7, new WaterWanderGoal<>(this));
     }
 
@@ -138,7 +139,7 @@ public class DrownedServant extends ZombieServant implements RangedAttackMob {
     }
 
     public void updateSwimming() {
-        if (!this.level.isClientSide) {
+        if (!this.level().isClientSide) {
             if (this.isEffectiveAi() && this.isInWater() && this.wantsToSwim()) {
                 this.navigation = this.waterNavigation;
                 this.setSwimming(true);
@@ -168,15 +169,15 @@ public class DrownedServant extends ZombieServant implements RangedAttackMob {
     }
 
     public void performRangedAttack(LivingEntity pTarget, float pDistanceFactor) {
-        ThrownTrident tridententity = new ThrownTrident(this.level, this, new ItemStack(Items.TRIDENT));
+        ThrownTrident tridententity = new ThrownTrident(this.level(), this, new ItemStack(Items.TRIDENT));
         double d0 = pTarget.getX() - this.getX();
         double d1 = pTarget.getY(0.3333333333333333D) - tridententity.getY();
         double d2 = pTarget.getZ() - this.getZ();
         double d3 = Mth.sqrt((float) (d0 * d0 + d2 * d2));
-        tridententity.shoot(d0, d1 + d3 * (double)0.2F, d2, 1.6F, (float)(14 - this.level.getDifficulty().getId() * 4));
+        tridententity.shoot(d0, d1 + d3 * (double)0.2F, d2, 1.6F, (float)(14 - this.level().getDifficulty().getId() * 4));
         this.playSound(SoundEvents.DROWNED_SHOOT, 1.0F, 1.0F / (this.getRandom().nextFloat() * 0.4F + 0.8F));
         ItemHelper.hurtAndBreak(this.getMainHandItem(), 1, this);
-        this.level.addFreshEntity(tridententity);
+        this.level().addFreshEntity(tridententity);
     }
 
     public void setSearchingForLand(boolean p_204713_1_) {

@@ -20,7 +20,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
 
 public class PlayerSpellShieldLayer<T extends LivingEntity, M extends EntityModel<T>> extends RenderLayer<T, M> {
-    private static final ResourceLocation VIZIER_ARMOR = new ResourceLocation(Goety.MOD_ID, "textures/entity/grand_robe_armor.png");
+    private static final ResourceLocation VIZIER_ARMOR = ResourceLocation.fromNamespaceAndPath(Goety.MOD_ID, "textures/entity/grand_robe_armor.png");
     private final PlayerModel<T> model;
 
     public PlayerSpellShieldLayer(RenderLayerParent<T, M> p_i50926_1_, EntityModelSet p_174555_) {
@@ -37,7 +37,7 @@ public class PlayerSpellShieldLayer<T extends LivingEntity, M extends EntityMode
             new ClientEvents().followBodyRotations(pLivingEntity, entitymodel);
             VertexConsumer ivertexbuilder = pBuffer.getBuffer(RenderType.energySwirl(VIZIER_ARMOR, this.xOffset(f), f * 0.01F));
             entitymodel.setupAnim(pLivingEntity, pLimbSwing, pLimbSwingAmount, pAgeInTicks, pNetHeadYaw, pHeadPitch);
-            entitymodel.renderToBuffer(pMatrixStack, ivertexbuilder, pPackedLight, OverlayTexture.NO_OVERLAY, 0.5F, 0.5F, 0.5F, 1.0F);
+            entitymodel.renderToBuffer(pMatrixStack, ivertexbuilder, pPackedLight, OverlayTexture.NO_OVERLAY, 0x80808080);
         }
     }
 

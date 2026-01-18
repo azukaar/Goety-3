@@ -62,7 +62,7 @@ public class HauntedSkullProjectileRenderer extends LayeredEntityRenderer<Haunte
                 float f1 = Mth.lerp(pPartialTicks, pEntity.xRotO, pEntity.getXRot());
                 VertexConsumer vertexconsumer = p_116971_.getBuffer(RenderType.energySwirl(TEXTURE, this.xOffset(f0) % 1.0F, f0 * 0.01F % 1.0F));
                 this.model().setupAnim(0.0F, f, f1);
-                this.model().renderToBuffer(p_116970_, vertexconsumer, p_116972_, OverlayTexture.NO_OVERLAY, 0.5F, 0.5F, 0.5F, 1.0F);
+                this.model().renderToBuffer(p_116970_, vertexconsumer, p_116972_, OverlayTexture.NO_OVERLAY, -1);
             }
             p_116970_.popPose();
         }

@@ -52,7 +52,7 @@ public class SnarelingShot extends ThrowableProjectile {
         double d2 = this.getZ() + vec3.z;
         ColorUtil colorUtil = new ColorUtil(0xdef44a);
         for (int i = 0; i < 2; ++i) {
-            this.level.addParticle(ModParticleTypes.GOO_STAIN.get(), d0 + (this.random.nextGaussian() / 2), d1 + 0.5D + (this.random.nextGaussian() / 2), d2 + (this.random.nextGaussian() / 2), colorUtil.red(), colorUtil.green(), colorUtil.blue());
+            this.level().addParticle(ModParticleTypes.GOO_STAIN.get(), d0 + (this.random.nextGaussian() / 2), d1 + 0.5D + (this.random.nextGaussian() / 2), d2 + (this.random.nextGaussian() / 2), colorUtil.red(), colorUtil.green(), colorUtil.blue());
         }
         Vec3 trailAt = this.position().add(0, this.getBbHeight() / 2F, 0);
         if (this.trailPointer == -1) {
@@ -66,24 +66,24 @@ public class SnarelingShot extends ThrowableProjectile {
 
     protected void onHit(HitResult pResult) {
         super.onHit(pResult);
-        if (!this.level.isClientSide) {
+        if (!this.level().isClientSide) {
             Vec3 vec3 = this.position();
             if (pResult instanceof EntityHitResult entityHitResult){
                 vec3 = entityHitResult.getEntity().position();
             }
-            if (this.level instanceof ServerLevel serverLevel) {
+            if (this.level() instanceof ServerLevel serverLevel) {
                 for (int i = 0; i <= 16; ++i) {
                     ColorUtil colorUtil = new ColorUtil(0xdef44a);
                     serverLevel.sendParticles(ModParticleTypes.GOO_STAIN.get(), this.getRandomX(0.5D), this.getY(), this.getRandomZ(0.5D), 0, colorUtil.red(), colorUtil.green(), colorUtil.blue(), 1.0F);
                 }
             }
-            SnarelingGoop goop = new SnarelingGoop(ModEntityType.SNARELING_GOOP.get(), this.level);
+            SnarelingGoop goop = new SnarelingGoop(ModEntityType.SNARELING_GOOP.get(), this.level());
             if (this.getOwner() instanceof LivingEntity livingEntity) {
                 goop.setOwner(livingEntity);
             }
             goop.setLifeSpan(MathHelper.secondsToTicks(3));
             goop.setPos(vec3);
-            this.level.addFreshEntity(goop);
+            this.level().addFreshEntity(goop);
             this.discard();
         }
     }

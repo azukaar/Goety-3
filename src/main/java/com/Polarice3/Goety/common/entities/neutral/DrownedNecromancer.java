@@ -75,7 +75,8 @@ public class DrownedNecromancer extends AbstractNecromancer {
 
     public DrownedNecromancer(EntityType<? extends AbstractNecromancer> type, Level level) {
         super(type, level);
-        this.setMaxUpStep(1.25F);
+        // setMaxUpStep removed in 1.21, step height handled by attributes now
+        // this.setMaxUpStep(1.25F);
         this.moveControl = new MoveHelperController(this, 2.0F);
         this.setPathfindingMalus(PathType.WATER, 0.0F);
         this.setPathfindingMalus(PathType.WATER_BORDER, 0.0F);
@@ -88,7 +89,7 @@ public class DrownedNecromancer extends AbstractNecromancer {
         this.goalSelector.addGoal(1, new GoToWaterGoal(this, 1.0D));
         this.goalSelector.addGoal(4, new ModLeaveWaterGoal<>(this));
         this.goalSelector.addGoal(5, new GoToBeachGoal(this, 1.0D));
-        this.goalSelector.addGoal(6, new SwimUpGoal(this, 1.0D, this.level.getSeaLevel()));
+        this.goalSelector.addGoal(6, new SwimUpGoal(this, 1.0D, this.level().getSeaLevel()));
         this.goalSelector.addGoal(7, new WaterWanderGoal<>(this));
         this.goalSelector.addGoal(8, new MoveToTarget());
     }
@@ -156,7 +157,7 @@ public class DrownedNecromancer extends AbstractNecromancer {
 
     public void onSyncedDataUpdated(EntityDataAccessor<?> p_33609_) {
         if (ANIM_STATE.equals(p_33609_)) {
-            if (this.level.isClientSide) {
+            if (this.level().isClientSide) {
                 switch (this.entityData.get(ANIM_STATE)) {
                     case 6:
                         this.stormAnimationState.startIfStopped(this.tickCount);
@@ -282,7 +283,7 @@ public class DrownedNecromancer extends AbstractNecromancer {
     }
 
     public void updateSwimming() {
-        if (!this.level.isClientSide) {
+        if (!this.level().isClientSide) {
             if (this.isEffectiveAi() && this.isInWater() && this.wantsToSwim()) {
                 this.navigation = this.waterNavigation;
                 this.setSwimming(true);
@@ -312,39 +313,39 @@ public class DrownedNecromancer extends AbstractNecromancer {
     }
 
     public Summoned getDefaultSummon(){
-        return new DrownedServant(ModEntityType.DROWNED_SERVANT.get(), this.level);
+        return new DrownedServant(ModEntityType.DROWNED_SERVANT.get(), this.level());
     }
 
     public Summoned getSummon(){
         Summoned summoned = this.getDefaultSummon();
         if (this.getSummonList().stream().anyMatch(entityType -> entityType.is(ModTags.EntityTypes.ZOMBIE_SERVANTS))) {
-            if (this.level.random.nextBoolean()) {
-                summoned = new DrownedServant(ModEntityType.DROWNED_SERVANT.get(), this.level);
+            if (this.level().random.nextBoolean()) {
+                summoned = new DrownedServant(ModEntityType.DROWNED_SERVANT.get(), this.level());
             }
         }
         if (this.getSummonList().stream().anyMatch(entityType -> entityType.is(ModTags.EntityTypes.SKELETON_SERVANTS))) {
-            if (this.level.random.nextBoolean()) {
-                summoned = new SunkenSkeletonServant(ModEntityType.SUNKEN_SKELETON_SERVANT.get(), this.level);
+            if (this.level().random.nextBoolean()) {
+                summoned = new SunkenSkeletonServant(ModEntityType.SUNKEN_SKELETON_SERVANT.get(), this.level());
             }
         }
         if (this.getSummonList().contains(ModEntityType.WRAITH_SERVANT.get())) {
-            if (this.level.random.nextFloat() <= 0.05F) {
-                summoned = new WraithServant(ModEntityType.WRAITH_SERVANT.get(), this.level);
+            if (this.level().random.nextFloat() <= 0.05F) {
+                summoned = new WraithServant(ModEntityType.WRAITH_SERVANT.get(), this.level());
             }
         }
         if (this.getSummonList().contains(ModEntityType.REAPER_SERVANT.get())) {
-            if (this.level.random.nextFloat() <= 0.05F) {
-                summoned = new ReaperServant(ModEntityType.REAPER_SERVANT.get(), this.level);
+            if (this.level().random.nextFloat() <= 0.05F) {
+                summoned = new ReaperServant(ModEntityType.REAPER_SERVANT.get(), this.level());
             }
         }
         if (this.getSummonList().contains(ModEntityType.VANGUARD_SERVANT.get())){
-            if (this.level.random.nextFloat() <= 0.15F) {
-                summoned = new VanguardServant(ModEntityType.VANGUARD_SERVANT.get(), this.level);
+            if (this.level().random.nextFloat() <= 0.15F) {
+                summoned = new VanguardServant(ModEntityType.VANGUARD_SERVANT.get(), this.level());
             }
         }
         if (this.getSummonList().contains(ModEntityType.BLACKGUARD_SERVANT.get())) {
-            if (this.level.random.nextFloat() <= 0.05F) {
-                summoned = new BlackguardServant(ModEntityType.BLACKGUARD_SERVANT.get(), this.level);
+            if (this.level().random.nextFloat() <= 0.05F) {
+                summoned = new BlackguardServant(ModEntityType.BLACKGUARD_SERVANT.get(), this.level());
             }
         }
         return summoned;
@@ -360,7 +361,7 @@ public class DrownedNecromancer extends AbstractNecromancer {
     }
 
     public InteractionResult mobInteract(Player pPlayer, InteractionHand pHand) {
-        if (!this.level.isClientSide) {
+        if (!this.level().isClientSide) {
             ItemStack itemstack = pPlayer.getItemInHand(pHand);
             Item item = itemstack.getItem();
             if (this.getTrueOwner() != null && pPlayer == this.getTrueOwner()) {
@@ -369,7 +370,7 @@ public class DrownedNecromancer extends AbstractNecromancer {
                         this.setUndeadIdle(true);
                     } else {
                         this.playSound(ModSounds.DROWNED_NECROMANCER_HURT.get());
-                        this.level.broadcastEntityEvent(this, (byte) 9);
+                        this.level().broadcastEntityEvent(this, (byte) 9);
                     }
                     return InteractionResult.SUCCESS;
                 } else if (item == Items.ROTTEN_FLESH && this.getHealth() < this.getMaxHealth()) {
@@ -378,7 +379,7 @@ public class DrownedNecromancer extends AbstractNecromancer {
                     }
                     this.playSound(SoundEvents.DROWNED_STEP, 1.0F, 1.25F);
                     this.heal(2.0F);
-                    if (this.level instanceof ServerLevel serverLevel) {
+                    if (this.level() instanceof ServerLevel serverLevel) {
                         for (int i = 0; i < 7; ++i) {
                             double d0 = this.random.nextGaussian() * 0.02D;
                             double d1 = this.random.nextGaussian() * 0.02D;
@@ -437,7 +438,7 @@ public class DrownedNecromancer extends AbstractNecromancer {
                         this.setNecroLevel(this.getNecroLevel() + 1);
                     }
                     this.heal(AttributesConfig.DrownedNecromancerHealth.get().floatValue());
-                    if (this.level instanceof ServerLevel serverLevel) {
+                    if (this.level() instanceof ServerLevel serverLevel) {
                         for (int i = 0; i < 7; ++i) {
                             double d0 = this.random.nextGaussian() * 0.02D;
                             double d1 = this.random.nextGaussian() * 0.02D;
@@ -590,7 +591,7 @@ public class DrownedNecromancer extends AbstractNecromancer {
 
         public boolean canUse() {
             Predicate<Entity> predicate = entity -> entity.isAlive() && entity instanceof IOwned owned && owned.getTrueOwner() instanceof DrownedNecromancer;
-            int i = DrownedNecromancer.this.level.getEntitiesOfClass(LivingEntity.class, DrownedNecromancer.this.getBoundingBox().inflate(64.0D, 16.0D, 64.0D)
+            int i = DrownedNecromancer.this.level().getEntitiesOfClass(LivingEntity.class, DrownedNecromancer.this.getBoundingBox().inflate(64.0D, 16.0D, 64.0D)
                     , predicate).size();
             return super.canUse() && i < 10;
         }
@@ -606,7 +607,7 @@ public class DrownedNecromancer extends AbstractNecromancer {
         }
 
         protected void castSpell(){
-            if (DrownedNecromancer.this.level instanceof ServerLevel serverLevel) {
+            if (DrownedNecromancer.this.level() instanceof ServerLevel serverLevel) {
                 for (int i1 = 0; i1 < 2; ++i1) {
                     Summoned summonedentity = DrownedNecromancer.this.getSummon();
                     BlockPos blockPos = BlockFinder.SummonRadius(DrownedNecromancer.this.blockPosition(), summonedentity, serverLevel);
@@ -622,7 +623,7 @@ public class DrownedNecromancer extends AbstractNecromancer {
                         summonedentity.setLimitedLife(MobUtil.getSummonLifespan(serverLevel));
                     }
                     summonedentity.setPersistenceRequired();
-                    summonedentity.finalizeSpawn(serverLevel, serverLevel.getCurrentDifficultyAt(DrownedNecromancer.this.blockPosition()), MobSpawnType.MOB_SUMMONED, null, null);
+                    summonedentity.finalizeSpawn(serverLevel, serverLevel.getCurrentDifficultyAt(DrownedNecromancer.this.blockPosition()), MobSpawnType.MOB_SUMMONED, null);
                     if (summonedentity instanceof DrownedServant && serverLevel.random.nextInt(16) == 0) {
                         summonedentity.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.TRIDENT));
                         summonedentity.setDropChance(EquipmentSlot.MAINHAND, 0.0F);
@@ -630,7 +631,7 @@ public class DrownedNecromancer extends AbstractNecromancer {
                     summonedentity.setBaby(false);
                     if (serverLevel.addFreshEntity(summonedentity)){
                         if (!DrownedNecromancer.this.isSilent()) {
-                            DrownedNecromancer.this.level.playSound(null, DrownedNecromancer.this.getX(), DrownedNecromancer.this.getY(), DrownedNecromancer.this.getZ(), ModSounds.DROWNED_NECROMANCER_SUMMON.get(), DrownedNecromancer.this.getSoundSource(), 1.4F, 1.0F);
+                            DrownedNecromancer.this.level().playSound(null, DrownedNecromancer.this.getX(), DrownedNecromancer.this.getY(), DrownedNecromancer.this.getZ(), ModSounds.DROWNED_NECROMANCER_SUMMON.get(), DrownedNecromancer.this.getSoundSource(), 1.4F, 1.0F);
                         }
                         ServerParticleUtil.summonUndeadParticles(serverLevel, summonedentity);
                     }
@@ -775,7 +776,7 @@ public class DrownedNecromancer extends AbstractNecromancer {
 
         public void tick() {
             ++this.spellTime;
-            Level worldIn = DrownedNecromancer.this.level;
+            Level worldIn = DrownedNecromancer.this.level();
             MobUtil.instaLook(DrownedNecromancer.this, this.target);
             if (!DrownedNecromancer.this.isCurrentAnimation(RAPID)) {
                 DrownedNecromancer.this.setAnimationState(RAPID);
@@ -900,9 +901,9 @@ public class DrownedNecromancer extends AbstractNecromancer {
             if (this.spellTime == 0) {
                 DrownedNecromancer.this.playSound(ModSounds.DROWNED_NECROMANCER_AMBIENT.get(), 2.0F, DrownedNecromancer.this.getVoicePitch());
                 DrownedNecromancer.this.setNecromancerSpellType(NecromancerSpellType.NONE);
-                int i = 2 + DrownedNecromancer.this.level.random.nextInt(4);
+                int i = 2 + DrownedNecromancer.this.level().random.nextInt(4);
                 for (int i1 = 0; i1 < i; ++i1) {
-                    if (DrownedNecromancer.this.level instanceof ServerLevel serverLevel) {
+                    if (DrownedNecromancer.this.level() instanceof ServerLevel serverLevel) {
                         Summoned summonedentity = DrownedNecromancer.this.getSummon();
                         if (DrownedNecromancer.this.summonVariants()) {
                             EntityType<?> entityType = summonedentity.getVariant(null, serverLevel, DrownedNecromancer.this.blockPosition());
@@ -918,11 +919,11 @@ public class DrownedNecromancer extends AbstractNecromancer {
                             summonedentity.setLimitedLife(MobUtil.getSummonLifespan(serverLevel));
                         }
                         summonedentity.setPersistenceRequired();
-                        summonedentity.finalizeSpawn(serverLevel, serverLevel.getCurrentDifficultyAt(DrownedNecromancer.this.blockPosition()), MobSpawnType.MOB_SUMMONED, null, null);
+                        summonedentity.finalizeSpawn(serverLevel, serverLevel.getCurrentDifficultyAt(DrownedNecromancer.this.blockPosition()), MobSpawnType.MOB_SUMMONED, null);
                         this.populateDefaultEquipmentSlots(summonedentity, serverLevel.random);
                         if (serverLevel.addFreshEntity(summonedentity)){
                             if (!DrownedNecromancer.this.isSilent()) {
-                                DrownedNecromancer.this.level.playSound(null, DrownedNecromancer.this.getX(), DrownedNecromancer.this.getY(), DrownedNecromancer.this.getZ(), ModSounds.DROWNED_NECROMANCER_SUMMON.get(), DrownedNecromancer.this.getSoundSource(), 1.4F, 1.0F);
+                                DrownedNecromancer.this.level().playSound(null, DrownedNecromancer.this.getX(), DrownedNecromancer.this.getY(), DrownedNecromancer.this.getZ(), ModSounds.DROWNED_NECROMANCER_SUMMON.get(), DrownedNecromancer.this.getSoundSource(), 1.4F, 1.0F);
                             }
                             ServerParticleUtil.summonUndeadParticles(serverLevel, summonedentity);
                         }
@@ -943,7 +944,7 @@ public class DrownedNecromancer extends AbstractNecromancer {
                 boolean flag = true;
 
                 for(EquipmentSlot equipmentslot : EquipmentSlot.values()) {
-                    if (equipmentslot.getType() == EquipmentSlot.Type.ARMOR) {
+                    if (equipmentslot.isArmor()) {
                         ItemStack itemstack = livingEntity.getItemBySlot(equipmentslot);
                         if (!flag && p_217055_.nextFloat() < 0.1F) {
                             break;

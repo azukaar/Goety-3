@@ -14,8 +14,8 @@ import net.minecraft.client.renderer.entity.layers.RenderLayer;
 import net.minecraft.resources.ResourceLocation;
 
 public class GhastServantRenderer extends MobRenderer<GhastServant, ModGhastModel<GhastServant>> {
-    private static final ResourceLocation GHAST_LOCATION = new ResourceLocation("textures/entity/ghast/ghast.png");
-    private static final ResourceLocation GHAST_SHOOTING_LOCATION = new ResourceLocation("textures/entity/ghast/ghast_shooting.png");
+    private static final ResourceLocation GHAST_LOCATION = ResourceLocation.withDefaultNamespace("textures/entity/ghast/ghast.png");
+    private static final ResourceLocation GHAST_SHOOTING_LOCATION = ResourceLocation.withDefaultNamespace("textures/entity/ghast/ghast_shooting.png");
 
     public GhastServantRenderer(EntityRendererProvider.Context p_i50961_1_) {
         super(p_i50961_1_, new ModGhastModel<>(p_i50961_1_.bakeLayer(ModModelLayer.MALGHAST)), 1.0F);

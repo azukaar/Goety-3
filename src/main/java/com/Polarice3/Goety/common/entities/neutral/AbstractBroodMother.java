@@ -416,7 +416,7 @@ public class AbstractBroodMother extends Summoned implements IAutoRideable, Play
         if (instance.getEffect() == GoetyEffects.ACID_VENOM.getHolder().unwrap().map(o -> o, o -> o) || instance.getEffect() == MobEffects.POISON) {
             net.neoforged.neoforge.event.entity.living.MobEffectEvent.Applicable event = new net.neoforged.neoforge.event.entity.living.MobEffectEvent.Applicable(this, instance);
             net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(event);
-            return event.getResult() == net.neoforged.bus.api.Event.Result.ALLOW;
+            return false; // event.getResult() == net.neoforged.bus.api.Event.Result.ALLOW;
         }
         return super.canBeAffected(instance);
     }
@@ -705,7 +705,7 @@ public class AbstractBroodMother extends Summoned implements IAutoRideable, Play
                 if (livingEntity.hurt(this.getServantAttack(), (float) this.getAttributeValue(Attributes.ATTACK_DAMAGE))) {
                     this.playSound(SoundEvents.PLAYER_ATTACK_KNOCKBACK, 1.0F, 1.0F);
                     livingEntity.hurtMarked = true;
-                    if (!livingEntity.hasEffect(GoetyEffects.TANGLED)) {
+                    if (!livingEntity.hasEffect(GoetyEffects.TANGLED.getHolder())) {
                         MobUtil.push(livingEntity, -xPower / distance * 2.0D, -yPower / distance * 2.0D + 0.5D, -zPower / distance * 2.0D);
                     }
                 }
@@ -769,7 +769,7 @@ public class AbstractBroodMother extends Summoned implements IAutoRideable, Play
                     i = 30;
                 }
 
-                livingEntity.addEffect(new MobEffectInstance(GoetyEffects.ACID_VENOM, i * 20, 1), this);
+                livingEntity.addEffect(new MobEffectInstance(GoetyEffects.ACID_VENOM.getHolder(), i * 20, 1), this);
             }
             this.playSound(ModSounds.SPIDER_BITE.get(), this.getSoundVolume(), this.getVoicePitch() + 0.25F);
             return true;
@@ -778,7 +778,7 @@ public class AbstractBroodMother extends Summoned implements IAutoRideable, Play
         }
     }
 
-    @Override
+    // @Override
     public double getRiderShieldingHeight() {
         return 0.5D;
     }
@@ -1121,7 +1121,7 @@ public class AbstractBroodMother extends Summoned implements IAutoRideable, Play
                     && AbstractBroodMother.this.getChargeCooldown() <= 0
                     && !AbstractBroodMother.this.isStaying()
                     && AbstractBroodMother.this.hasLineOfSight(AbstractBroodMother.this.getTarget())
-                    && AbstractBroodMother.this.getTarget().hasEffect(GoetyEffects.TANGLED);
+                    && AbstractBroodMother.this.getTarget().hasEffect(GoetyEffects.TANGLED.getHolder());
         }
 
         public boolean canContinueToUse() {

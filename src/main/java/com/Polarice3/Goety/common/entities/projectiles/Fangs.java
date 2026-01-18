@@ -67,9 +67,9 @@ public class Fangs extends Entity implements ISpellEntity {
         this.setPos(pPosX, pPosY, pPosZ);
     }
 
-    protected void defineSynchedData() {
-        this.entityData.define(ABSORBING, false);
-        this.entityData.define(TOTEM, false);
+    public void defineSynchedData(SynchedEntityData.Builder builder) {
+        builder.define(ABSORBING, false);
+        builder.define(TOTEM, false);
     }
 
     public boolean isAbsorbing() {
@@ -111,8 +111,8 @@ public class Fangs extends Entity implements ISpellEntity {
 
     @Nullable
     public LivingEntity getOwner() {
-        if (this.owner == null && this.ownerUUID != null && this.level instanceof ServerLevel) {
-            Entity entity = ((ServerLevel) this.level).getEntity(this.ownerUUID);
+        if (this.owner == null && this.ownerUUID != null && this.level() instanceof ServerLevel) {
+            Entity entity = ((ServerLevel) this.level()).getEntity(this.ownerUUID);
             if (entity instanceof LivingEntity) {
                 this.owner = (LivingEntity) entity;
             }
@@ -163,7 +163,7 @@ public class Fangs extends Entity implements ISpellEntity {
 
     public void tick() {
         super.tick();
-        if (this.level.isClientSide) {
+        if (this.level().isClientSide) {
             if (this.clientSideAttackStarted) {
                 --this.lifeTicks;
                 if (this.lifeTicks == 14) {
@@ -176,20 +176,20 @@ public class Fangs extends Entity implements ISpellEntity {
                         double d3 = (this.random.nextDouble() * 2.0D - 1.0D) * 0.3D;
                         double d4 = 0.3D + this.random.nextDouble() * 0.3D;
                         double d5 = (this.random.nextDouble() * 2.0D - 1.0D) * 0.3D;
-                        this.level.addParticle(ParticleTypes.CRIT, d0, d1 + 1.0D, d2, d3, d4, d5);
+                        this.level().addParticle(ParticleTypes.CRIT, d0, d1 + 1.0D, d2, d3, d4, d5);
                     }
                 }
             }
         } else if (--this.warmupDelayTicks < 0) {
             if (this.warmupDelayTicks == -8) {
-                for (LivingEntity livingentity : this.level.getEntitiesOfClass(LivingEntity.class,
+                for (LivingEntity livingentity : this.level().getEntitiesOfClass(LivingEntity.class,
                         this.getBoundingBox().inflate(0.2D, 0.0D, 0.2D))) {
                     this.dealDamageTo(livingentity);
                 }
             }
 
             if (!this.sentSpikeEvent) {
-                this.level.broadcastEntityEvent(this, (byte) 4);
+                this.level().broadcastEntityEvent(this, (byte) 4);
                 this.sentSpikeEvent = true;
             }
 
@@ -241,7 +241,7 @@ public class Fangs extends Entity implements ISpellEntity {
         if (p_36935_ == 4) {
             this.clientSideAttackStarted = true;
             if (!this.isSilent()) {
-                this.level.playLocalSound(this.getX(), this.getY(), this.getZ(), SoundEvents.EVOKER_FANGS_ATTACK,
+                this.level().playLocalSound(this.getX(), this.getY(), this.getZ(), SoundEvents.EVOKER_FANGS_ATTACK,
                         this.getSoundSource(), 1.0F, this.random.nextFloat() * 0.2F + 0.85F, false);
             }
         }
@@ -257,8 +257,9 @@ public class Fangs extends Entity implements ISpellEntity {
         }
     }
 
-    public Packet<ClientGamePacketListener> getAddEntityPacket() {
-        return new net.minecraft.network.protocol.game.ClientboundAddEntityPacket(this);
-    }
+    // @Override
+    // public Packet<ClientGamePacketListener> getAddEntityPacket() {
+    //    return new net.minecraft.network.protocol.game.ClientboundAddEntityPacket(this);
+    // }
 
 }

@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import net.minecraft.world.phys.Vec3;
 
 public abstract class AbstractCyclone extends SpellHurtingProjectile {
     protected static final EntityDataAccessor<Optional<UUID>> OWNER_UNIQUE_ID = SynchedEntityData.defineId(AbstractCyclone.class, EntityDataSerializers.OPTIONAL_UUID);
@@ -46,11 +47,11 @@ public abstract class AbstractCyclone extends SpellHurtingProjectile {
         this.lifespan = 0;
     }
 
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.entityData.define(OWNER_UNIQUE_ID, Optional.empty());
-        this.entityData.define(TARGET_UNIQUE_ID, Optional.empty());
-        this.entityData.define(DATA_RADIUS, 1.0F);
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(OWNER_UNIQUE_ID, Optional.empty());
+        builder.define(TARGET_UNIQUE_ID, Optional.empty());
+        builder.define(DATA_RADIUS, 1.0F);
     }
 
     public void onSyncedDataUpdated(EntityDataAccessor<?> p_33134_) {
@@ -200,7 +201,7 @@ public abstract class AbstractCyclone extends SpellHurtingProjectile {
 
     public void tick() {
         super.tick();
-        if (!this.level.isClientSide) {
+        if (!this.level().isClientSide) {
             if (this.getLifespan() < getTotalLife()) {
                 ++this.lifespan;
             } else {
@@ -222,7 +223,7 @@ public abstract class AbstractCyclone extends SpellHurtingProjectile {
                 this.trueRemove();
             }
             List<LivingEntity> targets = new ArrayList<>();
-            for (Entity entity : this.level.getEntitiesOfClass(Entity.class, this.getBoundingBox().inflate(this.getSize()))) {
+            for (Entity entity : this.level().getEntitiesOfClass(Entity.class, this.getBoundingBox().inflate(this.getSize()))) {
                 LivingEntity livingEntity = MobUtil.getLivingTarget(entity);
                 if (livingEntity != null) {
                     if (this.getOwner() != null) {
@@ -265,7 +266,9 @@ public abstract class AbstractCyclone extends SpellHurtingProjectile {
         double f1 = this.getZ() + radius * Mth.cos(angle);
         double d0 = (f0 - livingEntity.getX()) * knockBack;
         double d1 = (f1 - livingEntity.getZ()) * knockBack;
-        if (this.xPower != 0 || this.yPower != 0 || this.zPower != 0){
+        // xPower/yPower/zPower fields removed in 1.21, using getDeltaMovement instead
+        Vec3 movement = this.getDeltaMovement();
+        if (movement.x != 0 || movement.y != 0 || movement.z != 0){
             if (this.getTrueOwner() != null) {
                 this.fakeRemove(0, 0, 0);
             }
@@ -304,8 +307,9 @@ public abstract class AbstractCyclone extends SpellHurtingProjectile {
         return super.canHitEntity(p_36842_) && !p_36842_.noPhysics;
     }
 
-    @Override
-    public Packet<ClientGamePacketListener> getAddEntityPacket() {
-        return new net.minecraft.network.protocol.game.ClientboundAddEntityPacket(this);
-    }
+    // getAddEntityPacket is no longer needed in 1.21 - handled automatically
+    // @Override
+    // public Packet<ClientGamePacketListener> getAddEntityPacket() {
+    //     return new net.minecraft.network.protocol.game.ClientboundAddEntityPacket(this);
+    // }
 }

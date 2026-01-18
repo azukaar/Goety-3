@@ -98,15 +98,15 @@ public class TotemicBomb extends AbstractMonolith{
     }
 
     private void explode() {
-        if (!this.level.isClientSide) {
-            if (this.level instanceof ServerLevel serverLevel){
+        if (!this.level().isClientSide) {
+            if (this.level() instanceof ServerLevel serverLevel){
                 ColorUtil colorUtil = new ColorUtil(0xff8905);
                 serverLevel.sendParticles(new CircleExplodeParticleOption(colorUtil.red, colorUtil.green, colorUtil.blue, this.explosionPower * 2, 1), this.getX(), this.getY(), this.getZ(), 0, 0.0D, 0.0D, 0.0D, 0);
                 serverLevel.sendParticles(ParticleTypes.EXPLOSION_EMITTER, this.getX(), this.getY(), this.getZ(), 0, 1.0F, 0.0F, 0.0F, 0.5F);
             }
             this.dead = true;
             LootingExplosion.Mode lootMode = CuriosFinder.hasWanting(this.getMasterOwner()) ? LootingExplosion.Mode.LOOT : LootingExplosion.Mode.REGULAR;
-            ExplosionUtil.lootExplode(this.level, this.getTrueOwner() != null ? this.getTrueOwner() : this, this.getX(), this.getY(), this.getZ(), this.explosionPower, false, Explosion.BlockInteraction.KEEP, lootMode);
+            ExplosionUtil.lootExplode(this.level(), this.getTrueOwner() != null ? this.getTrueOwner() : this, this.getX(), this.getY(), this.getZ(), this.explosionPower, false, Explosion.BlockInteraction.KEEP, lootMode);
             this.discard();
         }
     }

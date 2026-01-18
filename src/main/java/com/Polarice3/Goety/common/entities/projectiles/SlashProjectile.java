@@ -153,12 +153,12 @@ public abstract class SlashProjectile extends Projectile implements ISpellEntity
         this.oldBB = this.getBoundingBox();
         this.setRadius(this.getRadius() + 0.12F);
 
-        if (!this.level.isClientSide) {
+        if (!this.level().isClientSide) {
             HitResult hitresult = ProjectileUtil.getHitResultOnMoveVector(this, this::canHitEntity);
             if (hitresult.getType() == HitResult.Type.BLOCK) {
                 this.onHitBlock((BlockHitResult) hitresult);
             }
-            for (Entity entity : this.level.getEntities(this, this.getBoundingBox())) {
+            for (Entity entity : this.level().getEntities(this, this.getBoundingBox())) {
                 if (this.canHitEntity(entity) && !this.victims.contains(entity)) {
                     this.damageEntity(entity);
                     this.victims.add(entity);
@@ -179,7 +179,7 @@ public abstract class SlashProjectile extends Projectile implements ISpellEntity
     }
 
     public void spawnParticles() {
-        if (this.level instanceof ServerLevel serverLevel) {
+        if (this.level() instanceof ServerLevel serverLevel) {
             float width = (float) this.getBoundingBox().getXsize();
             float step = 0.25F;
             float radians = Mth.DEG_TO_RAD * getYRot();
@@ -203,8 +203,8 @@ public abstract class SlashProjectile extends Projectile implements ISpellEntity
     @Override
     protected void onHitBlock(BlockHitResult hitResult) {
         super.onHitBlock(hitResult);
-        if (!this.level.getBlockState(hitResult.getBlockPos()).getCollisionShape(this.level, hitResult.getBlockPos()).isEmpty()) {
-            if (!this.level.isClientSide) {
+        if (!this.level().getBlockState(hitResult.getBlockPos()).getCollisionShape(this.level(), hitResult.getBlockPos()).isEmpty()) {
+            if (!this.level().isClientSide) {
                 this.discard();
             }
         }

@@ -71,7 +71,7 @@ public class HauntedArmorStand extends ArmorStand {
     }
 
     public boolean hurt(DamageSource p_31579_, float p_31580_) {
-        if (!this.level.isClientSide && !this.isRemoved()) {
+        if (!this.level().isClientSide && !this.isRemoved()) {
             if (p_31579_.is(DamageTypeTags.BYPASSES_INVULNERABILITY)) {
                 this.kill();
                 return false;
@@ -94,9 +94,9 @@ public class HauntedArmorStand extends ArmorStand {
                         this.kill();
                         return flag1;
                     } else {
-                        long i = this.level.getGameTime();
+                        long i = this.level().getGameTime();
                         if (i - this.lastHit > 5L && !flag) {
-                            this.level.broadcastEntityEvent(this, (byte)32);
+                            this.level().broadcastEntityEvent(this, (byte)32);
                             this.gameEvent(GameEvent.ENTITY_DAMAGE, p_31579_.getEntity());
                             this.lastHit = i;
                         } else {
@@ -117,8 +117,8 @@ public class HauntedArmorStand extends ArmorStand {
     }
 
     public void showBreakingParticles() {
-        if (this.level instanceof ServerLevel) {
-            ((ServerLevel)this.level).sendParticles(new BlockParticleOption(ParticleTypes.BLOCK, ModBlocks.HAUNTED_PLANKS.get().defaultBlockState()), this.getX(), this.getY(0.6666666666666666D), this.getZ(), 10, (double)(this.getBbWidth() / 4.0F), (double)(this.getBbHeight() / 4.0F), (double)(this.getBbWidth() / 4.0F), 0.05D);
+        if (this.level() instanceof ServerLevel) {
+            ((ServerLevel)this.level()).sendParticles(new BlockParticleOption(ParticleTypes.BLOCK, ModBlocks.HAUNTED_PLANKS.get().defaultBlockState()), this.getX(), this.getY(0.6666666666666666D), this.getZ(), 10, (double)(this.getBbWidth() / 4.0F), (double)(this.getBbHeight() / 4.0F), (double)(this.getBbWidth() / 4.0F), 0.05D);
         }
     }
 
@@ -136,7 +136,7 @@ public class HauntedArmorStand extends ArmorStand {
     }
 
     private void brokenByPlayer(DamageSource p_31647_) {
-        Block.popResource(this.level, this.blockPosition(), new ItemStack(ModItems.HAUNTED_ARMOR_STAND.get()));
+        Block.popResource(this.level(), this.blockPosition(), new ItemStack(ModItems.HAUNTED_ARMOR_STAND.get()));
         this.brokenByAnything(p_31647_);
     }
 
@@ -146,20 +146,20 @@ public class HauntedArmorStand extends ArmorStand {
 
         for (ItemStack itemStack : this.getHandSlots()){
             if (!itemStack.isEmpty()) {
-                Block.popResource(this.level, this.blockPosition().above(), itemStack);
+                Block.popResource(this.level(), this.blockPosition().above(), itemStack);
             }
         }
 
         for (ItemStack itemStack : this.getArmorSlots()){
             if (!itemStack.isEmpty()) {
-                Block.popResource(this.level, this.blockPosition().above(), itemStack);
+                Block.popResource(this.level(), this.blockPosition().above(), itemStack);
             }
         }
 
     }
 
     private void playBrokenSound() {
-        this.level.playSound((Player)null, this.getX(), this.getY(), this.getZ(), SoundEvents.ARMOR_STAND_BREAK, this.getSoundSource(), 1.0F, 1.0F);
+        this.level().playSound((Player)null, this.getX(), this.getY(), this.getZ(), SoundEvents.ARMOR_STAND_BREAK, this.getSoundSource(), 1.0F, 1.0F);
     }
 
     public ItemStack getPickResult() {

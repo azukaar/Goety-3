@@ -38,8 +38,8 @@ public class DrownedNecromancerRenderer extends MobRenderer<DrownedNecromancer, 
       }
    }
 
-   protected void setupRotations(DrownedNecromancer p_114109_, PoseStack p_114110_, float p_114111_, float p_114112_, float p_114113_) {
-      super.setupRotations(p_114109_, p_114110_, p_114111_, p_114112_, p_114113_);
+   protected void setupRotations(DrownedNecromancer p_114109_, PoseStack p_114110_, float p_114111_, float p_114112_, float p_114113_, float p_114114_) {
+      super.setupRotations(p_114109_, p_114110_, p_114111_, p_114112_, p_114113_, p_114114_);
       float f = p_114109_.getSwimAmount(p_114113_);
       if (f > 0.0F) {
          p_114110_.mulPose(Axis.XP.rotationDegrees(Mth.lerp(f, p_114109_.getXRot(), -10.0F - p_114109_.getXRot())));

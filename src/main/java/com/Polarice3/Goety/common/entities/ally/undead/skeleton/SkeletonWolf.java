@@ -107,11 +107,11 @@ public class SkeletonWolf extends AnimalSummon {
         MobUtil.setBaseAttributes(this.getAttribute(Attributes.ATTACK_DAMAGE), AttributesConfig.SkeletonWolfDamage.get());
     }
 
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.entityData.define(DATA_COLLAR_COLOR, DyeColor.RED.getId());
-        this.entityData.define(DATA_INTERESTED_ID, false);
-        this.entityData.define(DATA_HOWLING, false);
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(DATA_COLLAR_COLOR, DyeColor.RED.getId());
+        builder.define(DATA_INTERESTED_ID, false);
+        builder.define(DATA_HOWLING, false);
     }
 
     @Override
@@ -136,7 +136,7 @@ public class SkeletonWolf extends AnimalSummon {
         compound.putBoolean("Sitting", this.isSitting);
     }
 
-    @Override
+    // @Override
     public MobType getMobType() {
         return MobType.UNDEAD;
     }
@@ -218,11 +218,11 @@ public class SkeletonWolf extends AnimalSummon {
 
     public void aiStep() {
         super.aiStep();
-        if (!this.level.isClientSide && !this.isHowling() && this.isWet && !this.isShaking && !this.isPathFinding() && this.onGround()) {
+        if (!this.level().isClientSide && !this.isHowling() && this.isWet && !this.isShaking && !this.isPathFinding() && this.onGround()) {
             this.isShaking = true;
             this.shakeAnim = 0.0F;
             this.shakeAnimO = 0.0F;
-            this.level.broadcastEntityEvent(this, (byte)8);
+            this.level().broadcastEntityEvent(this, (byte)8);
         }
     }
 
@@ -238,14 +238,14 @@ public class SkeletonWolf extends AnimalSummon {
 
             if (this.isInWaterRainOrBubble()) {
                 this.isWet = true;
-                if (this.isShaking && !this.level.isClientSide) {
-                    this.level.broadcastEntityEvent(this, (byte)56);
+                if (this.isShaking && !this.level().isClientSide) {
+                    this.level().broadcastEntityEvent(this, (byte)56);
                     this.cancelShake();
                 }
             } else if ((this.isWet || this.isShaking) && this.isShaking) {
                 if (this.shakeAnim == 0.0F) {
                     this.playSound(ModSounds.SKELETON_WOLF_SHAKE.get(), this.getSoundVolume(), (this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 1.0F);
-                    this.gameEvent(GameEvent.ENTITY_SHAKE);
+                    this.gameEvent(GameEvent.ENTITY_ACTION); // Placeholder
                 }
 
                 this.shakeAnimO = this.shakeAnim;
@@ -265,28 +265,28 @@ public class SkeletonWolf extends AnimalSummon {
                     for(int j = 0; j < i; ++j) {
                         float f1 = (this.random.nextFloat() * 2.0F - 1.0F) * this.getBbWidth() * 0.5F;
                         float f2 = (this.random.nextFloat() * 2.0F - 1.0F) * this.getBbWidth() * 0.5F;
-                        this.level.addParticle(ParticleTypes.SPLASH, this.getX() + (double)f1, (double)(f + 0.8F), this.getZ() + (double)f2, vec3.x, vec3.y, vec3.z);
+                        this.level().addParticle(ParticleTypes.SPLASH, this.getX() + (double)f1, (double)(f + 0.8F), this.getZ() + (double)f2, vec3.x, vec3.y, vec3.z);
                     }
                 }
             }
 
-            if (!this.level.isClientSide){
+            if (!this.level().isClientSide){
                 if (this.howlingCool > 0){
                     --this.howlingCool;
                 }
                 if (this.isStaying()){
                     this.isSitting = true;
-                    this.level.broadcastEntityEvent(this, (byte) 9);
+                    this.level().broadcastEntityEvent(this, (byte) 9);
                 } else {
                     this.isSitting = false;
-                    this.level.broadcastEntityEvent(this, (byte) 10);
+                    this.level().broadcastEntityEvent(this, (byte) 10);
                 }
                 if (this.getTarget() != null){
                     this.setAggressive(true);
-                    this.level.broadcastEntityEvent(this, (byte) 6);
+                    this.level().broadcastEntityEvent(this, (byte) 6);
                 } else {
                     this.setAggressive(false);
-                    this.level.broadcastEntityEvent(this, (byte) 7);
+                    this.level().broadcastEntityEvent(this, (byte) 7);
                 }
             }
 
@@ -331,7 +331,7 @@ public class SkeletonWolf extends AnimalSummon {
     }
 
     protected float getStandingEyeHeight(Pose p_30409_, EntityDimensions p_30410_) {
-        return p_30410_.height * 0.8F;
+        return p_30410_.height() * 0.8F;
     }
 
     public int getMaxHeadXRot() {
@@ -382,8 +382,8 @@ public class SkeletonWolf extends AnimalSummon {
                 }
 
                 this.gameEvent(GameEvent.EAT, this);
-                this.eat(this.level, itemstack);
-                if (this.level instanceof ServerLevel serverLevel) {
+                this.eat(this.level(), itemstack);
+                if (this.level() instanceof ServerLevel serverLevel) {
                     for (int i = 0; i < 7; ++i) {
                         double d0 = this.random.nextGaussian() * 0.02D;
                         double d1 = this.random.nextGaussian() * 0.02D;
@@ -494,12 +494,12 @@ public class SkeletonWolf extends AnimalSummon {
             this.wolf.getMoveControl().strafe(0.0F, 0.0F);
             this.howlTime = MathHelper.secondsToTicks(3.25F);
             this.wolf.playSound(ModSounds.SKELETON_WOLF_HOWL.get(), 1.0F, 1.0F);
-            this.wolf.level.broadcastEntityEvent(this.wolf, (byte) 4);
+            this.wolf.level().broadcastEntityEvent(this.wolf, (byte) 4);
         }
 
         public void stop() {
             this.wolf.setIsHowling(false);
-            this.wolf.level.broadcastEntityEvent(this.wolf, (byte) 5);
+            this.wolf.level().broadcastEntityEvent(this.wolf, (byte) 5);
             this.wolf.howlingCool = 100;
         }
 
@@ -508,7 +508,7 @@ public class SkeletonWolf extends AnimalSummon {
             this.wolf.getNavigation().stop();
             this.wolf.getMoveControl().strafe(0.0F, 0.0F);
             if (this.howlTime == MathHelper.secondsToTicks(3)){
-                for (LivingEntity livingEntity : this.wolf.level.getEntitiesOfClass(LivingEntity.class, this.wolf.getBoundingBox().inflate(8.0D))){
+                for (LivingEntity livingEntity : this.wolf.level().getEntitiesOfClass(LivingEntity.class, this.wolf.getBoundingBox().inflate(8.0D))){
                     if (livingEntity != this.wolf){
                         boolean flag = false;
                         if (this.wolf.isHostile()){

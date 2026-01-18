@@ -16,8 +16,8 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.projectile.WitherSkull;
 
 public class ModWitherSkullRenderer extends EntityRenderer<ModWitherSkull> {
-   private static final ResourceLocation WITHER_INVULNERABLE_LOCATION = new ResourceLocation("textures/entity/wither/wither_invulnerable.png");
-   private static final ResourceLocation WITHER_LOCATION = new ResourceLocation("textures/entity/wither/wither.png");
+   private static final ResourceLocation WITHER_INVULNERABLE_LOCATION = ResourceLocation.parse("textures/entity/wither/wither_invulnerable.png");
+   private static final ResourceLocation WITHER_LOCATION = ResourceLocation.parse("textures/entity/wither/wither.png");
    private final SkullModel model;
 
    public ModWitherSkullRenderer(EntityRendererProvider.Context p_174449_) {
@@ -31,7 +31,7 @@ public class ModWitherSkullRenderer extends EntityRenderer<ModWitherSkull> {
 
    public void render(ModWitherSkull p_116484_, float p_116485_, float p_116486_, PoseStack p_116487_, MultiBufferSource p_116488_, int p_116489_) {
       try {
-         EntityRenderer<WitherSkull> entityRenderer = (EntityRenderer<WitherSkull>) this.entityRenderDispatcher.renderers.get(EntityType.WITHER_SKULL);
+         EntityRenderer<WitherSkull> entityRenderer = (EntityRenderer<WitherSkull>) this.entityRenderDispatcher.getRenderer(p_116484_);
          if (entityRenderer != null) {
             entityRenderer.render(p_116484_, p_116485_, p_116486_, p_116487_, p_116488_, p_116489_);
          } else {

@@ -73,7 +73,7 @@ public class Doppelganger extends Summoned implements RangedAttackMob {
     }
 
     public void tick() {
-        for (Mob mob : this.level.getEntitiesOfClass(Mob.class, this.getBoundingBox().inflate(16.0F))) {
+        for (Mob mob : this.level().getEntitiesOfClass(Mob.class, this.getBoundingBox().inflate(16.0F))) {
             if (this.getTrueOwner() != null) {
                 if (mob.getTarget() == this.getTrueOwner()) {
                     if (this.getTarget() != mob) {
@@ -124,8 +124,8 @@ public class Doppelganger extends Summoned implements RangedAttackMob {
         }
         if (LichdomHelper.isInLichMode(this.getTrueOwner())) {
             if (this.tickCount % 5 == 0) {
-                if (this.level.isClientSide) {
-                    this.level.addParticle(ModParticleTypes.LICH.get(), this.getRandomX(0.5D), this.getY(),
+                if (this.level().isClientSide) {
+                    this.level().addParticle(ModParticleTypes.LICH.get(), this.getRandomX(0.5D), this.getY(),
                             this.getRandomZ(0.5D), 0.0D, 0.0D, 0.0D);
                 }
             }
@@ -289,19 +289,19 @@ public class Doppelganger extends Summoned implements RangedAttackMob {
 
     public ResourceLocation getSkinTextureLocation() {
         PlayerInfo playerinfo = this.getPlayerInfo();
-        return playerinfo == null ? DefaultPlayerSkin.getDefaultSkin(this.getUUID()) : playerinfo.getSkinLocation();
+        return playerinfo == null ? DefaultPlayerSkin.get(this.getUUID()).texture() : playerinfo.getSkin().texture();
     }
 
     public String getModelName() {
         PlayerInfo playerinfo = this.getPlayerInfo();
-        return playerinfo == null ? DefaultPlayerSkin.getSkinModelName(this.getUUID())
+        return playerinfo == null ? DefaultPlayerSkin.get(this.getUUID()).model().id()
                 : playerinfo.getSkin().model().id();
     }
 
     @Nullable
     public ResourceLocation getCloakTextureLocation() {
         PlayerInfo playerinfo = this.getPlayerInfo();
-        return playerinfo == null ? null : playerinfo.getCapeLocation();
+        return playerinfo == null ? null : playerinfo.getSkin().capeTexture();
     }
 
     @Nullable
@@ -330,7 +330,7 @@ public class Doppelganger extends Summoned implements RangedAttackMob {
                     || (source.is(DamageTypeTags.BYPASSES_ARMOR)
                             && source.is(DamageTypeTags.BYPASSES_EFFECTS));
         } else if (flag) {
-            if (!this.level.isClientSide) {
+            if (!this.level().isClientSide) {
                 this.die(source);
             }
         }
@@ -338,13 +338,13 @@ public class Doppelganger extends Summoned implements RangedAttackMob {
     }
 
     public void die(DamageSource cause) {
-        if (!this.level.isClientSide) {
-            for (int i = 0; i < this.level.random.nextInt(10) + 10; ++i) {
+        if (!this.level().isClientSide) {
+            for (int i = 0; i < this.level().random.nextInt(10) + 10; ++i) {
                 ParticleOptions particleOptions = ParticleTypes.POOF;
                 if (this.isUndeadClone()) {
                     particleOptions = ModParticleTypes.LICH.get();
                 }
-                ServerParticleUtil.smokeParticles(particleOptions, this.getX(), this.getY(), this.getZ(), this.level);
+                ServerParticleUtil.smokeParticles(particleOptions, this.getX(), this.getY(), this.getZ(), this.level());
             }
         }
         SoundEvent soundEvent = SoundEvents.ILLUSIONER_MIRROR_MOVE;
@@ -382,10 +382,10 @@ public class Doppelganger extends Summoned implements RangedAttackMob {
     }
 
     public SpawnGroupData finalizeSpawn(ServerLevelAccessor pLevel, DifficultyInstance pDifficulty,
-            MobSpawnType pReason, @Nullable SpawnGroupData pSpawnData, @Nullable CompoundTag pDataTag) {
-        pSpawnData = super.finalizeSpawn(pLevel, pDifficulty, pReason, pSpawnData, pDataTag);
+            MobSpawnType pReason, @Nullable SpawnGroupData pSpawnData) {
+        pSpawnData = super.finalizeSpawn(pLevel, pDifficulty, pReason, pSpawnData);
         this.populateDefaultEquipmentSlots(pLevel.getRandom(), pDifficulty);
-        this.populateDefaultEquipmentEnchantments(pLevel.getRandom(), pDifficulty);
+        this.populateDefaultEquipmentEnchantments(pLevel, pLevel.getRandom(), pDifficulty);
         return pSpawnData;
     }
 
@@ -394,23 +394,23 @@ public class Doppelganger extends Summoned implements RangedAttackMob {
             ItemStack itemstack = this.getProjectile(
                     this.getItemInHand(ProjectileUtil.getWeaponHoldingHand(this, item -> item instanceof BowItem)));
             AbstractArrow abstractarrowentity = this.getMobArrow(itemstack, distanceFactor);
-            abstractarrowentity = ((BowItem) this.getMainHandItem().getItem()).customArrow(abstractarrowentity);
+            abstractarrowentity = ((BowItem) this.getMainHandItem().getItem()).customArrow(abstractarrowentity, ItemStack.EMPTY, this.getMainHandItem());
             double d0 = target.getX() - this.getX();
             double d1 = target.getY(0.3333333333333333D) - abstractarrowentity.getY();
             double d2 = target.getZ() - this.getZ();
             double d3 = Mth.sqrt((float) (d0 * d0 + d2 * d2));
             abstractarrowentity.shoot(d0, d1 + d3 * (double) 0.2F, d2, 1.6F,
-                    (float) (14 - this.level.getDifficulty().getId() * 4));
+                    (float) (14 - this.level().getDifficulty().getId() * 4));
             this.playSound(SoundEvents.ARROW_SHOOT, 1.0F, 1.0F / (this.getRandom().nextFloat() * 0.4F + 0.8F));
-            this.level.addFreshEntity(abstractarrowentity);
+            this.level().addFreshEntity(abstractarrowentity);
         } else {
             double d3 = target.getX() - this.getX();
             double d4 = (target.getY() + 0.5F) - (this.getY() + 0.5F);
             double d5 = target.getZ() - this.getZ();
-            NecroBolt soulBolt = new NecroBolt(this, d3, d4, d5, this.level);
+            NecroBolt soulBolt = new NecroBolt(this, d3, d4, d5, this.level());
             soulBolt.setPos(this.getX(), this.getEyeY() - 0.2F, this.getZ());
             soulBolt.setOwner(this);
-            if (this.level.addFreshEntity(soulBolt)) {
+            if (this.level().addFreshEntity(soulBolt)) {
                 SoundUtil.playNecroBoltIllusion(this);
                 this.setShot(true);
             }
@@ -419,7 +419,7 @@ public class Doppelganger extends Summoned implements RangedAttackMob {
     }
 
     protected AbstractArrow getMobArrow(ItemStack arrowStack, float distanceFactor) {
-        AbstractArrow abstractarrowentity = ProjectileUtil.getMobArrow(this, arrowStack, distanceFactor);
+        AbstractArrow abstractarrowentity = ProjectileUtil.getMobArrow(this, arrowStack, distanceFactor, ItemStack.EMPTY);
         if (!this.isUpgraded()) {
             abstractarrowentity.setBaseDamage(0.0F);
         } else {

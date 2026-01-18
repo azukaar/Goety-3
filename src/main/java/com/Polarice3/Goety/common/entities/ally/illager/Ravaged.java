@@ -47,9 +47,8 @@ import java.util.EnumSet;
 import java.util.UUID;
 
 public class Ravaged extends RaiderServant {
-    private static final UUID SPEED_BOOST_UUID = UUID.fromString("B9766B59-9566-4402-BC1F-2EE2A276D836");
-    private static final AttributeModifier SPEED_BOOST = new AttributeModifier(SPEED_BOOST_UUID,
-            "Aggressive speed boost", 0.5D, AttributeModifier.Operation.MULTIPLY_BASE);
+    private static final net.minecraft.resources.ResourceLocation SPEED_BOOST_ID = net.minecraft.resources.ResourceLocation.fromNamespaceAndPath(com.Polarice3.Goety.Goety.MOD_ID, "ravaged_speed_boost");
+    private static final AttributeModifier SPEED_BOOST = new AttributeModifier(SPEED_BOOST_ID, 0.5D, AttributeModifier.Operation.ADD_MULTIPLIED_BASE);
     private static final EntityDataAccessor<Integer> ID_SIZE = SynchedEntityData.defineId(Ravaged.class,
             EntityDataSerializers.INT);
     private static final EntityDataAccessor<Boolean> DATA_CONVERSION_ID = SynchedEntityData.defineId(Ravaged.class,
@@ -88,7 +87,7 @@ public class Ravaged extends RaiderServant {
                 .add(Attributes.FOLLOW_RANGE, 35.0D)
                 .add(Attributes.MOVEMENT_SPEED, (double) 0.23F)
                 .add(Attributes.ATTACK_DAMAGE, 3.0D)
-                .add(NeoForgeMod.STEP_HEIGHT_ADDITION.get(), 1.0D)
+                .add(Attributes.STEP_HEIGHT, 1.0D)
                 .add(Attributes.ARMOR, 2.0D);
     }
 
@@ -204,12 +203,12 @@ public class Ravaged extends RaiderServant {
             AttributeInstance speed = this.getAttribute(Attributes.MOVEMENT_SPEED);
             if (speed != null) {
                 if (this.getTarget() != null) {
-                    if (!speed.hasModifier(SPEED_BOOST)) {
+                    if (!speed.hasModifier(SPEED_BOOST.id())) {
                         speed.addPermanentModifier(SPEED_BOOST);
                     }
                 } else {
-                    if (speed.hasModifier(SPEED_BOOST)) {
-                        speed.removeModifier(SPEED_BOOST);
+                    if (speed.hasModifier(SPEED_BOOST.id())) {
+                        speed.removeModifier(SPEED_BOOST.id());
                     }
                 }
             }
@@ -217,7 +216,7 @@ public class Ravaged extends RaiderServant {
                 --this.bitingTick;
             }
 
-            if (!this.level.isClientSide && this.isAlive() && !this.isNoAi()) {
+            if (!this.level().isClientSide && this.isAlive() && !this.isNoAi()) {
                 if (this.isConverting()) {
                     --this.conversionTime;
                     if (this.conversionTime < 0) {
@@ -228,7 +227,7 @@ public class Ravaged extends RaiderServant {
                 }
             }
 
-            if (this.level.isClientSide) {
+            if (this.level().isClientSide) {
                 if (this.getRavagedSize() >= 4) {
                     if (this.getDeltaMovement().horizontalDistanceSqr() > (double) 2.5000003E-7F
                             && this.random.nextInt(5) == 0) {
@@ -236,9 +235,9 @@ public class Ravaged extends RaiderServant {
                         int j = Mth.floor(this.getY() - (double) 0.2F);
                         int k = Mth.floor(this.getZ());
                         BlockPos pos = new BlockPos(i, j, k);
-                        BlockState blockstate = this.level.getBlockState(pos);
+                        BlockState blockstate = this.level().getBlockState(pos);
                         if (!blockstate.isAir()) {
-                            this.level.addParticle(new BlockParticleOption(ParticleTypes.BLOCK, blockstate).setPos(pos),
+                            this.level().addParticle(new BlockParticleOption(ParticleTypes.BLOCK, blockstate).setPos(pos),
                                     this.getX()
                                             + ((double) this.random.nextFloat() - 0.5D) * (double) this.getBbWidth(),
                                     this.getY() + 0.1D,
@@ -272,7 +271,7 @@ public class Ravaged extends RaiderServant {
             }
         }
         if (!this.isSilent()) {
-            this.level.levelEvent(null, 1027, this.blockPosition(), 0);
+            this.level().levelEvent(null, 1027, this.blockPosition(), 0);
         }
 
     }
@@ -290,12 +289,12 @@ public class Ravaged extends RaiderServant {
         if (flag) {
             this.bitingTick = attackTotalTick();
             if (entityIn instanceof AbstractVillager) {
-                this.level.broadcastEntityEvent(this, (byte) 11);
+                this.level().broadcastEntityEvent(this, (byte) 11);
                 this.playSound(ModSounds.RAVAGED_EAT.get(), this.getSoundVolume(), this.getVoicePitch());
             }
-            this.level.broadcastEntityEvent(this, (byte) 4);
+            this.level().broadcastEntityEvent(this, (byte) 4);
             this.playSound(ModSounds.RAVAGED_BITE.get(), this.getSoundVolume(), this.getVoicePitch());
-            float f = this.level.getCurrentDifficultyAt(this.blockPosition()).getEffectiveDifficulty();
+            float f = this.level().getCurrentDifficultyAt(this.blockPosition()).getEffectiveDifficulty();
             if (this.isOnFire() && this.random.nextFloat() < f * 0.3F) {
                 entityIn.igniteForSeconds(2 * (int) f);
             }
@@ -305,8 +304,8 @@ public class Ravaged extends RaiderServant {
     }
 
     public SpawnGroupData finalizeSpawn(ServerLevelAccessor worldIn, DifficultyInstance difficultyIn,
-            MobSpawnType reason, @Nullable SpawnGroupData spawnDataIn, @Nullable CompoundTag dataTag) {
-        spawnDataIn = super.finalizeSpawn(worldIn, difficultyIn, reason, spawnDataIn, dataTag);
+            MobSpawnType reason, @Nullable SpawnGroupData spawnDataIn) {
+        spawnDataIn = super.finalizeSpawn(worldIn, difficultyIn, reason, spawnDataIn);
         return spawnDataIn;
     }
 
@@ -345,10 +344,10 @@ public class Ravaged extends RaiderServant {
         return super.hurt(p_34288_, p_34289_);
     }
 
-    public EntityDimensions getDimensions(Pose p_33113_) {
+    public EntityDimensions getDefaultDimensions(Pose p_33113_) {
         int i = this.getRavagedSize();
-        EntityDimensions entitydimensions = super.getDimensions(p_33113_);
-        float f = (entitydimensions.width + 0.2F * (float) i) / entitydimensions.width;
+        EntityDimensions entitydimensions = super.getDefaultDimensions(p_33113_);
+        float f = (entitydimensions.width() + 0.2F * (float) i) / entitydimensions.width();
         return entitydimensions.scale(f);
     }
 
@@ -381,7 +380,7 @@ public class Ravaged extends RaiderServant {
         }
 
         public boolean canUse() {
-            for (ItemEntity itemEntity : Ravaged.this.level.getEntitiesOfClass(ItemEntity.class,
+            for (ItemEntity itemEntity : Ravaged.this.level().getEntitiesOfClass(ItemEntity.class,
                     Ravaged.this.getBoundingBox().inflate(32))) {
                 if (itemEntity.getItem().is(Items.ROTTEN_FLESH)) {
                     this.food = itemEntity;
@@ -419,9 +418,9 @@ public class Ravaged extends RaiderServant {
                     if (this.feedingTime % 5 == 0) {
                         Ravaged.this.playSound(ModSounds.RAVAGED_EAT.get(), Ravaged.this.getSoundVolume(),
                                 Ravaged.this.getVoicePitch());
-                        Ravaged.this.level.broadcastEntityEvent(Ravaged.this, (byte) 10);
+                        Ravaged.this.level().broadcastEntityEvent(Ravaged.this, (byte) 10);
                     }
-                    if (Ravaged.this.level instanceof ServerLevel serverLevel) {
+                    if (Ravaged.this.level() instanceof ServerLevel serverLevel) {
                         for (int i = 0; i < 5; ++i) {
                             Vec3 vec3 = new Vec3(((double) Ravaged.this.random.nextFloat() - 0.5D) * 0.1D,
                                     Math.random() * 0.1D + 0.1D, 0.0D);

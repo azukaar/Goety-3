@@ -16,21 +16,21 @@ public class SoulCandlestickBlockEntity extends BlockEntity{
     }
 
     public void tick(){
-        if (this.level != null){
+        if (this.getLevel() != null){
             boolean flag = this.checkCage() && this.cursedCageTile.getSouls() > 0;
-            this.level.setBlock(this.getBlockPos(), this.getBlockState().setValue(NecroBrazierBlock.LIT, flag), 3);
+            this.getLevel().setBlock(this.getBlockPos(), this.getBlockState().setValue(NecroBrazierBlock.LIT, flag), 3);
         }
     }
 
     public void drainSouls(int amount, BlockPos blockPos){
-        if (this.level != null){
+        if (this.getLevel() != null){
             if (this.checkCage()) {
                 if (this.cursedCageTile.getSouls() > amount) {
                     this.cursedCageTile.decreaseSouls(amount);
                     double d0 = 0.1D * (blockPos.getX() - this.getBlockPos().getX());
                     double d1 = 0.1D * (blockPos.getY() - this.getBlockPos().getY());
                     double d2 = 0.1D * (blockPos.getZ() - this.getBlockPos().getZ());
-                    if (this.level instanceof ServerLevel serverLevel) {
+                    if (this.getLevel() instanceof ServerLevel serverLevel) {
                         serverLevel.sendParticles(ModParticleTypes.SOUL_EXPLODE_BITS.get(), this.getBlockPos().getX() + 0.5D, this.getBlockPos().getY() + 0.75D, this.getBlockPos().getZ() + 0.5D, 0, d0, d1, d2, 0.5D);
                     }
                 }
@@ -39,7 +39,7 @@ public class SoulCandlestickBlockEntity extends BlockEntity{
     }
 
     public int getSouls(){
-        if (this.level != null){
+        if (this.getLevel() != null){
             if (this.checkCage()){
                 return this.cursedCageTile.getSouls();
             }
@@ -48,13 +48,13 @@ public class SoulCandlestickBlockEntity extends BlockEntity{
     }
 
     private boolean checkCage() {
-        if (this.level == null){
+        if (this.getLevel() == null){
             return false;
         }
         BlockPos pos = new BlockPos(this.getBlockPos().getX(), this.getBlockPos().getY() - 1, this.getBlockPos().getZ());
-        BlockState blockState = this.level.getBlockState(pos);
+        BlockState blockState = this.getLevel().getBlockState(pos);
         if (blockState.is(ModBlocks.CURSED_CAGE_BLOCK.get())){
-            BlockEntity tileentity = this.level.getBlockEntity(pos);
+            BlockEntity tileentity = this.getLevel().getBlockEntity(pos);
             if (tileentity instanceof CursedCageBlockEntity){
                 this.cursedCageTile = (CursedCageBlockEntity) tileentity;
                 return !cursedCageTile.getItem().isEmpty();

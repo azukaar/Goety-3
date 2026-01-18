@@ -30,7 +30,7 @@ public class TallSkullModel extends SkullModelBase {
         this.head.xRot = p_225603_3_ * ((float)Math.PI / 180F);
     }
 
-    public void renderToBuffer(PoseStack pMatrixStack, VertexConsumer pBuffer, int pPackedLight, int pPackedOverlay, float pRed, float pGreen, float pBlue, float pAlpha) {
-        this.head.render(pMatrixStack, pBuffer, pPackedLight, pPackedOverlay, pRed, pGreen, pBlue, pAlpha);
+    public void renderToBuffer(PoseStack pMatrixStack, VertexConsumer pBuffer, int pPackedLight, int pPackedOverlay, int pColor) {
+        this.head.render(pMatrixStack, pBuffer, pPackedLight, pPackedOverlay, pColor);
     }
 }

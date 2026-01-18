@@ -15,9 +15,9 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 
 public class IceChunkRenderer extends EntityRenderer<IceChunk> {
-    private static final ResourceLocation TEXTURE = new ResourceLocation(Goety.MOD_ID,
+    private static final ResourceLocation TEXTURE = ResourceLocation.fromNamespaceAndPath(Goety.MOD_ID,
             "textures/entity/projectiles/ice_chunk.png");
-    private static final ResourceLocation SPAWN = new ResourceLocation(Goety.MOD_ID,
+    private static final ResourceLocation SPAWN = ResourceLocation.fromNamespaceAndPath(Goety.MOD_ID,
             "textures/entity/projectiles/ice_chunk_spawn.png");
     private final IceChunkModel<IceChunk> model;
 

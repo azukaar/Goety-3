@@ -28,7 +28,7 @@ public class EndermiteServant extends Summoned {
    protected void registerGoals() {
       super.registerGoals();
       this.goalSelector.addGoal(1, new FloatGoal(this));
-      this.goalSelector.addGoal(1, new ClimbOnTopOfPowderSnowGoal(this, this.level));
+      this.goalSelector.addGoal(1, new ClimbOnTopOfPowderSnowGoal(this, this.level()));
       this.goalSelector.addGoal(2, new MeleeAttackGoal(this, 1.0D, false));
       this.targetSelector.addGoal(1, (new HurtByTargetGoal(this)).setAlertOthers());
    }
@@ -85,9 +85,9 @@ public class EndermiteServant extends Summoned {
 
    @Override
    public void lifeSpanDamage() {
-      if (!this.level.isClientSide){
-         for(int i = 0; i < this.level.random.nextInt(10) + 10; ++i) {
-            ServerParticleUtil.smokeParticles(ParticleTypes.DRAGON_BREATH, this.getX(), this.getEyeY(), this.getZ(), this.level);
+      if (!this.level().isClientSide){
+         for(int i = 0; i < this.level().random.nextInt(10) + 10; ++i) {
+            ServerParticleUtil.smokeParticles(ParticleTypes.DRAGON_BREATH, this.getX(), this.getEyeY(), this.getZ(), this.level());
          }
       }
       this.discard();
@@ -95,9 +95,9 @@ public class EndermiteServant extends Summoned {
 
    public void aiStep() {
       super.aiStep();
-      if (this.level.isClientSide) {
+      if (this.level().isClientSide) {
          for(int i = 0; i < 2; ++i) {
-            this.level.addParticle(ParticleTypes.PORTAL, this.getRandomX(0.5D), this.getRandomY(), this.getRandomZ(0.5D), (this.random.nextDouble() - 0.5D) * 2.0D, -this.random.nextDouble(), (this.random.nextDouble() - 0.5D) * 2.0D);
+            this.level().addParticle(ParticleTypes.PORTAL, this.getRandomX(0.5D), this.getRandomY(), this.getRandomZ(0.5D), (this.random.nextDouble() - 0.5D) * 2.0D, -this.random.nextDouble(), (this.random.nextDouble() - 0.5D) * 2.0D);
          }
       }
 

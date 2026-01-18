@@ -129,25 +129,25 @@ public class RaidBossSummon extends Raider {
 
         this.setDeltaMovement(Vec3.ZERO);
 
-        if (this.level.getDifficulty() == Difficulty.PEACEFUL) {
+        if (this.level().getDifficulty() == Difficulty.PEACEFUL) {
             this.discard();
         }
 
-        List<Raider> list = this.level.getEntitiesOfClass(Raider.class, this.getBoundingBox().inflate(100.0),
+        List<Raider> list = this.level().getEntitiesOfClass(Raider.class, this.getBoundingBox().inflate(100.0),
                 (raider) -> raider.hasActiveRaid()
                         && !(raider instanceof RaidBossSummon)
                         && !raider.getType().is(Tags.EntityTypes.BOSSES)
                         && !raider.getType().is(ModTags.EntityTypes.RAID_BOSS));
         if (this.hasActiveRaid()) {
-            if (!this.level.isClientSide) {
+            if (!this.level().isClientSide) {
                 this.setIllagersNearby(!list.isEmpty());
 
                 if (!this.isActive()) {
                     if (this.tickCount % 20 == 0) {
                         if (!this.areIllagersNearby()) {
-                            Player player = this.level.getNearestPlayer(this, 100.0D);
+                            Player player = this.level().getNearestPlayer(this, 100.0D);
                             if (player != null) {
-                                BlockPos blockPos = BlockFinder.SummonRadius(player.blockPosition(), this, this.level, 16);
+                                BlockPos blockPos = BlockFinder.SummonRadius(player.blockPosition(), this, this.level(), 16);
                                 this.moveTo(Vec3.atBottomCenterOf(blockPos));
                             }
                             MobUtil.moveDownToGround(this);
@@ -155,14 +155,14 @@ public class RaidBossSummon extends Raider {
                         }
                     }
                 } else {
-                    if (this.level instanceof ServerLevel serverWorld) {
+                    if (this.level() instanceof ServerLevel serverWorld) {
                         ++this.lifeTick;
                         HostileRedstoneMonstrosity redstoneMonstrosity = null;
                         if (this.lifeTick == 1) {
-                            Player player = this.level.getNearestPlayer(this, 100.0D);
+                            Player player = this.level().getNearestPlayer(this, 100.0D);
                             if (player != null) {
-                                redstoneMonstrosity = new HostileRedstoneMonstrosity(ModEntityType.HOSTILE_REDSTONE_MONSTROSITY.get(), this.level);
-                                BlockPos blockPos = BlockFinder.SummonRadius(player.blockPosition(), redstoneMonstrosity, this.level, 16);
+                                redstoneMonstrosity = new HostileRedstoneMonstrosity(ModEntityType.HOSTILE_REDSTONE_MONSTROSITY.get(), this.level());
+                                BlockPos blockPos = BlockFinder.SummonRadius(player.blockPosition(), redstoneMonstrosity, this.level(), 16);
                                 this.moveTo(Vec3.atBottomCenterOf(blockPos));
                             }
                             MobUtil.moveDownToGround(this);
@@ -185,7 +185,7 @@ public class RaidBossSummon extends Raider {
                                     }
                                 }
                                 if (redstoneMonstrosity == null) {
-                                    redstoneMonstrosity = new HostileRedstoneMonstrosity(ModEntityType.HOSTILE_REDSTONE_MONSTROSITY.get(), this.level);
+                                    redstoneMonstrosity = new HostileRedstoneMonstrosity(ModEntityType.HOSTILE_REDSTONE_MONSTROSITY.get(), this.level());
                                 }
                                 redstoneMonstrosity.finalizeSpawn(serverWorld, serverWorld.getCurrentDifficultyAt(this.blockPosition()), MobSpawnType.MOB_SUMMONED, null, null);
                                 redstoneMonstrosity.setCanJoinRaid(true);
@@ -210,13 +210,13 @@ public class RaidBossSummon extends Raider {
 
         if (this.hasActiveRaid() && this.getCurrentRaid() != null && this.getCurrentRaid().isOver()) {
             this.getCurrentRaid().removeFromRaid(this, true);
-            if (!this.level.isClientSide) {
+            if (!this.level().isClientSide) {
                 this.discard();
             }
         }
         if (this.getCurrentRaid() == null) {
             if (this.tickCount % 100 == 0) {
-                if (!this.level.isClientSide) {
+                if (!this.level().isClientSide) {
                     this.discard();
                 }
             }

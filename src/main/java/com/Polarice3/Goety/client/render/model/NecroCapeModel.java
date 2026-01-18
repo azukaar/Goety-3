@@ -188,8 +188,8 @@ public class NecroCapeModel<T extends LivingEntity> extends HumanoidModel<T> {
         this.cape.xRot = MathHelper.modelDegrees(10.0F) + Mth.abs(Mth.cos(limbSwing * 0.6662F) * 0.7F * limbSwingAmount / f);
         if (pEntity.getVehicle() != null){
             if (pEntity.getVehicle().isAlive() && pEntity.getVehicle() instanceof LivingEntity livingEntity) {
-                float f8 = livingEntity.walkAnimation.speed(Minecraft.getInstance().getPartialTick());
-                float f5 = livingEntity.walkAnimation.position(Minecraft.getInstance().getPartialTick());
+                float f8 = livingEntity.walkAnimation.speed(Minecraft.getInstance().getTimer().getGameTimeDeltaPartialTick(true));
+                float f5 = livingEntity.walkAnimation.position(Minecraft.getInstance().getTimer().getGameTimeDeltaPartialTick(true));
                 if (livingEntity.isBaby()) {
                     f5 *= 3.0F;
                 }
@@ -203,8 +203,8 @@ public class NecroCapeModel<T extends LivingEntity> extends HumanoidModel<T> {
     }
 
     @Override
-    public void renderToBuffer(PoseStack poseStack, VertexConsumer vertexConsumer, int packedLight, int packedOverlay, float red, float green, float blue, float alpha) {
-        this.bodyParts().forEach((modelPart -> modelPart.render(poseStack, vertexConsumer, packedLight, packedOverlay, red, green, blue, alpha)));
+    public void renderToBuffer(PoseStack poseStack, VertexConsumer vertexConsumer, int packedLight, int packedOverlay, int color) {
+        this.bodyParts().forEach((modelPart -> modelPart.render(poseStack, vertexConsumer, packedLight, packedOverlay, color)));
     }
 
     @Override

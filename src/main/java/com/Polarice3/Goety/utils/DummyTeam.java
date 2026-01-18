@@ -3,12 +3,15 @@ package com.Polarice3.Goety.utils;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.world.scores.Team;
-
+import net.minecraft.world.scores.PlayerTeam;
+import net.minecraft.world.scores.Scoreboard;
 import java.util.ArrayList;
 import java.util.Collection;
 
-public class DummyTeam extends Team {
+public class DummyTeam extends PlayerTeam {
+    public DummyTeam() {
+        super(new Scoreboard(), "goety:dummy");
+    }
     @Override
     public String getName() {
         return "goety:dummy";

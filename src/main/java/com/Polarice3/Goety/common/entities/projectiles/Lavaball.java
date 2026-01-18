@@ -176,7 +176,7 @@ public class Lavaball extends LargeFireball implements ISpellEntity {
             this.level().gameEvent(GameEvent.PROJECTILE_LAND, blockpos,
                     GameEvent.Context.of(this, this.level().getBlockState(blockpos)));
         }
-        if (!this.level.isClientSide) {
+        if (!this.level().isClientSide) {
             Entity owner = this.getOwner();
             boolean flag = this.isDangerous();
             if (owner instanceof Player || (owner instanceof IOwned owned && owned.getTrueOwner() instanceof Player)) {
@@ -186,7 +186,7 @@ public class Lavaball extends LargeFireball implements ISpellEntity {
             }
             LootingExplosion.Mode lootMode = CuriosFinder.hasWanting(owner) ? LootingExplosion.Mode.LOOT
                     : LootingExplosion.Mode.REGULAR;
-            ExplosionUtil.lootExplode(this.level, owner, this.getX(), this.getY(), this.getZ(),
+            ExplosionUtil.lootExplode(this.level(), owner, this.getX(), this.getY(), this.getZ(),
                     this.getExplosionPower(), flag,
                     flag ? Explosion.BlockInteraction.DESTROY : Explosion.BlockInteraction.KEEP, lootMode);
             this.discard();
@@ -195,7 +195,7 @@ public class Lavaball extends LargeFireball implements ISpellEntity {
     }
 
     protected void onHitEntity(EntityHitResult pResult) {
-        if (!this.level.isClientSide) {
+        if (!this.level().isClientSide) {
             Entity entity = pResult.getEntity();
             Entity entity1 = this.getOwner();
             float damage = 6.0F;
@@ -209,11 +209,11 @@ public class Lavaball extends LargeFireball implements ISpellEntity {
             DamageSource damageSource = this.damageSources().fireball(this, this.getOwner());
             if (this.getOwner() instanceof LivingEntity livingEntity) {
                 if (CuriosFinder.hasNetherRobe(livingEntity)) {
-                    damageSource = ModDamageSource.magicFireball(this, this.getOwner(), this.level);
+                    damageSource = ModDamageSource.magicFireball(this, this.getOwner(), this.level());
                 }
                 if (MobUtil.getOwner(livingEntity) != null) {
                     if (CuriosFinder.hasNetherRobe(MobUtil.getOwner(livingEntity))) {
-                        damageSource = ModDamageSource.magicFireball(this, this.getOwner(), this.level);
+                        damageSource = ModDamageSource.magicFireball(this, this.getOwner(), this.level());
                     }
                 }
             }

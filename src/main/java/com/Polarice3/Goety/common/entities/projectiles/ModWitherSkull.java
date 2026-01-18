@@ -19,6 +19,7 @@ import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.WitherSkull;
 import net.minecraft.world.level.Explosion;
+import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.gameevent.GameEvent;
@@ -43,9 +44,9 @@ public class ModWitherSkull extends WitherSkull {
       this.reapplyPosition();
       double d0 = Math.sqrt(p_i50167_8_ * p_i50167_8_ + p_i50167_10_ * p_i50167_10_ + p_i50167_12_ * p_i50167_12_);
       if (d0 != 0.0D) {
-         this.xPower = p_i50167_8_ / d0 * 0.1D;
-         this.yPower = p_i50167_10_ / d0 * 0.1D;
-         this.zPower = p_i50167_12_ / d0 * 0.1D;
+         // this.accelerationX = p_i50167_8_ / d0 * 0.1D;
+         // this.accelerationY = p_i50167_10_ / d0 * 0.1D;
+         // this.accelerationZ = p_i50167_12_ / d0 * 0.1D;
       }
    }
 
@@ -146,7 +147,7 @@ public class ModWitherSkull extends WitherSkull {
    }
 
    protected void onHitEntity(EntityHitResult p_37626_) {
-      if (!this.level.isClientSide) {
+      if (!this.level().isClientSide) {
          Entity entity = p_37626_.getEntity();
          Entity entity1 = this.getOwner();
          boolean flag;
@@ -162,7 +163,7 @@ public class ModWitherSkull extends WitherSkull {
             flag = entity.hurt(this.damageSources().witherSkull(this, livingentity), damage + enchantment);
             if (flag) {
                if (entity.isAlive()) {
-                  this.doEnchantDamageEffects(livingentity, entity);
+                  // this.doEnchantDamageEffects(livingentity, entity);
                } else {
                   livingentity.heal(5.0F);
                }
@@ -194,16 +195,16 @@ public class ModWitherSkull extends WitherSkull {
          BlockPos blockpos = blockhitresult.getBlockPos();
          this.level().gameEvent(GameEvent.PROJECTILE_LAND, blockpos, GameEvent.Context.of(this, this.level().getBlockState(blockpos)));
       }
-      if (!this.level.isClientSide) {
+      if (!this.level().isClientSide) {
          Entity owner = this.getOwner();
-         boolean flag;aming = this.getFiery() > 0;
+         boolean flaming = this.getFiery() > 0;
          boolean loot = CuriosFinder.hasWanting(owner);
-         Explosion.BlockInteraction explodeMode = this.level.getGameRules().getBoolean(GameRules.RULE_MOB_GRIEFING) ? Explosion.BlockInteraction.DESTROY : Explosion.BlockInteraction.KEEP;
+         Explosion.BlockInteraction explodeMode = this.level().getGameRules().getBoolean(GameRules.RULE_MOB_GRIEFING) ? Explosion.BlockInteraction.DESTROY : Explosion.BlockInteraction.KEEP;
          if (this.getOwner() instanceof Player) {
             explodeMode = SpellConfig.WitherSkullGriefing.get() ? Explosion.BlockInteraction.DESTROY : Explosion.BlockInteraction.KEEP;
          }
          LootingExplosion.Mode lootMode = loot ? LootingExplosion.Mode.LOOT : LootingExplosion.Mode.REGULAR;
-         ExplosionUtil.lootExplode(this.level, this, this.getX(), this.getY(), this.getZ(), this.getExplosionPower(), flaming, explodeMode, lootMode);
+         ExplosionUtil.lootExplode(this.level(), this, this.getX(), this.getY(), this.getZ(), this.getExplosionPower(), flaming, explodeMode, lootMode);
          this.discard();
       }
    }

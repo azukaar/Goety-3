@@ -145,7 +145,7 @@ public class WarlockServant extends CultistServant implements RangedAttackMob {
             --this.coolDown;
         }
 
-        if (!this.level.isClientSide){
+        if (!this.level().isClientSide){
             if (this.isAlive()){
                 if (--this.targetCoolDown <= 0 && this.getRandom().nextBoolean()) {
                     this.findTarget();
@@ -158,7 +158,7 @@ public class WarlockServant extends CultistServant implements RangedAttackMob {
                 }
             }
             if (this.random.nextFloat() < 7.5E-4F) {
-                this.level.broadcastEntityEvent(this, (byte)15);
+                this.level().broadcastEntityEvent(this, (byte)15);
             }
             if (this.getShootTarget() != null) {
                 if (!this.isAlliedTarget(this.getShootTarget()) || (this.getTarget() != null && this.getTarget() == this.getShootTarget())) {
@@ -180,13 +180,13 @@ public class WarlockServant extends CultistServant implements RangedAttackMob {
                         flag = true;
                     }
                     if (!this.getActiveEffects().isEmpty()) {
-                        if (this.getActiveEffects().stream().anyMatch((mobEffectInstance -> mobEffectInstance.getEffect().getCategory() == MobEffectCategory.HARMFUL))){
+                        if (this.getActiveEffects().stream().anyMatch((mobEffectInstance -> mobEffectInstance.getEffect().value().getCategory() == MobEffectCategory.HARMFUL))){
                             flag = true;
                         }
                     }
                     if (flag){
                         if (this.tickCount % 60 == 0){
-                            Wartling wartling = new Wartling(ModEntityType.WARTLING.get(), this.level);
+                            Wartling wartling = new Wartling(ModEntityType.WARTLING.get(), this.level());
                             wartling.moveTo(this.blockPosition(), this.getYRot(), this.getXRot());
                             this.summonWartlings(wartling);
                         }
@@ -210,7 +210,7 @@ public class WarlockServant extends CultistServant implements RangedAttackMob {
     }
 
     protected void findTarget() {
-        this.shootTarget = this.level.getNearestEntity(this.level.getEntitiesOfClass(LivingEntity.class, this.getTargetSearchArea(this.getAttributeValue(Attributes.FOLLOW_RANGE)), (p_148152_) -> {
+        this.shootTarget = this.level().getNearestEntity(this.level().getEntitiesOfClass(LivingEntity.class, this.getTargetSearchArea(this.getAttributeValue(Attributes.FOLLOW_RANGE)), (p_148152_) -> {
             return true;
         }), TargetingConditions.forNonCombat().range(this.getAttributeValue(Attributes.FOLLOW_RANGE))
                 .selector(livingEntity -> this.isAlliedTarget(livingEntity) && (livingEntity instanceof Mob mob && mob.getTarget() != null && !(mob instanceof Wartling))), this, this.getX(), this.getEyeY(), this.getZ());
@@ -219,7 +219,7 @@ public class WarlockServant extends CultistServant implements RangedAttackMob {
     public void handleEntityEvent(byte p_34138_) {
         if (p_34138_ == 15) {
             for(int i = 0; i < this.random.nextInt(35) + 10; ++i) {
-                this.level.addParticle(ModParticleTypes.WARLOCK.get(), this.getX() + this.random.nextGaussian() * (double)0.13F, this.getBoundingBox().maxY + this.random.nextGaussian() * (double)0.13F, this.getZ() + this.random.nextGaussian() * (double)0.13F, 0.0D, 0.0D, 0.0D);
+                this.level().addParticle(ModParticleTypes.WARLOCK.get(), this.getX() + this.random.nextGaussian() * (double)0.13F, this.getBoundingBox().maxY + this.random.nextGaussian() * (double)0.13F, this.getZ() + this.random.nextGaussian() * (double)0.13F, 0.0D, 0.0D, 0.0D);
             }
         } else {
             super.handleEntityEvent(p_34138_);
@@ -242,32 +242,32 @@ public class WarlockServant extends CultistServant implements RangedAttackMob {
 
     @Override
     public void performRangedAttack(LivingEntity target, float velocity) {
-        if (target.distanceTo(this) < 6.0F && this.coolDown <= 0 && this.level.getBlockState(this.blockPosition().above(2)).isAir() && !(this.getTarget() instanceof Raider)) {
+        if (target.distanceTo(this) < 6.0F && this.coolDown <= 0 && this.level().getBlockState(this.blockPosition().above(2)).isAir() && !(this.getTarget() instanceof Raider)) {
             this.totalCool = Mth.nextInt(this.random, 6, 10);
             for (int i = 0; i < this.totalCool; ++i) {
-                MobUtil.throwSnapFungus(this, level);
+                MobUtil.throwSnapFungus(this, this.level());
             }
             this.coolDown = MathHelper.secondsToTicks(this.totalCool);
             if (!this.isSilent()) {
-                this.level.playSound((Player) null, this.getX(), this.getY(), this.getZ(), ModSounds.BLAST_FUNGUS_THROW.get(), this.getSoundSource(), 2.0F, 0.8F + this.random.nextFloat() * 0.4F);
+                this.level().playSound((Player) null, this.getX(), this.getY(), this.getZ(), ModSounds.BLAST_FUNGUS_THROW.get(), this.getSoundSource(), 2.0F, 0.8F + this.random.nextFloat() * 0.4F);
             }
         } else {
-            if (this.level instanceof ServerLevel) {
+            if (this.level() instanceof ServerLevel) {
                 if (this.isAlliedTarget(target) && this.getTarget() != target) {
                     if (!this.isSilent()) {
-                        this.level.playSound((Player) null, this.getX(), this.getY(), this.getZ(), ModSounds.BLAST_FUNGUS_THROW.get(), this.getSoundSource(), 2.0F, 0.8F + this.random.nextFloat() * 0.4F);
+                        this.level().playSound((Player) null, this.getX(), this.getY(), this.getZ(), ModSounds.BLAST_FUNGUS_THROW.get(), this.getSoundSource(), 2.0F, 0.8F + this.random.nextFloat() * 0.4F);
                     }
                     Vec3 vec3 = target.getDeltaMovement();
                     double d0 = target.getX() + vec3.x - this.getX();
                     double d1 = target.getEyeY() - (double)1.1F - this.getY();
                     double d2 = target.getZ() + vec3.z - this.getZ();
                     double d3 = Math.sqrt(d0 * d0 + d2 * d2);
-                    BerserkFungus berserkFungus = new BerserkFungus(this, this.level);
+                    BerserkFungus berserkFungus = new BerserkFungus(this, this.level());
                     berserkFungus.setXRot(berserkFungus.getXRot() - 20.0F);
                     berserkFungus.shoot(d0, d1 + d3 * 0.2D, d2, 0.75F, 8.0F);
-                    this.level.addFreshEntity(berserkFungus);
+                    this.level().addFreshEntity(berserkFungus);
                 } else {
-                    Wartling wartling = new Wartling(ModEntityType.WARTLING.get(), this.level);
+                    Wartling wartling = new Wartling(ModEntityType.WARTLING.get(), this.level());
                     wartling.setTarget(target);
                     if (this.isInFluidType()){
                         wartling.setPos(this.getX(), this.getY(0.5F), this.getZ());
@@ -288,15 +288,18 @@ public class WarlockServant extends CultistServant implements RangedAttackMob {
     }
 
     private void summonWartlings(Wartling wartling){
-        if (this.level instanceof ServerLevel serverLevel) {
+        if (this.level() instanceof ServerLevel serverLevel) {
             wartling.setTrueOwner(this);
             wartling.setLimitedLife(MathHelper.secondsToTicks(9));
-            this.getActiveEffects().stream().filter(mobEffect -> mobEffect.getEffect().getCategory() == MobEffectCategory.HARMFUL && !mobEffect.getEffect().getCurativeItems().isEmpty()).findFirst().ifPresent(effect -> {
-                wartling.setStoredEffect(effect);
-                this.removeEffect(effect.getEffect());
-            });
+            this.getActiveEffects().stream()
+                .filter(mobEffect -> mobEffect.getEffect().value().getCategory() == MobEffectCategory.HARMFUL)
+                .findFirst()
+                .ifPresent(effect -> {
+                    wartling.setStoredEffect(effect);
+                    this.removeEffect(effect.getEffect());
+                });
             wartling.finalizeSpawn(serverLevel, serverLevel.getCurrentDifficultyAt(this.blockPosition()), MobSpawnType.MOB_SUMMONED, null, null);
-            this.level.addFreshEntity(wartling);
+            this.level().addFreshEntity(wartling);
         }
     }
 

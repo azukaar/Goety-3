@@ -67,7 +67,7 @@ public class ArmoredRavager extends Ravager implements IRavager {
     }
 
     public void setArmorEquipment(ItemStack armor) {
-        if (!this.level.isClientSide) {
+        if (!this.level().isClientSide) {
             this.setItemSlot(EquipmentSlot.CHEST, armor);
             this.setDropChance(EquipmentSlot.CHEST, 0.0F);
             this.updateArmor();

@@ -37,7 +37,7 @@ public class SculkConverterBlockEntity extends ModBlockEntity implements IEnchan
     }
 
     public void activate(){
-        if (this.level != null && this.level instanceof ServerLevel serverLevel) {
+        if (this.getLevel() != null && this.getLevel() instanceof ServerLevel serverLevel) {
             if (this.checkCage()) {
                 int spread = this.enchantments.getOrDefault(ModEnchantments.POTENCY.get(), 0) + 1;
                 int cost = 5 * spread;
@@ -45,11 +45,11 @@ public class SculkConverterBlockEntity extends ModBlockEntity implements IEnchan
                     this.getRelay();
                     this.getCursedCageTile().decreaseSouls(cost);
                     int x = serverLevel.getRandom().nextInt(-1, 1);
-                    int y = (int) BlockFinder.moveBlockDownToGround(this.level, this.getBlockPos());
+                    int y = (int) BlockFinder.moveBlockDownToGround(this.getLevel(), this.getBlockPos());
                     int z = serverLevel.getRandom().nextInt(-1, 1);
                     BlockPos blockPos = new BlockPos(this.getBlockPos().getX() + x, y, this.getBlockPos().getZ() + z);
                     if (this.nearbyRelay != null){
-                        y = (int) BlockFinder.moveBlockDownToGround(this.level, this.nearbyRelay);
+                        y = (int) BlockFinder.moveBlockDownToGround(this.getLevel(), this.nearbyRelay);
                         blockPos = new BlockPos(this.nearbyRelay.getX() + x, y, this.nearbyRelay.getZ() + z);
                     }
                     this.sculkSpreader.addCursors(blockPos, spread);
@@ -60,13 +60,13 @@ public class SculkConverterBlockEntity extends ModBlockEntity implements IEnchan
     }
 
     public void findRelay(){
-        if (this.level != null) {
+        if (this.getLevel() != null) {
             if (this.nearbyRelay != null) {
-                BlockState blockState = this.level.getBlockState(this.nearbyRelay);
+                BlockState blockState = this.getLevel().getBlockState(this.nearbyRelay);
                 if (!(blockState.getBlock() instanceof SculkRelayBlock)) {
                     this.searchRelay();
                 } else {
-                    if (this.level instanceof ServerLevel serverLevel) {
+                    if (this.getLevel() instanceof ServerLevel serverLevel) {
                         Vec3 vec3 = Vec3.atCenterOf(this.getBlockPos());
                         serverLevel.sendParticles(new SculkBubbleParticleOption(new BlockPositionSource(this.nearbyRelay), (int) vec3.distanceTo(Vec3.atCenterOf(this.nearbyRelay)) * 2), vec3.x, vec3.y, vec3.z, 1, 0.0D, 0.0D, 0.0D, 0.0D);
                     }
@@ -78,13 +78,13 @@ public class SculkConverterBlockEntity extends ModBlockEntity implements IEnchan
     }
 
     public void getRelay(){
-        if (this.level != null) {
+        if (this.getLevel() != null) {
             if (this.nearbyRelay != null) {
-                BlockState blockState = this.level.getBlockState(this.nearbyRelay);
+                BlockState blockState = this.getLevel().getBlockState(this.nearbyRelay);
                 if (!(blockState.getBlock() instanceof SculkRelayBlock)) {
                     this.searchRelay();
                 } else {
-                    if (this.level instanceof ServerLevel serverLevel) {
+                    if (this.getLevel() instanceof ServerLevel serverLevel) {
                         serverLevel.sendParticles(new SculkChargeParticleOptions(0.0F), (double)this.nearbyRelay.getX() + 0.5D, (double)this.nearbyRelay.getY() + 1.15D, (double)this.nearbyRelay.getZ() + 0.5D, 2, 0.2D, 0.0D, 0.2D, 0.0D);
                         serverLevel.sendParticles(DustColorTransitionOptions.SCULK_TO_REDSTONE, (double)this.nearbyRelay.getX() + 0.5D, (double)this.nearbyRelay.getY() + 1.15D, (double)this.nearbyRelay.getZ() + 0.5D, 0, 0.0D, (double)serverLevel.random.nextFloat() * 0.04D, 0.0D, 0.9F);
                         Vec3 vec3 = Vec3.atCenterOf(this.getBlockPos());
@@ -101,12 +101,12 @@ public class SculkConverterBlockEntity extends ModBlockEntity implements IEnchan
     }
 
     private void searchRelay(){
-        if (this.level != null) {
+        if (this.getLevel() != null) {
             for (int i = -16; i <= 16; ++i) {
                 for (int j = -8; j <= 8; ++j) {
                     for (int k = -16; k <= 16; ++k) {
                         BlockPos blockpos1 = this.getBlockPos().offset(i, j, k);
-                        BlockState blockstate = this.level.getBlockState(blockpos1);
+                        BlockState blockstate = this.getLevel().getBlockState(blockpos1);
                         if (blockstate.getBlock() instanceof SculkRelayBlock) {
                             this.nearbyRelay = blockpos1;
                         }
@@ -117,28 +117,28 @@ public class SculkConverterBlockEntity extends ModBlockEntity implements IEnchan
     }
 
     public void tick(){
-        if (this.level != null) {
-            if (!this.level.isClientSide) {
+        if (this.getLevel() != null) {
+            if (!this.getLevel().isClientSide) {
                 if (!this.checkCage()) {
-                    this.level.setBlock(this.getBlockPos(), this.getBlockState().setValue(SculkConverterBlock.LIT, false), 3);
+                    this.getLevel().setBlock(this.getBlockPos(), this.getBlockState().setValue(SculkConverterBlock.LIT, false), 3);
                 } else {
-                    this.level.setBlock(this.getBlockPos(), this.getBlockState().setValue(SculkConverterBlock.LIT, true), 3);
+                    this.getLevel().setBlock(this.getBlockPos(), this.getBlockState().setValue(SculkConverterBlock.LIT, true), 3);
                 }
                 if (!this.sculkSpreader.getCursors().isEmpty()) {
-                    this.sculkSpreader.updateCursors(this.level, this.getBlockPos(), this.level.getRandom(), true);
+                    this.sculkSpreader.updateCursors(this.getLevel(), this.getBlockPos(), this.getLevel().getRandom(), true);
                 }
             }
         }
     }
 
     private boolean checkCage() {
-        if (this.level == null){
+        if (this.getLevel() == null){
             return false;
         }
         BlockPos pos = new BlockPos(this.getBlockPos().getX(), this.getBlockPos().getY() + 1, this.getBlockPos().getZ());
-        BlockState blockState = this.level.getBlockState(pos);
+        BlockState blockState = this.getLevel().getBlockState(pos);
         if (blockState.is(ModBlocks.CURSED_CAGE_BLOCK.get())){
-            BlockEntity tileentity = this.level.getBlockEntity(pos);
+            BlockEntity tileentity = this.getLevel().getBlockEntity(pos);
             if (tileentity instanceof CursedCageBlockEntity){
                 this.cursedCageTile = (CursedCageBlockEntity) tileentity;
                 return !cursedCageTile.getItem().isEmpty();

@@ -44,13 +44,13 @@ public abstract class AbstractWave extends SpellEntity {
     }
 
     @Override
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.getEntityData().define(SLAMMING, false);
-        this.getEntityData().define(LIFESPAN, 10);
-        this.getEntityData().define(WAITING_TICKS, 0);
-        this.getEntityData().define(Y_ROT, 0.0F);
-        this.getEntityData().define(WAVE_SCALE, 1.0F);
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(SLAMMING, false);
+        builder.define(LIFESPAN, 10);
+        builder.define(WAITING_TICKS, 0);
+        builder.define(Y_ROT, 0.0F);
+        builder.define(WAVE_SCALE, 1.0F);
     }
 
     public void readAdditionalSaveData(CompoundTag compoundTag) {
@@ -115,7 +115,7 @@ public abstract class AbstractWave extends SpellEntity {
 
     public void spawnParticleAt(float yOffset, float zOffset, float xOffset, ParticleOptions particleType) {
         Vec3 vec3 = new Vec3(xOffset, yOffset, zOffset).yRot((float) Math.toRadians(-this.getYRot()));
-        this.level.addParticle(particleType, this.getX() + vec3.x, this.getY() + vec3.y, this.getZ() + vec3.z, this.getDeltaMovement().x, 0.1F, this.getDeltaMovement().z);
+        this.level().addParticle(particleType, this.getX() + vec3.x, this.getY() + vec3.y, this.getZ() + vec3.z, this.getDeltaMovement().x, 0.1F, this.getDeltaMovement().z);
     }
 
     protected void playStepSound(BlockPos pos, BlockState state) {
@@ -141,7 +141,7 @@ public abstract class AbstractWave extends SpellEntity {
         }
         float f = Math.min(this.activeWaveTicks / 10.0F, 1.0F);
         Vec3 directionVec = new Vec3(0, 0, f * f * 0.2F).yRot((float) Math.toRadians(-this.getYRot()));
-        if (this.level.isClientSide) {
+        if (this.level().isClientSide) {
             if (this.lSteps > 0) {
                 double d5 = this.getX() + (this.lx - this.getX()) / (double) this.lSteps;
                 double d6 = this.getY() + (this.ly - this.getY()) / (double) this.lSteps;
@@ -157,7 +157,7 @@ public abstract class AbstractWave extends SpellEntity {
             this.reapplyPosition();
             this.setRot(this.getYRot(), this.getXRot());
         }
-        if (!this.level.isClientSide) {
+        if (!this.level().isClientSide) {
             this.attackEntities(getSlamAmount(1.0F) * 2.0F + 1.0F + this.getWaveScale());
         }
         Vec3 vec3 = this.getDeltaMovement().scale(0.9F).add(directionVec);
@@ -171,7 +171,7 @@ public abstract class AbstractWave extends SpellEntity {
 
     public boolean isWaitingTick() {
         if (this.getWaitingTicks() > 0) {
-            if (!this.level.isClientSide) {
+            if (!this.level().isClientSide) {
                 this.setWaitingTicks(this.getWaitingTicks() - 1);
             }
             this.setInvisible(true);
@@ -210,7 +210,7 @@ public abstract class AbstractWave extends SpellEntity {
                         this.getWaveScale() + newDim);
     }
 
-    @Override
+    // lerpTo signature may have changed in 1.21
     public void lerpTo(double x, double y, double z, float yr, float xr, int steps, boolean b) {
         this.lx = x;
         this.ly = y;

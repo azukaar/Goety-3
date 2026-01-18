@@ -37,12 +37,12 @@ public class SoulBomb extends ThrowableProjectile {
     protected void onHit(HitResult p_37406_) {
         super.onHit(p_37406_);
         this.playSound(ModSounds.BOLT_IMPACT.get());
-        if (!this.level.isClientSide) {
+        if (!this.level().isClientSide) {
             float damage = 0;
             if (this.getOwner() instanceof Mob mob && mob.getAttribute(Attributes.ATTACK_DAMAGE) != null){
                 damage = (float) mob.getAttributeValue(Attributes.ATTACK_DAMAGE);
             }
-            MobUtil.explosionDamage(this.level, this, this.damageSources().indirectMagic(this, this.getOwner()), this.getX(), this.getY(), this.getZ(), 2.0F, damage);
+            MobUtil.explosionDamage(this.level(), this, this.damageSources().indirectMagic(this, this.getOwner()), this.getX(), this.getY(), this.getZ(), 2.0F, damage);
             ModNetwork.sendToALL(new SSoulExplodePacket(this.blockPosition(), 2));
             this.discard();
         }

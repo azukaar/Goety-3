@@ -146,7 +146,7 @@ public class VindicatorChefServant extends VindicatorServant{
                         if (this.getAmbientSound() != null) {
                             this.playSound(this.getAmbientSound(), 1.0F, 1.25F);
                         }
-                        this.level.playSound(pPlayer, pPlayer, SoundEvents.ITEM_PICKUP, SoundSource.PLAYERS, 1.0F, 1.0F);
+                        this.level().playSound(pPlayer, pPlayer, SoundEvents.ITEM_PICKUP, SoundSource.PLAYERS, 1.0F, 1.0F);
                         return InteractionResult.SUCCESS;
                     }
                 }

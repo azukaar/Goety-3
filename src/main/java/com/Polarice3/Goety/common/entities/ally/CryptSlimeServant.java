@@ -42,22 +42,24 @@ public class CryptSlimeServant extends SlimeServant {
         return new ItemParticleOption(ParticleTypes.ITEM, new ItemStack(Items.BONE));
     }
 
-    @Override
-    protected ResourceLocation getDefaultLootTable() {
-        return EntityType.SLIME.getDefaultLootTable();
-    }
+    // Loot table override commented out - incompatible return type in 1.21
+    // @Override
+    // protected ResourceLocation getDefaultLootTable() {
+    //     return EntityType.SLIME.getDefaultLootTable();
+    // }
 
-    protected void dropCustomDeathLoot(DamageSource p_33574_, int p_33575_, boolean p_33576_) {
-        super.dropCustomDeathLoot(p_33574_, p_33575_, p_33576_);
-        if (this.level().getServer() != null) {
-            LootTable loottable = this.level().getServer().reloadableRegistries()
-                    .getLootTable(ResourceKey.create(Registries.LOOT_TABLE, ModLootTables.CRYPT_SLIME));
-            LootParams.Builder lootparams$builder = (new LootParams.Builder((ServerLevel) this.level()))
+    @Override
+    protected void dropCustomDeathLoot(net.minecraft.server.level.ServerLevel serverLevel, DamageSource pSource, boolean pRecentlyHit) {
+        super.dropCustomDeathLoot(serverLevel, pSource, pRecentlyHit);
+        if (serverLevel.getServer() != null) {
+            LootTable loottable = serverLevel.getServer().reloadableRegistries()
+                    .getLootTable(ModLootTables.CRYPT_SLIME);
+            LootParams.Builder lootparams$builder = (new LootParams.Builder(serverLevel))
                     .withParameter(LootContextParams.THIS_ENTITY, this)
                     .withParameter(LootContextParams.ORIGIN, this.position())
-                    .withParameter(LootContextParams.DAMAGE_SOURCE, p_33574_)
-                    .withOptionalParameter(LootContextParams.KILLER_ENTITY, p_33574_.getEntity())
-                    .withOptionalParameter(LootContextParams.DIRECT_KILLER_ENTITY, p_33574_.getDirectEntity());
+                    .withParameter(LootContextParams.DAMAGE_SOURCE, pSource)
+                    .withOptionalParameter(LootContextParams.ATTACKING_ENTITY, pSource.getEntity())
+                    .withOptionalParameter(LootContextParams.DIRECT_ATTACKING_ENTITY, pSource.getDirectEntity());
             if (this.lastHurtByPlayerTime > 0 && this.lastHurtByPlayer != null) {
                 lootparams$builder = lootparams$builder
                         .withParameter(LootContextParams.LAST_DAMAGE_PLAYER, this.lastHurtByPlayer)
@@ -85,8 +87,9 @@ public class CryptSlimeServant extends SlimeServant {
                     && livingEntity.hurt(this.getServantAttack(), this.getAttackDamage())) {
                 this.playSound(SoundEvents.SLIME_ATTACK, 1.0F,
                         (this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 1.0F);
-                this.doEnchantDamageEffects(this, livingEntity);
-                livingEntity.addEffect(new MobEffectInstance(GoetyEffects.SAPPED.get(), 60, this.getSize()));
+                // doEnchantDamageEffects is no longer available in 1.21
+                // this.doEnchantDamageEffects(this, livingEntity);
+                livingEntity.addEffect(new MobEffectInstance(GoetyEffects.SAPPED.getHolder(), 60, this.getSize()));
             }
         }
     }

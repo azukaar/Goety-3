@@ -44,21 +44,21 @@ public class FungusExplosion extends Explosion {
                         d0 = d0 / d3;
                         d1 = d1 / d3;
                         d2 = d2 / d3;
-                        float f = this.radius * (0.7F + this.level.random.nextFloat() * 0.6F);
+                        float f = this.radius * (0.7F + this.level().random.nextFloat() * 0.6F);
                         double d4 = this.x;
                         double d6 = this.y;
                         double d8 = this.z;
 
                         for(float f1 = 0.3F; f > 0.0F; f -= 0.22500001F) {
                             BlockPos blockpos = BlockPos.containing(d4, d6, d8);
-                            BlockState blockstate = this.level.getBlockState(blockpos);
-                            FluidState fluidstate = this.level.getFluidState(blockpos);
-                            Optional<Float> optional = this.damageCalculator.getBlockExplosionResistance(this, this.level, blockpos, blockstate, fluidstate);
+                            BlockState blockstate = this.level().getBlockState(blockpos);
+                            FluidState fluidstate = this.level().getFluidState(blockpos);
+                            Optional<Float> optional = this.damageCalculator.getBlockExplosionResistance(this, this.level(), blockpos, blockstate, fluidstate);
                             if (optional.isPresent()) {
                                 f -= (optional.get() + 0.3F) * 0.3F;
                             }
 
-                            if (f > 0.0F && this.damageCalculator.shouldBlockExplode(this, this.level, blockpos, blockstate, f)) {
+                            if (f > 0.0F && this.damageCalculator.shouldBlockExplode(this, this.level(), blockpos, blockstate, f)) {
                                 set.add(blockpos);
                             }
 
@@ -79,8 +79,8 @@ public class FungusExplosion extends Explosion {
         int i1 = Mth.floor(this.y + (double)f2 + 1.0D);
         int j2 = Mth.floor(this.z - (double)f2 - 1.0D);
         int j1 = Mth.floor(this.z + (double)f2 + 1.0D);
-        List<Entity> list = this.level.getEntities(this.source, new AABB((double)k1, (double)i2, (double)j2, (double)l1, (double)i1, (double)j1));
-        net.neoforged.event.EventFactory.onExplosionDetonate(this.level, this, list, f2);
+        List<Entity> list = this.level().getEntities(this.source, new AABB((double)k1, (double)i2, (double)j2, (double)l1, (double)i1, (double)j1));
+        net.neoforged.event.EventFactory.onExplosionDetonate(this.level(), this, list, f2);
         Vec3 vector3d = new Vec3(this.x, this.y, this.z);
 
         for (Entity entity : list) {
@@ -121,22 +121,22 @@ public class FungusExplosion extends Explosion {
     }
 
     public void finalizeExplosion(boolean pSpawnParticles) {
-        if (this.level.isClientSide) {
-            this.level.playLocalSound(this.x, this.y, this.z, ModSounds.BLAST_FUNGUS_EXPLODE.get(), SoundSource.BLOCKS, 4.0F, (1.0F + (this.level.random.nextFloat() - this.level.random.nextFloat()) * 0.2F) * 0.7F, false);
+        if (this.level().isClientSide) {
+            this.level().playLocalSound(this.x, this.y, this.z, ModSounds.BLAST_FUNGUS_EXPLODE.get(), SoundSource.BLOCKS, 4.0F, (1.0F + (this.level().random.nextFloat() - this.level().random.nextFloat()) * 0.2F) * 0.7F, false);
         }
 
         if (pSpawnParticles) {
             if (this.radius > 2.0F) {
-                this.level.addParticle(ModParticleTypes.FUNGUS_EXPLOSION_EMITTER.get(), this.x, this.y, this.z, 1.0D, 0.0D, 0.0D);
+                this.level().addParticle(ModParticleTypes.FUNGUS_EXPLOSION_EMITTER.get(), this.x, this.y, this.z, 1.0D, 0.0D, 0.0D);
             } else {
-                this.level.addParticle(ModParticleTypes.FUNGUS_EXPLOSION.get(), this.x, this.y, this.z, 1.0D, 0.0D, 0.0D);
+                this.level().addParticle(ModParticleTypes.FUNGUS_EXPLOSION.get(), this.x, this.y, this.z, 1.0D, 0.0D, 0.0D);
             }
         }
 
         if (this.fire) {
             for (BlockPos blockpos2 : this.toBlow) {
-                if (this.random.nextInt(3) == 0 && this.level.getBlockState(blockpos2).isAir() && this.level.getBlockState(blockpos2.below()).isSolidRender(this.level, blockpos2.below())) {
-                    this.level.setBlockAndUpdate(blockpos2, BaseFireBlock.getState(this.level, blockpos2));
+                if (this.random.nextInt(3) == 0 && this.level().getBlockState(blockpos2).isAir() && this.level().getBlockState(blockpos2.below()).isSolidRender(this.level(), blockpos2.below())) {
+                    this.level().setBlockAndUpdate(blockpos2, BaseFireBlock.getState(this.level(), blockpos2));
                 }
             }
         }

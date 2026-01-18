@@ -1,5 +1,8 @@
 package com.Polarice3.Goety.common.entities.projectiles;
 
+import net.minecraft.server.level.ServerEntity;
+import net.minecraft.network.syncher.SynchedEntityData;
+
 import com.Polarice3.Goety.api.entities.ISpellEntity;
 import com.Polarice3.Goety.common.network.ModNetwork;
 import com.Polarice3.Goety.common.network.client.CBeamPacket;
@@ -57,7 +60,7 @@ public abstract class AbstractBeam extends Entity implements ISpellEntity {
         LivingEntity owner = getOwner();
         if (this.level().isClientSide) {
             if (this.owner instanceof Player) {
-                ModNetwork.INSTANCE.sendToServer(new CBeamPacket(this));
+                ModNetwork.sendToServer(new CBeamPacket(this));
             }
             this.updatePositionAndRotation();
         }
@@ -178,7 +181,7 @@ public abstract class AbstractBeam extends Entity implements ISpellEntity {
     }
 
     @Override
-    protected void defineSynchedData() {
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
     }
 
     @Override
@@ -207,8 +210,8 @@ public abstract class AbstractBeam extends Entity implements ISpellEntity {
 
 
 
-    @Override
-    public @NotNull Packet<ClientGamePacketListener> getAddEntityPacket() {
-        return new net.minecraft.network.protocol.game.ClientboundAddEntityPacket(this);
+    // @Override
+    public Packet<ClientGamePacketListener> getAddEntityPacket(ServerEntity p_345479_) {
+        return new net.minecraft.network.protocol.game.ClientboundAddEntityPacket(this, p_345479_);
     }
 }

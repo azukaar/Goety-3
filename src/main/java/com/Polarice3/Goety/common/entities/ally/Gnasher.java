@@ -138,18 +138,19 @@ public class Gnasher extends AnimalSummon implements PlayerRideable, IAutoRideab
         return 1;
     }
 
-    @Override
+    // @Override
     public double getPassengersRidingOffset() {
-        return (double)this.dimensions.height * 0.5D;
+        return (double)this.getBbHeight() * 0.5D;
     }
 
+    // @Override
     protected float getStandingEyeHeight(Pose p_28352_, EntityDimensions p_28353_) {
         return 0.3F;
     }
 
     @Nullable
-    public SpawnGroupData finalizeSpawn(ServerLevelAccessor pLevel, DifficultyInstance pDifficulty, MobSpawnType pReason, @javax.annotation.Nullable SpawnGroupData pSpawnData, @javax.annotation.Nullable CompoundTag pDataTag) {
-        pSpawnData = super.finalizeSpawn(pLevel, pDifficulty, pReason, pSpawnData, pDataTag);
+    public SpawnGroupData finalizeSpawn(ServerLevelAccessor pLevel, DifficultyInstance pDifficulty, MobSpawnType pReason, @javax.annotation.Nullable SpawnGroupData pSpawnData) {
+        pSpawnData = super.finalizeSpawn(pLevel, pDifficulty, pReason, pSpawnData);
         if (pReason == MobSpawnType.MOB_SUMMONED && this.getTrueOwner() != null){
             ServerParticleUtil.addParticlesAroundMiddleSelf(pLevel.getLevel(), ParticleTypes.LARGE_SMOKE, this);
             ColorUtil color = new ColorUtil(0);
@@ -201,7 +202,7 @@ public class Gnasher extends AnimalSummon implements PlayerRideable, IAutoRideab
     //Based on @TeamAbnormal's tail animation codes:https://github.com/team-abnormals/upgrade-aquatic/blob/1.20.x/src/main/java/com/teamabnormals/upgrade_aquatic/common/entity/monster/Thrasher.java
     public void aiStep() {
         if (this.isAlive()) {
-            if (this.level.isClientSide) {
+            if (this.level().isClientSide) {
                 this.prevFinAnimation = this.finAnimation;
 
                 if (!this.isInWater()) {
@@ -327,7 +328,7 @@ public class Gnasher extends AnimalSummon implements PlayerRideable, IAutoRideab
     }
 
     protected void doPlayerRide(Player player) {
-        if (!this.level.isClientSide) {
+        if (!this.level().isClientSide) {
             player.setYRot(this.getYRot());
             player.setXRot(this.getXRot());
             player.startRiding(this);
@@ -336,9 +337,9 @@ public class Gnasher extends AnimalSummon implements PlayerRideable, IAutoRideab
 
     @Override
     public void lifeSpanDamage() {
-        if (!this.level.isClientSide){
-            for(int i = 0; i < this.level.random.nextInt(35) + 10; ++i) {
-                ServerParticleUtil.smokeParticles(ParticleTypes.POOF, this.getX(), this.getEyeY(), this.getZ(), this.level);
+        if (!this.level().isClientSide){
+            for(int i = 0; i < this.level().random.nextInt(35) + 10; ++i) {
+                ServerParticleUtil.smokeParticles(ParticleTypes.POOF, this.getX(), this.getEyeY(), this.getZ(), this.level());
             }
         }
         this.discard();
@@ -350,7 +351,7 @@ public class Gnasher extends AnimalSummon implements PlayerRideable, IAutoRideab
 
     public boolean isFood(ItemStack p_30440_) {
         Item item = p_30440_.getItem();
-        return item.isEdible() && p_30440_.getFoodProperties(this).isMeat();
+        return p_30440_.has(net.minecraft.core.component.DataComponents.FOOD) && p_30440_.is(net.minecraft.tags.ItemTags.MEAT);
     }
 
     public void travel(Vec3 travelVector) {
@@ -364,20 +365,20 @@ public class Gnasher extends AnimalSummon implements PlayerRideable, IAutoRideab
     }
 
     public InteractionResult mobInteract(Player pPlayer, InteractionHand pHand) {
-        if (!this.level.isClientSide){
+        if (!this.level().isClientSide){
             ItemStack itemstack = pPlayer.getItemInHand(pHand);
             if (this.getTrueOwner() != null && pPlayer == this.getTrueOwner()) {
                 if (itemstack.is(ItemTags.FISHES) && this.getHealth() < this.getMaxHealth()) {
                     FoodProperties foodProperties = itemstack.getFoodProperties(this);
                     if (foodProperties != null){
-                        this.heal((float)foodProperties.getNutrition());
+                        this.heal((float)foodProperties.nutrition());
                         if (!pPlayer.getAbilities().instabuild) {
                             itemstack.shrink(1);
                         }
 
                         this.gameEvent(GameEvent.EAT, this);
-                        this.eat(this.level, itemstack);
-                        if (this.level instanceof ServerLevel serverLevel) {
+                        this.eat(this.level(), itemstack);
+                        if (this.level() instanceof ServerLevel serverLevel) {
                             for (int i = 0; i < 7; ++i) {
                                 double d0 = this.random.nextGaussian() * 0.02D;
                                 double d1 = this.random.nextGaussian() * 0.02D;
@@ -409,7 +410,7 @@ public class Gnasher extends AnimalSummon implements PlayerRideable, IAutoRideab
             this.playSound(SoundEvents.PHANTOM_BITE, 1.0F, 0.75F);
             if (this.isUpgraded()){
                 if (entityIn instanceof LivingEntity livingEntity) {
-                    livingEntity.addEffect(new MobEffectInstance(GoetyEffects.SAPPED.get(), MathHelper.secondsToTicks(5), 0), this);
+                    livingEntity.addEffect(new MobEffectInstance(GoetyEffects.SAPPED.getHolder(), MathHelper.secondsToTicks(5), 0), this);
                 }
             }
         }

@@ -51,9 +51,9 @@ public abstract class LivingEntityMixin extends Entity {
 
     @Inject(method = "dropExperience", at = @At("HEAD"))
     public void dropExperience(CallbackInfo callbackInfo) {
-        if (this.level instanceof ServerLevel serverLevel) {
+        if (this.level() instanceof ServerLevel serverLevel) {
             if (this.lastHurtByPlayerTime <= 0 && !this.isAlwaysExperienceDropper()) {
-                if (this.lastHurtByMob instanceof IOwned owned && !this.wasExperienceConsumed() && this.level.getGameRules().getBoolean(GameRules.RULE_DOMOBLOOT)) {
+                if (this.lastHurtByMob instanceof IOwned owned && !this.wasExperienceConsumed() && this.level().getGameRules().getBoolean(GameRules.RULE_DOMOBLOOT)) {
                     if (owned.getMasterOwner() instanceof Player player) {
                         int reward = this.getExperienceReward();
                         ExperienceOrb.award(serverLevel, this.position(), reward);

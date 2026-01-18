@@ -10,7 +10,7 @@ import net.minecraft.resources.ResourceLocation;
 
 public class HuskServantRenderer extends ZombieServantRenderer {
    protected static final ResourceLocation TEXTURE = Goety.location("textures/entity/servants/zombie/husk_servant.png");
-   private static final ResourceLocation ZOMBIE_LOCATION = new ResourceLocation("textures/entity/zombie/husk.png");
+   private static final ResourceLocation ZOMBIE_LOCATION = ResourceLocation.withDefaultNamespace("textures/entity/zombie/husk.png");
 
    public HuskServantRenderer(EntityRendererProvider.Context p_174180_) {
       super(p_174180_, ModelLayers.HUSK, ModelLayers.HUSK_INNER_ARMOR, ModelLayers.HUSK_OUTER_ARMOR);

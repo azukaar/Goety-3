@@ -143,7 +143,7 @@ public class VoidRift extends CastSpellTrap {
         if (!this.isActivated()){
             int count = SpellConfig.RuptureDuration.get() / 3;
             if (this.tickCount % count == 0) {
-                if (this.level.isClientSide) {
+                if (this.level().isClientSide) {
                     if (this.getAnimation() < 2) {
                         this.setAnimation(this.getAnimation() + 1);
                     }
@@ -151,7 +151,7 @@ public class VoidRift extends CastSpellTrap {
                 this.playSound(ModSounds.RUMBLE.get(), 2.0F, this.random.nextFloat() + 0.75F);
             }
         } else {
-            if (this.level.isClientSide) {
+            if (this.level().isClientSide) {
                 if (this.tickCount % 20 == 0) {
                     if (this.isClosing) {
                         if (this.getAnimation() > 0) {
@@ -167,11 +167,11 @@ public class VoidRift extends CastSpellTrap {
                 }
             }
         }
-        if (!this.level.isClientSide) {
+        if (!this.level().isClientSide) {
             if (this.warmUp <= 0) {
                 if (!this.isActivated()) {
                     this.setActivated(true);
-                    this.level.broadcastEntityEvent(this, (byte) 100);
+                    this.level().broadcastEntityEvent(this, (byte) 100);
                 }
                 if (!this.playEvent) {
                     this.playSound(ModSounds.VOID_RIFT_OPEN.get(), 5.0F, 1.0F);
@@ -187,10 +187,10 @@ public class VoidRift extends CastSpellTrap {
                     int rangeInt = Mth.floor(range);
                     this.suckBlocks(rangeInt, rangeInt, rangeInt);
                 }*/
-                if (this.level instanceof ServerLevel serverWorld) {
+                if (this.level() instanceof ServerLevel serverWorld) {
                     ServerParticleUtil.gatheringParticles(ParticleTypes.PORTAL, this, serverWorld, (int)range);
                 }
-                for (Entity entity : this.level.getEntitiesOfClass(Entity.class, this.getBoundingBox().inflate(range))) {
+                for (Entity entity : this.level().getEntitiesOfClass(Entity.class, this.getBoundingBox().inflate(range))) {
                     if (!(entity instanceof Endermite)) {
                         if (entity instanceof ModFallingBlock modFallingBlock && modFallingBlock.getMode() == ModFallingBlock.FallingBlockMode.DEBRIS){
                             targets.add(entity);
@@ -229,7 +229,7 @@ public class VoidRift extends CastSpellTrap {
                     }
                 }
             } else {
-                if (this.level instanceof ServerLevel serverWorld) {
+                if (this.level() instanceof ServerLevel serverWorld) {
                     double d1 = this.getX() + (this.random.nextDouble() - 0.5D) * (double) this.getBbWidth();
                     double d2 = this.getY() + 0.5F;
                     double d3 = this.getZ() + (this.random.nextDouble() - 0.5D) * (double) this.getBbWidth();
@@ -243,17 +243,17 @@ public class VoidRift extends CastSpellTrap {
             if (this.tickCount >= this.getDuration()) {
                 if (!this.isClosing){
                     this.isClosing = true;
-                    this.level.broadcastEntityEvent(this, (byte) 101);
+                    this.level().broadcastEntityEvent(this, (byte) 101);
                 }
                 if (this.tickCount >= this.getDuration() + 20) {
-                    if (this.level instanceof ServerLevel serverLevel) {
+                    if (this.level() instanceof ServerLevel serverLevel) {
                         ColorUtil colorUtil = new ColorUtil(0x7317d2);
                         float range = 8.0F * (this.getSize() + 1.0F);
                         serverLevel.sendParticles(new ShockwaveParticleOption(colorUtil.red, colorUtil.green, colorUtil.blue, range, 0, true), this.getX(), this.getY() + 0.5D, this.getZ(), 0, 0, 0, 0, 0);
                         ServerParticleUtil.createParticleBall(ParticleTypes.DRAGON_BREATH, this.getX(), this.getY() + 0.5D, this.getZ(), serverLevel,  8 + (int) this.getSize());
                         this.playSound(SoundEvents.RESPAWN_ANCHOR_DEPLETE.get(), 5.0F, 0.5F);
                         this.playSound(SoundEvents.GENERIC_EXPLODE, 5.0F, 0.5F);
-                        new SpellExplosion(this.level, this.getOwner() != null ? this.getOwner() : this, this.damageSources().indirectMagic(this, this.getOwner()), this.blockPosition(), range / 4, 0.0F) {
+                        new SpellExplosion(this.level(), this.getOwner() != null ? this.getOwner() : this, this.damageSources().indirectMagic(this, this.getOwner()), this.blockPosition(), range / 4, 0.0F) {
                             @Override
                             public void explodeHurt(Entity target, DamageSource damageSource, double x, double y, double z, double seen, float actualDamage) {
                                 super.explodeHurt(target, damageSource, x, y, z, seen, actualDamage);
@@ -277,8 +277,8 @@ public class VoidRift extends CastSpellTrap {
         int MthX = Mth.floor(this.getX());
         int MthY = Mth.floor(this.getY());
         int MthZ = Mth.floor(this.getZ());
-        if (!this.level.isClientSide) {
-            if (this.level.getGameRules().getBoolean(GameRules.RULE_MOB_GRIEFING)) {
+        if (!this.level().isClientSide) {
+            if (this.level().getGameRules().getBoolean(GameRules.RULE_MOB_GRIEFING)) {
                 for (int i = -x; i <= x; ++i) {
                     for (int j = -y; j <= y; ++j) {
                         for (int k = -z; k <= z; ++k) {
@@ -287,15 +287,15 @@ public class VoidRift extends CastSpellTrap {
                             int n = MthZ + k;
                             BlockPos blockpos = new BlockPos(l, m, n);
 
-                            BlockState blockState = this.level.getBlockState(blockpos);
-                            BlockState above = this.level.getBlockState(blockpos.above());
-                            BlockEntity tileEntity = this.level.getBlockEntity(blockpos);
+                            BlockState blockState = this.level().getBlockState(blockpos);
+                            BlockState above = this.level().getBlockState(blockpos.above());
+                            BlockEntity tileEntity = this.level().getBlockEntity(blockpos);
                             if ((above == Blocks.AIR.defaultBlockState() || above == Blocks.WATER.defaultBlockState()) && blockState != Blocks.AIR.defaultBlockState() && !blockState.is(BlockTags.WITHER_IMMUNE) && !blockState.is(BlockTags.DRAGON_IMMUNE)) {
                                 if (tileEntity == null && random.nextInt(2000) == 0) {
-                                    this.level.removeBlock(blockpos, true);
-                                    ModFallingBlock fallingBlockEntity = new ModFallingBlock(this.level, l + 0.5D, m + 0.5D, n + 0.5D, blockState, 5);
-                                    this.level.setBlock(blockpos, blockState.getFluidState().createLegacyBlock(), 3);
-                                    this.level.addFreshEntity(fallingBlockEntity);
+                                    this.level().removeBlock(blockpos, true);
+                                    ModFallingBlock fallingBlockEntity = new ModFallingBlock(this.level(), l + 0.5D, m + 0.5D, n + 0.5D, blockState, 5);
+                                    this.level().setBlock(blockpos, blockState.getFluidState().createLegacyBlock(), 3);
+                                    this.level().addFreshEntity(fallingBlockEntity);
                                 }
                             }
                         }

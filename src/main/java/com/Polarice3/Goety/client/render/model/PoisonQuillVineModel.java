@@ -142,8 +142,8 @@ public class PoisonQuillVineModel<T extends PoisonQuillVine> extends Hierarchica
 	}
 
 	@Override
-	public void renderToBuffer(PoseStack poseStack, VertexConsumer vertexConsumer, int packedLight, int packedOverlay, float red, float green, float blue, float alpha) {
-		this.vine.render(poseStack, vertexConsumer, packedLight, packedOverlay, red, green, blue, alpha);
+	public void renderToBuffer(PoseStack poseStack, VertexConsumer vertexConsumer, int packedLight, int packedOverlay, int color) {
+		this.vine.render(poseStack, vertexConsumer, packedLight, packedOverlay, color);
 	}
 
 	@Override

@@ -12,9 +12,9 @@ public class MagicLightBlockEntity extends BlockEntity {
     }
 
     public void tick(ParticleOptions particleOptions){
-        if(this.level != null){
-            if (this.level instanceof ServerLevel serverLevel){
-                if (this.level.getGameTime() % 10 == 0){
+        if(this.getLevel() != null){
+            if (this.getLevel() instanceof ServerLevel serverLevel){
+                if (this.getLevel().getGameTime() % 10 == 0){
                     double d0 = (double)this.getBlockPos().getX() + 0.5D;
                     double d2 = (double)this.getBlockPos().getZ() + 0.5D;
                     serverLevel.sendParticles(particleOptions, d0, (double)this.getBlockPos().getY() + 0.5D, d2, 1, 0.0D, 0.0D, 0.0D, 0);

@@ -20,6 +20,7 @@ import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.level.Level;
+import net.minecraft.core.Holder;
 
 public class JungleZombieServant extends ZombieServant{
     public JungleZombieServant(EntityType<? extends Summoned> type, Level worldIn) {
@@ -60,10 +61,10 @@ public class JungleZombieServant extends ZombieServant{
     @Override
     public void tick() {
         super.tick();
-        if (this.level.isClientSide){
-            if (this.tickCount % 5 == 0 && this.level.random.nextBoolean()) {
+        if (this.level().isClientSide){
+            if (this.tickCount % 5 == 0 && this.level().random.nextBoolean()) {
                 double[] colors = MathHelper.rgbParticle(2735172);
-                this.level.addParticle(ModParticleTypes.BIG_CULT_SPELL.get(), this.getX(), this.getY() + 1.0D, this.getZ(),
+                this.level().addParticle(ModParticleTypes.BIG_CULT_SPELL.get(), this.getX(), this.getY() + 1.0D, this.getZ(),
                         colors[0],
                         colors[1],
                         colors[2]);
@@ -74,9 +75,9 @@ public class JungleZombieServant extends ZombieServant{
     public boolean doHurtTarget(Entity pEntity) {
         boolean flag = super.doHurtTarget(pEntity);
         if (flag && pEntity instanceof LivingEntity livingEntity) {
-            MobEffect mobEffect = MobEffects.POISON;
+            Holder<MobEffect> mobEffect = MobEffects.POISON;
             if (CuriosFinder.hasWildRobe(this.getTrueOwner())){
-                mobEffect = GoetyEffects.ACID_VENOM.get();
+                mobEffect = GoetyEffects.ACID_VENOM.getHolder();
             }
             livingEntity.addEffect(new MobEffectInstance(mobEffect, MathHelper.secondsToTicks(5)), this);
         }

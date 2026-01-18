@@ -116,12 +116,12 @@ public class FlyingItem extends SpellEntity implements ItemSupplier {
             double d5 = this.getOwner().getZ() - this.getZ();
             this.setYRot(-((float) Mth.atan2(d4, d5)) * (180F / (float) Math.PI));
         }
-        if (!this.level.isClientSide) {
+        if (!this.level().isClientSide) {
             ++this.life;
             if (this.life < 80){
                 this.setDeltaMovement(0.0D, 0.05D, 0.0D);
             } else if (this.life > 100) {
-                if (this.getOwner() != null && this.getOwner().level.dimension() == this.level.dimension()) {
+                if (this.getOwner() != null && this.getOwner().level.dimension() == this.level().dimension()) {
                     if (this.getOwner().distanceTo(this) >= 64){
                         this.teleportTowards(this.getOwner());
                     } else {
@@ -142,12 +142,12 @@ public class FlyingItem extends SpellEntity implements ItemSupplier {
                                 if (!player.getInventory().add(this.getItem())) {
                                     player.drop(this.getItem(), false, true);
                                 } else {
-                                    if (!this.level.isClientSide){
+                                    if (!this.level().isClientSide){
                                         ModNetwork.sendTo(player, new SPlayPlayerSoundPacket(SoundEvents.ITEM_PICKUP, 0.2F, (this.random.nextFloat() - this.random.nextFloat()) * 1.4F + 2.0F));
                                     }
                                 }
                             } else {
-                                this.level.addFreshEntity(new ItemEntity(this.level, this.getX(), this.getY(), this.getZ(), this.getItem()));
+                                this.level().addFreshEntity(new ItemEntity(this.level(), this.getX(), this.getY(), this.getZ(), this.getItem()));
                             }
                             this.discard();
                         }
@@ -160,12 +160,12 @@ public class FlyingItem extends SpellEntity implements ItemSupplier {
                         if (!player.getInventory().add(this.getItem())) {
                             player.drop(this.getItem(), false, true);
                         } else {
-                            if (!this.level.isClientSide){
+                            if (!this.level().isClientSide){
                                 ModNetwork.sendTo(player, new SPlayPlayerSoundPacket(SoundEvents.ITEM_PICKUP, 0.2F, (this.random.nextFloat() - this.random.nextFloat()) * 1.4F + 2.0F));
                             }
                         }
                     } else {
-                        this.level.addFreshEntity(new ItemEntity(this.level, this.getX(), this.getY(), this.getZ(), this.getItem()));
+                        this.level().addFreshEntity(new ItemEntity(this.level(), this.getX(), this.getY(), this.getZ(), this.getItem()));
                     }
                     this.discard();
                 }
@@ -174,13 +174,13 @@ public class FlyingItem extends SpellEntity implements ItemSupplier {
 
         if (this.isInWater()) {
             for(int i = 0; i < 4; ++i) {
-                this.level.addParticle(ParticleTypes.BUBBLE, d0 - vec3.x * 0.25D, d1 - vec3.y * 0.25D, d2 - vec3.z * 0.25D, vec3.x, vec3.y, vec3.z);
+                this.level().addParticle(ParticleTypes.BUBBLE, d0 - vec3.x * 0.25D, d1 - vec3.y * 0.25D, d2 - vec3.z * 0.25D, vec3.x, vec3.y, vec3.z);
             }
         } else {
-            this.level.addParticle(this.getParticle(), d0 - vec3.x * 0.25D + this.random.nextDouble() * 0.6D - 0.3D, d1 - vec3.y * 0.25D, d2 - vec3.z * 0.25D + this.random.nextDouble() * 0.6D - 0.3D, vec3.x, vec3.y, vec3.z);
+            this.level().addParticle(this.getParticle(), d0 - vec3.x * 0.25D + this.random.nextDouble() * 0.6D - 0.3D, d1 - vec3.y * 0.25D, d2 - vec3.z * 0.25D + this.random.nextDouble() * 0.6D - 0.3D, vec3.x, vec3.y, vec3.z);
         }
 
-        if (!this.level.isClientSide) {
+        if (!this.level().isClientSide) {
             this.setPos(d0, d1, d2);
         } else {
             this.setPosRaw(d0, d1, d2);

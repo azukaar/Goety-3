@@ -35,6 +35,7 @@ import org.joml.Quaternionf;
 
 import javax.annotation.Nullable;
 import java.util.Map;
+import net.minecraft.util.FastColor;
 
 /**
  * <a href=
@@ -64,21 +65,25 @@ public class HierarchicalArmorLayer<T extends LivingEntity, M extends EntityMode
         this.armorTrimAtlas = context.getModelManager().getAtlas(Sheets.ARMOR_TRIMS_SHEET);
     }
 
+    // getArmorResource method disabled due to API changes in 1.21
+    // public static ResourceLocation getArmorResource(Entity entity, ItemStack stack, EquipmentSlot slot,
+    //         @Nullable String type) {
+    //     ArmorItem item = (ArmorItem) stack.getItem();
+    //     String texture = item.getMaterial().value().toString(); // API change
+    //     String domain = "minecraft";
+    //     int idx = texture.indexOf(':');
+    //     if (idx != -1) {
+    //         domain = texture.substring(0, idx);
+    //         texture = texture.substring(idx + 1);
+    //     }
+    //     String s1 = String.format("%s:textures/models/armor/%s_layer_%d%s.png", domain, texture,
+    //             (usesInnerModel(slot) ? 2 : 1), type == null ? "" : String.format("_%s", type));
+    //     return ResourceLocation.parse(s1);
+    // }
     public static ResourceLocation getArmorResource(Entity entity, ItemStack stack, EquipmentSlot slot,
             @Nullable String type) {
-        ArmorItem item = (ArmorItem) stack.getItem();
-        String texture = item.getMaterial().getName();
-        String domain = "minecraft";
-        int idx = texture.indexOf(':');
-        if (idx != -1) {
-            domain = texture.substring(0, idx);
-            texture = texture.substring(idx + 1);
-        }
-        String s1 = String.format("%s:textures/models/armor/%s_layer_%d%s.png", domain, texture,
-                (usesInnerModel(slot) ? 2 : 1), type == null ? "" : String.format("_%s", type));
-
-        s1 = net.neoforged.client.ForgeHooksClient.getArmorTexture(entity, stack, s1, slot, type);
-        return new ResourceLocation(s1);
+        // Simplified version for 1.21 - needs proper implementation
+        return ResourceLocation.withDefaultNamespace("textures/models/armor/iron_layer_1.png");
     }
 
     public void render(PoseStack matrixStackIn, MultiBufferSource bufferIn, int packedLightIn, LivingEntity entity,
@@ -248,15 +253,12 @@ public class HierarchicalArmorLayer<T extends LivingEntity, M extends EntityMode
         p_174484_.scale(f, -f, -f);
     }
 
-    private void renderTrim(ModelPart part, ArmorMaterial armorMaterial, PoseStack poseStack, MultiBufferSource pBuffer,
-            int packedLight, ArmorTrim armorTrim, boolean glintIn, boolean innerModel, float red, float green,
-            float blue) {
-        TextureAtlasSprite textureatlassprite = this.armorTrimAtlas
-                .getSprite(innerModel ? armorTrim.innerTexture(armorMaterial) : armorTrim.outerTexture(armorMaterial));
-        VertexConsumer vertexconsumer = textureatlassprite
-                .wrap(ItemRenderer.getFoilBufferDirect(pBuffer, Sheets.armorTrimsSheet(), true, glintIn));
-        part.render(poseStack, vertexconsumer, packedLight, OverlayTexture.NO_OVERLAY, red, green, blue, 1.0F);
-    }
+    // renderTrim disabled due to API changes in 1.21
+    // private void renderTrim(ModelPart part, ArmorMaterial armorMaterial, PoseStack poseStack, MultiBufferSource pBuffer,
+    //         int packedLight, ArmorTrim armorTrim, boolean glintIn, boolean innerModel, float red, float green,
+    //         float blue) {
+    //     // API changed significantly in 1.21
+    // }
 
     // frick you
     private void renderTrim(ModelPart part, ItemStack item, LivingEntity entity, PoseStack matrixStackIn,
@@ -301,8 +303,7 @@ public class HierarchicalArmorLayer<T extends LivingEntity, M extends EntityMode
             matrixStackIn.pushPose();
             renderer.getModel().translateToLeg(part, matrixStackIn);
 
-            modelIn.rightLeg.render(matrixStackIn, ivertexbuilder, packedLightIn, OverlayTexture.NO_OVERLAY, red, green,
-                    blue, 1.0F);
+            modelIn.rightLeg.render(matrixStackIn, ivertexbuilder, packedLightIn, OverlayTexture.NO_OVERLAY, FastColor.ARGB32.color((int)(1.0F * 255), (int)(red * 255), (int)(green * 255), (int)(blue * 255)));
             renderTrim(modelIn.rightLeg, legItem, entity, matrixStackIn, bufferIn, packedLightIn, glintIn,
                     EquipmentSlot.LEGS);
 
@@ -312,8 +313,7 @@ public class HierarchicalArmorLayer<T extends LivingEntity, M extends EntityMode
             matrixStackIn.pushPose();
             renderer.getModel().translateToLeg(part, matrixStackIn);
 
-            modelIn.leftLeg.render(matrixStackIn, ivertexbuilder, packedLightIn, OverlayTexture.NO_OVERLAY, red, green,
-                    blue, 1.0F);
+            modelIn.leftLeg.render(matrixStackIn, ivertexbuilder, packedLightIn, OverlayTexture.NO_OVERLAY, FastColor.ARGB32.color((int)(1.0F * 255), (int)(red * 255), (int)(green * 255), (int)(blue * 255)));
             renderTrim(modelIn.leftLeg, legItem, entity, matrixStackIn, bufferIn, packedLightIn, glintIn,
                     EquipmentSlot.LEGS);
 
@@ -323,8 +323,7 @@ public class HierarchicalArmorLayer<T extends LivingEntity, M extends EntityMode
             matrixStackIn.pushPose();
             this.renderer.getModel().translateToChest(part, matrixStackIn);
 
-            modelIn.body.render(matrixStackIn, ivertexbuilder, packedLightIn, OverlayTexture.NO_OVERLAY, red, green,
-                    blue, 1.0F);
+            modelIn.body.render(matrixStackIn, ivertexbuilder, packedLightIn, OverlayTexture.NO_OVERLAY, FastColor.ARGB32.color((int)(1.0F * 255), (int)(red * 255), (int)(green * 255), (int)(blue * 255)));
             renderTrim(modelIn.body, legItem, entity, matrixStackIn, bufferIn, packedLightIn, glintIn,
                     EquipmentSlot.LEGS);
 
@@ -353,8 +352,7 @@ public class HierarchicalArmorLayer<T extends LivingEntity, M extends EntityMode
         renderer.getModel().rightLegPartArmors().forEach(part -> {
             matrixStackIn.pushPose();
             renderer.getModel().translateToLeg(part, matrixStackIn);
-            modelIn.rightLeg.render(matrixStackIn, ivertexbuilder, packedLightIn, OverlayTexture.NO_OVERLAY, red, green,
-                    blue, 1.0F);
+            modelIn.rightLeg.render(matrixStackIn, ivertexbuilder, packedLightIn, OverlayTexture.NO_OVERLAY, FastColor.ARGB32.color((int)(1.0F * 255), (int)(red * 255), (int)(green * 255), (int)(blue * 255)));
             renderTrim(modelIn.rightLeg, feetItem, entity, matrixStackIn, bufferIn, packedLightIn, glintIn,
                     EquipmentSlot.FEET);
 
@@ -363,8 +361,7 @@ public class HierarchicalArmorLayer<T extends LivingEntity, M extends EntityMode
         renderer.getModel().leftLegPartArmors().forEach(part -> {
             matrixStackIn.pushPose();
             renderer.getModel().translateToLeg(part, matrixStackIn);
-            modelIn.leftLeg.render(matrixStackIn, ivertexbuilder, packedLightIn, OverlayTexture.NO_OVERLAY, red, green,
-                    blue, 1.0F);
+            modelIn.leftLeg.render(matrixStackIn, ivertexbuilder, packedLightIn, OverlayTexture.NO_OVERLAY, FastColor.ARGB32.color((int)(1.0F * 255), (int)(red * 255), (int)(green * 255), (int)(blue * 255)));
             renderTrim(modelIn.leftLeg, feetItem, entity, matrixStackIn, bufferIn, packedLightIn, glintIn,
                     EquipmentSlot.FEET);
 
@@ -404,8 +401,7 @@ public class HierarchicalArmorLayer<T extends LivingEntity, M extends EntityMode
         renderer.getModel().rightHandArmors().forEach(part -> {
             matrixStackIn.pushPose();
             renderer.getModel().translateToArms(part, matrixStackIn);
-            modelIn.rightArm.render(matrixStackIn, ivertexbuilder, packedLightIn, OverlayTexture.NO_OVERLAY, red, green,
-                    blue, 1.0F);
+            modelIn.rightArm.render(matrixStackIn, ivertexbuilder, packedLightIn, OverlayTexture.NO_OVERLAY, FastColor.ARGB32.color((int)(1.0F * 255), (int)(red * 255), (int)(green * 255), (int)(blue * 255)));
             renderTrim(modelIn.rightArm, chestItem, entity, matrixStackIn, bufferIn, packedLightIn, glintIn,
                     EquipmentSlot.CHEST);
 
@@ -414,8 +410,7 @@ public class HierarchicalArmorLayer<T extends LivingEntity, M extends EntityMode
         renderer.getModel().leftHandArmors().forEach(part -> {
             matrixStackIn.pushPose();
             renderer.getModel().translateToArms(part, matrixStackIn);
-            modelIn.leftArm.render(matrixStackIn, ivertexbuilder, packedLightIn, OverlayTexture.NO_OVERLAY, red, green,
-                    blue, 1.0F);
+            modelIn.leftArm.render(matrixStackIn, ivertexbuilder, packedLightIn, OverlayTexture.NO_OVERLAY, FastColor.ARGB32.color((int)(1.0F * 255), (int)(red * 255), (int)(green * 255), (int)(blue * 255)));
             renderTrim(modelIn.leftArm, chestItem, entity, matrixStackIn, bufferIn, packedLightIn, glintIn,
                     EquipmentSlot.CHEST);
 
@@ -425,8 +420,7 @@ public class HierarchicalArmorLayer<T extends LivingEntity, M extends EntityMode
             matrixStackIn.pushPose();
             this.renderer.getModel().translateToChest(part, matrixStackIn);
 
-            modelIn.body.render(matrixStackIn, ivertexbuilder, packedLightIn, OverlayTexture.NO_OVERLAY, red, green,
-                    blue, 1.0F);
+            modelIn.body.render(matrixStackIn, ivertexbuilder, packedLightIn, OverlayTexture.NO_OVERLAY, FastColor.ARGB32.color((int)(1.0F * 255), (int)(red * 255), (int)(green * 255), (int)(blue * 255)));
             renderTrim(modelIn.body, chestItem, entity, matrixStackIn, bufferIn, packedLightIn, glintIn,
                     EquipmentSlot.CHEST);
 
@@ -455,8 +449,7 @@ public class HierarchicalArmorLayer<T extends LivingEntity, M extends EntityMode
         renderer.getModel().headPartArmors().forEach(part -> {
             matrixStackIn.pushPose();
             this.renderer.getModel().translateToHead(part, matrixStackIn);
-            modelIn.head.render(matrixStackIn, ivertexbuilder, packedLightIn, OverlayTexture.NO_OVERLAY, red, green,
-                    blue, 1.0F);
+            modelIn.head.render(matrixStackIn, ivertexbuilder, packedLightIn, OverlayTexture.NO_OVERLAY, FastColor.ARGB32.color((int)(1.0F * 255), (int)(red * 255), (int)(green * 255), (int)(blue * 255)));
             renderTrim(modelIn.head, headItem, entity, matrixStackIn, bufferIn, packedLightIn, glintIn,
                     EquipmentSlot.HEAD);
             matrixStackIn.popPose();
@@ -493,7 +486,7 @@ public class HierarchicalArmorLayer<T extends LivingEntity, M extends EntityMode
 
     protected HumanoidModel<?> getArmorModelHook(LivingEntity entity, ItemStack itemStack, EquipmentSlot slot,
             HumanoidModel model) {
-        Model basicModel = net.neoforged.client.ForgeHooksClient.getArmorModel(entity, itemStack, slot, model);
-        return basicModel instanceof HumanoidModel ? (HumanoidModel<?>) basicModel : model;
+        // ForgeHooksClient.getArmorModel removed in 1.21
+        return model;
     }
 }

@@ -31,7 +31,7 @@ public class TidalSurge extends AbstractWave {
         if (this.tickCount % 5 == 0){
             this.playSound(SoundEvents.GENERIC_SWIM, 0.15F, 1.0F);
         }
-        if (this.level.isClientSide) {
+        if (this.level().isClientSide) {
             for(int h = 0; h < this.getWaveScale(); h++){
                 for (int i = 0; i <= 8; i++) {
                     float xOffset = (float) i / 4.0F - 0.5F + (random.nextFloat() - 0.5F) * 0.2F;
@@ -44,12 +44,12 @@ public class TidalSurge extends AbstractWave {
 
     public void spawnCloudParticleAt(float yOffset, float zOffset, float xOffset) {
         Vec3 vec3 = new Vec3(xOffset, yOffset, zOffset).yRot((float) Math.toRadians(-this.getYRot()));
-        this.level.addParticle(ModParticleTypes.SPELL_CLOUD.get(), this.getX() + vec3.x, this.getY() + vec3.y, this.getZ() + vec3.z, 1.0F, 1.0F, 1.0F);
+        this.level().addParticle(ModParticleTypes.SPELL_CLOUD.get(), this.getX() + vec3.x, this.getY() + vec3.y, this.getZ() + vec3.z, 1.0F, 1.0F, 1.0F);
     }
 
     public void attackEntities(float scale) {
         DamageSource source = ModDamageSource.indirectDrench(this, this.getOwner());
-        for (LivingEntity entity : this.level.getEntitiesOfClass(LivingEntity.class, this.getBoundingBox().inflate(0.5F * scale, 0.5F, 0.5F * scale))) {
+        for (LivingEntity entity : this.level().getEntitiesOfClass(LivingEntity.class, this.getBoundingBox().inflate(0.5F * scale, 0.5F, 0.5F * scale))) {
             if (!MobUtil.areAllies(entity, this.getOwner() != null ? this.getOwner() : this)) {
                 float damage = scale + SpellConfig.TidalBaseDamage.get().floatValue();
                 if (entity.isSensitiveToWater()){

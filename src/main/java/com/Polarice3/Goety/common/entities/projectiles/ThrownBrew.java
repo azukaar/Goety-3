@@ -94,7 +94,7 @@ public class ThrownBrew extends ThrowableItemProjectile implements ItemSupplier 
 
     protected void onHitBlock(BlockHitResult p_37541_) {
         super.onHitBlock(p_37541_);
-        if (!this.level.isClientSide) {
+        if (!this.level().isClientSide) {
             if (!this.isGas()) {
                 ItemStack itemstack = this.getItem();
                 Potion potion = PotionUtils.getPotion(itemstack);
@@ -113,8 +113,8 @@ public class ThrownBrew extends ThrowableItemProjectile implements ItemSupplier 
                 }
                 for (BrewEffectInstance brewEffectInstance : list) {
                     LivingEntity livingEntity = this.getOwner() instanceof LivingEntity living ? living : null;
-                    brewEffectInstance.getEffect().applyDirectionalBlockEffect(this.level, p_37541_.getBlockPos(), p_37541_.getDirection(), livingEntity, brewEffectInstance.getAmplifier(), BrewUtils.getAreaOfEffect(itemstack));
-                    brewEffectInstance.getEffect().applyBlockEffect(this.level, p_37541_.getBlockPos(), livingEntity, brewEffectInstance.getDuration(), brewEffectInstance.getAmplifier(), BrewUtils.getAreaOfEffect(itemstack));
+                    brewEffectInstance.getEffect().applyDirectionalBlockEffect(this.level(), p_37541_.getBlockPos(), p_37541_.getDirection(), livingEntity, brewEffectInstance.getAmplifier(), BrewUtils.getAreaOfEffect(itemstack));
+                    brewEffectInstance.getEffect().applyBlockEffect(this.level(), p_37541_.getBlockPos(), livingEntity, brewEffectInstance.getDuration(), brewEffectInstance.getAmplifier(), BrewUtils.getAreaOfEffect(itemstack));
                 }
             }
         }
@@ -122,13 +122,13 @@ public class ThrownBrew extends ThrowableItemProjectile implements ItemSupplier 
 
     protected void onHitEntity(EntityHitResult p_37259_) {
         super.onHitEntity(p_37259_);
-        if (!this.level.isClientSide) {
+        if (!this.level().isClientSide) {
             if (!this.isGas()) {
                 ItemStack itemstack = this.getItem();
                 List<BrewEffectInstance> list = BrewUtils.getBrewEffects(itemstack);
                 for (BrewEffectInstance brewEffectInstance : list) {
                     LivingEntity livingEntity = this.getOwner() instanceof LivingEntity living ? living : null;
-                    brewEffectInstance.getEffect().applyBlockEffect(this.level, p_37259_.getEntity().blockPosition(), livingEntity, brewEffectInstance.getDuration(), brewEffectInstance.getAmplifier(), BrewUtils.getAreaOfEffect(itemstack));
+                    brewEffectInstance.getEffect().applyBlockEffect(this.level(), p_37259_.getEntity().blockPosition(), livingEntity, brewEffectInstance.getDuration(), brewEffectInstance.getAmplifier(), BrewUtils.getAreaOfEffect(itemstack));
                 }
             }
         }
@@ -136,7 +136,7 @@ public class ThrownBrew extends ThrowableItemProjectile implements ItemSupplier 
 
     protected void onHit(HitResult p_37543_) {
         super.onHit(p_37543_);
-        if (!this.level.isClientSide) {
+        if (!this.level().isClientSide) {
             ItemStack itemstack = this.getItem();
             Potion potion = PotionUtils.getPotion(itemstack);
             List<MobEffectInstance> list = PotionUtils.getMobEffects(itemstack);
@@ -164,7 +164,7 @@ public class ThrownBrew extends ThrowableItemProjectile implements ItemSupplier 
         int area = BrewUtils.getAreaOfEffect(itemstack) + 4;
         int areaSqr = Mth.square(area);
         AABB aabb = this.getBoundingBox().inflate(area, area / 2.0D, area);
-        List<LivingEntity> list = this.level.getEntitiesOfClass(LivingEntity.class, aabb, WATER_SENSITIVE);
+        List<LivingEntity> list = this.level().getEntitiesOfClass(LivingEntity.class, aabb, WATER_SENSITIVE);
         if (!list.isEmpty()) {
             for(LivingEntity livingentity : list) {
                 double d0 = this.distanceToSqr(livingentity);
@@ -174,7 +174,7 @@ public class ThrownBrew extends ThrowableItemProjectile implements ItemSupplier 
             }
         }
 
-        for(Axolotl axolotl : this.level.getEntitiesOfClass(Axolotl.class, aabb)) {
+        for(Axolotl axolotl : this.level().getEntitiesOfClass(Axolotl.class, aabb)) {
             axolotl.rehydrate();
         }
 
@@ -185,7 +185,7 @@ public class ThrownBrew extends ThrowableItemProjectile implements ItemSupplier 
         int area = BrewUtils.getAreaOfEffect(itemstack) + 4;
         int areaSqr = Mth.square(area);
         AABB aabb = this.getBoundingBox().inflate(area, area / 2.0D, area);
-        List<LivingEntity> list = this.level.getEntitiesOfClass(LivingEntity.class, aabb);
+        List<LivingEntity> list = this.level().getEntitiesOfClass(LivingEntity.class, aabb);
         if (!list.isEmpty()) {
             Entity entity = this.getEffectSource();
 
@@ -230,7 +230,7 @@ public class ThrownBrew extends ThrowableItemProjectile implements ItemSupplier 
         ItemStack itemstack = this.getItem();
         int h = BrewUtils.getAreaOfEffect(itemstack);
         float i = BrewUtils.getLingering(itemstack);
-        BrewEffectCloud brewEffectCloud = new BrewEffectCloud(this.level, this.getX(), this.getY(), this.getZ());
+        BrewEffectCloud brewEffectCloud = new BrewEffectCloud(this.level(), this.getX(), this.getY(), this.getZ());
         Entity entity = this.getOwner();
         if (entity instanceof LivingEntity) {
             brewEffectCloud.setOwner((LivingEntity)entity);
@@ -258,7 +258,7 @@ public class ThrownBrew extends ThrowableItemProjectile implements ItemSupplier 
             brewEffectCloud.setFixedColor(compoundtag.getInt("CustomPotionColor"));
         }
 
-        this.level.addFreshEntity(brewEffectCloud);
+        this.level().addFreshEntity(brewEffectCloud);
     }
 
     private void makeBrewGas(ItemStack itemStack, HitResult hitResult){
@@ -270,7 +270,7 @@ public class ThrownBrew extends ThrowableItemProjectile implements ItemSupplier 
             EntityHitResult entityHitResult = (EntityHitResult) hitResult;
             blockPos = entityHitResult.getEntity().blockPosition();
         }
-        BrewGas brewGas = new BrewGas(this.level, blockPos.getX(), blockPos.getY(), blockPos.getZ());
+        BrewGas brewGas = new BrewGas(this.level(), blockPos.getX(), blockPos.getY(), blockPos.getZ());
         LivingEntity livingEntity = null;
         if (this.getOwner() instanceof LivingEntity livingEntity1) {
             livingEntity = livingEntity1;
@@ -278,10 +278,10 @@ public class ThrownBrew extends ThrowableItemProjectile implements ItemSupplier 
         brewGas.setGas(PotionUtils.getCustomEffects(itemStack), BrewUtils.getCustomEffects(itemStack),
                 120 * (i + 1), 3 * (h + 1), livingEntity);
 
-        this.level.addFreshEntity(brewGas);
+        this.level().addFreshEntity(brewGas);
 
-        if (!this.level.isClientSide){
-            ModNetwork.sendToALL(new SPlayWorldSoundPacket(blockPos, ModSounds.BREW_GAS.get(), 1.0F, this.level.random.nextFloat() * 0.1F + 0.9F));
+        if (!this.level().isClientSide){
+            ModNetwork.sendToALL(new SPlayWorldSoundPacket(blockPos, ModSounds.BREW_GAS.get(), 1.0F, this.level().random.nextFloat() * 0.1F + 0.9F));
         }
     }
 
@@ -294,15 +294,15 @@ public class ThrownBrew extends ThrowableItemProjectile implements ItemSupplier 
     }
 
     private void dowseFire(BlockPos p_150193_) {
-        BlockState blockstate = this.level.getBlockState(p_150193_);
+        BlockState blockstate = this.level().getBlockState(p_150193_);
         if (blockstate.is(BlockTags.FIRE)) {
-            this.level.removeBlock(p_150193_, false);
+            this.level().removeBlock(p_150193_, false);
         } else if (AbstractCandleBlock.isLit(blockstate)) {
-            AbstractCandleBlock.extinguish((Player)null, blockstate, this.level, p_150193_);
+            AbstractCandleBlock.extinguish((Player)null, blockstate, this.level(), p_150193_);
         } else if (CampfireBlock.isLitCampfire(blockstate)) {
-            this.level.levelEvent((Player)null, 1009, p_150193_, 0);
-            CampfireBlock.dowse(this.getOwner(), this.level, p_150193_, blockstate);
-            this.level.setBlockAndUpdate(p_150193_, blockstate.setValue(CampfireBlock.LIT, Boolean.valueOf(false)));
+            this.level().levelEvent((Player)null, 1009, p_150193_, 0);
+            CampfireBlock.dowse(this.getOwner(), this.level(), p_150193_, blockstate);
+            this.level().setBlockAndUpdate(p_150193_, blockstate.setValue(CampfireBlock.LIT, Boolean.valueOf(false)));
         }
 
     }

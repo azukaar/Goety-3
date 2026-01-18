@@ -37,10 +37,10 @@ public class SoulAbsorberBlockEntity extends ModBlockEntity implements Clearable
 
     public void tick() {
         boolean flag = this.getArcaOwner() != null;
-        if (this.level == null){
+        if (this.getLevel() == null){
             return;
         }
-        if (!this.level.isClientSide) {
+        if (!this.getLevel().isClientSide) {
             if (flag) {
                 if (!this.itemStack.isEmpty()) {
                     this.makeWorkParticles();
@@ -54,11 +54,11 @@ public class SoulAbsorberBlockEntity extends ModBlockEntity implements Clearable
                 }
             }
         }
-        this.level.setBlock(this.getBlockPos(), this.getBlockState().setValue(SoulAbsorberBlock.LIT, this.getArcaOwner() != null), 3);
+        this.getLevel().setBlock(this.getBlockPos(), this.getBlockState().setValue(SoulAbsorberBlock.LIT, this.getArcaOwner() != null), 3);
     }
 
     private void work() {
-        if (this.level == null){
+        if (this.getLevel() == null){
             return;
         }
         if (!this.itemStack.isEmpty()) {
@@ -71,15 +71,15 @@ public class SoulAbsorberBlockEntity extends ModBlockEntity implements Clearable
                     }
                 } else {
                     this.itemStack.shrink(1);
-                    this.level.playSound(null, this.getBlockPos(), SoundEvents.FIRE_AMBIENT, SoundSource.BLOCKS, 1.0F, 1.0F);
+                    this.getLevel().playSound(null, this.getBlockPos(), SoundEvents.FIRE_AMBIENT, SoundSource.BLOCKS, 1.0F, 1.0F);
                     this.finishParticles();
                     this.markUpdated();
                     this.cookingProgress = 0;
                 }
             } else {
                 Container iinventory = new SimpleContainer(this.itemStack);
-                int soulIncrease = this.level.getRecipeManager()
-                        .getRecipeFor(ModRecipeSerializer.SOUL_ABSORBER.get(), new net.minecraft.world.item.crafting.SingleRecipeInput(this.itemStack), this.level)
+                int soulIncrease = this.getLevel().getRecipeManager()
+                        .getRecipeFor(ModRecipeSerializer.SOUL_ABSORBER.get(), new net.minecraft.world.item.crafting.SingleRecipeInput(this.itemStack), this.getLevel())
                         .map(net.minecraft.world.item.crafting.RecipeHolder::value)
                         .map(SoulAbsorberRecipes::getSoulIncrease).orElse(25);
                 if (soulIncrease > 0){
@@ -90,7 +90,7 @@ public class SoulAbsorberBlockEntity extends ModBlockEntity implements Clearable
                         SEHelper.increaseSouls(this.getArcaOwner(), soulIncrease);
                     }
                     this.itemStack.shrink(1);
-                    this.level.playSound(null, this.getBlockPos(), SoundEvents.FIRE_AMBIENT, SoundSource.BLOCKS, 1.0F, 1.0F);
+                    this.getLevel().playSound(null, this.getBlockPos(), SoundEvents.FIRE_AMBIENT, SoundSource.BLOCKS, 1.0F, 1.0F);
                     this.finishParticles();
                     this.markUpdated();
                     this.cookingProgress = 0;
@@ -101,14 +101,14 @@ public class SoulAbsorberBlockEntity extends ModBlockEntity implements Clearable
     }
 
     public boolean placeItem(ItemStack pStack, int pCookTime) {
-        if (this.level == null){
+        if (this.getLevel() == null){
             return false;
         }
         if (this.itemStack.isEmpty()) {
             this.cookingTime = pCookTime;
             this.cookingProgress = 0;
             this.itemStack = pStack.split(1);
-            this.level.playSound(null, this.getBlockPos(), SoundEvents.EVOKER_CAST_SPELL, SoundSource.BLOCKS, 1.0F, 0.5F);
+            this.getLevel().playSound(null, this.getBlockPos(), SoundEvents.EVOKER_CAST_SPELL, SoundSource.BLOCKS, 1.0F, 0.5F);
             this.markUpdated();
             return true;
         }
@@ -148,7 +148,7 @@ public class SoulAbsorberBlockEntity extends ModBlockEntity implements Clearable
 
     @Override
     public boolean stillValid(Player pPlayer) {
-        if (this.level.getBlockEntity(this.worldPosition) != this) {
+        if (this.getLevel().getBlockEntity(this.worldPosition) != this) {
             return false;
         } else {
             return pPlayer.distanceToSqr((double)this.worldPosition.getX() + 0.5D, (double)this.worldPosition.getY() + 0.5D, (double)this.worldPosition.getZ() + 0.5D) <= 64.0D;
@@ -158,9 +158,9 @@ public class SoulAbsorberBlockEntity extends ModBlockEntity implements Clearable
     private void finishParticles() {
         BlockPos blockpos = this.getBlockPos();
 
-        if (this.level != null) {
-            if (!this.level.isClientSide) {
-                ServerLevel serverWorld = (ServerLevel) this.level;
+        if (this.getLevel() != null) {
+            if (!this.getLevel().isClientSide) {
+                ServerLevel serverWorld = (ServerLevel) this.getLevel();
                 serverWorld.sendParticles(ParticleTypes.LARGE_SMOKE, blockpos.getX() + 0.5D, blockpos.getY() + 0.5D, blockpos.getZ() + 0.5D, 1, 0, 0, 0, 0);
                 for (int p = 0; p < 6; ++p) {
                     double d0 = (double) blockpos.getX() + serverWorld.random.nextDouble();
@@ -175,7 +175,7 @@ public class SoulAbsorberBlockEntity extends ModBlockEntity implements Clearable
 
     private void makeWorkParticles() {
         BlockPos blockpos = this.getBlockPos();
-        ServerLevel serverLevel = (ServerLevel) this.level;
+        ServerLevel serverLevel = (ServerLevel) this.getLevel();
 
         if (serverLevel != null) {
             long t = serverLevel.getGameTime();
@@ -214,16 +214,16 @@ public class SoulAbsorberBlockEntity extends ModBlockEntity implements Clearable
     }
 
     private boolean checkArca() {
-        if (this.level == null){
+        if (this.getLevel() == null){
             return false;
         }
-        return this.level.getBlockState(new BlockPos(this.getBlockPos().getX(), this.getBlockPos().getY() - 1, this.getBlockPos().getZ())).is(ModBlocks.ARCA_BLOCK.get());
+        return this.getLevel().getBlockState(new BlockPos(this.getBlockPos().getX(), this.getBlockPos().getY() - 1, this.getBlockPos().getZ())).is(ModBlocks.ARCA_BLOCK.get());
     }
 
     private Player getArcaOwner(){
         if (this.checkArca()){
             BlockPos blockPos = new BlockPos(this.getBlockPos().getX(), this.getBlockPos().getY() - 1, this.getBlockPos().getZ());
-            ArcaBlockEntity arcaTileEntity = (ArcaBlockEntity) this.level.getBlockEntity(blockPos);
+            ArcaBlockEntity arcaTileEntity = (ArcaBlockEntity) this.getLevel().getBlockEntity(blockPos);
             if (arcaTileEntity != null && arcaTileEntity.getPlayer() != null){
                 return arcaTileEntity.getPlayer();
             }
@@ -232,7 +232,7 @@ public class SoulAbsorberBlockEntity extends ModBlockEntity implements Clearable
     }
 
     public Optional<SoulAbsorberRecipes> getRecipes(ItemStack pStack) {
-        return this.level.getRecipeManager().getRecipeFor(ModRecipeSerializer.SOUL_ABSORBER.get(), new net.minecraft.world.item.crafting.SingleRecipeInput(pStack), this.level)
+        return this.getLevel().getRecipeManager().getRecipeFor(ModRecipeSerializer.SOUL_ABSORBER.get(), new net.minecraft.world.item.crafting.SingleRecipeInput(pStack), this.getLevel())
                 .map(net.minecraft.world.item.crafting.RecipeHolder::value);
     }
 
@@ -248,13 +248,13 @@ public class SoulAbsorberBlockEntity extends ModBlockEntity implements Clearable
 
     @Override
     public boolean canPlaceItemThroughFace(int pIndex, ItemStack pItemStack, @Nullable Direction pDirection) {
-        if (this.level == null){
+        if (this.getLevel() == null){
             return false;
         }
         Optional<SoulAbsorberRecipes> optional = this.getRecipes(pItemStack);
         if (!optional.isPresent()) return false;
         if (this.getArcaOwner() == null) return false;
-        return !this.level.isClientSide && this.placeItem(pItemStack, optional.get().getCookingTime());
+        return !this.getLevel().isClientSide && this.placeItem(pItemStack, optional.get().getCookingTime());
     }
 
     @Override

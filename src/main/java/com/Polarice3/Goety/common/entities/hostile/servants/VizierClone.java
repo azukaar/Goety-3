@@ -69,9 +69,9 @@ public class VizierClone extends SpellcasterIllager {
     public void tick() {
         if (this.isEffectiveAi()) {
             if (this.getOwner() == null || this.getOwner().isDeadOrDying()) {
-                if (!this.level.isClientSide) {
-                    for (int i = 0; i < this.level.random.nextInt(35) + 10; ++i) {
-                        ServerParticleUtil.smokeParticles(ParticleTypes.POOF, this.getX(), this.getEyeY(), this.getZ(), this.level);
+                if (!this.level().isClientSide) {
+                    for (int i = 0; i < this.level().random.nextInt(35) + 10; ++i) {
+                        ServerParticleUtil.smokeParticles(ParticleTypes.POOF, this.getX(), this.getEyeY(), this.getZ(), this.level());
                     }
                 }
                 this.discard();
@@ -94,7 +94,7 @@ public class VizierClone extends SpellcasterIllager {
                         z = MobUtil.getHorizontalRightLookAngle(this.getOwner()).z * 4;
                     }
                     Vec3 vector3d = this.getDeltaMovement().multiply(1.0D, 0.6D, 1.0D);
-                    if (!this.level.isClientSide){
+                    if (!this.level().isClientSide){
                         double d0 = vector3d.y;
                         if (this.getY() < this.getOwner().getY() + 1.0D) {
                             d0 = Math.max(0.0D, d0);
@@ -157,12 +157,12 @@ public class VizierClone extends SpellcasterIllager {
         MobUtil.setBaseAttributes(this.getAttribute(Attributes.MAX_HEALTH), AttributesConfig.VizierHealth.get());
     }
 
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.entityData.define(OWNER_UNIQUE_ID, Optional.empty());
-        this.entityData.define(OWNER_CLIENT_ID, -1);
-        this.entityData.define(POSITION, 0);
-        this.entityData.define(VIZIER_FLAGS, (byte)0);
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(OWNER_UNIQUE_ID, Optional.empty());
+        builder.define(OWNER_CLIENT_ID, -1);
+        builder.define(POSITION, 0);
+        builder.define(VIZIER_FLAGS, (byte)0);
     }
 
     public void readAdditionalSaveData(CompoundTag compound) {
@@ -228,12 +228,12 @@ public class VizierClone extends SpellcasterIllager {
 
     @Nullable
     public Vizier getOwner() {
-        if (!this.level.isClientSide){
+        if (!this.level().isClientSide){
             UUID uuid = this.getOwnerId();
             return uuid == null ? null : EntityFinder.getLivingEntityByUuiD(uuid) instanceof Vizier vizier ? vizier : null;
         } else {
             int id = this.getOwnerClientId();
-            return id <= -1 ? null : this.level.getEntity(this.getOwnerClientId()) instanceof Vizier vizier ? vizier : null;
+            return id <= -1 ? null : this.level().getEntity(this.getOwnerClientId()) instanceof Vizier vizier ? vizier : null;
         }
     }
 
@@ -315,10 +315,10 @@ public class VizierClone extends SpellcasterIllager {
     }
 
     @Nullable
-    public SpawnGroupData finalizeSpawn(ServerLevelAccessor p_37856_, DifficultyInstance p_37857_, MobSpawnType p_37858_, @Nullable SpawnGroupData p_37859_, @Nullable CompoundTag p_37860_) {
+    public SpawnGroupData finalizeSpawn(ServerLevelAccessor p_37856_, DifficultyInstance p_37857_, MobSpawnType p_37858_, @Nullable SpawnGroupData p_37859_) {
         this.populateDefaultEquipmentSlots(p_37856_.getRandom(), p_37857_);
-        this.populateDefaultEquipmentEnchantments(p_37856_.getRandom(), p_37857_);
-        return super.finalizeSpawn(p_37856_, p_37857_, p_37858_, p_37859_, p_37860_);
+        this.populateDefaultEquipmentEnchantments(p_37856_, p_37856_.getRandom(), p_37857_);
+        return super.finalizeSpawn(p_37856_, p_37857_, p_37858_, p_37859_);
     }
 
     protected void populateDefaultEquipmentSlots(RandomSource randomSource, DifficultyInstance difficulty) {
@@ -326,7 +326,8 @@ public class VizierClone extends SpellcasterIllager {
         this.setDropChance(EquipmentSlot.MAINHAND, 0.0F);
     }
 
-    public void applyRaidBuffs(int wave, boolean p_213660_2_) {
+    @Override
+    public void applyRaidBuffs(ServerLevel p_37843_, int wave, boolean p_213660_2_) {
     }
 
     @Override
@@ -443,8 +444,8 @@ public class VizierClone extends SpellcasterIllager {
             if (livingentity != null) {
                 ++this.duration;
                 ++this.duration2;
-                if (!VizierClone.this.level.isClientSide) {
-                    ServerLevel serverWorld = (ServerLevel) VizierClone.this.level;
+                if (!VizierClone.this.level().isClientSide) {
+                    ServerLevel serverWorld = (ServerLevel) VizierClone.this.level();
                     for (int i = 0; i < 5; ++i) {
                         double d0 = serverWorld.random.nextGaussian() * 0.02D;
                         double d1 = serverWorld.random.nextGaussian() * 0.02D;
@@ -469,17 +470,17 @@ public class VizierClone extends SpellcasterIllager {
         }
 
         private void attack(LivingEntity livingEntity){
-            SwordProjectile swordProjectile = new SwordProjectile(VizierClone.this, VizierClone.this.level, VizierClone.this.getMainHandItem());
+            SwordProjectile swordProjectile = new SwordProjectile(VizierClone.this, VizierClone.this.level(), VizierClone.this.getMainHandItem());
             double d0 = livingEntity.getX() - VizierClone.this.getX();
             double d1 = livingEntity.getY(0.3333333333333333D) - swordProjectile.getY();
             double d2 = livingEntity.getZ() - VizierClone.this.getZ();
             double d3 = (double)Mth.sqrt((float) (d0 * d0 + d2 * d2));
             swordProjectile.pickup = AbstractArrow.Pickup.CREATIVE_ONLY;
-            swordProjectile.shoot(d0, d1 + d3 * (double)0.2F, d2, 1.6F, (float)(14 - VizierClone.this.level.getDifficulty().getId() * 4));
+            swordProjectile.shoot(d0, d1 + d3 * (double)0.2F, d2, 1.6F, (float)(14 - VizierClone.this.level().getDifficulty().getId() * 4));
             if (!VizierClone.this.getSensing().hasLineOfSight(livingEntity)){
                 swordProjectile.setNoPhysics(true);
             }
-            VizierClone.this.level.addFreshEntity(swordProjectile);
+            VizierClone.this.level().addFreshEntity(swordProjectile);
             if (!VizierClone.this.isSilent()) {
                 VizierClone.this.playSound(SoundEvents.DROWNED_SHOOT, 1.0F, 1.0F);
             }
@@ -492,11 +493,11 @@ public class VizierClone extends SpellcasterIllager {
 
             do {
                 BlockPos blockpos1 = blockpos.below();
-                BlockState blockstate = VizierClone.this.level.getBlockState(blockpos1);
-                if (blockstate.isFaceSturdy(VizierClone.this.level, blockpos1, Direction.UP)) {
-                    if (!VizierClone.this.level.isEmptyBlock(blockpos)) {
-                        BlockState blockstate1 = VizierClone.this.level.getBlockState(blockpos);
-                        VoxelShape voxelshape = blockstate1.getCollisionShape(VizierClone.this.level, blockpos);
+                BlockState blockstate = VizierClone.this.level().getBlockState(blockpos1);
+                if (blockstate.isFaceSturdy(VizierClone.this.level(), blockpos1, Direction.UP)) {
+                    if (!VizierClone.this.level().isEmptyBlock(blockpos)) {
+                        BlockState blockstate1 = VizierClone.this.level().getBlockState(blockpos);
+                        VoxelShape voxelshape = blockstate1.getCollisionShape(VizierClone.this.level(), blockpos);
                         if (!voxelshape.isEmpty()) {
                             d0 = voxelshape.max(Direction.Axis.Y);
                         }
@@ -510,7 +511,7 @@ public class VizierClone extends SpellcasterIllager {
             } while(blockpos.getY() >= Mth.floor(p_190876_5_) - 1);
 
             if (flag) {
-                VizierClone.this.level.addFreshEntity(new EvokerFangs(VizierClone.this.level, p_190876_1_, (double)blockpos.getY() + d0, p_190876_3_, p_190876_9_, p_190876_10_, VizierClone.this));
+                VizierClone.this.level().addFreshEntity(new EvokerFangs(VizierClone.this.level(), p_190876_1_, (double)blockpos.getY() + d0, p_190876_3_, p_190876_9_, p_190876_10_, VizierClone.this));
             }
 
         }
@@ -541,7 +542,7 @@ public class VizierClone extends SpellcasterIllager {
 
             for(int i = 0; i < 3; ++i) {
                 BlockPos blockpos1 = blockpos.offset(VizierClone.this.random.nextInt(8) - 4, VizierClone.this.random.nextInt(6) - 2, VizierClone.this.random.nextInt(8) - 4);
-                if (VizierClone.this.level.isEmptyBlock(blockpos1)) {
+                if (VizierClone.this.level().isEmptyBlock(blockpos1)) {
                     VizierClone.this.moveControl.setWantedPosition((double)blockpos1.getX() + 0.5D, (double)blockpos1.getY() + 0.5D, (double)blockpos1.getZ() + 0.5D, speed);
                     if (VizierClone.this.getTarget() == null) {
                         VizierClone.this.getLookControl().setLookAt((double)blockpos1.getX() + 0.5D, (double)blockpos1.getY() + 0.5D, (double)blockpos1.getZ() + 0.5D, 180.0F, 20.0F);

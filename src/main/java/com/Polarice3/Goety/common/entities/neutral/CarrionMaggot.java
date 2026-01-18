@@ -48,6 +48,7 @@ import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.entity.ai.navigation.PathNavigation;
 import net.minecraft.world.entity.ai.navigation.WallClimberNavigation;
 import org.jetbrains.annotations.Nullable;
 
@@ -176,7 +177,7 @@ public class CarrionMaggot extends Summoned {
       this.playSound(ModSounds.MAGGOT_STEP.get(), 0.15F, 1.0F);
    }
 
-   @Override
+   // @Override
    public MobType getMobType() {
       return MobType.ARTHROPOD;
    }

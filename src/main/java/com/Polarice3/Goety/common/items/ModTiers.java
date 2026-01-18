@@ -46,7 +46,7 @@ public enum ModTiers implements Tier {
     private final Supplier<Ingredient> repairIngredient;
 
     ModTiers(int pLevel, int pUses, float pSpeed, float pDamage, int pEnchantmentValue, Supplier<Ingredient> pRepairIngredient) {
-        this.level = pLevel;
+        this.level() = pLevel;
         this.uses = pUses;
         this.speed = pSpeed;
         this.damage = pDamage;
@@ -67,7 +67,7 @@ public enum ModTiers implements Tier {
     }
 
     public int getLevel() {
-        return this.level;
+        return this.level();
     }
 
     public int getEnchantmentValue() {

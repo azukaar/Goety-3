@@ -242,7 +242,7 @@ public class ModRavager extends RaiderServant implements PlayerRideable, IAutoRi
     }
 
     public void setArmorEquipment(ItemStack armor, boolean sound) {
-        if (!this.level.isClientSide) {
+        if (!this.level().isClientSide) {
             this.setItemSlot(EquipmentSlot.CHEST, armor);
             float chance = MobsConfig.PlayerRavagerArmorDrop.get() ? 2.0F : 0.0F;
             this.setDropChance(EquipmentSlot.CHEST, chance);
@@ -305,16 +305,16 @@ public class ModRavager extends RaiderServant implements PlayerRideable, IAutoRi
                     attribute.setBaseValue(Mth.lerp(0.1D, d1, d0));
                 }
             }
-            if (!this.level.isClientSide) {
-                if (this.level.getGameRules().getBoolean(GameRules.RULE_MOB_GRIEFING)) {
+            if (!this.level().isClientSide) {
+                if (this.level().getGameRules().getBoolean(GameRules.RULE_MOB_GRIEFING)) {
                     boolean flag = false;
                     AABB aabb = this.getBoundingBox().inflate(0.2D);
 
                     for (BlockPos blockpos : BlockPos.betweenClosed(Mth.floor(aabb.minX), Mth.floor(aabb.minY), Mth.floor(aabb.minZ), Mth.floor(aabb.maxX), Mth.floor(aabb.maxY), Mth.floor(aabb.maxZ))) {
-                        BlockState blockstate = this.level.getBlockState(blockpos);
+                        BlockState blockstate = this.level().getBlockState(blockpos);
                         Block block = blockstate.getBlock();
                         if (block instanceof LeavesBlock) {
-                            flag = this.level.destroyBlock(blockpos, true, this) || flag;
+                            flag = this.level().destroyBlock(blockpos, true, this) || flag;
                         }
                     }
                 }
@@ -363,7 +363,7 @@ public class ModRavager extends RaiderServant implements PlayerRideable, IAutoRi
             double d0 = this.getX() - (double)this.getBbWidth() * Math.sin((double)(this.yBodyRot * ((float)Math.PI / 180F))) + (this.random.nextDouble() * 0.6D - 0.3D);
             double d1 = this.getY() + (double)this.getBbHeight() - 0.3D;
             double d2 = this.getZ() + (double)this.getBbWidth() * Math.cos((double)(this.yBodyRot * ((float)Math.PI / 180F))) + (this.random.nextDouble() * 0.6D - 0.3D);
-            this.level.addParticle(ParticleTypes.ENTITY_EFFECT, d0, d1, d2, 0.4980392156862745D, 0.5137254901960784D, 0.5725490196078431D);
+            this.level().addParticle(ParticleTypes.ENTITY_EFFECT, d0, d1, d2, 0.4980392156862745D, 0.5137254901960784D, 0.5725490196078431D);
         }
 
     }
@@ -382,7 +382,7 @@ public class ModRavager extends RaiderServant implements PlayerRideable, IAutoRi
                 this.stunnedTick = 40;
                 this.roarCool = this.getRoarCoolMax();
                 this.playSound(this.getStunnedSound(), 1.0F, 1.0F);
-                this.level.broadcastEntityEvent(this, (byte)39);
+                this.level().broadcastEntityEvent(this, (byte)39);
                 p_33361_.push(this);
             } else {
                 this.strongKnockback(p_33361_);
@@ -397,13 +397,13 @@ public class ModRavager extends RaiderServant implements PlayerRideable, IAutoRi
             this.roarTick = 20;
             this.playSound(this.getRoarSound(), 1.0F, 1.0F);
             this.roarCool = this.getRoarCoolMax();
-            this.level.broadcastEntityEvent(this, (byte) 40);
+            this.level().broadcastEntityEvent(this, (byte) 40);
         }
     }
 
     private void roar() {
         if (this.isAlive()) {
-            for(LivingEntity livingentity : this.level.getEntitiesOfClass(LivingEntity.class, this.getBoundingBox().inflate(4.0D), NO_RAVAGER_AND_ALIVE)) {
+            for(LivingEntity livingentity : this.level().getEntitiesOfClass(LivingEntity.class, this.getBoundingBox().inflate(4.0D), NO_RAVAGER_AND_ALIVE)) {
                 if (!MobUtil.areAllies(this, livingentity)) {
                     livingentity.hurt(this.getServantAttack(), 6.0F);
                 }
@@ -417,7 +417,7 @@ public class ModRavager extends RaiderServant implements PlayerRideable, IAutoRi
                 double d0 = this.random.nextGaussian() * 0.2D;
                 double d1 = this.random.nextGaussian() * 0.2D;
                 double d2 = this.random.nextGaussian() * 0.2D;
-                this.level.addParticle(ParticleTypes.POOF, vec3.x, vec3.y, vec3.z, d0, d1, d2);
+                this.level().addParticle(ParticleTypes.POOF, vec3.x, vec3.y, vec3.z, d0, d1, d2);
             }
 
             this.gameEvent(GameEvent.ENTITY_ROAR);
@@ -466,7 +466,7 @@ public class ModRavager extends RaiderServant implements PlayerRideable, IAutoRi
 
     public boolean doHurtTarget(Entity p_33328_) {
         this.attackTick = 10;
-        this.level.broadcastEntityEvent(this, (byte)4);
+        this.level().broadcastEntityEvent(this, (byte)4);
         this.playSound(this.getAttackSound(), 1.0F, 1.0F);
         return super.doHurtTarget(p_33328_);
     }
@@ -521,7 +521,7 @@ public class ModRavager extends RaiderServant implements PlayerRideable, IAutoRi
     }
 
     protected void doPlayerRide(Player player) {
-        if (!this.level.isClientSide) {
+        if (!this.level().isClientSide) {
             player.setYRot(this.getYRot());
             player.setXRot(this.getXRot());
             player.startRiding(this);
@@ -579,7 +579,7 @@ public class ModRavager extends RaiderServant implements PlayerRideable, IAutoRi
 
     @Override
     public void die(DamageSource pCause) {
-        if (!this.level.isClientSide) {
+        if (!this.level().isClientSide) {
             if (this.getIdol() == null) {
                 if (this.getTrueOwner() != null && this.getMobType() != MobType.UNDEAD) {
                     if (CuriosFinder.hasNamelessSet(this.getTrueOwner())) {
@@ -592,7 +592,7 @@ public class ModRavager extends RaiderServant implements PlayerRideable, IAutoRi
                             servant.updateArmor();
                             net.neoforged.event.net.neoforged.neoforge.event.EventHooks.onLivingConvert(this, servant);
                             if (!this.isSilent()) {
-                                this.level.levelEvent((Player) null, 1026, this.blockPosition(), 0);
+                                this.level().levelEvent((Player) null, 1026, this.blockPosition(), 0);
                             }
                         }
                     }
@@ -676,7 +676,7 @@ public class ModRavager extends RaiderServant implements PlayerRideable, IAutoRi
 
     public void equipSaddle(boolean playSound) {
         if (playSound) {
-            this.level.playSound(null, this, SoundEvents.HORSE_SADDLE, SoundSource.PLAYERS, 1.0F, 1.0F);
+            this.level().playSound(null, this, SoundEvents.HORSE_SADDLE, SoundSource.PLAYERS, 1.0F, 1.0F);
         }
         AttributeInstance attributeInstance = this.getAttribute(Attributes.MAX_HEALTH);
         if (attributeInstance != null) {

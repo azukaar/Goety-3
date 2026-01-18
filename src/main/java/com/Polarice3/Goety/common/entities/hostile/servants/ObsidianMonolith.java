@@ -93,11 +93,11 @@ public class ObsidianMonolith extends AbstractMonolith implements Enemy {
     }
 
     @Override
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.entityData.define(DATA_PROGRESS, 0.0F);
-        this.entityData.define(DATA_LEVEL, 0);
-        this.entityData.define(DATA_LEVELING, 0);
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(DATA_PROGRESS, 0.0F);
+        builder.define(DATA_LEVEL, 0);
+        builder.define(DATA_LEVELING, 0);
     }
 
     @Override
@@ -227,7 +227,7 @@ public class ObsidianMonolith extends AbstractMonolith implements Enemy {
                 if (pSource.getDirectEntity() instanceof LivingEntity living) {
                     if (living.getMainHandItem().isCorrectToolForDrops(this.getState())) {
                         damage = true;
-                        efficiency += EnchantmentHelper.getBlockEfficiency(living);
+                        efficiency += EnchantmentHelper.getEnchantmentLevel(this.level().registryAccess().registryOrThrow(net.minecraft.core.registries.Registries.ENCHANTMENT).getHolderOrThrow(net.minecraft.world.item.enchantment.Enchantments.EFFICIENCY), living);
                     }
                 }
             }
@@ -290,7 +290,7 @@ public class ObsidianMonolith extends AbstractMonolith implements Enemy {
     }
 
     public void die(DamageSource cause) {
-        this.playSound(SoundEvents.RESPAWN_ANCHOR_DEPLETE.get(), 5.0F, 0.5F);
+        this.playSound(SoundEvents.RESPAWN_ANCHOR_DEPLETE.value(), 5.0F, 0.5F);
         this.playSound(SoundEvents.ZOMBIE_BREAK_WOODEN_DOOR, 5.0F,
                 (this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 1.0F);
         this.silentDie(cause);
@@ -300,7 +300,9 @@ public class ObsidianMonolith extends AbstractMonolith implements Enemy {
         if (ModDamageSource.physicalAttacks(p_21192_)) {
             if (p_21192_.getDirectEntity() instanceof LivingEntity living) {
                 if (living.getMainHandItem().isCorrectToolForDrops(this.getState())) {
-                    super.dropAllDeathLoot(p_21192_);
+                     if (this.level() instanceof ServerLevel serverLevel) {
+                        super.dropAllDeathLoot(serverLevel, p_21192_);
+                     }
                 }
             }
         }
@@ -543,11 +545,9 @@ public class ObsidianMonolith extends AbstractMonolith implements Enemy {
                                         Entity entity = spawner.type.create(serverLevel);
                                         BlockPos blockPos = BlockFinder.SummonRadius(this.blockPosition(), entity,
                                                 serverLevel, 24);
-                                        SpawnPlacements.Type spawnplacements$type = SpawnPlacements
+                                        SpawnPlacementType spawnplacements$type = SpawnPlacements
                                                 .getPlacementType(spawner.type);
-                                        if (NaturalSpawner.isSpawnPositionOk(spawnplacements$type, this.level(),
-                                                blockPos, spawner.type)
-                                                && SpawnPlacements.checkSpawnRules(spawner.type, serverLevel,
+                                        if (SpawnPlacements.checkSpawnRules(spawner.type, serverLevel,
                                                         MobSpawnType.SPAWNER, blockPos, serverLevel.random)) {
                                             if (entity instanceof Mob mob) {
                                                 if (!(entity instanceof Ghast) && !(entity instanceof AbstractPiglin)
@@ -601,7 +601,7 @@ public class ObsidianMonolith extends AbstractMonolith implements Enemy {
                     if (this.destroyBlocksTick > 0) {
                         --this.destroyBlocksTick;
                         if (this.destroyBlocksTick == 0
-                                && this.level().getGameRules().getBoolean(GameRules.RULE_MOB_GRIEFING)) {
+                                && this.level().getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING)) {
                             int x = Mth.floor(this.getX());
                             int y = Mth.floor(this.getY());
                             int z = Mth.floor(this.getZ());

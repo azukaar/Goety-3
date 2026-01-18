@@ -203,9 +203,8 @@ public class VizierModel extends HierarchicalModel<Vizier> implements ArmedModel
     }
 
     @Override
-    public void renderToBuffer(PoseStack poseStack, VertexConsumer vertexConsumer, int packedLight, int packedOverlay,
-            float red, float green, float blue, float alpha) {
-        this.main.render(poseStack, vertexConsumer, packedLight, packedOverlay, red, green, blue, alpha);
+    public void renderToBuffer(PoseStack poseStack, VertexConsumer vertexConsumer, int packedLight, int packedOverlay, int color) {
+        this.main.render(poseStack, vertexConsumer, packedLight, packedOverlay, color);
     }
 
     public void renderCape(PoseStack pMatrixStack, VertexConsumer pBuffer, int pPackedLight, int pPackedOverlay) {

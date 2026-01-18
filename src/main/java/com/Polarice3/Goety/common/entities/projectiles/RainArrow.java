@@ -55,7 +55,7 @@ public class RainArrow extends Arrow {
 
     protected void onHitBlock(BlockHitResult p_36755_) {
         super.onHitBlock(p_36755_);
-        if (!this.level.isClientSide) {
+        if (!this.level().isClientSide) {
             this.discard();
         }
     }
@@ -63,7 +63,7 @@ public class RainArrow extends Arrow {
     @Override
     public void remove(RemovalReason p_146834_) {
         if (p_146834_ == RemovalReason.DISCARDED){
-            if (this.level instanceof ServerLevel serverLevel){
+            if (this.level() instanceof ServerLevel serverLevel){
                 ColorUtil colorUtil = new ColorUtil(0x16feff);
                 serverLevel.sendParticles(ModParticleTypes.CULT_SPELL.get(), this.getX(), this.getY(), this.getZ(), 0, colorUtil.red, colorUtil.green, colorUtil.blue, 1.0F);
             }

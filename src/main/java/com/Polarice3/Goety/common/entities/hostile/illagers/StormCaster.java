@@ -154,7 +154,7 @@ public class StormCaster extends HuntingIllagerEntity{
 
     public void onSyncedDataUpdated(EntityDataAccessor<?> accessor) {
         if (ANIM_STATE.equals(accessor)) {
-            if (this.level.isClientSide){
+            if (this.level().isClientSide){
                 switch (this.entityData.get(ANIM_STATE)){
                     case 0:
                         break;
@@ -180,7 +180,7 @@ public class StormCaster extends HuntingIllagerEntity{
     }
 
     public boolean isCastingSpell() {
-        if (this.level.isClientSide) {
+        if (this.level().isClientSide) {
             return this.entityData.get(IS_CASTING_SPELL) > 0;
         } else {
             return this.castingTime > 0;
@@ -251,9 +251,9 @@ public class StormCaster extends HuntingIllagerEntity{
     @Override
     public void tick() {
         super.tick();
-        if (this.level.isClientSide){
+        if (this.level().isClientSide){
             this.idleAnimationState.animateWhen(!this.isAttacking() && !this.walkAnimation.isMoving(), this.tickCount);
-        } else if (this.level instanceof ServerLevel serverLevel){
+        } else if (this.level() instanceof ServerLevel serverLevel){
             if (this.isAlive()) {
                 ServerParticleUtil.windParticle(serverLevel, ColorUtil.WHITE, 0.5F + serverLevel.random.nextFloat() * 0.5F, 0.0F, this.getId(), this.position());
                 ColorUtil colorUtil = new ColorUtil(0x8d837d);

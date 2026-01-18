@@ -35,7 +35,7 @@ public class HellBoltRenderer extends EntityRenderer<HellBolt> {
       this.model.renderToBuffer(p_116487_, vertexconsumer, p_116489_, OverlayTexture.NO_OVERLAY, -1);
       VertexConsumer vertexconsumer2 = p_116488_.getBuffer(ModRenderType.wraith(this.getTextureLocation(p_116484_)));
       this.model.setupAnim(0.0F, f, f1);
-      this.model.renderToBuffer(p_116487_, vertexconsumer2, 15728640, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 0.5F);
+      this.model.renderToBuffer(p_116487_, vertexconsumer2, 15728640, OverlayTexture.NO_OVERLAY, -1);
       p_116487_.popPose();
       super.render(p_116484_, p_116485_, p_116486_, p_116487_, p_116488_, p_116489_);
    }

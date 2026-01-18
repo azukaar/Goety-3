@@ -31,7 +31,7 @@ public class HellCloud extends AbstractSpellCloud{
         if (pTarget != null){
             BlockPos.MutableBlockPos blockpos$mutable = new BlockPos.MutableBlockPos(pTarget.getX(), pTarget.getY(), pTarget.getZ());
 
-            while(blockpos$mutable.getY() < pTarget.getY() + 4.0D && !this.level.getBlockState(blockpos$mutable).blocksMotion()) {
+            while(blockpos$mutable.getY() < pTarget.getY() + 4.0D && !this.level().getBlockState(blockpos$mutable).blocksMotion()) {
                 blockpos$mutable.move(Direction.UP);
             }
             this.setPos(pTarget.getX(), blockpos$mutable.getY(), pTarget.getZ());
@@ -57,7 +57,7 @@ public class HellCloud extends AbstractSpellCloud{
     }
 
     public void rainParticles(ParticleOptions particleRain){
-        if (this.level instanceof ServerLevel serverWorld){
+        if (this.level() instanceof ServerLevel serverWorld){
             float f = getRadius();
             float f5 = (float) Math.PI * f * f;
             for (int k1 = 0; (float) k1 < f5; ++k1) {

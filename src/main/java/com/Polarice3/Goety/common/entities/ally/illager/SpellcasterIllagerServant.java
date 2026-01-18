@@ -91,9 +91,9 @@ public abstract class SpellcasterIllagerServant extends AbstractIllagerServant {
                 float f = this.yBodyRot * ((float) Math.PI / 180F) + Mth.cos((float) this.tickCount * 0.6662F) * 0.25F;
                 float f1 = Mth.cos(f);
                 float f2 = Mth.sin(f);
-                this.level().addParticle(ParticleTypes.ENTITY_EFFECT, this.getX() + (double) f1 * 0.6D,
+                this.level().addParticle(net.minecraft.core.particles.ColorParticleOption.create(ParticleTypes.ENTITY_EFFECT, (float)d0, (float)d1, (float)d2), this.getX() + (double) f1 * 0.6D,
                         this.getY() + 1.8D, this.getZ() + (double) f2 * 0.6D, d0, d1, d2);
-                this.level().addParticle(ParticleTypes.ENTITY_EFFECT, this.getX() - (double) f1 * 0.6D,
+                this.level().addParticle(net.minecraft.core.particles.ColorParticleOption.create(ParticleTypes.ENTITY_EFFECT, (float)d0, (float)d1, (float)d2), this.getX() - (double) f1 * 0.6D,
                         this.getY() + 1.8D, this.getZ() - (double) f2 * 0.6D, d0, d1, d2);
             }
         }

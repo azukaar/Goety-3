@@ -64,12 +64,12 @@ public class ModChestBoat extends ModBoat implements HasCustomInventoryScreen, C
 
     public void destroy(DamageSource p_219892_) {
         super.destroy(p_219892_);
-        this.chestVehicleDestroyed(p_219892_, this.level, this);
+        this.chestVehicleDestroyed(p_219892_, this.level(), this);
     }
 
     public void remove(RemovalReason p_219894_) {
-        if (!this.level.isClientSide && p_219894_.shouldDestroy()) {
-            Containers.dropContents(this.level, this, this);
+        if (!this.level().isClientSide && p_219894_.shouldDestroy()) {
+            Containers.dropContents(this.level(), this, this);
         }
 
         super.remove(p_219894_);

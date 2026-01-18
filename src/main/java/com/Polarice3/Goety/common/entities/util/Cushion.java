@@ -30,7 +30,7 @@ public class Cushion extends Entity {
     }
 
     public void setRadius(int p_19713_) {
-        if (!this.level.isClientSide) {
+        if (!this.level().isClientSide) {
             this.getEntityData().set(DATA_RADIUS, Mth.clamp(p_19713_, 0, 32));
         }
     }
@@ -67,18 +67,18 @@ public class Cushion extends Entity {
     public void tick() {
         super.tick();
         --this.lifeTicks;
-        if (!this.level.isClientSide) {
+        if (!this.level().isClientSide) {
             if (!this.isNoGravity()) {
                 MobUtil.moveDownToGround(this);
             }
             if (this.lifeTicks <= 0){
                 this.discard();
             } else if (this.lifeTicks < MathHelper.secondsToTicks(9)){
-                if (this.level instanceof ServerLevel serverLevel){
+                if (this.level() instanceof ServerLevel serverLevel){
                     ServerParticleUtil.addGroundAuraParticles(serverLevel, ParticleTypes.ENCHANT, this, this.initialRadius + this.getRadius());
                     ServerParticleUtil.circularParticles(serverLevel, ParticleTypes.CLOUD, this, this.initialRadius + this.getRadius());
                 }
-                for (LivingEntity livingentity : this.level.getEntitiesOfClass(LivingEntity.class, this.getBoundingBox().inflate(1.0D, 3.0D, 1.0D))) {
+                for (LivingEntity livingentity : this.level().getEntitiesOfClass(LivingEntity.class, this.getBoundingBox().inflate(1.0D, 3.0D, 1.0D))) {
                     if (livingentity != null && livingentity.isAlive()) {
                         livingentity.resetFallDistance();
                     }

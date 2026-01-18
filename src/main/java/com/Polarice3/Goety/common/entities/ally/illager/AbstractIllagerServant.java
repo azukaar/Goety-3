@@ -147,7 +147,7 @@ public abstract class AbstractIllagerServant extends RaiderServant implements IT
         compound.putInt("EatenFoodLevel", this.eatenFoodLevel);
         this.saveLooterData(compound);
         this.saveTrainableData(compound);
-        this.writeInventoryToTag(compound);
+        this.writeInventoryToTag(compound, this.registryAccess());
     }
 
     public void readAdditionalSaveData(CompoundTag compound) {
@@ -163,7 +163,7 @@ public abstract class AbstractIllagerServant extends RaiderServant implements IT
         }
         this.readLooterData(compound);
         this.readTrainableData(compound);
-        this.readInventoryFromTag(compound);
+        this.readInventoryFromTag(compound, this.registryAccess());
     }
 
     public SimpleContainer getInventory() {
@@ -182,7 +182,7 @@ public abstract class AbstractIllagerServant extends RaiderServant implements IT
 
     @Nullable
     @Override
-    public Team getTeam() {
+    public net.minecraft.world.scores.PlayerTeam getTeam() {
         if (super.getTeam() != null) {
             return super.getTeam();
         } else {
@@ -222,11 +222,11 @@ public abstract class AbstractIllagerServant extends RaiderServant implements IT
     public void setCommandPos(BlockPos blockPos) {
         super.setCommandPos(blockPos);
         if (blockPos != null) {
-            if (this.level.getBlockEntity(blockPos) instanceof OminousPyreBlockEntity pyre) {
-                EntityType<? extends Mob> entityType = pyre.getTrainedMob(this.level, blockPos);
-                if (pyre.capacityAvailable(this.level, blockPos)
+            if (this.level().getBlockEntity(blockPos) instanceof OminousPyreBlockEntity pyre) {
+                EntityType<? extends Mob> entityType = pyre.getTrainedMob(this.level(), blockPos);
+                if (pyre.capacityAvailable(this.level(), blockPos)
                         && entityType != null
-                        && pyre.trainingRequirements(this.level, blockPos).test(this)
+                        && pyre.trainingRequirements(this.level(), blockPos).test(this)
                         && pyre.getTrueOwner() == this.getTrueOwner()) {
                     this.setStoredTrainPos(blockPos);
                 }
@@ -330,7 +330,7 @@ public abstract class AbstractIllagerServant extends RaiderServant implements IT
         if (this.cantDo > 0) {
             --this.cantDo;
         }
-        if (!this.level.isClientSide) {
+        if (!this.level().isClientSide) {
             if (this.breedCool > 0) {
                 --this.breedCool;
             }
@@ -353,7 +353,7 @@ public abstract class AbstractIllagerServant extends RaiderServant implements IT
     @Override
     public void healServant() {
         super.healServant();
-        if (!this.level.isClientSide) {
+        if (!this.level().isClientSide) {
             if (this.eatenFoodLevel <= 0 && this.getHealth() < this.getMaxHealth()) {
                 if (this.countFoodPointsInInventory() != 0) {
                     for (int i = 0; i < this.getInventory().getContainerSize(); ++i) {
@@ -375,8 +375,8 @@ public abstract class AbstractIllagerServant extends RaiderServant implements IT
                                 if (!BrewUtils.isEmpty(itemstack)) {
                                     if (!PotionUtils.getMobEffects(itemstack).isEmpty()) {
                                         for (MobEffectInstance instance : PotionUtils.getMobEffects(itemstack)) {
-                                            if (instance.getEffect().isInstantenous()) {
-                                                instance.getEffect().applyInstantenousEffect(this, this, this,
+                                            if (instance.getEffect().value().isInstantenous()) {
+                                                instance.getEffect().value().applyInstantenousEffect(this, this, this,
                                                         instance.getAmplifier(), 1.0D);
                                             } else {
                                                 this.addEffect(new MobEffectInstance(instance));
@@ -392,7 +392,7 @@ public abstract class AbstractIllagerServant extends RaiderServant implements IT
                                 }
                                 this.eatenFoodLevel = integer;
                                 this.playSound(SoundEvents.GENERIC_EAT);
-                                if (this.level instanceof ServerLevel serverLevel) {
+                                if (this.level() instanceof ServerLevel serverLevel) {
                                     ServerParticleUtil.addParticlesAroundMiddleSelf(serverLevel,
                                             new ItemParticleOption(ParticleTypes.ITEM, itemstack), this);
                                 }
@@ -546,7 +546,7 @@ public abstract class AbstractIllagerServant extends RaiderServant implements IT
         FoodProperties foodProperties = itemStack.getFoodProperties(this);
         if (foodProperties == null) {
             return false;
-        } else if (foodProperties.isMeat() && foodProperties.nutrition() <= 3) {
+        } else if (/*foodProperties.isMeat() &&*/ foodProperties.nutrition() <= 3) {
             return false;
         } else {
             return foodProperties.effects().isEmpty() || itemStack.is(Items.ROTTEN_FLESH);
@@ -594,7 +594,7 @@ public abstract class AbstractIllagerServant extends RaiderServant implements IT
             double d0 = this.random.nextGaussian() * 0.02D;
             double d1 = this.random.nextGaussian() * 0.02D;
             double d2 = this.random.nextGaussian() * 0.02D;
-            this.level.addParticle(p_35288_, this.getRandomX(1.0D), this.getRandomY() + 1.0D, this.getRandomZ(1.0D), d0,
+            this.level().addParticle(p_35288_, this.getRandomX(1.0D), this.getRandomY() + 1.0D, this.getRandomZ(1.0D), d0,
                     d1, d2);
         }
 
@@ -661,11 +661,11 @@ public abstract class AbstractIllagerServant extends RaiderServant implements IT
     @Override
     public int trainSpeed(EntityType<? extends Mob> entityType) {
         int i = this.isBaby() ? 2 : 1;
-        Mob mob = entityType.create(this.level);
+        Mob mob = entityType.create(this.level());
         if (mob instanceof PillagerServant) {
             i *= 2;
         }
-        List<AbstractIllagerServant> list = this.level.getNearbyEntities(AbstractIllagerServant.class,
+        List<AbstractIllagerServant> list = this.level().getNearbyEntities(AbstractIllagerServant.class,
                 TargetingConditions.forNonCombat().range(8.0D)
                         .ignoreLineOfSight()
                         .ignoreInvisibilityTesting()
@@ -682,7 +682,7 @@ public abstract class AbstractIllagerServant extends RaiderServant implements IT
         if (Objects.equals(this.getCurrentTrain(), entityType.getDescriptionId())) {
             if (this.getTrainTime() < this.getTotalTrainTime()) {
                 if (this.getTrainTime() % 1000 == 0) {
-                    if (this.level instanceof ServerLevel serverLevel) {
+                    if (this.level() instanceof ServerLevel serverLevel) {
                         ServerParticleUtil.addParticlesAroundMiddleSelf(serverLevel, ParticleTypes.HAPPY_VILLAGER,
                                 this);
                     }
@@ -694,7 +694,7 @@ public abstract class AbstractIllagerServant extends RaiderServant implements IT
         } else {
             this.setTrainTime(0);
             this.setCurrentTrain(entityType.getDescriptionId());
-            if (this.level instanceof ServerLevel serverLevel) {
+            if (this.level() instanceof ServerLevel serverLevel) {
                 ServerParticleUtil.addParticlesAroundMiddleSelf(serverLevel, ParticleTypes.HAPPY_VILLAGER, this);
             }
         }
@@ -709,7 +709,7 @@ public abstract class AbstractIllagerServant extends RaiderServant implements IT
     @Override
     public void completeTraining(EntityType<? extends Mob> entityType) {
         if (!this.isTrained()) {
-            if (this.level instanceof ServerLevel serverLevel) {
+            if (this.level() instanceof ServerLevel serverLevel) {
                 ServerParticleUtil.addParticlesAroundMiddleSelf(serverLevel, ParticleTypes.FLAME, this);
             }
             ITrainable.super.completeTraining(entityType);
@@ -739,7 +739,7 @@ public abstract class AbstractIllagerServant extends RaiderServant implements IT
         for (int i = 0; i < this.getInventory().getContainerSize(); ++i) {
             ItemStack itemstack = this.getInventory().getItem(i);
             if (!itemstack.isEmpty()) {
-                if (EnchantmentHelper.hasVanishingCurse(itemstack)) {
+                if (EnchantmentHelper.has(itemstack, net.minecraft.world.item.enchantment.EnchantmentEffectComponents.PREVENT_EQUIPMENT_DROP)) {
                     this.getInventory().removeItemNoUpdate(i);
                 } else {
                     this.spawnAtLocation(itemstack);
@@ -787,7 +787,7 @@ public abstract class AbstractIllagerServant extends RaiderServant implements IT
                         itemstack.shrink(1);
                     }
                     this.playSound(SoundEvents.ITEM_PICKUP, 1.0F, 1.0F);
-                    if (this.level instanceof ServerLevel serverLevel) {
+                    if (this.level() instanceof ServerLevel serverLevel) {
                         for (int i = 0; i < 7; ++i) {
                             double d0 = this.random.nextGaussian() * 0.02D;
                             double d1 = this.random.nextGaussian() * 0.02D;
@@ -803,12 +803,12 @@ public abstract class AbstractIllagerServant extends RaiderServant implements IT
             } else if (pPlayer.getMainHandItem().is(ModItems.WAYSTONE.get())) {
                 if (WaystoneItem.isSameDimension(this, pPlayer.getMainHandItem())) {
                     if (WaystoneItem.getBlockEntity(pPlayer.getMainHandItem(),
-                            this.level) instanceof ChestBlockEntity chestBlock && chestBlock.canOpen(pPlayer)) {
-                        if (!this.level.isClientSide) {
+                            this.level()) instanceof ChestBlockEntity chestBlock && chestBlock.canOpen(pPlayer)) {
+                        if (!this.level().isClientSide) {
                             BlockPos blockPos = WaystoneItem.getBlockPos(pPlayer.getMainHandItem());
                             if (blockPos != null) {
                                 this.playSound(SoundEvents.ARROW_HIT_PLAYER, 1.0F, 0.45F);
-                                if (this.level instanceof ServerLevel serverLevel) {
+                                if (this.level() instanceof ServerLevel serverLevel) {
                                     for (int i = 0; i < 7; ++i) {
                                         double d0 = this.random.nextGaussian() * 0.02D;
                                         double d1 = this.random.nextGaussian() * 0.02D;
@@ -819,20 +819,20 @@ public abstract class AbstractIllagerServant extends RaiderServant implements IT
                                 }
                                 if (chestBlock.getBlockState().is(ModTags.Blocks.RAIDING_CHESTS)) {
                                     this.setDumpChestPos(blockPos);
-                                    this.setDumpChestDim(this.level.dimension());
+                                    this.setDumpChestDim(this.level().dimension());
                                 } else {
                                     this.setChestPos(blockPos);
-                                    this.setChestDim(this.level.dimension());
+                                    this.setChestDim(this.level().dimension());
                                 }
                                 if (this.isLeader()) {
                                     for (RaiderServant servant : this.getNearbyCompanions()) {
                                         if (servant instanceof AbstractIllagerServant servant1) {
                                             if (chestBlock.getBlockState().is(ModTags.Blocks.RAIDING_CHESTS)) {
                                                 servant1.setDumpChestPos(blockPos);
-                                                servant1.setDumpChestDim(this.level.dimension());
+                                                servant1.setDumpChestDim(this.level().dimension());
                                             } else {
                                                 servant1.setChestPos(blockPos);
-                                                servant1.setChestDim(this.level.dimension());
+                                                servant1.setChestDim(this.level().dimension());
                                             }
                                         }
                                     }
@@ -852,7 +852,7 @@ public abstract class AbstractIllagerServant extends RaiderServant implements IT
                     this.playSound(this.getCelebrateSound(), 1.0F, 1.0F);
                 }
                 this.playSound(SoundEvents.ITEM_PICKUP, 1.0F, 1.0F);
-                if (this.level instanceof ServerLevel serverLevel) {
+                if (this.level() instanceof ServerLevel serverLevel) {
                     for (int i = 0; i < 7; ++i) {
                         double d0 = this.random.nextGaussian() * 0.02D;
                         double d1 = this.random.nextGaussian() * 0.02D;
@@ -954,7 +954,7 @@ public abstract class AbstractIllagerServant extends RaiderServant implements IT
 
         @Nullable
         public LivingEntity getThrowTarget() {
-            List<LivingEntity> list = this.illager.level.getEntitiesOfClass(LivingEntity.class,
+            List<LivingEntity> list = this.illager.level().getEntitiesOfClass(LivingEntity.class,
                     this.illager.getBoundingBox().inflate(16.0D));
             list.sort(Comparator.comparingDouble(this.illager::distanceToSqr));
             LivingEntity illagerServant = null;
@@ -1000,7 +1000,7 @@ public abstract class AbstractIllagerServant extends RaiderServant implements IT
 
         public GiveExcessFoodGoal(AbstractIllagerServant illager) {
             super(illager);
-            this.predicate = ItemStack::isEdible;
+            this.predicate = itemStack -> itemStack.has(net.minecraft.core.component.DataComponents.FOOD);
             this.targetPredicate = living -> living instanceof AbstractIllagerServant servant1
                     && servant1.getTrueOwner() == illager.getTrueOwner()
                     && servant1.wantsMoreFood()
@@ -1034,7 +1034,7 @@ public abstract class AbstractIllagerServant extends RaiderServant implements IT
                 ItemStack itemstack1 = simpleContainer.getItem(i);
                 Item item = itemstack1.getItem();
                 if (!itemstack1.isEmpty()) {
-                    if (item.isEdible()) {
+                    if (itemstack1.has(net.minecraft.core.component.DataComponents.FOOD)) {
                         int j = 0;
                         if (itemstack1.getCount() > itemstack1.getMaxStackSize() / 2) {
                             j = itemstack1.getCount() / 2;
@@ -1123,12 +1123,12 @@ public abstract class AbstractIllagerServant extends RaiderServant implements IT
                                 this.illager.getNavigation().stop();
                                 ++this.throwTime;
                                 if (this.throwTime > 20) {
-                                    this.target.heal(foodProperties.getNutrition());
+                                    this.target.heal(foodProperties.nutrition());
                                     this.target.playSound(SoundEvents.GENERIC_EAT, 1.0F, 0.5F);
                                     this.target.gameEvent(GameEvent.EAT, this.target);
                                     this.throwTime = 0;
                                     itemStack.shrink(1);
-                                    if (this.target.level instanceof ServerLevel serverLevel) {
+                                    if (this.target.level() instanceof ServerLevel serverLevel) {
                                         for (int i = 0; i < 7; ++i) {
                                             double d0 = this.target.getRandom().nextGaussian() * 0.02D;
                                             double d1 = this.target.getRandom().nextGaussian() * 0.02D;
@@ -1193,7 +1193,7 @@ public abstract class AbstractIllagerServant extends RaiderServant implements IT
             return this.partner != null
                     && this.partner.isAlive()
                     && this.hasVacantBed()
-                    && (int) this.illager.level.getGameTime() <= this.loveTime
+                    && (int) this.illager.level().getGameTime() <= this.loveTime
                     && this.illager.canBreed()
                     && this.partner.canBreed();
         }
@@ -1201,8 +1201,8 @@ public abstract class AbstractIllagerServant extends RaiderServant implements IT
         @Override
         public void start() {
             this.hasBred = false;
-            int i = 275 + this.illager.level.getRandom().nextInt(50);
-            this.loveTime = (int) (this.illager.level.getGameTime() + i);
+            int i = 275 + this.illager.level().getRandom().nextInt(50);
+            this.loveTime = (int) (this.illager.level().getGameTime() + i);
         }
 
         @Override
@@ -1217,14 +1217,14 @@ public abstract class AbstractIllagerServant extends RaiderServant implements IT
             }
             this.illager.getLookControl().setLookAt(this.partner, 10.0F, (float) this.illager.getMaxHeadXRot());
             this.illager.getNavigation().moveTo(this.partner, 0.5F);
-            if ((int) this.illager.level.getGameTime() >= this.loveTime
+            if ((int) this.illager.level().getGameTime() >= this.loveTime
                     && this.illager.distanceToSqr(this.partner) <= 5.0D) {
                 this.partner.eatAndDigestFood();
                 this.illager.eatAndDigestFood();
                 this.breed();
-            } else if (this.illager.level.getRandom().nextInt(35) == 0) {
-                this.illager.level.broadcastEntityEvent(this.illager, (byte) 12);
-                this.illager.level.broadcastEntityEvent(this.partner, (byte) 12);
+            } else if (this.illager.level().getRandom().nextInt(35) == 0) {
+                this.illager.level().broadcastEntityEvent(this.illager, (byte) 12);
+                this.illager.level().broadcastEntityEvent(this.partner, (byte) 12);
             }
         }
 
@@ -1234,13 +1234,13 @@ public abstract class AbstractIllagerServant extends RaiderServant implements IT
                 return;
             }
             this.partner.breedCool = 6000;
-            if (this.illager.level instanceof ServerLevel serverLevel) {
+            if (this.illager.level() instanceof ServerLevel serverLevel) {
                 AbstractIllagerServant baby = this.illager.getBreedOffspring(serverLevel, this.partner);
                 if (baby != null) {
                     baby.moveTo(this.illager.getX(), this.illager.getY(), this.illager.getZ(), 0.0F, 0.0F);
                     baby.setBaby(true);
-                    if (this.illager.level.addFreshEntity(baby)) {
-                        this.illager.level.broadcastEntityEvent(baby, (byte) 12);
+                    if (this.illager.level().addFreshEntity(baby)) {
+                        this.illager.level().broadcastEntityEvent(baby, (byte) 12);
                         this.hasBred = true;
                     }
                 }
@@ -1249,7 +1249,7 @@ public abstract class AbstractIllagerServant extends RaiderServant implements IT
 
         @Nullable
         private AbstractIllagerServant getFreePartner() {
-            List<AbstractIllagerServant> list = this.illager.level.getEntitiesOfClass(AbstractIllagerServant.class,
+            List<AbstractIllagerServant> list = this.illager.level().getEntitiesOfClass(AbstractIllagerServant.class,
                     this.illager.getBoundingBox().inflate(16.0D));
             list.sort(Comparator.comparingDouble(this.illager::distanceToSqr));
             AbstractIllagerServant illagerServant = null;
@@ -1265,7 +1265,7 @@ public abstract class AbstractIllagerServant extends RaiderServant implements IT
         }
 
         public boolean hasVacantBed() {
-            if (this.illager.level instanceof ServerLevel serverLevel) {
+            if (this.illager.level() instanceof ServerLevel serverLevel) {
                 Optional<BlockPos> optional = this.getVacantBed(serverLevel);
                 return optional.isPresent() && this.canReach(optional.get());
             } else {

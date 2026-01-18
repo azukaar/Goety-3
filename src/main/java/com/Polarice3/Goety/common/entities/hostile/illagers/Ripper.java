@@ -36,7 +36,6 @@ import net.minecraft.world.entity.raid.Raid;
 import net.minecraft.world.entity.raid.Raider;
 import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.NaturalSpawner;
 import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.gameevent.GameEvent;
@@ -99,13 +98,13 @@ public class Ripper extends Raider {
                 .add(Attributes.SPAWN_REINFORCEMENTS_CHANCE);
     }
 
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.entityData.define(ID_SIZE, 0);
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(ID_SIZE, 0);
     }
 
     @Override
-    public void applyRaidBuffs(int p_37844_, boolean p_37845_) {
+    public void applyRaidBuffs(ServerLevel p_37843_, int p_37844_, boolean p_37845_) {
         Raid raid = this.getCurrentRaid();
         if (raid != null) {
             int i = 0;
@@ -153,10 +152,10 @@ public class Ripper extends Raider {
         }
     }
 
-    public EntityDimensions getDimensions(Pose p_33113_) {
+    public EntityDimensions getDefaultDimensions(Pose p_33113_) {
         float i = this.getRipperSize();
-        EntityDimensions entitydimensions = super.getDimensions(p_33113_);
-        float f = (entitydimensions.width + (0.2F * i)) / entitydimensions.width;
+        EntityDimensions entitydimensions = super.getDefaultDimensions(p_33113_);
+        float f = (entitydimensions.width() + (0.2F * i)) / entitydimensions.width();
         return entitydimensions.scale(f);
     }
 
@@ -234,11 +233,11 @@ public class Ripper extends Raider {
                 --this.bitingTick;
             }
         }
-        if (!this.level.isClientSide && this.isWet && !this.isShaking && !this.isPathFinding() && this.onGround()) {
+        if (!this.level().isClientSide && this.isWet && !this.isShaking && !this.isPathFinding() && this.onGround()) {
             this.isShaking = true;
             this.shakeAnim = 0.0F;
             this.shakeAnimO = 0.0F;
-            this.level.broadcastEntityEvent(this, (byte) 8);
+            this.level().broadcastEntityEvent(this, (byte) 8);
         }
     }
 
@@ -247,15 +246,15 @@ public class Ripper extends Raider {
         if (this.isAlive()) {
             if (this.isInWaterRainOrBubble()) {
                 this.isWet = true;
-                if (this.isShaking && !this.level.isClientSide) {
-                    this.level.broadcastEntityEvent(this, (byte) 56);
+                if (this.isShaking && !this.level().isClientSide) {
+                    this.level().broadcastEntityEvent(this, (byte) 56);
                     this.cancelShake();
                 }
             } else if ((this.isWet || this.isShaking) && this.isShaking) {
                 if (this.shakeAnim == 0.0F) {
                     this.playSound(SoundEvents.WOLF_SHAKE, this.getSoundVolume(),
                             (this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 1.0F);
-                    this.gameEvent(GameEvent.ENTITY_SHAKE);
+                    // this.gameEvent(GameEvent.ENTITY_SHAKE);
                 }
 
                 this.shakeAnimO = this.shakeAnim;
@@ -275,7 +274,7 @@ public class Ripper extends Raider {
                     for (int j = 0; j < i; ++j) {
                         float f1 = (this.random.nextFloat() * 2.0F - 1.0F) * this.getBbWidth() * 0.5F;
                         float f2 = (this.random.nextFloat() * 2.0F - 1.0F) * this.getBbWidth() * 0.5F;
-                        this.level.addParticle(ParticleTypes.SPLASH, this.getX() + (double) f1, (double) (f + 0.8F),
+                        this.level().addParticle(ParticleTypes.SPLASH, this.getX() + (double) f1, (double) (f + 0.8F),
                                 this.getZ() + (double) f2, vec3.x, vec3.y, vec3.z);
                     }
                 }
@@ -310,9 +309,9 @@ public class Ripper extends Raider {
         boolean flag = super.doHurtTarget(entityIn);
         if (flag) {
             this.bitingTick = attackTotalTick();
-            this.level.broadcastEntityEvent(this, (byte) 4);
+            this.level().broadcastEntityEvent(this, (byte) 4);
             this.playSound(SoundEvents.FOX_BITE, this.getSoundVolume(), this.getVoicePitch());
-            float f = this.level.getCurrentDifficultyAt(this.blockPosition()).getEffectiveDifficulty();
+            float f = this.level().getCurrentDifficultyAt(this.blockPosition()).getEffectiveDifficulty();
             if (this.isOnFire() && this.random.nextFloat() < f * 0.3F) {
                 entityIn.igniteForSeconds(2 * (int) f);
             }
@@ -345,7 +344,7 @@ public class Ripper extends Raider {
     }
 
     protected float getStandingEyeHeight(Pose p_30409_, EntityDimensions p_30410_) {
-        return p_30410_.height * 0.8F;
+        return p_30410_.height() * 0.8F;
     }
 
     public void handleEntityEvent(byte p_30379_) {
@@ -371,7 +370,7 @@ public class Ripper extends Raider {
     public boolean hurt(DamageSource p_34288_, float p_34289_) {
         if (!super.hurt(p_34288_, p_34289_)) {
             return false;
-        } else if (!(this.level instanceof ServerLevel serverlevel)) {
+        } else if (!(this.level() instanceof ServerLevel serverlevel)) {
             return false;
         } else {
             LivingEntity livingentity = this.getTarget();
@@ -386,8 +385,8 @@ public class Ripper extends Raider {
             if (spawnChance != null) {
                 if (livingentity != null
                         && this.random.nextDouble() < spawnChance.getValue()
-                        && this.level.getGameRules().getBoolean(GameRules.RULE_DOMOBSPAWNING)) {
-                    Ripper ripper = ModEntityType.RIPPER.get().create(this.level);
+                        && this.level().getGameRules().getBoolean(GameRules.RULE_DOMOBSPAWNING)) {
+                    Ripper ripper = ModEntityType.RIPPER.get().create(this.level());
 
                     if (ripper != null) {
                         for (int l = 0; l < 50; ++l) {
@@ -396,26 +395,25 @@ public class Ripper extends Raider {
                             int k1 = k + Mth.nextInt(this.random, 7, 40) * Mth.nextInt(this.random, -1, 1);
                             BlockPos blockpos = new BlockPos(i1, j1, k1);
                             EntityType<?> entitytype = ripper.getType();
-                            SpawnPlacements.Type spawnplacements$type = SpawnPlacements.getPlacementType(entitytype);
-                            if (NaturalSpawner.isSpawnPositionOk(spawnplacements$type, this.level, blockpos, entitytype)
-                                    && SpawnPlacements.checkSpawnRules(entitytype, serverlevel,
-                                            MobSpawnType.REINFORCEMENT, blockpos, this.level.random)) {
+                            SpawnPlacementType spawnplacements$type = SpawnPlacements.getPlacementType(entitytype);
+                            if (SpawnPlacements.checkSpawnRules(entitytype, serverlevel,
+                                            MobSpawnType.REINFORCEMENT, blockpos, this.level().random)) {
                                 ripper.setPos((double) i1, (double) j1, (double) k1);
-                                if (!this.level.hasNearbyAlivePlayer((double) i1, (double) j1, (double) k1, 7.0D)
-                                        && this.level.isUnobstructed(ripper) && this.level.noCollision(ripper)
-                                        && !this.level.containsAnyLiquid(ripper.getBoundingBox())) {
+                                if (!this.level().hasNearbyAlivePlayer((double) i1, (double) j1, (double) k1, 7.0D)
+                                        && this.level().isUnobstructed(ripper) && this.level().noCollision(ripper)
+                                        && !this.level().containsAnyLiquid(ripper.getBoundingBox())) {
                                     ripper.setTarget(livingentity);
                                     ripper.finalizeSpawn(serverlevel,
-                                            this.level.getCurrentDifficultyAt(ripper.blockPosition()),
-                                            MobSpawnType.REINFORCEMENT, (SpawnGroupData) null, (CompoundTag) null);
+                                            this.level().getCurrentDifficultyAt(ripper.blockPosition()),
+                                            MobSpawnType.REINFORCEMENT, (SpawnGroupData) null);
                                     serverlevel.addFreshEntityWithPassengers(ripper);
-                                    spawnChance.addPermanentModifier(new AttributeModifier("Caller charge",
-                                            (double) -0.05F, AttributeModifier.Operation.ADDITION));
+                                    spawnChance.addPermanentModifier(new AttributeModifier(net.minecraft.resources.ResourceLocation.withDefaultNamespace("caller_charge"),
+                                            (double) -0.05F, AttributeModifier.Operation.ADD_VALUE));
                                     AttributeInstance spawnChance2 = ripper
                                             .getAttribute(Attributes.SPAWN_REINFORCEMENTS_CHANCE);
                                     if (spawnChance2 != null) {
-                                        spawnChance2.addPermanentModifier(new AttributeModifier("Callee charge",
-                                                (double) -0.05F, AttributeModifier.Operation.ADDITION));
+                                        spawnChance2.addPermanentModifier(new AttributeModifier(net.minecraft.resources.ResourceLocation.withDefaultNamespace("callee_charge"),
+                                                (double) -0.05F, AttributeModifier.Operation.ADD_VALUE));
                                     }
                                     break;
                                 }
@@ -431,8 +429,8 @@ public class Ripper extends Raider {
 
     @Nullable
     public SpawnGroupData finalizeSpawn(ServerLevelAccessor p_34297_, DifficultyInstance p_34298_,
-            MobSpawnType p_34299_, @Nullable SpawnGroupData p_34300_, @Nullable CompoundTag p_34301_) {
-        p_34300_ = super.finalizeSpawn(p_34297_, p_34298_, p_34299_, p_34300_, p_34301_);
+            MobSpawnType p_34299_, @Nullable SpawnGroupData p_34300_) {
+        p_34300_ = super.finalizeSpawn(p_34297_, p_34298_, p_34299_, p_34300_);
         float f = p_34298_.getSpecialMultiplier();
         this.handleAttributes(f);
         return p_34300_;
@@ -450,18 +448,18 @@ public class Ripper extends Raider {
         AttributeInstance knockResist = this.getAttribute(Attributes.KNOCKBACK_RESISTANCE);
         AttributeInstance spawnChance = this.getAttribute(Attributes.SPAWN_REINFORCEMENTS_CHANCE);
         if (speed != null) {
-            speed.addPermanentModifier(new AttributeModifier("Random spawn speed bonus",
-                    this.random.nextDouble() * 0.05D, AttributeModifier.Operation.ADDITION));
+            speed.addPermanentModifier(new AttributeModifier(net.minecraft.resources.ResourceLocation.withDefaultNamespace("random_spawn_speed_bonus"),
+                    this.random.nextDouble() * 0.05D, AttributeModifier.Operation.ADD_VALUE));
         }
         if (knockResist != null) {
-            knockResist.addPermanentModifier(new AttributeModifier("Random spawn bonus",
-                    this.random.nextDouble() * 0.05D, AttributeModifier.Operation.ADDITION));
+            knockResist.addPermanentModifier(new AttributeModifier(net.minecraft.resources.ResourceLocation.withDefaultNamespace("random_spawn_bonus"),
+                    this.random.nextDouble() * 0.05D, AttributeModifier.Operation.ADD_VALUE));
         }
 
         if (this.random.nextFloat() < p_34340_ * 0.05F) {
             if (spawnChance != null) {
-                spawnChance.addPermanentModifier(new AttributeModifier("Leader Ripper bonus",
-                        this.random.nextDouble() * 0.25D + 0.5D, AttributeModifier.Operation.ADDITION));
+                spawnChance.addPermanentModifier(new AttributeModifier(net.minecraft.resources.ResourceLocation.withDefaultNamespace("leader_ripper_bonus"),
+                        this.random.nextDouble() * 0.25D + 0.5D, AttributeModifier.Operation.ADD_VALUE));
             }
             this.setRipperSize(2, true);
         } else {

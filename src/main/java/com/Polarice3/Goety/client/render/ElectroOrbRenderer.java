@@ -50,13 +50,12 @@ public class ElectroOrbRenderer extends EntityRenderer<ElectroOrb> {
    }
 
    private static void vertex(VertexConsumer consumer, Matrix4f matrix4f, Matrix3f matrix3f, int packedLight, float xPos, float yPos, float u, float v) {
-      consumer.vertex(matrix4f, xPos, yPos , 0.0F)
-              .color(255, 255, 255, 255)
-              .uv(u, v)
-              .overlayCoords(OverlayTexture.NO_OVERLAY)
-              .uv2(packedLight)
-              .normal(matrix3f, 0.0F, 1.0F, 0.0F)
-              .endVertex();
+      consumer.addVertex(matrix4f, xPos, yPos, 0.0F)
+              .setColor(255, 255, 255, 255)
+              .setUv(u, v)
+              .setOverlay(OverlayTexture.NO_OVERLAY)
+              .setLight(packedLight)
+              .setNormal(0.0F, 1.0F, 0.0F);
    }
 
    public ResourceLocation getTextureLocation(ElectroOrb entity) {

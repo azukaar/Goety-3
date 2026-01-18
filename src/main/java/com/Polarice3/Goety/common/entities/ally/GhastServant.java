@@ -59,7 +59,7 @@ public class GhastServant extends Malghast {
 
     @Override
     public void push(Entity entity) {
-        if (!this.level.isClientSide) {
+        if (!this.level().isClientSide) {
             if (!MobUtil.areAllies(this, entity)) {
                 super.push(entity);
             }
@@ -67,7 +67,7 @@ public class GhastServant extends Malghast {
     }
 
     protected void doPush(Entity entity) {
-        if (!this.level.isClientSide) {
+        if (!this.level().isClientSide) {
             if (!MobUtil.areAllies(this, entity)) {
                 super.doPush(entity);
             }
@@ -113,7 +113,7 @@ public class GhastServant extends Malghast {
 
             for(int i = 1; i < p_220673_2_; ++i) {
                 axisalignedbb = axisalignedbb.move(p_220673_1_);
-                if (!this.ghast.level.noCollision(this.ghast, axisalignedbb)) {
+                if (!this.ghast.level().noCollision(this.ghast, axisalignedbb)) {
                     return false;
                 }
             }
@@ -146,7 +146,7 @@ public class GhastServant extends Malghast {
             LivingEntity livingentity = this.ghast.getTarget();
             float d0 = 64.0F;
             if (livingentity != null && livingentity.distanceToSqr(this.ghast) < Mth.square(d0) && this.ghast.hasLineOfSight(livingentity)) {
-                Level world = this.ghast.level;
+                Level world = this.ghast.level();
                 ++this.chargeTime;
                 if (this.chargeTime == 10) {
                     if (!this.ghast.isSilent()) {
@@ -166,7 +166,7 @@ public class GhastServant extends Malghast {
                     largefireball.setExplosionPower(this.ghast.getExplosionPower());
                     largefireball.setDamage(AttributesConfig.GhastServantDamage.get().floatValue() + this.ghast.getFireBallDamage());
                     largefireball.setPos(this.ghast.getX() + vec3.x() * 4.0D, this.ghast.getY() + 0.25D, this.ghast.getZ() + vec3.z() * 4.0D);
-                    largefireball.setDangerous(world.getGameRules().getBoolean(GameRules.RULE_MOB_GRIEFING));
+                    largefireball.setDangerous(world.getGameRules().getBoolean(net.minecraft.world.level.GameRules.RULE_MOBGRIEFING));
                     world.addFreshEntity(largefireball);
                     this.chargeTime = -40;
                 }

@@ -137,7 +137,7 @@ public class ZombieVillagerServant extends ZombieServant implements InventoryCar
     }
 
     public void tick() {
-        if (this.level instanceof ServerLevel serverLevel && this.isAlive() && this.isConverting()) {
+        if (this.level() instanceof ServerLevel serverLevel && this.isAlive() && this.isConverting()) {
             int i = this.getConversionProgress();
             this.villagerConversionTime -= i;
             if (this.villagerConversionTime <= 0 && net.neoforged.neoforge.event.EventHooks.canLivingConvert(this,
@@ -155,7 +155,7 @@ public class ZombieVillagerServant extends ZombieServant implements InventoryCar
 
     public InteractionResult mobInteract(Player pPlayer, InteractionHand pHand) {
         ItemStack itemstack = pPlayer.getItemInHand(pHand);
-        if (!this.level.isClientSide) {
+        if (!this.level().isClientSide) {
             if (this.canConvert() && itemstack.is(Items.GOLDEN_APPLE)) {
                 if (this.hasEffect(MobEffects.WEAKNESS)) {
                     if (!pPlayer.getAbilities().instabuild) {
@@ -192,13 +192,13 @@ public class ZombieVillagerServant extends ZombieServant implements InventoryCar
         this.removeEffect(MobEffects.WEAKNESS);
         this.addEffect(new MobEffectInstance(MobEffects.DAMAGE_BOOST, p_34385_,
                 Math.min(this.level().getDifficulty().getId() - 1, 0)));
-        this.level.broadcastEntityEvent(this, (byte) 16);
+        this.level().broadcastEntityEvent(this, (byte) 16);
     }
 
     public void handleEntityEvent(byte p_34372_) {
         if (p_34372_ == 16) {
             if (!this.isSilent()) {
-                this.level.playLocalSound(this.getX(), this.getEyeY(), this.getZ(), SoundEvents.ZOMBIE_VILLAGER_CURE,
+                this.level().playLocalSound(this.getX(), this.getEyeY(), this.getZ(), SoundEvents.ZOMBIE_VILLAGER_CURE,
                         this.getSoundSource(), 1.0F + this.random.nextFloat(), this.random.nextFloat() * 0.7F + 0.3F,
                         false);
             }

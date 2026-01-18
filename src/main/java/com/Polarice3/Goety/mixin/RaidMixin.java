@@ -22,9 +22,9 @@ public class RaidMixin {
     @ModifyVariable(at = @At(value = "STORE", ordinal = 0), method = "spawnGroup")
     private Raider spawnCustomRaider(Raider raider, BlockPos blockPos) {
         if (MobsConfig.ArmoredRavagerRaid.get()){
-            if (this.level.random.nextFloat() < (0.25F + this.level.getCurrentDifficultyAt(raider.blockPosition()).getSpecialMultiplier())) {
+            if (this.level().random.nextFloat() < (0.25F + this.level().getCurrentDifficultyAt(raider.blockPosition()).getSpecialMultiplier())) {
                 if (raider.getType() == EntityType.RAVAGER){
-                    raider = ModEntityType.ARMORED_RAVAGER.get().create(this.level);
+                    raider = ModEntityType.ARMORED_RAVAGER.get().create(this.level());
                     if (raider != null){
                         return raider;
                     }

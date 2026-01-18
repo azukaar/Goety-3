@@ -135,7 +135,7 @@ public class Volcano extends AbstractMonolith{
             if (!this.isActivate()){
                 this.setActivate(true);
             }
-            if (!this.level.isClientSide) {
+            if (!this.level().isClientSide) {
                 --this.attackTime;
                 if (this.attackTime <= 0) {
                     ++this.attackStep;
@@ -147,17 +147,17 @@ public class Volcano extends AbstractMonolith{
                     }
                     if (this.attackStep > 1) {
                         if (!this.isSilent()) {
-                            this.level.levelEvent((Player)null, 1018, this.blockPosition(), 0);
+                            this.level().levelEvent((Player)null, 1018, this.blockPosition(), 0);
                         }
 
-                        if (this.level instanceof ServerLevel serverLevel){
+                        if (this.level() instanceof ServerLevel serverLevel){
                             double d0 = (double)this.getX() + this.random.nextDouble();
                             double d1 = (double)this.getY() + 1.0D;
                             double d2 = (double)this.getZ() + this.random.nextDouble();
                             serverLevel.sendParticles(ParticleTypes.LAVA, d0, d1, d2, 0, 0.0D, 0.0D, 0.0D, 0.5F);
                         }
 
-                        Pyroclast pyroclast = new Pyroclast(this, this.level);
+                        Pyroclast pyroclast = new Pyroclast(this, this.level());
                         if (this.getTrueOwner() != null){
                             pyroclast.setOwner(this.getTrueOwner());
                         } else {
@@ -169,7 +169,7 @@ public class Volcano extends AbstractMonolith{
                         MobUtil.shootUp(pyroclast, this, MobUtil.ceilingVelocity(this, 1.5F));
                     }
                 } else {
-                    if (this.level instanceof ServerLevel serverLevel){
+                    if (this.level() instanceof ServerLevel serverLevel){
                         ServerParticleUtil.smokeParticles(ParticleTypes.LARGE_SMOKE, this.getX(), this.getY(), this.getZ(), serverLevel);
                         if (this.random.nextInt(100) == 0) {
                             double d0 = (double)this.getX() + this.random.nextDouble();
@@ -186,7 +186,7 @@ public class Volcano extends AbstractMonolith{
                 }
                 if (this.tickCount >= MathHelper.secondsToTicks(this.getLifeSpan())){
                     this.setAge(this.getAge() - this.getAgeSpeed());
-                    this.level.broadcastEntityEvent(this, (byte) 5);
+                    this.level().broadcastEntityEvent(this, (byte) 5);
                 }
                 if (this.getAge() <= 0){
                     this.discard();

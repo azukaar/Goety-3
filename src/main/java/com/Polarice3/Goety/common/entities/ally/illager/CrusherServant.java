@@ -137,7 +137,7 @@ public class CrusherServant extends AbstractIllagerServant {
 
     public void onSyncedDataUpdated(EntityDataAccessor<?> accessor) {
         if (ANIM_STATE.equals(accessor)) {
-            if (this.level.isClientSide){
+            if (this.level().isClientSide){
                 switch (this.entityData.get(ANIM_STATE)){
                     case 0:
                         break;
@@ -166,7 +166,7 @@ public class CrusherServant extends AbstractIllagerServant {
 
     public void tick() {
         super.tick();
-        if (this.level.isClientSide){
+        if (this.level().isClientSide){
             if (this.isAlive()){
                 if (this.getCurrentAnimation() != this.getAnimationState("attack")) {
                     this.setAnimationState("idle");
@@ -202,7 +202,7 @@ public class CrusherServant extends AbstractIllagerServant {
     public void setMeleeAttacking(boolean attacking) {
         this.setFlag(1, attacking);
         this.attackTick = 0;
-        this.level.broadcastEntityEvent(this, (byte) 5);
+        this.level().broadcastEntityEvent(this, (byte) 5);
     }
 
     public boolean isStorm(){
@@ -294,7 +294,7 @@ public class CrusherServant extends AbstractIllagerServant {
         @Override
         public void start() {
             CrusherServant.this.setAggressive(true);
-            CrusherServant.this.level.broadcastEntityEvent(CrusherServant.this, (byte) 6);
+            CrusherServant.this.level().broadcastEntityEvent(CrusherServant.this, (byte) 6);
             this.delayCounter = 0;
         }
 
@@ -302,7 +302,7 @@ public class CrusherServant extends AbstractIllagerServant {
         public void stop() {
             CrusherServant.this.getNavigation().stop();
             CrusherServant.this.setAggressive(false);
-            CrusherServant.this.level.broadcastEntityEvent(CrusherServant.this, (byte) 7);
+            CrusherServant.this.level().broadcastEntityEvent(CrusherServant.this, (byte) 7);
         }
 
         @Override
@@ -322,12 +322,12 @@ public class CrusherServant extends AbstractIllagerServant {
             this.checkAndPerformAttack(livingentity, CrusherServant.this.distanceToSqr(livingentity.getX(), livingentity.getY(), livingentity.getZ()));
         }
 
-        @Override
+        // checkAndPerformAttack no longer overrides a supertype method in 1.21
         protected void checkAndPerformAttack(@NotNull LivingEntity enemy, double distToEnemySqr) {
             if (CrusherServant.this.targetClose(enemy, distToEnemySqr)) {
                 if (!CrusherServant.this.isMeleeAttacking()) {
                     CrusherServant.this.setMeleeAttacking(true);
-                    CrusherServant.this.level.broadcastEntityEvent(CrusherServant.this, (byte) 8);
+                    CrusherServant.this.level().broadcastEntityEvent(CrusherServant.this, (byte) 8);
                 }
             }
         }
@@ -355,7 +355,7 @@ public class CrusherServant extends AbstractIllagerServant {
         @Override
         public void start() {
             CrusherServant.this.setMeleeAttacking(true);
-            CrusherServant.this.level.broadcastEntityEvent(CrusherServant.this, (byte) 8);
+            CrusherServant.this.level().broadcastEntityEvent(CrusherServant.this, (byte) 8);
             if (CrusherServant.this.getTarget() != null){
                 MobUtil.instaLook(CrusherServant.this, CrusherServant.this.getTarget());
             }
@@ -366,7 +366,7 @@ public class CrusherServant extends AbstractIllagerServant {
         public void stop() {
             CrusherServant.this.setAnimationState("idle");
             CrusherServant.this.setMeleeAttacking(false);
-            CrusherServant.this.level.broadcastEntityEvent(CrusherServant.this, (byte) 9);
+            CrusherServant.this.level().broadcastEntityEvent(CrusherServant.this, (byte) 9);
         }
 
         @Override
@@ -385,7 +385,7 @@ public class CrusherServant extends AbstractIllagerServant {
                 AABB aabb = MobUtil.makeAttackRange(CrusherServant.this.getX() + CrusherServant.this.getHorizontalLookAngle().x * 2,
                         CrusherServant.this.getY(),
                         CrusherServant.this.getZ() + CrusherServant.this.getHorizontalLookAngle().z * 2, 3, 3, 3);
-                for (LivingEntity target : CrusherServant.this.level.getEntitiesOfClass(LivingEntity.class, aabb)) {
+                for (LivingEntity target : CrusherServant.this.level().getEntitiesOfClass(LivingEntity.class, aabb)) {
                     if (target != CrusherServant.this && !MobUtil.areAllies(CrusherServant.this, target)) {
                         this.hurtTarget(target);
                     }
@@ -395,7 +395,7 @@ public class CrusherServant extends AbstractIllagerServant {
                 if (CrusherServant.this.isStorm()){
                     CrusherServant.this.playSound(ModSounds.THUNDER_STRIKE_FAST.get());
                 }
-                if (CrusherServant.this.level instanceof ServerLevel serverLevel){
+                if (CrusherServant.this.level() instanceof ServerLevel serverLevel){
                     BlockPos blockPos = BlockPos.containing(CrusherServant.this.getX() + CrusherServant.this.getHorizontalLookAngle().x * 2, CrusherServant.this.getY() - 1.0F, CrusherServant.this.getZ() + CrusherServant.this.getHorizontalLookAngle().z * 2);
                     BlockParticleOption option = new BlockParticleOption(ParticleTypes.BLOCK, serverLevel.getBlockState(blockPos));
                     for (int i = 0; i < 8; ++i) {
@@ -407,7 +407,7 @@ public class CrusherServant extends AbstractIllagerServant {
 
         public void hurtTarget(Entity target) {
             CrusherServant.this.doHurtTarget(target);
-            if (CrusherServant.this.level instanceof ServerLevel serverLevel) {
+            if (CrusherServant.this.level() instanceof ServerLevel serverLevel) {
                 if (CrusherServant.this.isStorm() && target instanceof LivingEntity livingEntity) {
                     BlockHitResult rayTraceResult = this.blockResult(serverLevel, CrusherServant.this, 16);
                     Optional<BlockPos> lightningRod = BlockFinder.findLightningRod(serverLevel, BlockPos.containing(rayTraceResult.getLocation()), 16);
@@ -427,7 +427,7 @@ public class CrusherServant extends AbstractIllagerServant {
 
         public void chain(LivingEntity pTarget, LivingEntity pAttacker) {
             double range = 6;
-            Level level = pAttacker.level;
+            Level level = pAttacker.level();
             float oDamage = (float) pAttacker.getAttributeValue(Attributes.ATTACK_DAMAGE);
 
             List<Entity> harmed = new ArrayList<>();

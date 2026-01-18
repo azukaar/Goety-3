@@ -53,7 +53,7 @@ public class AbstractBorderWraith extends AbstractWraith implements IBreathing {
     }
 
     public void attackAI(){
-        if (!this.level.isClientSide) {
+        if (!this.level().isClientSide) {
             if (this.fireCooldown > 0){
                 --this.fireCooldown;
             }
@@ -118,8 +118,8 @@ public class AbstractBorderWraith extends AbstractWraith implements IBreathing {
 
                             this.initial = this.initial.add(vector3d.x * speed, vector3d.y * speed, vector3d.z * speed);
 
-                            this.level.broadcastEntityEvent(this, (byte) 10);
-                            Entity entity = MobUtil.getSingleTarget(this.level, this, 8, 3.0F);
+                            this.level().broadcastEntityEvent(this, (byte) 10);
+                            Entity entity = MobUtil.getSingleTarget(this.level(), this, 8, 3.0F);
                             if (entity != null) {
                                 this.doBreathing(entity);
                                 this.gameEvent(GameEvent.PROJECTILE_SHOOT);
@@ -142,7 +142,7 @@ public class AbstractBorderWraith extends AbstractWraith implements IBreathing {
     }
 
     public boolean hurtStop(){
-        return this.level.getDifficulty() == Difficulty.EASY && this.hurtTime > 0;
+        return this.level().getDifficulty() == Difficulty.EASY && this.hurtTime > 0;
     }
 
     public void movement(){
@@ -160,16 +160,16 @@ public class AbstractBorderWraith extends AbstractWraith implements IBreathing {
     }
 
     public void magicFire(LivingEntity livingEntity){
-        WandUtil.spawn4x4IceBouquet(this.level, livingEntity.position(), this);
+        WandUtil.spawn4x4IceBouquet(this.level(), livingEntity.position(), this);
     }
 
     public void startBreathing(){
         if (!this.isBreathing()) {
             this.setBreathing(true);
-            this.level.broadcastEntityEvent(this, (byte) 8);
-            this.level.broadcastEntityEvent(this, (byte) 100);
+            this.level().broadcastEntityEvent(this, (byte) 8);
+            this.level().broadcastEntityEvent(this, (byte) 100);
             if (!this.isSilent()) {
-                this.level.playSound((Player) null, this.getX(), this.getY(), this.getZ(), ModSounds.WRAITH_PUKE.get(), this.getSoundSource(), 1.0F, 1.0F);
+                this.level().playSound((Player) null, this.getX(), this.getY(), this.getZ(), ModSounds.WRAITH_PUKE.get(), this.getSoundSource(), 1.0F, 1.0F);
                 this.playSound(ModSounds.WRAITH_PUKE.get(), 1.0F, 1.0F);
             }
         }
@@ -179,7 +179,7 @@ public class AbstractBorderWraith extends AbstractWraith implements IBreathing {
         if (this.isBreathing()) {
             this.setBreathing(false);
             this.breathTick = 0;
-            this.level.broadcastEntityEvent(this, (byte) 9);
+            this.level().broadcastEntityEvent(this, (byte) 9);
         }
     }
 
@@ -214,7 +214,7 @@ public class AbstractBorderWraith extends AbstractWraith implements IBreathing {
                 dy *= velocity;
                 dz *= velocity;
 
-                this.level.addParticle(ModParticleTypes.WRAITH_FIRE.get(), px, py, pz, dx, dy, dz);
+                this.level().addParticle(ModParticleTypes.WRAITH_FIRE.get(), px, py, pz, dx, dy, dz);
             }
             this.gameEvent(GameEvent.PROJECTILE_SHOOT);
         }

@@ -136,10 +136,10 @@ public class TwilightGoat extends AnimalSummon implements ICharger {
         this.entityData.set(DATA_HAS_RIGHT_HORN, p_149373_.getBoolean("HasRightHorn"));
     }
 
-    @Override
-    public MobType getMobType() {
-        return ModMobType.NATURAL;
-    }
+    // getMobType removed in 1.21
+    // public MobType getMobType() {
+    //     return ModMobType.NATURAL;
+    // }
 
     public boolean hasLeftHorn() {
         return this.entityData.get(DATA_HAS_LEFT_HORN);
@@ -361,7 +361,7 @@ public class TwilightGoat extends AnimalSummon implements ICharger {
         private final Function<PathfinderMob, SoundEvent> getHornBreakSound;
         private static final TargetingConditions RAM_TARGET_CONDITIONS = TargetingConditions.forCombat()
                 .selector((p_289449_) -> {
-                    return p_289449_.level.getWorldBorder().isWithinBounds(p_289449_.getBoundingBox());
+                    return p_289449_.level().getWorldBorder().isWithinBounds(p_289449_.getBoundingBox());
                 });
         private static final UniformInt TIME_BETWEEN_RAMS = UniformInt.of(100, 300);
 
@@ -385,7 +385,7 @@ public class TwilightGoat extends AnimalSummon implements ICharger {
 
         public void start() {
             this.windup = MathHelper.secondsToTicks(1) + this.charger.getRandom().nextInt(MathHelper.secondsToTicks(1));
-            this.charger.level.broadcastEntityEvent(this.charger, (byte) 58);
+            this.charger.level().broadcastEntityEvent(this.charger, (byte) 58);
             BlockPos blockpos = this.charger.blockPosition();
             if (this.chargePos != null) {
                 this.ramDirection = (new Vec3((double) blockpos.getX() - this.chargePos.x(), 0.0D,
@@ -409,7 +409,7 @@ public class TwilightGoat extends AnimalSummon implements ICharger {
                 }
             }
             if (this.windup <= 0) {
-                List<LivingEntity> list = this.charger.level.getNearbyEntities(LivingEntity.class,
+                List<LivingEntity> list = this.charger.level().getNearbyEntities(LivingEntity.class,
                         RAM_TARGET_CONDITIONS, this.charger, this.charger.getBoundingBox());
                 list.removeIf(livingEntity -> MobUtil.areAllies(this.charger, livingEntity));
                 if (!list.isEmpty()) {
@@ -432,14 +432,14 @@ public class TwilightGoat extends AnimalSummon implements ICharger {
                                 this.ramDirection.x(), this.ramDirection.z());
                     }
                     this.stop();
-                    this.charger.level.playSound((Player) null, this.charger, this.getImpactSound.apply(this.charger),
+                    this.charger.level().playSound((Player) null, this.charger, this.getImpactSound.apply(this.charger),
                             SoundSource.NEUTRAL, 1.0F, 1.0F);
                 } else if (this.hasRammedHornBreakingBlock()) {
-                    this.charger.level.playSound((Player) null, this.charger, this.getImpactSound.apply(this.charger),
+                    this.charger.level().playSound((Player) null, this.charger, this.getImpactSound.apply(this.charger),
                             SoundSource.NEUTRAL, 1.0F, 1.0F);
                     boolean flag = this.charger instanceof TwilightGoat goat && goat.dropHorn();
                     if (flag) {
-                        this.charger.level.playSound((Player) null, this.charger,
+                        this.charger.level().playSound((Player) null, this.charger,
                                 this.getHornBreakSound.apply(this.charger), SoundSource.NEUTRAL, 1.0F, 1.0F);
                     }
 
@@ -460,13 +460,13 @@ public class TwilightGoat extends AnimalSummon implements ICharger {
         private boolean hasRammedHornBreakingBlock() {
             Vec3 vec3 = this.charger.getDeltaMovement().multiply(1.0D, 0.0D, 1.0D).normalize();
             BlockPos blockpos = BlockPos.containing(this.charger.position().add(vec3));
-            return this.charger.level.getBlockState(blockpos).is(BlockTags.SNAPS_GOAT_HORN)
-                    || this.charger.level.getBlockState(blockpos.above()).is(BlockTags.SNAPS_GOAT_HORN);
+            return this.charger.level().getBlockState(blockpos).is(BlockTags.SNAPS_GOAT_HORN)
+                    || this.charger.level().getBlockState(blockpos.above()).is(BlockTags.SNAPS_GOAT_HORN);
         }
 
         @Override
         public void stop() {
-            this.charger.level.broadcastEntityEvent(this.charger, (byte) 59);
+            this.charger.level().broadcastEntityEvent(this.charger, (byte) 59);
             this.charger.getNavigation().stop();
             this.windup = 0;
             this.chargeTarget = null;

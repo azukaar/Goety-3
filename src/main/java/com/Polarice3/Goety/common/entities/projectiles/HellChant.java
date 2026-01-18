@@ -64,35 +64,35 @@ public class HellChant extends SpellEntity{
 
         this.move(MoverType.SELF, this.getDeltaMovement());
 
-        for (Entity entity : this.level.getEntitiesOfClass(Entity.class, this.getBoundingBox().inflate(this.growProgress), entity -> entity != this && EntitySelector.NO_CREATIVE_OR_SPECTATOR.test(entity))) {
+        for (Entity entity : this.level().getEntitiesOfClass(Entity.class, this.getBoundingBox().inflate(this.growProgress), entity -> entity != this && EntitySelector.NO_CREATIVE_OR_SPECTATOR.test(entity))) {
             if (owner instanceof Heretic heretic) {
                 if (entity == heretic.getTarget()) {
                     heretic.setChantTimes(heretic.getChantTimes() + 1);
                     if (heretic.getChantTimes() == 3){
                         Vec3 vec3 = new Vec3(entity.getX(), entity.getY(), entity.getZ());
-                        FireBlastTrap fireBlastTrap = new FireBlastTrap(owner.level, vec3.x, vec3.y + 0.25D, vec3.z);
+                        FireBlastTrap fireBlastTrap = new FireBlastTrap(owner.level(), vec3.x, vec3.y + 0.25D, vec3.z);
                         MobUtil.moveDownToGround(fireBlastTrap);
                         fireBlastTrap.setOwner(owner);
                         fireBlastTrap.setAreaOfEffect(1.0F);
                         fireBlastTrap.setExtraDamage(this.getExtraDamage());
-                        this.level.addFreshEntity(fireBlastTrap);
+                        this.level().addFreshEntity(fireBlastTrap);
                     }
                 }
             } else if (owner != null && owner.getUseItem().getItem() instanceof InfernalTome){
                 if (!MobUtil.areAllies(owner, entity) && entity.isAttackable()) {
                     ItemStack itemStack = owner.getUseItem();
-                    CompoundTag compoundTag = itemStack.getTag();
-                    if (compoundTag != null){
+                    if (itemStack.has(net.minecraft.core.component.DataComponents.CUSTOM_DATA)) {
+                        CompoundTag compoundTag = itemStack.getOrDefault(net.minecraft.core.component.DataComponents.CUSTOM_DATA, net.minecraft.world.item.component.CustomData.EMPTY).copyTag();
                         if (compoundTag.contains(InfernalTome.CHANT_TIMES)){
                             InfernalTome.increaseChantTimes(itemStack);
                             if (InfernalTome.getChantTimes(itemStack) == 3){
                                 Vec3 vec3 = new Vec3(entity.getX(), entity.getY(), entity.getZ());
-                                FireBlastTrap fireBlastTrap = new FireBlastTrap(owner.level, vec3.x, vec3.y + 0.25D, vec3.z);
+                                FireBlastTrap fireBlastTrap = new FireBlastTrap(owner.level(), vec3.x, vec3.y + 0.25D, vec3.z);
                                 MobUtil.moveDownToGround(fireBlastTrap);
                                 fireBlastTrap.setOwner(owner);
                                 fireBlastTrap.setAreaOfEffect(1.0F);
                                 fireBlastTrap.setExtraDamage(this.getExtraDamage());
-                                this.level.addFreshEntity(fireBlastTrap);
+                                this.level().addFreshEntity(fireBlastTrap);
                             }
                         }
                     }

@@ -34,13 +34,13 @@ public class SurveyEye extends FlyingMob {
     @Nullable
     public Player getPlayer(){
         if (this.owner == null && this.playerId != null) {
-            if (this.level instanceof ServerLevel serverLevel) {
+            if (this.level() instanceof ServerLevel serverLevel) {
                 Entity entity = serverLevel.getEntity(this.playerId);
                 if (entity instanceof Player) {
                     this.owner = (Player) entity;
                 }
-            } else if (this.level.isClientSide) {
-                this.owner = this.level.getPlayerByUUID(this.playerId);
+            } else if (this.level().isClientSide) {
+                this.owner = this.level().getPlayerByUUID(this.playerId);
             }
         }
         return this.owner;

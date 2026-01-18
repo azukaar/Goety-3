@@ -120,11 +120,11 @@ public class EntangleVinesModel<T extends TangleEntity> extends HierarchicalMode
 	}
 
 	@Override
-	public void renderToBuffer(PoseStack poseStack, VertexConsumer vertexConsumer, int packedLight, int packedOverlay, float red, float green, float blue, float alpha) {
-		vine.render(poseStack, vertexConsumer, packedLight, packedOverlay, red, green, blue, alpha);
-		vine2.render(poseStack, vertexConsumer, packedLight, packedOverlay, red, green, blue, alpha);
-		vine3.render(poseStack, vertexConsumer, packedLight, packedOverlay, red, green, blue, alpha);
-		vine4.render(poseStack, vertexConsumer, packedLight, packedOverlay, red, green, blue, alpha);
+	public void renderToBuffer(PoseStack poseStack, VertexConsumer vertexConsumer, int packedLight, int packedOverlay, int color) {
+		vine.render(poseStack, vertexConsumer, packedLight, packedOverlay, color);
+		vine2.render(poseStack, vertexConsumer, packedLight, packedOverlay, color);
+		vine3.render(poseStack, vertexConsumer, packedLight, packedOverlay, color);
+		vine4.render(poseStack, vertexConsumer, packedLight, packedOverlay, color);
 	}
 
 	@Override

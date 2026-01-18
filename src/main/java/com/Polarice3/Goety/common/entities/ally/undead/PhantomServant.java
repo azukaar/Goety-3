@@ -88,9 +88,9 @@ public class PhantomServant extends SummonedFlying {
         MobUtil.setBaseAttributes(this.getAttribute(Attributes.ATTACK_DAMAGE), AttributesConfig.PhantomServantInitialDamage.get());
     }
 
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.entityData.define(ID_SIZE, 0);
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(ID_SIZE, 0);
     }
 
     public void setPhantomSize(int p_33109_) {
@@ -111,7 +111,7 @@ public class PhantomServant extends SummonedFlying {
     }
 
     protected float getStandingEyeHeight(Pose p_33136_, EntityDimensions p_33137_) {
-        return p_33137_.height * 0.35F;
+        return p_33137_.height() * 0.35F;
     }
 
     public void onSyncedDataUpdated(EntityDataAccessor<?> p_33134_) {
@@ -152,19 +152,19 @@ public class PhantomServant extends SummonedFlying {
         if (this.isUpgraded()){
             this.noPhysics = true;
         }
-        if (this.level.isClientSide) {
+        if (this.level().isClientSide) {
             float f = Mth.cos((float)(this.getUniqueFlapTickOffset() + this.tickCount) * 7.448451F * ((float)Math.PI / 180F) + (float)Math.PI);
             float f1 = Mth.cos((float)(this.getUniqueFlapTickOffset() + this.tickCount + 1) * 7.448451F * ((float)Math.PI / 180F) + (float)Math.PI);
             if (f > 0.0F && f1 <= 0.0F) {
-                this.level.playLocalSound(this.getX(), this.getY(), this.getZ(), SoundEvents.PHANTOM_FLAP, this.getSoundSource(), 0.95F + this.random.nextFloat() * 0.05F, 0.95F + this.random.nextFloat() * 0.05F, false);
+                this.level().playLocalSound(this.getX(), this.getY(), this.getZ(), SoundEvents.PHANTOM_FLAP, this.getSoundSource(), 0.95F + this.random.nextFloat() * 0.05F, 0.95F + this.random.nextFloat() * 0.05F, false);
             }
 
             int i = this.getPhantomSize();
             float f2 = Mth.cos(this.getYRot() * ((float)Math.PI / 180F)) * (1.3F + 0.21F * (float)i);
             float f3 = Mth.sin(this.getYRot() * ((float)Math.PI / 180F)) * (1.3F + 0.21F * (float)i);
             float f4 = (0.3F + f * 0.45F) * ((float)i * 0.2F + 1.0F);
-            this.level.addParticle(ParticleTypes.MYCELIUM, this.getX() + (double)f2, this.getY() + (double)f4, this.getZ() + (double)f3, 0.0D, 0.0D, 0.0D);
-            this.level.addParticle(ParticleTypes.MYCELIUM, this.getX() - (double)f2, this.getY() + (double)f4, this.getZ() - (double)f3, 0.0D, 0.0D, 0.0D);
+            this.level().addParticle(ParticleTypes.MYCELIUM, this.getX() + (double)f2, this.getY() + (double)f4, this.getZ() + (double)f3, 0.0D, 0.0D, 0.0D);
+            this.level().addParticle(ParticleTypes.MYCELIUM, this.getX() - (double)f2, this.getY() + (double)f4, this.getZ() - (double)f3, 0.0D, 0.0D, 0.0D);
         }
 
     }
@@ -174,10 +174,10 @@ public class PhantomServant extends SummonedFlying {
         return true;
     }
 
-    public SpawnGroupData finalizeSpawn(ServerLevelAccessor p_33126_, DifficultyInstance p_33127_, MobSpawnType p_33128_, @Nullable SpawnGroupData p_33129_, @Nullable CompoundTag p_33130_) {
+    public SpawnGroupData finalizeSpawn(ServerLevelAccessor p_33126_, DifficultyInstance p_33127_, MobSpawnType p_33128_, @Nullable SpawnGroupData p_33129_) {
         this.anchorPoint = this.blockPosition().above(5);
         this.setPhantomSize(0);
-        return super.finalizeSpawn(p_33126_, p_33127_, p_33128_, p_33129_, p_33130_);
+        return super.finalizeSpawn(p_33126_, p_33127_, p_33128_, p_33129_);
     }
 
     public void setTarget(@Nullable LivingEntity target) {
@@ -224,10 +224,10 @@ public class PhantomServant extends SummonedFlying {
         return true;
     }
 
-    public EntityDimensions getDimensions(Pose p_33113_) {
+    public EntityDimensions getDefaultDimensions(Pose p_33113_) {
         int i = this.getPhantomSize();
-        EntityDimensions entitydimensions = super.getDimensions(p_33113_);
-        float f = (entitydimensions.width + 0.2F * (float)i) / entitydimensions.width;
+        EntityDimensions entitydimensions = super.getDefaultDimensions(p_33113_);
+        float f = (entitydimensions.width() + 0.2F * (float)i) / entitydimensions.width();
         return entitydimensions.scale(f);
     }
 
@@ -249,7 +249,7 @@ public class PhantomServant extends SummonedFlying {
                 --this.nextScanTick;
             } else {
                 this.nextScanTick = reducedTickDelay(60);
-                List<LivingEntity> list = PhantomServant.this.level.getNearbyEntities(LivingEntity.class, this.attackTargeting, PhantomServant.this, PhantomServant.this.getBoundingBox().inflate(16.0D, 64.0D, 16.0D));
+                List<LivingEntity> list = PhantomServant.this.level().getNearbyEntities(LivingEntity.class, this.attackTargeting, PhantomServant.this, PhantomServant.this.getBoundingBox().inflate(16.0D, 64.0D, 16.0D));
                 if (!list.isEmpty()) {
                     list.sort(Comparator.<Entity, Double>comparing(Entity::getY).reversed());
 
@@ -289,7 +289,7 @@ public class PhantomServant extends SummonedFlying {
             if (PhantomServant.this.isGuardingArea()){
                 PhantomServant.this.anchorPoint = PhantomServant.this.getBoundPos();
             } else {
-                PhantomServant.this.anchorPoint = PhantomServant.this.level.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING, PhantomServant.this.anchorPoint).above(10 + PhantomServant.this.random.nextInt(20));
+                PhantomServant.this.anchorPoint = PhantomServant.this.level().getHeightmapPos(Heightmap.Types.MOTION_BLOCKING, PhantomServant.this.anchorPoint).above(10 + PhantomServant.this.random.nextInt(20));
             }
         }
 
@@ -317,8 +317,8 @@ public class PhantomServant extends SummonedFlying {
                 }
                 if (flag) {
                     PhantomServant.this.anchorPoint = PhantomServant.this.getTarget().blockPosition().above(20 + PhantomServant.this.random.nextInt(20));
-                    if (PhantomServant.this.anchorPoint.getY() < PhantomServant.this.level.getSeaLevel()) {
-                        PhantomServant.this.anchorPoint = new BlockPos(PhantomServant.this.anchorPoint.getX(), PhantomServant.this.level.getSeaLevel() + 1, PhantomServant.this.anchorPoint.getZ());
+                    if (PhantomServant.this.anchorPoint.getY() < PhantomServant.this.level().getSeaLevel()) {
+                        PhantomServant.this.anchorPoint = new BlockPos(PhantomServant.this.anchorPoint.getX(), PhantomServant.this.level().getSeaLevel() + 1, PhantomServant.this.anchorPoint.getZ());
                     }
                 }
             }
@@ -352,7 +352,7 @@ public class PhantomServant extends SummonedFlying {
             if (PhantomServant.this.isGuardingArea()){
                 PhantomServant.this.anchorPoint = PhantomServant.this.getBoundPos();
             } else {
-                PhantomServant.this.anchorPoint = PhantomServant.this.level.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING, PhantomServant.this.anchorPoint).above(10 + PhantomServant.this.random.nextInt(20));
+                PhantomServant.this.anchorPoint = PhantomServant.this.level().getHeightmapPos(Heightmap.Types.MOTION_BLOCKING, PhantomServant.this.anchorPoint).above(10 + PhantomServant.this.random.nextInt(20));
             }
         }
 
@@ -407,12 +407,12 @@ public class PhantomServant extends SummonedFlying {
                 this.selectNext();
             }
 
-            if (PhantomServant.this.moveTargetPoint.y < PhantomServant.this.getY() && !PhantomServant.this.level.isEmptyBlock(PhantomServant.this.blockPosition().below(1))) {
+            if (PhantomServant.this.moveTargetPoint.y < PhantomServant.this.getY() && !PhantomServant.this.level().isEmptyBlock(PhantomServant.this.blockPosition().below(1))) {
                 this.height = Math.max(1.0F, this.height);
                 this.selectNext();
             }
 
-            if (PhantomServant.this.moveTargetPoint.y > PhantomServant.this.getY() && !PhantomServant.this.level.isEmptyBlock(PhantomServant.this.blockPosition().above(1))) {
+            if (PhantomServant.this.moveTargetPoint.y > PhantomServant.this.getY() && !PhantomServant.this.level().isEmptyBlock(PhantomServant.this.blockPosition().above(1))) {
                 this.height = Math.min(-1.0F, this.height);
                 this.selectNext();
             }
@@ -523,7 +523,7 @@ public class PhantomServant extends SummonedFlying {
                 } else {
                     if (PhantomServant.this.tickCount > this.catSearchTick) {
                         this.catSearchTick = PhantomServant.this.tickCount + 20;
-                        List<Cat> list = PhantomServant.this.level.getEntitiesOfClass(Cat.class, PhantomServant.this.getBoundingBox().inflate(16.0D), EntitySelector.ENTITY_STILL_ALIVE);
+                        List<Cat> list = PhantomServant.this.level().getEntitiesOfClass(Cat.class, PhantomServant.this.getBoundingBox().inflate(16.0D), EntitySelector.ENTITY_STILL_ALIVE);
 
                         for(Cat cat : list) {
                             cat.hiss();
@@ -550,7 +550,7 @@ public class PhantomServant extends SummonedFlying {
                     PhantomServant.this.doHurtTarget(livingentity);
                     PhantomServant.this.attackPhase = AttackPhase.CIRCLE;
                     if (!PhantomServant.this.isSilent()) {
-                        PhantomServant.this.level.levelEvent(1039, PhantomServant.this.blockPosition(), 0);
+                        PhantomServant.this.level().levelEvent(1039, PhantomServant.this.blockPosition(), 0);
                     }
                 } else if (PhantomServant.this.horizontalCollision || PhantomServant.this.hurtTime > 0) {
                     PhantomServant.this.attackPhase = AttackPhase.CIRCLE;

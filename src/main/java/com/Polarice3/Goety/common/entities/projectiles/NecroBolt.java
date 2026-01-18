@@ -59,14 +59,14 @@ public class NecroBolt extends SpellHurtingProjectile {
         return false;
     }
 
-    @Override
+    // @Override
     protected float getInertia() {
         return 0.9F + this.boltSpeed;
     }
 
     protected void onHitEntity(EntityHitResult p_37626_) {
         super.onHitEntity(p_37626_);
-        if (!this.level.isClientSide) {
+        if (!this.level().isClientSide) {
             float baseDamage = SpellConfig.NecroBoltDamage.get().floatValue() * WandUtil.damageMultiply();
             Entity entity = p_37626_.getEntity();
             Entity entity1 = this.getOwner();
@@ -81,7 +81,7 @@ public class NecroBolt extends SpellHurtingProjectile {
                 flag = entity.hurt(entity.damageSources().indirectMagic(this, livingentity), baseDamage);
                 if (flag) {
                     if (entity.isAlive()) {
-                        this.doEnchantDamageEffects(livingentity, entity);
+                        // this.doEnchantDamageEffects(livingentity, entity);
                     } else {
                         ServantUtil.convertZombies(entity, livingentity, true);
                         boolean wither = false;
@@ -113,12 +113,12 @@ public class NecroBolt extends SpellHurtingProjectile {
 
     protected void onHitBlock(BlockHitResult p_230299_1_) {
         super.onHitBlock(p_230299_1_);
-        if (!this.level.isClientSide) {
-            ServerLevel serverLevel = (ServerLevel) this.level;
+        if (!this.level().isClientSide) {
+            ServerLevel serverLevel = (ServerLevel) this.level();
             for (int p = 0; p < 8; ++p) {
-                double d0 = (double)this.getX() + this.level.random.nextDouble();
-                double d1 = (double)this.getY() + this.level.random.nextDouble();
-                double d2 = (double)this.getZ() + this.level.random.nextDouble();
+                double d0 = (double)this.getX() + this.level().random.nextDouble();
+                double d1 = (double)this.getY() + this.level().random.nextDouble();
+                double d2 = (double)this.getZ() + this.level().random.nextDouble();
                 serverLevel.sendParticles(ModParticleTypes.NECRO_EFFECT.get(), d0, d1, d2, 0, 0.45, 0.45, 0.45, 0.5F);
                 serverLevel.sendParticles(ModParticleTypes.SUMMON_TRAIL.get(), d0, d1, d2, 1, 0.0F, 0.0F, 0.0F, 0);
             }
@@ -135,15 +135,15 @@ public class NecroBolt extends SpellHurtingProjectile {
             this.discard();
         }
         Entity entity = this.getOwner();
-        if (this.level.isClientSide || (entity == null || !entity.isRemoved()) && this.level.isLoaded(this.blockPosition())) {
+        if (this.level().isClientSide || (entity == null || !entity.isRemoved()) && this.level().isLoaded(this.blockPosition())) {
             Vec3 vec3 = this.getDeltaMovement();
             double d0 = this.getX() - vec3.x;
             double d1 = this.getY() - vec3.y;
             double d2 = this.getZ() - vec3.z;
-            this.level.addParticle(ModParticleTypes.SUMMON_TRAIL.get(),
-                    d0 + ((this.level.random.nextDouble() / 2) * (this.level.random.nextIntBetweenInclusive(-1, 1))),
+            this.level().addParticle(ModParticleTypes.SUMMON_TRAIL.get(),
+                    d0 + ((this.level().random.nextDouble() / 2) * (this.level().random.nextIntBetweenInclusive(-1, 1))),
                     d1 + 0.5D,
-                    d2 + ((this.level.random.nextDouble() / 2) * (this.level.random.nextIntBetweenInclusive(-1, 1))),
+                    d2 + ((this.level().random.nextDouble() / 2) * (this.level().random.nextIntBetweenInclusive(-1, 1))),
                     0.0D, 0.0D, 0.0D);
         }
         Vec3 trailAt = this.position().add(0, this.getBbHeight() / 2F, 0);
@@ -197,7 +197,7 @@ public class NecroBolt extends SpellHurtingProjectile {
         return false;
     }
 
-    @Override
+    // @Override
     public @NotNull Packet<ClientGamePacketListener> getAddEntityPacket() {
         return new net.minecraft.network.protocol.game.ClientboundAddEntityPacket(this);
     }

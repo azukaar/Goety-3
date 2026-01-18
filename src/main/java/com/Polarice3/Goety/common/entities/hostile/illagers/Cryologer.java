@@ -35,6 +35,7 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
@@ -94,11 +95,12 @@ public class Cryologer extends HuntingIllagerEntity implements IBreathing {
         MobUtil.setBaseAttributes(this.getAttribute(Attributes.ATTACK_DAMAGE), AttributesConfig.CryologerDamage.get());
     }
 
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.entityData.define(IS_CASTING_SPELL, (byte) 0);
-        this.entityData.define(ANIM_STATE, 0);
-        this.entityData.define(BREATHING, false);
+    @Override
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(IS_CASTING_SPELL, (byte) 0);
+        builder.define(ANIM_STATE, 0);
+        builder.define(BREATHING, false);
     }
 
     public void readAdditionalSaveData(CompoundTag p_33732_) {
@@ -159,7 +161,7 @@ public class Cryologer extends HuntingIllagerEntity implements IBreathing {
 
     public void onSyncedDataUpdated(EntityDataAccessor<?> accessor) {
         if (ANIM_STATE.equals(accessor)) {
-            if (this.level.isClientSide) {
+            if (this.level().isClientSide) {
                 switch (this.entityData.get(ANIM_STATE)) {
                     case 0:
                         break;
@@ -189,7 +191,7 @@ public class Cryologer extends HuntingIllagerEntity implements IBreathing {
     }
 
     public boolean isCastingSpell() {
-        if (this.level.isClientSide) {
+        if (this.level().isClientSide) {
             return this.entityData.get(IS_CASTING_SPELL) > 0;
         } else {
             return this.castingTime > 0;
@@ -251,7 +253,7 @@ public class Cryologer extends HuntingIllagerEntity implements IBreathing {
     @Override
     public void tick() {
         super.tick();
-        if (this.level.isClientSide) {
+        if (this.level().isClientSide) {
             if (this.isAlive()) {
                 if (this.getCurrentAnimation() < 2 && this.getCurrentAnimation() != 1) {
                     this.setAnimationState("idle");
@@ -275,7 +277,7 @@ public class Cryologer extends HuntingIllagerEntity implements IBreathing {
                                 this.getRandom().nextGaussian() * 0.0075D * spread);
                         Vec3 vec3 = look.add(vecSpread).multiply(velocity, velocity, velocity);
 
-                        this.level.addAlwaysVisibleParticle(ParticleTypes.CLOUD, px, py, pz, vec3.x, vec3.y, vec3.z);
+                        this.level().addAlwaysVisibleParticle(ParticleTypes.CLOUD, px, py, pz, vec3.x, vec3.y, vec3.z);
                     }
                 }
             }
@@ -288,7 +290,7 @@ public class Cryologer extends HuntingIllagerEntity implements IBreathing {
     }
 
     @Override
-    public void applyRaidBuffs(int p_37844_, boolean p_37845_) {
+    public void applyRaidBuffs(ServerLevel pLevel, int p_37844_, boolean p_37845_) {
 
     }
 
@@ -313,7 +315,7 @@ public class Cryologer extends HuntingIllagerEntity implements IBreathing {
         float damage = 1.0F;
         if (target.hurt(ModDamageSource.frostBreath(this, this), damage)) {
             if (target instanceof LivingEntity living) {
-                living.addEffect(new MobEffectInstance(GoetyEffects.FREEZING.get(), MathHelper.secondsToTicks(1)));
+                living.addEffect(new MobEffectInstance(GoetyEffects.FREEZING.getHolder(), MathHelper.secondsToTicks(1)));
             }
         }
     }
@@ -328,7 +330,7 @@ public class Cryologer extends HuntingIllagerEntity implements IBreathing {
 
         public boolean noWall() {
             return MobUtil
-                    .getTargets(Cryologer.this.level, Cryologer.this, 16, 3, EntitySelector.NO_CREATIVE_OR_SPECTATOR)
+                    .getTargets(Cryologer.this.level(), Cryologer.this, 16, 3, EntitySelector.NO_CREATIVE_OR_SPECTATOR)
                     .stream().noneMatch(entity -> entity instanceof AbstractMonolith);
         }
 
@@ -569,7 +571,7 @@ public class Cryologer extends HuntingIllagerEntity implements IBreathing {
 
         @Override
         public boolean canUse() {
-            return super.canUse() && Cryologer.this.level.getDifficulty() == Difficulty.HARD
+            return super.canUse() && Cryologer.this.level().getDifficulty() == Difficulty.HARD
                     && MobsConfig.CryologerIceChunk.get();
         }
 

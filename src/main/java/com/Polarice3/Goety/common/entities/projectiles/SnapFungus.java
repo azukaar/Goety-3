@@ -28,10 +28,10 @@ public class SnapFungus extends ThrowableFungus {
 
     protected void onHit(HitResult p_37406_) {
         super.onHit(p_37406_);
-        if (!this.level.isClientSide) {
-            ExplosionUtil.fungusExplode(this.level, this, this.getX(), this.getY(), this.getZ(), 1.25F, this.isOnFire());
-            if (this.level.random.nextFloat() <= 0.25F){
-                AreaEffectCloud areaEffectCloud = new AreaEffectCloud(this.level, this.getX(), this.getY(), this.getZ());
+        if (!this.level().isClientSide) {
+            ExplosionUtil.fungusExplode(this.level(), this, this.getX(), this.getY(), this.getZ(), 1.25F, this.isOnFire());
+            if (this.level().random.nextFloat() <= 0.25F){
+                AreaEffectCloud areaEffectCloud = new AreaEffectCloud(this.level(), this.getX(), this.getY(), this.getZ());
                 if (p_37406_.getType() == HitResult.Type.ENTITY){
                     EntityHitResult result1 = (EntityHitResult) p_37406_;
                     areaEffectCloud.setPos(result1.getEntity().position());
@@ -42,7 +42,7 @@ public class SnapFungus extends ThrowableFungus {
                 areaEffectCloud.setDuration(areaEffectCloud.getDuration() / 2);
                 areaEffectCloud.setRadiusPerTick(-areaEffectCloud.getRadius() / (float)areaEffectCloud.getDuration());
                 areaEffectCloud.addEffect(new MobEffectInstance(MobEffects.POISON, MathHelper.secondsToTicks(11)));
-                this.level.addFreshEntity(areaEffectCloud);
+                this.level().addFreshEntity(areaEffectCloud);
             }
             this.discard();
         }

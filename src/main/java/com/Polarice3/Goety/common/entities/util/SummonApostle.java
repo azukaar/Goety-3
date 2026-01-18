@@ -49,10 +49,10 @@ public class SummonApostle extends Entity {
         super.tick();
         if (this.tickCount == 150) {
             this.playSound(SoundEvents.AMBIENT_NETHER_WASTES_MOOD.get(), 1.0F, 1.0F);
-            for (Player player: this.level.getEntitiesOfClass(Player.class, this.getBoundingBox().inflate(32))){
+            for (Player player: this.level().getEntitiesOfClass(Player.class, this.getBoundingBox().inflate(32))){
                 player.displayClientMessage(Component.translatable("info.goety.apostle.summon"), true);
             }
-            if (this.level instanceof ServerLevel serverLevel){
+            if (this.level() instanceof ServerLevel serverLevel){
                 Warden.applyDarknessAround(serverLevel, this.position(), (Entity)null, 32);
             }
         }
@@ -62,8 +62,8 @@ public class SummonApostle extends Entity {
         if (this.tickCount == 450){
             this.playSound(SoundEvents.LIGHTNING_BOLT_THUNDER, 1.0F, 1.0F);
         }
-        if (!this.level.isClientSide) {
-            ServerLevel serverWorld = (ServerLevel) this.level;
+        if (!this.level().isClientSide) {
+            ServerLevel serverWorld = (ServerLevel) this.level();
             if (serverWorld.getDifficulty() == Difficulty.PEACEFUL){
                 this.discard();
             }
@@ -86,7 +86,7 @@ public class SummonApostle extends Entity {
                     serverWorld.sendParticles(ParticleTypes.FLAME, this.getX() + d1 * 0.1D, this.getY() + 0.3D, this.getZ() + d3 * 0.1D, 0, d1, d2, d3, 0.5F);
                 }
                 serverWorld.setWeatherParameters(6000, 0, false, false);
-                Apostle apostleEntity = new Apostle(ModEntityType.APOSTLE.get(), this.level);
+                Apostle apostleEntity = new Apostle(ModEntityType.APOSTLE.get(), this.level());
                 apostleEntity.setPos(this.getX(), this.getY(), this.getZ());
                 apostleEntity.finalizeSpawn(serverWorld, serverWorld.getCurrentDifficultyAt(this.blockPosition()), MobSpawnType.MOB_SUMMONED, null, null);
                 serverWorld.addFreshEntity(apostleEntity);

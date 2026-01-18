@@ -14,7 +14,7 @@ import net.minecraft.util.Mth;
 
 public class DrownedServantRenderer extends AbstractZombieServantRenderer<DrownedServant, DrownedServantModel<DrownedServant>> {
    protected static final ResourceLocation TEXTURE = Goety.location("textures/entity/servants/zombie/drowned_servant.png");
-   private static final ResourceLocation DROWNED_LOCATION = new ResourceLocation("textures/entity/zombie/drowned.png");
+   private static final ResourceLocation DROWNED_LOCATION = ResourceLocation.withDefaultNamespace("textures/entity/zombie/drowned.png");
 
    public DrownedServantRenderer(EntityRendererProvider.Context p_173964_) {
       super(p_173964_, new DrownedServantModel<>(p_173964_.bakeLayer(ModelLayers.DROWNED)), new DrownedServantModel<>(p_173964_.bakeLayer(ModelLayers.DROWNED_INNER_ARMOR)), new DrownedServantModel<>(p_173964_.bakeLayer(ModelLayers.DROWNED_OUTER_ARMOR)));
@@ -29,8 +29,8 @@ public class DrownedServantRenderer extends AbstractZombieServantRenderer<Drowne
       }
    }
 
-   protected void setupRotations(DrownedServant p_114109_, PoseStack p_114110_, float p_114111_, float p_114112_, float p_114113_) {
-      super.setupRotations(p_114109_, p_114110_, p_114111_, p_114112_, p_114113_);
+   protected void setupRotations(DrownedServant p_114109_, PoseStack p_114110_, float p_114111_, float p_114112_, float p_114113_, float p_114114_) {
+      super.setupRotations(p_114109_, p_114110_, p_114111_, p_114112_, p_114113_, p_114114_);
       float f = p_114109_.getSwimAmount(p_114113_);
       if (f > 0.0F) {
          p_114110_.mulPose(Axis.XP.rotationDegrees(Mth.lerp(f, p_114109_.getXRot(), -10.0F - p_114109_.getXRot())));

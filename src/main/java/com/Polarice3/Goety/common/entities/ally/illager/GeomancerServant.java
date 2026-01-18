@@ -130,7 +130,7 @@ public class GeomancerServant extends SpellcasterIllagerServant{
 
     public void onSyncedDataUpdated(EntityDataAccessor<?> accessor) {
         if (ANIM_STATE.equals(accessor)) {
-            if (this.level.isClientSide){
+            if (this.level().isClientSide){
                 switch (this.entityData.get(ANIM_STATE)){
                     case 0:
                         break;
@@ -149,16 +149,16 @@ public class GeomancerServant extends SpellcasterIllagerServant{
 
     @Override
     public void die(DamageSource pCause) {
-        if (!this.level.isClientSide) {
+        if (!this.level().isClientSide) {
             if (this.getIdol() == null) {
                 if (this.getTrueOwner() != null) {
                     if (CuriosFinder.hasNamelessSet(this.getTrueOwner())){
                         BoundGeomancer servant = this.convertTo(ModEntityType.BOUND_GEOMANCER.get(), true);
                         if (servant != null) {
                             servant.setTrueOwner(this.getTrueOwner());
-                            net.neoforged.event.net.neoforged.neoforge.event.EventHooks.onLivingConvert(this, servant);
+                            net.neoforged.neoforge.event.EventHooks.onLivingConvert(this, servant);
                             if (!this.isSilent()) {
-                                this.level.levelEvent((Player)null, 1026, this.blockPosition(), 0);
+                                this.level().levelEvent((Player)null, 1026, this.blockPosition(), 0);
                             }
                         }
                     }
@@ -191,11 +191,11 @@ public class GeomancerServant extends SpellcasterIllagerServant{
 
     @Override
     public void tick() {
-        if (this.level.isClientSide()) {
+        if (this.level().isClientSide()) {
             this.idleAnimationState.animateWhen(this.getCurrentAnimation() != this.getAnimationState("attack") && !this.walkAnimation.isMoving(), this.tickCount);
         }
         super.tick();
-        if (!this.level.isClientSide) {
+        if (!this.level().isClientSide) {
             if (this.spellCool > 0) {
                 --this.spellCool;
             }

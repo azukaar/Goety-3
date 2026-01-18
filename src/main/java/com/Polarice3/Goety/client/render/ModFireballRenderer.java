@@ -28,7 +28,7 @@ public class ModFireballRenderer<T extends Entity & ItemSupplier> extends Thrown
             entityType = EntityType.FIREBALL;
         }
         try {
-            EntityRenderer<T> entityRenderer = (EntityRenderer<T>) this.entityRenderDispatcher.renderers.get(entityType);
+            EntityRenderer<T> entityRenderer = (EntityRenderer<T>) this.entityRenderDispatcher.getRenderer(p_116085_);
             if (entityType != null && entityRenderer != null) {
                 entityRenderer.render(p_116085_, p_116086_, p_116087_, p_116088_, p_116089_, p_116090_);
             } else {

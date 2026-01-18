@@ -54,6 +54,9 @@ import java.util.List;
 import java.util.Objects;
 
 public class HostileRedstoneGolem extends HostileGolem {
+    @Override
+    public void applyRaidBuffs(ServerLevel p_37889_, int p_37890_, boolean p_37891_) {
+    }
     protected static final EntityDataAccessor<Byte> DATA_FLAGS_ID = SynchedEntityData.defineId(HostileRedstoneGolem.class, EntityDataSerializers.BYTE);
     private static final EntityDataAccessor<Integer> ANIM_STATE = SynchedEntityData.defineId(HostileRedstoneGolem.class, EntityDataSerializers.INT);
     public static String IDLE = "idle";
@@ -116,7 +119,7 @@ public class HostileRedstoneGolem extends HostileGolem {
                 .add(Attributes.MOVEMENT_SPEED, (double)0.3F)
                 .add(Attributes.KNOCKBACK_RESISTANCE, 1.0D)
                 .add(Attributes.ATTACK_KNOCKBACK, 3.0D)
-                .add(NeoForgeMod.STEP_HEIGHT_ADDITION.get(), 1.0D)
+                // .add(NeoForgeMod.STEP_HEIGHT.get(), 1.0D)
                 .add(Attributes.ATTACK_DAMAGE, AttributesConfig.RedstoneGolemDamage.get())
                 .add(Attributes.FOLLOW_RANGE, AttributesConfig.RedstoneGolemFollowRange.get());
     }
@@ -128,10 +131,11 @@ public class HostileRedstoneGolem extends HostileGolem {
         MobUtil.setBaseAttributes(this.getAttribute(Attributes.FOLLOW_RANGE), AttributesConfig.RedstoneGolemFollowRange.get());
     }
 
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.entityData.define(DATA_FLAGS_ID, (byte)0);
-        this.entityData.define(ANIM_STATE, 0);
+    @Override
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(DATA_FLAGS_ID, (byte)0);
+        builder.define(ANIM_STATE, 0);
     }
 
     protected Component getTypeName() {
@@ -176,7 +180,7 @@ public class HostileRedstoneGolem extends HostileGolem {
 
     public void onSyncedDataUpdated(EntityDataAccessor<?> p_219422_) {
         if (ANIM_STATE.equals(p_219422_)) {
-            if (this.level.isClientSide){
+            if (this.level().isClientSide){
                 switch (this.entityData.get(ANIM_STATE)){
                     case 0:
                         break;
@@ -264,9 +268,9 @@ public class HostileRedstoneGolem extends HostileGolem {
         this.bossInfo.removePlayer(pPlayer);
     }
 
-    @Override
-    public void applyRaidBuffs(int p_37844_, boolean p_37845_) {
-    }
+    // @Override
+    // public void applyRaidBuffs(int p_37844_, boolean p_37845_) {
+    // }
 
     @Override
     public SoundEvent getCelebrateSound() {
@@ -319,7 +323,7 @@ public class HostileRedstoneGolem extends HostileGolem {
     public void setMeleeAttacking(boolean attacking) {
         this.setGolemFlags(1, attacking);
         this.attackTick = 0;
-        this.level.broadcastEntityEvent(this, (byte) 5);
+        this.level().broadcastEntityEvent(this, (byte) 5);
     }
 
     protected boolean isImmobile() {
@@ -349,7 +353,7 @@ public class HostileRedstoneGolem extends HostileGolem {
         if (this.deathTime >= 30) {
             this.spawnAnim();
             ItemStack itemStack = new ItemStack(ModBlocks.REDSTONE_GOLEM_SKULL_ITEM.get());
-            if (this.level.random.nextFloat() <= 0.11F){
+            if (this.level().random.nextFloat() <= 0.11F){
                 this.spawnAtLocation(itemStack);
             }
             this.remove(RemovalReason.KILLED);
@@ -390,7 +394,7 @@ public class HostileRedstoneGolem extends HostileGolem {
             this.setYRot(this.deathRotation);
             this.setYBodyRot(this.deathRotation);
         }
-        if (this.level.isClientSide()) {
+        if (this.level().isClientSide()) {
             if (this.isAlive()) {
                 if (!this.isSummoning()){
                     this.glow();
@@ -404,7 +408,7 @@ public class HostileRedstoneGolem extends HostileGolem {
             }
         }
         MiscCapHelper.updateMobTarget(this);
-        if (!this.level.isClientSide){
+        if (!this.level().isClientSide){
             if (!this.isDeadOrDying()) {
                 if (!this.isMeleeAttacking() && !this.isSummoning()) {
                     if (!this.isPostAttack && !this.isNovelty) {
@@ -422,7 +426,7 @@ public class HostileRedstoneGolem extends HostileGolem {
                         }
                         if (this.noveltyTick == 42) {
                             this.playSound(ModSounds.REDSTONE_GOLEM_GROWL.get());
-                            this.gameEvent(GameEvent.ENTITY_ROAR, this);
+                            // this.gameEvent(GameEvent.ENTITY_ROAR, this);
                         }
                         if (this.noveltyTick >= 92 || this.getTarget() != null || this.hurtTime > 0) {
                             this.isNovelty = false;
@@ -432,7 +436,7 @@ public class HostileRedstoneGolem extends HostileGolem {
                     }
                     if (!this.isMeleeAttacking() && !this.isSummoning() && !this.isMoving()) {
                         ++this.idleTime;
-                        if (this.level.random.nextFloat() <= 0.05F && this.hurtTime <= 0 && (this.getTarget() == null || this.getTarget().isDeadOrDying()) && !this.isNovelty && this.idleTime >= MathHelper.minutesToTicks(1)) {
+                        if (this.level().random.nextFloat() <= 0.05F && this.hurtTime <= 0 && (this.getTarget() == null || this.getTarget().isDeadOrDying()) && !this.isNovelty && this.idleTime >= MathHelper.minutesToTicks(1)) {
                             this.idleTime = 0;
                             this.isNovelty = true;
                             this.setAnimationState(NOVELTY);
@@ -461,7 +465,7 @@ public class HostileRedstoneGolem extends HostileGolem {
                         this.isPostAttack = false;
                     }
                     if (this.isSummoning()) {
-                        if (this.level instanceof ServerLevel serverLevel) {
+                        if (this.level() instanceof ServerLevel serverLevel) {
                             for (int i = 0; i < 5; ++i) {
                                 double d0 = serverLevel.random.nextGaussian() * 0.02D;
                                 double d1 = serverLevel.random.nextGaussian() * 0.02D;
@@ -470,22 +474,22 @@ public class HostileRedstoneGolem extends HostileGolem {
                             }
                         }
                         if (this.summonTick == MathHelper.secondsToTicks(SUMMON_SECONDS_TIME - 1)) {
-                            CameraShake.cameraShake(this.level, this.position(), 10.0F, 0.1F, 0, 20);
+                            CameraShake.cameraShake(this.level(), this.position(), 10.0F, 0.1F, 0, 20);
                         }
                         if (this.summonTick <= (MathHelper.secondsToTicks(SUMMON_SECONDS_TIME - 1)) && this.mineCount > 0) {
                             int time = (int) (MathHelper.secondsToTicks(SUMMON_SECONDS_TIME - 1) / 14);
                             if (this.tickCount % time == 0 && this.onGround()) {
                                 BlockPos blockPos = this.blockPosition();
-                                blockPos = blockPos.offset(-8 + this.level.random.nextInt(16), 0, -8 + this.level.random.nextInt(16));
-                                BlockPos blockPos2 = this.blockPosition().offset(-8 + this.level.random.nextInt(16), 0, -8 + this.level.random.nextInt(16));
+                                blockPos = blockPos.offset(-8 + this.level().random.nextInt(16), 0, -8 + this.level().random.nextInt(16));
+                                BlockPos blockPos2 = this.blockPosition().offset(-8 + this.level().random.nextInt(16), 0, -8 + this.level().random.nextInt(16));
                                 Vec3 vec3 = Vec3.atBottomCenterOf(blockPos);
                                 Vec3 vec32 = Vec3.atBottomCenterOf(blockPos2);
-                                ScatterMine scatterMine = new ScatterMine(this.level, this, vec3);
-                                if (!this.level.getEntitiesOfClass(ScatterMine.class, new AABB(blockPos)).isEmpty()) {
+                                ScatterMine scatterMine = new ScatterMine(this.level(), this, vec3);
+                                if (!this.level().getEntitiesOfClass(ScatterMine.class, new AABB(blockPos)).isEmpty()) {
                                     scatterMine.setPos(vec32.x(), vec32.y(), vec32.z());
                                 }
-                                if (this.level.addFreshEntity(scatterMine)) {
-                                    if (this.level.random.nextBoolean()) {
+                                if (this.level().addFreshEntity(scatterMine)) {
+                                    if (this.level().random.nextBoolean()) {
                                         SoundUtil.playRedstoneMineLoad(scatterMine);
                                     }
                                     --this.mineCount;
@@ -527,7 +531,7 @@ public class HostileRedstoneGolem extends HostileGolem {
     }
 
     public boolean doHurtTarget(Entity entityIn) {
-        if (!this.level.isClientSide && !this.isMeleeAttacking()) {
+        if (!this.level().isClientSide && !this.isMeleeAttacking()) {
             this.playSound(ModSounds.REDSTONE_GOLEM_PRE_ATTACK.get(), 1.5F, 1.0F);
             this.setMeleeAttacking(true);
         }
@@ -587,12 +591,11 @@ public class HostileRedstoneGolem extends HostileGolem {
                 HostileRedstoneGolem.this.getNavigation().moveTo(livingentity, this.moveSpeed);
             }
 
-            this.checkAndPerformAttack(livingentity, HostileRedstoneGolem.this.distanceToSqr(livingentity.getX(), livingentity.getY(), livingentity.getZ()));
+            this.checkAndPerformAttack(livingentity);
         }
 
-        @Override
-        protected void checkAndPerformAttack(LivingEntity enemy, double distToEnemySqr) {
-            if (HostileRedstoneGolem.this.targetClose(enemy, distToEnemySqr) && !HostileRedstoneGolem.this.isPostAttack) {
+        protected void checkAndPerformAttack(LivingEntity enemy) {
+            if (this.canPerformAttack(enemy) && !HostileRedstoneGolem.this.isPostAttack) {
                 HostileRedstoneGolem.this.doHurtTarget(enemy);
             }
         }
@@ -667,7 +670,8 @@ public class HostileRedstoneGolem extends HostileGolem {
                     HostileRedstoneGolem.this.setDeltaMovement(HostileRedstoneGolem.this.getDeltaMovement().multiply(0.6D, 1.0D, 0.6D));
                 }
 
-                HostileRedstoneGolem.this.doEnchantDamageEffects(HostileRedstoneGolem.this, target);
+                // HostileRedstoneGolem.this.doEnchantDamageEffects(HostileRedstoneGolem.this, target);
+                // net.minecraft.world.item.enchantment.EnchantmentHelper.doPostAttackEffects((ServerLevel) HostileRedstoneGolem.this.level(), HostileRedstoneGolem.this, target);
                 HostileRedstoneGolem.this.setLastHurtMob(target);
             }
         }

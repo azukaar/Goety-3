@@ -44,13 +44,15 @@ public class ElectroOrb extends SpellThrowableProjectile {
         }
     }
 
-    protected float getGravity() {
-        if (this.getTarget() == null){
-            return super.getGravity();
-        } else {
-            return 0.0F;
-        }
-    }
+    // getGravity is final in 1.21 and cannot be overridden
+    // Gravity is now controlled by entity attributes/type
+    // protected float getGravity() {
+    //     if (this.getTarget() == null){
+    //         return super.getGravity();
+    //     } else {
+    //         return 0.0F;
+    //     }
+    // }
 
     public void tick() {
         super.tick();
@@ -82,8 +84,8 @@ public class ElectroOrb extends SpellThrowableProjectile {
     }
 
     protected void onHit(HitResult hitResult) {
-        if (!this.level.isClientSide) {
-            DamageSource damageSource = ModDamageSource.getDamageSource(this.level, ModDamageSource.SHOCK);
+        if (!this.level().isClientSide) {
+            DamageSource damageSource = ModDamageSource.getDamageSource(this.level(), ModDamageSource.SHOCK);
             float damage = SpellConfig.ElectroOrbDamage.get().floatValue() * WandUtil.damageMultiply();
             if (this.getOwner() != null) {
                 damageSource = ModDamageSource.indirectShock(this, this.getOwner());
@@ -94,11 +96,11 @@ public class ElectroOrb extends SpellThrowableProjectile {
                 entity.hurt(damageSource, damage);
                 if (this.isStaff()) {
                     float chance = 0.05F;
-                    if (this.level.isThundering() && this.level.isRainingAt(entity.blockPosition())) {
+                    if (this.level().isThundering() && this.level().isRainingAt(entity.blockPosition())) {
                         chance += 0.25F;
                     }
-                    if (entity instanceof LivingEntity livingEntity && this.level.random.nextFloat() <= chance) {
-                        livingEntity.addEffect(new MobEffectInstance(GoetyEffects.SPASMS.get(), MathHelper.secondsToTicks(5)));
+                    if (entity instanceof LivingEntity livingEntity && this.level().random.nextFloat() <= chance) {
+                        livingEntity.addEffect(new MobEffectInstance(GoetyEffects.SPASMS.getHolder(), MathHelper.secondsToTicks(5)));
                     }
                 }
             }
@@ -109,10 +111,10 @@ public class ElectroOrb extends SpellThrowableProjectile {
     }
 
     public void finalizeExplosion() {
-        if (this.level instanceof ServerLevel serverLevel) {
+        if (this.level() instanceof ServerLevel serverLevel) {
             ColorUtil colorUtil = new ColorUtil(0xfef597);
             if (this.isStaff()) {
-                DamageSource damageSource = ModDamageSource.getDamageSource(this.level, ModDamageSource.SHOCK);
+                DamageSource damageSource = ModDamageSource.getDamageSource(this.level(), ModDamageSource.SHOCK);
                 int radius = 2;
                 float damage = SpellConfig.ElectroOrbDamage.get().floatValue() * WandUtil.damageMultiply();
                 if (this.getOwner() != null) {
@@ -139,7 +141,7 @@ public class ElectroOrb extends SpellThrowableProjectile {
                                 chance += 0.25F;
                             }
                             if (serverLevel.random.nextFloat() <= chance){
-                                target1.addEffect(new MobEffectInstance(GoetyEffects.SPASMS.get(), MathHelper.secondsToTicks(5)));
+                                target1.addEffect(new MobEffectInstance(GoetyEffects.SPASMS.getHolder(), MathHelper.secondsToTicks(5)));
                             }
                         }
                     }

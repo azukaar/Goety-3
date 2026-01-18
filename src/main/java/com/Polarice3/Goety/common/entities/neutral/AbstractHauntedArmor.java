@@ -21,6 +21,7 @@ import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
@@ -43,8 +44,12 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.entity.projectile.ProjectileUtil;
+import net.minecraft.world.entity.projectile.ProjectileUtil;
 import net.minecraft.world.item.*;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
+// import net.neoforged.neoforge.common.ToolAction;
+// import net.neoforged.neoforge.common.ToolActions;
+import net.neoforged.neoforge.event.EventHooks;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.block.state.BlockState;
@@ -55,8 +60,8 @@ import java.util.EnumSet;
 import java.util.UUID;
 
 public abstract class AbstractHauntedArmor extends Summoned implements CrossbowAttackMob, RangedAttackMob {
-    private static final UUID SPEED_MODIFIER_HOSTILE_UUID = UUID.fromString("5CD17E52-A79A-43D3-A529-90FDE04B181E");
-    private static final AttributeModifier SPEED_MODIFIER_HOSTILE = new AttributeModifier(SPEED_MODIFIER_HOSTILE_UUID, "Aggression Speed", 0.5D, AttributeModifier.Operation.MULTIPLY_BASE);
+    private static final ResourceLocation SPEED_MODIFIER_HOSTILE_ID = ResourceLocation.withDefaultNamespace("haunted_armor_aggression_speed");
+    private static final AttributeModifier SPEED_MODIFIER_HOSTILE = new AttributeModifier(SPEED_MODIFIER_HOSTILE_ID, 0.5D, AttributeModifier.Operation.ADD_MULTIPLIED_BASE);
     private static final EntityDataAccessor<Byte> FLAGS = SynchedEntityData.defineId(AbstractHauntedArmor.class, EntityDataSerializers.BYTE);
     private static final EntityDataAccessor<Boolean> DATA_CHARGING_STATE = SynchedEntityData.defineId(AbstractHauntedArmor.class, EntityDataSerializers.BOOLEAN);
     private final CreatureBowAttackGoal<AbstractHauntedArmor> bowGoal = new CreatureBowAttackGoal<>(this, 1.0D, 20, 15.0F){
@@ -87,10 +92,10 @@ public abstract class AbstractHauntedArmor extends Summoned implements CrossbowA
         this.goalSelector.addGoal(8, new WanderGoal<>(this, 1.0D, 10));
     }
 
-    @Override
-    public float getStepHeight() {
-        return 1.0F;
-    }
+    // @Override
+    // public float getStepHeight() {
+    //    return 1.0F;
+    // }
 
     public static AttributeSupplier.Builder setCustomAttributes() {
         return Mob.createMobAttributes()
@@ -131,7 +136,7 @@ public abstract class AbstractHauntedArmor extends Summoned implements CrossbowA
     }
 
     public void reassessWeaponGoal() {
-        if (!this.level.isClientSide) {
+        if (!this.level().isClientSide) {
             this.goalSelector.removeGoal(this.meleeGoal);
             this.goalSelector.removeGoal(this.bowGoal);
             this.goalSelector.removeGoal(this.crossBowGoal);
@@ -152,16 +157,17 @@ public abstract class AbstractHauntedArmor extends Summoned implements CrossbowA
 
     public void setItemSlot(EquipmentSlot pSlot, ItemStack pStack) {
         super.setItemSlot(pSlot, pStack);
-        if (!this.level.isClientSide) {
+        if (!this.level().isClientSide) {
             this.reassessWeaponGoal();
         }
 
     }
 
-    public SpawnGroupData finalizeSpawn(ServerLevelAccessor worldIn, DifficultyInstance difficultyIn, MobSpawnType reason, @Nullable SpawnGroupData spawnDataIn, @Nullable CompoundTag dataTag) {
-        spawnDataIn = super.finalizeSpawn(worldIn, difficultyIn, reason, spawnDataIn, dataTag);
+    @Override
+    public SpawnGroupData finalizeSpawn(ServerLevelAccessor worldIn, DifficultyInstance difficultyIn, MobSpawnType reason, @Nullable SpawnGroupData spawnDataIn) {
+        spawnDataIn = super.finalizeSpawn(worldIn, difficultyIn, reason, spawnDataIn);
         this.populateDefaultEquipmentSlots(worldIn.getRandom(), worldIn.getCurrentDifficultyAt(this.blockPosition()));
-        this.populateDefaultEquipmentEnchantments(worldIn.getRandom(), difficultyIn);
+        this.populateDefaultEquipmentEnchantments(worldIn, worldIn.getRandom(), difficultyIn);
         this.reassessWeaponGoal();
         return spawnDataIn;
     }
@@ -172,7 +178,7 @@ public abstract class AbstractHauntedArmor extends Summoned implements CrossbowA
         this.setItemSlot(EquipmentSlot.LEGS, ModItems.CURSED_KNIGHT_LEGGINGS.get().getDefaultInstance());
         this.setItemSlot(EquipmentSlot.FEET, ModItems.CURSED_KNIGHT_BOOTS.get().getDefaultInstance());
         for (EquipmentSlot equipmentSlot : EquipmentSlot.values()){
-            if (equipmentSlot.getType() == EquipmentSlot.Type.ARMOR){
+            if (equipmentSlot.isArmor()){
                 this.setDropChance(equipmentSlot, 0.05F);
             }
         }
@@ -217,19 +223,19 @@ public abstract class AbstractHauntedArmor extends Summoned implements CrossbowA
         ItemStack itemstack = this.getProjectile(this.getItemInHand(ProjectileUtil.getWeaponHoldingHand(this, item -> item instanceof BowItem)));
         AbstractArrow abstractarrowentity = this.getArrow(itemstack, pDistanceFactor);
         if (this.getMainHandItem().getItem() instanceof BowItem bowItem) {
-            abstractarrowentity = bowItem.customArrow(abstractarrowentity);
+            abstractarrowentity = bowItem.customArrow(abstractarrowentity, itemstack, this.getMainHandItem());
         }
         double d0 = pTarget.getX() - this.getX();
         double d1 = pTarget.getY(0.3333333333333333D) - abstractarrowentity.getY();
         double d2 = pTarget.getZ() - this.getZ();
         double d3 = Mth.sqrt((float) (d0 * d0 + d2 * d2));
-        abstractarrowentity.shoot(d0, d1 + d3 * (double)0.2F, d2, 1.6F, (float)(14 - this.level.getDifficulty().getId() * 4));
+        abstractarrowentity.shoot(d0, d1 + d3 * (double)0.2F, d2, 1.6F, (float)(14 - this.level().getDifficulty().getId() * 4));
         this.playSound(SoundEvents.SKELETON_SHOOT, 1.0F, 1.0F / (this.getRandom().nextFloat() * 0.4F + 0.8F));
-        this.level.addFreshEntity(abstractarrowentity);
+        this.level().addFreshEntity(abstractarrowentity);
     }
 
     protected AbstractArrow getArrow(ItemStack pArrowStack, float pDistanceFactor) {
-        return ProjectileUtil.getMobArrow(this, pArrowStack, pDistanceFactor);
+        return ProjectileUtil.getMobArrow(this, pArrowStack, pDistanceFactor, this.getMainHandItem());
     }
 
     public boolean canFireProjectileWeapon(ProjectileWeaponItem p_230280_1_) {
@@ -245,9 +251,11 @@ public abstract class AbstractHauntedArmor extends Summoned implements CrossbowA
         this.entityData.set(DATA_CHARGING_STATE, isCharging);
     }
 
-    @Override
+    // @Override
     public void shootCrossbowProjectile(LivingEntity p_230284_1_, ItemStack p_230284_2_, Projectile p_230284_3_, float p_230284_4_) {
-        this.shootCrossbowProjectile(this, p_230284_1_, p_230284_3_, p_230284_4_, 1.6F);
+        // this.performCrossbowAttack(this, 1.6F);
+        this.playSound(SoundEvents.CROSSBOW_SHOOT, 1.0F, 1.0F / (this.getRandom().nextFloat() * 0.4F + 0.8F));
+        this.level().addFreshEntity(p_230284_3_);
     }
 
     public void onCrossbowAttackPerformed() {
@@ -284,10 +292,10 @@ public abstract class AbstractHauntedArmor extends Summoned implements CrossbowA
     protected SoundEvent getHurtSound(DamageSource p_21239_) {
         if (!this.isDamageSourceBlocked(p_21239_)) {
             if (this.getItemBySlot(EquipmentSlot.CHEST).getItem() instanceof ArmorItem armorItem){
-                if (armorItem.getMaterial().getEquipSound() == SoundEvents.ARMOR_EQUIP_LEATHER
-                || armorItem.getMaterial().getEquipSound() == SoundEvents.ARMOR_EQUIP_ELYTRA
-                || armorItem.getMaterial().getEquipSound() == SoundEvents.ARMOR_EQUIP_TURTLE
-                || armorItem.getMaterial().getEquipSound() == SoundEvents.ARMOR_EQUIP_GENERIC){
+                if (armorItem.getMaterial().value().equipSound() == SoundEvents.ARMOR_EQUIP_LEATHER
+                || armorItem.getMaterial().value().equipSound() == SoundEvents.ARMOR_EQUIP_ELYTRA
+                || armorItem.getMaterial().value().equipSound() == SoundEvents.ARMOR_EQUIP_TURTLE
+                || armorItem.getMaterial().value().equipSound() == SoundEvents.ARMOR_EQUIP_GENERIC){
                     return SoundEvents.GENERIC_HURT;
                 }
             } else {
@@ -312,10 +320,10 @@ public abstract class AbstractHauntedArmor extends Summoned implements CrossbowA
     @Nullable
     protected SoundEvent getStepSound() {
         if (this.getItemBySlot(EquipmentSlot.FEET).getItem() instanceof ArmorItem armorItem){
-            if (armorItem.getMaterial().getEquipSound() == SoundEvents.ARMOR_EQUIP_LEATHER
-                    || armorItem.getMaterial().getEquipSound() == SoundEvents.ARMOR_EQUIP_ELYTRA
-                    || armorItem.getMaterial().getEquipSound() == SoundEvents.ARMOR_EQUIP_TURTLE
-                    || armorItem.getMaterial().getEquipSound() == SoundEvents.ARMOR_EQUIP_GENERIC){
+            if (armorItem.getMaterial().value().equipSound() == SoundEvents.ARMOR_EQUIP_LEATHER
+                    || armorItem.getMaterial().value().equipSound() == SoundEvents.ARMOR_EQUIP_ELYTRA
+                    || armorItem.getMaterial().value().equipSound() == SoundEvents.ARMOR_EQUIP_TURTLE
+                    || armorItem.getMaterial().value().equipSound() == SoundEvents.ARMOR_EQUIP_GENERIC){
                 return null;
             }
         }
@@ -330,13 +338,13 @@ public abstract class AbstractHauntedArmor extends Summoned implements CrossbowA
 
     @Override
     public boolean canBeAffected(MobEffectInstance pPotioneffect) {
-        return pPotioneffect.getEffect().getAttributeModifiers().containsKey(Attributes.ARMOR);
+        return true; // pPotioneffect.getEffect().value().getAttributeModifiers().containsKey(Attributes.ARMOR);
     }
 
     @Override
     public void die(DamageSource pCause) {
         super.die(pCause);
-        if (this.level instanceof ServerLevel serverLevel) {
+        if (this.level() instanceof ServerLevel serverLevel) {
             for (int i = 0; i < 20; ++i) {
                 ServerParticleUtil.addParticlesAroundSelf(serverLevel, ParticleTypes.SMOKE, this);
             }
@@ -346,20 +354,20 @@ public abstract class AbstractHauntedArmor extends Summoned implements CrossbowA
     @Override
     public void tick() {
         super.tick();
-        if (!this.level.isClientSide){
+        if (!this.level().isClientSide){
             AttributeInstance attributeinstance = this.getAttribute(Attributes.MOVEMENT_SPEED);
             if (attributeinstance != null) {
                 if ((this.getTarget() != null || this.isAggressive())
-                        && !attributeinstance.hasModifier(SPEED_MODIFIER_HOSTILE)) {
+                        && !attributeinstance.hasModifier(SPEED_MODIFIER_HOSTILE.id())) {
                     attributeinstance.addTransientModifier(SPEED_MODIFIER_HOSTILE);
-                } else if (attributeinstance.hasModifier(SPEED_MODIFIER_HOSTILE)){
-                    attributeinstance.removeModifier(SPEED_MODIFIER_HOSTILE);
+                } else if (attributeinstance.hasModifier(SPEED_MODIFIER_HOSTILE.id())){
+                    attributeinstance.removeModifier(SPEED_MODIFIER_HOSTILE.id());
                 }
             }
         }
         if (this.isGuarding()){
             ++this.blockTime;
-            int total = MathHelper.secondsToTicks(3 + this.level.random.nextInt(3));
+            int total = MathHelper.secondsToTicks(3 + this.level().random.nextInt(3));
             if (this.blockTime > total){
                 this.coolTime = total * 2;
                 this.setGuarding(false);
@@ -371,7 +379,7 @@ public abstract class AbstractHauntedArmor extends Summoned implements CrossbowA
             }
         }
 
-        if (!this.isInLava() && !this.isInFluidType(NeoForgeMod.LAVA_TYPE.get())){
+        if (!this.isInLava() && !this.isInFluidType(NeoForgeMod.LAVA_TYPE.value())){
             this.clearFire();
         }
 
@@ -385,9 +393,9 @@ public abstract class AbstractHauntedArmor extends Summoned implements CrossbowA
             }
         }
 
-        if (this.level.isClientSide) {
+        if (this.level().isClientSide) {
             for(int i = 0; i < 2; ++i) {
-                this.level.addParticle(ParticleTypes.SMOKE, this.getRandomX(0.5D), this.getRandomY(), this.getRandomZ(0.5D), 0.0D, 0.0D, 0.0D);
+                this.level().addParticle(ParticleTypes.SMOKE, this.getRandomX(0.5D), this.getRandomY(), this.getRandomZ(0.5D), 0.0D, 0.0D, 0.0D);
             }
         }
     }
@@ -396,12 +404,12 @@ public abstract class AbstractHauntedArmor extends Summoned implements CrossbowA
     public boolean hurt(DamageSource source, float amount) {
         boolean flag = false;
         if (amount > 0.0F && this.isDamageSourceBlocked(source)) {
-            net.neoforged.event.entity.living.ShieldBlockEvent ev = net.neoforged.common.ForgeHooks.onShieldBlock(this, source, amount);
-            if(!ev.isCanceled()) {
-                if(ev.shieldTakesDamage()) {
+            // net.neoforged.neoforge.event.entity.living.ShieldBlockEvent ev = net.neoforged.neoforge.event.EventHooks.onShieldBlock(this, source, amount);
+            if(true /*!ev.isCanceled()*/) {
+                if(true /*ev.shieldTakesDamage()*/) {
                     this.hurtCurrentlyUsedShield(amount);
                 }
-                amount -= ev.getBlockedDamage();
+                amount -= 0; // ev.getBlockedDamage();
                 if (!source.is(DamageTypeTags.IS_PROJECTILE)) {
                     Entity entity = source.getDirectEntity();
                     if (entity instanceof LivingEntity) {
@@ -416,8 +424,8 @@ public abstract class AbstractHauntedArmor extends Summoned implements CrossbowA
             return false;
         }
         if (flag) {
-            this.playSound(SoundEvents.SHIELD_BLOCK, 1.0F, 0.8F + this.level.random.nextFloat() * 0.4F);
-            this.level.broadcastEntityEvent(this, (byte)29);
+            this.playSound(SoundEvents.SHIELD_BLOCK, 1.0F, 0.8F + this.level().random.nextFloat() * 0.4F);
+            this.level().broadcastEntityEvent(this, (byte)29);
             if (amount <= 1.0F){
                 return false;
             }
@@ -425,7 +433,7 @@ public abstract class AbstractHauntedArmor extends Summoned implements CrossbowA
         if (!this.isGuarding() && this.coolTime > 0 && !this.canDisableShield(source) && !source.is(DamageTypeTags.BYPASSES_ARMOR)){
             this.coolTime -= (int) (amount * 10);
         }
-        if (this.level instanceof ServerLevel serverLevel && !this.isDamageSourceBlocked(source)){
+        if (this.level() instanceof ServerLevel serverLevel && !this.isDamageSourceBlocked(source)){
             if (!this.getItemBySlot(EquipmentSlot.CHEST).isEmpty()) {
                 int j = (int) Math.min(amount, 10);
                 for (int i = 0; i < j; ++i) {
@@ -452,7 +460,8 @@ public abstract class AbstractHauntedArmor extends Summoned implements CrossbowA
     }
 
     public void disableShield(boolean p_36385_) {
-        float f = 0.25F + (float) EnchantmentHelper.getBlockEfficiency(this) * 0.05F;
+        // float f = 0.25F + (float) EnchantmentHelper.getBlockEfficiency(this) * 0.05F;
+        float f = 0.25F;
         if (p_36385_) {
             f += 0.75F;
         }
@@ -463,20 +472,21 @@ public abstract class AbstractHauntedArmor extends Summoned implements CrossbowA
             this.setGuarding(false);
             this.stopUsingItem();
             this.swing(InteractionHand.OFF_HAND);
-            this.playSound(SoundEvents.SHIELD_BREAK, 2.0F, 0.8F + this.level.random.nextFloat() * 0.4F);
-            this.level.broadcastEntityEvent(this, (byte)30);
+            this.playSound(SoundEvents.SHIELD_BREAK, 2.0F, 0.8F + this.level().random.nextFloat() * 0.4F);
+            this.level().broadcastEntityEvent(this, (byte)30);
         }
 
     }
 
     protected void hurtCurrentlyUsedShield(float p_36383_) {
-        if (this.useItem.canPerformAction(net.neoforged.common.ToolActions.SHIELD_BLOCK)) {
+        if (this.useItem.canPerformAction(null /*ToolActions.SHIELD_BLOCK*/)) {
             if (p_36383_ >= 3.0F) {
                 int i = 1 + Mth.floor(p_36383_);
                 InteractionHand interactionhand = this.getUsedItemHand();
-                this.useItem.hurtAndBreak(i, this, (p_219739_) -> {
-                    p_219739_.broadcastBreakEvent(interactionhand);
-                });
+                this.useItem.hurtAndBreak(i, this, EquipmentSlot.MAINHAND);
+                // this.useItem.hurtAndBreak(i, this, (p_219739_) -> {
+                //      p_219739_.broadcastBreakEvent(interactionhand);
+                // });
                 if (this.useItem.isEmpty()) {
                     if (interactionhand == InteractionHand.MAIN_HAND) {
                         this.setItemSlot(EquipmentSlot.MAINHAND, ItemStack.EMPTY);
@@ -485,7 +495,7 @@ public abstract class AbstractHauntedArmor extends Summoned implements CrossbowA
                     }
 
                     this.useItem = ItemStack.EMPTY;
-                    this.playSound(SoundEvents.SHIELD_BREAK, 2.0F, 0.8F + this.level.random.nextFloat() * 0.4F);
+                    this.playSound(SoundEvents.SHIELD_BREAK, 2.0F, 0.8F + this.getRandom().nextFloat() * 0.4F);
                 }
             }
 
@@ -494,16 +504,16 @@ public abstract class AbstractHauntedArmor extends Summoned implements CrossbowA
 
     public void handleEntityEvent(byte p_20975_) {
         if (p_20975_ == 29){
-            this.playSound(SoundEvents.SHIELD_BLOCK, 1.0F, 0.8F + this.level.random.nextFloat() * 0.4F);
+            this.playSound(SoundEvents.SHIELD_BLOCK, 1.0F, 0.8F + this.getRandom().nextFloat() * 0.4F);
         } else if (p_20975_ == 30){
-            this.playSound(SoundEvents.SHIELD_BREAK, 2.0F, 0.8F + this.level.random.nextFloat() * 0.4F);
+            this.playSound(SoundEvents.SHIELD_BREAK, 2.0F, 0.8F + this.getRandom().nextFloat() * 0.4F);
             this.breakShield = 10;
         }
         super.handleEntityEvent(p_20975_);
     }
 
     public InteractionResult mobInteract(Player pPlayer, InteractionHand pHand) {
-        if (!this.level.isClientSide){
+        if (!this.level().isClientSide){
             ItemStack itemstack = pPlayer.getItemInHand(pHand);
             if (this.getTrueOwner() != null && pPlayer == this.getTrueOwner()) {
                 if (itemstack.is(ModItems.ECTOPLASM.get()) && this.getHealth() < this.getMaxHealth()) {
@@ -512,7 +522,7 @@ public abstract class AbstractHauntedArmor extends Summoned implements CrossbowA
                     }
                     this.playSound(ModSounds.HAUNTED_ARMOR_AMBIENT.get(), 1.0F, 1.25F);
                     this.heal(2.0F);
-                    if (this.level instanceof ServerLevel serverLevel) {
+                    if (this.level() instanceof ServerLevel serverLevel) {
                         for (int i = 0; i < 7; ++i) {
                             double d0 = this.random.nextGaussian() * 0.02D;
                             double d1 = this.random.nextGaussian() * 0.02D;

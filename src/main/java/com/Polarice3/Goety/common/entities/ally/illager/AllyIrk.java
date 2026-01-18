@@ -142,7 +142,7 @@ public class AllyIrk extends Minion {
 
         public void tick() {
             BlockPos.MutableBlockPos blockpos$mutable = AllyIrk.this.blockPosition().mutable();
-            blockpos$mutable.setY(AllyIrk.this.level.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, blockpos$mutable).getY());
+            blockpos$mutable.setY(AllyIrk.this.level().getHeightmapPos(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, blockpos$mutable).getY());
             AllyIrk.this.getMoveControl().setWantedPosition(blockpos$mutable.getX(), blockpos$mutable.getY(), blockpos$mutable.getZ(), 1.0F);
         }
 
@@ -189,9 +189,9 @@ public class AllyIrk extends Minion {
                     double d1 = livingentity.getX() - AllyIrk.this.getX();
                     double d2 = livingentity.getY(0.5D) - AllyIrk.this.getY(0.5D);
                     double d3 = livingentity.getZ() - AllyIrk.this.getZ();
-                    SoulBullet smallFireballEntity = new SoulBullet(AllyIrk.this.level, AllyIrk.this, d1, d2, d3);
+                    SoulBullet smallFireballEntity = new SoulBullet(AllyIrk.this.level(), AllyIrk.this, d1, d2, d3);
                     smallFireballEntity.setPos(smallFireballEntity.getX(), AllyIrk.this.getY(0.5D), smallFireballEntity.getZ());
-                    AllyIrk.this.level.addFreshEntity(smallFireballEntity);
+                    AllyIrk.this.level().addFreshEntity(smallFireballEntity);
                     AllyIrk.this.playSound(SoundEvents.VEX_CHARGE, 1.0F, 2.0F);
                 }
                 AllyIrk.this.setIsCharging(AllyIrk.this.shootTime <= 10);
@@ -248,7 +248,7 @@ public class AllyIrk extends Minion {
 
             for(int i = 0; i < 3; ++i) {
                 BlockPos blockpos1 = blockpos.offset(AllyIrk.this.random.nextInt(8) - 4, AllyIrk.this.random.nextInt(6) - 2, AllyIrk.this.random.nextInt(8) - 4);
-                if (AllyIrk.this.level.isEmptyBlock(blockpos1)) {
+                if (AllyIrk.this.level().isEmptyBlock(blockpos1)) {
                     AllyIrk.this.moveControl.setWantedPosition((double)blockpos1.getX() + 0.5D, (double)blockpos1.getY() + 0.5D, (double)blockpos1.getZ() + 0.5D, 0.25D);
                     if (AllyIrk.this.getTarget() == null) {
                         AllyIrk.this.getLookControl().setLookAt((double)blockpos1.getX() + 0.5D, (double)blockpos1.getY() + 0.5D, (double)blockpos1.getZ() + 0.5D, 180.0F, 20.0F);

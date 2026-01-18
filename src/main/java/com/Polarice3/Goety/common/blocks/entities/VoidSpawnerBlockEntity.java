@@ -33,7 +33,7 @@ public class VoidSpawnerBlockEntity extends BlockEntity implements VoidSpawner.S
                 .parse(NbtOps.INSTANCE, compoundTag)
                 .resultOrPartial(Goety.LOGGER::error)
                 .ifPresent(voidSpawner -> this.voidSpawner = voidSpawner);
-        if (this.level != null) {
+        if (this.getLevel() != null) {
             this.markUpdated();
         }
     }
@@ -94,8 +94,8 @@ public class VoidSpawnerBlockEntity extends BlockEntity implements VoidSpawner.S
     @Override
     public void markUpdated() {
         this.setChanged();
-        if (this.level != null) {
-            this.level.sendBlockUpdated(this.worldPosition, this.getBlockState(), this.getBlockState(), 3);
+        if (this.getLevel() != null) {
+            this.getLevel().sendBlockUpdated(this.worldPosition, this.getBlockState(), this.getBlockState(), 3);
         }
 
     }

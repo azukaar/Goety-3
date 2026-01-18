@@ -26,16 +26,16 @@ public class IceBouquetTrapBlockEntity extends OwnedBlockEntity {
     }
 
     public void tick() {
-        if (!this.level.isClientSide) {
+        if (!this.getLevel().isClientSide) {
             if (this.firing) {
                 ++this.ticks;
             }
             if (this.ticks == 1) {
                 this.activated = 20;
                 BlockPos blockPos = this.getBlockPos().above();
-                IceBouquet ghostFire = new IceBouquet(this.level, blockPos.getX() + 0.5F, blockPos.getY(), blockPos.getZ() + 0.5F, this.getTrueOwner());
+                IceBouquet ghostFire = new IceBouquet(this.getLevel(), blockPos.getX() + 0.5F, blockPos.getY(), blockPos.getZ() + 0.5F, this.getTrueOwner());
                 ghostFire.setSoulEating(true);
-                this.level.addFreshEntity(ghostFire);
+                this.getLevel().addFreshEntity(ghostFire);
             }
             if (this.ticks >= 70) {
                 this.firing = false;
@@ -43,15 +43,15 @@ public class IceBouquetTrapBlockEntity extends OwnedBlockEntity {
             }
             if (this.activated != 0) {
                 --this.activated;
-                this.level.setBlock(this.getBlockPos(), this.getBlockState().setValue(IceBouquetTrapBlock.POWERED, true), 3);
+                this.getLevel().setBlock(this.getBlockPos(), this.getBlockState().setValue(IceBouquetTrapBlock.POWERED, true), 3);
             } else {
-                this.level.setBlock(this.getBlockPos(), this.getBlockState().setValue(IceBouquetTrapBlock.POWERED, false), 3);
+                this.getLevel().setBlock(this.getBlockPos(), this.getBlockState().setValue(IceBouquetTrapBlock.POWERED, false), 3);
             }
         }
     }
 
     public void playSound(SoundEvent sound) {
-        this.level.playSound(null, this.worldPosition, sound, SoundSource.BLOCKS, 1.0F, 1.0F);
+        this.getLevel().playSound(null, this.worldPosition, sound, SoundSource.BLOCKS, 1.0F, 1.0F);
     }
 
     public void setRemoved() {

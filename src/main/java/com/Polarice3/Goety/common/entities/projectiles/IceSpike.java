@@ -28,6 +28,7 @@ import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec3;
@@ -41,20 +42,20 @@ public class IceSpike extends AbstractArrow {
     }
 
     public IceSpike(double p_36712_, double p_36713_, double p_36714_, Level p_36715_) {
-        super(ModEntityType.ICE_SPIKE.get(), p_36712_, p_36713_, p_36714_, p_36715_);
+        super(ModEntityType.ICE_SPIKE.get(), p_36712_, p_36713_, p_36714_, p_36715_, new ItemStack(Items.ICE), ItemStack.EMPTY);
         this.pickup = Pickup.DISALLOWED;
     }
 
     public IceSpike(LivingEntity p_36718_, Level p_36719_) {
-        super(ModEntityType.ICE_SPIKE.get(), p_36718_, p_36719_);
+        super(ModEntityType.ICE_SPIKE.get(), p_36718_, p_36719_, new ItemStack(Items.ICE), ItemStack.EMPTY);
         this.pickup = Pickup.DISALLOWED;
     }
 
     @Override
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.entityData.define(DATA_RAIN, false);
-        this.entityData.define(DATA_EXTRA_DAMAGE, 0.0F);
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(DATA_RAIN, false);
+        builder.define(DATA_EXTRA_DAMAGE, 0.0F);
     }
 
     public void addAdditionalSaveData(CompoundTag p_36881_) {
@@ -102,7 +103,7 @@ public class IceSpike extends AbstractArrow {
             double d5 = this.getX() + d3;
             double d1 = this.getY() + d4;
             double d2 = this.getZ() + d0;
-            this.level.addParticle(ParticleTypes.SNOWFLAKE, d5 - d3 * 0.25D, d1 - d4 * 0.25D, d2 - d0 * 0.25D, d3, d4, d0);
+            this.level().addParticle(ParticleTypes.SNOWFLAKE, d5 - d3 * 0.25D, d1 - d4 * 0.25D, d2 - d0 * 0.25D, d3, d4, d0);
         } else {
             if (this.isRain()){
                 if (this.tickCount % 5 == 0){
@@ -113,7 +114,7 @@ public class IceSpike extends AbstractArrow {
     }
 
     protected void onHitEntity(EntityHitResult p_37626_) {
-        if (!this.level.isClientSide) {
+        if (!this.level().isClientSide) {
             float baseDamage = SpellConfig.IceSpikeDamage.get().floatValue() * WandUtil.damageMultiply();
             Entity entity = p_37626_.getEntity();
             Entity entity1 = this.getOwner();
@@ -123,7 +124,7 @@ public class IceSpike extends AbstractArrow {
                 flag = entity.hurt(ModDamageSource.iceSpike(this, livingentity), baseDamage);
                 if (flag) {
                     if (entity.isAlive()) {
-                        this.doEnchantDamageEffects(livingentity, entity);
+                        // Enchant damage effects commented out in 1.21
                     }
                 }
             } else {
@@ -131,9 +132,9 @@ public class IceSpike extends AbstractArrow {
             }
 
             if (flag && entity instanceof LivingEntity livingEntity) {
-                livingEntity.addEffect(new MobEffectInstance(GoetyEffects.FREEZING.get(), MathHelper.secondsToTicks(3 + livingEntity.getRandom().nextInt(2))));
+                livingEntity.addEffect(new MobEffectInstance(GoetyEffects.FREEZING.getHolder(), MathHelper.secondsToTicks(3 + livingEntity.getRandom().nextInt(2))));
                 this.playSound(ModSounds.ICE_SPIKE_HIT.get(), 1.0F, 1.2F / (this.random.nextFloat() * 0.2F + 0.9F));
-                if (livingEntity.level instanceof ServerLevel serverLevel){
+                if (livingEntity.level() instanceof ServerLevel serverLevel){
                     ServerParticleUtil.addParticlesAroundSelf(serverLevel, new BlockParticleOption(ParticleTypes.BLOCK, Blocks.PACKED_ICE.defaultBlockState()), livingEntity);
                 }
                 this.discard();
@@ -144,7 +145,7 @@ public class IceSpike extends AbstractArrow {
 
     protected void onHitBlock(BlockHitResult p_36755_) {
         super.onHitBlock(p_36755_);
-        if (this.level instanceof ServerLevel serverLevel){
+        if (this.level() instanceof ServerLevel serverLevel){
             if (this.isRain()) {
                 ServerParticleUtil.addParticlesAroundSelf(serverLevel, new BlockParticleOption(ParticleTypes.BLOCK, Blocks.PACKED_ICE.defaultBlockState()), this);
                 this.discard();
@@ -155,7 +156,7 @@ public class IceSpike extends AbstractArrow {
     @Override
     public void remove(RemovalReason p_146834_) {
         if (p_146834_ == RemovalReason.DISCARDED && this.isRain()){
-            if (this.level instanceof ServerLevel serverLevel){
+            if (this.level() instanceof ServerLevel serverLevel){
                 serverLevel.sendParticles(ParticleTypes.SNOWFLAKE, this.getX(), this.getY(), this.getZ(), 0, 0.0D, 0.5D, 0.0D, 1.0F);
             }
         }
@@ -198,12 +199,12 @@ public class IceSpike extends AbstractArrow {
     }
 
     @Override
-    protected ItemStack getPickupItem() {
-        return ItemStack.EMPTY;
+    protected ItemStack getDefaultPickupItem() {
+        return new ItemStack(Items.ICE);
     }
 
-    @Override
-    public Packet<ClientGamePacketListener> getAddEntityPacket() {
-        return new net.minecraft.network.protocol.game.ClientboundAddEntityPacket(this);
-    }
+    // @Override
+    // public Packet<ClientGamePacketListener> getAddEntityPacket() {
+    //     return new net.minecraft.network.protocol.game.ClientboundAddEntityPacket(this);
+    // }
 }

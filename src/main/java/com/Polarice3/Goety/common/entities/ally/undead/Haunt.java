@@ -134,13 +134,13 @@ public class Haunt extends Summoned {
     }
 
     public void lifeSpanDamage(){
-        if (!this.level.isClientSide) {
-            for (int i = 0; i < this.level.random.nextInt(12) + 10; ++i) {
-                ServerParticleUtil.smokeParticles(ParticleTypes.POOF, this.getX(), this.getEyeY(), this.getZ(), this.level);
+        if (!this.level().isClientSide) {
+            for (int i = 0; i < this.level().random.nextInt(12) + 10; ++i) {
+                ServerParticleUtil.smokeParticles(ParticleTypes.POOF, this.getX(), this.getEyeY(), this.getZ(), this.level());
             }
-            ServerParticleUtil.smokeParticles(ParticleTypes.SCULK_SOUL, this.getX(), this.getEyeY(), this.getZ(), this.level);
+            ServerParticleUtil.smokeParticles(ParticleTypes.SCULK_SOUL, this.getX(), this.getEyeY(), this.getZ(), this.level());
         }
-        this.playSound(SoundEvents.SOUL_ESCAPE, 1.0F, 1.0F);
+        this.playSound(SoundEvents.SOUL_ESCAPE.value(), 1.0F, 1.0F);
         this.discard();
     }
 

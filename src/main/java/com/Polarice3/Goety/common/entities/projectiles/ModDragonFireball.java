@@ -28,11 +28,11 @@ public class ModDragonFireball extends AbstractHurtingProjectile {
     }
 
     public ModDragonFireball(Level pWorld, double pX, double pY, double pZ, double pAccelX, double pAccelY, double pAccelZ) {
-        super(ModEntityType.MOD_DRAGON_FIREBALL.get(), pX, pY, pZ, pAccelX, pAccelY, pAccelZ, pWorld);
+        super(ModEntityType.MOD_DRAGON_FIREBALL.get(), pX, pY, pZ, new net.minecraft.world.phys.Vec3(pAccelX, pAccelY, pAccelZ), pWorld);
     }
 
     public ModDragonFireball(Level pWorld, LivingEntity pOwner, double pAccelX, double pAccelY, double pAccelZ) {
-        super(ModEntityType.MOD_DRAGON_FIREBALL.get(), pOwner, pAccelX, pAccelY, pAccelZ, pWorld);
+        super(ModEntityType.MOD_DRAGON_FIREBALL.get(), pOwner, new net.minecraft.world.phys.Vec3(pAccelX, pAccelY, pAccelZ), pWorld);
     }
 
     protected void onHit(HitResult p_36913_) {
@@ -42,9 +42,9 @@ public class ModDragonFireball extends AbstractHurtingProjectile {
         int duration = 1;
         float damage = 0.0F;
         if (p_36913_.getType() != HitResult.Type.ENTITY || !this.ownedBy(((EntityHitResult)p_36913_).getEntity())) {
-            if (!this.level.isClientSide) {
-                List<LivingEntity> list = this.level.getEntitiesOfClass(LivingEntity.class, this.getBoundingBox().inflate(4.0D, 2.0D, 4.0D));
-                DragonBreathCloud breathCloud = new DragonBreathCloud(this.level, this.getX(), this.getY(), this.getZ());
+            if (!this.level().isClientSide) {
+                List<LivingEntity> list = this.level().getEntitiesOfClass(LivingEntity.class, this.getBoundingBox().inflate(4.0D, 2.0D, 4.0D));
+                DragonBreathCloud breathCloud = new DragonBreathCloud(this.level(), this.getX(), this.getY(), this.getZ());
                 if (entity instanceof LivingEntity livingEntity) {
                     if (entity instanceof Player player){
                         if (WandUtil.enchantedFocus(player)){
@@ -69,8 +69,8 @@ public class ModDragonFireball extends AbstractHurtingProjectile {
                     }
                 }
 
-                this.level.levelEvent(2006, this.blockPosition(), this.isSilent() ? -1 : 1);
-                this.level.addFreshEntity(breathCloud);
+                this.level().levelEvent(2006, this.blockPosition(), this.isSilent() ? -1 : 1);
+                this.level().addFreshEntity(breathCloud);
                 this.discard();
             }
 
@@ -112,8 +112,4 @@ public class ModDragonFireball extends AbstractHurtingProjectile {
         return super.canHitEntity(pEntity);
     }
 
-    @Override
-    public Packet<ClientGamePacketListener> getAddEntityPacket() {
-        return new net.minecraft.network.protocol.game.ClientboundAddEntityPacket(this);
-    }
 }

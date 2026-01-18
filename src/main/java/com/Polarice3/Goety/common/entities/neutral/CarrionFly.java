@@ -67,7 +67,7 @@ public class CarrionFly extends Summoned {
     protected void registerGoals() {
         super.registerGoals();
         this.goalSelector.addGoal(4, new MeleeAttackGoal(this, 1.5D, false));
-        this.goalSelector.addGoal(8, new RandomStrollGoal(this, 1.0D, 10, 0.0F));
+        this.goalSelector.addGoal(8, new RandomStrollGoal(this, 1.0D, 10, false));
         this.goalSelector.addGoal(9, new FloatGoal(this));
         this.goalSelector.addGoal(9, new LookAtPlayerGoal(this, Player.class, 3.0F, 1.0F));
         this.goalSelector.addGoal(10, new LookAtPlayerGoal(this, Mob.class, 8.0F));

@@ -105,7 +105,7 @@ public class Piker extends HuntingIllagerEntity {
 
     public void tick() {
         super.tick();
-        if (this.level.isClientSide) {
+        if (this.level().isClientSide) {
             if (this.isAlive()) {
                 if (!this.isMeleeAttacking()) {
                     this.attackAnimationState.stop();
@@ -128,11 +128,11 @@ public class Piker extends HuntingIllagerEntity {
         if (this.attackTick > 20) {
             this.setMeleeAttacking(false);
         }
-        if (!this.level.isClientSide) {
+        if (!this.level().isClientSide) {
             if (this.getTarget() != null) {
-                this.level.broadcastEntityEvent(this, (byte) 6);
+                this.level().broadcastEntityEvent(this, (byte) 6);
             } else {
-                this.level.broadcastEntityEvent(this, (byte) 7);
+                this.level().broadcastEntityEvent(this, (byte) 7);
             }
         }
     }
@@ -160,7 +160,7 @@ public class Piker extends HuntingIllagerEntity {
     public void setMeleeAttacking(boolean attacking) {
         this.setFlag(1, attacking);
         this.attackTick = 0;
-        this.level.broadcastEntityEvent(this, (byte) 5);
+        this.level().broadcastEntityEvent(this, (byte) 5);
     }
 
     protected SoundEvent getAmbientSound() {
@@ -337,7 +337,7 @@ public class Piker extends HuntingIllagerEntity {
         @Override
         public void start() {
             Piker.this.setMeleeAttacking(true);
-            Piker.this.level.broadcastEntityEvent(Piker.this, (byte) 4);
+            Piker.this.level().broadcastEntityEvent(Piker.this, (byte) 4);
         }
 
         @Override
@@ -360,7 +360,7 @@ public class Piker extends HuntingIllagerEntity {
                         if (Piker.this.doHurtTarget(livingentity)) {
                             Piker.this.playSound(ModSounds.PIKER_PIKE.get(), Piker.this.getSoundVolume(),
                                     Piker.this.getVoicePitch());
-                            for (Entity entity : getTargets(Piker.this.level, Piker.this, 3)) {
+                            for (Entity entity : getTargets(Piker.this.level(), Piker.this, 3)) {
                                 if (entity instanceof LivingEntity living && Piker.this.hasLineOfSight(living)) {
                                     if (!MobUtil.areAllies(Piker.this, living) && living != livingentity
                                             && (!(livingentity instanceof ArmorStand)

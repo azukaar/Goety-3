@@ -40,7 +40,7 @@ public class CustomItemsRenderer extends BlockEntityWithoutLevelRenderer {
     }
 
     public void renderByItem(ItemStack itemStackIn, ItemDisplayContext transformType, PoseStack matrixStackIn, MultiBufferSource bufferIn, int combinedLightIn, int combinedOverlayIn) {
-        float partialTick = Minecraft.getInstance().getPartialTick();
+        float partialTick = Minecraft.getInstance().getTimer().getGameTimeDeltaPartialTick(true);
 
         int tick;
         if (Minecraft.getInstance().player != null && !Minecraft.getInstance().isPaused()) {
@@ -53,7 +53,7 @@ public class CustomItemsRenderer extends BlockEntityWithoutLevelRenderer {
             matrixStackIn.pushPose();
             matrixStackIn.translate(0.5F, 0.5F, 0.5F);
             matrixStackIn.scale(1.0F, -1.0F, -1.0F);
-            VertexConsumer vertexconsumer = ItemRenderer.getArmorFoilBuffer(bufferIn, RenderType.entityCutoutNoCull(NAMELESS_STAFF_TEXTURE), false, itemStackIn.hasFoil());
+            VertexConsumer vertexconsumer = ItemRenderer.getArmorFoilBuffer(bufferIn, RenderType.entityCutoutNoCull(NAMELESS_STAFF_TEXTURE), itemStackIn.hasFoil());
             this.staffModel.renderToBuffer(matrixStackIn, vertexconsumer, combinedLightIn, combinedOverlayIn, -1);
             matrixStackIn.popPose();
             matrixStackIn.pushPose();

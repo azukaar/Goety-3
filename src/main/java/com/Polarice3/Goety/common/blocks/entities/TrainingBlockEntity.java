@@ -156,11 +156,11 @@ public abstract class TrainingBlockEntity extends OwnedBlockEntity implements IT
     }
 
     public boolean hasNearbyTarget(){
-        if (this.level != null) {
+        if (this.getLevel() != null) {
             BlockPos blockPos = this.worldPosition.offset(-RANGE, -RANGE, -RANGE);
             BlockPos blockPos1 = this.worldPosition.offset(RANGE, RANGE, RANGE);
             AABB aabb = new AABB(blockPos.getX(), blockPos.getY(), blockPos.getZ(), blockPos1.getX(), blockPos1.getY(), blockPos1.getZ());
-            List<LivingEntity> list = this.level.getEntitiesOfClass(LivingEntity.class, aabb);
+            List<LivingEntity> list = this.getLevel().getEntitiesOfClass(LivingEntity.class, aabb);
             for (LivingEntity livingEntity : list) {
                 if (EntitySelector.NO_SPECTATORS.test(livingEntity) && EntitySelector.LIVING_ENTITY_STILL_ALIVE.test(livingEntity)) {
                     if (this.getTrueOwner() != null){
@@ -227,7 +227,7 @@ public abstract class TrainingBlockEntity extends OwnedBlockEntity implements IT
     }
 
     public void startTraining(int amount, ItemStack itemStack){
-        this.setVariant(itemStack, this.level, this.getBlockPos());
+        this.setVariant(itemStack, this.getLevel(), this.getBlockPos());
         this.trainAmount = Math.min(this.trainAmount + amount, this.maxTrainAmount());
     }
 
@@ -258,12 +258,12 @@ public abstract class TrainingBlockEntity extends OwnedBlockEntity implements IT
     }
 
     public boolean placeItem(ItemStack pStack) {
-        if (this.level != null) {
+        if (this.getLevel() != null) {
             if (this.isFuel(pStack) && this.trainAmount < this.maxTrainAmount()) {
                 this.itemStack = pStack;
                 this.startTraining(1, pStack);
                 if (pStack.hasCraftingRemainingItem()){
-                    ItemHelper.addItemEntity(this.level, this.getBlockPos().above(), pStack.getCraftingRemainingItem());
+                    ItemHelper.addItemEntity(this.getLevel(), this.getBlockPos().above(), pStack.getCraftingRemainingItem());
                 }
                 pStack.shrink(1);
                 this.markUpdated();
@@ -293,7 +293,7 @@ public abstract class TrainingBlockEntity extends OwnedBlockEntity implements IT
     }
 
     public boolean getBlocks(Predicate<BlockState> pPredicate, int totalCount){
-        return getStructures(this.level, this.worldPosition, pPredicate, totalCount);
+        return getStructures(this.getLevel(), this.worldPosition, pPredicate, totalCount);
     }
 
     public boolean reachedLimit(){
@@ -414,8 +414,8 @@ public abstract class TrainingBlockEntity extends OwnedBlockEntity implements IT
 
     public void markUpdated() {
         this.setChanged();
-        if (this.level != null) {
-            this.level.sendBlockUpdated(this.getBlockPos(), this.getBlockState(), this.getBlockState(), 3);
+        if (this.getLevel() != null) {
+            this.getLevel().sendBlockUpdated(this.getBlockPos(), this.getBlockState(), this.getBlockState(), 3);
         }
     }
 
@@ -426,7 +426,7 @@ public abstract class TrainingBlockEntity extends OwnedBlockEntity implements IT
 
     @Override
     public boolean canPlaceItemThroughFace(int p_19235_, ItemStack pItemStack, @Nullable Direction p_19237_) {
-        return this.level != null && !this.level.isClientSide && this.placeItem(pItemStack);
+        return this.getLevel() != null && !this.getLevel().isClientSide && this.placeItem(pItemStack);
     }
 
     @Override
@@ -466,7 +466,7 @@ public abstract class TrainingBlockEntity extends OwnedBlockEntity implements IT
 
     @Override
     public boolean stillValid(Player pPlayer) {
-        if (this.level == null || this.level.getBlockEntity(this.worldPosition) != this) {
+        if (this.getLevel() == null || this.getLevel().getBlockEntity(this.worldPosition) != this) {
             return false;
         } else {
             return pPlayer.distanceToSqr((double)this.worldPosition.getX() + 0.5D, (double)this.worldPosition.getY() + 0.5D, (double)this.worldPosition.getZ() + 0.5D) <= 64.0D;

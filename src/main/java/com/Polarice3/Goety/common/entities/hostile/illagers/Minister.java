@@ -128,10 +128,10 @@ public class Minister extends HuntingIllagerEntity implements RangedAttackMob {
     }
 
     @Override
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.entityData.define(DATA_TYPE_ID, 1);
-        this.entityData.define(HAS_STAFF, true);
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(DATA_TYPE_ID, 1);
+        builder.define(HAS_STAFF, true);
     }
 
     public void addAdditionalSaveData(CompoundTag pCompound) {
@@ -190,7 +190,7 @@ public class Minister extends HuntingIllagerEntity implements RangedAttackMob {
     };
 
     public List<AbstractIllager> getNearbyIllagers(){
-        return this.level.getEntitiesOfClass(AbstractIllager.class, this.getBoundingBox().inflate(32.0D, 16.0D, 32.0D), NOT_THEMSELVES);
+        return this.level().getEntitiesOfClass(AbstractIllager.class, this.getBoundingBox().inflate(32.0D, 16.0D, 32.0D), NOT_THEMSELVES);
     }
 
     public boolean hasNearbyIllagers(){
@@ -238,9 +238,9 @@ public class Minister extends HuntingIllagerEntity implements RangedAttackMob {
 
     @Nullable
     @Override
-    public SpawnGroupData finalizeSpawn(ServerLevelAccessor p_37856_, DifficultyInstance p_37857_, MobSpawnType p_37858_, @org.jetbrains.annotations.Nullable SpawnGroupData p_37859_, @org.jetbrains.annotations.Nullable CompoundTag p_37860_) {
+    public SpawnGroupData finalizeSpawn(ServerLevelAccessor p_37856_, DifficultyInstance p_37857_, MobSpawnType p_37858_, @org.jetbrains.annotations.Nullable SpawnGroupData p_37859_) {
         this.setOutfitType(this.random.nextInt(this.OutfitTypeNumber()));
-        return super.finalizeSpawn(p_37856_, p_37857_, p_37858_, p_37859_, p_37860_);
+        return super.finalizeSpawn(p_37856_, p_37857_, p_37858_, p_37859_);
     }
 
     @Override
@@ -250,12 +250,12 @@ public class Minister extends HuntingIllagerEntity implements RangedAttackMob {
 
     @Override
     public boolean hurt(DamageSource p_37849_, float p_37850_) {
-        if (!this.level.isClientSide) {
+        if (!this.level().isClientSide) {
             if (this.hasStaff() && this.isAggressive() && !this.isCasting() && this.coolDown <= 10) {
                 if (this.staffDamage >= 64) {
                     this.setHasStaff(false);
-                    this.level.broadcastEntityEvent(this, (byte) 13);
-                    if (this.level instanceof ServerLevel serverLevel) {
+                    this.level().broadcastEntityEvent(this, (byte) 13);
+                    if (this.level() instanceof ServerLevel serverLevel) {
                         for (int i = 0; i < 20; ++i) {
                             ServerParticleUtil.addParticlesAroundSelf(serverLevel, new ItemParticleOption(ParticleTypes.ITEM, new ItemStack(ModItems.DARK_FABRIC.get())), this);
                         }
@@ -278,14 +278,14 @@ public class Minister extends HuntingIllagerEntity implements RangedAttackMob {
                             p_37850_ *= 2.0F;
                         }
                         this.staffDamage += p_37850_;
-                        this.level.broadcastEntityEvent(this, (byte) 8);
+                        this.level().broadcastEntityEvent(this, (byte) 8);
                         this.playSound(SoundEvents.SHIELD_BLOCK);
-                        if (this.level instanceof ServerLevel serverLevel) {
+                        if (this.level() instanceof ServerLevel serverLevel) {
                             for (int i = 0; i < 5; ++i) {
                                 ServerParticleUtil.addParticlesAroundSelf(serverLevel, new ItemParticleOption(ParticleTypes.ITEM, new ItemStack(ModItems.DARK_FABRIC.get())), this);
                             }
                         }
-                        if (this.level.random.nextFloat() <= 0.05F) {
+                        if (this.level().random.nextFloat() <= 0.05F) {
                             this.playSound(ModSounds.MINISTER_LAUGH.get());
                         }
                     }
@@ -307,9 +307,9 @@ public class Minister extends HuntingIllagerEntity implements RangedAttackMob {
     }
 
     public void die(DamageSource p_21014_) {
-        this.level.broadcastEntityEvent(this, (byte) 10);
+        this.level().broadcastEntityEvent(this, (byte) 10);
         this.deathRotation = this.getYRot();
-        if (this.level instanceof ServerLevel serverLevel){
+        if (this.level() instanceof ServerLevel serverLevel){
             for (Player player : serverLevel.getEntitiesOfClass(Player.class, this.getBoundingBox().inflate(32.0F))){
                 SEHelper.setRestPeriod(player, MathHelper.minecraftDayToTicks(MobsConfig.IllagerAssaultRestMinister.get()));
             }
@@ -318,8 +318,8 @@ public class Minister extends HuntingIllagerEntity implements RangedAttackMob {
     }
 
     @Override
-    protected void dropCustomDeathLoot(DamageSource p_21385_, int p_21386_, boolean p_21387_) {
-        super.dropCustomDeathLoot(p_21385_, p_21386_, p_21387_);
+    protected void dropCustomDeathLoot(ServerLevel level, DamageSource p_21385_, boolean p_21387_) {
+        super.dropCustomDeathLoot(level, p_21385_, p_21387_);
         if (this.hasStaff()){
             ItemStack itemStack = ModItems.OMINOUS_ORB.get().getDefaultInstance();
             ItemEntity itementity = this.spawnAtLocation(itemStack);
@@ -340,16 +340,16 @@ public class Minister extends HuntingIllagerEntity implements RangedAttackMob {
     public ItemEntity spawnAtLocation(ItemStack itemStack, float p_19986_) {
         if (itemStack.isEmpty()) {
             return null;
-        } else if (this.level.isClientSide) {
+        } else if (this.level().isClientSide) {
             return null;
         } else {
-            ItemEntity itementity = new ItemEntity(this.level, this.getX(), this.getY() + (double)p_19986_, this.getZ(), itemStack
+            ItemEntity itementity = new ItemEntity(this.level(), this.getX(), this.getY() + (double)p_19986_, this.getZ(), itemStack
                     , this.random.nextDouble() * 0.4D - 0.2D, 0.4D, this.random.nextDouble() * 0.4D - 0.2D);
             itementity.setDefaultPickUpDelay();
             if (this.captureDrops() != null) {
                 this.captureDrops().add(itementity);
             } else {
-                this.level.addFreshEntity(itementity);
+                this.level().addFreshEntity(itementity);
             }
             return itementity;
         }
@@ -384,7 +384,7 @@ public class Minister extends HuntingIllagerEntity implements RangedAttackMob {
         if (this.isCelebrating()){
             if (this.tickCount % 100 == 0 && this.hurtTime <= 0){
                 this.laughAnimationState.start(this.tickCount);
-                this.level.broadcastEntityEvent(this, (byte) 6);
+                this.level().broadcastEntityEvent(this, (byte) 6);
             }
         }
         if (this.isDeadOrDying()){
@@ -396,7 +396,7 @@ public class Minister extends HuntingIllagerEntity implements RangedAttackMob {
             this.setYRot(this.deathRotation);
             this.setYBodyRot(this.deathRotation);
         }
-        if (this.level instanceof ServerLevel serverLevel){
+        if (this.level() instanceof ServerLevel serverLevel){
             if (this.hasStaff()) {
                 if (!this.getMainHandItem().isEmpty()) {
                     if (this.getOffhandItem().isEmpty()) {
@@ -409,7 +409,7 @@ public class Minister extends HuntingIllagerEntity implements RangedAttackMob {
             }
             ServerParticleUtil.addAuraParticles(serverLevel, ParticleTypes.ENCHANT, this, 8.0F);
             for (LivingEntity living : serverLevel.getEntitiesOfClass(LivingEntity.class, this.getBoundingBox().inflate(8.0F, 4.0F, 8.0F))) {
-                if (living.getMobType() == MobType.ILLAGER && living != this) {
+                if (living.getType().is(net.minecraft.tags.EntityTypeTags.ILLAGER) && living != this) {
                     boolean flag = false;
                     if (living instanceof Mob mob){
                         if (mob.getTarget() != this){
@@ -441,7 +441,7 @@ public class Minister extends HuntingIllagerEntity implements RangedAttackMob {
     }
 
     @Override
-    public void applyRaidBuffs(int p_37844_, boolean p_37845_) {
+    public void applyRaidBuffs(ServerLevel p_37844_, int p_37845_, boolean p_37846_) {
 
     }
 
@@ -452,14 +452,14 @@ public class Minister extends HuntingIllagerEntity implements RangedAttackMob {
             double d1 = p_33317_.getX() - this.getX();
             double d2 = p_33317_.getY(0.5D) - this.getY(0.5D);
             double d3 = p_33317_.getZ() - this.getZ();
-            MagicBolt magicBolt = new MagicBolt(this.level, this, d1, d2, d3);
+            MagicBolt magicBolt = new MagicBolt(this.level(), this, d1, d2, d3);
             magicBolt.setYRot(this.getYRot());
             magicBolt.setXRot(this.getXRot());
             magicBolt.setPos(this.getX() + vector3d.x / 2, this.getEyeY() - 0.2, this.getZ() + vector3d.z / 2);
             this.playSound(ModSounds.CAST_SPELL.get(), 1.0F, 0.4F / (this.getRandom().nextFloat() * 0.4F + 0.8F));
-            this.level.addFreshEntity(magicBolt);
+            this.level().addFreshEntity(magicBolt);
         } else {
-            IllBomb snowball = new IllBomb(this, this.level);
+            IllBomb snowball = new IllBomb(this, this.level());
             double d0 = p_33317_.getEyeY() - (double)1.1F;
             double d1 = p_33317_.getX() - this.getX();
             double d2 = d0 - snowball.getY();
@@ -468,7 +468,7 @@ public class Minister extends HuntingIllagerEntity implements RangedAttackMob {
             float velocity = p_33317_.distanceTo(this) >= 10.0F ? 1.0F : 0.5F;
             snowball.shoot(d1, d2 + d4, d3, velocity, 0.5F);
             this.playSound(SoundEvents.WITCH_THROW, 1.0F, 0.4F / (this.getRandom().nextFloat() * 0.4F + 0.8F));
-            this.level.addFreshEntity(snowball);
+            this.level().addFreshEntity(snowball);
         }
     }
 
@@ -564,7 +564,7 @@ public class Minister extends HuntingIllagerEntity implements RangedAttackMob {
         public void start() {
             super.start();
             Minister.this.castAnimationState.start(Minister.this.tickCount);
-            Minister.this.level.broadcastEntityEvent(Minister.this, (byte) 5);
+            Minister.this.level().broadcastEntityEvent(Minister.this, (byte) 5);
         }
 
         protected int getCastingTime() {
@@ -589,16 +589,16 @@ public class Minister extends HuntingIllagerEntity implements RangedAttackMob {
                         blockPos = blockPos.offset(Minister.this.getRandom().nextInt(-4, 4), 0, Minister.this.getRandom().nextInt(-4, 4));
                         BlockPos.MutableBlockPos blockpos$mutable = new BlockPos.MutableBlockPos(blockPos.getX(), blockPos.getY(), blockPos.getZ());
 
-                        while(blockpos$mutable.getY() < blockPos.getY() + 8.0D && !Minister.this.level.getBlockState(blockpos$mutable).blocksMotion()) {
+                        while(blockpos$mutable.getY() < blockPos.getY() + 8.0D && !Minister.this.level().getBlockState(blockpos$mutable).blocksMotion()) {
                             blockpos$mutable.move(Direction.UP);
                         }
 
-                        if (Minister.this.level.noCollision(new AABB(blockpos$mutable))){
+                        if (Minister.this.level().noCollision(new AABB(blockpos$mutable))){
                             ++this.teethAmount;
-                            ViciousTooth viciousTooth = new ViciousTooth(ModEntityType.VICIOUS_TOOTH.get(), Minister.this.level);
+                            ViciousTooth viciousTooth = new ViciousTooth(ModEntityType.VICIOUS_TOOTH.get(), Minister.this.level());
                             viciousTooth.setPos(Vec3.atCenterOf(blockpos$mutable));
                             viciousTooth.setOwner(Minister.this);
-                            if (Minister.this.level.addFreshEntity(viciousTooth)) {
+                            if (Minister.this.level().addFreshEntity(viciousTooth)) {
                                 viciousTooth.playSound(ModSounds.TOOTH_SPAWN.get());
                             }
                         }
@@ -615,26 +615,26 @@ public class Minister extends HuntingIllagerEntity implements RangedAttackMob {
                 BlockPos blockPos = Minister.this.blockPosition();
                 BlockPos.MutableBlockPos blockpos$mutable = new BlockPos.MutableBlockPos(blockPos.getX(), blockPos.getY(), blockPos.getZ());
 
-                while (blockpos$mutable.getY() < blockPos.getY() + 8.0D && !Minister.this.level.getBlockState(blockpos$mutable).blocksMotion()) {
+                while (blockpos$mutable.getY() < blockPos.getY() + 8.0D && !Minister.this.level().getBlockState(blockpos$mutable).blocksMotion()) {
                     blockpos$mutable.move(Direction.UP);
                 }
 
                 float f = (float) Mth.atan2(Minister.this.getTarget().getZ() - blockPos.getZ(), Minister.this.getTarget().getX() - blockPos.getX());
                 for (int i = 0; i < 5; ++i) {
                     float f1 = f + (float) i * (float) Math.PI * 0.4F;
-                    ViciousTooth viciousTooth = new ViciousTooth(ModEntityType.VICIOUS_TOOTH.get(), Minister.this.level);
+                    ViciousTooth viciousTooth = new ViciousTooth(ModEntityType.VICIOUS_TOOTH.get(), Minister.this.level());
                     viciousTooth.setPos(blockPos.getX() + (double) Mth.cos(f1) * 1.5D, blockpos$mutable.getY(), blockPos.getZ() + (double) Mth.cos(f1) * 1.5D);
                     viciousTooth.setOwner(Minister.this);
-                    if (Minister.this.level.addFreshEntity(viciousTooth)) {
+                    if (Minister.this.level().addFreshEntity(viciousTooth)) {
                         viciousTooth.playSound(ModSounds.TOOTH_SPAWN.get());
                     }
                 }
                 for (int k = 0; k < 8; ++k) {
                     float f2 = f + (float) k * (float) Math.PI * 2.0F / 8.0F + 1.2566371F;
-                    ViciousTooth viciousTooth = new ViciousTooth(ModEntityType.VICIOUS_TOOTH.get(), Minister.this.level);
+                    ViciousTooth viciousTooth = new ViciousTooth(ModEntityType.VICIOUS_TOOTH.get(), Minister.this.level());
                     viciousTooth.setPos(blockPos.getX() + (double) Mth.cos(f2) * 2.5D, blockpos$mutable.getY(), blockPos.getZ() + (double) Mth.sin(f2) * 2.5D);
                     viciousTooth.setOwner(Minister.this);
-                    if (Minister.this.level.addFreshEntity(viciousTooth)) {
+                    if (Minister.this.level().addFreshEntity(viciousTooth)) {
                         viciousTooth.playSound(ModSounds.TOOTH_SPAWN.get());
                     }
                 }
@@ -664,7 +664,7 @@ public class Minister extends HuntingIllagerEntity implements RangedAttackMob {
         public void start() {
             super.start();
             Minister.this.speechAnimationState.start(Minister.this.tickCount);
-            Minister.this.level.broadcastEntityEvent(Minister.this, (byte) 11);
+            Minister.this.level().broadcastEntityEvent(Minister.this, (byte) 11);
         }
 
         protected int getCastingTime() {
@@ -723,7 +723,7 @@ public class Minister extends HuntingIllagerEntity implements RangedAttackMob {
         public void start() {
             super.start();
             Minister.this.commandAnimationState.start(Minister.this.tickCount);
-            Minister.this.level.broadcastEntityEvent(Minister.this, (byte) 12);
+            Minister.this.level().broadcastEntityEvent(Minister.this, (byte) 12);
         }
 
         protected int getCastingTime() {
@@ -770,7 +770,7 @@ public class Minister extends HuntingIllagerEntity implements RangedAttackMob {
         @Override
         public void start() {
             super.start();
-            Minister.this.level.broadcastEntityEvent(Minister.this, (byte) 7);
+            Minister.this.level().broadcastEntityEvent(Minister.this, (byte) 7);
         }
 
         @Override
@@ -872,7 +872,7 @@ public class Minister extends HuntingIllagerEntity implements RangedAttackMob {
                 --this.attackTime;
                 if (this.attackTime == 5) {
                     this.mob.attackAnimationState.start(Minister.this.tickCount);
-                    this.mob.level.broadcastEntityEvent(Minister.this, (byte) 4);
+                    this.mob.level().broadcastEntityEvent(Minister.this, (byte) 4);
                 } else if (this.attackTime == 0) {
                     if (!flag) {
                         return;
@@ -890,7 +890,7 @@ public class Minister extends HuntingIllagerEntity implements RangedAttackMob {
     }
 
     @Override
-    public boolean canChangeDimensions() {
+    public boolean canUsePortal(boolean p_342953_) {
         return false;
     }
 }

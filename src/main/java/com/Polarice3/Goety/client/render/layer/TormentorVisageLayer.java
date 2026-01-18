@@ -11,7 +11,7 @@ import net.minecraft.client.renderer.entity.layers.EyesLayer;
 import net.minecraft.resources.ResourceLocation;
 
 public class TormentorVisageLayer<T extends Tormentor, M extends TormentorModel<T>> extends EyesLayer<T, M> {
-    private static final RenderType VISAGE = RenderType.eyes(new ResourceLocation(Goety.MOD_ID, "textures/entity/illagers/tormentor_visage.png"));
+    private static final RenderType VISAGE = RenderType.eyes(ResourceLocation.fromNamespaceAndPath(Goety.MOD_ID, "textures/entity/illagers/tormentor_visage.png"));
 
     public TormentorVisageLayer(RenderLayerParent<T, M> p_i50921_1_) {
         super(p_i50921_1_);

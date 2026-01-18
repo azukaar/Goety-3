@@ -28,7 +28,7 @@ public class DeathArrow extends Arrow {
     }
 
     public DeathArrow(Level p_36866_, LivingEntity p_36867_) {
-        super(p_36866_, p_36867_);
+        super(p_36866_, p_36867_, new net.minecraft.world.item.ItemStack(net.minecraft.world.item.Items.ARROW), null);
     }
 
     @Override
@@ -57,7 +57,7 @@ public class DeathArrow extends Arrow {
             }
         } else if (this.getOwner() instanceof LivingEntity livingOwner){
             if (CuriosFinder.hasUnholySet(livingOwner)){
-                if (livingOwner.level.dimension() == Level.NETHER) {
+                if (livingOwner.level().dimension() == Level.NETHER) {
                     float voidDamage = livingEntity.getMaxHealth() * 0.05F;
 
                     if (livingEntity.getHealth() > voidDamage + 1.0F) {
@@ -111,13 +111,13 @@ public class DeathArrow extends Arrow {
     @Override
     protected void onHit(HitResult p_37260_) {
         super.onHit(p_37260_);
-        if (!this.level.isClientSide) {
-            ServerLevel serverLevel = (ServerLevel) this.level;
+        if (!this.level().isClientSide) {
+            ServerLevel serverLevel = (ServerLevel) this.level();
             if (!this.inGround) {
                 for (int p = 0; p < 32; ++p) {
-                    double d0 = (double) this.getX() + this.level.random.nextDouble();
-                    double d1 = (double) this.getY() + this.level.random.nextDouble();
-                    double d2 = (double) this.getZ() + this.level.random.nextDouble();
+                    double d0 = (double) this.getX() + this.level().random.nextDouble();
+                    double d1 = (double) this.getY() + this.level().random.nextDouble();
+                    double d2 = (double) this.getZ() + this.level().random.nextDouble();
                     serverLevel.sendParticles(ModParticleTypes.TOTEM_EFFECT.get(), d0, d1, d2, 0, 0.45, 0.45, 0.45, 0.5F);
                 }
             }
@@ -143,8 +143,9 @@ public class DeathArrow extends Arrow {
         return super.canHitEntity(pEntity);
     }
 
-    @Override
-    public Packet<ClientGamePacketListener> getAddEntityPacket() {
-        return new net.minecraft.network.protocol.game.ClientboundAddEntityPacket(this);
-    }
+    // getAddEntityPacket is no longer needed in 1.21 - handled automatically
+    // @Override
+    // public Packet<ClientGamePacketListener> getAddEntityPacket() {
+    //     return new net.minecraft.network.protocol.game.ClientboundAddEntityPacket(this);
+    // }
 }

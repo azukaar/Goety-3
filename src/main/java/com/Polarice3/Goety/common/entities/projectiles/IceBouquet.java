@@ -178,7 +178,7 @@ public class IceBouquet extends GroundProjectile {
 
     public void tick() {
         super.tick();
-        if (this.level.isClientSide) {
+        if (this.level().isClientSide) {
             if (this.sentTrapEvent) {
                 if (this.animationTicks > 9){
                     --this.animationTicks;
@@ -192,9 +192,9 @@ public class IceBouquet extends GroundProjectile {
                     --this.lifeTicks;
                 }
                 if (this.tickCount >= 10) {
-                    this.level.addParticle(new MagicSmokeParticle.Option(0xb8e5ff, 0x015687, 10 + this.level.getRandom().nextInt(10), 0.2F), this.getRandomX(0.5D), this.getRandomY(), this.getRandomZ(0.5D), 0.0D, 0.0D, 0.0D);
-                    if (this.level.random.nextInt(24) == 0) {
-                        this.level.playLocalSound((double)this.blockPosition().getX() + 0.5D, (double)this.blockPosition().getY() + 0.5D, (double)this.blockPosition().getZ() + 0.5D, SoundEvents.FIRE_AMBIENT, SoundSource.BLOCKS, 1.0F + this.level.random.nextFloat(), this.level.random.nextFloat() * 0.7F + 0.3F, false);
+                    this.level().addParticle(new MagicSmokeParticle.Option(0xb8e5ff, 0x015687, 10 + this.level().getRandom().nextInt(10), 0.2F), this.getRandomX(0.5D), this.getRandomY(), this.getRandomZ(0.5D), 0.0D, 0.0D, 0.0D);
+                    if (this.level().random.nextInt(24) == 0) {
+                        this.level().playLocalSound((double)this.blockPosition().getX() + 0.5D, (double)this.blockPosition().getY() + 0.5D, (double)this.blockPosition().getZ() + 0.5D, SoundEvents.FIRE_AMBIENT, SoundSource.BLOCKS, 1.0F + this.level().random.nextFloat(), this.level().random.nextFloat() * 0.7F + 0.3F, false);
                     }
                 }
             }
@@ -203,13 +203,13 @@ public class IceBouquet extends GroundProjectile {
                 MobUtil.moveDownToGround(this);
             }
             if (!this.sentTrapEvent) {
-                this.level.broadcastEntityEvent(this, (byte)4);
+                this.level().broadcastEntityEvent(this, (byte)4);
                 this.sentTrapEvent = true;
             }
 
             if (this.isCenter()) {
                 if (!this.playSound) {
-                    this.level.broadcastEntityEvent(this, (byte) 5);
+                    this.level().broadcastEntityEvent(this, (byte) 5);
                     this.playSound = true;
                 }
             }
@@ -217,11 +217,11 @@ public class IceBouquet extends GroundProjectile {
             if (this.tickCount >= 12){
                 if (!this.isCenter()){
                     if (!this.playSound) {
-                        this.level.broadcastEntityEvent(this, (byte) 8);
+                        this.level().broadcastEntityEvent(this, (byte) 8);
                         this.playSound = true;
                     }
                 }
-                for(LivingEntity livingentity : this.level.getEntitiesOfClass(LivingEntity.class, this.getBoundingBox())) {
+                for(LivingEntity livingentity : this.level().getEntitiesOfClass(LivingEntity.class, this.getBoundingBox())) {
                     this.dealDamageTo(livingentity);
                 }
             }
@@ -229,7 +229,7 @@ public class IceBouquet extends GroundProjectile {
             if (this.tickCount > 0) {
                 --this.lifeTicks;
                 if (this.lifeTicks <= 14) {
-                    this.level.broadcastEntityEvent(this, (byte) 7);
+                    this.level().broadcastEntityEvent(this, (byte) 7);
                 }
                 if (this.lifeTicks < 0) {
                     this.discard();
@@ -241,14 +241,14 @@ public class IceBouquet extends GroundProjectile {
                     if (this.needsConcentrate()) {
                         if (this.getOwner().hurtTime > 0 && this.tickCount < 10 && !this.getOwner().isDeadOrDying()) {
                             this.lifeTicks = 14;
-                            this.level.broadcastEntityEvent(this, (byte) 7);
+                            this.level().broadcastEntityEvent(this, (byte) 7);
                         }
                     }
                 }
             }
 
             if (this.isInLava()){
-                this.level.broadcastEntityEvent(this, (byte)6);
+                this.level().broadcastEntityEvent(this, (byte)6);
                 this.discard();
             }
         }
@@ -320,12 +320,12 @@ public class IceBouquet extends GroundProjectile {
         super.handleEntityEvent(pId);
         if (pId == 5) {
             if (!this.isSilent()) {
-                this.level.playLocalSound(this.getX(), this.getY(), this.getZ(), ModSounds.WRAITH_FIRE.get(), this.getSoundSource(), 1.0F, 1.0F, false);
+                this.level().playLocalSound(this.getX(), this.getY(), this.getZ(), ModSounds.WRAITH_FIRE.get(), this.getSoundSource(), 1.0F, 1.0F, false);
             }
         }
         if (pId == 6){
             if (!this.isSilent()) {
-                this.level.playLocalSound(this.getX(), this.getY(), this.getZ(), SoundEvents.FIRE_EXTINGUISH, this.getSoundSource(), 1.0F, 1.0F, false);
+                this.level().playLocalSound(this.getX(), this.getY(), this.getZ(), SoundEvents.FIRE_EXTINGUISH, this.getSoundSource(), 1.0F, 1.0F, false);
             }
         }
         if (pId == 7){
@@ -336,15 +336,16 @@ public class IceBouquet extends GroundProjectile {
         }
         if (pId == 8){
             if (!this.isSilent()) {
-                this.level.playLocalSound(this.getX(), this.getY(), this.getZ(), ModSounds.REDSTONE_FIRE_PROJECTILE.get(), this.getSoundSource(), 0.3F, 1.3F, false);
-                this.level.playLocalSound(this.getX(), this.getY(), this.getZ(), ModSounds.FIRE_PROJECTILE_FLY.get(), this.getSoundSource(), 0.3F, 1.3F, false);
+                this.level().playLocalSound(this.getX(), this.getY(), this.getZ(), ModSounds.FIRE_PROJECTILE_FLY.get(), this.getSoundSource(), 0.3F, 1.3F, false);
+                this.level().addParticle(com.Polarice3.Goety.client.particles.ModParticleTypes.ELECTRIC.get(), this.getRandomX(0.5D), this.getRandomY(), this.getRandomZ(0.5D), 0.0D, 0.0D, 0.0D);
+                this.level().playLocalSound(this.getX(), this.getY(), this.getZ(), ModSounds.FIRE_PROJECTILE_FLY.get(), this.getSoundSource(), 0.3F, 1.3F, false);
             }
         }
 
     }
 
-    @Override
-    public Packet<ClientGamePacketListener> getAddEntityPacket() {
-        return new net.minecraft.network.protocol.game.ClientboundAddEntityPacket(this);
-    }
+    // @Override
+    // public Packet<ClientGamePacketListener> getAddEntityPacket() {
+    //      return new ClientboundAddEntityPacket(this);
+    // }
 }

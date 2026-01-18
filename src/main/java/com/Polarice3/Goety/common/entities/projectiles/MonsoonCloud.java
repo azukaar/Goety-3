@@ -45,7 +45,7 @@ public class MonsoonCloud extends AbstractSpellCloud{
         if (pTarget != null){
             BlockPos.MutableBlockPos blockpos$mutable = new BlockPos.MutableBlockPos(pTarget.getX(), pTarget.getY(), pTarget.getZ());
 
-            while(blockpos$mutable.getY() < pTarget.getY() + 4.0D && !this.level.getBlockState(blockpos$mutable).blocksMotion()) {
+            while(blockpos$mutable.getY() < pTarget.getY() + 4.0D && !this.level().getBlockState(blockpos$mutable).blocksMotion()) {
                 blockpos$mutable.move(Direction.UP);
             }
             this.setPos(pTarget.getX(), blockpos$mutable.getY(), pTarget.getZ());
@@ -87,7 +87,7 @@ public class MonsoonCloud extends AbstractSpellCloud{
 
     public void hurtEntities(LivingEntity livingEntity){
         ColorUtil colorUtil = new ColorUtil(this.getLightningColor());
-        if (this.level instanceof ServerLevel serverLevel) {
+        if (this.level() instanceof ServerLevel serverLevel) {
             if (livingEntity != null && !livingEntity.isDeadOrDying() && EntitySelector.NO_CREATIVE_OR_SPECTATOR.test(livingEntity)) {
                 if (livingEntity.isSensitiveToWater()) {
                     livingEntity.hurt(livingEntity.damageSources().indirectMagic(this, this.getOwner()), 1.0F);

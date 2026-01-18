@@ -64,7 +64,7 @@ public class VineHook extends Projectile {
             Vec3 vec31 = this.getDeltaMovement();
             this.setDeltaMovement(vec31.x, vec31.y - (double)this.getGravity(), vec31.z);
         }
-        if (player != null && (this.level.isClientSide() || !this.shouldRetract(player))) {
+        if (player != null && (this.level().isClientSide() || !this.shouldRetract(player))) {
             HitResult hitResult = ProjectileUtil.getHitResultOnMoveVector(this, this::canHitEntity);
             if (hitResult.getType() != HitResult.Type.MISS) {
                 this.onHit(hitResult);

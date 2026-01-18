@@ -31,8 +31,8 @@ public class GnasherRenderer extends MobRenderer<Gnasher, GnasherModel<Gnasher>>
         p_115315_.scale(f, f, f);
     }
 
-    protected void setupRotations(Gnasher p_115828_, PoseStack p_115829_, float p_115830_, float p_115831_, float p_115832_) {
-        super.setupRotations(p_115828_, p_115829_, p_115830_, p_115831_, p_115832_);
+    protected void setupRotations(Gnasher p_115828_, PoseStack p_115829_, float p_115830_, float p_115831_, float p_115832_, float p_115833_) {
+        super.setupRotations(p_115828_, p_115829_, p_115830_, p_115831_, p_115832_, p_115833_);
         float f = 1.0F;
         float f1 = 1.0F;
         float f2 = f * 4.3F * Mth.sin(f1 * 0.6F * p_115830_);

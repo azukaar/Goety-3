@@ -82,7 +82,7 @@ public class VoidVaultBlockEntity extends BlockEntity {
 
     @Nullable
     public VoidVaultServerData getServerData() {
-        return this.level != null && !this.level.isClientSide ? this.serverData : null;
+        return this.getLevel() != null && !this.getLevel().isClientSide ? this.serverData : null;
     }
 
     public VoidVaultSharedData getSharedData() {

@@ -1104,7 +1104,7 @@ public class BlockFinder {
         public ChopTreeTask(UUID owner, ItemStack axe, ServerLevel level, BlockPos pos) {
             this.owner = owner;
             this.axe = axe;
-            this.level = level;
+            this.level() = level;
             this.hits.computeIfAbsent(pos.getY(), i -> new ArrayDeque<>()).add(pos);
         }
 
@@ -1125,10 +1125,10 @@ public class BlockFinder {
                     if (blockPos.equals(pos)) {
                         continue;
                     }
-                    BlockState state = this.level.getBlockState(blockPos);
+                    BlockState state = this.level().getBlockState(blockPos);
                     if (state.is(BlockTags.LOGS)) {
-                        breakExtraBlock(this.level, blockPos, this.axe, this.owner);
-                        if (!this.level.getBlockState(blockPos).is(BlockTags.LOGS)) {
+                        breakExtraBlock(this.level(), blockPos, this.axe, this.owner);
+                        if (!this.level().getBlockState(blockPos).is(BlockTags.LOGS)) {
                             this.hits.computeIfAbsent(blockPos.getY(), i -> new ArrayDeque<>())
                                     .add(blockPos.immutable());
                             breaks++;

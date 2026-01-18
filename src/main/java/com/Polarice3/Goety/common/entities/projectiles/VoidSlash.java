@@ -48,7 +48,7 @@ public class VoidSlash extends SlashProjectile{
     }
 
     public void spawnParticles() {
-        if (this.level instanceof ServerLevel serverLevel) {
+        if (this.level() instanceof ServerLevel serverLevel) {
             float width = (float) this.getBoundingBox().getXsize();
             float step = 0.25F;
             float radians = Mth.DEG_TO_RAD * getYRot();

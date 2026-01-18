@@ -32,7 +32,7 @@ public class HellfireRenderer extends EntityRenderer<Hellfire> {
             this.model.setupAnim(pEntity, 0.0F, 0.0F, pPartialTicks/10, 0, 0);
             this.model.renderToBuffer(pMatrixStack, ivertexbuilder, packedLightIn, OverlayTexture.NO_OVERLAY, -1);
             VertexConsumer glow = bufferIn.getBuffer(ModRenderType.wraith(this.getTextureLocation(pEntity)));
-            this.model.renderToBuffer(pMatrixStack, glow, 15728640, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 1.0F);
+            this.model.renderToBuffer(pMatrixStack, glow, 15728640, OverlayTexture.NO_OVERLAY, -1);
             pMatrixStack.popPose();
             super.render(pEntity, entityYaw, pPartialTicks, pMatrixStack, bufferIn, packedLightIn);
         }
@@ -42,7 +42,8 @@ public class HellfireRenderer extends EntityRenderer<Hellfire> {
         return 15;
     }
 
+    @Override
     public ResourceLocation getTextureLocation(Hellfire entity) {
-        return Goety.location("textures/entity/projectiles/hellfire/" + entity.level.getGameTime() % 31 + ".png");
+        return Goety.location("textures/entity/projectiles/hellfire/" + entity.level().getGameTime() % 31 + ".png");
     }
 }

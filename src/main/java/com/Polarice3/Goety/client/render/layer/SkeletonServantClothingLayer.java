@@ -18,7 +18,7 @@ public class SkeletonServantClothingLayer<T extends AbstractSkeletonServant, M e
         extends RenderLayer<T, M> {
     private static final ResourceLocation TEXTURES = Goety
             .location("textures/entity/servants/skeleton/skeleton_servant_overlay.png");
-    private static final ResourceLocation STRAY_ORIGINAL = new ResourceLocation(
+    private static final ResourceLocation STRAY_ORIGINAL = ResourceLocation.withDefaultNamespace(
             "textures/entity/skeleton/stray_overlay.png");
     private static final ResourceLocation STRAY = Goety
             .location("textures/entity/servants/skeleton/stray_servant_overlay.png");

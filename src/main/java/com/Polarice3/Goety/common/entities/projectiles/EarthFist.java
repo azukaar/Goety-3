@@ -62,18 +62,18 @@ public class EarthFist extends SpellEntity {
 
     public void tick() {
         super.tick();
-        if (!this.level.isClientSide) {
+        if (!this.level().isClientSide) {
             MobUtil.moveDownToGround(this);
             --this.warmupDelayTicks;
             if (this.warmupDelayTicks < 0) {
                 if (!this.sentSpikeEvent) {
-                    this.level.broadcastEntityEvent(this, (byte)4);
+                    this.level().broadcastEntityEvent(this, (byte)4);
                     this.sentSpikeEvent = true;
                     this.refreshDimensions();
-                    for(LivingEntity livingentity : this.level.getEntitiesOfClass(LivingEntity.class, this.getBoundingBox().inflate(0.25D))) {
+                    for(LivingEntity livingentity : this.level().getEntitiesOfClass(LivingEntity.class, this.getBoundingBox().inflate(0.25D))) {
                         this.dealDamageTo(livingentity);
                     }
-                    if (this.level instanceof ServerLevel serverLevel) {
+                    if (this.level() instanceof ServerLevel serverLevel) {
                         BlockPos blockPos = BlockPos.containing(this.getX(), this.getY() - 1.0F, this.getZ());
                         BlockState blockState = serverLevel.getBlockState(blockPos);
                         for (int i = 0; i < 8; ++i) {
@@ -88,14 +88,14 @@ public class EarthFist extends SpellEntity {
 
                 --this.lifeTicks;
                 if (this.lifeTicks == 0) {
-                    this.level.broadcastEntityEvent(this, (byte)5);
+                    this.level().broadcastEntityEvent(this, (byte)5);
                 }
 
                 if (this.lifeTicks <= -8) {
                     this.discard();
                 }
             } else {
-                if (this.level instanceof ServerLevel serverLevel) {
+                if (this.level() instanceof ServerLevel serverLevel) {
                     BlockPos blockPos = BlockPos.containing(this.getX(), this.getY() - 1.0F, this.getZ());
                     BlockParticleOption option = new BlockParticleOption(ParticleTypes.BLOCK, serverLevel.getBlockState(blockPos));
                     ServerParticleUtil.circularParticles(serverLevel, option, this, 1.5F);
@@ -144,7 +144,7 @@ public class EarthFist extends SpellEntity {
             this.sentSpikeEvent = true;
             this.refreshDimensions();
             if (!this.isSilent()) {
-                this.level.playLocalSound(this.getX(), this.getY(), this.getZ(), ModSounds.WALL_ERUPT.get(), this.getSoundSource(), 1.0F, this.random.nextFloat() * 0.2F + 0.85F, false);
+                this.level().playLocalSound(this.getX(), this.getY(), this.getZ(), ModSounds.WALL_ERUPT.get(), this.getSoundSource(), 1.0F, this.random.nextFloat() * 0.2F + 0.85F, false);
             }
         } else if (p_36935_ == 5) {
             this.attackAnimationState.stop();
@@ -153,7 +153,8 @@ public class EarthFist extends SpellEntity {
 
     }
 
-    public Packet<ClientGamePacketListener> getAddEntityPacket() {
-        return new net.minecraft.network.protocol.game.ClientboundAddEntityPacket(this);
-    }
+    // getAddEntityPacket is no longer needed in 1.21 - handled automatically
+    // public Packet<ClientGamePacketListener> getAddEntityPacket() {
+    //     return new net.minecraft.network.protocol.game.ClientboundAddEntityPacket(this);
+    // }
 }

@@ -29,7 +29,7 @@ public class VoidBarrelBlockEntity extends BlockEntity {
     }
 
     public void tick() {
-        if (this.level instanceof ServerLevel serverLevel) {
+        if (this.getLevel() instanceof ServerLevel serverLevel) {
             if (this.getBlockState().getValue(VoidBarrelBlock.HALF) == DoubleBlockHalf.LOWER) {
                 Vec3 vec3 = this.worldPosition.getCenter();
                 if (this.getBlockState().getValue(VoidBarrelBlock.TRIGGERED) && !this.getBlockState().getValue(VoidBarrelBlock.LIT)) {
@@ -52,9 +52,9 @@ public class VoidBarrelBlockEntity extends BlockEntity {
                             }
                         };
                         new SpellExplosion(serverLevel, null, serverLevel.damageSources().explosion(null), vec3.x, vec3.y, vec3.z, 5.0F, 4.0F);
-                        //this.level.playSound(null, this.worldPosition, SoundEvents.GLASS_BREAK, SoundSource.BLOCKS, 4.0F, 1.0F);
-                        this.level.playSound(null, this.worldPosition, SoundEvents.GENERIC_EXPLODE, SoundSource.BLOCKS, 4.0F, (1.0F + (serverLevel.getRandom().nextFloat() - serverLevel.getRandom().nextFloat()) * 0.2F) * 0.7F);
-                        this.level.setBlockAndUpdate(this.worldPosition, this.getBlockState().setValue(VoidBarrelBlock.LIT, true));
+                        //this.getLevel().playSound(null, this.worldPosition, SoundEvents.GLASS_BREAK, SoundSource.BLOCKS, 4.0F, 1.0F);
+                        this.getLevel().playSound(null, this.worldPosition, SoundEvents.GENERIC_EXPLODE, SoundSource.BLOCKS, 4.0F, (1.0F + (serverLevel.getRandom().nextFloat() - serverLevel.getRandom().nextFloat()) * 0.2F) * 0.7F);
+                        this.getLevel().setBlockAndUpdate(this.worldPosition, this.getBlockState().setValue(VoidBarrelBlock.LIT, true));
                     }
                 } else if (this.getBlockState().getValue(VoidBarrelBlock.LIT)) {
                     if (serverLevel.getRandom().nextInt(10) == 0) {

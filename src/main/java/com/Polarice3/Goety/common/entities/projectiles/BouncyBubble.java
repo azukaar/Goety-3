@@ -49,7 +49,6 @@ public class BouncyBubble extends SpellHurtingProjectile{
     }
 
     @Override
-    @Override
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
         super.defineSynchedData(builder);
         builder.define(BOUNCE_TIMES, 0);

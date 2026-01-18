@@ -201,7 +201,7 @@ public class RedstoneGolem extends RaiderGolemServant {
 
     public void onSyncedDataUpdated(EntityDataAccessor<?> p_219422_) {
         if (ANIM_STATE.equals(p_219422_)) {
-            if (this.level.isClientSide){
+            if (this.level().isClientSide){
                 switch (this.entityData.get(ANIM_STATE)){
                     case 0:
                         break;
@@ -305,7 +305,7 @@ public class RedstoneGolem extends RaiderGolemServant {
     @Override
     protected void playStepSound(BlockPos p_20135_, BlockState p_20136_) {
         this.playSound(ModSounds.REDSTONE_GOLEM_STEP.get());
-        CameraShake.cameraShake(this.level, this.position(), 10.0F, 0.01F, 5, 0);
+        CameraShake.cameraShake(this.level(), this.position(), 10.0F, 0.01F, 5, 0);
     }
 
     @Nullable
@@ -337,7 +337,7 @@ public class RedstoneGolem extends RaiderGolemServant {
     public void setMeleeAttacking(boolean attacking) {
         this.setGolemFlags(1, attacking);
         this.attackTick = 0;
-        this.level.broadcastEntityEvent(this, (byte) 5);
+        this.level().broadcastEntityEvent(this, (byte) 5);
     }
 
     protected boolean isImmobile() {
@@ -373,9 +373,9 @@ public class RedstoneGolem extends RaiderGolemServant {
     public void setStaying(boolean staying){
         super.setStaying(staying);
         if (staying){
-            this.level.broadcastEntityEvent(this, (byte) 12);
+            this.level().broadcastEntityEvent(this, (byte) 12);
         } else if (this.isFollowing()) {
-            this.level.broadcastEntityEvent(this, (byte) 13);
+            this.level().broadcastEntityEvent(this, (byte) 13);
         }
     }
 
@@ -393,7 +393,7 @@ public class RedstoneGolem extends RaiderGolemServant {
                 if (itemEntity != null){
                     itemEntity.setExtendedLifetime();
                 }
-            } else if (this.level.random.nextFloat() <= 0.11F){
+            } else if (this.level().random.nextFloat() <= 0.11F){
                 this.spawnAtLocation(itemStack);
             }
             this.remove(RemovalReason.KILLED);
@@ -453,7 +453,7 @@ public class RedstoneGolem extends RaiderGolemServant {
                 }
             }
         }
-        if (this.level.isClientSide()) {
+        if (this.level().isClientSide()) {
             if (this.isAlive() && !this.isActivating()) {
                 if (!this.isSummoning()){
                     this.glow();
@@ -466,7 +466,7 @@ public class RedstoneGolem extends RaiderGolemServant {
                 }
             }
         }
-        if (!this.level.isClientSide){
+        if (!this.level().isClientSide){
             if (!this.isDeadOrDying()) {
                 if (!this.isActivating() && !this.isMeleeAttacking() && !this.isSummoning()) {
                     if (this.isStaying()) {
@@ -508,7 +508,7 @@ public class RedstoneGolem extends RaiderGolemServant {
                     }
                     if (!this.isMeleeAttacking() && !this.isSummoning() && !this.isMoving() && !this.isStaying()) {
                         ++this.idleTime;
-                        if (this.level.random.nextFloat() <= 0.05F && this.hurtTime <= 0 && (this.getTarget() == null || this.getTarget().isDeadOrDying()) && !this.isNovelty && this.idleTime >= MathHelper.minutesToTicks(1)) {
+                        if (this.level().random.nextFloat() <= 0.05F && this.hurtTime <= 0 && (this.getTarget() == null || this.getTarget().isDeadOrDying()) && !this.isNovelty && this.idleTime >= MathHelper.minutesToTicks(1)) {
                             this.idleTime = 0;
                             this.isNovelty = true;
                             this.setAnimationState(NOVELTY);
@@ -537,7 +537,7 @@ public class RedstoneGolem extends RaiderGolemServant {
                         this.isPostAttack = false;
                     }
                     if (this.isSummoning()) {
-                        if (this.level instanceof ServerLevel serverLevel) {
+                        if (this.level() instanceof ServerLevel serverLevel) {
                             for (int i = 0; i < 5; ++i) {
                                 double d0 = serverLevel.random.nextGaussian() * 0.02D;
                                 double d1 = serverLevel.random.nextGaussian() * 0.02D;
@@ -546,22 +546,22 @@ public class RedstoneGolem extends RaiderGolemServant {
                             }
                         }
                         if (this.summonTick == MathHelper.secondsToTicks(SUMMON_SECONDS_TIME - 1)) {
-                            CameraShake.cameraShake(this.level, this.position(), 10.0F, 0.1F, 0, 20);
+                            CameraShake.cameraShake(this.level(), this.position(), 10.0F, 0.1F, 0, 20);
                         }
                         if (this.summonTick <= (MathHelper.secondsToTicks(SUMMON_SECONDS_TIME - 1)) && this.mineCount > 0) {
                             int time = (int) (MathHelper.secondsToTicks(SUMMON_SECONDS_TIME - 1) / 14);
                             if (this.tickCount % time == 0 && this.onGround()) {
                                 BlockPos blockPos = this.blockPosition();
-                                blockPos = blockPos.offset(-8 + this.level.random.nextInt(16), 0, -8 + this.level.random.nextInt(16));
-                                BlockPos blockPos2 = this.blockPosition().offset(-8 + this.level.random.nextInt(16), 0, -8 + this.level.random.nextInt(16));
+                                blockPos = blockPos.offset(-8 + this.level().random.nextInt(16), 0, -8 + this.level().random.nextInt(16));
+                                BlockPos blockPos2 = this.blockPosition().offset(-8 + this.level().random.nextInt(16), 0, -8 + this.level().random.nextInt(16));
                                 Vec3 vec3 = Vec3.atBottomCenterOf(blockPos);
                                 Vec3 vec32 = Vec3.atBottomCenterOf(blockPos2);
-                                ScatterMine scatterMine = new ScatterMine(this.level, this, vec3);
-                                if (!this.level.getEntitiesOfClass(ScatterMine.class, new AABB(blockPos)).isEmpty()) {
+                                ScatterMine scatterMine = new ScatterMine(this.level(), this, vec3);
+                                if (!this.level().getEntitiesOfClass(ScatterMine.class, new AABB(blockPos)).isEmpty()) {
                                     scatterMine.setPos(vec32.x(), vec32.y(), vec32.z());
                                 }
-                                if (this.level.addFreshEntity(scatterMine)) {
-                                    if (this.level.random.nextBoolean()) {
+                                if (this.level().addFreshEntity(scatterMine)) {
+                                    if (this.level().random.nextBoolean()) {
                                         SoundUtil.playRedstoneMineLoad(scatterMine);
                                     }
                                     --this.mineCount;
@@ -611,7 +611,7 @@ public class RedstoneGolem extends RaiderGolemServant {
     }
 
     public boolean doHurtTarget(Entity entityIn) {
-        if (!this.level.isClientSide && !this.isMeleeAttacking()) {
+        if (!this.level().isClientSide && !this.isMeleeAttacking()) {
             this.playSound(ModSounds.REDSTONE_GOLEM_PRE_ATTACK.get(), 1.5F, 1.0F);
             this.setMeleeAttacking(true);
         }
@@ -636,7 +636,7 @@ public class RedstoneGolem extends RaiderGolemServant {
     }
 
     public InteractionResult mobInteract(Player pPlayer, InteractionHand p_230254_2_) {
-        if (!this.level.isClientSide) {
+        if (!this.level().isClientSide) {
             ItemStack itemstack = pPlayer.getItemInHand(p_230254_2_);
             if (this.getTrueOwner() != null && pPlayer == this.getTrueOwner()) {
                 if ((itemstack.is(ModBlocks.REINFORCED_REDSTONE_BLOCK.get().asItem())
@@ -656,7 +656,7 @@ public class RedstoneGolem extends RaiderGolemServant {
                         this.heal((this.getMaxHealth() / 4.0F) / 8.0F);
                         this.playSound(SoundEvents.IRON_GOLEM_REPAIR, 0.25F, 1.0F);
                     }
-                    if (this.level instanceof ServerLevel serverLevel) {
+                    if (this.level() instanceof ServerLevel serverLevel) {
                         for (int i = 0; i < 7; ++i) {
                             double d0 = serverLevel.random.nextGaussian() * 0.02D;
                             double d1 = serverLevel.random.nextGaussian() * 0.02D;

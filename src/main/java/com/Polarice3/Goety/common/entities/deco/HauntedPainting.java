@@ -45,13 +45,15 @@ public class HauntedPainting extends Painting {
     }
 
     public void setVariant(Holder<PaintingVariant> p_218892_) {
-        this.entityData.set(DATA_PAINTING_VARIANT_ID, p_218892_);
+        this.setVariant(p_218892_);
     }
 
     public static Optional<HauntedPainting> createModded(Level p_218888_, BlockPos p_218889_, Direction p_218890_) {
         HauntedPainting painting = new HauntedPainting(p_218888_, p_218889_);
         List<Holder<PaintingVariant>> list = new ArrayList<>();
-        BuiltInRegistries.PAINTING_VARIANT.getTagOrEmpty(ModTags.Paintings.MODDED_PAINTINGS).forEach(list::add);
+        if (p_218888_.registryAccess().registryOrThrow(net.minecraft.core.registries.Registries.PAINTING_VARIANT).getTag(ModTags.Paintings.MODDED_PAINTINGS).isPresent()) {
+            p_218888_.registryAccess().registryOrThrow(net.minecraft.core.registries.Registries.PAINTING_VARIANT).getTag(ModTags.Paintings.MODDED_PAINTINGS).get().forEach(list::add);
+        }
         if (list.isEmpty()) {
             return Optional.empty();
         } else {
@@ -80,11 +82,11 @@ public class HauntedPainting extends Painting {
     }
 
     private static int variantArea(Holder<PaintingVariant> p_218899_) {
-        return p_218899_.value().getWidth() * p_218899_.value().getHeight();
+        return p_218899_.value().width() * p_218899_.value().height();
     }
 
     public void dropItem(@Nullable Entity p_31925_) {
-        if (this.level.getGameRules().getBoolean(GameRules.RULE_DOENTITYDROPS)) {
+        if (this.level().getGameRules().getBoolean(GameRules.RULE_DOENTITYDROPS)) {
             this.playSound(SoundEvents.PAINTING_BREAK, 1.0F, 1.0F);
             if (p_31925_ instanceof Player player) {
                 if (player.getAbilities().instabuild) {

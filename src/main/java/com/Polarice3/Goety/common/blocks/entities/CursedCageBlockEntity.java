@@ -54,18 +54,18 @@ public class CursedCageBlockEntity extends BlockEntity implements Clearable {
     }
 
     public Player getOwner(){
-        if (this.level != null && this.item.getItem() == ModItems.SOUL_TRANSFER.get()) {
+        if (this.getLevel() != null && this.item.getItem() == ModItems.SOUL_TRANSFER.get()) {
             CustomData data = this.item.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY);
             if (!data.isEmpty() && data.contains("owner")) {
                 UUID owner = data.copyTag().getUUID("owner");
-                return this.level.getPlayerByUUID(owner);
+                return this.getLevel().getPlayerByUUID(owner);
             }
         }
         return null;
     }
 
     public int getSouls(){
-        if (this.level != null) {
+        if (this.getLevel() != null) {
             Player player = this.getOwner();
             if (player != null) {
                 if (SEHelper.getSEActive(player)) {
@@ -84,7 +84,7 @@ public class CursedCageBlockEntity extends BlockEntity implements Clearable {
             ITotem.decreaseSouls(this.item, souls);
             this.generateParticles();
         }
-        if (this.level != null) {
+        if (this.getLevel() != null) {
             Player player = this.getOwner();
             if (player != null) {
                 if (SEHelper.getSEActive(player)) {
@@ -92,7 +92,7 @@ public class CursedCageBlockEntity extends BlockEntity implements Clearable {
                     if (Soulcount > 0) {
                         SEHelper.decreaseSESouls(player, souls);
                         SEHelper.sendSEUpdatePacket(player);
-                        ArcaBlockEntity arcaTile = (ArcaBlockEntity) this.level.getBlockEntity(SEHelper.getArcaBlock(player));
+                        ArcaBlockEntity arcaTile = (ArcaBlockEntity) this.getLevel().getBlockEntity(SEHelper.getArcaBlock(player));
                         if (arcaTile != null) {
                             arcaTile.generateParticles();
                             this.generateParticles();
@@ -115,12 +115,12 @@ public class CursedCageBlockEntity extends BlockEntity implements Clearable {
         }
         BlockPos blockpos = this.getBlockPos();
 
-        if (this.level != null) {
-            if (!this.level.isClientSide) {
-                ServerLevel serverWorld = (ServerLevel) this.level;
-                double d0 = (double) blockpos.getX() + this.level.random.nextDouble();
-                double d1 = (double) blockpos.getY() + this.level.random.nextDouble();
-                double d2 = (double) blockpos.getZ() + this.level.random.nextDouble();
+        if (this.getLevel() != null) {
+            if (!this.getLevel().isClientSide) {
+                ServerLevel serverWorld = (ServerLevel) this.getLevel();
+                double d0 = (double) blockpos.getX() + this.getLevel().random.nextDouble();
+                double d1 = (double) blockpos.getY() + this.getLevel().random.nextDouble();
+                double d2 = (double) blockpos.getZ() + this.getLevel().random.nextDouble();
                 for (int p = 0; p < 4; ++p) {
                     serverWorld.sendParticles(ParticleTypes.SOUL_FIRE_FLAME, d0, d1, d2, 1, 0, 0, 0, 0);
                     serverWorld.sendParticles(ParticleTypes.SMOKE, d0, d1, d2, 1, 0.0D, 5.0E-4D, 0.0D, 5.0E-4D);
@@ -132,13 +132,13 @@ public class CursedCageBlockEntity extends BlockEntity implements Clearable {
 
     public void generateManyParticles(){
         BlockPos blockpos = this.getBlockPos();
-        if (this.level != null) {
-            if (!this.level.isClientSide) {
-                ServerLevel serverWorld = (ServerLevel) this.level;
+        if (this.getLevel() != null) {
+            if (!this.getLevel().isClientSide) {
+                ServerLevel serverWorld = (ServerLevel) this.getLevel();
                 for(int k = 0; k < 20; ++k) {
-                    double d9 = (double)blockpos.getX() + 0.5D + (this.level.random.nextDouble() - 0.5D) * 2.0D;
-                    double d13 = (double)blockpos.getY() + 0.5D + (this.level.random.nextDouble() - 0.5D) * 2.0D;
-                    double d19 = (double)blockpos.getZ() + 0.5D + (this.level.random.nextDouble() - 0.5D) * 2.0D;
+                    double d9 = (double)blockpos.getX() + 0.5D + (this.getLevel().random.nextDouble() - 0.5D) * 2.0D;
+                    double d13 = (double)blockpos.getY() + 0.5D + (this.getLevel().random.nextDouble() - 0.5D) * 2.0D;
+                    double d19 = (double)blockpos.getZ() + 0.5D + (this.getLevel().random.nextDouble() - 0.5D) * 2.0D;
                     serverWorld.sendParticles(ParticleTypes.SMOKE, d9, d13, d19, 1, 0.0D, 0.0D, 0.0D, 0);
                     serverWorld.sendParticles(ParticleTypes.SOUL_FIRE_FLAME, d9, d13, d19, 1, 0.0D, 0.0D, 0.0D, 0);
                 }
@@ -153,14 +153,14 @@ public class CursedCageBlockEntity extends BlockEntity implements Clearable {
     }
 
     public void readNetwork(CompoundTag tag) {
-        if (this.level != null) {
-            item = ItemStack.parseOptional(this.level.registryAccess(), tag.getCompound("item"));
+        if (this.getLevel() != null) {
+            item = ItemStack.parseOptional(this.getLevel().registryAccess(), tag.getCompound("item"));
         }
     }
 
     public CompoundTag writeNetwork(CompoundTag tag) {
-        if (this.level != null) {
-            tag.put("item", item.save(this.level.registryAccess(), new CompoundTag()));
+        if (this.getLevel() != null) {
+            tag.put("item", item.save(this.getLevel().registryAccess(), new CompoundTag()));
         }
         return tag;
     }

@@ -208,7 +208,7 @@ public class Neollager extends AbstractIllagerServant {
 
     @Override
     public boolean canTrain(Level level, BlockPos blockPos, EntityType<? extends Mob> entityType) {
-        Mob mob = entityType.create(this.level);
+        Mob mob = entityType.create(this.level());
         if (super.canTrain(level, blockPos, entityType)) {
             if (mob instanceof SpellcasterIllagerServant) {
                 return this.isMagic();
@@ -220,7 +220,7 @@ public class Neollager extends AbstractIllagerServant {
     }
 
     @Nullable
-    @Override
+    // @Override
     public SpawnGroupData finalizeSpawn(ServerLevelAccessor pLevel, DifficultyInstance pDifficulty, MobSpawnType pReason, @Nullable SpawnGroupData pSpawnData, @Nullable CompoundTag pDataTag) {
         SpawnGroupData data = super.finalizeSpawn(pLevel, pDifficulty, pReason, pSpawnData, pDataTag);
         if (pLevel.getLevel().getRandom().nextFloat() <= 0.15F){
@@ -241,10 +241,10 @@ public class Neollager extends AbstractIllagerServant {
 
     public void tick(){
         super.tick();
-        if (this.level.isClientSide) {
+        if (this.level().isClientSide) {
             if (this.forcedAgeTimer > 0) {
                 if (this.forcedAgeTimer % 4 == 0) {
-                    this.level.addParticle(ParticleTypes.HAPPY_VILLAGER, this.getRandomX(1.0D), this.getRandomY() + 0.5D, this.getRandomZ(1.0D), 0.0D, 0.0D, 0.0D);
+                    this.level().addParticle(ParticleTypes.HAPPY_VILLAGER, this.getRandomX(1.0D), this.getRandomY() + 0.5D, this.getRandomZ(1.0D), 0.0D, 0.0D, 0.0D);
                 }
 
                 --this.forcedAgeTimer;
@@ -293,10 +293,10 @@ public class Neollager extends AbstractIllagerServant {
             if (!this.isBaby() && itemstack.is(ItemTags.BANNERS) && this.getMainHandItem().isEmpty()){
                 if (this.getLeaderBannerInstance().isEmpty()){
                     this.playSound(SoundEvents.PILLAGER_AMBIENT, 1.0F, 0.75F);
-                    this.level.broadcastEntityEvent(this, (byte) 9);
+                    this.level().broadcastEntityEvent(this, (byte) 9);
                     return InteractionResult.FAIL;
                 } else if (!ItemHelper.sameBanner(itemstack, this.getBannerPatternInstance())){
-                    if (!this.level.isClientSide) {
+                    if (!this.level().isClientSide) {
                         this.setItemSlot(EquipmentSlot.MAINHAND, itemstack.copy());
                         if (!pPlayer.getAbilities().instabuild) {
                             itemstack.shrink(1);

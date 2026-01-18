@@ -33,7 +33,7 @@ public class VoidFrameBlockEntity extends BlockEntity {
     }
 
     public void tick() {
-        if (this.level instanceof ServerLevel serverLevel) {
+        if (this.getLevel() instanceof ServerLevel serverLevel) {
             if (!this.getBlockState().getValue(VoidFrameBlock.LOCKED)) {
                 ++this.coolTick;
                 if (this.coolTick < 20) {

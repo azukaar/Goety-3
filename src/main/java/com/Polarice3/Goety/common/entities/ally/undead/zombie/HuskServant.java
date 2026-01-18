@@ -61,7 +61,7 @@ public class HuskServant extends ZombieServant{
     public boolean doHurtTarget(Entity pEntity) {
         boolean flag = super.doHurtTarget(pEntity);
         if (flag && this.getMainHandItem().isEmpty() && pEntity instanceof LivingEntity) {
-            float f = this.level.getCurrentDifficultyAt(this.blockPosition()).getEffectiveDifficulty();
+            float f = this.level().getCurrentDifficultyAt(this.blockPosition()).getEffectiveDifficulty();
             ((LivingEntity)pEntity).addEffect(new MobEffectInstance(MobEffects.HUNGER, 140 * (int)f));
         }
 
@@ -75,7 +75,7 @@ public class HuskServant extends ZombieServant{
     protected void doUnderWaterConversion() {
         this.convertToZombieType(ModEntityType.ZOMBIE_SERVANT.get());
         if (!this.isSilent()) {
-            this.level.levelEvent((Player) null, 1041, this.blockPosition(), 0);
+            this.level().levelEvent((Player) null, 1041, this.blockPosition(), 0);
         }
 
     }

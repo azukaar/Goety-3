@@ -511,7 +511,7 @@ public class SkullLord extends Monster implements ICustomAttributes {
 
     @Override
     public void remove(Entity.RemovalReason reason) {
-        this.setStopSpawning(true);
+        this.setPersistenceRequired();
         super.remove(reason);
         if (!this.level().isClientSide) {
             if (this.getBoneLord() != null) {
@@ -775,9 +775,10 @@ public class SkullLord extends Monster implements ICustomAttributes {
     public SpawnGroupData finalizeSpawn(ServerLevelAccessor pLevel, DifficultyInstance pDifficulty,
             MobSpawnType pReason, @Nullable SpawnGroupData pSpawnData, @Nullable CompoundTag pDataTag) {
         this.populateDefaultEquipmentSlots(pLevel.getRandom(), pDifficulty);
-        this.populateDefaultEquipmentEnchantments(pLevel.getRandom(), pDifficulty);
+        this.populateDefaultEquipmentEnchantments(pLevel, pLevel.getRandom(), pDifficulty);
         BoneLord boneLord = ModEntityType.BONE_LORD.get().create((Level) pLevel);
         if (boneLord != null) {
+            boneLord.finalizeSpawn(pLevel, pDifficulty, pReason, pSpawnData);
             boneLord.finalizeSpawn(pLevel, pDifficulty, pReason, pSpawnData);
             boneLord.setPos(this.getX(), this.getY(), this.getZ());
             boneLord.setSkullLord(this);

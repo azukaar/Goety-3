@@ -134,7 +134,7 @@ public class ZPiglinServant extends ZombieServant {
         if (pSource.getEntity() != null){
             if (pSource.getEntity() instanceof LivingEntity livingEntity){
                 if (!(livingEntity instanceof ZombifiedPiglin) && !livingEntity.isAlliedTo(this)){
-                    for (ZombifiedPiglin zombifiedPiglin : this.level.getEntitiesOfClass(ZombifiedPiglin.class, this.getBoundingBox().inflate(10))){
+                    for (ZombifiedPiglin zombifiedPiglin : this.level().getEntitiesOfClass(ZombifiedPiglin.class, this.getBoundingBox().inflate(10))){
                         if (zombifiedPiglin.getTarget() != livingEntity) {
                             if (zombifiedPiglin.canAttack(livingEntity)) {
                                 zombifiedPiglin.startPersistentAngerTimer();

@@ -233,7 +233,7 @@ public class AbstractReaper extends Summoned {
 
     public void onSyncedDataUpdated(EntityDataAccessor<?> accessor) {
         if (ANIM_STATE.equals(accessor)) {
-            if (this.level.isClientSide) {
+            if (this.level().isClientSide) {
                 switch (this.entityData.get(ANIM_STATE)) {
                     case 0:
                         break;
@@ -278,7 +278,7 @@ public class AbstractReaper extends Summoned {
     public void setMeleeAttacking(boolean attacking) {
         this.setReaperFlags(1, attacking);
         this.attackTick = 0;
-        this.level.broadcastEntityEvent(this, (byte) 5);
+        this.level().broadcastEntityEvent(this, (byte) 5);
     }
 
     public void handleEntityEvent(byte pId) {
@@ -318,7 +318,7 @@ public class AbstractReaper extends Summoned {
     @Override
     public void tick() {
         super.tick();
-        if (!this.level.isClientSide) {
+        if (!this.level().isClientSide) {
             if (this.isMeleeAttacking()) {
                 ++this.attackTick;
             } else if (!this.isDeadOrDying()) {
@@ -349,7 +349,7 @@ public class AbstractReaper extends Summoned {
                 }
                 this.playSound(ModSounds.REAPER_AMBIENT.get(), 1.0F, 1.25F);
                 this.heal(2.0F);
-                if (this.level instanceof ServerLevel serverLevel) {
+                if (this.level() instanceof ServerLevel serverLevel) {
                     for (int i = 0; i < 7; ++i) {
                         double d0 = this.random.nextGaussian() * 0.02D;
                         double d1 = this.random.nextGaussian() * 0.02D;
@@ -488,7 +488,7 @@ public class AbstractReaper extends Summoned {
                     this.reaper.distanceToSqr(livingentity.getX(), livingentity.getY(), livingentity.getZ()));
         }
 
-        @Override
+        // @Override
         protected void checkAndPerformAttack(LivingEntity enemy, double distToEnemySqr) {
             if (this.reaper.isWithinMeleeAttackRange(enemy) && this.reaper.hasLineOfSight(enemy)) {
                 this.reaper.setMeleeAttacking(true);
@@ -553,16 +553,16 @@ public class AbstractReaper extends Summoned {
                 SEHelper.increaseSouls(player, ItemConfig.DarkScytheSouls.get() * 5);
             }
             float f = (float) reaper.getAttributeValue(Attributes.ATTACK_DAMAGE);
-            float f1 = EnchantmentHelper.getDamageBonus(reaper.getMainHandItem(), pTarget.getMobType());
+            float f1 = 0.0F; // EnchantmentHelper.getDamageBonus(reaper.getMainHandItem(), pTarget.getMobType());
             float f2 = 1.0F;
             f = f * (0.2F + f2 * f2 * 0.8F);
             f1 = f1 * f2;
             f = f + f1;
 
             float f3 = 1.0F;
-            int j = EnchantmentHelper.getFireAspect(reaper);
+            int j = 0; // EnchantmentHelper.getFireAspect(reaper);
             double area = 2.0D;
-            for (LivingEntity livingentity : reaper.level.getEntitiesOfClass(LivingEntity.class, this.reaper
+            for (LivingEntity livingentity : reaper.level().getEntitiesOfClass(LivingEntity.class, this.reaper
                     .getBoundingBox().move(this.getHorizontalLookAngle().scale(2.0D)).inflate(area, area, area))) {
                 if (livingentity != reaper && !MobUtil.areAllies(reaper, livingentity)
                         && (!(livingentity instanceof ArmorStand) || !((ArmorStand) livingentity).isMarker())
@@ -582,17 +582,17 @@ public class AbstractReaper extends Summoned {
                                 SEHelper.increaseSouls(player, ItemConfig.DarkScytheSouls.get() * 5);
                             }
                         }
-                        EnchantmentHelper.doPostHurtEffects(livingentity, reaper);
-                        EnchantmentHelper.doPostDamageEffects(reaper, livingentity);
+                        // EnchantmentHelper.doPostHurtEffects(livingentity, reaper);
+                        // EnchantmentHelper.doPostDamageEffects(reaper, livingentity);
                     }
                 }
             }
 
-            reaper.level.playSound(null, reaper.getX(), reaper.getY(), reaper.getZ(), ModSounds.SCYTHE_SWING.get(),
+            reaper.level().playSound(null, reaper.getX(), reaper.getY(), reaper.getZ(), ModSounds.SCYTHE_SWING.get(),
                     reaper.getSoundSource(), 1.0F, 1.0F);
             double d0 = -Mth.sin(reaper.getYRot() * ((float) Math.PI / 180F));
             double d1 = Mth.cos(reaper.getYRot() * ((float) Math.PI / 180F));
-            if (reaper.level instanceof ServerLevel serverLevel) {
+            if (reaper.level() instanceof ServerLevel serverLevel) {
                 serverLevel.sendParticles(ParticleTypes.SWEEP_ATTACK, reaper.getX() + d0, reaper.getY(0.5D),
                         reaper.getZ() + d1, 0, d0, 0.0D, d1, 0.0D);
             }

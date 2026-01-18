@@ -32,7 +32,7 @@ public class ArrowRainTrap extends AbstractTrap {
         super.tick();
         BlockPos.MutableBlockPos blockpos$mutable = new BlockPos.MutableBlockPos(this.getX(), this.getY(), this.getZ());
 
-        while(blockpos$mutable.getY() < this.getY() + 32.0D && !this.level.getBlockState(blockpos$mutable).blocksMotion()) {
+        while(blockpos$mutable.getY() < this.getY() + 32.0D && !this.level().getBlockState(blockpos$mutable).blocksMotion()) {
             blockpos$mutable.move(Direction.UP);
         }
         if (this.getOwner() != null) {
@@ -43,17 +43,17 @@ public class ArrowRainTrap extends AbstractTrap {
                 abstractarrowentity.setPos(this.getX() + this.random.nextIntBetweenInclusive(-3, 3), blockpos$mutable.getY(), this.getZ() + this.random.nextIntBetweenInclusive(-3, 3));
                 abstractarrowentity.shoot(0, -900, 0, 2, 10);
                 abstractarrowentity.setOwner(apostle);
-                this.level.addFreshEntity(abstractarrowentity);
+                this.level().addFreshEntity(abstractarrowentity);
             } else {
                 ItemStack itemStack = new ItemStack(Items.ARROW);
                 ArrowItem arrowitem = (ArrowItem)(itemStack.getItem() instanceof ArrowItem ? itemStack.getItem() : Items.ARROW);
                 for(int i = 0; i < 3; ++i) {
-                    AbstractArrow abstractArrowEntity = arrowitem.createArrow(this.level, itemStack, this.getOwner());
+                    AbstractArrow abstractArrowEntity = arrowitem.createArrow(this.level(), itemStack, this.getOwner());
                     abstractArrowEntity.addTag(ConstantPaths.rainArrow());
                     abstractArrowEntity.setPos(this.getX() + this.random.nextIntBetweenInclusive(-3, 3), blockpos$mutable.getY(), this.getZ() + this.random.nextIntBetweenInclusive(-3, 3));
                     abstractArrowEntity.shoot(0, -900, 0, 2, 0);
                     abstractArrowEntity.setOwner(this.getOwner());
-                    this.level.addFreshEntity(abstractArrowEntity);
+                    this.level().addFreshEntity(abstractArrowEntity);
                 }
             }
         } else {

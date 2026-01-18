@@ -12,6 +12,7 @@ import com.Polarice3.Goety.init.ModTags;
 import com.Polarice3.Goety.utils.*;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
@@ -33,6 +34,7 @@ import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.GameRules;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
@@ -47,9 +49,13 @@ public class EvokerServant extends SpellcasterIllagerServant{
     private Mob ravageTarget;
     private int ravageCool;
 
+
+
     public EvokerServant(EntityType<? extends EvokerServant> p_32627_, Level p_32628_) {
         super(p_32627_, p_32628_);
     }
+
+
 
     protected void registerGoals() {
         super.registerGoals();
@@ -102,16 +108,16 @@ public class EvokerServant extends SpellcasterIllagerServant{
 
     @Override
     public void die(DamageSource pCause) {
-        if (!this.level.isClientSide) {
+        if (!this.level().isClientSide) {
             if (this.getIdol() == null) {
                 if (this.getTrueOwner() != null) {
                     if (CuriosFinder.hasNamelessSet(this.getTrueOwner())){
                         BoundEvoker servant = this.convertTo(ModEntityType.BOUND_EVOKER.get(), true);
                         if (servant != null) {
                             servant.setTrueOwner(this.getTrueOwner());
-                            net.neoforged.event.net.neoforged.neoforge.event.EventHooks.onLivingConvert(this, servant);
+                            net.neoforged.neoforge.event.EventHooks.onLivingConvert(this, servant);
                             if (!this.isSilent()) {
-                                this.level.levelEvent((Player)null, 1026, this.blockPosition(), 0);
+                                this.level().levelEvent((Player)null, 1026, this.blockPosition(), 0);
                             }
                         }
                     }
@@ -231,11 +237,11 @@ public class EvokerServant extends SpellcasterIllagerServant{
 
             do {
                 BlockPos blockpos1 = blockpos.below();
-                BlockState blockstate = EvokerServant.this.level.getBlockState(blockpos1);
-                if (blockstate.isFaceSturdy(EvokerServant.this.level, blockpos1, Direction.UP)) {
-                    if (!EvokerServant.this.level.isEmptyBlock(blockpos)) {
-                        BlockState blockstate1 = EvokerServant.this.level.getBlockState(blockpos);
-                        VoxelShape voxelshape = blockstate1.getCollisionShape(EvokerServant.this.level, blockpos);
+                BlockState blockstate = EvokerServant.this.level().getBlockState(blockpos1);
+                if (blockstate.isFaceSturdy(EvokerServant.this.level(), blockpos1, Direction.UP)) {
+                    if (!EvokerServant.this.level().isEmptyBlock(blockpos)) {
+                        BlockState blockstate1 = EvokerServant.this.level().getBlockState(blockpos);
+                        VoxelShape voxelshape = blockstate1.getCollisionShape(EvokerServant.this.level(), blockpos);
                         if (!voxelshape.isEmpty()) {
                             d0 = voxelshape.max(Direction.Axis.Y);
                         }
@@ -249,7 +255,7 @@ public class EvokerServant extends SpellcasterIllagerServant{
             } while(blockpos.getY() >= Mth.floor(p_32675_) - 1);
 
             if (flag) {
-                EvokerServant.this.level.addFreshEntity(new Fangs(EvokerServant.this.level, p_32673_, (double)blockpos.getY() + d0, p_32674_, p_32677_, p_32678_, EvokerServant.this));
+                EvokerServant.this.level().addFreshEntity(new Fangs(EvokerServant.this.level(), p_32673_, (double)blockpos.getY() + d0, p_32674_, p_32677_, p_32678_, EvokerServant.this));
             }
 
         }
@@ -275,13 +281,14 @@ public class EvokerServant extends SpellcasterIllagerServant{
     }
 
     class EvokerSummonSpellGoal extends SpellcasterUseSpellGoal {
+        private static final ResourceLocation TEXTURE_LOCATION = ResourceLocation.fromNamespaceAndPath("goety", "textures/entity/projectiles/fangs.png");
         private final TargetingConditions vexCountTargeting = TargetingConditions.forNonCombat().range(16.0D).ignoreLineOfSight().ignoreInvisibilityTesting();
 
         public boolean canUse() {
             if (!super.canUse()) {
                 return false;
             } else {
-                int i = EvokerServant.this.level.getNearbyEntities(AllyVex.class, this.vexCountTargeting, EvokerServant.this, EvokerServant.this.getBoundingBox().inflate(16.0D)).size();
+                int i = EvokerServant.this.level().getNearbyEntities(AllyVex.class, this.vexCountTargeting, EvokerServant.this, EvokerServant.this.getBoundingBox().inflate(16.0D)).size();
                 return EvokerServant.this.random.nextInt(8) + 1 > i;
             }
         }
@@ -295,14 +302,14 @@ public class EvokerServant extends SpellcasterIllagerServant{
         }
 
         protected void performSpellCasting() {
-            ServerLevel serverlevel = (ServerLevel)EvokerServant.this.level;
+            ServerLevel serverlevel = (ServerLevel)EvokerServant.this.level();
 
             for(int i = 0; i < 3; ++i) {
                 BlockPos blockpos = EvokerServant.this.blockPosition().offset(-2 + EvokerServant.this.random.nextInt(5), 1, -2 + EvokerServant.this.random.nextInt(5));
                 AllyVex vex = ModEntityType.VEX_SERVANT.get().create(EvokerServant.this.level());
                 if (vex != null) {
                     vex.moveTo(blockpos, 0.0F, 0.0F);
-                    vex.finalizeSpawn(serverlevel, EvokerServant.this.level.getCurrentDifficultyAt(blockpos), MobSpawnType.MOB_SUMMONED, (SpawnGroupData)null, (CompoundTag)null);
+                    vex.finalizeSpawn(serverlevel, EvokerServant.this.level().getCurrentDifficultyAt(blockpos), MobSpawnType.MOB_SUMMONED, null);
                     vex.setTrueOwner(EvokerServant.this);
                     vex.setBoundOrigin(blockpos);
                     vex.setLimitedLife(20 * (30 + EvokerServant.this.random.nextInt(90)));
@@ -333,10 +340,10 @@ public class EvokerServant extends SpellcasterIllagerServant{
                 return false;
             } else if (EvokerServant.this.tickCount < this.nextAttackTickCount) {
                 return false;
-            } else if (!net.neoforged.event.EvokerServant.this.level.getGameRules().getBoolean(GameRules.RULE_MOB_GRIEFING)) {
+            } else if (!EvokerServant.this.level().getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING)) {
                 return false;
             } else {
-                List<Sheep> list = EvokerServant.this.level.getNearbyEntities(Sheep.class, this.wololoTargeting, EvokerServant.this, EvokerServant.this.getBoundingBox().inflate(16.0D, 4.0D, 16.0D));
+                List<Sheep> list = EvokerServant.this.level().getNearbyEntities(Sheep.class, this.wololoTargeting, EvokerServant.this, EvokerServant.this.getBoundingBox().inflate(16.0D, 4.0D, 16.0D));
                 if (list.isEmpty()) {
                     return false;
                 } else {
@@ -409,7 +416,7 @@ public class EvokerServant extends SpellcasterIllagerServant{
                     if (!SEHelper.hasResearch(player, ResearchList.RAVAGING)){
                         return false;
                     } else if (SEHelper.getGrudgeEntityTypes(player).contains(EntityType.VILLAGER)) {
-                        List<Mob> list = EvokerServant.this.level.getNearbyEntities(Mob.class, this.ravageTargeting, EvokerServant.this, EvokerServant.this.getBoundingBox().inflate(16.0D, 4.0D, 16.0D));
+                        List<Mob> list = EvokerServant.this.level().getNearbyEntities(Mob.class, this.ravageTargeting, EvokerServant.this, EvokerServant.this.getBoundingBox().inflate(16.0D, 4.0D, 16.0D));
                         if (list.isEmpty()) {
                             return false;
                         } else {
@@ -447,7 +454,7 @@ public class EvokerServant extends SpellcasterIllagerServant{
                 victim.getNavigation().stop();
                 victim.getMoveControl().strafe(0.0F, 0.0F);
                 if (victim.tickCount % 20 == 0) {
-                    if (victim.level instanceof ServerLevel serverLevel){
+                    if (victim.level() instanceof ServerLevel serverLevel){
                         ServerParticleUtil.addParticlesAroundSelf(serverLevel, ParticleTypes.ENCHANT, victim);
                     }
                 }
@@ -478,10 +485,10 @@ public class EvokerServant extends SpellcasterIllagerServant{
         private Vec3 groundOf(Vec3 in) {
             BlockPos origin = BlockPos.containing(in);
             BlockPos.MutableBlockPos blockPos = origin.mutable();
-            while (!EvokerServant.this.level.isEmptyBlock(blockPos) && blockPos.getY() < EvokerServant.this.level.getMaxBuildHeight()) {
+            while (!EvokerServant.this.level().isEmptyBlock(blockPos) && blockPos.getY() < EvokerServant.this.level().getMaxBuildHeight()) {
                 blockPos.move(0, 1, 0);
             }
-            while (EvokerServant.this.level.isEmptyBlock(blockPos.below()) && blockPos.getY() > EvokerServant.this.level.getMinBuildHeight()) {
+            while (EvokerServant.this.level().isEmptyBlock(blockPos.below()) && blockPos.getY() > EvokerServant.this.level().getMinBuildHeight()) {
                 blockPos.move(0, -1, 0);
             }
             return new Vec3(in.x, blockPos.getY(), in.z);

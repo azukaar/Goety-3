@@ -106,13 +106,13 @@ public class Tormentor extends AbstractIllager implements ICustomAttributes {
         }
     }
 
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.entityData.define(DATA_FLAGS_ID, (byte)0);
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(DATA_FLAGS_ID, (byte)0);
     }
 
     @Override
-    public void applyRaidBuffs(int pWave, boolean p_213660_2_) {
+    public void applyRaidBuffs(net.minecraft.server.level.ServerLevel pMake, int pWave, boolean p_213660_2_) {
 
     }
 
@@ -208,8 +208,8 @@ public class Tormentor extends AbstractIllager implements ICustomAttributes {
     public SpawnGroupData finalizeSpawn(ServerLevelAccessor pLevel, DifficultyInstance pDifficulty, MobSpawnType pReason, @Nullable SpawnGroupData pSpawnData, @Nullable CompoundTag pDataTag) {
         RandomSource randomSource = pLevel.getRandom();
         this.populateDefaultEquipmentSlots(randomSource, pDifficulty);
-        this.populateDefaultEquipmentEnchantments(randomSource, pDifficulty);
-        return super.finalizeSpawn(pLevel, pDifficulty, pReason, pSpawnData, pDataTag);
+        // this.populateDefaultEquipmentEnchantments(randomSource, pDifficulty);
+        return super.finalizeSpawn(pLevel, pDifficulty, pReason, pSpawnData);
     }
 
     @Override
@@ -313,7 +313,7 @@ public class Tormentor extends AbstractIllager implements ICustomAttributes {
 
             for(int i = 0; i < 3; ++i) {
                 BlockPos blockpos1 = blockpos.offset(Tormentor.this.random.nextInt(15) - 7, Tormentor.this.random.nextInt(11) - 5, Tormentor.this.random.nextInt(15) - 7);
-                if (Tormentor.this.level.isEmptyBlock(blockpos1)) {
+                if (Tormentor.this.level().isEmptyBlock(blockpos1)) {
                     Tormentor.this.moveControl.setWantedPosition((double)blockpos1.getX() + 0.5D, (double)blockpos1.getY() + 0.5D, (double)blockpos1.getZ() + 0.5D, 0.25D);
                     if (Tormentor.this.getTarget() == null) {
                         Tormentor.this.getLookControl().setLookAt((double)blockpos1.getX() + 0.5D, (double)blockpos1.getY() + 0.5D, (double)blockpos1.getZ() + 0.5D, 180.0F, 20.0F);

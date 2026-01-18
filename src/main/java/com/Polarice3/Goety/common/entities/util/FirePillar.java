@@ -70,9 +70,9 @@ public class FirePillar extends CastSpellTrap {
 
     public void tick() {
         super.tick();
-        if (!this.level.isClientSide) {
+        if (!this.level().isClientSide) {
             if (this.warmUp <= 0) {
-                if (this.level instanceof ServerLevel serverWorld) {
+                if (this.level() instanceof ServerLevel serverWorld) {
                     if (this.tickCount % 5 == 0) {
                         serverWorld.sendParticles(ModParticleTypes.FIERY_PILLAR.get(), this.getX(), this.getY() + 0.5D,
                                 this.getZ(), 0, 0, 0.5D, 0, 1.0D);
@@ -87,7 +87,7 @@ public class FirePillar extends CastSpellTrap {
                     this.playSound(ModSounds.FIRE_TORNADO_AMBIENT.get(), 1.0F, 1.0F);
                 }
                 List<LivingEntity> targets = new ArrayList<>();
-                for (Entity entity : this.level.getEntitiesOfClass(Entity.class,
+                for (Entity entity : this.level().getEntitiesOfClass(Entity.class,
                         this.getBoundingBox().inflate(0, 8, 0))) {
                     LivingEntity livingEntity = MobUtil.getLivingTarget(entity);
                     if (livingEntity != null) {
@@ -103,7 +103,7 @@ public class FirePillar extends CastSpellTrap {
                 if (!targets.isEmpty()) {
                     for (LivingEntity livingEntity : targets) {
                         int distance = Math.max((int) (livingEntity.getY() - this.getY()), 1);
-                        if (BlockFinder.emptySpaceBetween(this.level, this.blockPosition().above(),
+                        if (BlockFinder.emptySpaceBetween(this.level(), this.blockPosition().above(),
                                 Math.min(8, distance), true)) {
                             float damage = SpellConfig.FlameStrikeDamage.get().floatValue() * WandUtil.damageMultiply();
                             if (this.getOwner() != null) {
@@ -135,7 +135,7 @@ public class FirePillar extends CastSpellTrap {
                 if (!this.isNoGravity()) {
                     MobUtil.moveDownToGround(this);
                 }
-                if (this.level instanceof ServerLevel serverWorld) {
+                if (this.level() instanceof ServerLevel serverWorld) {
                     double d1 = this.getX() + (this.random.nextDouble() - 0.5D) * (double) this.getBbWidth();
                     double d2 = this.getY() + 0.5F;
                     double d3 = this.getZ() + (this.random.nextDouble() - 0.5D) * (double) this.getBbWidth();

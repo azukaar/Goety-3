@@ -88,7 +88,7 @@ public class PikerServant extends AbstractIllagerServant {
 
     public void tick() {
         super.tick();
-        if (this.level.isClientSide) {
+        if (this.level().isClientSide) {
             if (this.isAlive()) {
                 if (!this.isMeleeAttacking()) {
                     this.attackAnimationState.stop();
@@ -111,11 +111,11 @@ public class PikerServant extends AbstractIllagerServant {
         if (this.attackTick > 20) {
             this.setMeleeAttacking(false);
         }
-        if (!this.level.isClientSide) {
+        if (!this.level().isClientSide) {
             if (this.getTarget() != null) {
-                this.level.broadcastEntityEvent(this, (byte) 6);
+                this.level().broadcastEntityEvent(this, (byte) 6);
             } else {
-                this.level.broadcastEntityEvent(this, (byte) 7);
+                this.level().broadcastEntityEvent(this, (byte) 7);
             }
         }
     }
@@ -143,7 +143,7 @@ public class PikerServant extends AbstractIllagerServant {
     public void setMeleeAttacking(boolean attacking) {
         this.setFlag(1, attacking);
         this.attackTick = 0;
-        this.level.broadcastEntityEvent(this, (byte) 5);
+        this.level().broadcastEntityEvent(this, (byte) 5);
     }
 
     protected SoundEvent getAmbientSound() {
@@ -308,7 +308,7 @@ public class PikerServant extends AbstractIllagerServant {
         @Override
         public void start() {
             PikerServant.this.setMeleeAttacking(true);
-            PikerServant.this.level.broadcastEntityEvent(PikerServant.this, (byte) 4);
+            PikerServant.this.level().broadcastEntityEvent(PikerServant.this, (byte) 4);
         }
 
         @Override
@@ -332,7 +332,7 @@ public class PikerServant extends AbstractIllagerServant {
                         if (PikerServant.this.doHurtTarget(livingentity)) {
                             PikerServant.this.playSound(ModSounds.PIKER_PIKE.get(), PikerServant.this.getSoundVolume(),
                                     PikerServant.this.getVoicePitch());
-                            for (Entity entity : getTargets(PikerServant.this.level, PikerServant.this, 3)) {
+                            for (Entity entity : getTargets(PikerServant.this.level(), PikerServant.this, 3)) {
                                 if (entity instanceof LivingEntity living && PikerServant.this.hasLineOfSight(living)) {
                                     if (!MobUtil.areAllies(PikerServant.this, living) && living != livingentity
                                             && (!(livingentity instanceof ArmorStand)

@@ -153,19 +153,19 @@ public class ScytheSlash extends AbstractHurtingProjectile {
             AABB aabb = this.getBoundingBox().inflate(0.2D);
 
             for (BlockPos blockpos : BlockPos.betweenClosed(Mth.floor(aabb.minX), Mth.floor(aabb.minY), Mth.floor(aabb.minZ), Mth.floor(aabb.maxX), Mth.floor(aabb.maxY), Mth.floor(aabb.maxZ))) {
-                BlockState blockstate = this.level.getBlockState(blockpos);
+                BlockState blockstate = this.level().getBlockState(blockpos);
                 if (blockstate.is(BlockTags.MINEABLE_WITH_HOE) || BlockFinder.isScytheBreak(blockstate)) {
                     ItemStack itemStack = this.weapon;
                     if (this.weapon == null || this.weapon.isEmpty()){
                         itemStack = new ItemStack(ModItems.DEATH_SCYTHE.get());
                     }
-                    BlockFinder.breakBlock(this.level, blockpos, itemStack, this);
+                    BlockFinder.breakBlock(this.level(), blockpos, itemStack, this);
                 }
             }
         }
-        if (!this.level.isClientSide) {
+        if (!this.level().isClientSide) {
             List<Entity> targets = new ArrayList<>();
-            for (Entity entity : this.level.getEntitiesOfClass(Entity.class, this.getBoundingBox().inflate(0.5F))) {
+            for (Entity entity : this.level().getEntitiesOfClass(Entity.class, this.getBoundingBox().inflate(0.5F))) {
                 if (this.getOwner() != null) {
                     if (entity != this.getOwner() && !MobUtil.areAllies(entity, this.getOwner()) && entity != this.getOwner().getVehicle()) {
                         targets.add(entity);

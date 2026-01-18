@@ -24,16 +24,16 @@ public abstract class SpellHurtingProjectile extends WaterHurtingProjectile {
         super(p_36833_, p_36834_);
     }
 
-    public SpellHurtingProjectile(EntityType<? extends AbstractHurtingProjectile> p_36817_, double p_36818_, double p_36819_, double p_36820_, double p_36821_, double p_36822_, double p_36823_, Level p_36824_) {
+    public SpellHurtingProjectile(EntityType<? extends SpellHurtingProjectile> p_36817_, double p_36818_, double p_36819_, double p_36820_, double p_36821_, double p_36822_, double p_36823_, Level p_36824_) {
         super(p_36817_, p_36818_, p_36819_, p_36820_, p_36821_, p_36822_, p_36823_, p_36824_);
     }
 
     public SpellHurtingProjectile(EntityType<? extends SpellHurtingProjectile> p_36826_, double p_36827_, double p_36828_, double p_36829_, double p_36830_, double p_36831_, Level p_36832_) {
-        super(p_36826_, p_36827_, p_36828_, p_36829_, p_36830_, p_36831_, p_36832_);
+        super(p_36826_, p_36827_, p_36828_, p_36829_, p_36830_, p_36831_, 0.0D, p_36832_);
     }
 
     public SpellHurtingProjectile(EntityType<? extends WaterHurtingProjectile> p_36826_, LivingEntity p_36827_, double p_36828_, double p_36829_, double p_36830_, Level p_36831_) {
-        super(p_36826_, p_36827_.getX(), p_36827_.getY(), p_36827_.getZ(), new net.minecraft.world.phys.Vec3(p_36828_, p_36829_, p_36830_), p_36831_);
+        super(p_36826_, p_36827_.getX(), p_36827_.getY(), p_36827_.getZ(), p_36828_, p_36829_, p_36830_, p_36831_);
         this.setOwner(p_36827_);
         this.setGeneric(false);
     }

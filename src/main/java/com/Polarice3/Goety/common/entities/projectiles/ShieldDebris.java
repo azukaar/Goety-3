@@ -51,13 +51,13 @@ public class ShieldDebris extends ModFireball {
         if (this.tickCount >= MathHelper.secondsToTicks(10)){
             this.discard();
         }
-        if (this.level.isClientSide || (entity == null || !entity.isRemoved()) && this.level.hasChunkAt(this.blockPosition())) {
+        if (this.level().isClientSide || (entity == null || !entity.isRemoved()) && this.level().hasChunkAt(this.blockPosition())) {
             Vec3 vec3 = this.getDeltaMovement();
             double d0 = this.getX() - vec3.x;
             double d1 = this.getY() - vec3.y;
             double d2 = this.getZ() - vec3.z;
-            if (this.level.random.nextFloat() <= 0.05F){
-                this.level.addParticle(ModParticleTypes.BIG_FIRE.get(), d0, d1 + 0.15D, d2, 0.0D, 0.0D, 0.0D);
+            if (this.level().random.nextFloat() <= 0.05F){
+                this.level().addParticle(ModParticleTypes.BIG_FIRE.get(), d0, d1 + 0.15D, d2, 0.0D, 0.0D, 0.0D);
             }
         }
     }
@@ -66,7 +66,7 @@ public class ShieldDebris extends ModFireball {
     protected void onHit(HitResult hitResult) {
         super.onHit(hitResult);
         this.playSound(ModSounds.SHIELD_DEBRIS_IMPACT.get());
-        if (this.level instanceof ServerLevel serverLevel){
+        if (this.level() instanceof ServerLevel serverLevel){
             ParticleOptions particleOptions = new ItemParticleOption(ParticleTypes.ITEM, new ItemStack(Items.BLAZE_ROD));
             for(int i = 0; i < 10; ++i) {
                 double d0 = serverLevel.random.nextGaussian() * 0.02D;

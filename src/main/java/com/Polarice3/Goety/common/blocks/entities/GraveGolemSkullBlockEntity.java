@@ -65,7 +65,7 @@ public class GraveGolemSkullBlockEntity extends SkullBlockEntity {
             uuid = tag.getUUID("Owner");
         } else {
             String s = tag.getString("Owner");
-            uuid = OldUsersConverter.convertMobOwnerIfNecessary(this.level.getServer(), s);
+            uuid = OldUsersConverter.convertMobOwnerIfNecessary(this.getLevel().getServer(), s);
         }
         if (uuid != null) {
             try {
@@ -109,7 +109,7 @@ public class GraveGolemSkullBlockEntity extends SkullBlockEntity {
     public LivingEntity getTrueOwner() {
         try {
             UUID uuid = this.getOwnerId();
-            return uuid == null ? null : this.level.getPlayerByUUID(uuid);
+            return uuid == null ? null : this.getLevel().getPlayerByUUID(uuid);
         } catch (IllegalArgumentException illegalargumentexception) {
             return null;
         }

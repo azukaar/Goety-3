@@ -29,7 +29,7 @@ public class ForbiddenGrassBlockEntity extends BlockEntity {
     }
 
     public Level getOriginalLevel(){
-        return this.level;
+        return this.getLevel();
     }
 
     public ServerLevel getLevel() {
@@ -41,7 +41,7 @@ public class ForbiddenGrassBlockEntity extends BlockEntity {
     }
 
     public void tick() {
-        if (this.level instanceof ServerLevel serverLevel) {
+        if (this.getLevel() instanceof ServerLevel serverLevel) {
             if (serverLevel.isLoaded(this.worldPosition)) {
                 BlockPos above = this.getBlockPos().above();
                 if (!serverLevel.getBlockState(above).isSolidRender(serverLevel, above)) {

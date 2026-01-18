@@ -116,7 +116,7 @@ public class RipperModel<T extends Ripper> extends HierarchicalModel<T> {
 		this.b = p_102422_;
 	}
 
-	public void renderToBuffer(PoseStack p_102424_, VertexConsumer p_102425_, int p_102426_, int p_102427_, float p_102428_, float p_102429_, float p_102430_, float p_102431_) {
-		super.renderToBuffer(p_102424_, p_102425_, p_102426_, p_102427_, this.r * p_102428_, this.g * p_102429_, this.b * p_102430_, p_102431_);
+	public void renderToBuffer(PoseStack p_102424_, VertexConsumer p_102425_, int p_102426_, int p_102427_, int color) {
+		super.renderToBuffer(p_102424_, p_102425_, p_102426_, p_102427_, color);
 	}
 }

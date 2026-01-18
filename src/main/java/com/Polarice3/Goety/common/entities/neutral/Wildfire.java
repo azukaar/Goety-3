@@ -95,12 +95,12 @@ public class Wildfire extends Summoned {
         this.goalSelector.addGoal(6, new AvoidTargetGoal<>(this, LivingEntity.class, 10.0F, 1.0F, 1.3F){
             @Override
             public boolean canUse() {
-                return super.canUse() && !(Wildfire.this.level.getBlockState(Wildfire.this.blockPosition()).getBlock() instanceof BaseFireBlock) && Wildfire.this.getFleeingCool() <= 0;
+                return super.canUse() && !(Wildfire.this.level().getBlockState(Wildfire.this.blockPosition()).getBlock() instanceof BaseFireBlock) && Wildfire.this.getFleeingCool() <= 0;
             }
 
             @Override
             public boolean canContinueToUse() {
-                return super.canContinueToUse() && !(Wildfire.this.level.getBlockState(Wildfire.this.blockPosition()).getBlock() instanceof BaseFireBlock);
+                return super.canContinueToUse() && !(Wildfire.this.level().getBlockState(Wildfire.this.blockPosition()).getBlock() instanceof BaseFireBlock);
             }
 
             @Override
@@ -147,7 +147,7 @@ public class Wildfire extends Summoned {
 
     public void onSyncedDataUpdated(EntityDataAccessor<?> accessor) {
         if (ANIM_STATE.equals(accessor)) {
-            if (this.level.isClientSide) {
+            if (this.level().isClientSide) {
                 switch (this.entityData.get(ANIM_STATE)){
                     case 0:
                         this.stopAllAnimation();
@@ -210,7 +210,7 @@ public class Wildfire extends Summoned {
         }
     }
 
-    @Override
+    // @Override
     public MobType getMobType() {
         return ModMobType.NETHER;
     }
@@ -337,7 +337,7 @@ public class Wildfire extends Summoned {
             this.playSound(ModSounds.WILDFIRE_SHIELD_BREAK.get(), 1.2F, 1.0F);
             this.playSound(ModSounds.WILDFIRE_SHIELD_BREAK_VOCAL.get(), 1.2F, 1.0F);
         }
-        if (this.level instanceof ServerLevel serverLevel){
+        if (this.level() instanceof ServerLevel serverLevel){
             ParticleOptions particleOptions = new ItemParticleOption(ParticleTypes.ITEM, new ItemStack(Items.BLAZE_ROD));
             for(int i = 0; i < 10; ++i) {
                 ServerParticleUtil.addParticlesAroundMiddleSelf(serverLevel, particleOptions, this);
@@ -480,12 +480,12 @@ public class Wildfire extends Summoned {
             this.setDeltaMovement(this.getDeltaMovement().multiply(1.0D, 0.6D, 1.0D));
         }
 
-        if (this.level.isClientSide) {
+        if (this.level().isClientSide) {
             this.spinAnimationState.startIfStopped(this.tickCount);
             for(int i = 0; i < 2; ++i) {
-                this.level.addParticle(ParticleTypes.LARGE_SMOKE, this.getRandomX(0.5D), this.getRandomY(), this.getRandomZ(0.5D), 0.0D, 0.0D, 0.0D);
-                if (this.level.random.nextFloat() <= 0.25F){
-                    this.level.addParticle(ModParticleTypes.BIG_FIRE.get(), this.getRandomX(0.5D), this.getRandomY(), this.getRandomZ(0.5D), 0.0D, 0.0D, 0.0D);
+                this.level().addParticle(ParticleTypes.LARGE_SMOKE, this.getRandomX(0.5D), this.getRandomY(), this.getRandomZ(0.5D), 0.0D, 0.0D, 0.0D);
+                if (this.level().random.nextFloat() <= 0.25F){
+                    this.level().addParticle(ModParticleTypes.BIG_FIRE.get(), this.getRandomX(0.5D), this.getRandomY(), this.getRandomZ(0.5D), 0.0D, 0.0D, 0.0D);
                 }
             }
         } else {
@@ -556,7 +556,7 @@ public class Wildfire extends Summoned {
         boolean blockBeneath = false;
 
         for (int i = 0; i < 8; i++) {
-            if (!this.level.getBlockState(
+            if (!this.level().getBlockState(
                     new BlockPos(this.blockPosition().getX(),
                             this.blockPosition().getY() - i,
                             this.blockPosition().getZ())).isAir()) {
@@ -577,7 +577,7 @@ public class Wildfire extends Summoned {
     }
 
     public InteractionResult mobInteract(Player pPlayer, InteractionHand pHand) {
-        if (!this.level.isClientSide){
+        if (!this.level().isClientSide){
             ItemStack itemstack = pPlayer.getItemInHand(pHand);
             Item item = itemstack.getItem();
             if (this.getTrueOwner() != null && pPlayer == this.getTrueOwner()) {
@@ -591,7 +591,7 @@ public class Wildfire extends Summoned {
                         healAmount = 4.0F;
                     }
                     this.heal(healAmount);
-                    if (this.level instanceof ServerLevel serverLevel) {
+                    if (this.level() instanceof ServerLevel serverLevel) {
                         for (int i = 0; i < 7; ++i) {
                             double d0 = this.random.nextGaussian() * 0.02D;
                             double d1 = this.random.nextGaussian() * 0.02D;
@@ -612,7 +612,7 @@ public class Wildfire extends Summoned {
         @Override
         public boolean canUse() {
             Predicate<Entity> predicate = entity -> entity.isAlive() && entity instanceof BlazeServant blazeServant && blazeServant.getTrueOwner() instanceof Wildfire;
-            int i = Wildfire.this.level.getEntitiesOfClass(LivingEntity.class, Wildfire.this.getBoundingBox().inflate(32.0D, 16.0D, 32.0D)
+            int i = Wildfire.this.level().getEntitiesOfClass(LivingEntity.class, Wildfire.this.getBoundingBox().inflate(32.0D, 16.0D, 32.0D)
                     , predicate).size();
             return i < 4 && Wildfire.this.getSummonCooldown() <= 0 && Wildfire.this.getTarget() != null && Wildfire.this.getTarget().distanceTo(Wildfire.this) > 10.0D;
         }
@@ -620,7 +620,7 @@ public class Wildfire extends Summoned {
         @Override
         public void start() {
             super.start();
-            if (Wildfire.this.level instanceof ServerLevel serverLevel) {
+            if (Wildfire.this.level() instanceof ServerLevel serverLevel) {
                 for (int i1 = 0; i1 < 1 + serverLevel.random.nextInt(1); ++i1) {
                     BlazeServant blazeServant = new BlazeServant(ModEntityType.BLAZE_SERVANT.get(), serverLevel);
                     BlockPos blockPos = BlockFinder.SummonFlyingRadius(Wildfire.this.blockPosition(), blazeServant, serverLevel, 3);
@@ -630,7 +630,7 @@ public class Wildfire extends Summoned {
                         blazeServant.setLimitedLife(MobUtil.getSummonLifespan(serverLevel));
                     }
                     blazeServant.setPersistenceRequired();
-                    blazeServant.finalizeSpawn(serverLevel, serverLevel.getCurrentDifficultyAt(blockPos), MobSpawnType.MOB_SUMMONED, null, null);
+                    blazeServant.finalizeSpawn(serverLevel, serverLevel.getCurrentDifficultyAt(blockPos), MobSpawnType.MOB_SUMMONED, null);
                     if (serverLevel.addFreshEntity(blazeServant)){
                         for (int i = 0; i < serverLevel.random.nextInt(10) + 10; ++i) {
                             serverLevel.sendParticles(ModParticleTypes.SUMMON.get(), blazeServant.getRandomX(1.5D), blazeServant.getRandomY(), blazeServant.getRandomZ(1.5D), 0, 0.0F, 0.0F, 0.0F, 1.0F);
@@ -656,7 +656,7 @@ public class Wildfire extends Summoned {
         public boolean canUse() {
             if (Wildfire.this.getTarget() != null){
                 if (Wildfire.this.getShockwaveCooldown() <= 0){
-                    if (Wildfire.this.level.random.nextFloat() <= 0.4F) {
+                    if (Wildfire.this.level().random.nextFloat() <= 0.4F) {
                         return Wildfire.this.getTarget().distanceTo(Wildfire.this) <= 4.0D;
                     }
                 }
@@ -697,7 +697,7 @@ public class Wildfire extends Summoned {
 
             if (this.attackTime == 25){
                 this.shockwave();
-                if (Wildfire.this.level instanceof ServerLevel serverLevel){
+                if (Wildfire.this.level() instanceof ServerLevel serverLevel){
                     Vec3 vec3 = Wildfire.this.position();
                     ColorUtil colorUtil = new ColorUtil(0xdd9c16);
                     serverLevel.sendParticles(new CircleExplodeParticleOption(colorUtil.red, colorUtil.green, colorUtil.blue, 2, 1), vec3.x, BlockFinder.moveDownToGround(Wildfire.this) + 0.5F, vec3.z, 1, 0.0D, 0.0D, 0.0D, 0.0D);
@@ -706,7 +706,7 @@ public class Wildfire extends Summoned {
         }
 
         public void shockwave(){
-            for (LivingEntity target : Wildfire.this.level.getEntitiesOfClass(LivingEntity.class, Wildfire.this.getBoundingBox().inflate(3.0D))) {
+            for (LivingEntity target : Wildfire.this.level().getEntitiesOfClass(LivingEntity.class, Wildfire.this.getBoundingBox().inflate(3.0D))) {
                 if (target != Wildfire.this && !MobUtil.areAllies(Wildfire.this, target)) {
                     if (Wildfire.this.doHurtTarget(target)) {
                         double d0 = target.getX() - Wildfire.this.getX();
@@ -802,12 +802,12 @@ public class Wildfire extends Summoned {
                     float damage = AttributesConfig.WildfireRangeDamage.get().floatValue() + this.mob.getFireBallDamage();
 
                     Vec3 vector3d = this.mob.getViewVector(1.0F);
-                    ShieldDebris fireball = new ShieldDebris(this.mob.level, this.mob, vector3d.x, vector3d.y, vector3d.z);
+                    ShieldDebris fireball = new ShieldDebris(this.mob.level(), this.mob, vector3d.x, vector3d.y, vector3d.z);
                     fireball.shoot(vector3d.x, vector3d.y, vector3d.z, 1.0F, 0.0F);
                     fireball.setOwner(this.mob);
                     fireball.setPos(this.mob.getX() + vector3d.x / 2, this.mob.getEyeY() - 0.2, this.mob.getZ() + vector3d.z / 2);
                     fireball.setDamage(damage);
-                    this.mob.level.addFreshEntity(fireball);
+                    this.mob.level().addFreshEntity(fireball);
                     this.mob.playSound(ModSounds.WILDFIRE_SHOOT.get());
                 }
                 if (this.attackTime >= 24) {

@@ -37,8 +37,8 @@ public class OminousIdolBlockEntity extends OwnedBlockEntity {
     }
 
     public void tick(){
-        if (this.level != null) {
-            if (this.level instanceof ServerLevel world) {
+        if (this.getLevel() != null) {
+            if (this.getLevel() instanceof ServerLevel world) {
                 if (!this.uuids.isEmpty()) {
                     ChunkPos chunkPos = world.getChunkAt(this.worldPosition).getPos();
                     if (--this.ticketTime <= 0L) {
@@ -77,7 +77,7 @@ public class OminousIdolBlockEntity extends OwnedBlockEntity {
                             }
                             if (!BlockFinder.samePos(raider.getRevivePos(), this.getBlockPos())) {
                                 raider.setRevivePos(this.getBlockPos());
-                                raider.setReviveDim(this.level.dimension());
+                                raider.setReviveDim(this.getLevel().dimension());
                             }
                         }
                     }
@@ -85,7 +85,7 @@ public class OminousIdolBlockEntity extends OwnedBlockEntity {
                 if (!this.ids.isEmpty()) {
                     this.isEmpty = false;
                     if (this.ids.removeIf(integer -> {
-                        Entity entity = this.level.getEntity(integer);
+                        Entity entity = this.getLevel().getEntity(integer);
                         if (entity instanceof RaiderServant raider) {
                             return !raider.isAlive() || raider.isRemoved();
                         } else {
@@ -98,7 +98,7 @@ public class OminousIdolBlockEntity extends OwnedBlockEntity {
                     this.markUpdated();
                     this.isEmpty = true;
                 }
-                this.level.setBlock(this.getBlockPos(), this.getBlockState().setValue(OminousIdolBlock.POWERED, this.checkCage() && !this.getIllagers().isEmpty()), 3);
+                this.getLevel().setBlock(this.getBlockPos(), this.getBlockState().setValue(OminousIdolBlock.POWERED, this.checkCage() && !this.getIllagers().isEmpty()), 3);
             }
             this.clientCount = this.ids.size();
         }
@@ -135,11 +135,11 @@ public class OminousIdolBlockEntity extends OwnedBlockEntity {
     }
 
     private boolean checkCage() {
-        if (this.level != null) {
+        if (this.getLevel() != null) {
             BlockPos pos = this.getBlockPos().below();
-            BlockState blockState = this.level.getBlockState(pos);
+            BlockState blockState = this.getLevel().getBlockState(pos);
             if (blockState.is(ModBlocks.CURSED_CAGE_BLOCK.get())) {
-                BlockEntity tileentity = this.level.getBlockEntity(pos);
+                BlockEntity tileentity = this.getLevel().getBlockEntity(pos);
                 if (tileentity instanceof CursedCageBlockEntity) {
                     this.cursedCageTile = (CursedCageBlockEntity) tileentity;
                     return !cursedCageTile.getItem().isEmpty();
@@ -150,7 +150,7 @@ public class OminousIdolBlockEntity extends OwnedBlockEntity {
     }
 
     public int getSoulEnergy() {
-        if (this.level != null) {
+        if (this.getLevel() != null) {
             if (this.cursedCageTile != null) {
                 return this.cursedCageTile.getSouls();
             }
@@ -159,7 +159,7 @@ public class OminousIdolBlockEntity extends OwnedBlockEntity {
     }
 
     public void siphonSoulEnergy(int souls) {
-        if (this.level != null) {
+        if (this.getLevel() != null) {
             if (this.cursedCageTile != null) {
                 this.cursedCageTile.decreaseSouls(souls);
             }
@@ -237,8 +237,8 @@ public class OminousIdolBlockEntity extends OwnedBlockEntity {
 
     public void markUpdated() {
         this.setChanged();
-        if (this.level != null) {
-            this.level.sendBlockUpdated(this.getBlockPos(), this.getBlockState(), this.getBlockState(), 2);
+        if (this.getLevel() != null) {
+            this.getLevel().sendBlockUpdated(this.getBlockPos(), this.getBlockState(), this.getBlockState(), 2);
         }
     }
 }

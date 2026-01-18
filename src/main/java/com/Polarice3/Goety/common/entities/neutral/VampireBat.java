@@ -125,7 +125,7 @@ public class VampireBat extends Bat implements IOwned {
     }
 
     protected void doPush(Entity entity) {
-        if (!this.level.isClientSide){
+        if (!this.level().isClientSide){
             if (entity instanceof LivingEntity livingEntity){
                 if (!(livingEntity instanceof Bat) && livingEntity != this.getTrueOwner()){
                     livingEntity.hurt(this.damageSources().mobAttack(this), (float) this.getAttributeValue(Attributes.ATTACK_DAMAGE));
@@ -136,7 +136,7 @@ public class VampireBat extends Bat implements IOwned {
     }
 
     protected void pushEntities() {
-        List<Entity> list = this.level.getEntities(this, this.getBoundingBox(), EntitySelector.pushableBy(this));
+        List<Entity> list = this.level().getEntities(this, this.getBoundingBox(), EntitySelector.pushableBy(this));
         if (!list.isEmpty()) {
             for (Entity entity : list) {
                 this.doPush(entity);
@@ -156,7 +156,7 @@ public class VampireBat extends Bat implements IOwned {
     }
 
     public void callBats(LivingEntity livingEntity){
-        for (VampireBat vampireBat : this.level.getEntitiesOfClass(VampireBat.class, this.getBoundingBox().inflate(10.0D))){
+        for (VampireBat vampireBat : this.level().getEntitiesOfClass(VampireBat.class, this.getBoundingBox().inflate(10.0D))){
             if (vampireBat.getTarget() == null && livingEntity != this.getTrueOwner() && !(livingEntity instanceof Bat)){
                 vampireBat.setTarget(livingEntity);
             }
@@ -164,7 +164,7 @@ public class VampireBat extends Bat implements IOwned {
     }
 
     protected void customServerAiStep() {
-        if (this.targetPosition != null && (!this.level.isEmptyBlock(this.targetPosition) || this.targetPosition.getY() <= this.level.getMinBuildHeight())) {
+        if (this.targetPosition != null && (!this.level().isEmptyBlock(this.targetPosition) || this.targetPosition.getY() <= this.level().getMinBuildHeight())) {
             this.targetPosition = null;
         }
 

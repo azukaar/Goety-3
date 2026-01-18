@@ -29,7 +29,7 @@ public class MagmaCubeServant extends SlimeServant{
     }
 
     @Override
-    protected ResourceLocation getDefaultLootTable() {
+    protected net.minecraft.resources.ResourceKey<net.minecraft.world.level.storage.loot.LootTable> getDefaultLootTable() {
         return EntityType.MAGMA_CUBE.getDefaultLootTable();
     }
 
@@ -58,11 +58,11 @@ public class MagmaCubeServant extends SlimeServant{
         this.targetSquish *= 0.9F;
     }
 
-    protected void jumpFromGround() {
+    public void jumpFromGround() {
         Vec3 vec3 = this.getDeltaMovement();
         this.setDeltaMovement(vec3.x, (double)(this.getJumpPower() + (float)this.getSize() * 0.1F), vec3.z);
         this.hasImpulse = true;
-        net.neoforged.common.ForgeHooks.onLivingJump(this);
+        net.neoforged.neoforge.common.CommonHooks.onLivingJump(this);
     }
 
     public boolean causeFallDamage(float p_149717_, float p_149718_, DamageSource p_149719_) {

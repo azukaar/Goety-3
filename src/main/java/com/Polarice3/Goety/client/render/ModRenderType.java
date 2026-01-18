@@ -5,6 +5,7 @@ import com.Polarice3.Goety.init.ModShaders;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
+import org.joml.Matrix4fStack;
 import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.ParticleRenderType;
@@ -55,13 +56,13 @@ public class ModRenderType {
      * Beam render Types and StateShards based on MyRenderType on @Thelnfamous1's Dungeon Gears
      */
     protected static final RenderStateShard.LayeringStateShard VIEW_OFFSET_Z_LAYERING = new RenderStateShard.LayeringStateShard("view_offset_z_layering", () -> {
-        PoseStack posestack = RenderSystem.getModelViewStack();
-        posestack.pushPose();
+        Matrix4fStack posestack = RenderSystem.getModelViewStack();
+        posestack.pushMatrix();
         posestack.scale(0.99975586F, 0.99975586F, 0.99975586F);
         RenderSystem.applyModelViewMatrix();
     }, () -> {
-        PoseStack posestack = RenderSystem.getModelViewStack();
-        posestack.popPose();
+        Matrix4fStack posestack = RenderSystem.getModelViewStack();
+        posestack.popMatrix();
         RenderSystem.applyModelViewMatrix();
     });
     protected static final RenderStateShard.DepthTestStateShard NO_DEPTH_TEST = new RenderStateShard.DepthTestStateShard("always", 519);
@@ -151,14 +152,14 @@ public class ModRenderType {
      * Based/Stolen from @RCXcrafter's Embers Rekindled codes: <a href="https://github.com/RCXcrafter/EmbersRekindled/blob/rekindled/src/main/java/com/rekindled/embers/render/EmbersRenderTypes.java#L49">...</a>
      */
     public static ParticleRenderType PARTICLE_ADDITIVE = new ParticleRenderType() {
-        public void begin(BufferBuilder p_107455_, TextureManager p_107456_) {
+        public BufferBuilder begin(Tesselator p_107455_, TextureManager p_107456_) {
             RenderSystem.enableDepthTest();
             Minecraft.getInstance().gameRenderer.lightTexture().turnOnLightLayer();
             RenderSystem.depthMask(false);
             RenderSystem.setShaderTexture(0, TextureAtlas.LOCATION_PARTICLES);
             RenderSystem.enableBlend();
             RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE);
-            p_107455_.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.PARTICLE);
+            return p_107455_.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.PARTICLE);
         }
 
         public void end(Tesselator p_107458_) {

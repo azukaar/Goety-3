@@ -52,7 +52,8 @@ public class HellBlast extends WaterHurtingProjectile {
 
     public HellBlast(LivingEntity p_i1771_2_, double p_i1771_3_, double p_i1771_5_, double p_i1771_7_,
             Level p_i1771_1_) {
-        super(ModEntityType.HELL_BLAST.get(), p_i1771_2_, p_i1771_3_, p_i1771_5_, p_i1771_7_, p_i1771_1_);
+        super(ModEntityType.HELL_BLAST.get(), p_i1771_2_.getX(), p_i1771_2_.getEyeY(), p_i1771_2_.getZ(), p_i1771_3_, p_i1771_5_, p_i1771_7_, p_i1771_1_);
+        this.setOwner(p_i1771_2_);
         this.rotateToMatchMovement();
     }
 
@@ -60,13 +61,13 @@ public class HellBlast extends WaterHurtingProjectile {
         super(ModEntityType.HELL_BLAST.get(), pX, pY, pZ, pAccelX, pAccelY, pAccelZ, pWorld);
     }
 
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.entityData.define(DATA_DAMAGE, 6.0F);
-        this.entityData.define(DATA_EXTRA_DAMAGE, 0.0F);
-        this.entityData.define(DATA_RADIUS, 1.5F);
-        this.entityData.define(DATA_TYPE_ID, 0);
-        this.entityData.define(DATA_FIERY, 0);
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(DATA_DAMAGE, 6.0F);
+        builder.define(DATA_EXTRA_DAMAGE, 0.0F);
+        builder.define(DATA_RADIUS, 1.5F);
+        builder.define(DATA_TYPE_ID, 0);
+        builder.define(DATA_FIERY, 0);
     }
 
     public void tick() {
@@ -84,14 +85,14 @@ public class HellBlast extends WaterHurtingProjectile {
     @Override
     public void trailParticle() {
         Entity entity = this.getOwner();
-        if (this.level.isClientSide
-                || (entity == null || !entity.isRemoved()) && this.level.hasChunkAt(this.blockPosition())) {
+        if (this.level().isClientSide
+                || (entity == null || !entity.isRemoved()) && this.level().hasChunkAt(this.blockPosition())) {
             Vec3 vec3 = this.getDeltaMovement();
             double d0 = this.getX() - vec3.x;
             double d1 = this.getY() - vec3.y;
             double d2 = this.getZ() - vec3.z;
-            if (this.level.random.nextFloat() <= 0.05F) {
-                this.level.addParticle(ModParticleTypes.BIG_FIRE.get(), d0, d1 + 0.15D, d2, 0.0D, 0.0D, 0.0D);
+            if (this.level().random.nextFloat() <= 0.05F) {
+                this.level().addParticle(ModParticleTypes.BIG_FIRE.get(), d0, d1 + 0.15D, d2, 0.0D, 0.0D, 0.0D);
             }
         }
     }
@@ -130,7 +131,7 @@ public class HellBlast extends WaterHurtingProjectile {
 
     protected void onHitEntity(EntityHitResult pResult) {
         super.onHitEntity(pResult);
-        if (!this.level.isClientSide) {
+        if (!this.level().isClientSide) {
             Entity entity = pResult.getEntity();
             Entity entity1 = this.getOwner();
             float damage = this.getDamage();
@@ -141,7 +142,7 @@ public class HellBlast extends WaterHurtingProjectile {
             }
             entity.hurt(ModDamageSource.hellfire(this, entity1), damage + enchantment);
             if (entity1 instanceof LivingEntity) {
-                this.doEnchantDamageEffects((LivingEntity) entity1, entity);
+                // this.doEnchantDamageEffects((LivingEntity) entity1, entity);
             }
             if (flaming != 0) {
                 entity.igniteForSeconds(5 * flaming);
@@ -151,31 +152,31 @@ public class HellBlast extends WaterHurtingProjectile {
 
     protected void onHit(HitResult pResult) {
         super.onHit(pResult);
-        if (!this.level.isClientSide) {
+        if (!this.level().isClientSide) {
             Entity entity = this.getOwner();
             Vec3 vec3 = Vec3.atCenterOf(this.blockPosition());
             if (entity instanceof LivingEntity livingEntity) {
                 if (pResult instanceof BlockHitResult blockHitResult) {
                     BlockPos blockpos = blockHitResult.getBlockPos().relative(blockHitResult.getDirection());
-                    if (BlockFinder.canBeReplaced(this.level, blockpos)) {
+                    if (BlockFinder.canBeReplaced(this.level(), blockpos)) {
                         vec3 = Vec3.atCenterOf(blockpos);
                     }
                 } else if (pResult instanceof EntityHitResult entityHitResult) {
                     Entity entity1 = entityHitResult.getEntity();
                     vec3 = Vec3.atCenterOf(entity1.blockPosition());
                 }
-                Hellfire hellfire = new Hellfire(this.level, vec3, livingEntity);
-                if (this.level.addFreshEntity(hellfire)) {
+                Hellfire hellfire = new Hellfire(this.level(), vec3, livingEntity);
+                if (this.level().addFreshEntity(hellfire)) {
                     for (Direction direction : Direction.values()) {
                         if (direction.getAxis().isHorizontal()) {
-                            Hellfire hellfire1 = new Hellfire(this.level,
+                            Hellfire hellfire1 = new Hellfire(this.level(),
                                     Vec3.atCenterOf(hellfire.blockPosition().relative(direction)), livingEntity);
-                            this.level.addFreshEntity(hellfire1);
+                            this.level().addFreshEntity(hellfire1);
                         }
                     }
                 }
             }
-            new SpellExplosion(this.level, this.getOwner() != null ? this.getOwner() : this,
+            new SpellExplosion(this.level(), this.getOwner() != null ? this.getOwner() : this,
                     ModDamageSource.hellfire(this, this.getOwner()), vec3.x, vec3.y, vec3.z, this.getRadius(), 0) {
                 @Override
                 public void explodeHurt(Entity target, DamageSource damageSource, double x, double y, double z,
@@ -188,7 +189,7 @@ public class HellBlast extends WaterHurtingProjectile {
                     }
                 }
             };
-            if (this.level instanceof ServerLevel serverLevel) {
+            if (this.level() instanceof ServerLevel serverLevel) {
                 ServerParticleUtil.addParticlesAroundSelf(serverLevel, ModParticleTypes.BIG_FIRE.get(), this);
                 ColorUtil colorUtil = new ColorUtil(0xdd9c16);
                 serverLevel.sendParticles(
@@ -208,7 +209,7 @@ public class HellBlast extends WaterHurtingProjectile {
                 ServerParticleUtil.circularParticles(serverLevel, cloudParticleOptions2, vec3.x, this.getY() + 0.25D,
                         vec3.z, 0, 0.14D, 0, this.getRadius() * 2);
             }
-            this.playSound(SoundEvents.GENERIC_EXPLODE, 4.0F, 1.0F);
+            this.playSound(SoundEvents.GENERIC_EXPLODE.value(), 4.0F, 1.0F);
             this.playSound(ModSounds.HELL_BLAST_IMPACT.get(), 4.0F, 1.0F);
             this.discard();
         }
@@ -292,8 +293,8 @@ public class HellBlast extends WaterHurtingProjectile {
         return false;
     }
 
-    @Override
-    public Packet<ClientGamePacketListener> getAddEntityPacket() {
-        return new net.minecraft.network.protocol.game.ClientboundAddEntityPacket(this);
-    }
+    // @Override
+    // public Packet<ClientGamePacketListener> getAddEntityPacket() {
+    //    return new net.minecraft.network.protocol.game.ClientboundAddEntityPacket(this);
+    // }
 }

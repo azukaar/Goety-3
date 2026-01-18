@@ -97,24 +97,24 @@ public class HookBellBlockEntity extends BlockEntity {
             this.shaking = true;
         }
 
-        if (this.level != null) {
-            this.level.blockEvent(blockpos, this.getBlockState().getBlock(), 1, p_58835_.get3DDataValue());
+        if (this.getLevel() != null) {
+            this.getLevel().blockEvent(blockpos, this.getBlockState().getBlock(), 1, p_58835_.get3DDataValue());
         }
     }
 
     private void updateEntities() {
-        if (this.level != null) {
+        if (this.getLevel() != null) {
             BlockPos blockpos = this.getBlockPos();
-            if (this.level.getGameTime() > this.lastRingTimestamp + 60L || this.nearbyEntities == null) {
-                this.lastRingTimestamp = this.level.getGameTime();
+            if (this.getLevel().getGameTime() > this.lastRingTimestamp + 60L || this.nearbyEntities == null) {
+                this.lastRingTimestamp = this.getLevel().getGameTime();
                 AABB aabb = (new AABB(blockpos)).inflate(maxRange);
-                this.nearbyEntities = this.level.getEntitiesOfClass(LivingEntity.class, aabb);
+                this.nearbyEntities = this.getLevel().getEntitiesOfClass(LivingEntity.class, aabb);
             }
 
-            if (!this.level.isClientSide) {
+            if (!this.getLevel().isClientSide) {
                 for (LivingEntity livingentity : this.nearbyEntities) {
                     if (livingentity.isAlive() && !livingentity.isRemoved() && blockpos.closerToCenterThan(livingentity.position(), maxRange)) {
-                        livingentity.getBrain().setMemory(MemoryModuleType.HEARD_BELL_TIME, this.level.getGameTime());
+                        livingentity.getBrain().setMemory(MemoryModuleType.HEARD_BELL_TIME, this.getLevel().getGameTime());
                     }
                 }
             }

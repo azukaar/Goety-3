@@ -13,6 +13,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
@@ -70,10 +71,10 @@ public class Malghast extends SummonedFlying {
         this.goalSelector.addGoal(7, new FireballAttackGoal(this));
     }
 
-    @Override
-    public MobType getMobType() {
-        return ModMobType.NETHER;
-    }
+    // @Override
+    // public MobType getMobType() {
+    //    return ModMobType.NETHER;
+    // }
 
     public void tick() {
         if (this.isAlive()) {
@@ -101,7 +102,7 @@ public class Malghast extends SummonedFlying {
             }
         }
         super.tick();
-        if (!this.level.isClientSide) {
+        if (!this.level().isClientSide) {
             if (this.isStaying()) {
                 this.getMoveControl().strafe(0.0F, 0.0F);
             }
@@ -164,11 +165,10 @@ public class Malghast extends SummonedFlying {
             return !this.isInvulnerableTo(p_32730_) && super.hurt(p_32730_, p_32731_);
         }
     }
-
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.entityData.define(DATA_IS_CHARGING, false);
-        this.entityData.define(DATA_SWELL_DIR, -1);
+    public void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(DATA_IS_CHARGING, false);
+        builder.define(DATA_SWELL_DIR, -1);
     }
 
     public static AttributeSupplier.Builder setCustomAttributes() {
@@ -219,8 +219,8 @@ public class Malghast extends SummonedFlying {
     }
 
     @Nullable
-    public SpawnGroupData finalizeSpawn(ServerLevelAccessor pLevel, DifficultyInstance pDifficulty, MobSpawnType pReason, @Nullable SpawnGroupData pSpawnData, @Nullable CompoundTag pDataTag) {
-        pSpawnData = super.finalizeSpawn(pLevel, pDifficulty, pReason, pSpawnData, pDataTag);
+    public SpawnGroupData finalizeSpawn(ServerLevelAccessor pLevel, DifficultyInstance pDifficulty, MobSpawnType pReason, @Nullable SpawnGroupData pSpawnData) {
+        pSpawnData = super.finalizeSpawn(pLevel, pDifficulty, pReason, pSpawnData);
         this.setGhastSpawn();
         return pSpawnData;
     }
@@ -238,9 +238,9 @@ public class Malghast extends SummonedFlying {
 
     @Override
     public void lifeSpanDamage() {
-        if (!this.level.isClientSide){
-            for(int i = 0; i < this.level.random.nextInt(35) + 10; ++i) {
-                ServerParticleUtil.smokeParticles(ParticleTypes.POOF, this.getX(), this.getEyeY(), this.getZ(), this.level);
+        if (!this.level().isClientSide){
+            for(int i = 0; i < this.level().random.nextInt(35) + 10; ++i) {
+                ServerParticleUtil.smokeParticles(ParticleTypes.POOF, this.getX(), this.getEyeY(), this.getZ(), this.level());
             }
         }
         this.playSound(ModSounds.GHAST_DISAPPEAR.get(), this.getSoundVolume(), this.getVoicePitch());
@@ -258,7 +258,7 @@ public class Malghast extends SummonedFlying {
     }
 
     @Override
-    protected ResourceLocation getDefaultLootTable() {
+    protected ResourceKey<net.minecraft.world.level.storage.loot.LootTable> getDefaultLootTable() {
         if (this.isNatural()){
             return EntityType.GHAST.getDefaultLootTable();
         } else {
@@ -296,7 +296,7 @@ public class Malghast extends SummonedFlying {
             LivingEntity livingentity = this.ghast.getTarget();
             float d0 = 64.0F;
             if (livingentity != null && livingentity.distanceToSqr(this.ghast) < Mth.square(d0) && this.ghast.hasLineOfSight(livingentity)) {
-                Level world = this.ghast.level;
+                Level world = this.ghast.level();
                 ++this.chargeTime;
                 if (this.chargeTime == 10) {
                     this.shotTimes = this.ghast.random.nextFloat() >= 0.25F;
@@ -322,7 +322,7 @@ public class Malghast extends SummonedFlying {
                             this.ghast.playSound(SoundEvents.GHAST_SHOOT, 5.0F, (this.ghast.random.nextFloat() - this.ghast.random.nextFloat()) * 0.2F + 1.0F);
                         }                    }
 
-                    int power = (int) (this.ghast.getExplosionPower() + this.ghast.level.getCurrentDifficultyAt(this.ghast.blockPosition()).getSpecialMultiplier());
+                    int power = (int) (this.ghast.getExplosionPower() + this.ghast.level().getCurrentDifficultyAt(this.ghast.blockPosition()).getSpecialMultiplier());
 
                     AbstractHurtingProjectile fireballentity;
                     int charge = -40;
@@ -417,7 +417,7 @@ public class Malghast extends SummonedFlying {
 
             for(int i = 1; i < p_220673_2_; ++i) {
                 axisalignedbb = axisalignedbb.move(p_220673_1_);
-                if (!this.ghast.level.noCollision(this.ghast, axisalignedbb)) {
+                if (!this.ghast.level().noCollision(this.ghast, axisalignedbb)) {
                     return false;
                 }
             }

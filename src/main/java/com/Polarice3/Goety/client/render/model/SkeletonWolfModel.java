@@ -119,26 +119,26 @@ public class SkeletonWolfModel<T extends SkeletonWolf> extends HierarchicalModel
         this.b = p_102422_;
     }
 
-    public void renderToBuffer(PoseStack p_102424_, VertexConsumer p_102425_, int p_102426_, int p_102427_, float p_102428_, float p_102429_, float p_102430_, float p_102431_) {
-        if (this.young) {
-            p_102424_.pushPose();
-            p_102424_.translate(0.0F, 1.75F, 4.0F / 16.0F);
-            this.headParts().forEach((p_102081_) -> {
-                p_102081_.render(p_102424_, p_102425_, p_102426_, p_102427_, this.r * p_102428_, this.g * p_102429_, this.b * p_102430_, p_102431_);
-            });
-            p_102424_.popPose();
-            p_102424_.pushPose();
-            float f1 = 1.0F / 2.0F;
-            p_102424_.scale(f1, f1, f1);
-            p_102424_.translate(0.0F, 3.0F, 0.0F);
-            this.bodyParts().forEach((p_102071_) -> {
-                p_102071_.render(p_102424_, p_102425_, p_102426_, p_102427_, this.r * p_102428_, this.g * p_102429_, this.b * p_102430_, p_102431_);
-            });
-            p_102424_.popPose();
-        } else {
-            super.renderToBuffer(p_102424_, p_102425_, p_102426_, p_102427_, this.r * p_102428_, this.g * p_102429_, this.b * p_102430_, p_102431_);
-        }
-    }
+	public void renderToBuffer(PoseStack p_102424_, VertexConsumer p_102425_, int p_102426_, int p_102427_, int color) {
+		if (this.young) {
+			p_102424_.pushPose();
+			p_102424_.translate(0.0F, 1.75F, 4.0F / 16.0F);
+			this.headParts().forEach((p_102081_) -> {
+				p_102081_.render(p_102424_, p_102425_, p_102426_, p_102427_, color);
+			});
+			p_102424_.popPose();
+			p_102424_.pushPose();
+			float f1 = 1.0F / 2.0F;
+			p_102424_.scale(f1, f1, f1);
+			p_102424_.translate(0.0F, 3.0F, 0.0F);
+			this.bodyParts().forEach((p_102071_) -> {
+				p_102071_.render(p_102424_, p_102425_, p_102426_, p_102427_, color);
+			});
+			p_102424_.popPose();
+		} else {
+			super.renderToBuffer(p_102424_, p_102425_, p_102426_, p_102427_, color);
+		}
+	}
 
     public static final AnimationDefinition HOWL = AnimationDefinition.Builder.withLength(3.25F)
             .addAnimation("head", new AnimationChannel(AnimationChannel.Targets.ROTATION,

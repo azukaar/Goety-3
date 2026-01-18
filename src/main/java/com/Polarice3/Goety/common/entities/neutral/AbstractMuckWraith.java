@@ -55,17 +55,17 @@ public class AbstractMuckWraith extends AbstractWraith {
 
     @Override
     public void firingParticles() {
-        this.level.broadcastEntityEvent(this, (byte) 103);
+        this.level().broadcastEntityEvent(this, (byte) 103);
     }
 
     public void playAttackSound(){
         if (!this.isSilent()) {
-            this.level.playSound(null, this.getX(), this.getY(), this.getZ(), this.getAttackSound(), this.getSoundSource(), 1.0F, 1.0F);
+            this.level().playSound(null, this.getX(), this.getY(), this.getZ(), this.getAttackSound(), this.getSoundSource(), 1.0F, 1.0F);
         }
     }
 
     public void magicFire(LivingEntity livingEntity){
-        AcidPool acidPool = new AcidPool(ModEntityType.ACID_POOL.get(), this.level);
+        AcidPool acidPool = new AcidPool(ModEntityType.ACID_POOL.get(), this.level());
         acidPool.setColor(0xec67eb);
         acidPool.setWarmupColor(0xfdd4fb);
         acidPool.setPos(livingEntity.position());
@@ -78,7 +78,7 @@ public class AbstractMuckWraith extends AbstractWraith {
         if (!livingEntity.isInWater()) {
             MobUtil.moveDownToGround(acidPool);
         }
-        if (this.level.addFreshEntity(acidPool)){
+        if (this.level().addFreshEntity(acidPool)){
             acidPool.playSound(ModSounds.TOWER_WRAITH_ACID.get(), 1.0F, this.getVoicePitch());
         }
     }
@@ -97,7 +97,7 @@ public class AbstractMuckWraith extends AbstractWraith {
                 double d2 = this.getY() + (this.random.nextDouble() + 0.5D);
                 double d3 = this.getZ() + (this.random.nextDouble() - 0.5D) * (double)this.getBbWidth() * 2.0D;
                 ColorUtil colorUtil = new ColorUtil(0xec67eb);
-                this.level.addParticle(ModParticleTypes.BIG_CULT_SPELL.get(), d1, d2, d3, colorUtil.red(), colorUtil.green(), colorUtil.blue());
+                this.level().addParticle(ModParticleTypes.BIG_CULT_SPELL.get(), d1, d2, d3, colorUtil.red(), colorUtil.green(), colorUtil.blue());
             }
         } else {
             super.handleEntityEvent(pId);

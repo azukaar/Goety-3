@@ -53,7 +53,7 @@ public class FireTornado extends AbstractCyclone {
     }
 
     public void fakeRemove(double x, double y, double z){
-        FireTornado cyclone = new FireTornado(this.level, this.getTrueOwner(), x, y, z);
+        FireTornado cyclone = new FireTornado(this.level(), this.getTrueOwner(), x, y, z);
         cyclone.setOwner(this.getTrueOwner());
         cyclone.setTarget(this.getTarget());
         cyclone.setLifespan(this.getLifespan());
@@ -63,14 +63,14 @@ public class FireTornado extends AbstractCyclone {
         cyclone.setDamage(this.getDamage());
         cyclone.setExtraDamage(this.getExtraDamage());
         cyclone.setPos(this.getX(), this.getY(), this.getZ());
-        this.level.addFreshEntity(cyclone);
+        this.level().addFreshEntity(cyclone);
         this.remove();
     }
 
     public void remove() {
-        if (!this.level.isClientSide){
+        if (!this.level().isClientSide){
             if (this.getLifespan() >= this.getTotalLife()) {
-                ServerLevel serverWorld = (ServerLevel) this.level;
+                ServerLevel serverWorld = (ServerLevel) this.level();
                 for (int k = 0; k < 200; ++k) {
                     float f2 = random.nextFloat() * 4.0F;
                     float f1 = random.nextFloat() * ((float) Math.PI * 2F);
@@ -91,7 +91,7 @@ public class FireTornado extends AbstractCyclone {
         if (this.getTrueOwner() != null) {
             if (CuriosFinder.hasUnholySet(this.getTrueOwner())) {
                 if (living.hurt(ModDamageSource.hellfire(this, this.getTrueOwner()), AttributesConfig.ApostleMagicDamage.get().floatValue() / 1.5F)){
-                    living.addEffect(new MobEffectInstance(GoetyEffects.BURN_HEX.get(), 1200));
+                    living.addEffect(new MobEffectInstance(GoetyEffects.BURN_HEX.getHolder(), 1200));
                 }
             } else {
                 living.hurt(ModDamageSource.magicFireBreath(this, this.getTrueOwner()), 4.0F + this.getDamage());
@@ -103,7 +103,7 @@ public class FireTornado extends AbstractCyclone {
         }
         if (living instanceof Player player){
             if (player.isBlocking()) {
-                player.disableShield(true);
+                player.disableShield();
             }
         } else {
             MobUtil.disableShield(living);

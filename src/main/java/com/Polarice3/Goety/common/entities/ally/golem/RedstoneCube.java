@@ -87,7 +87,7 @@ public class RedstoneCube extends AbstractGolemServant{
                 .add(Attributes.MOVEMENT_SPEED, 0.3D)
                 .add(Attributes.ATTACK_DAMAGE, AttributesConfig.RedstoneCubeDamage.get())
                 .add(Attributes.ARMOR, AttributesConfig.RedstoneCubeArmor.get())
-                .add(NeoForgeMod.STEP_HEIGHT_ADDITION.get(), 1.0D)
+                .add(Attributes.STEP_HEIGHT, 1.0D)
                 .add(Attributes.KNOCKBACK_RESISTANCE, 0.75D)
                 .add(Attributes.FOLLOW_RANGE, AttributesConfig.RedstoneCubeFollowRange.get());
     }
@@ -99,10 +99,10 @@ public class RedstoneCube extends AbstractGolemServant{
         MobUtil.setBaseAttributes(this.getAttribute(Attributes.FOLLOW_RANGE), AttributesConfig.RedstoneCubeFollowRange.get());
     }
 
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.entityData.define(DATA_FLAGS_ID, (byte)0);
-        this.entityData.define(ANIM_STATE, 0);
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(DATA_FLAGS_ID, (byte)0);
+        builder.define(ANIM_STATE, 0);
     }
 
     @Nullable
@@ -144,8 +144,8 @@ public class RedstoneCube extends AbstractGolemServant{
     }
 
     @Nullable
-    public SpawnGroupData finalizeSpawn(ServerLevelAccessor pLevel, DifficultyInstance pDifficulty, MobSpawnType pReason, @javax.annotation.Nullable SpawnGroupData pSpawnData, @javax.annotation.Nullable CompoundTag pDataTag) {
-        pSpawnData = super.finalizeSpawn(pLevel, pDifficulty, pReason, pSpawnData, pDataTag);
+    public SpawnGroupData finalizeSpawn(ServerLevelAccessor pLevel, DifficultyInstance pDifficulty, MobSpawnType pReason, @javax.annotation.Nullable SpawnGroupData pSpawnData) {
+        pSpawnData = super.finalizeSpawn(pLevel, pDifficulty, pReason, pSpawnData);
         if (pReason == MobSpawnType.MOB_SUMMONED){
             if (pLevel instanceof ServerLevel serverLevel){
                 for (int i = 0; i < 8; ++i) {
@@ -206,7 +206,7 @@ public class RedstoneCube extends AbstractGolemServant{
 
     public void onSyncedDataUpdated(EntityDataAccessor<?> accessor) {
         if (ANIM_STATE.equals(accessor)) {
-            if (this.level.isClientSide){
+            if (this.level().isClientSide){
                 switch (this.entityData.get(ANIM_STATE)){
                     case 0:
                         break;
@@ -250,7 +250,7 @@ public class RedstoneCube extends AbstractGolemServant{
     public void setMeleeAttacking(boolean attack) {
         this.setFlag(1, attack);
         this.attackTick = 0;
-        this.level.broadcastEntityEvent(this, (byte) 5);
+        this.level().broadcastEntityEvent(this, (byte) 5);
     }
 
     @Override
@@ -262,7 +262,7 @@ public class RedstoneCube extends AbstractGolemServant{
     public void tick() {
         super.tick();
         if (this.isAlive()) {
-            if (!this.level.isClientSide) {
+            if (!this.level().isClientSide) {
                 if (this.isMeleeAttacking()) {
                     this.getNavigation().stop();
                     ++this.attackTick;
@@ -274,7 +274,7 @@ public class RedstoneCube extends AbstractGolemServant{
                     }
                 } else {
                     if (this.isMoving()) {
-                        if (this.level instanceof ServerLevel serverLevel){
+                        if (this.level() instanceof ServerLevel serverLevel){
                             if (this.onGround() && this.tickCount % 5 == 0) {
                                 ColorUtil colorUtil = new ColorUtil(16711680);
                                 serverLevel.sendParticles(ModParticleTypes.REDSTONE_DEBRIS.get(), this.getX(), this.getY() + 0.1F, this.getZ(), 0, colorUtil.red, colorUtil.green, colorUtil.blue, 1.0F);
@@ -315,7 +315,7 @@ public class RedstoneCube extends AbstractGolemServant{
                             for (int j = -16; j <= 16; ++j){
                                 for (int k = -16; k <= 16; ++k){
                                     BlockPos blockPos = this.blockPosition().offset(i, j, k);
-                                    if (this.level.getBlockState(blockPos).getBlock() == block){
+                                    if (this.level().getBlockState(blockPos).getBlock() == block){
                                         blockPosList.add(blockPos);
                                     }
                                 }
@@ -369,7 +369,7 @@ public class RedstoneCube extends AbstractGolemServant{
     }
 
     public InteractionResult mobInteract(Player pPlayer, InteractionHand pHand) {
-        if (!this.level.isClientSide) {
+        if (!this.level().isClientSide) {
             ItemStack itemstack = pPlayer.getItemInHand(pHand);
             Item item = itemstack.getItem();
             if (this.getTrueOwner() != null && pPlayer == this.getTrueOwner()) {
@@ -402,7 +402,7 @@ public class RedstoneCube extends AbstractGolemServant{
                         this.heal(this.getMaxHealth() / 4.0F);
                         this.playSound(SoundEvents.IRON_GOLEM_REPAIR, 0.25F, 1.0F);
                     }
-                    if (this.level instanceof ServerLevel serverLevel) {
+                    if (this.level() instanceof ServerLevel serverLevel) {
                         for (int i = 0; i < 7; ++i) {
                             double d0 = serverLevel.random.nextGaussian() * 0.02D;
                             double d1 = serverLevel.random.nextGaussian() * 0.02D;

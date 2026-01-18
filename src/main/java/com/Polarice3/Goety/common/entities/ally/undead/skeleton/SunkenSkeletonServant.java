@@ -69,7 +69,7 @@ public class SunkenSkeletonServant extends AbstractSkeletonServant implements Cr
         super.registerGoals();
         this.goalSelector.addGoal(1, new GoToWaterGoal(this, 1.0D));
         this.goalSelector.addGoal(5, new GoToBeachGoal(this, 1.0D));
-        this.goalSelector.addGoal(6, new SwimUpGoal(this, 1.0D, this.level.getSeaLevel()));
+        this.goalSelector.addGoal(6, new SwimUpGoal(this, 1.0D, this.level().getSeaLevel()));
         this.goalSelector.addGoal(7, new WaterWanderGoal<>(this));
     }
 
@@ -96,7 +96,7 @@ public class SunkenSkeletonServant extends AbstractSkeletonServant implements Cr
     }
 
     public void reassessWeaponGoal() {
-        if (!this.level.isClientSide) {
+        if (!this.level().isClientSide) {
             this.goalSelector.removeGoal(this.meleeGoal);
             this.goalSelector.removeGoal(this.crossbowAttackGoal);
             ItemStack itemstack = this.getMainHandItem();
@@ -161,7 +161,7 @@ public class SunkenSkeletonServant extends AbstractSkeletonServant implements Cr
     }
 
     public void updateSwimming() {
-        if (!this.level.isClientSide) {
+        if (!this.level().isClientSide) {
             if (this.isEffectiveAi() && this.isInWater() && this.wantsToSwim()) {
                 this.navigation = this.waterNavigation;
                 this.setSwimming(true);
@@ -240,7 +240,7 @@ public class SunkenSkeletonServant extends AbstractSkeletonServant implements Cr
     }
 
     public AbstractArrow getArrow(ItemStack pArrowStack, float pDistanceFactor) {
-        Harpoon harpoon = new Harpoon(this.level, this);
+        Harpoon harpoon = new Harpoon(this.level(), this);
         harpoon.setEffectsFromItem(pArrowStack);
         ItemStack weapon = this.getItemInHand(ProjectileUtil.getWeaponHoldingHand(this, item -> item instanceof CrossbowItem));
         double d0 = harpoon.getBaseDamage();

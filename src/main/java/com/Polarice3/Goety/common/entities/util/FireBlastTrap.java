@@ -83,8 +83,8 @@ public class FireBlastTrap extends Entity implements ISpellEntity {
 
     @Nullable
     public LivingEntity getOwner() {
-        if (this.owner == null && this.ownerUniqueId != null && this.level instanceof ServerLevel) {
-            Entity entity = ((ServerLevel) this.level).getEntity(this.ownerUniqueId);
+        if (this.owner == null && this.ownerUniqueId != null && this.level() instanceof ServerLevel) {
+            Entity entity = ((ServerLevel) this.level()).getEntity(this.ownerUniqueId);
             if (entity instanceof LivingEntity) {
                 this.owner = (LivingEntity) entity;
             }
@@ -128,7 +128,7 @@ public class FireBlastTrap extends Entity implements ISpellEntity {
     @Override
     public void tick() {
         super.tick();
-        if (this.level instanceof ServerLevel serverLevel) {
+        if (this.level() instanceof ServerLevel serverLevel) {
             float area = this.getAreaOfEffect() / 2;
             float f = 1.5F + area;
             float f5 = (float) Math.PI * f * f;
@@ -162,7 +162,7 @@ public class FireBlastTrap extends Entity implements ISpellEntity {
                 AABB aabb = this.getBoundingBox();
                 AABB aabb1 = new AABB(aabb.minX - area0, aabb.minY - 1.0F, aabb.minZ - area0, aabb.maxX + area0,
                         aabb.maxY + 1.0F, aabb.maxZ + area0);
-                for (Entity entity : this.level.getEntitiesOfClass(Entity.class, aabb1)) {
+                for (Entity entity : this.level().getEntitiesOfClass(Entity.class, aabb1)) {
                     if (this.owner != null) {
                         if (entity != this.owner && !MobUtil.areAllies(entity, this.owner)) {
                             if (this.owner instanceof Mob mob && this.owner instanceof Enemy

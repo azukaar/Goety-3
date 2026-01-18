@@ -146,7 +146,7 @@ public class GulfTentacle extends Owned {
         this.setYHeadRot(this.getYRot());
         this.yRotO = this.getYRot();
         this.xRotO = this.getXRot();
-        if (!this.level.isClientSide) {
+        if (!this.level().isClientSide) {
             if (this.getTrueOwner() != null) {
                 float f2 = this.getTrueOwner().yBodyRot * (float) (Math.PI / 180.0);
                 double d0 = Mth.sin(f2);
@@ -158,7 +158,7 @@ public class GulfTentacle extends Owned {
                 this.setPos(vec3);
             }
             if (!this.sentSpawnEvent) {
-                this.level.broadcastEntityEvent(this, (byte)4);
+                this.level().broadcastEntityEvent(this, (byte)4);
                 this.sentSpawnEvent = true;
                 ModNetwork.sentToTrackingEntityAndPlayer(this, new STentacleRangePacket(this.getId(), this.getRange()));
                 ModNetwork.sentToTrackingEntityAndPlayer(this, new SRepositionPacket(this.getId(), this.position()));
@@ -172,7 +172,7 @@ public class GulfTentacle extends Owned {
                     double distanceToDestination = beamTraceDistance(this.getRange(), 1.0f, false);
                     double distanceTraveled = 0;
                     while (!(this.position().distanceTo(aabb.getCenter()) > distanceToDestination) && !(this.position().distanceTo(aabb.getCenter()) > this.getRange())) {
-                        for (Entity entity : this.level.getEntitiesOfClass(Entity.class, aabb)) {
+                        for (Entity entity : this.level().getEntitiesOfClass(Entity.class, aabb)) {
                             LivingEntity livingEntity = MobUtil.getLivingTarget(entity);
                             if (livingEntity != null && !MobUtil.areAllies(this.getOwner() != null ? this.getOwner() : this, livingEntity) && EntitySelector.NO_CREATIVE_OR_SPECTATOR.test(livingEntity)) {
                                 entities.add(livingEntity);
@@ -197,9 +197,9 @@ public class GulfTentacle extends Owned {
             }
             boolean flag = entity.hurt(damageSource, (float) this.getAttributeValue(Attributes.ATTACK_DAMAGE));
             if (flag) {
-                this.level.playSound(null, entity.getX(), entity.getY(), entity.getZ(), ModSounds.WHIP_HIT.get(), this.getSoundSource(), 1.0F, this.getVoicePitch());
+                this.level().playSound(null, entity.getX(), entity.getY(), entity.getZ(), ModSounds.WHIP_HIT.get(), this.getSoundSource(), 1.0F, this.getVoicePitch());
                 if (this.isStaff) {
-                    GulfTentacle gulfTentacle = new GulfTentacle(ModEntityType.GULF_TENTACLE.get(), this.level);
+                    GulfTentacle gulfTentacle = new GulfTentacle(ModEntityType.GULF_TENTACLE.get(), this.level());
                     gulfTentacle.setPos(this.position());
                     if (this.getTrueOwner() != null) {
                         gulfTentacle.setRot(this.getTrueOwner().getYRot(), this.getTrueOwner().getXRot());
@@ -209,11 +209,11 @@ public class GulfTentacle extends Owned {
                     }
                     gulfTentacle.setRange(this.getRange());
                     gulfTentacle.setOffset(this.offset);
-                    if (this.hasEffect(GoetyEffects.BUFF.get())) {
-                        gulfTentacle.addEffect(new MobEffectInstance(GoetyEffects.BUFF.get(), EffectsUtil.infiniteEffect(), EffectsUtil.getAmplifier(this, GoetyEffects.BUFF.get()), false, false));
+                    if (this.hasEffect(GoetyEffects.BUFF.getHolder())) {
+                        gulfTentacle.addEffect(new MobEffectInstance(GoetyEffects.BUFF.getHolder(), EffectsUtil.infiniteEffect(), EffectsUtil.getAmplifier(this, GoetyEffects.BUFF.getHolder().value()), false, false));
                     }
                     gulfTentacle.setStaff(false);
-                    this.level.addFreshEntity(gulfTentacle);
+                    this.level().addFreshEntity(gulfTentacle);
                     gulfTentacle.playSound(ModSounds.WHIP_SWING.get());
                 }
             }
@@ -231,7 +231,7 @@ public class GulfTentacle extends Owned {
         Vec3 vector3d = this.getWorldPosition(ticks);
         Vec3 vector3d1 = this.getViewVector(ticks);
         Vec3 vector3d2 = vector3d.add(vector3d1.x * distance, vector3d1.y * distance, vector3d1.z * distance);
-        return level.clip(new ClipContext(vector3d, vector3d2, ClipContext.Block.COLLIDER, passesWater ? ClipContext.Fluid.ANY : ClipContext.Fluid.NONE, this));
+        return level().clip(new ClipContext(vector3d, vector3d2, ClipContext.Block.COLLIDER, passesWater ? ClipContext.Fluid.ANY : ClipContext.Fluid.NONE, this));
     }
 
     public double beamTraceDistance(double distance, float ticks, boolean passesWater) {
@@ -282,7 +282,7 @@ public class GulfTentacle extends Owned {
 
     @Override
     public boolean canBeAffected(MobEffectInstance pPotioneffect) {
-        return pPotioneffect.getEffect().isBeneficial();
+        return pPotioneffect.getEffect().value().isBeneficial();
     }
 
     @Override

@@ -100,7 +100,7 @@ public abstract class AbstractVine extends AbstractMonolith{
     @Override
     public void kill() {
         if (this.activeTick < 1) {
-            if (this.level instanceof ServerLevel serverLevel) {
+            if (this.level() instanceof ServerLevel serverLevel) {
                 ServerParticleUtil.blockBreakParticles(this.getParticles(), BlockPos.containing(this.position()), this.getState(), serverLevel);
                 SoundType soundType = this.getState().getSoundType();
                 serverLevel.playSound(null, this.getX(), this.getY(), this.getZ(), soundType.getBreakSound(), this.getSoundSource(), soundType.getVolume(), soundType.getPitch());
@@ -124,7 +124,7 @@ public abstract class AbstractVine extends AbstractMonolith{
     }
 
     protected boolean hasTarget() {
-        return !this.level.getEntitiesOfClass(LivingEntity.class, this.getTargetSearchArea(), (p_148152_) -> SummonTargetGoal.predicate(this).test(p_148152_)).isEmpty();
+        return !this.level().getEntitiesOfClass(LivingEntity.class, this.getTargetSearchArea(), (p_148152_) -> SummonTargetGoal.predicate(this).test(p_148152_)).isEmpty();
     }
 
     public void playAmbientSound() {
@@ -177,10 +177,10 @@ public abstract class AbstractVine extends AbstractMonolith{
         if (this.activeTick > 0){
             super.aiStep();
         }
-        if (!this.level.isClientSide) {
+        if (!this.level().isClientSide) {
             if (this.warmupDelayTicks > 0){
                 --this.warmupDelayTicks;
-                if (!this.canSpawn(this.level)){
+                if (!this.canSpawn(this.level())){
                     this.discard();
                 }
             } else {
@@ -195,7 +195,7 @@ public abstract class AbstractVine extends AbstractMonolith{
                         this.proximity = false;
                     }
                     ++this.activeTick;
-                    this.level.broadcastEntityEvent(this, (byte) 6);
+                    this.level().broadcastEntityEvent(this, (byte) 6);
                     this.burst();
                 }
             }
@@ -205,19 +205,19 @@ public abstract class AbstractVine extends AbstractMonolith{
                 this.setActivate(true);
             }
             if (!this.isPerpetual()) {
-                if (!this.level.isClientSide) {
+                if (!this.level().isClientSide) {
                     if (this.activeTick == MathHelper.secondsToTicks(this.getLifeSpan())){
                         this.burrow();
                     } else if (this.activeTick >= MathHelper.secondsToTicks(this.getLifeSpan())){
                         this.setAge(this.getAge() - this.getAgeSpeed());
-                        this.level.broadcastEntityEvent(this, (byte) 5);
+                        this.level().broadcastEntityEvent(this, (byte) 5);
                     }
                     if (this.getAge() <= 0){
                         this.discard();
                     }
                 }
             }
-            if (!this.level.isClientSide) {
+            if (!this.level().isClientSide) {
                 if (!this.isOnFire() && !this.isDeadOrDying() && (!this.limitedLifespan || this.limitedLifeTicks > 20)) {
                     if (this.getHealth() < this.getMaxHealth()){
                         if (this.getTrueOwner() instanceof Player owner) {
@@ -236,7 +236,7 @@ public abstract class AbstractVine extends AbstractMonolith{
                                     if (this.tickCount % (MathHelper.secondsToTicks(healRate) + 1) == 0) {
                                         this.heal(healAmount);
                                         Vec3 vector3d = this.getDeltaMovement();
-                                        if (this.level instanceof ServerLevel serverWorld) {
+                                        if (this.level() instanceof ServerLevel serverWorld) {
                                             SEHelper.decreaseSouls(owner, soulCost);
                                             serverWorld.sendParticles(ParticleTypes.SCULK_SOUL, this.getRandomX(0.5D), this.getRandomY(), this.getRandomZ(0.5D), 0, vector3d.x * -0.2D, 0.1D, vector3d.z * -0.2D, 0.5F);
                                         }
@@ -261,7 +261,7 @@ public abstract class AbstractVine extends AbstractMonolith{
     }
 
     public void diggingParticles(){
-        if (this.level instanceof ServerLevel serverLevel) {
+        if (this.level() instanceof ServerLevel serverLevel) {
             BlockPos blockPos = BlockPos.containing(this.getX(), this.getY() - 1.0F, this.getZ());
             BlockParticleOption option = new BlockParticleOption(ParticleTypes.BLOCK, serverLevel.getBlockState(blockPos));
             Vector3f vector3f = new Vector3f(Vec3.fromRGB24(0xcf75af).toVector3f());
@@ -290,7 +290,7 @@ public abstract class AbstractVine extends AbstractMonolith{
     }
 
     public InteractionResult mobInteract(Player pPlayer, InteractionHand p_230254_2_) {
-        if (!this.level.isClientSide){
+        if (!this.level().isClientSide){
             ItemStack itemstack = pPlayer.getItemInHand(p_230254_2_);
             Item item = itemstack.getItem();
             if (this.getTrueOwner() != null && pPlayer == this.getTrueOwner()) {
@@ -301,7 +301,7 @@ public abstract class AbstractVine extends AbstractMonolith{
                     if (this.getHealth() < this.getMaxHealth()) {
                         this.heal(5.0F);
                         this.playSound(SoundEvents.GROWING_PLANT_CROP, this.getSoundVolume(), this.getVoicePitch() + 0.25F);
-                        if (this.level instanceof ServerLevel serverLevel) {
+                        if (this.level() instanceof ServerLevel serverLevel) {
                             for (int i = 0; i < 7; ++i) {
                                 double d0 = this.random.nextGaussian() * 0.02D;
                                 double d1 = this.random.nextGaussian() * 0.02D;
@@ -311,7 +311,7 @@ public abstract class AbstractVine extends AbstractMonolith{
                         }
                     } else {
                         this.playSound(SoundEvents.BONE_MEAL_USE, this.getSoundVolume(), this.getVoicePitch());
-                        if (this.level instanceof ServerLevel serverLevel) {
+                        if (this.level() instanceof ServerLevel serverLevel) {
                             for (int i = 0; i < 7; ++i) {
                                 double d0 = this.random.nextGaussian() * 0.02D;
                                 double d1 = this.random.nextGaussian() * 0.02D;
@@ -319,9 +319,9 @@ public abstract class AbstractVine extends AbstractMonolith{
                                 serverLevel.sendParticles(ParticleTypes.HAPPY_VILLAGER, this.getRandomX(1.0D), this.getRandomY() + 0.5D, this.getRandomZ(1.0D), 0, d0, d1, d2, 0.5F);
                             }
                         }
-                        if (this.level.random.nextFloat() <= 0.45F){
+                        if (this.level().random.nextFloat() <= 0.45F){
                             if (!this.getSeed().isEmpty()){
-                                ItemHelper.addItemEntity(this.level, this.blockPosition().above(), this.getSeed());
+                                ItemHelper.addItemEntity(this.level(), this.blockPosition().above(), this.getSeed());
                             }
                         }
                     }

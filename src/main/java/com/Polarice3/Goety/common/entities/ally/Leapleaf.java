@@ -1,5 +1,9 @@
 package com.Polarice3.Goety.common.entities.ally;
 
+import com.Polarice3.Goety.Goety;
+import net.minecraft.resources.ResourceLocation;
+
+import com.Polarice3.Goety.Goety;
 import com.Polarice3.Goety.client.particles.CircleExplodeParticleOption;
 import com.Polarice3.Goety.client.particles.ModParticleTypes;
 import com.Polarice3.Goety.common.entities.neutral.Owned;
@@ -14,6 +18,7 @@ import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.util.Mth;
@@ -43,10 +48,10 @@ import java.util.*;
 public class Leapleaf extends Summoned{
     private static final EntityDataAccessor<Integer> ANIM_STATE = SynchedEntityData.defineId(Leapleaf.class, EntityDataSerializers.INT);
     protected static final EntityDataAccessor<Byte> DATA_FLAGS_ID = SynchedEntityData.defineId(Leapleaf.class, EntityDataSerializers.BYTE);
-    private static final UUID LEAP_ATTACK_MODIFIER_UUID = UUID.fromString("c8724bee-d7fe-46e5-9319-980ea1146ebb");
-    private static final AttributeModifier LEAP_ATTACK_MODIFIER = new AttributeModifier(LEAP_ATTACK_MODIFIER_UUID, "Leap Attack Bonus", 1.25D, AttributeModifier.Operation.MULTIPLY_TOTAL);
-    private static final UUID LEAP_KNOCKBACK_MODIFIER_UUID = UUID.fromString("ad8d395e-7773-4138-bdc4-ea80768a2101");
-    private static final AttributeModifier LEAP_KNOCKBACK_MODIFIER = new AttributeModifier(LEAP_KNOCKBACK_MODIFIER_UUID, "Leap Knockback Bonus", 2.0D, AttributeModifier.Operation.ADDITION);
+    private static final ResourceLocation LEAP_ATTACK_MODIFIER_ID = Goety.location("leap_attack_bonus");
+    private static final AttributeModifier LEAP_ATTACK_MODIFIER = new AttributeModifier(LEAP_ATTACK_MODIFIER_ID, 1.25D, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL);
+    private static final ResourceLocation LEAP_KNOCKBACK_MODIFIER_ID = Goety.location("leap_knockback_bonus");
+    private static final AttributeModifier LEAP_KNOCKBACK_MODIFIER = new AttributeModifier(LEAP_KNOCKBACK_MODIFIER_ID, 2.0D, AttributeModifier.Operation.ADD_VALUE);
     public static final int REST_TIME = MathHelper.secondsToTicks(4);
     public static String IDLE = "idle";
     public static String WALK = "walk";
@@ -73,6 +78,7 @@ public class Leapleaf extends Summoned{
 
     public Leapleaf(EntityType<? extends Owned> type, Level worldIn) {
         super(type, worldIn);
+        this.xpReward = 20;
     }
 
     @Override
@@ -116,20 +122,12 @@ public class Leapleaf extends Summoned{
         builder.define(ANIM_STATE, 0);
     }
 
-    @Override
+    //@Override
     public MobType getMobType() {
         return ModMobType.NATURAL;
     }
 
-    @Override
-    public float getStepHeight() {
-        return 1.0F;
-    }
 
-    @Override
-    public int xpReward() {
-        return 20;
-    }
 
     @Nullable
     @Override
@@ -221,7 +219,7 @@ public class Leapleaf extends Summoned{
 
     public void onSyncedDataUpdated(EntityDataAccessor<?> accessor) {
         if (ANIM_STATE.equals(accessor)) {
-            if (this.level.isClientSide){
+            if (this.level().isClientSide){
                 switch (this.entityData.get(ANIM_STATE)){
                     case 0:
                         this.stopAllAnimations();
@@ -309,7 +307,7 @@ public class Leapleaf extends Summoned{
     public void setMeleeAttacking(boolean leaping) {
         this.setFlag(4, leaping);
         this.attackTick = 0;
-        this.level.broadcastEntityEvent(this, (byte) 5);
+        this.level().broadcastEntityEvent(this, (byte) 5);
     }
 
     public boolean isResting(){
@@ -327,7 +325,7 @@ public class Leapleaf extends Summoned{
 
     @Override
     public boolean canBeCollidedWith() {
-        return this.isAlive() && this.level.getEntitiesOfClass(LivingEntity.class, this.getBoundingBox().inflate(0.5D)).stream().noneMatch(living -> living == this.getTrueOwner() && CuriosFinder.hasWildRobe(living));
+        return this.isAlive() && this.level().getEntitiesOfClass(LivingEntity.class, this.getBoundingBox().inflate(0.5D)).stream().noneMatch(living -> living == this.getTrueOwner() && CuriosFinder.hasWildRobe(living));
     }
 
     public boolean canAnimateMove(){
@@ -338,30 +336,30 @@ public class Leapleaf extends Summoned{
     public void tick() {
         super.tick();
         if (this.isAlive()){
-            if (!this.level.isClientSide) {
+            if (!this.level().isClientSide) {
                 AttributeInstance modifiableattributeinstance = this.getAttribute(Attributes.ATTACK_DAMAGE);
                 AttributeInstance modifiableattributeinstance2 = this.getAttribute(Attributes.ATTACK_KNOCKBACK);
                 if (modifiableattributeinstance != null) {
                     if (this.isLeaping()) {
                         if (this.getAttribute(Attributes.ATTACK_DAMAGE) != null) {
-                            modifiableattributeinstance.removeModifier(LEAP_ATTACK_MODIFIER);
+                            modifiableattributeinstance.removeModifier(LEAP_ATTACK_MODIFIER_ID);
                             modifiableattributeinstance.addTransientModifier(LEAP_ATTACK_MODIFIER);
                         }
                     } else {
-                        if (modifiableattributeinstance.hasModifier(LEAP_ATTACK_MODIFIER)) {
-                            modifiableattributeinstance.removeModifier(LEAP_ATTACK_MODIFIER);
+                        if (modifiableattributeinstance.hasModifier(LEAP_ATTACK_MODIFIER_ID)) {
+                            modifiableattributeinstance.removeModifier(LEAP_ATTACK_MODIFIER_ID);
                         }
                     }
                 }
                 if (modifiableattributeinstance2 != null) {
                     if (this.isLeaping()) {
                         if (this.getAttribute(Attributes.ATTACK_KNOCKBACK) != null) {
-                            modifiableattributeinstance2.removeModifier(LEAP_KNOCKBACK_MODIFIER);
+                            modifiableattributeinstance2.removeModifier(LEAP_KNOCKBACK_MODIFIER_ID);
                             modifiableattributeinstance2.addTransientModifier(LEAP_KNOCKBACK_MODIFIER);
                         }
                     } else {
-                        if (modifiableattributeinstance2.hasModifier(LEAP_KNOCKBACK_MODIFIER)) {
-                            modifiableattributeinstance2.removeModifier(LEAP_KNOCKBACK_MODIFIER);
+                        if (modifiableattributeinstance2.hasModifier(LEAP_KNOCKBACK_MODIFIER_ID)) {
+                            modifiableattributeinstance2.removeModifier(LEAP_KNOCKBACK_MODIFIER_ID);
                         }
                     }
                 }
@@ -375,10 +373,10 @@ public class Leapleaf extends Summoned{
                 } else {
                     if (!this.isMeleeAttacking() && !this.isChestPound() && !this.isLeaping()) {
                         ++this.idleTime;
-                        if (this.level.random.nextFloat() <= 0.05F && !this.isMoving() && this.hurtTime <= 0 && (this.getTarget() == null || this.getTarget().isDeadOrDying()) && !this.isNovelty && this.idleTime >= MathHelper.secondsToTicks(10)) {
+                        if (this.level().random.nextFloat() <= 0.05F && !this.isMoving() && this.hurtTime <= 0 && (this.getTarget() == null || this.getTarget().isDeadOrDying()) && !this.isNovelty && this.idleTime >= MathHelper.secondsToTicks(10)) {
                             this.idleTime = 0;
                             this.isNovelty = true;
-                            this.level.broadcastEntityEvent(this, (byte) 22);
+                            this.level().broadcastEntityEvent(this, (byte) 22);
                         }
                         if (this.isNovelty){
                             this.setAnimationState(ALERT);
@@ -388,7 +386,7 @@ public class Leapleaf extends Summoned{
                     } else {
                         this.isNovelty = false;
                         this.noveltyTick = 0;
-                        this.level.broadcastEntityEvent(this, (byte) 23);
+                        this.level().broadcastEntityEvent(this, (byte) 23);
                     }
                     if (this.isMeleeAttacking()) {
                         ++this.attackTick;
@@ -409,11 +407,11 @@ public class Leapleaf extends Summoned{
                     }
                     if (this.isNovelty){
                         ++noveltyTick;
-                        this.level.broadcastEntityEvent(this, (byte) 24);
+                        this.level().broadcastEntityEvent(this, (byte) 24);
                         if (this.noveltyTick >= MathHelper.secondsToTicks(5.75F) || this.isMoving() || this.getTarget() != null || this.hurtTime > 0){
                             this.isNovelty = false;
                             this.noveltyTick = 0;
-                            this.level.broadcastEntityEvent(this, (byte) 23);
+                            this.level().broadcastEntityEvent(this, (byte) 23);
                         }
                     }
                 }
@@ -462,7 +460,7 @@ public class Leapleaf extends Summoned{
     }
 
     public InteractionResult mobInteract(Player pPlayer, InteractionHand p_230254_2_) {
-        if (!this.level.isClientSide){
+        if (!this.level().isClientSide){
             ItemStack itemstack = pPlayer.getItemInHand(p_230254_2_);
             Item item = itemstack.getItem();
             if (this.getTrueOwner() != null && pPlayer == this.getTrueOwner()) {
@@ -472,7 +470,7 @@ public class Leapleaf extends Summoned{
                     }
                     this.playSound(ModSounds.LEAPLEAF_AMBIENT.get(), 1.0F, 1.25F);
                     this.heal(5.0F);
-                    if (this.level instanceof ServerLevel serverLevel) {
+                    if (this.level() instanceof ServerLevel serverLevel) {
                         for (int i = 0; i < 7; ++i) {
                             double d0 = this.random.nextGaussian() * 0.02D;
                             double d1 = this.random.nextGaussian() * 0.02D;
@@ -509,14 +507,14 @@ public class Leapleaf extends Summoned{
         public void start() {
             Leapleaf.this.setMeleeAttacking(true);
             Leapleaf.this.setAggressive(true);
-            Leapleaf.this.level.broadcastEntityEvent(Leapleaf.this, (byte) 6);
+            Leapleaf.this.level().broadcastEntityEvent(Leapleaf.this, (byte) 6);
         }
 
         @Override
         public void stop() {
             Leapleaf.this.setMeleeAttacking(false);
             Leapleaf.this.setAggressive(false);
-            Leapleaf.this.level.broadcastEntityEvent(Leapleaf.this, (byte) 7);
+            Leapleaf.this.level().broadcastEntityEvent(Leapleaf.this, (byte) 7);
         }
 
         @Override
@@ -537,12 +535,12 @@ public class Leapleaf extends Summoned{
                 AABB aabb = MobUtil.makeAttackRange(x,
                         Leapleaf.this.getY(),
                         z, 1, 1, 1);
-                for (LivingEntity target : Leapleaf.this.level.getEntitiesOfClass(LivingEntity.class, aabb)) {
+                for (LivingEntity target : Leapleaf.this.level().getEntitiesOfClass(LivingEntity.class, aabb)) {
                     if (target != Leapleaf.this && !target.isAlliedTo(Leapleaf.this) && !Leapleaf.this.isAlliedTo(target)) {
                         Leapleaf.this.doHurtTarget(target);
                     }
                 }
-                if (Leapleaf.this.level instanceof ServerLevel serverLevel){
+                if (Leapleaf.this.level() instanceof ServerLevel serverLevel){
                     BlockPos blockPos = BlockPos.containing(x, Leapleaf.this.getY() - 1.0F, z);
                     BlockParticleOption option = new BlockParticleOption(ParticleTypes.BLOCK, serverLevel.getBlockState(blockPos));
                     for (int i = 0; i < 8; ++i) {
@@ -726,7 +724,7 @@ public class Leapleaf extends Summoned{
                         this.leapleaf.getY(),
                         z, 3, 3, 3);
                 boolean random = this.leapleaf.random.nextFloat() <= 0.25F;
-                for (LivingEntity target : this.leapleaf.level.getEntitiesOfClass(LivingEntity.class, aabb)) {
+                for (LivingEntity target : this.leapleaf.level().getEntitiesOfClass(LivingEntity.class, aabb)) {
                     if (target != this.leapleaf && !target.isAlliedTo(this.leapleaf) && !this.leapleaf.isAlliedTo(target)) {
                         if (this.leapleaf.doHurtTarget(target) && (random || !target.isAlive())){
                             this.leapleaf.restTick = REST_TIME;
@@ -735,7 +733,7 @@ public class Leapleaf extends Summoned{
                 }
                 this.leapleaf.setLeaping(false);
                 this.leapleaf.coolTick = MathHelper.secondsToTicks(2);
-                if (this.leapleaf.level instanceof ServerLevel serverLevel){
+                if (this.leapleaf.level() instanceof ServerLevel serverLevel){
                     BlockPos leftPos = BlockPos.containing(xLeft, this.leapleaf.getY() - 1.0F, zLeft);
                     BlockPos rightPos = BlockPos.containing(xRight, this.leapleaf.getY() - 1.0F, zRight);
                     BlockState leftState = serverLevel.getBlockState(leftPos);

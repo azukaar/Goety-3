@@ -150,7 +150,7 @@ public class WindCallerServant extends SpellcasterIllagerServant{
 
     public void onSyncedDataUpdated(EntityDataAccessor<?> accessor) {
         if (ANIM_STATE.equals(accessor)) {
-            if (this.level.isClientSide){
+            if (this.level().isClientSide){
                 switch (this.entityData.get(ANIM_STATE)){
                     case 0:
                         break;
@@ -177,7 +177,7 @@ public class WindCallerServant extends SpellcasterIllagerServant{
 
     @Override
     public void die(DamageSource pCause) {
-        if (!this.level.isClientSide) {
+        if (!this.level().isClientSide) {
             if (this.getIdol() == null) {
                 if (this.getTrueOwner() != null) {
                     if (CuriosFinder.hasNamelessSet(this.getTrueOwner())){
@@ -186,7 +186,7 @@ public class WindCallerServant extends SpellcasterIllagerServant{
                             servant.setTrueOwner(this.getTrueOwner());
                             net.neoforged.event.net.neoforged.neoforge.event.EventHooks.onLivingConvert(this, servant);
                             if (!this.isSilent()) {
-                                this.level.levelEvent((Player)null, 1026, this.blockPosition(), 0);
+                                this.level().levelEvent((Player)null, 1026, this.blockPosition(), 0);
                             }
                         }
                     }
@@ -231,11 +231,11 @@ public class WindCallerServant extends SpellcasterIllagerServant{
 
     @Override
     public void tick() {
-        if (this.level.isClientSide()) {
+        if (this.level().isClientSide()) {
             this.idleAnimationState.animateWhen(!this.isAttacking() && !this.walkAnimation.isMoving(), this.tickCount);
         }
         super.tick();
-        if (this.level instanceof ServerLevel serverLevel){
+        if (this.level() instanceof ServerLevel serverLevel){
             if (this.blastCool > 0) {
                 --this.blastCool;
             }

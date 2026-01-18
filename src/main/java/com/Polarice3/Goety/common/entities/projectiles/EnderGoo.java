@@ -41,21 +41,21 @@ public class EnderGoo extends SpellHurtingProjectile {
     @Override
     public void trailParticle() {
         Entity entity = this.getOwner();
-        if (this.level.isClientSide || (entity == null || !entity.isRemoved()) && this.level.hasChunkAt(this.blockPosition())) {
+        if (this.level().isClientSide || (entity == null || !entity.isRemoved()) && this.level().hasChunkAt(this.blockPosition())) {
             Vec3 vec3 = this.getDeltaMovement();
             double d0 = this.getX() - vec3.x;
             double d1 = this.getY() - vec3.y;
             double d2 = this.getZ() - vec3.z;
             ColorUtil colorUtil = new ColorUtil(0xf169e9);
-            if (this.level.random.nextFloat() <= 0.75F){
-                this.level.addParticle(ModParticleTypes.TRAIL.get(), d0, d1 + 0.15D, d2, colorUtil.red(), colorUtil.green(), colorUtil.blue());
+            if (this.level().random.nextFloat() <= 0.75F){
+                this.level().addParticle(ModParticleTypes.TRAIL.get(), d0, d1 + 0.15D, d2, colorUtil.red(), colorUtil.green(), colorUtil.blue());
             }
         }
     }
 
     protected void onHitEntity(EntityHitResult p_37626_) {
         super.onHitEntity(p_37626_);
-        if (!this.level.isClientSide) {
+        if (!this.level().isClientSide) {
             float baseDamage = 3.0F;
             Entity entity = p_37626_.getEntity();
             Entity entity1 = this.getOwner();
@@ -83,7 +83,7 @@ public class EnderGoo extends SpellHurtingProjectile {
     protected void onHit(HitResult p_37628_) {
         super.onHit(p_37628_);
         this.playSound(ModSounds.ENDER_GOO_IMPACT.get());
-        if (this.level instanceof ServerLevel serverLevel) {
+        if (this.level() instanceof ServerLevel serverLevel) {
             for (int i = 0; i <= 16; ++i) {
                 ColorUtil colorUtil = new ColorUtil(0xeb58e5);
                 serverLevel.sendParticles(ModParticleTypes.GOO_STAIN.get(), this.getRandomX(0.5D), this.getY(), this.getRandomZ(0.5D), 0, colorUtil.red(), colorUtil.green(), colorUtil.blue(), 1.0F);

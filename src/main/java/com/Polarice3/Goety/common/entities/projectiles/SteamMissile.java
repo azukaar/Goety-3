@@ -86,7 +86,7 @@ public class SteamMissile extends SpellHurtingProjectile {
 
     protected void onHitEntity(EntityHitResult p_37626_) {
         super.onHitEntity(p_37626_);
-        if (!this.level.isClientSide) {
+        if (!this.level().isClientSide) {
             float baseDamage = SpellConfig.SteamingDamage.get().floatValue() * WandUtil.damageMultiply();
             Entity entity = p_37626_.getEntity();
             Entity entity1 = this.getOwner();
@@ -123,7 +123,7 @@ public class SteamMissile extends SpellHurtingProjectile {
     protected void onHit(HitResult p_37628_) {
         super.onHit(p_37628_);
         this.playSound(ModSounds.STEAM_IMPACT.get());
-        if (!this.level.isClientSide) {
+        if (!this.level().isClientSide) {
             this.discard();
         }
 

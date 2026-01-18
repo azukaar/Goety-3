@@ -63,7 +63,7 @@ public abstract class CastSpellTrap extends SpellEntity {
     @Override
     public void tick() {
         super.tick();
-        if (this.level instanceof ServerLevel serverWorld) {
+        if (this.level() instanceof ServerLevel serverWorld) {
             if (this.getParticle() != null) {
                 ServerParticleUtil.circularParticles(serverWorld, this.getParticle(), this.getX(), this.getY(), this.getZ(), this.radius());
             }

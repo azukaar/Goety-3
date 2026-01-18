@@ -60,9 +60,9 @@ public class Crusher extends HuntingIllagerEntity{
 
     protected void registerGoals() {
         super.registerGoals();
-        this.goalSelector.addGoal(1, new MeleeGoal());
+        this.goalSelector.addGoal(1, new CrusherMeleeGoal());
         this.goalSelector.addGoal(2, new Raider.HoldGroundAttackGoal(this, 10.0F));
-        this.goalSelector.addGoal(4, new AttackGoal(1.0D));
+        this.goalSelector.addGoal(4, new CrusherAttackGoal(1.0D));
     }
 
     public void extraGoals(){
@@ -107,13 +107,13 @@ public class Crusher extends HuntingIllagerEntity{
 
     @Nullable
     @Override
-    public SpawnGroupData finalizeSpawn(ServerLevelAccessor p_34002_, DifficultyInstance p_34003_, MobSpawnType p_34004_, @javax.annotation.Nullable SpawnGroupData p_34005_, @javax.annotation.Nullable CompoundTag p_34006_) {
+    public SpawnGroupData finalizeSpawn(ServerLevelAccessor p_34002_, DifficultyInstance p_34003_, MobSpawnType p_34004_, @javax.annotation.Nullable SpawnGroupData p_34005_) {
         if (p_34003_.isHard()) {
             RandomSource randomsource = p_34002_.getRandom();
             this.populateDefaultEquipmentSlots(randomsource, p_34003_);
-            this.populateDefaultEquipmentEnchantments(randomsource, p_34003_);
+            this.populateDefaultEquipmentEnchantments(p_34002_, randomsource, p_34003_);
         }
-        return super.finalizeSpawn(p_34002_, p_34003_, p_34004_, p_34005_, p_34006_);
+        return super.finalizeSpawn(p_34002_, p_34003_, p_34004_, p_34005_);
     }
 
     @Override
@@ -122,7 +122,7 @@ public class Crusher extends HuntingIllagerEntity{
     }
 
     @Override
-    public void applyRaidBuffs(int wave, boolean noClue) {
+    public void applyRaidBuffs(ServerLevel pLevel, int wave, boolean noClue) {
         Raid raid = this.getCurrentRaid();
         if (raid == null){
             return;
@@ -183,7 +183,7 @@ public class Crusher extends HuntingIllagerEntity{
 
     public void onSyncedDataUpdated(EntityDataAccessor<?> accessor) {
         if (ANIM_STATE.equals(accessor)) {
-            if (this.level.isClientSide){
+            if (this.level().isClientSide){
                 switch (this.entityData.get(ANIM_STATE)){
                     case 0:
                         break;
@@ -212,7 +212,7 @@ public class Crusher extends HuntingIllagerEntity{
 
     public void tick() {
         super.tick();
-        if (this.level.isClientSide){
+        if (this.level().isClientSide){
             if (this.isAlive()){
                 if (this.getCurrentAnimation() != this.getAnimationState("attack")) {
                     this.setAnimationState("idle");
@@ -248,7 +248,7 @@ public class Crusher extends HuntingIllagerEntity{
     public void setMeleeAttacking(boolean attacking) {
         this.setFlag(1, attacking);
         this.attackTick = 0;
-        this.level.broadcastEntityEvent(this, (byte) 5);
+        this.level().broadcastEntityEvent(this, (byte) 5);
     }
 
     public boolean isStorm(){
@@ -320,10 +320,10 @@ public class Crusher extends HuntingIllagerEntity{
     }
 
     @Override
-    protected void dropCustomDeathLoot(DamageSource pSource, int pLooting, boolean pRecentlyHit) {
-        super.dropCustomDeathLoot(pSource, pLooting, pRecentlyHit);
-        if (this.level.getGameRules().getBoolean(GameRules.RULE_DOMOBLOOT) && pRecentlyHit) {
-            if (this.level.random.nextFloat() < 0.025F + (pLooting * 0.01F)) {
+    protected void dropCustomDeathLoot(ServerLevel pLevel, DamageSource pSource, boolean pRecentlyHit) {
+        super.dropCustomDeathLoot(pLevel, pSource, pRecentlyHit);
+        if (this.level().getGameRules().getBoolean(GameRules.RULE_DOMOBLOOT) && pRecentlyHit) {
+            if (this.level().random.nextFloat() < 0.025F + (this.getLootTableSeed() * 0.01F)) {
                 Item item = ModItems.GREAT_HAMMER.get();
                 if (this.isStorm()) {
                     item = ModItems.STORMLANDER.get();
@@ -333,19 +333,20 @@ public class Crusher extends HuntingIllagerEntity{
         }
     }
 
-    @Override
-    public int getExperienceReward() {
-        if (this.isStorm()){
-            return super.getExperienceReward() * 3;
-        }
-        return super.getExperienceReward();
-    }
+    // @Override
+    // public int getExperienceReward(ServerLevel serverLevel, Entity entity) {
+    //    int reward = super.getExperienceReward(serverLevel, entity);
+    //    if (this.isStorm()){
+    //        reward *= 3;
+    //    }
+    //    return reward;
+    // }
 
-    class AttackGoal extends MeleeAttackGoal {
+    class CrusherAttackGoal extends MeleeAttackGoal {
         private final double moveSpeed;
         private int delayCounter;
 
-        public AttackGoal(double moveSpeed) {
+        public CrusherAttackGoal(double moveSpeed) {
             super(Crusher.this, moveSpeed, true);
             this.moveSpeed = moveSpeed;
         }
@@ -359,7 +360,7 @@ public class Crusher extends HuntingIllagerEntity{
         @Override
         public void start() {
             Crusher.this.setAggressive(true);
-            Crusher.this.level.broadcastEntityEvent(Crusher.this, (byte) 6);
+            Crusher.this.level().broadcastEntityEvent(Crusher.this, (byte) 6);
             this.delayCounter = 0;
         }
 
@@ -367,7 +368,7 @@ public class Crusher extends HuntingIllagerEntity{
         public void stop() {
             Crusher.this.getNavigation().stop();
             Crusher.this.setAggressive(false);
-            Crusher.this.level.broadcastEntityEvent(Crusher.this, (byte) 7);
+            Crusher.this.level().broadcastEntityEvent(Crusher.this, (byte) 7);
         }
 
         @Override
@@ -387,22 +388,22 @@ public class Crusher extends HuntingIllagerEntity{
             this.checkAndPerformAttack(livingentity, Crusher.this.distanceToSqr(livingentity.getX(), livingentity.getY(), livingentity.getZ()));
         }
 
-        @Override
+        // checkAndPerformAttack no longer overrides a supertype method in 1.21
         protected void checkAndPerformAttack(@NotNull LivingEntity enemy, double distToEnemySqr) {
             if (Crusher.this.targetClose(enemy, distToEnemySqr)) {
                 if (!Crusher.this.isMeleeAttacking()) {
                     Crusher.this.setMeleeAttacking(true);
-                    Crusher.this.level.broadcastEntityEvent(Crusher.this, (byte) 8);
+                    Crusher.this.level().broadcastEntityEvent(Crusher.this, (byte) 8);
                 }
             }
         }
 
     }
 
-    class MeleeGoal extends Goal {
+    class CrusherMeleeGoal extends Goal {
         private float yRot;
 
-        public MeleeGoal() {
+        public CrusherMeleeGoal() {
             this.setFlags(EnumSet.of(Flag.LOOK, Flag.MOVE));
         }
 
@@ -420,7 +421,7 @@ public class Crusher extends HuntingIllagerEntity{
         @Override
         public void start() {
             Crusher.this.setMeleeAttacking(true);
-            Crusher.this.level.broadcastEntityEvent(Crusher.this, (byte) 8);
+            Crusher.this.level().broadcastEntityEvent(Crusher.this, (byte) 8);
             if (Crusher.this.getTarget() != null){
                 MobUtil.instaLook(Crusher.this, Crusher.this.getTarget());
             }
@@ -431,7 +432,7 @@ public class Crusher extends HuntingIllagerEntity{
         public void stop() {
             Crusher.this.setAnimationState("idle");
             Crusher.this.setMeleeAttacking(false);
-            Crusher.this.level.broadcastEntityEvent(Crusher.this, (byte) 9);
+            Crusher.this.level().broadcastEntityEvent(Crusher.this, (byte) 9);
         }
 
         @Override
@@ -450,7 +451,7 @@ public class Crusher extends HuntingIllagerEntity{
                 AABB aabb = MobUtil.makeAttackRange(Crusher.this.getX() + Crusher.this.getHorizontalLookAngle().x * 2,
                         Crusher.this.getY(),
                         Crusher.this.getZ() + Crusher.this.getHorizontalLookAngle().z * 2, 3, 3, 3);
-                for (LivingEntity target : Crusher.this.level.getEntitiesOfClass(LivingEntity.class, aabb)) {
+                for (LivingEntity target : Crusher.this.level().getEntitiesOfClass(LivingEntity.class, aabb)) {
                     if (target != Crusher.this && !MobUtil.areAllies(Crusher.this, target)) {
                         this.hurtTarget(target);
                     }
@@ -460,7 +461,7 @@ public class Crusher extends HuntingIllagerEntity{
                 if (Crusher.this.isStorm()){
                     Crusher.this.playSound(ModSounds.THUNDER_STRIKE_FAST.get());
                 }
-                if (Crusher.this.level instanceof ServerLevel serverLevel){
+                if (Crusher.this.level() instanceof ServerLevel serverLevel){
                     BlockPos blockPos = BlockPos.containing(Crusher.this.getX() + Crusher.this.getHorizontalLookAngle().x * 2, Crusher.this.getY() - 1.0F, Crusher.this.getZ() + Crusher.this.getHorizontalLookAngle().z * 2);
                     BlockParticleOption option = new BlockParticleOption(ParticleTypes.BLOCK, serverLevel.getBlockState(blockPos));
                     for (int i = 0; i < 8; ++i) {
@@ -472,7 +473,7 @@ public class Crusher extends HuntingIllagerEntity{
 
         public void hurtTarget(Entity target) {
             Crusher.this.doHurtTarget(target);
-            if (Crusher.this.level instanceof ServerLevel serverLevel) {
+            if (Crusher.this.level() instanceof ServerLevel serverLevel) {
                 if (Crusher.this.isStorm() && target instanceof LivingEntity livingEntity) {
                     BlockHitResult rayTraceResult = this.blockResult(serverLevel, Crusher.this, 16);
                     Optional<BlockPos> lightningRod = BlockFinder.findLightningRod(serverLevel, BlockPos.containing(rayTraceResult.getLocation()), 16);
@@ -492,7 +493,7 @@ public class Crusher extends HuntingIllagerEntity{
 
         public void chain(LivingEntity pTarget, LivingEntity pAttacker) {
             double range = 6;
-            Level level = pAttacker.level;
+            Level level = pAttacker.level();
             float oDamage = (float) pAttacker.getAttributeValue(Attributes.ATTACK_DAMAGE);
 
             List<Entity> harmed = new ArrayList<>();
@@ -540,4 +541,5 @@ public class Crusher extends HuntingIllagerEntity{
             return true;
         }
     }
+
 }

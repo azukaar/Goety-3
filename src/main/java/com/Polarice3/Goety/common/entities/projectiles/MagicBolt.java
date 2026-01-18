@@ -75,12 +75,12 @@ public class MagicBolt extends SpellHurtingProjectile {
             this.discard();
         }
 
-        if (this.level.isClientSide && this.level.isLoaded(this.blockPosition())) {
+        if (this.level().isClientSide && this.level().isLoaded(this.blockPosition())) {
             Vec3 vector3d = this.getDeltaMovement();
             double d0 = this.getX() + vector3d.x;
             double d1 = this.getY() + vector3d.y;
             double d2 = this.getZ() + vector3d.z;
-            this.level.addParticle(ParticleTypes.WITCH, d0 + level.random.nextDouble()/2, d1 + 0.5D, d2 + level.random.nextDouble()/2, 0.0D, 0.0D, 0.0D);
+            this.level().addParticle(ParticleTypes.WITCH, d0 + level.random.nextDouble()/2, d1 + 0.5D, d2 + level.random.nextDouble()/2, 0.0D, 0.0D, 0.0D);
         }
     }
 
@@ -118,7 +118,7 @@ public class MagicBolt extends SpellHurtingProjectile {
     @Override
     protected void onHit(HitResult p_37260_) {
         super.onHit(p_37260_);
-        if (!this.level.isClientSide) {
+        if (!this.level().isClientSide) {
             boolean flag = true;
             if (p_37260_ instanceof EntityHitResult hitResult) {
                 if (!this.canHitEntity(hitResult.getEntity())) {
@@ -153,7 +153,7 @@ public class MagicBolt extends SpellHurtingProjectile {
 
     protected void magicGround(HitResult pResult){
         int duration = 100;
-        MagicGround magicGround = new MagicGround(this.level, this.getX(), this.getY(), this.getZ());
+        MagicGround magicGround = new MagicGround(this.level(), this.getX(), this.getY(), this.getZ());
         if (pResult instanceof EntityHitResult entityHitResult){
             Entity entity = entityHitResult.getEntity();
             magicGround.setPos(entity.position());
@@ -164,7 +164,7 @@ public class MagicBolt extends SpellHurtingProjectile {
         }
         magicGround.setDuration(duration);
         MobUtil.moveDownToGround(magicGround);
-        this.level.addFreshEntity(magicGround);
+        this.level().addFreshEntity(magicGround);
     }
 
     public boolean isOnFire() {

@@ -78,7 +78,7 @@ public class SnarelingGoop extends TangleEntity {
 
     public void onSyncedDataUpdated(EntityDataAccessor<?> accessor) {
         if (ANIM_STATE.equals(accessor)) {
-            if (this.level.isClientSide){
+            if (this.level().isClientSide){
                 switch (this.entityData.get(ANIM_STATE)) {
                     case 0 -> {
                     }

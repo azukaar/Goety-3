@@ -28,3 +28,4 @@ forge*changelog.txt
 *.log
 build_log_*.txt
 build_errors.log
+compile_log.txt

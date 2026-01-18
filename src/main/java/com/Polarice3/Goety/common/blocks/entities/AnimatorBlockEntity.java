@@ -63,19 +63,19 @@ public class AnimatorBlockEntity extends BlockEntity implements IWaystoneBlock, 
     }
 
     public void summonGolem(){
-        if (this.level != null) {
+        if (this.getLevel() != null) {
             if (this.getPosition() != null) {
-                if (this.level.dimension() == this.getPosition().dimension()) {
-                    if (this.level.isLoaded(this.getPosition().pos())) {
+                if (this.getLevel().dimension() == this.getPosition().dimension()) {
+                    if (this.getLevel().isLoaded(this.getPosition().pos())) {
                         if (this.checkCage() && this.cursedCageTile.getSouls() >= this.getSoulCost()) {
                             ItemStack itemStack = ModItems.ANIMATION_CORE.get().getDefaultInstance();
-                            BlockState blockState = this.level.getBlockState(this.getPosition().pos());
+                            BlockState blockState = this.getLevel().getBlockState(this.getPosition().pos());
                             AABB aabb = new AABB(this.getPosition().pos());
-                            List<HauntedArmorStand> list = this.level.getEntitiesOfClass(HauntedArmorStand.class, aabb, ItemHelper::isFullEquipped);
+                            List<HauntedArmorStand> list = this.getLevel().getEntitiesOfClass(HauntedArmorStand.class, aabb, ItemHelper::isFullEquipped);
                             Optional<HauntedArmorStand> optional = !list.isEmpty() ? list.stream().findFirst() : Optional.empty();
                             if (optional.isPresent() && SEHelper.hasResearch(this.getOwner(), ResearchList.HAUNTING)){
                                 HauntedArmorStand hauntedArmorStand = optional.get();
-                                HauntedArmorServant hauntedArmorServant = new HauntedArmorServant(ModEntityType.HAUNTED_ARMOR_SERVANT.get(), this.level);
+                                HauntedArmorServant hauntedArmorServant = new HauntedArmorServant(ModEntityType.HAUNTED_ARMOR_SERVANT.get(), this.getLevel());
                                 for (EquipmentSlot equipmentSlot : EquipmentSlot.values()) {
                                     hauntedArmorServant.setItemSlot(equipmentSlot, hauntedArmorStand.getItemBySlot(equipmentSlot));
                                     hauntedArmorServant.setGuaranteedDrop(equipmentSlot);
@@ -84,22 +84,22 @@ public class AnimatorBlockEntity extends BlockEntity implements IWaystoneBlock, 
                                 hauntedArmorServant.setTrueOwner(this.getOwner());
                                 hauntedArmorServant.moveTo(hauntedArmorStand.blockPosition(), hauntedArmorStand.getYRot(), hauntedArmorStand.getXRot());
                                 hauntedArmorServant.setLeftHanded(this.getOwner().getMainArm() == HumanoidArm.LEFT);
-                                if (this.level.addFreshEntity(hauntedArmorServant)) {
+                                if (this.getLevel().addFreshEntity(hauntedArmorServant)) {
                                     hauntedArmorStand.playSound(ModSounds.SUMMON_SPELL.get());
                                     hauntedArmorStand.showBreakingParticles();
                                     hauntedArmorStand.discard();
                                 }
                             } else if (GolemType.getGolemList().containsKey(blockState)) {
-                                if (GolemType.getGolemList().get(blockState).spawnServant(this.getOwner(), itemStack, this.level, this.getPosition().pos())) {
-                                    this.level.playSound(null, this.getBlockPos(), ModSounds.SUMMON_SPELL.get(), SoundSource.BLOCKS, 1.0F, 1.0F);
-                                    this.level.playSound(null, this.getPosition().pos(), ModSounds.SUMMON_SPELL.get(), SoundSource.BLOCKS, 1.0F, 1.0F);
+                                if (GolemType.getGolemList().get(blockState).spawnServant(this.getOwner(), itemStack, this.getLevel(), this.getPosition().pos())) {
+                                    this.getLevel().playSound(null, this.getBlockPos(), ModSounds.SUMMON_SPELL.get(), SoundSource.BLOCKS, 1.0F, 1.0F);
+                                    this.getLevel().playSound(null, this.getPosition().pos(), ModSounds.SUMMON_SPELL.get(), SoundSource.BLOCKS, 1.0F, 1.0F);
                                     this.cursedCageTile.decreaseSouls(this.getSoulCost());
                                     this.generateManyParticles();
                                 }
                             } else {
-                                if (SpawnFromBlock.spawnServant(this.getOwner(), itemStack, this.level, this.getPosition().pos())) {
-                                    this.level.playSound(null, this.getBlockPos(), ModSounds.SUMMON_SPELL.get(), SoundSource.BLOCKS, 1.0F, 1.0F);
-                                    this.level.playSound(null, this.getPosition().pos(), ModSounds.SUMMON_SPELL.get(), SoundSource.BLOCKS, 1.0F, 1.0F);
+                                if (SpawnFromBlock.spawnServant(this.getOwner(), itemStack, this.getLevel(), this.getPosition().pos())) {
+                                    this.getLevel().playSound(null, this.getBlockPos(), ModSounds.SUMMON_SPELL.get(), SoundSource.BLOCKS, 1.0F, 1.0F);
+                                    this.getLevel().playSound(null, this.getPosition().pos(), ModSounds.SUMMON_SPELL.get(), SoundSource.BLOCKS, 1.0F, 1.0F);
                                     this.cursedCageTile.decreaseSouls(this.getSoulCost());
                                     this.generateManyParticles();
                                 }
@@ -121,12 +121,12 @@ public class AnimatorBlockEntity extends BlockEntity implements IWaystoneBlock, 
     }
 
     public Player getOwner(){
-        if (this.level != null) {
+        if (this.getLevel() != null) {
             if (!this.getItem().isEmpty()) {
                 if (this.getItem().getItem() instanceof WaystoneItem && this.getItem().has(DataComponents.CUSTOM_DATA)) {
                     if (this.getItem().get(DataComponents.CUSTOM_DATA).contains(WaystoneItem.TAG_OWNER)) {
                         UUID owner = this.getItem().get(DataComponents.CUSTOM_DATA).copyTag().getUUID(WaystoneItem.TAG_OWNER);
-                        return this.level.getPlayerByUUID(owner);
+                        return this.getLevel().getPlayerByUUID(owner);
                     }
                 }
             }
@@ -152,20 +152,20 @@ public class AnimatorBlockEntity extends BlockEntity implements IWaystoneBlock, 
         if (this.spinning > 0){
             --this.spinning;
         }
-        if (this.level != null) {
-            this.level.setBlock(this.getBlockPos(), this.getBlockState().setValue(AnimatorBlock.POWERED, this.checkCage() && this.getPosition() != null), 3);
+        if (this.getLevel() != null) {
+            this.getLevel().setBlock(this.getBlockPos(), this.getBlockState().setValue(AnimatorBlock.POWERED, this.checkCage() && this.getPosition() != null), 3);
         }
     }
 
     public void generateManyParticles(){
         BlockPos blockpos = this.getBlockPos();
-        if (this.level != null) {
-            if (!this.level.isClientSide) {
-                ServerLevel serverWorld = (ServerLevel) this.level;
+        if (this.getLevel() != null) {
+            if (!this.getLevel().isClientSide) {
+                ServerLevel serverWorld = (ServerLevel) this.getLevel();
                 for(int k = 0; k < 20; ++k) {
-                    double d9 = (double)blockpos.getX() + 0.5D + (this.level.random.nextDouble() - 0.5D) * 2.0D;
-                    double d13 = (double)blockpos.getY() + 0.5D + (this.level.random.nextDouble() - 0.5D) * 2.0D;
-                    double d19 = (double)blockpos.getZ() + 0.5D + (this.level.random.nextDouble() - 0.5D) * 2.0D;
+                    double d9 = (double)blockpos.getX() + 0.5D + (this.getLevel().random.nextDouble() - 0.5D) * 2.0D;
+                    double d13 = (double)blockpos.getY() + 0.5D + (this.getLevel().random.nextDouble() - 0.5D) * 2.0D;
+                    double d19 = (double)blockpos.getZ() + 0.5D + (this.getLevel().random.nextDouble() - 0.5D) * 2.0D;
                     serverWorld.sendParticles(ParticleTypes.SMOKE, d9, d13, d19, 1, 0.0D, 0.0D, 0.0D, 0);
                     serverWorld.sendParticles(ParticleTypes.FLAME, d9, d13, d19, 1, 0.0D, 0.0D, 0.0D, 0);
                 }
@@ -175,11 +175,11 @@ public class AnimatorBlockEntity extends BlockEntity implements IWaystoneBlock, 
     }
 
     private boolean checkCage() {
-        if (this.level != null) {
+        if (this.getLevel() != null) {
             BlockPos pos = new BlockPos(this.getBlockPos().getX(), this.getBlockPos().getY() - 1, this.getBlockPos().getZ());
-            BlockState blockState = this.level.getBlockState(pos);
+            BlockState blockState = this.getLevel().getBlockState(pos);
             if (blockState.is(ModBlocks.CURSED_CAGE_BLOCK.get())) {
-                BlockEntity tileentity = this.level.getBlockEntity(pos);
+                BlockEntity tileentity = this.getLevel().getBlockEntity(pos);
                 if (tileentity instanceof CursedCageBlockEntity cageBlock) {
                     this.cursedCageTile = cageBlock;
                     return !cursedCageTile.getItem().isEmpty();
@@ -209,7 +209,7 @@ public class AnimatorBlockEntity extends BlockEntity implements IWaystoneBlock, 
 
     @Override
     public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt, HolderLookup.Provider lookupProvider) {
-        if (this.level != null) {
+        if (this.getLevel() != null) {
             this.readNetwork(pkt.getTag(), lookupProvider);
         }
     }
@@ -243,8 +243,8 @@ public class AnimatorBlockEntity extends BlockEntity implements IWaystoneBlock, 
 
     public void markUpdated() {
         this.setChanged();
-        if (this.level != null) {
-            this.level.sendBlockUpdated(this.worldPosition, this.getBlockState(), this.getBlockState(), 3);
+        if (this.getLevel() != null) {
+            this.getLevel().sendBlockUpdated(this.worldPosition, this.getBlockState(), this.getBlockState(), 3);
         }
     }
 

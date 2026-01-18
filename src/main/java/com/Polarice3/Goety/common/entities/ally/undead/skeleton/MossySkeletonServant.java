@@ -63,10 +63,10 @@ public class MossySkeletonServant extends AbstractSkeletonServant {
     @Override
     public void tick() {
         super.tick();
-        if (this.level.isClientSide){
-            if (this.tickCount % 5 == 0 && this.level.random.nextBoolean()) {
+        if (this.level().isClientSide){
+            if (this.tickCount % 5 == 0 && this.level().random.nextBoolean()) {
                 double[] colors = MathHelper.rgbParticle(2735172);
-                this.level.addParticle(ModParticleTypes.BIG_CULT_SPELL.get(), this.getX(), this.getY() + 1.0D, this.getZ(),
+                this.level().addParticle(ModParticleTypes.BIG_CULT_SPELL.get(), this.getX(), this.getY() + 1.0D, this.getZ(),
                         colors[0],
                         colors[1],
                         colors[2]);

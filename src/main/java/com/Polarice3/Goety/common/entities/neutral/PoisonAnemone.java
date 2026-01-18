@@ -55,7 +55,7 @@ public class PoisonAnemone extends PoisonQuillVine{
     }
 
     public void shootQuill(@NotNull LivingEntity target) {
-        PoisonQuill quill = new PoisonQuill(this.level, this);
+        PoisonQuill quill = new PoisonQuill(this.level(), this);
         quill.setAqua(true);
         Vec3 vector3d = this.getViewVector( 1.0F);
         quill.setPos(this.getX() + vector3d.x,
@@ -66,7 +66,7 @@ public class PoisonAnemone extends PoisonQuillVine{
         double d2 = target.getZ() - this.getZ();
         double d3 = Mth.sqrt((float) (d0 * d0 + d2 * d2));
         quill.shoot(d0, d1 + d3 * (double)0.2F, d2, 1.6F, 1.0F);
-        if (this.level.addFreshEntity(quill)){
+        if (this.level().addFreshEntity(quill)){
             this.playSound(ModSounds.POISON_ANEMONE_SHOOT.get());
         }
     }

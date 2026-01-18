@@ -207,7 +207,7 @@ public class RitualRequirements extends RitualTypes {
                 RitualChecker finder1 = new RitualChecker(pLevel, pPos, third, RANGE, 16) {
                     @Override
                     public boolean isCorrectBlock(BlockState blockState, BlockPos blockPos) {
-                        return super.isCorrectBlock(blockState, blockPos) && blockState.isSolidRender(this.level, blockPos);
+                        return super.isCorrectBlock(blockState, blockPos) && blockState.isSolidRender(this.level(), blockPos);
                     }
                 };
                 if (!finder1.checkBlocks()) {

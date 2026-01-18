@@ -22,7 +22,7 @@ public abstract class ModBlockEntity extends BlockEntity {
 
     @Override
     public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt, HolderLookup.Provider lookupProvider) {
-        if (this.level != null) {
+        if (this.getLevel() != null) {
             this.readNetwork(pkt.getTag(), lookupProvider);
         }
     }

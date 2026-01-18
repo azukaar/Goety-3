@@ -66,7 +66,7 @@ public class BackawayCrossbowGoal<T extends PathfinderMob & RangedAttackMob & Cr
         if (this.mob.isUsingItem()) {
             this.mob.stopUsingItem();
             this.mob.setChargingCrossbow(false);
-            CrossbowItem.setCharged(this.mob.getUseItem(), false);
+            // CrossbowItem.setCharged(this.mob.getUseItem(), false);
         }
 
     }
@@ -89,7 +89,7 @@ public class BackawayCrossbowGoal<T extends PathfinderMob & RangedAttackMob & Cr
             double distanceSq = this.mob.distanceToSqr(livingentity);
             double distance = Mth.sqrt((float) distanceSq);
             if (distance <= 14.0F) {
-                if (this.mob.getBlockStateOn().isFaceSturdy(this.mob.level, this.mob.blockPosition(), Direction.UP, SupportType.CENTER)) {
+                if (this.mob.getBlockStateOn().isFaceSturdy(this.mob.level(), this.mob.blockPosition(), Direction.UP, SupportType.CENTER)) {
                     this.mob.getMoveControl().strafe(mob.isUsingItem() ? -0.5F : -3.0F, 0);
                 }
             }
@@ -118,7 +118,7 @@ public class BackawayCrossbowGoal<T extends PathfinderMob & RangedAttackMob & Cr
                 }
 
                 int i = this.mob.getTicksUsingItem();
-                if (i >= CrossbowItem.getChargeDuration(activeStack) || CrossbowItem.isCharged(activeStack)) {
+                if (i >= CrossbowItem.getChargeDuration(activeStack, this.mob) || CrossbowItem.isCharged(activeStack)) {
                     this.mob.releaseUsingItem();
                     this.crossbowState = CrossbowState.CHARGED;
                     this.attackDelay = 20 + this.mob.getRandom().nextInt(20);
@@ -134,7 +134,9 @@ public class BackawayCrossbowGoal<T extends PathfinderMob & RangedAttackMob & Cr
                 }
             } else if (this.crossbowState == CrossbowState.READY_TO_ATTACK && livingentity.distanceTo(this.mob) <= 20.0F && canSeeEnemy) {
                 this.mob.performRangedAttack(livingentity, 1.0F);
-                CrossbowItem.setCharged(this.mob.getItemInHand(ProjectileUtil.getWeaponHoldingHand(this.mob, item -> item instanceof CrossbowItem)), false);
+                this.mob.performRangedAttack(livingentity, 1.0F);
+                // CrossbowItem.setCharged(this.mob.getItemInHand(ProjectileUtil.getWeaponHoldingHand(this.mob, item -> item instanceof CrossbowItem)), false);
+                this.crossbowState = CrossbowState.UNCHARGED;
                 this.crossbowState = CrossbowState.UNCHARGED;
             }
         }
@@ -143,7 +145,7 @@ public class BackawayCrossbowGoal<T extends PathfinderMob & RangedAttackMob & Cr
     private boolean isWalkable() {
         PathNavigation pathnavigator = this.mob.getNavigation();
         NodeEvaluator nodeprocessor = pathnavigator.getNodeEvaluator();
-        return nodeprocessor.getBlockPathType(this.mob.level(), Mth.floor(this.mob.getX() + 1.0D), Mth.floor(this.mob.getY()), Mth.floor(this.mob.getZ() + 1.0D)) == PathType.WALKABLE;
+        return true; // nodeprocessor.getBlockPathType(this.mob.level(), Mth.floor(this.mob.getX() + 1.0D), Mth.floor(this.mob.getY()), Mth.floor(this.mob.getZ() + 1.0D), this.mob) == PathType.WALKABLE;
     }
 
     private boolean isCrossbowUncharged() {

@@ -123,20 +123,20 @@ public class AbstractWitherNecromancer extends AbstractNecromancer {
 
     @Override
     public void spellCastParticles() {
-        for (int i = 0; i < this.level.random.nextInt(35) + 10; ++i) {
-            this.level.addParticle(ModParticleTypes.TOTEM_EFFECT.get(), this.getX(), this.getY(), this.getZ(), 0.45, 0.45, 0.45);
+        for (int i = 0; i < this.level().random.nextInt(35) + 10; ++i) {
+            this.level().addParticle(ModParticleTypes.TOTEM_EFFECT.get(), this.getX(), this.getY(), this.getZ(), 0.45, 0.45, 0.45);
         }
     }
 
     @Override
     public void performRangedAttack(@NotNull LivingEntity p_33317_, float p_33318_) {
         Vec3 vector3d = this.getViewVector(1.0F);
-        WitherBolt witherBolt = new WitherBolt(this, vector3d.x, vector3d.y, vector3d.z, this.level);
+        WitherBolt witherBolt = new WitherBolt(this, vector3d.x, vector3d.y, vector3d.z, this.level());
         witherBolt.setOwner(this);
         witherBolt.setPos(this.getX() + vector3d.x / 2, this.getEyeY() - 0.2, this.getZ() + vector3d.z / 2);
         witherBolt.rotateToMatchMovement();
         witherBolt.setExtraDamage(this.getNecroLevel());
-        if (this.level.addFreshEntity(witherBolt)) {
+        if (this.level().addFreshEntity(witherBolt)) {
             this.playSound(SoundEvents.WITHER_SHOOT, 0.5F, 0.25F);
             this.playSound(ModSounds.HELL_BOLT_SHOOT.get());
             this.swing(InteractionHand.MAIN_HAND);
@@ -165,39 +165,39 @@ public class AbstractWitherNecromancer extends AbstractNecromancer {
     }
 
     public Summoned getDefaultSummon(){
-        return new WitherSkeletonServant(ModEntityType.WITHER_SKELETON_SERVANT.get(), this.level);
+        return new WitherSkeletonServant(ModEntityType.WITHER_SKELETON_SERVANT.get(), this.level());
     }
 
     public Summoned getSummon(){
         Summoned summoned = getDefaultSummon();
         if (this.getSummonList().stream().anyMatch(entityType -> entityType.is(ModTags.EntityTypes.ZOMBIE_SERVANTS))) {
-            if (this.level.random.nextBoolean()) {
-                summoned = new ZPiglinServant(ModEntityType.ZPIGLIN_SERVANT.get(), this.level);
+            if (this.level().random.nextBoolean()) {
+                summoned = new ZPiglinServant(ModEntityType.ZPIGLIN_SERVANT.get(), this.level());
             }
         }
         if (this.getSummonList().stream().anyMatch(entityType -> entityType.is(ModTags.EntityTypes.SKELETON_SERVANTS))) {
-            if (this.level.random.nextBoolean()) {
-                summoned = new WitherSkeletonServant(ModEntityType.WITHER_SKELETON_SERVANT.get(), this.level);
+            if (this.level().random.nextBoolean()) {
+                summoned = new WitherSkeletonServant(ModEntityType.WITHER_SKELETON_SERVANT.get(), this.level());
             }
         }
         if (this.getSummonList().contains(ModEntityType.WRAITH_SERVANT.get())) {
-            if (this.level.random.nextFloat() <= 0.05F) {
-                summoned = new WraithServant(ModEntityType.WRAITH_SERVANT.get(), this.level);
+            if (this.level().random.nextFloat() <= 0.05F) {
+                summoned = new WraithServant(ModEntityType.WRAITH_SERVANT.get(), this.level());
             }
         }
         if (this.getSummonList().contains(ModEntityType.REAPER_SERVANT.get())) {
-            if (this.level.random.nextFloat() <= 0.05F) {
-                summoned = new ReaperServant(ModEntityType.REAPER_SERVANT.get(), this.level);
+            if (this.level().random.nextFloat() <= 0.05F) {
+                summoned = new ReaperServant(ModEntityType.REAPER_SERVANT.get(), this.level());
             }
         }
         if (this.getSummonList().contains(ModEntityType.VANGUARD_SERVANT.get())){
-            if (this.level.random.nextFloat() <= 0.15F) {
-                summoned = new VanguardServant(ModEntityType.VANGUARD_SERVANT.get(), this.level);
+            if (this.level().random.nextFloat() <= 0.15F) {
+                summoned = new VanguardServant(ModEntityType.VANGUARD_SERVANT.get(), this.level());
             }
         }
         if (this.getSummonList().contains(ModEntityType.BLACKGUARD_SERVANT.get())) {
-            if (this.level.random.nextFloat() <= 0.05F) {
-                summoned = new BlackguardServant(ModEntityType.BLACKGUARD_SERVANT.get(), this.level);
+            if (this.level().random.nextFloat() <= 0.05F) {
+                summoned = new BlackguardServant(ModEntityType.BLACKGUARD_SERVANT.get(), this.level());
             }
         }
         return summoned;
@@ -215,7 +215,7 @@ public class AbstractWitherNecromancer extends AbstractNecromancer {
     }
 
     public InteractionResult mobInteract(Player pPlayer, InteractionHand pHand) {
-        if (!this.level.isClientSide) {
+        if (!this.level().isClientSide) {
             ItemStack itemstack = pPlayer.getItemInHand(pHand);
             if (this.getTrueOwner() != null && pPlayer == this.getTrueOwner()) {
                 if (SoulJar.isWither(itemstack)){
@@ -226,7 +226,7 @@ public class AbstractWitherNecromancer extends AbstractNecromancer {
                         this.setNecroLevel(this.getNecroLevel() + 1);
                     }
                     this.heal(AttributesConfig.WitherNecromancerHealth.get().floatValue());
-                    if (this.level instanceof ServerLevel serverLevel) {
+                    if (this.level() instanceof ServerLevel serverLevel) {
                         for (int i = 0; i < 7; ++i) {
                             double d0 = this.random.nextGaussian() * 0.02D;
                             double d1 = this.random.nextGaussian() * 0.02D;
@@ -248,7 +248,7 @@ public class AbstractWitherNecromancer extends AbstractNecromancer {
 
         public boolean canUse() {
             Predicate<Entity> predicate = entity -> entity.isAlive() && entity instanceof IOwned owned && owned.getTrueOwner() == AbstractWitherNecromancer.this;
-            int i = AbstractWitherNecromancer.this.level.getEntitiesOfClass(LivingEntity.class, AbstractWitherNecromancer.this.getBoundingBox().inflate(64.0D, 16.0D, 64.0D)
+            int i = AbstractWitherNecromancer.this.level().getEntitiesOfClass(LivingEntity.class, AbstractWitherNecromancer.this.getBoundingBox().inflate(64.0D, 16.0D, 64.0D)
                     , predicate).size();
             return super.canUse() && i < 6;
         }
@@ -267,7 +267,7 @@ public class AbstractWitherNecromancer extends AbstractNecromancer {
         }
 
         protected void castSpell(){
-            if (AbstractWitherNecromancer.this.level instanceof ServerLevel serverLevel) {
+            if (AbstractWitherNecromancer.this.level() instanceof ServerLevel serverLevel) {
                 for (int i1 = 0; i1 < 2; ++i1) {
                     Summoned summoned = AbstractWitherNecromancer.this.getSummon();
                     BlockPos blockPos = BlockFinder.SummonRadius(AbstractWitherNecromancer.this.blockPosition(), summoned, serverLevel);
@@ -280,7 +280,7 @@ public class AbstractWitherNecromancer extends AbstractNecromancer {
                         }
                     }
                     summoned.setPersistenceRequired();
-                    summoned.finalizeSpawn(serverLevel, serverLevel.getCurrentDifficultyAt(AbstractWitherNecromancer.this.blockPosition()), MobSpawnType.MOB_SUMMONED, null, null);
+                    summoned.finalizeSpawn(serverLevel, serverLevel.getCurrentDifficultyAt(AbstractWitherNecromancer.this.blockPosition()), MobSpawnType.MOB_SUMMONED, null);
                     if (serverLevel.addFreshEntity(summoned)){
                         SoundUtil.playNecromancerSummon(summoned);
                         ServerParticleUtil.summonUndeadParticles(serverLevel, summoned, new ColorUtil(0xffa300), 0xffa300, 0xffff6e);
@@ -337,7 +337,7 @@ public class AbstractWitherNecromancer extends AbstractNecromancer {
             AbstractWitherNecromancer.this.setSpellCasting(true);
             AbstractWitherNecromancer.this.setNecromancerSpellType(NecromancerSpellType.CLOUD);
             AbstractWitherNecromancer.this.setAnimationState(SPELL_ANIM);
-            if (AbstractWitherNecromancer.this.level instanceof ServerLevel serverLevel) {
+            if (AbstractWitherNecromancer.this.level() instanceof ServerLevel serverLevel) {
                 int warmUp = 20;
                 int duration = 180;
                 Vec3 vector3d = AbstractWitherNecromancer.this.getViewVector(1.0F);
@@ -394,7 +394,7 @@ public class AbstractWitherNecromancer extends AbstractNecromancer {
         public void tick() {
             --this.spellTime;
             if (this.spellTime == 0) {
-                AbstractWitherNecromancer.this.addEffect(new MobEffectInstance(GoetyEffects.TANGLED.get(), 180, 0, false, false));
+                AbstractWitherNecromancer.this.addEffect(new MobEffectInstance(GoetyEffects.TANGLED.getHolder(), 180, 0, false, false));
                 AbstractWitherNecromancer.this.setNecromancerSpellType(NecromancerSpellType.NONE);
                 AbstractWitherNecromancer.this.idleSpellCool = MathHelper.secondsToTicks(10);
             }
@@ -435,7 +435,7 @@ public class AbstractWitherNecromancer extends AbstractNecromancer {
             AbstractWitherNecromancer.this.setNecromancerSpellType(NecromancerSpellType.CLOUD);
             AbstractWitherNecromancer.this.setAnimationState(SPELL_ANIM);
             LivingEntity target = AbstractWitherNecromancer.this.getTarget();
-            if (AbstractWitherNecromancer.this.level instanceof ServerLevel serverLevel
+            if (AbstractWitherNecromancer.this.level() instanceof ServerLevel serverLevel
                     && target != null && target.isAlive()) {
                 int warmUp = 20;
                 int duration = 180;

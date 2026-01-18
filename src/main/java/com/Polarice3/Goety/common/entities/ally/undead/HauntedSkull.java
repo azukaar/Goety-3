@@ -75,7 +75,7 @@ public class HauntedSkull extends Minion {
     public void tick() {
         super.tick();
         this.setNoGravity(true);
-        if (this.level.isClientSide) {
+        if (this.level().isClientSide) {
             Vec3 vector3d = this.getDeltaMovement();
             double d0 = this.getX() + vector3d.x;
             double d1 = this.getY() + vector3d.y;
@@ -96,7 +96,7 @@ public class HauntedSkull extends Minion {
                 }
             }
             for(int j = 0; j < 2; ++j) {
-                this.level.addParticle(particleData, d0 + this.random.nextGaussian() * (double)0.3F, d1 + this.random.nextGaussian() * (double)0.3F, d2 + this.random.nextGaussian() * (double)0.3F, 0.0D, 0.0D, 0.0D);
+                this.level().addParticle(particleData, d0 + this.random.nextGaussian() * (double)0.3F, d1 + this.random.nextGaussian() * (double)0.3F, d2 + this.random.nextGaussian() * (double)0.3F, 0.0D, 0.0D, 0.0D);
             }
         }
     }
@@ -111,9 +111,9 @@ public class HauntedSkull extends Minion {
     }
 
     @Override
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.entityData.define(DATA_TYPE_ID, 0);
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(DATA_TYPE_ID, 0);
     }
 
     public void readAdditionalSaveData(CompoundTag p_34008_) {
@@ -156,7 +156,7 @@ public class HauntedSkull extends Minion {
         if (this.getTrueOwner() instanceof Player player){
             if (CuriosFinder.findRing(player).getItem() == ModItems.RING_OF_WANT.get()){
                 if (CuriosFinder.findRing(player).isEnchanted()){
-                    float wanting = EnchantmentHelper.getTagEnchantmentLevel(ModEnchantments.WANTING.get(), CuriosFinder.findRing(player));
+                    float wanting = EnchantmentHelper.getItemEnchantmentLevel(ModEnchantments.WANTING, CuriosFinder.findRing(player));
                     if (wanting > 0){
                         loot = true;
                     }
@@ -164,7 +164,7 @@ public class HauntedSkull extends Minion {
             }
         }
         LootingExplosion.Mode lootMode = loot ? LootingExplosion.Mode.LOOT : LootingExplosion.Mode.REGULAR;
-        ExplosionUtil.lootExplode(this.level, this, this.getX(), this.getY(), this.getZ(), this.explosionPower, false, Explosion.BlockInteraction.KEEP, lootMode);
+        ExplosionUtil.lootExplode(this.level(), this, this.getX(), this.getY(), this.getZ(), this.explosionPower, false, Explosion.BlockInteraction.KEEP, lootMode);
         this.discard();
     }
 
@@ -197,7 +197,7 @@ public class HauntedSkull extends Minion {
         if (this.getTrueOwner() == null){
             this.setBoundOrigin(this.blockPosition());
         }
-        return super.finalizeSpawn(p_34002_, p_34003_, p_34004_, p_34005_, p_34006_);
+        return super.finalizeSpawn(p_34002_, p_34003_, p_34004_, p_34005_);
     }
 
     public boolean isUpgraded() {
@@ -246,7 +246,7 @@ public class HauntedSkull extends Minion {
                 } else {
                     for (int i = 0; i < 3; ++i) {
                         BlockPos blockpos1 = blockpos.offset(HauntedSkull.this.random.nextInt(15) - 7, HauntedSkull.this.random.nextInt(4) - 2, HauntedSkull.this.random.nextInt(15) - 7);
-                        if (BlockFinder.isEmptyBox(HauntedSkull.this.level, blockpos1)) {
+                        if (BlockFinder.isEmptyBox(HauntedSkull.this.level(), blockpos1)) {
                             HauntedSkull.this.moveControl.setWantedPosition((double) blockpos1.getX() + 0.5D, (double) blockpos1.getY() + 0.5D, (double) blockpos1.getZ() + 0.5D, 0.25D);
                             if (HauntedSkull.this.getTarget() == null) {
                                 HauntedSkull.this.getLookControl().setLookAt((double) blockpos1.getX() + 0.5D, (double) blockpos1.getY() + 0.5D, (double) blockpos1.getZ() + 0.5D, 180.0F, 20.0F);
@@ -295,7 +295,7 @@ public class HauntedSkull extends Minion {
                     double d1 = livingentity.getX() - HauntedSkull.this.getX();
                     double d2 = livingentity.getY(0.5D) - HauntedSkull.this.getY(0.5D);
                     double d3 = livingentity.getZ() - HauntedSkull.this.getZ();
-                    HauntedSkullProjectile soulSkull = new HauntedSkullProjectile(HauntedSkull.this, d1, d2, d3, HauntedSkull.this.level);
+                    HauntedSkullProjectile soulSkull = new HauntedSkullProjectile(HauntedSkull.this, d1, d2, d3, HauntedSkull.this.level());
                     if (HauntedSkull.this.getTrueOwner() != null) {
                         soulSkull.setOwner(HauntedSkull.this.getTrueOwner());
                     }
@@ -304,7 +304,7 @@ public class HauntedSkull extends Minion {
                     soulSkull.setUpgraded(HauntedSkull.this.isUpgraded());
                     soulSkull.setFiery(HauntedSkull.this.getBurning());
                     soulSkull.setExplosionPower(HauntedSkull.this.getExplosionPower());
-                    if (HauntedSkull.this.level.addFreshEntity(soulSkull)) {
+                    if (HauntedSkull.this.level().addFreshEntity(soulSkull)) {
                         HauntedSkull.this.playChargeCry();
                         HauntedSkull.this.discard();
                     }

@@ -98,7 +98,7 @@ public class SpiderEgg extends Owned {
 
     @Override
     public void die(DamageSource p_21014_) {
-        if (this.level instanceof ServerLevel serverLevel) {
+        if (this.level() instanceof ServerLevel serverLevel) {
             for (int i = 0; i < 8; ++i) {
                 ServerParticleUtil.addParticlesAroundMiddleSelf(serverLevel, new BlockParticleOption(ParticleTypes.BLOCK, Blocks.COBWEB.defaultBlockState()), this);
             }
@@ -143,7 +143,7 @@ public class SpiderEgg extends Owned {
             this.swell = this.maxSwell;
             this.hatchEgg();
         }
-        if (this.level instanceof ServerLevel serverLevel) {
+        if (this.level() instanceof ServerLevel serverLevel) {
             if (serverLevel.random.nextInt(10) == 0) {
                 ServerParticleUtil.addParticlesAroundMiddleSelf(serverLevel, new BlockParticleOption(ParticleTypes.BLOCK, Blocks.COBWEB.defaultBlockState()), this);
             }
@@ -155,7 +155,7 @@ public class SpiderEgg extends Owned {
     }
 
     private void hatchEgg() {
-        if (this.level instanceof ServerLevel serverLevel) {
+        if (this.level() instanceof ServerLevel serverLevel) {
             SpiderServant spiderServant = ModEntityType.SPIDER_SERVANT.get().create(serverLevel);
             if (spiderServant != null) {
                 EntityType<?> entityType = spiderServant.getVariant(this.getOwner() instanceof Player player ? player : null, serverLevel, this.blockPosition());

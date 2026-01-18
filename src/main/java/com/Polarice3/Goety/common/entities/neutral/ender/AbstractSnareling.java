@@ -87,10 +87,10 @@ public class AbstractSnareling extends AbstractEnderling implements RangedAttack
         MobUtil.setBaseAttributes(this.getAttribute(Attributes.ATTACK_DAMAGE), AttributesConfig.SnarelingDamage.get());
     }
 
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.entityData.define(WEB_SHOOTING, false);
-        this.entityData.define(ANIM_STATE, 0);
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(WEB_SHOOTING, false);
+        builder.define(ANIM_STATE, 0);
     }
 
     @Override
@@ -109,7 +109,7 @@ public class AbstractSnareling extends AbstractEnderling implements RangedAttack
 
     public void onSyncedDataUpdated(EntityDataAccessor<?> p_33609_) {
         if (ANIM_STATE.equals(p_33609_)) {
-            if (this.level.isClientSide) {
+            if (this.level().isClientSide) {
                 switch (this.entityData.get(ANIM_STATE)) {
                     case 0:
                         this.stopAllAnimations();
@@ -217,7 +217,7 @@ public class AbstractSnareling extends AbstractEnderling implements RangedAttack
     @Override
     public void tick() {
         super.tick();
-        if (this.level.isClientSide) {
+        if (this.level().isClientSide) {
             this.idleAnimationState.animateWhen(!this.walkAnimation.isMoving() && this.getCurrentAnimation() == 0, this.tickCount);
         }
     }
@@ -235,7 +235,7 @@ public class AbstractSnareling extends AbstractEnderling implements RangedAttack
                 this.playSound(ModSounds.SNARELING_MELEE.get(), 1.0F, this.getVoicePitch());
             }
         }
-        if (!this.level.isClientSide) {
+        if (!this.level().isClientSide) {
             if (!this.isDeadOrDying()) {
                 if (this.fleeCool > 0) {
                     --this.fleeCool;
@@ -291,7 +291,7 @@ public class AbstractSnareling extends AbstractEnderling implements RangedAttack
 
     @Override
     public void performRangedAttack(LivingEntity p_33317_, float p_33318_) {
-        SnarelingShot snowball = new SnarelingShot(this, this.level);
+        SnarelingShot snowball = new SnarelingShot(this, this.level());
         Vec3 vec3 = p_33317_.getDeltaMovement();
         double d0 = p_33317_.getX() + vec3.x - this.getX();
         double d1 = p_33317_.getY() + vec3.y  - this.getEyeY();
@@ -299,7 +299,7 @@ public class AbstractSnareling extends AbstractEnderling implements RangedAttack
         double d3 = Math.sqrt(d0 * d0 + d2 * d2);
         snowball.setXRot(snowball.getXRot() - -20.0F);
         snowball.shoot(d0, d1 + d3 * 0.2D, d2, 0.95F, 8.0F);
-        this.level.addFreshEntity(snowball);
+        this.level().addFreshEntity(snowball);
     }
 
     public static class ShootGoal<T extends AbstractSnareling> extends Goal {
@@ -324,7 +324,7 @@ public class AbstractSnareling extends AbstractEnderling implements RangedAttack
                     && livingentity.isAlive()
                     && !this.mob.isFleeing) {
                 this.target = livingentity;
-                return !livingentity.hasEffect(GoetyEffects.TANGLED.get())
+                return !livingentity.hasEffect(GoetyEffects.TANGLED.getHolder())
                         && this.mob.distanceTo(livingentity) > 3.0F;
             } else {
                 return false;
@@ -397,12 +397,12 @@ public class AbstractSnareling extends AbstractEnderling implements RangedAttack
         public boolean canUse() {
             return AbstractSnareling.this.getTarget() != null
                     && AbstractSnareling.this.getTarget().isAlive()
-                    && AbstractSnareling.this.getTarget().hasEffect(GoetyEffects.TANGLED.get());
+                    && AbstractSnareling.this.getTarget().hasEffect(GoetyEffects.TANGLED.getHolder());
         }
 
         @Override
         public boolean canContinueToUse() {
-            if (AbstractSnareling.this.getTarget() == null || AbstractSnareling.this.getTarget().isDeadOrDying() || !AbstractSnareling.this.getTarget().hasEffect(GoetyEffects.TANGLED.get())) {
+            if (AbstractSnareling.this.getTarget() == null || AbstractSnareling.this.getTarget().isDeadOrDying() || !AbstractSnareling.this.getTarget().hasEffect(GoetyEffects.TANGLED.getHolder())) {
                 return false;
             }
             return super.canContinueToUse();
@@ -426,18 +426,19 @@ public class AbstractSnareling extends AbstractEnderling implements RangedAttack
             LivingEntity target = AbstractSnareling.this.getTarget();
             if (target != null) {
                 MobUtil.instaLook(AbstractSnareling.this, target);
-                this.checkAndPerformAttack(target, AbstractSnareling.this.distanceToSqr(target.getX(), target.getY(), target.getZ()));
+                double distToEnemySqr = AbstractSnareling.this.distanceToSqr(target.getX(), target.getY(), target.getZ());
+                this.checkAndPerformAttack(target, distToEnemySqr);
             }
         }
 
-        @Override
+        // checkAndPerformAttack signature changed in 1.21
         protected void checkAndPerformAttack(LivingEntity enemy, double distToEnemySqr) {
             double d0 = this.getAttackReachSqr(enemy);
             if (distToEnemySqr > d0) {
                 Vec3 vec3 = enemy.position().offsetRandom(AbstractSnareling.this.getRandom(), 2.0F);
                 if (AbstractSnareling.this.teleportCool <= 0) {
                     if (AbstractSnareling.this.randomTeleport(vec3.x, vec3.y, vec3.z, true)) {
-                        if (!AbstractSnareling.this.level.isClientSide) {
+                        if (!AbstractSnareling.this.level().isClientSide) {
                             ModNetwork.sendToALL(new SRepositionPacket(AbstractSnareling.this.getId(), AbstractSnareling.this.getX(), AbstractSnareling.this.getY(), AbstractSnareling.this.getZ()));
                         }
                         AbstractSnareling.this.teleportCool = MathHelper.secondsToTicks(6);
@@ -454,7 +455,7 @@ public class AbstractSnareling extends AbstractEnderling implements RangedAttack
             }
         }
 
-        @Override
+        // getAttackReachSqr signature changed in 1.21
         protected double getAttackReachSqr(LivingEntity livingEntity) {
             return this.mob.getBbWidth() * 4.0F * this.mob.getBbWidth() * 4.0F + livingEntity.getBbWidth();
         }

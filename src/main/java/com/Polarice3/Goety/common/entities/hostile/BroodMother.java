@@ -93,7 +93,7 @@ public class BroodMother extends AbstractBroodMother {
     protected void alertSpooders(){
         double d0 = this.getAttributeValue(Attributes.FOLLOW_RANGE);
         AABB axisalignedbb = AABB.unitCubeFromLowerCorner(this.position()).inflate(d0, 10.0D, d0);
-        List<Mob> list = this.level.getEntitiesOfClass(Mob.class, axisalignedbb);
+        List<Mob> list = this.level().getEntitiesOfClass(Mob.class, axisalignedbb);
 
         for (Mob mob : list){
             if (mob.getTarget() == null && this.getLastHurtByMob() != null && !(this.getLastHurtByMob() instanceof Spider) && !MobUtil.areAllies(this.getLastHurtByMob(), this)) {

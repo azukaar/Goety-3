@@ -35,8 +35,8 @@ public class InquillagerRenderer<T extends Inquillager> extends MobRenderer<T, I
         matrixStackIn.scale(0.9375F, 0.9375F, 0.9375F);
     }
 
-    protected void setupRotations(T pEntityLiving, PoseStack pMatrixStack, float pAgeInTicks, float pRotationYaw, float pPartialTicks) {
-        super.setupRotations(pEntityLiving, pMatrixStack, pAgeInTicks, pRotationYaw, pPartialTicks);
+    protected void setupRotations(T pEntityLiving, PoseStack pMatrixStack, float pAgeInTicks, float pRotationYaw, float pPartialTicks, float pHeadPitch) {
+        super.setupRotations(pEntityLiving, pMatrixStack, pAgeInTicks, pRotationYaw, pPartialTicks, pHeadPitch);
         float f = pEntityLiving.getSwimAmount(pPartialTicks);
         if (f > 0.0F) {
             pMatrixStack.mulPose(Axis.XP.rotationDegrees(Mth.lerp(f, pEntityLiving.getXRot(), -10.0F - pEntityLiving.getXRot())));

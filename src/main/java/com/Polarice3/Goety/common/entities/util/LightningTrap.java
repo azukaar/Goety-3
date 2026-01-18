@@ -31,7 +31,7 @@ public class LightningTrap extends AbstractTrap {
     public void tick() {
         super.tick();
         if (this.tickCount == 1) {
-            if (this.level instanceof ServerLevel serverLevel) {
+            if (this.level() instanceof ServerLevel serverLevel) {
                 ColorUtil colorUtil = ColorUtil.WHITE;
                 serverLevel.sendParticles(new AoEParticleOption(3.0F, 3.0F / this.getDuration(), 0.0F, this.getDuration()), this.getX(), this.getY() + 0.1F, this.getZ(), 0, colorUtil.red(), colorUtil.green(), colorUtil.blue(), 1.0F);
             }

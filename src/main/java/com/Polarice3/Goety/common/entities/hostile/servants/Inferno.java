@@ -83,21 +83,22 @@ public class Inferno extends BlazeServant {
         return false;
     }
 
-    @Override
-    protected ResourceLocation getDefaultLootTable() {
-        if (this.isNatural()){
-            return EntityType.BLAZE.getDefaultLootTable();
-        } else {
-            return super.getDefaultLootTable();
-        }
-    }
+    // Loot table method signature changed in 1.21
+    // @Override
+    // protected ResourceLocation getDefaultLootTable() {
+    //     if (this.isNatural()){
+    //         return EntityType.BLAZE.getDefaultLootTable();
+    //     } else {
+    //         return super.getDefaultLootTable();
+    //     }
+    // }
 
-    protected void dropCustomDeathLoot(DamageSource p_33574_, int p_33575_, boolean p_33576_) {
-        super.dropCustomDeathLoot(p_33574_, p_33575_, p_33576_);
+    protected void dropCustomDeathLoot(ServerLevel serverLevel, DamageSource p_33574_, boolean p_33576_) {
+        super.dropCustomDeathLoot(serverLevel, p_33574_, p_33576_);
         if (this.isNatural()) {
-            if (this.level.getServer() != null) {
-                LootTable loottable = this.level.getServer().getLootData().getLootTable(ModLootTables.INFERNO);
-                LootParams.Builder lootparams$builder = (new LootParams.Builder((ServerLevel) this.level)).withParameter(LootContextParams.THIS_ENTITY, this).withParameter(LootContextParams.ORIGIN, this.position()).withParameter(LootContextParams.DAMAGE_SOURCE, p_33574_).withOptionalParameter(LootContextParams.KILLER_ENTITY, p_33574_.getEntity()).withOptionalParameter(LootContextParams.DIRECT_KILLER_ENTITY, p_33574_.getDirectEntity());
+            if (serverLevel.getServer() != null) {
+                LootTable loottable = serverLevel.getServer().reloadableRegistries().getLootTable(ModLootTables.INFERNO);
+                LootParams.Builder lootparams$builder = (new LootParams.Builder(serverLevel)).withParameter(LootContextParams.THIS_ENTITY, this).withParameter(LootContextParams.ORIGIN, this.position()).withParameter(LootContextParams.DAMAGE_SOURCE, p_33574_).withOptionalParameter(LootContextParams.ATTACKING_ENTITY, p_33574_.getEntity()).withOptionalParameter(LootContextParams.DIRECT_ATTACKING_ENTITY, p_33574_.getDirectEntity());
                 if (this.lastHurtByPlayerTime > 0 && this.lastHurtByPlayer != null) {
                     lootparams$builder = lootparams$builder.withParameter(LootContextParams.LAST_DAMAGE_PLAYER, this.lastHurtByPlayer).withLuck(this.lastHurtByPlayer.getLuck());
                 }
@@ -127,11 +128,11 @@ public class Inferno extends BlazeServant {
     @Override
     public void clientTick() {
         if (this.random.nextInt(24) == 0 && !this.isSilent()) {
-            this.level.playLocalSound(this.getX() + 0.5D, this.getY() + 0.5D, this.getZ() + 0.5D, SoundEvents.BLAZE_BURN, this.getSoundSource(), 1.0F + this.random.nextFloat(), this.random.nextFloat() * 0.7F + 0.3F, false);
+            this.level().playLocalSound(this.getX() + 0.5D, this.getY() + 0.5D, this.getZ() + 0.5D, SoundEvents.BLAZE_BURN, this.getSoundSource(), 1.0F + this.random.nextFloat(), this.random.nextFloat() * 0.7F + 0.3F, false);
         }
 
         for(int i = 0; i < 2; ++i) {
-            this.level.addParticle(ModParticleTypes.BIG_FIRE.get(), this.getRandomX(0.5D), this.getRandomY(), this.getRandomZ(0.5D), 0.0D, 0.0D, 0.0D);
+            this.level().addParticle(ModParticleTypes.BIG_FIRE.get(), this.getRandomX(0.5D), this.getRandomY(), this.getRandomZ(0.5D), 0.0D, 0.0D, 0.0D);
         }
     }
 
@@ -142,7 +143,7 @@ public class Inferno extends BlazeServant {
     private void floatInferno() {
         if (this.isInLava()) {
             CollisionContext collisioncontext = CollisionContext.of(this);
-            if (collisioncontext.isAbove(LiquidBlock.STABLE_SHAPE, this.blockPosition(), true) && !this.level.getFluidState(this.blockPosition().above()).is(FluidTags.LAVA)) {
+            if (collisioncontext.isAbove(LiquidBlock.STABLE_SHAPE, this.blockPosition(), true) && !this.level().getFluidState(this.blockPosition().above()).is(FluidTags.LAVA)) {
                 this.setOnGround(true);
             } else {
                 this.setDeltaMovement(this.getDeltaMovement().scale(0.5D).add(0.0D, 0.05D, 0.0D));
@@ -161,8 +162,8 @@ public class Inferno extends BlazeServant {
 
     @Nullable
     @Override
-    public SpawnGroupData finalizeSpawn(ServerLevelAccessor pLevel, DifficultyInstance pDifficulty, MobSpawnType pReason, @Nullable SpawnGroupData pSpawnData, @Nullable CompoundTag pDataTag) {
-        SpawnGroupData spawnGroupData = super.finalizeSpawn(pLevel, pDifficulty, pReason, pSpawnData, pDataTag);
+    public SpawnGroupData finalizeSpawn(ServerLevelAccessor pLevel, DifficultyInstance pDifficulty, MobSpawnType pReason, @Nullable SpawnGroupData pSpawnData) {
+        SpawnGroupData spawnGroupData = super.finalizeSpawn(pLevel, pDifficulty, pReason, pSpawnData);
         if (this.isNatural()){
             this.setHostile(true);
         }
@@ -283,10 +284,10 @@ public class Inferno extends BlazeServant {
                             float damage = AttributesConfig.InfernoRangeDamage.get().floatValue() + this.blaze.getFireBallDamage();
 
                             for(int i = 0; i < 1; ++i) {
-                                HellBolt hellBolt = new HellBolt(this.blaze, d1, d2, d3, this.blaze.level);
+                                HellBolt hellBolt = new HellBolt(this.blaze, d1, d2, d3, this.blaze.level());
                                 hellBolt.setPos(hellBolt.getX(), this.blaze.getY(0.5D) + 0.5D, hellBolt.getZ());
                                 hellBolt.setDamage(damage);
-                                this.blaze.level.addFreshEntity(hellBolt);
+                                this.blaze.level().addFreshEntity(hellBolt);
                             }
                         }
                     }

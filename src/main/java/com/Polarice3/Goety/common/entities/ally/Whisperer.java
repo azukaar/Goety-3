@@ -137,7 +137,7 @@ public class Whisperer extends Summoned {
     protected void doUnderWaterConversion() {
         this.convertToWave(ModEntityType.WAVEWHISPERER.get());
         if (!this.isSilent()) {
-            this.level.levelEvent((Player) null, 1040, this.blockPosition(), 0);
+            this.level().levelEvent((Player) null, 1040, this.blockPosition(), 0);
         }
 
     }
@@ -156,7 +156,7 @@ public class Whisperer extends Summoned {
 
     }
 
-    @Override
+    // @Override
     public MobType getMobType() {
         return ModMobType.NATURAL;
     }
@@ -218,7 +218,7 @@ public class Whisperer extends Summoned {
 
     public void onSyncedDataUpdated(EntityDataAccessor<?> accessor) {
         if (ANIM_STATE.equals(accessor)) {
-            if (this.level.isClientSide) {
+            if (this.level().isClientSide) {
                 switch (this.entityData.get(ANIM_STATE)) {
                     case 0:
                         break;
@@ -340,7 +340,7 @@ public class Whisperer extends Summoned {
     public void setMeleeAttacking(boolean attack) {
         this.setFlag(4, attack);
         this.attackTick = 0;
-        this.level.broadcastEntityEvent(this, (byte) 5);
+        this.level().broadcastEntityEvent(this, (byte) 5);
     }
 
     public Vec3 getHorizontalLeftLookAngle() {
@@ -367,7 +367,7 @@ public class Whisperer extends Summoned {
     public void tick() {
         super.tick();
         if (this.isAlive()) {
-            if (!this.level.isClientSide) {
+            if (!this.level().isClientSide) {
                 if (this.isAlive() && !this.isNoAi()) {
                     if (this.isUnderWaterConverting()) {
                         --this.conversionTime;
@@ -377,7 +377,7 @@ public class Whisperer extends Summoned {
                             this.doUnderWaterConversion();
                         }
                     } else if (this.convertsInWater()) {
-                        if (this.isEyeInFluidType(NeoForgeMod.WATER_TYPE.get())) {
+                        if (this.isEyeInFluidType(NeoForgeMod.WATER_TYPE.value())) {
                             ++this.inWaterTime;
                             if (this.inWaterTime >= 600) {
                                 this.startUnderWaterConversion(300);
@@ -398,7 +398,7 @@ public class Whisperer extends Summoned {
                     ++this.attackTick;
                     if (this.attackTick >= MathHelper.secondsToTicks(1.3333F)) {
                         this.setMeleeAttacking(false);
-                        this.level.broadcastEntityEvent(this, (byte) 9);
+                        this.level().broadcastEntityEvent(this, (byte) 9);
                     }
                 }
                 if (this.isSummoning()) {
@@ -407,7 +407,7 @@ public class Whisperer extends Summoned {
                 if (this.summonCool > 0) {
                     --this.summonCool;
                 }
-                if (this.level instanceof ServerLevel serverLevel) {
+                if (this.level() instanceof ServerLevel serverLevel) {
                     if (this.getCurrentAnimation() == this.getAnimationState(SUMMON)) {
                         if (this.summonTick > 5 && this.summonTick <= 20) {
                             ColorUtil colorUtil = new ColorUtil(0xfcd9f7);
@@ -455,7 +455,7 @@ public class Whisperer extends Summoned {
     }
 
     public InteractionResult mobInteract(Player pPlayer, InteractionHand p_230254_2_) {
-        if (!this.level.isClientSide) {
+        if (!this.level().isClientSide) {
             ItemStack itemstack = pPlayer.getItemInHand(p_230254_2_);
             Item item = itemstack.getItem();
             if (this.getTrueOwner() != null && pPlayer == this.getTrueOwner()) {
@@ -469,7 +469,7 @@ public class Whisperer extends Summoned {
                         this.playSound(ModSounds.WHISPERER_AMBIENT.get(), 1.0F, 1.25F);
                     }
                     this.heal(5.0F);
-                    if (this.level instanceof ServerLevel serverLevel) {
+                    if (this.level() instanceof ServerLevel serverLevel) {
                         for (int i = 0; i < 7; ++i) {
                             double d0 = this.random.nextGaussian() * 0.02D;
                             double d1 = this.random.nextGaussian() * 0.02D;
@@ -517,14 +517,14 @@ public class Whisperer extends Summoned {
             this.ticksUntilNextAttack = 0;
             this.whisperer.setMeleeAttacking(true);
             this.whisperer.setAggressive(true);
-            this.whisperer.level.broadcastEntityEvent(this.whisperer, (byte) 6);
+            this.whisperer.level().broadcastEntityEvent(this.whisperer, (byte) 6);
         }
 
         @Override
         public void stop() {
             this.whisperer.setMeleeAttacking(false);
             this.whisperer.setAggressive(false);
-            this.whisperer.level.broadcastEntityEvent(this.whisperer, (byte) 7);
+            this.whisperer.level().broadcastEntityEvent(this.whisperer, (byte) 7);
         }
 
         @Override
@@ -695,10 +695,10 @@ public class Whisperer extends Summoned {
                                         this.whisperer.getSoundVolume(), this.whisperer.getVoicePitch());
                             }
                             if (this.whisperer.summonTick == 46) {
-                                EntangleVines entangleVines = new EntangleVines(this.whisperer.level, this.whisperer,
+                                EntangleVines entangleVines = new EntangleVines(this.whisperer.level(), this.whisperer,
                                         this.target);
                                 entangleVines.setDamaging(CuriosFinder.hasWildRobe(this.whisperer.getTrueOwner()));
-                                this.whisperer.level.addFreshEntity(entangleVines);
+                                this.whisperer.level().addFreshEntity(entangleVines);
                             }
                             cooldown = (int) (spellTime + MathHelper.secondsToTicks(0.1F));
                         }

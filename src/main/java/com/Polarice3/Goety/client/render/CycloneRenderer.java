@@ -14,7 +14,7 @@ import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
 
 public class CycloneRenderer extends EntityRenderer<Cyclone> {
-    private static final ResourceLocation TEXTURES = new ResourceLocation(Goety.MOD_ID,
+    private static final ResourceLocation TEXTURES = ResourceLocation.fromNamespaceAndPath(Goety.MOD_ID,
             "textures/entity/projectiles/cyclone.png");
     private final CycloneModel<Cyclone> model;
 

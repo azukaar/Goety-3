@@ -87,8 +87,8 @@ public abstract class AbstractTrap extends Entity implements ISpellEntity {
 
     @Nullable
     public LivingEntity getOwner() {
-        if (this.owner == null && this.ownerUniqueId != null && this.level instanceof ServerLevel) {
-            Entity entity = ((ServerLevel)this.level).getEntity(this.ownerUniqueId);
+        if (this.owner == null && this.ownerUniqueId != null && this.level() instanceof ServerLevel) {
+            Entity entity = ((ServerLevel)this.level()).getEntity(this.ownerUniqueId);
             if (entity instanceof LivingEntity) {
                 this.owner = (LivingEntity)entity;
             }
@@ -105,7 +105,7 @@ public abstract class AbstractTrap extends Entity implements ISpellEntity {
     public void tick() {
         super.tick();
         if (this.getParticle() != null) {
-            if (this.level instanceof ServerLevel serverWorld) {
+            if (this.level() instanceof ServerLevel serverWorld) {
                 ParticleOptions iparticledata = this.getParticle();
                 ServerParticleUtil.circularParticles(serverWorld, iparticledata, this.getX(), this.getY(), this.getZ(), this.xSpeed, this.ySpeed, this.zSpeed, this.radius() / 2.0F);
             }

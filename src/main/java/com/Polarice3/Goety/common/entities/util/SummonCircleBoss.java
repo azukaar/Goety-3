@@ -51,7 +51,7 @@ public class SummonCircleBoss extends Entity {
 
     @Override
     protected void readAdditionalSaveData(CompoundTag pCompound) {
-        Entity entity = EntityType.loadEntityRecursive(pCompound, this.level, (p_58740_) -> {
+        Entity entity = EntityType.loadEntityRecursive(pCompound, this.level(), (p_58740_) -> {
             return p_58740_;
         });
         if (entity != null) {
@@ -103,7 +103,7 @@ public class SummonCircleBoss extends Entity {
             this.playedEvent = true;
             this.playSound(ModSounds.BOSS_SUMMON.get(), 16.0F, 1.0F);
         }
-        if (this.level instanceof ServerLevel serverWorld) {
+        if (this.level() instanceof ServerLevel serverWorld) {
             float f = 1.5F;
             float f5 = (float) Math.PI * f * f;
             if (this.tickCount % 5 == 0){

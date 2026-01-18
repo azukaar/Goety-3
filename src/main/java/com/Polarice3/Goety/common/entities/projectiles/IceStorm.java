@@ -75,7 +75,7 @@ public class IceStorm extends SpellHurtingProjectile {
     public EntityDimensions getDimensions(Pose p_33113_) {
         float i = this.getSize();
         EntityDimensions entitydimensions = super.getDimensions(p_33113_);
-        float f = (entitydimensions.width + (0.2F * i)) / entitydimensions.width;
+        float f = (entitydimensions.width() + (0.2F * i)) / entitydimensions.width();
         return entitydimensions.scale(f);
     }
 
@@ -111,8 +111,8 @@ public class IceStorm extends SpellHurtingProjectile {
     public void tick() {
         super.tick();
         Entity owner = this.getOwner();
-        if (!this.level.isClientSide){
-            if (this.level instanceof ServerLevel serverLevel){
+        if (!this.level().isClientSide){
+            if (this.level() instanceof ServerLevel serverLevel){
                 ServerParticleUtil.addAuraParticles(serverLevel, ParticleTypes.SNOWFLAKE, this.getX(), (this.getY() - 0.5F)+ (this.getSize() / 4.0F), this.getZ(), (this.getSize() / 4.0F) + 0.5F);
                 ServerParticleUtil.addAuraParticles(serverLevel, ParticleTypes.SNOWFLAKE, this.getX(), (this.getY() + 1.0F) + (this.getSize() / 4.0F), this.getZ(), (this.getSize() / 4.0F) + 0.5F);
                 ServerParticleUtil.addAuraParticles(serverLevel, ParticleTypes.SNOWFLAKE, this.getX(), (this.getY() + 0.5F) + (this.getSize() / 4.0F), this.getZ(), (this.getSize() / 2.0F) + 1.0F);
@@ -122,18 +122,18 @@ public class IceStorm extends SpellHurtingProjectile {
                 this.discard();
             }
             float baseDamage = SpellConfig.IceStormDamage.get().floatValue() * WandUtil.damageMultiply();
-            for (Entity entity : this.level.getEntitiesOfClass(Entity.class, this.getBoundingBox().inflate(1.0F), EntitySelector.NO_CREATIVE_OR_SPECTATOR)){
+            for (Entity entity : this.level().getEntitiesOfClass(Entity.class, this.getBoundingBox().inflate(1.0F), EntitySelector.NO_CREATIVE_OR_SPECTATOR)){
                 LivingEntity livingEntity = MobUtil.getLivingTarget(entity);
                 if (livingEntity != null) {
                     if (owner != null) {
                         if (!MobUtil.areAllies(owner, livingEntity) && livingEntity != owner) {
                             if (livingEntity.hurt(ModDamageSource.indirectFreeze(this, owner), baseDamage + this.getExtraDamage())) {
-                                livingEntity.addEffect(new MobEffectInstance(GoetyEffects.FREEZING.get(), MathHelper.secondsToTicks(1 + this.getDuration())));
+                                livingEntity.addEffect(new MobEffectInstance(GoetyEffects.FREEZING.getHolder(), MathHelper.secondsToTicks(1 + this.getDuration())));
                             }
                         }
                     } else {
                         if (livingEntity.hurt(ModDamageSource.indirectFreeze(this, this), baseDamage + this.getExtraDamage())) {
-                            livingEntity.addEffect(new MobEffectInstance(GoetyEffects.FREEZING.get(), MathHelper.secondsToTicks(1 + this.getDuration())));
+                            livingEntity.addEffect(new MobEffectInstance(GoetyEffects.FREEZING.getHolder(), MathHelper.secondsToTicks(1 + this.getDuration())));
                         }
                     }
                 }
@@ -162,8 +162,8 @@ public class IceStorm extends SpellHurtingProjectile {
         return super.canHitEntity(p_36842_) && !p_36842_.noPhysics;
     }
 
-    @Override
-    public Packet<ClientGamePacketListener> getAddEntityPacket() {
-        return new net.minecraft.network.protocol.game.ClientboundAddEntityPacket(this);
-    }
+    // @Override
+    // public Packet<ClientGamePacketListener> getAddEntityPacket() {
+    //     return new net.minecraft.network.protocol.game.ClientboundAddEntityPacket(this);
+    // }
 }

@@ -56,15 +56,15 @@ public class IceStormRenderer extends EntityRenderer<IceStorm> {
         p_114165_.mulPose(Axis.YP.rotationDegrees(f1));
         p_114165_.translate(0.0D, 0.25F, 0.0D);
         p_114165_.mulPose((new Quaternionf()).setAngleAxis(((float)Math.PI / 3F), SIN_45, 0.0F, SIN_45));
-        this.glass.render(p_114165_, vertexconsumer, p_114167_, i, 1.0F, 1.0F, 1.0F, 0.25F);
+        this.glass.render(p_114165_, vertexconsumer, p_114167_, i, 0x40FFFFFF);
         p_114165_.scale(0.875F, 0.875F, 0.875F);
         p_114165_.mulPose((new Quaternionf()).setAngleAxis(((float)Math.PI / 3F), SIN_45, 0.0F, SIN_45));
         p_114165_.mulPose(Axis.YP.rotationDegrees(f1));
-        this.glass.render(p_114165_, vertexconsumer, p_114167_, i, 1.0F, 1.0F, 1.0F, 0.5F);
+        this.glass.render(p_114165_, vertexconsumer, p_114167_, i, 0x80FFFFFF);
         p_114165_.scale(0.875F, 0.875F, 0.875F);
         p_114165_.mulPose((new Quaternionf()).setAngleAxis(((float)Math.PI / 3F), SIN_45, 0.0F, SIN_45));
         p_114165_.mulPose(Axis.YP.rotationDegrees(f1));
-        this.cube.render(p_114165_, vertexconsumer, p_114167_, i, 1.0F, 1.0F, 1.0F, 0.75F);
+        this.cube.render(p_114165_, vertexconsumer, p_114167_, i, 0xBFFFFFFF);
         p_114165_.popPose();
         p_114165_.popPose();
         super.render(p_114162_, p_114163_, p_114164_, p_114165_, p_114166_, p_114167_);

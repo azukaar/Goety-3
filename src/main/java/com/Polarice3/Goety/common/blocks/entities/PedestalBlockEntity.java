@@ -21,12 +21,12 @@ public class PedestalBlockEntity extends RitualBlockEntity {
 
                 @Override
                 protected void onContentsChanged(int slot) {
-                    if (PedestalBlockEntity.this.level != null) {
-                        if (!PedestalBlockEntity.this.level.isClientSide) {
-                            PedestalBlockEntity.this.lastChangeTime = PedestalBlockEntity.this.level
+                    if (PedestalBlockEntity.this.getLevel() != null) {
+                        if (!PedestalBlockEntity.this.getLevel().isClientSide) {
+                            PedestalBlockEntity.this.lastChangeTime = PedestalBlockEntity.this.getLevel()
                                     .getGameTime();
                             boolean flag = !this.stacks.get(0).isEmpty();
-                            PedestalBlockEntity.this.level.setBlockAndUpdate(PedestalBlockEntity.this.getBlockPos(),
+                            PedestalBlockEntity.this.getLevel().setBlockAndUpdate(PedestalBlockEntity.this.getBlockPos(),
                                     PedestalBlockEntity.this.getBlockState().setValue(BlockStateProperties.OCCUPIED, flag));
                             PedestalBlockEntity.this.markNetworkDirty();
                         }
@@ -46,16 +46,16 @@ public class PedestalBlockEntity extends RitualBlockEntity {
 
     @Override
     public void readNetwork(CompoundTag compound) {
-        if (this.level != null) {
-            this.itemStackHandler.deserializeNBT(this.level.registryAccess(), compound.getCompound("inventory"));
+        if (this.getLevel() != null) {
+            this.itemStackHandler.deserializeNBT(this.getLevel().registryAccess(), compound.getCompound("inventory"));
         }
         this.lastChangeTime = compound.getLong("lastChangeTime");
     }
 
     @Override
     public CompoundTag writeNetwork(CompoundTag compound) {
-        if (this.level != null) {
-            compound.put("inventory", this.itemStackHandler.serializeNBT(this.level.registryAccess()));
+        if (this.getLevel() != null) {
+            compound.put("inventory", this.itemStackHandler.serializeNBT(this.getLevel().registryAccess()));
         }
         compound.putLong("lastChangeTime", this.lastChangeTime);
         return compound;

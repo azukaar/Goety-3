@@ -214,7 +214,7 @@ public class RedstoneMonstrosity extends RaiderGolemServant implements PlayerRid
     }
 
     protected void doPlayerRide(Player player) {
-        if (!this.level.isClientSide) {
+        if (!this.level().isClientSide) {
             player.setYRot(this.getYRot());
             player.setXRot(this.getXRot());
             player.startRiding(this);
@@ -256,7 +256,7 @@ public class RedstoneMonstrosity extends RaiderGolemServant implements PlayerRid
     }
 
     public boolean clientStopMoving() {
-        if (this.level.isClientSide) {
+        if (this.level().isClientSide) {
             return this.clientStop;
         } else {
             return this.isMeleeAttacking() || this.isBelching() || this.isSummoning();
@@ -297,7 +297,7 @@ public class RedstoneMonstrosity extends RaiderGolemServant implements PlayerRid
         } else {
             this.playSound(ModSounds.REDSTONE_MONSTROSITY_STEP.get(), 2.0F, 1.0F);
         }
-        CameraShake.cameraShake(this.level, this.position(), 20.0F, 0.03F, 0, 20);
+        CameraShake.cameraShake(this.level(), this.position(), 20.0F, 0.03F, 0, 20);
     }
 
     @Override
@@ -380,7 +380,7 @@ public class RedstoneMonstrosity extends RaiderGolemServant implements PlayerRid
 
     public void onSyncedDataUpdated(EntityDataAccessor<?> accessor) {
         if (ANIM_STATE.equals(accessor)) {
-            if (this.level.isClientSide) {
+            if (this.level().isClientSide) {
                 switch (this.entityData.get(ANIM_STATE)) {
                     case 0:
                         break;
@@ -651,32 +651,32 @@ public class RedstoneMonstrosity extends RaiderGolemServant implements PlayerRid
                 this.playSound(ModSounds.REDSTONE_MONSTROSITY_AWAKEN.get(), 10.0F, 1.0F);
             }
             if (this.activateTick == 40) {
-                CameraShake.cameraShake(this.level, this.position(), 40.0F, 0.5F, 0, 20);
+                CameraShake.cameraShake(this.level(), this.position(), 40.0F, 0.5F, 0, 20);
             }
             if (this.activateTick > MathHelper.secondsToTicks(3.25F)) {
                 this.setPose(Pose.STANDING);
             }
         }
-        if (!this.level.isClientSide) {
+        if (!this.level().isClientSide) {
             if (this.isAlive() && !this.isActivating()) {
                 if (MobsConfig.RedstoneMonstrosityLeafBreak.get()) {
-                    if (this.level.getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING)) {
+                    if (this.level().getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING)) {
                         boolean flag = false;
                         AABB aabb = this.getBoundingBox().inflate(0.2D);
 
                         for (BlockPos blockpos : BlockPos.betweenClosed(Mth.floor(aabb.minX), Mth.floor(aabb.minY),
                                 Mth.floor(aabb.minZ), Mth.floor(aabb.maxX), Mth.floor(aabb.maxY),
                                 Mth.floor(aabb.maxZ))) {
-                            BlockState blockstate = this.level.getBlockState(blockpos);
+                            BlockState blockstate = this.level().getBlockState(blockpos);
                             Block block = blockstate.getBlock();
                             if (block instanceof LeavesBlock || blockstate.is(ModTags.Blocks.MONSTROSITY_BREAKS)) {
-                                flag = this.level.destroyBlock(blockpos, true, this) || flag;
+                                flag = this.level().destroyBlock(blockpos, true, this) || flag;
                             }
                         }
                     }
                 }
                 if (!this.isMeleeAttacking() && !this.isBelching() && !this.isSummoning()) {
-                    this.level.broadcastEntityEvent(this, (byte) 7);
+                    this.level().broadcastEntityEvent(this, (byte) 7);
                     if (this.isStaying()) {
                         if (this.isSittingDown > 0) {
                             --this.isSittingDown;
@@ -695,7 +695,7 @@ public class RedstoneMonstrosity extends RaiderGolemServant implements PlayerRid
                         }
                     }
                 } else {
-                    this.level.broadcastEntityEvent(this, (byte) 6);
+                    this.level().broadcastEntityEvent(this, (byte) 6);
                     if (this.isStaying()) {
                         this.isSittingDown = MathHelper.secondsToTicks(1);
                     } else {
@@ -712,7 +712,7 @@ public class RedstoneMonstrosity extends RaiderGolemServant implements PlayerRid
                 if (this.isSummoning()) {
                     this.makeBigGlow();
                     --this.summonTick;
-                    if (this.level instanceof ServerLevel serverLevel) {
+                    if (this.level() instanceof ServerLevel serverLevel) {
                         for (int i = 0; i < 5; ++i) {
                             double d0 = serverLevel.random.nextGaussian() * 0.02D;
                             double d1 = serverLevel.random.nextGaussian() * 0.02D;
@@ -723,7 +723,7 @@ public class RedstoneMonstrosity extends RaiderGolemServant implements PlayerRid
                         }
                         if (this.summonTick < MathHelper.secondsToTicks(SUMMON_SECONDS_TIME - 1)
                                 && this.summonTick >= MathHelper.secondsToTicks(SUMMON_SECONDS_TIME - 2)) {
-                            if (!this.level.getBlockState(this.blockPosition().below()).isAir()) {
+                            if (!this.level().getBlockState(this.blockPosition().below()).isAir()) {
                                 for (int j = 0; j < 4; ++j) {
                                     double d1 = this.getX()
                                             + (this.random.nextDouble() - 0.5D) * (double) this.getBbWidth() * 2.0D;
@@ -749,7 +749,7 @@ public class RedstoneMonstrosity extends RaiderGolemServant implements PlayerRid
                                     0.0D, 0.0D, 0.0D);
                             this.playSound(ModSounds.REDSTONE_MONSTROSITY_BELCH.get(), this.getSoundVolume(), 0.7F);
                             AABB aabb = new AABB(this.blockPosition());
-                            for (LivingEntity target : this.level.getEntitiesOfClass(LivingEntity.class,
+                            for (LivingEntity target : this.level().getEntitiesOfClass(LivingEntity.class,
                                     aabb.inflate(MELEE_RANGE / 2.0F))) {
                                 if (target != this && !MobUtil.areAllies(this, target)) {
                                     if (target.hurt(this.getServantAttack(), 2.0F)) {
@@ -769,21 +769,21 @@ public class RedstoneMonstrosity extends RaiderGolemServant implements PlayerRid
                             }
                         }
                         if (this.summonTick == MathHelper.secondsToTicks(SUMMON_SECONDS_TIME - 1.2F)) {
-                            CameraShake.cameraShake(this.level, this.position(), 25.0F, 0.3F, 0, 20);
+                            CameraShake.cameraShake(this.level(), this.position(), 25.0F, 0.3F, 0, 20);
                         }
                         if (this.summonTick <= (MathHelper.secondsToTicks(SUMMON_SECONDS_TIME - 2))
                                 && this.summonCount != 0) {
                             for (int i = 0; i < 10; ++i) {
                                 BlockPos blockPos = this.blockPosition();
-                                blockPos = blockPos.offset(-16 + this.level.random.nextInt(32), 0,
-                                        -16 + this.level.random.nextInt(32));
+                                blockPos = blockPos.offset(-16 + this.level().random.nextInt(32), 0,
+                                        -16 + this.level().random.nextInt(32));
                                 Vec3 vec3 = Vec3.atBottomCenterOf(blockPos);
-                                Summoned summoned = new RedstoneCube(ModEntityType.REDSTONE_CUBE.get(), this.level);
-                                if (this.level.noCollision(summoned, summoned.getBoundingBox().move(vec3))) {
-                                    SummonCircleVariant summonCircle = new SummonCircleVariant(this.level, vec3,
+                                Summoned summoned = new RedstoneCube(ModEntityType.REDSTONE_CUBE.get(), this.level());
+                                if (this.level().noCollision(summoned, summoned.getBoundingBox().move(vec3))) {
+                                    SummonCircleVariant summonCircle = new SummonCircleVariant(this.level(), vec3,
                                             summoned, this);
                                     summonCircle.playSound(ModSounds.DIRT_DEBRIS.get(), 3.0F, 0.4F);
-                                    this.level.addFreshEntity(summonCircle);
+                                    this.level().addFreshEntity(summonCircle);
                                 }
                             }
                             this.summonCount = 0;
@@ -831,7 +831,7 @@ public class RedstoneMonstrosity extends RaiderGolemServant implements PlayerRid
     }
 
     public void makeBigGlow() {
-        this.level.broadcastEntityEvent(this, (byte) 5);
+        this.level().broadcastEntityEvent(this, (byte) 5);
     }
 
     @Override
@@ -880,7 +880,7 @@ public class RedstoneMonstrosity extends RaiderGolemServant implements PlayerRid
     }
 
     public boolean doHurtTarget(Entity entityIn) {
-        if (!this.level.isClientSide && !this.isMeleeAttacking()) {
+        if (!this.level().isClientSide && !this.isMeleeAttacking()) {
             this.setMeleeAttacking(true);
         }
         return true;
@@ -900,7 +900,7 @@ public class RedstoneMonstrosity extends RaiderGolemServant implements PlayerRid
     }
 
     public InteractionResult mobInteract(Player pPlayer, InteractionHand pHand) {
-        if (!this.level.isClientSide) {
+        if (!this.level().isClientSide) {
             ItemStack itemstack = pPlayer.getItemInHand(pHand);
             if (this.getTrueOwner() != null && pPlayer == this.getTrueOwner()) {
                 if ((itemstack.is(Tags.Items.STORAGE_BLOCKS_REDSTONE)
@@ -916,7 +916,7 @@ public class RedstoneMonstrosity extends RaiderGolemServant implements PlayerRid
                         this.heal((this.getMaxHealth() / 4.0F) / 8.0F);
                         this.playSound(SoundEvents.IRON_GOLEM_REPAIR, 0.25F, 0.75F);
                     }
-                    if (this.level instanceof ServerLevel serverLevel) {
+                    if (this.level() instanceof ServerLevel serverLevel) {
                         for (int i = 0; i < 7; ++i) {
                             double d0 = serverLevel.random.nextGaussian() * 0.02D;
                             double d1 = serverLevel.random.nextGaussian() * 0.02D;

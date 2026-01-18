@@ -15,7 +15,7 @@ import org.joml.Matrix3f;
 import org.joml.Matrix4f;
 
 public class ModDragonFireballRenderer extends EntityRenderer<ModDragonFireball> {
-   private static final ResourceLocation TEXTURE_LOCATION = new ResourceLocation("textures/entity/enderdragon/dragon_fireball.png");
+   private static final ResourceLocation TEXTURE_LOCATION = ResourceLocation.withDefaultNamespace("textures/entity/enderdragon/dragon_fireball.png");
    private static final RenderType RENDER_TYPE = RenderType.entityCutoutNoCull(TEXTURE_LOCATION);
 
    public ModDragonFireballRenderer(EntityRendererProvider.Context p_173962_) {
@@ -44,7 +44,8 @@ public class ModDragonFireballRenderer extends EntityRenderer<ModDragonFireball>
    }
 
    private static void vertex(VertexConsumer p_254095_, Matrix4f p_254477_, Matrix3f p_253948_, int p_253829_, float p_253995_, int p_254031_, int p_253641_, int p_254243_) {
-      p_254095_.vertex(p_254477_, p_253995_ - 0.5F, (float)p_254031_ - 0.25F, 0.0F).color(255, 255, 255, 255).uv((float)p_253641_, (float)p_254243_).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(p_253829_).normal(p_253948_, 0.0F, 1.0F, 0.0F).endVertex();
+      org.joml.Vector4f vec = new org.joml.Vector4f(p_253995_ - 0.5F, (float)p_254031_ - 0.25F, 0.0F, 1.0F).mul(p_254477_);
+      p_254095_.addVertex(vec.x(), vec.y(), vec.z()).setColor(255, 255, 255, 255).setUv((float)p_253641_, (float)p_254243_).setOverlay(OverlayTexture.NO_OVERLAY).setLight(p_253829_).setNormal(0.0F, 1.0F, 0.0F);
    }
 
    public ResourceLocation getTextureLocation(ModDragonFireball p_114078_) {

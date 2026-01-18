@@ -159,7 +159,7 @@ public class PoisonQuill extends Arrow implements ISpellEntity {
     @Override
     public void tick() {
         super.tick();
-        if (!this.level.isLoaded(this.blockPosition())){
+        if (!this.level().isLoaded(this.blockPosition())){
             this.discard();
         }
         if (this.tickCount >= 100) {
@@ -172,7 +172,7 @@ public class PoisonQuill extends Arrow implements ISpellEntity {
             double d2 = this.getZ() + vec3.z;
             ColorUtil colorUtil = new ColorUtil(0xefec8b);
             for (int i = 0; i < 4; ++i) {
-                this.level.addParticle(ModParticleTypes.TRAIL.get(), d0 + (this.random.nextGaussian() / 2), d1 + 0.5D + (this.random.nextGaussian() / 2), d2 + (this.random.nextGaussian() / 2), colorUtil.red(), colorUtil.green(), colorUtil.blue());
+                this.level().addParticle(ModParticleTypes.TRAIL.get(), d0 + (this.random.nextGaussian() / 2), d1 + 0.5D + (this.random.nextGaussian() / 2), d2 + (this.random.nextGaussian() / 2), colorUtil.red(), colorUtil.green(), colorUtil.blue());
             }
         } else {
             this.discard();
@@ -191,7 +191,7 @@ public class PoisonQuill extends Arrow implements ISpellEntity {
 
     @Override
     protected void onHitEntity(EntityHitResult pResult) {
-        if (!this.level.isClientSide) {
+        if (!this.level().isClientSide) {
             Entity entity = pResult.getEntity();
             if (this.getSpearLevel() > 0) {
                 if (this.piercingIgnoreEntityIds == null) {
@@ -252,7 +252,7 @@ public class PoisonQuill extends Arrow implements ISpellEntity {
     protected void onHitBlock(BlockHitResult p_36755_) {
         super.onHitBlock(p_36755_);
         this.resetPiercedEntities();
-        if (!this.level.isClientSide) {
+        if (!this.level().isClientSide) {
             this.discard();
         }
     }

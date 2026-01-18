@@ -98,12 +98,12 @@ public class SpellLightningBolt extends LightningBolt {
 
     @Nullable
     public LivingEntity getOwner() {
-        if (!this.level.isClientSide){
+        if (!this.level().isClientSide){
             UUID uuid = this.getOwnerId();
             return uuid == null ? null : EntityFinder.getLivingEntityByUuiD(uuid);
         } else {
             int id = this.getOwnerClientId();
-            return id <= -1 ? null : this.level.getEntity(this.getOwnerClientId()) instanceof LivingEntity living ? living : null;
+            return id <= -1 ? null : this.level().getEntity(this.getOwnerClientId()) instanceof LivingEntity living ? living : null;
         }
     }
 
@@ -166,9 +166,9 @@ public class SpellLightningBolt extends LightningBolt {
 
     private void powerLightningRod() {
         BlockPos blockpos = this.getStrikePosition();
-        BlockState blockstate = this.level.getBlockState(blockpos);
+        BlockState blockstate = this.level().getBlockState(blockpos);
         if (blockstate.is(Blocks.LIGHTNING_ROD)) {
-            ((LightningRodBlock)blockstate.getBlock()).onLightningStrike(blockstate, this.level, blockpos);
+            ((LightningRodBlock)blockstate.getBlock()).onLightningStrike(blockstate, this.level(), blockpos);
         }
 
     }
@@ -188,17 +188,17 @@ public class SpellLightningBolt extends LightningBolt {
     public void tick() {
         this.baseTick();
         if (this.life == 2) {
-            if (this.level.isClientSide()) {
-                this.level.playLocalSound(this.getX(), this.getY(), this.getZ(), SoundEvents.LIGHTNING_BOLT_THUNDER, SoundSource.WEATHER, 10000.0F, 0.8F + this.random.nextFloat() * 0.2F, false);
-                this.level.playLocalSound(this.getX(), this.getY(), this.getZ(), SoundEvents.LIGHTNING_BOLT_IMPACT, SoundSource.WEATHER, 2.0F, 0.5F + this.random.nextFloat() * 0.2F, false);
+            if (this.level().isClientSide()) {
+                this.level().playLocalSound(this.getX(), this.getY(), this.getZ(), SoundEvents.LIGHTNING_BOLT_THUNDER, SoundSource.WEATHER, 10000.0F, 0.8F + this.random.nextFloat() * 0.2F, false);
+                this.level().playLocalSound(this.getX(), this.getY(), this.getZ(), SoundEvents.LIGHTNING_BOLT_IMPACT, SoundSource.WEATHER, 2.0F, 0.5F + this.random.nextFloat() * 0.2F, false);
             } else {
-                Difficulty difficulty = this.level.getDifficulty();
+                Difficulty difficulty = this.level().getDifficulty();
                 if (difficulty == Difficulty.NORMAL || difficulty == Difficulty.HARD) {
                     this.spawnFire(4);
                 }
 
                 this.powerLightningRod();
-                clearCopperOnLightningStrike(this.level, this.getStrikePosition());
+                clearCopperOnLightningStrike(this.level(), this.getStrikePosition());
                 this.gameEvent(GameEvent.LIGHTNING_STRIKE);
             }
         }
@@ -206,8 +206,8 @@ public class SpellLightningBolt extends LightningBolt {
         --this.life;
         if (this.life < 0) {
             if (this.flashes == 0) {
-                if (this.level instanceof ServerLevel serverLevel) {
-                    List<Entity> list = this.level.getEntities(this, new AABB(this.getX() - 15.0D, this.getY() - 15.0D, this.getZ() - 15.0D, this.getX() + 15.0D, this.getY() + 6.0D + 15.0D, this.getZ() + 15.0D), (p_147140_) -> p_147140_.isAlive() && !this.hitEntities.contains(p_147140_));
+                if (this.level() instanceof ServerLevel serverLevel) {
+                    List<Entity> list = this.level().getEntities(this, new AABB(this.getX() - 15.0D, this.getY() - 15.0D, this.getZ() - 15.0D, this.getX() + 15.0D, this.getY() + 6.0D + 15.0D, this.getZ() + 15.0D), (p_147140_) -> p_147140_.isAlive() && !this.hitEntities.contains(p_147140_));
 
                     for(ServerPlayer serverplayer : serverLevel.getPlayers((p_147157_) -> p_147157_.distanceTo(this) < 256.0F)) {
                         CriteriaTriggers.LIGHTNING_STRIKE.trigger(serverplayer, this, list);
@@ -224,14 +224,14 @@ public class SpellLightningBolt extends LightningBolt {
         }
 
         if (this.life >= 0) {
-            if (!(this.level instanceof ServerLevel)) {
-                this.level.setSkyFlashTime(2);
+            if (!(this.level() instanceof ServerLevel)) {
+                this.level().setSkyFlashTime(2);
             } else if (!this.isVisualOnly()) {
-                List<Entity> list1 = this.level.getEntities(this, new AABB(this.getX() - 3.0D, this.getY() - 3.0D, this.getZ() - 3.0D, this.getX() + 3.0D, this.getY() + 6.0D + 3.0D, this.getZ() + 3.0D), this::canHitEntity);
+                List<Entity> list1 = this.level().getEntities(this, new AABB(this.getX() - 3.0D, this.getY() - 3.0D, this.getZ() - 3.0D, this.getX() + 3.0D, this.getY() + 6.0D + 3.0D, this.getZ() + 3.0D), this::canHitEntity);
 
                 for(Entity entity : list1) {
                     if (!net.neoforged.event.EventFactory.onEntityStruckByLightning(entity, this)) {
-                        entity.thunderHit((ServerLevel) this.level, this);
+                        entity.thunderHit((ServerLevel) this.level(), this);
                     }
                     if (entity instanceof LivingEntity livingEntity) {
                         if (EntitySelector.NO_CREATIVE_OR_SPECTATOR.test(livingEntity)) {
@@ -267,19 +267,19 @@ public class SpellLightningBolt extends LightningBolt {
     }
 
     private void spawnFire(int p_20871_) {
-        if (!this.isVisualOnly() && !this.level.isClientSide && this.level.getGameRules().getBoolean(GameRules.RULE_DOFIRETICK) && this.isSetFire()) {
+        if (!this.isVisualOnly() && !this.level().isClientSide && this.level().getGameRules().getBoolean(GameRules.RULE_DOFIRETICK) && this.isSetFire()) {
             BlockPos blockpos = this.blockPosition();
-            BlockState blockstate = BaseFireBlock.getState(this.level, blockpos);
-            if (this.level.getBlockState(blockpos).isAir() && blockstate.canSurvive(this.level, blockpos)) {
-                this.level.setBlockAndUpdate(blockpos, blockstate);
+            BlockState blockstate = BaseFireBlock.getState(this.level(), blockpos);
+            if (this.level().getBlockState(blockpos).isAir() && blockstate.canSurvive(this.level(), blockpos)) {
+                this.level().setBlockAndUpdate(blockpos, blockstate);
                 ++this.blocksSetOnFire;
             }
 
             for(int i = 0; i < p_20871_; ++i) {
                 BlockPos blockpos1 = blockpos.offset(this.random.nextInt(3) - 1, this.random.nextInt(3) - 1, this.random.nextInt(3) - 1);
-                blockstate = BaseFireBlock.getState(this.level, blockpos1);
-                if (this.level.getBlockState(blockpos1).isAir() && blockstate.canSurvive(this.level, blockpos1)) {
-                    this.level.setBlockAndUpdate(blockpos1, blockstate);
+                blockstate = BaseFireBlock.getState(this.level(), blockpos1);
+                if (this.level().getBlockState(blockpos1).isAir() && blockstate.canSurvive(this.level(), blockpos1)) {
+                    this.level().setBlockAndUpdate(blockpos1, blockstate);
                     ++this.blocksSetOnFire;
                 }
             }

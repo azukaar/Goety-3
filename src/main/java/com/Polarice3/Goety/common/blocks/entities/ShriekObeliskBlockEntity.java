@@ -31,10 +31,10 @@ public class ShriekObeliskBlockEntity extends BlockEntity {
     }
 
     public void tick(){
-        if (this.level != null) {
-            this.power = updateBase(this.level, this.getBlockPos());
-            if (!this.level.isClientSide) {
-                this.level.setBlock(this.getBlockPos(), this.getBlockState().setValue(ShriekObeliskBlock.POWERED, this.checkCage()), 3);
+        if (this.getLevel() != null) {
+            this.power = updateBase(this.getLevel(), this.getBlockPos());
+            if (!this.getLevel().isClientSide) {
+                this.getLevel().setBlock(this.getBlockPos(), this.getBlockState().setValue(ShriekObeliskBlock.POWERED, this.checkCage()), 3);
             }
         }
     }
@@ -106,11 +106,11 @@ public class ShriekObeliskBlockEntity extends BlockEntity {
     }
 
     private boolean checkCage() {
-        if (this.level != null) {
+        if (this.getLevel() != null) {
             BlockPos pos = this.getBlockPos().below();
-            BlockState blockState = this.level.getBlockState(pos);
+            BlockState blockState = this.getLevel().getBlockState(pos);
             if (blockState.is(ModBlocks.CURSED_CAGE_BLOCK.get())) {
-                BlockEntity tileentity = this.level.getBlockEntity(pos);
+                BlockEntity tileentity = this.getLevel().getBlockEntity(pos);
                 if (tileentity instanceof CursedCageBlockEntity) {
                     this.cursedCageTile = (CursedCageBlockEntity) tileentity;
                     return !cursedCageTile.getItem().isEmpty();

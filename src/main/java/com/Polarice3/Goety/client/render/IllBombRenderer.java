@@ -6,7 +6,7 @@ import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.resources.ResourceLocation;
 
 public class IllBombRenderer extends ExplosiveProjectileRenderer<IllBomb> {
-    private static final ResourceLocation TEXTURE = new ResourceLocation(Goety.MOD_ID,"textures/item/ill_bomb.png");
+    private static final ResourceLocation TEXTURE = ResourceLocation.fromNamespaceAndPath(Goety.MOD_ID,"textures/item/ill_bomb.png");
 
     public IllBombRenderer(EntityRendererProvider.Context renderManagerIn) {
         super(renderManagerIn);

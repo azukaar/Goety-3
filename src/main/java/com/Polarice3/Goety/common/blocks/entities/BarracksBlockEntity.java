@@ -298,8 +298,8 @@ public abstract class BarracksBlockEntity extends OwnedBlockEntity implements Ga
 
     public void markUpdated() {
         this.setChanged();
-        if (this.level != null) {
-            this.level.sendBlockUpdated(this.getBlockPos(), this.getBlockState(), this.getBlockState(), 3);
+        if (this.getLevel() != null) {
+            this.getLevel().sendBlockUpdated(this.getBlockPos(), this.getBlockState(), this.getBlockState(), 3);
         }
     }
 }

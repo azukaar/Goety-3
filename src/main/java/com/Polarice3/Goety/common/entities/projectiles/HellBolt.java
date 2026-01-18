@@ -55,7 +55,8 @@ public class HellBolt extends WaterHurtingProjectile {
 
     public HellBolt(LivingEntity p_i1771_2_, double p_i1771_3_, double p_i1771_5_, double p_i1771_7_,
             Level p_i1771_1_) {
-        super(ModEntityType.HELL_BOLT.get(), p_i1771_2_, p_i1771_3_, p_i1771_5_, p_i1771_7_, p_i1771_1_);
+        super(ModEntityType.HELL_BOLT.get(), p_i1771_2_.getX(), p_i1771_2_.getEyeY(), p_i1771_2_.getZ(), p_i1771_3_, p_i1771_5_, p_i1771_7_, p_i1771_1_);
+        this.setOwner(p_i1771_2_);
     }
 
     public HellBolt(double pX, double pY, double pZ, double pAccelX, double pAccelY, double pAccelZ, Level pWorld) {
@@ -86,14 +87,14 @@ public class HellBolt extends WaterHurtingProjectile {
     @Override
     public void trailParticle() {
         Entity entity = this.getOwner();
-        if (this.level.isClientSide
-                || (entity == null || !entity.isRemoved()) && this.level.hasChunkAt(this.blockPosition())) {
+        if (this.level().isClientSide
+                || (entity == null || !entity.isRemoved()) && this.level().hasChunkAt(this.blockPosition())) {
             Vec3 vec3 = this.getDeltaMovement();
             double d0 = this.getX() - vec3.x;
             double d1 = this.getY() - vec3.y;
             double d2 = this.getZ() - vec3.z;
-            if (this.level.random.nextFloat() <= 0.05F) {
-                this.level.addParticle(ModParticleTypes.BIG_FIRE.get(), d0, d1 + 0.15D, d2, 0.0D, 0.0D, 0.0D);
+            if (this.level().random.nextFloat() <= 0.05F) {
+                this.level().addParticle(ModParticleTypes.BIG_FIRE.get(), d0, d1 + 0.15D, d2, 0.0D, 0.0D, 0.0D);
             }
         }
     }
@@ -116,7 +117,7 @@ public class HellBolt extends WaterHurtingProjectile {
 
     protected void onHitEntity(EntityHitResult pResult) {
         super.onHitEntity(pResult);
-        if (!this.level.isClientSide) {
+        if (!this.level().isClientSide) {
             Entity entity = pResult.getEntity();
             Entity entity1 = this.getOwner();
             int flaming = this.getFiery();
@@ -130,34 +131,34 @@ public class HellBolt extends WaterHurtingProjectile {
                 entity.setRemainingFireTicks(i);
             }
             if (entity1 instanceof LivingEntity) {
-                this.doEnchantDamageEffects((LivingEntity) entity1, entity);
+                // this.doEnchantDamageEffects((LivingEntity) entity1, entity);
             }
         }
     }
 
     protected void onHit(HitResult pResult) {
         super.onHit(pResult);
-        if (!this.level.isClientSide) {
+        if (!this.level().isClientSide) {
             if (!this.isRain()) {
                 Entity entity = this.getOwner();
                 Vec3 vec3 = Vec3.atCenterOf(this.blockPosition());
                 if (entity instanceof LivingEntity livingOwner) {
                     if (pResult instanceof BlockHitResult blockHitResult) {
                         BlockPos blockpos = blockHitResult.getBlockPos().relative(blockHitResult.getDirection());
-                        if (BlockFinder.canBeReplaced(this.level, blockpos)) {
-                            Hellfire hellfire = new Hellfire(this.level, Vec3.atCenterOf(blockpos), livingOwner);
+                        if (BlockFinder.canBeReplaced(this.level(), blockpos)) {
+                            Hellfire hellfire = new Hellfire(this.level(), Vec3.atCenterOf(blockpos), livingOwner);
                             vec3 = Vec3.atCenterOf(blockpos);
-                            this.level.addFreshEntity(hellfire);
+                            this.level().addFreshEntity(hellfire);
                         }
                     } else if (pResult instanceof EntityHitResult entityHitResult) {
                         Entity entity1 = entityHitResult.getEntity();
-                        Hellfire hellfire = new Hellfire(this.level, Vec3.atCenterOf(entity1.blockPosition()),
+                        Hellfire hellfire = new Hellfire(this.level(), Vec3.atCenterOf(entity1.blockPosition()),
                                 livingOwner);
                         vec3 = Vec3.atCenterOf(entity1.blockPosition());
-                        this.level.addFreshEntity(hellfire);
+                        this.level().addFreshEntity(hellfire);
                     }
                 }
-                if (this.level instanceof ServerLevel serverLevel) {
+                if (this.level() instanceof ServerLevel serverLevel) {
                     ServerParticleUtil.addParticlesAroundSelf(serverLevel, ModParticleTypes.BIG_FIRE.get(), this);
                     ColorUtil colorUtil = new ColorUtil(0xdd9c16);
                     serverLevel.sendParticles(
@@ -262,8 +263,8 @@ public class HellBolt extends WaterHurtingProjectile {
         return false;
     }
 
-    @Override
-    public Packet<ClientGamePacketListener> getAddEntityPacket() {
-        return new net.minecraft.network.protocol.game.ClientboundAddEntityPacket(this);
-    }
+    // @Override
+    // public Packet<ClientGamePacketListener> getAddEntityPacket() {
+    //    return new net.minecraft.network.protocol.game.ClientboundAddEntityPacket(this);
+    // }
 }

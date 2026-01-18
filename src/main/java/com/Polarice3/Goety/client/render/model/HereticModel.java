@@ -89,7 +89,7 @@ public class HereticModel<T extends Heretic> extends HierarchicalModel<T> implem
 		}
 		float f4 = Math.min(limbSwingAmount / 0.3F, 1.0F);
 		this.body.xRot = f4 * MathHelper.modelDegrees(7.5F);
-		float f5 = entity.getCast(Minecraft.getInstance().getPartialTick());
+		float f5 = entity.getCast(Minecraft.getInstance().getTimer().getGameTimeDeltaPartialTick(true));
 		this.arms.xRot = (f5 * MathHelper.modelDegrees(-25.0F)) + MathHelper.modelDegrees(-45.0F);
 	}
 

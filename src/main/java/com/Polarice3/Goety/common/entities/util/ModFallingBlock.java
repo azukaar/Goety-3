@@ -72,7 +72,6 @@ public class ModFallingBlock extends Entity {
 
     @Override
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
-        super.defineSynchedData(builder);
         builder.define(BLOCK_STATE, Optional.of(Blocks.DIRT.defaultBlockState()));
         builder.define(DURATION, 70);
         builder.define(MODE, FallingBlockMode.MOBILE.toString());
@@ -104,14 +103,15 @@ public class ModFallingBlock extends Entity {
         compound.putString("mode", this.entityData.get(MODE));
         compound.putFloat("popUp", this.entityData.get(POP_UP_LEVEL));
     }
-    @Override
-    public void onAddedToWorld() {
-        if (this.getDeltaMovement().x() > 0.0D || this.getDeltaMovement().z() > 0.0D) {
-            this.setYRot((float) ((180.0F / Math.PI) * Math.atan2(getDeltaMovement().x(), getDeltaMovement().z())));
-        }
-        this.setXRot(getXRot() + this.random.nextFloat() * 360.0F);
-        super.onAddedToWorld();
-    }
+    // onAddedToWorld removed in 1.21
+    // @Override
+    // public void onAddedToWorld() {
+    //    if (this.getDeltaMovement().x() > 0.0D || this.getDeltaMovement().z() > 0.0D) {
+    //        this.setYRot((float) ((180.0F / Math.PI) * Math.atan2(getDeltaMovement().x(), getDeltaMovement().z())));
+    //    }
+    //    this.setXRot(getXRot() + this.random.nextFloat() * 360.0F);
+    //    super.onAddedToWorld();
+    // }
 
     @Override
     public void tick() {
@@ -131,13 +131,13 @@ public class ModFallingBlock extends Entity {
             this.setDeltaMovement(this.getDeltaMovement().scale(0.98D));
 
             if (this.onGround() && this.tickCount > this.getDuration()) {
-                if (this.level instanceof ServerLevel serverLevel) {
+                if (this.level() instanceof ServerLevel serverLevel) {
                     ServerParticleUtil.addParticlesAroundMiddleSelf(serverLevel, new BlockParticleOption(ParticleTypes.BLOCK, this.getBlock()), this);
                 }
                 this.discard();
             }
             if (this.tickCount > 300) {
-                if (this.level instanceof ServerLevel serverLevel) {
+                if (this.level() instanceof ServerLevel serverLevel) {
                     ServerParticleUtil.addParticlesAroundMiddleSelf(serverLevel, new BlockParticleOption(ParticleTypes.BLOCK, this.getBlock()), this);
                 }
                 this.discard();
@@ -153,7 +153,7 @@ public class ModFallingBlock extends Entity {
             this.move(MoverType.SELF, this.getDeltaMovement());
 
             if (this.tickCount > this.getDuration()) {
-                if (this.level instanceof ServerLevel serverLevel) {
+                if (this.level() instanceof ServerLevel serverLevel) {
                     ServerParticleUtil.addParticlesAroundMiddleSelf(serverLevel, new BlockParticleOption(ParticleTypes.BLOCK, this.getBlock()), this);
                 }
                 this.discard();
@@ -205,10 +205,12 @@ public class ModFallingBlock extends Entity {
         this.entityData.set(POP_UP_LEVEL, power);
     }
 
-    @Override
-    public Packet<ClientGamePacketListener> getAddEntityPacket() {
-        return new net.minecraft.network.protocol.game.ClientboundAddEntityPacket(this);
-    }
+    // @Override
+    // getAddEntityPacket changed in 1.21
+    // @Override
+    // public Packet<ClientGamePacketListener> getAddEntityPacket() {
+    //    return new net.minecraft.network.protocol.game.ClientboundAddEntityPacket(this);
+    // }
 
     public enum FallingBlockMode {
         MOBILE,

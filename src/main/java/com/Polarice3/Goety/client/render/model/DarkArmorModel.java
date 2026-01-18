@@ -106,7 +106,7 @@ public class DarkArmorModel extends HumanoidModel<LivingEntity> {
 	}
 
 	public DarkArmorModel animate(LivingEntity entity){
-		float partialTick = Minecraft.getInstance().getFrameTime();
+		float partialTick = Minecraft.getInstance().getTimer().getGameTimeDeltaPartialTick(true);
 		float limbSwingAmount = entity.walkAnimation.speed(partialTick);
 		float limbSwing = entity.walkAnimation.position(partialTick);
 		float f = Mth.cos(limbSwing * 0.6662F) * 1.4F * limbSwingAmount;
@@ -122,8 +122,8 @@ public class DarkArmorModel extends HumanoidModel<LivingEntity> {
 	}
 
 	@Override
-	public void renderToBuffer(PoseStack poseStack, VertexConsumer vertexConsumer, int packedLight, int packedOverlay, float red, float green, float blue, float alpha) {
-		this.bodyParts().forEach((modelPart -> modelPart.render(poseStack, vertexConsumer, packedLight, packedOverlay, red, green, blue, alpha)));
+	public void renderToBuffer(PoseStack poseStack, VertexConsumer vertexConsumer, int packedLight, int packedOverlay, int color) {
+		this.bodyParts().forEach((modelPart -> modelPart.render(poseStack, vertexConsumer, packedLight, packedOverlay, color)));
 	}
 
 	@Override

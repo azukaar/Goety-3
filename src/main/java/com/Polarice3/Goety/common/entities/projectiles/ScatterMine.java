@@ -113,8 +113,8 @@ public class ScatterMine extends Entity implements ISpellEntity {
 
     @Nullable
     public LivingEntity getOwner() {
-        if (this.owner == null && this.ownerUUID != null && this.level instanceof ServerLevel) {
-            Entity entity = ((ServerLevel)this.level).getEntity(this.ownerUUID);
+        if (this.owner == null && this.ownerUUID != null && this.level() instanceof ServerLevel) {
+            Entity entity = ((ServerLevel)this.level()).getEntity(this.ownerUUID);
             if (entity instanceof LivingEntity) {
                 this.owner = (LivingEntity)entity;
             }
@@ -133,7 +133,7 @@ public class ScatterMine extends Entity implements ISpellEntity {
 
     public void setIsSpell(){
         this.setSpell(true);
-        this.level.broadcastEntityEvent(this, (byte) 7);
+        this.level().broadcastEntityEvent(this, (byte) 7);
     }
 
     public float getExtraDamage() {
@@ -154,14 +154,14 @@ public class ScatterMine extends Entity implements ISpellEntity {
 
     public void handleEntityEvent(byte id) {
         if (id == 4) {
-            this.level.addParticle(ModParticleTypes.BIG_ELECTRIC.get(), this.getRandomX(0.5D), this.getRandomY(), this.getRandomZ(0.5D), -0.05D + this.random.nextDouble() * 0.05D, -0.05D + this.random.nextDouble() * 0.05D, -0.05D + this.random.nextDouble() * 0.05D);
+            this.level().addParticle(ModParticleTypes.BIG_ELECTRIC.get(), this.getRandomX(0.5D), this.getRandomY(), this.getRandomZ(0.5D), -0.05D + this.random.nextDouble() * 0.05D, -0.05D + this.random.nextDouble() * 0.05D, -0.05D + this.random.nextDouble() * 0.05D);
         } else if (id == 5){
             for(int i = 0; i < 20; ++i) {
                 double d0 = this.random.nextGaussian() * 0.02D;
                 double d1 = this.random.nextGaussian() * 0.02D;
                 double d2 = this.random.nextGaussian() * 0.02D;
                 double d3 = 10.0D;
-                this.level.addParticle(ParticleTypes.SMOKE, this.getRandomX(1.0D) - d0 * d3, this.getRandomY() - d1 * d3, this.getRandomZ(1.0D) - d2 * d3, d0, d1, d2);
+                this.level().addParticle(ParticleTypes.SMOKE, this.getRandomX(1.0D) - d0 * d3, this.getRandomY() - d1 * d3, this.getRandomZ(1.0D) - d2 * d3, d0, d1, d2);
             }
         } else if (id == 6){
             this.growTick = 1;
@@ -188,7 +188,7 @@ public class ScatterMine extends Entity implements ISpellEntity {
     public void tick() {
         super.tick();
         --this.lifeTicks;
-        if (this.level.isClientSide){
+        if (this.level().isClientSide){
             if (this.growTick <= 0) {
                 if (this.startGlow()) {
                     this.glow();
@@ -200,34 +200,34 @@ public class ScatterMine extends Entity implements ISpellEntity {
                 }
             }
         }
-        if (!this.level.isClientSide) {
+        if (!this.level().isClientSide) {
             if (!this.isNoGravity()) {
                 MobUtil.moveDownToGround(this);
             }
-            this.level.broadcastEntityEvent(this, (byte) 4);
+            this.level().broadcastEntityEvent(this, (byte) 4);
             if (this.growTick >= 1){
                 ++this.growTick;
-                this.level.broadcastEntityEvent(this, (byte) 8);
+                this.level().broadcastEntityEvent(this, (byte) 8);
                 if (this.growTick >= 5){
                     this.discard();
                 }
             } else {
                 if (this.lifeTicks <= 0){
                     if (!this.isSpell()) {
-                        this.level.broadcastEntityEvent(this, (byte) 5);
+                        this.level().broadcastEntityEvent(this, (byte) 5);
                         this.discard();
                     } else {
                         this.trigger();
                     }
                 } else if (this.tickCount >= 20){
                     if (this.tickCount % 10 == 0) {
-                        if (this.level instanceof ServerLevel serverLevel) {
+                        if (this.level() instanceof ServerLevel serverLevel) {
                             float pulse = 1.0F + this.getExtraRadius();
                             serverLevel.sendParticles(new PulsatingCircleParticleOption(pulse), this.getX(), this.getY(), this.getZ(), 1, 0, 0, 0, 0.5F);
                         }
                     }
                     double bbSize = 0.6D + this.getExtraRadius();
-                    for (LivingEntity livingentity : this.level.getEntitiesOfClass(LivingEntity.class, this.getBoundingBox().inflate(bbSize, bbSize / 2.0D, bbSize))) {
+                    for (LivingEntity livingentity : this.level().getEntitiesOfClass(LivingEntity.class, this.getBoundingBox().inflate(bbSize, bbSize / 2.0D, bbSize))) {
                         if (livingentity.isAlive() && !livingentity.isInvulnerable()) {
                             if (this.getOwner() != null) {
                                 if (!MobUtil.areAllies(this.getOwner(), livingentity) && livingentity != this.getOwner()) {
@@ -252,10 +252,10 @@ public class ScatterMine extends Entity implements ISpellEntity {
     }
 
     public void trigger(){
-        if (!this.level.isClientSide) {
-            this.level.broadcastEntityEvent(this, (byte) 6);
+        if (!this.level().isClientSide) {
+            this.level().broadcastEntityEvent(this, (byte) 6);
             double bbSize = 0.6D + this.getExtraRadius();
-            for (LivingEntity livingentity : this.level.getEntitiesOfClass(LivingEntity.class, this.getBoundingBox().inflate(bbSize, bbSize / 2.0D, bbSize))) {
+            for (LivingEntity livingentity : this.level().getEntitiesOfClass(LivingEntity.class, this.getBoundingBox().inflate(bbSize, bbSize / 2.0D, bbSize))) {
                 if (livingentity.isAlive() && !livingentity.isInvulnerable()) {
                     if (this.getOwner() != null) {
                         if (!MobUtil.areAllies(this.getOwner(), livingentity) && livingentity != this.getOwner()) {
@@ -271,7 +271,7 @@ public class ScatterMine extends Entity implements ISpellEntity {
     }
 
     public void explodeDamage(LivingEntity livingEntity) {
-        if (!this.level.isClientSide) {
+        if (!this.level().isClientSide) {
             Entity owner = this.getOwner() != null ? this.getOwner() : this;
             float damage = SpellConfig.ScatterMineDamage.get().floatValue();
             if (!this.isSpell()) {
@@ -298,7 +298,7 @@ public class ScatterMine extends Entity implements ISpellEntity {
                     double d4 = (double)i + (this.random.nextDouble() - this.random.nextDouble()) * 0.5D;
                     double d5 = (double)k + (this.random.nextDouble() - this.random.nextDouble()) * 0.5D;
                     double d6 = Math.sqrt(d3 * d3 + d4 * d4 + d5 * d5) / p_106779_ + this.random.nextGaussian() * 0.05D;
-                    this.level.addParticle(ModParticleTypes.REDSTONE_EXPLODE.get(), d0, d1, d2, d3 / d6, d4 / d6, d5 / d6);
+                    this.level().addParticle(ModParticleTypes.REDSTONE_EXPLODE.get(), d0, d1, d2, d3 / d6, d4 / d6, d5 / d6);
                     if (i != -radius && i != radius && j != -radius && j != radius) {
                         k += radius * 2 - 1;
                     }
@@ -309,11 +309,11 @@ public class ScatterMine extends Entity implements ISpellEntity {
     }
 
     public void finalizeExplosion() {
-        if (this.level.isClientSide) {
-            this.level.playLocalSound(this.getX(), this.getY(), this.getZ(), ModSounds.REDSTONE_EXPLODE.get(), SoundSource.BLOCKS, 4.0F, (1.0F + (this.level.random.nextFloat() - this.level.random.nextFloat()) * 0.2F) * 0.7F, false);
+        if (this.level().isClientSide) {
+            this.level().playLocalSound(this.getX(), this.getY(), this.getZ(), ModSounds.REDSTONE_EXPLODE.get(), SoundSource.BLOCKS, 4.0F, (1.0F + (this.level().random.nextFloat() - this.level().random.nextFloat()) * 0.2F) * 0.7F, false);
         }
         this.createParticleBall(0.5D, (int) 2.0F);
-        this.level.addParticle(ModParticleTypes.BIG_ELECTRIC.get(), this.getX(), this.getY(), this.getZ(), 1.0D, 0.0D, 0.0D);
+        this.level().addParticle(ModParticleTypes.BIG_ELECTRIC.get(), this.getX(), this.getY(), this.getZ(), 1.0D, 0.0D, 0.0D);
     }
 
     @Override

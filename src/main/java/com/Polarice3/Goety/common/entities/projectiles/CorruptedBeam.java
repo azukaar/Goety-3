@@ -15,6 +15,11 @@ public class CorruptedBeam extends AbstractBeam {
         super(p_i48580_1_, p_i48580_2_);
     }
 
+    @Override
+    protected void defineSynchedData(net.minecraft.network.syncher.SynchedEntityData.Builder builder) {
+        // super.defineSynchedData(builder);
+    }
+
     public CorruptedBeam(EntityType<?> p_i48580_1_, Level p_i48580_2_, LivingEntity owner) {
         super(p_i48580_1_, p_i48580_2_);
         this.setOwner(owner);

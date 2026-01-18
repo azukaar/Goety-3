@@ -110,7 +110,7 @@ public class WebSpiderServant extends SpiderServant implements RangedAttackMob {
 
     public void onSyncedDataUpdated(EntityDataAccessor<?> accessor) {
         if (ANIM_STATE.equals(accessor)) {
-            if (this.level.isClientSide){
+            if (this.level().isClientSide){
                 switch (this.entityData.get(ANIM_STATE)){
                     case 0:
                         this.shootAnimationState.stop();
@@ -134,7 +134,7 @@ public class WebSpiderServant extends SpiderServant implements RangedAttackMob {
     @Override
     public void tick() {
         super.tick();
-        if (!this.level.isClientSide){
+        if (!this.level().isClientSide){
             if (this.getTarget() != null){
                 if (!this.isWebShooting()){
                     this.stopMoving = false;
@@ -182,7 +182,7 @@ public class WebSpiderServant extends SpiderServant implements RangedAttackMob {
 
     @Override
     public void performRangedAttack(LivingEntity p_33317_, float p_33318_) {
-        WebShot snowball = new WebShot(this, this.level);
+        WebShot snowball = new WebShot(this, this.level());
         Vec3 vec3 = p_33317_.getDeltaMovement();
         double d0 = p_33317_.getX() + vec3.x - this.getX();
         double d1 = p_33317_.getEyeY() - (double)1.1F - this.getY();
@@ -191,7 +191,7 @@ public class WebSpiderServant extends SpiderServant implements RangedAttackMob {
         snowball.setXRot(snowball.getXRot() - -20.0F);
         snowball.shoot(d0, d1 + d3 * 0.2D, d2, 0.75F, 8.0F);
         this.playSound(ModSounds.SPIDER_SPIT.get(), 1.0F, 0.4F / (this.getRandom().nextFloat() * 0.4F + 0.8F));
-        this.level.addFreshEntity(snowball);
+        this.level().addFreshEntity(snowball);
     }
 
     public static class WebShootGoal<T extends WebSpiderServant> extends Goal {

@@ -64,15 +64,15 @@ public class GravestoneBlockEntity extends TrainingBlockEntity {
 
     public void startTraining(int amount, ItemStack itemStack){
         super.startTraining(amount, itemStack);
-        if (this.level != null) {
-            this.level.playSound(null, this.getBlockPos(), ModSounds.GRAVESTONE_START.get(), SoundSource.BLOCKS, 1.0F, 1.0F);
+        if (this.getLevel() != null) {
+            this.getLevel().playSound(null, this.getBlockPos(), ModSounds.GRAVESTONE_START.get(), SoundSource.BLOCKS, 1.0F, 1.0F);
         }
     }
 
     @Override
     public void playSpawnSound() {
-        if (this.level != null) {
-            this.level.playSound(null, this.getBlockPos(), ModSounds.NECROMANCER_SUMMON.get(), SoundSource.BLOCKS, 1.0F, 1.0F);
+        if (this.getLevel() != null) {
+            this.getLevel().playSound(null, this.getBlockPos(), ModSounds.NECROMANCER_SUMMON.get(), SoundSource.BLOCKS, 1.0F, 1.0F);
         }
     }
 
@@ -84,7 +84,7 @@ public class GravestoneBlockEntity extends TrainingBlockEntity {
     @Override
     public boolean summonLimit() {
         int count = 0;
-        if (this.level instanceof ServerLevel serverLevel) {
+        if (this.getLevel() instanceof ServerLevel serverLevel) {
             for (Entity entity : serverLevel.getAllEntities()) {
                 if (entity instanceof ZombieServant servant) {
                     if (this.getTrueOwner() != null && servant.getTrueOwner() == this.getTrueOwner() && servant.isAlive()) {

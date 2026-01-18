@@ -48,7 +48,7 @@ public class SpellExplosion {
                     boolean hurt = true;
                     if (entity instanceof ItemEntity) {
                         hurt = false;
-                    } else if (damageSource.is(DamageTypeTags.IS_EXPLOSION) && entity.ignoreExplosion()){
+                    } else if (damageSource.is(DamageTypeTags.IS_EXPLOSION)){
                         hurt = false;
                     } else if (damageSource.getEntity() != null){
                         trueSource = damageSource.getEntity();
@@ -116,7 +116,7 @@ public class SpellExplosion {
                         double d9 = Mth.lerp(d6, aabb.minY, aabb.maxY);
                         double d10 = Mth.lerp(d7, aabb.minZ, aabb.maxZ);
                         Vec3 vec3 = new Vec3(d8 + d3, d9, d10 + d4);
-                        if (target.level.clip(new ClipContext(vec3, vector, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, target)).getType() == HitResult.Type.MISS) {
+                        if (target.level().clip(new ClipContext(vec3, vector, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, target)).getType() == HitResult.Type.MISS) {
                             ++i;
                         }
 

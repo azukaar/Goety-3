@@ -47,9 +47,9 @@ public class SpikeModel<T extends Entity> extends HierarchicalModel<T> {
     }
 
     @Override
-    public void renderToBuffer(PoseStack poseStack, VertexConsumer vertexConsumer, int packedLight, int packedOverlay, float red, float green, float blue, float alpha) {
-        base.render(poseStack, vertexConsumer, packedLight, packedOverlay, red, green, blue, alpha);
-        upper_jaw.render(poseStack, vertexConsumer, packedLight, packedOverlay, red, green, blue, alpha);
+    public void renderToBuffer(PoseStack poseStack, VertexConsumer vertexConsumer, int packedLight, int packedOverlay, int color) {
+        base.render(poseStack, vertexConsumer, packedLight, packedOverlay, color);
+        upper_jaw.render(poseStack, vertexConsumer, packedLight, packedOverlay, color);
     }
 
     @Override

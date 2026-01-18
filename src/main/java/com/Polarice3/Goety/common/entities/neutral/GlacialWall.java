@@ -65,7 +65,7 @@ public class GlacialWall extends AbstractMonolith{
         int particles = 5;
         int efficiency = 0;
         boolean damage = false;
-        if (!this.level.isClientSide && !this.isEmerging()) {
+        if (!this.level().isClientSide && !this.isEmerging()) {
             if (ModDamageSource.physicalAttacks(pSource)) {
                 if (pSource.getDirectEntity() instanceof LivingEntity living) {
                     if (living.getMainHandItem().isCorrectToolForDrops(this.getState())){
@@ -82,7 +82,7 @@ public class GlacialWall extends AbstractMonolith{
                 pAmount *= 2.0F;
             }
             if (!pSource.is(DamageTypes.STARVE)) {
-                if (this.level instanceof ServerLevel serverLevel) {
+                if (this.level() instanceof ServerLevel serverLevel) {
                     for (int i = 0; i < particles; ++i) {
                         ServerParticleUtil.addParticlesAroundSelf(serverLevel, this.getParticles(), this);
                     }
@@ -106,15 +106,15 @@ public class GlacialWall extends AbstractMonolith{
     }
 
     public void die(DamageSource cause) {
-        if (this.level instanceof ServerLevel serverLevel){
+        if (this.level() instanceof ServerLevel serverLevel){
             ServerParticleUtil.blockBreakParticles(this.getParticles(), BlockPos.containing(this.position()), Blocks.SNOW_BLOCK.defaultBlockState(), serverLevel);
             ServerParticleUtil.blockBreakParticles(this.getParticles(), BlockPos.containing(this.position()).above(), this.getState(), serverLevel);
             ServerParticleUtil.blockBreakParticles(this.getParticles(), BlockPos.containing(this.position()).above().above(), Blocks.SNOW_BLOCK.defaultBlockState(), serverLevel);
         }
         this.playSound(ModSounds.ICE_SPIKE_HIT.get(), 1.0F, (this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 0.5F);
         if (cause.is(DamageTypes.STARVE)){
-            if (this.level.random.nextFloat() <= 0.15F) {
-                AreaEffectCloud areaeffectcloud = new AreaEffectCloud(this.level, this.getX(), this.getY(), this.getZ());
+            if (this.level().random.nextFloat() <= 0.15F) {
+                AreaEffectCloud areaeffectcloud = new AreaEffectCloud(this.level(), this.getX(), this.getY(), this.getZ());
                 areaeffectcloud.setParticle(ParticleTypes.POOF);
                 areaeffectcloud.setRadius(2.0F);
                 areaeffectcloud.setDuration(200);
@@ -122,7 +122,7 @@ public class GlacialWall extends AbstractMonolith{
 
                 areaeffectcloud.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 600));
 
-                this.level.addFreshEntity(areaeffectcloud);
+                this.level().addFreshEntity(areaeffectcloud);
             }
         }
         this.remove(RemovalReason.KILLED);
@@ -151,9 +151,9 @@ public class GlacialWall extends AbstractMonolith{
                 if (this.level().getBiome(this.blockPosition()).is(BiomeTags.SNOW_GOLEM_MELTS)){
                     damage *= 2.0F;
                 }
-                this.hurt(this.damageSources().starve(), this.level.random.nextInt((int) damage));
+                this.hurt(this.damageSources().starve(), this.level().random.nextInt((int) damage));
             }
-            if (!this.level.isClientSide) {
+            if (!this.level().isClientSide) {
                 if (this.tickCount >= MathHelper.secondsToTicks(this.getLifeSpan())){
                     if (this.random.nextFloat() <= 0.25F) {
                         this.die(this.damageSources().starve());

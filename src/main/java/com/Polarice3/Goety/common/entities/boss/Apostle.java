@@ -1788,7 +1788,7 @@ public class Apostle extends SpellCastingCultist implements RangedAttackMob {
                     damned.moveTo(blockPos.below(2), Apostle.this.getYHeadRot(), Apostle.this.getXRot());
                     damned.setTrueOwner(Apostle.this);
                     damned.finalizeSpawn(serverLevel, serverLevel.getCurrentDifficultyAt(blockPos.below(2)),
-                            MobSpawnType.MOB_SUMMONED, null, null);
+                            MobSpawnType.MOB_SUMMONED, null);
                     if (livingentity != null) {
                         damned.setTarget(livingentity);
                     }

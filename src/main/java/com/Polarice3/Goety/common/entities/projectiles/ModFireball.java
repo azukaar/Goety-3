@@ -124,7 +124,7 @@ public class ModFireball extends SmallFireball implements ISpellEntity {
     }
 
     protected void onHitEntity(EntityHitResult pResult) {
-        if (!this.level.isClientSide) {
+        if (!this.level().isClientSide) {
             Entity entity = pResult.getEntity();
             Entity entity1 = this.getOwner();
             float enchantment = this.getExtraDamage();
@@ -140,11 +140,11 @@ public class ModFireball extends SmallFireball implements ISpellEntity {
             DamageSource damageSource = entity.damageSources().fireball(this, entity1);
             if (entity1 instanceof LivingEntity livingEntity) {
                 if (CuriosFinder.hasNetherRobe(livingEntity)) {
-                    damageSource = ModDamageSource.magicFireball(this, entity1, this.level);
+                    damageSource = ModDamageSource.magicFireball(this, entity1, this.level());
                 }
                 if (MobUtil.getOwner(livingEntity) != null) {
                     if (CuriosFinder.hasNetherRobe(MobUtil.getOwner(livingEntity))) {
-                        damageSource = ModDamageSource.magicFireball(this, entity1, this.level);
+                        damageSource = ModDamageSource.magicFireball(this, entity1, this.level());
                     }
                 }
             }
@@ -160,18 +160,18 @@ public class ModFireball extends SmallFireball implements ISpellEntity {
     protected void onHitBlock(BlockHitResult p_230299_1_) {
         BlockState blockstate = this.level().getBlockState(p_230299_1_.getBlockPos());
         blockstate.onProjectileHit(this.level(), blockstate, p_230299_1_, this);
-        if (!this.level.isClientSide) {
+        if (!this.level().isClientSide) {
             Entity entity = this.getOwner();
             if (this.isDangerous()) {
-                boolean flag = this.level.getGameRules().getBoolean(GameRules.RULE_MOB_GRIEFING);
+                boolean flag = this.level().getGameRules().getBoolean(GameRules.RULE_MOB_GRIEFING);
                 if (entity instanceof Player
                         || (entity instanceof IOwned iOwned && iOwned.getTrueOwner() instanceof Player)) {
                     flag = SpellConfig.FireballGriefing.get();
                 }
                 if (flag) {
                     BlockPos blockpos = p_230299_1_.getBlockPos().relative(p_230299_1_.getDirection());
-                    if (this.level.isEmptyBlock(blockpos)) {
-                        this.level.setBlockAndUpdate(blockpos, BaseFireBlock.getState(this.level, blockpos));
+                    if (this.level().isEmptyBlock(blockpos)) {
+                        this.level().setBlockAndUpdate(blockpos, BaseFireBlock.getState(this.level(), blockpos));
                     }
                 }
             }

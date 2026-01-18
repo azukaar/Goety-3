@@ -34,9 +34,9 @@ public class GrimInfuserBlockEntity extends ModBlockEntity implements Clearable,
     }
 
     public void tick() {
-        if (this.level != null) {
+        if (this.getLevel() != null) {
             boolean flag = checkSpawner();
-            if (!this.level.isClientSide) {
+            if (!this.getLevel().isClientSide) {
                 if (flag) {
                     this.makeParticles();
                     if (!this.isEmpty()) {
@@ -51,31 +51,31 @@ public class GrimInfuserBlockEntity extends ModBlockEntity implements Clearable,
                     }
                 }
             }
-            this.level.setBlock(this.getBlockPos(), this.getBlockState().setValue(CursedInfuserBlock.LIT, this.checkSpawner()), 3);
+            this.getLevel().setBlock(this.getBlockPos(), this.getBlockState().setValue(CursedInfuserBlock.LIT, this.checkSpawner()), 3);
         }
     }
 
     private void work() {
-        if (this.level != null) {
+        if (this.getLevel() != null) {
             for(int i = 0; i < this.items.size(); ++i) {
                 ItemStack itemstack = this.items.get(i);
                 if (!itemstack.isEmpty()) {
                     SingleRecipeInput iinventory = new SingleRecipeInput(itemstack);
-                    if (this.level != null) {
-                        ItemStack itemstack1 = this.level.getRecipeManager()
-                                .getRecipeFor(ModRecipeSerializer.CURSED_INFUSER.get(), iinventory, this.level)
-                                .map((recipes) -> recipes.value().assemble(iinventory, this.level.registryAccess())).orElse(itemstack);
+                    if (this.getLevel() != null) {
+                        ItemStack itemstack1 = this.getLevel().getRecipeManager()
+                                .getRecipeFor(ModRecipeSerializer.CURSED_INFUSER.get(), iinventory, this.getLevel())
+                                .map((recipes) -> recipes.value().assemble(iinventory, this.getLevel().registryAccess())).orElse(itemstack);
                         if (itemstack != itemstack1) {
                             this.cookingProgress[i]++;
                         }
                         if (this.cookingProgress[i] % 20 == 0) {
-                            this.level.playSound(null, this.getBlockPos(), SoundEvents.FURNACE_FIRE_CRACKLE, SoundSource.BLOCKS, 1.0F, 1.0F);
+                            this.getLevel().playSound(null, this.getBlockPos(), SoundEvents.FURNACE_FIRE_CRACKLE, SoundSource.BLOCKS, 1.0F, 1.0F);
                         }
                         if (this.cookingProgress[i] >= this.cookingTime[i]) {
                             this.items.set(i, ItemStack.EMPTY);
                             BlockPos blockpos = this.getBlockPos();
-                            Containers.dropItemStack(this.level, blockpos.getX(), blockpos.getY(), blockpos.getZ(), itemstack1);
-                            this.level.playSound(null, this.getBlockPos(), SoundEvents.GENERIC_EXTINGUISH_FIRE, SoundSource.BLOCKS, 1.0F, 1.0F);
+                            Containers.dropItemStack(this.getLevel(), blockpos.getX(), blockpos.getY(), blockpos.getZ(), itemstack1);
+                            this.getLevel().playSound(null, this.getBlockPos(), SoundEvents.GENERIC_EXTINGUISH_FIRE, SoundSource.BLOCKS, 1.0F, 1.0F);
                             this.markUpdated();
                             this.cookingProgress[i] = 0;
                         }
@@ -87,7 +87,7 @@ public class GrimInfuserBlockEntity extends ModBlockEntity implements Clearable,
     }
 
     public boolean placeItem(ItemStack pStack, int pCookTime) {
-        if (this.level != null) {
+        if (this.getLevel() != null) {
             for (int i = 0; i < this.items.size(); ++i) {
                 ItemStack itemstack = this.items.get(i);
                 if (itemstack.isEmpty()) {
@@ -97,7 +97,7 @@ public class GrimInfuserBlockEntity extends ModBlockEntity implements Clearable,
                     if (this.isEmpty()) {
                         volume = 1.0F;
                     }
-                    this.level.playSound(null, this.getBlockPos(), SoundEvents.ARMOR_EQUIP_GENERIC.value(), SoundSource.BLOCKS, volume, 1.0F);
+                    this.getLevel().playSound(null, this.getBlockPos(), SoundEvents.ARMOR_EQUIP_GENERIC.value(), SoundSource.BLOCKS, volume, 1.0F);
                     this.items.set(i, pStack.split(1));
                     this.markUpdated();
                     return true;
@@ -146,7 +146,7 @@ public class GrimInfuserBlockEntity extends ModBlockEntity implements Clearable,
 
     @Override
     public boolean stillValid(Player pPlayer) {
-        if (this.level.getBlockEntity(this.worldPosition) != this) {
+        if (this.getLevel().getBlockEntity(this.worldPosition) != this) {
             return false;
         } else {
             return pPlayer.distanceToSqr((double)this.worldPosition.getX() + 0.5D, (double)this.worldPosition.getY() + 0.5D, (double)this.worldPosition.getZ() + 0.5D) <= 64.0D;
@@ -155,7 +155,7 @@ public class GrimInfuserBlockEntity extends ModBlockEntity implements Clearable,
 
     private void makeParticles() {
         BlockPos blockpos = this.getBlockPos();
-        ServerLevel serverLevel = (ServerLevel) this.level;
+        ServerLevel serverLevel = (ServerLevel) this.getLevel();
 
         if (serverLevel != null) {
             long t = serverLevel.getGameTime();
@@ -182,7 +182,7 @@ public class GrimInfuserBlockEntity extends ModBlockEntity implements Clearable,
 
     private void makeWorkParticles() {
         BlockPos blockpos = this.getBlockPos();
-        ServerLevel serverLevel = (ServerLevel) this.level;
+        ServerLevel serverLevel = (ServerLevel) this.getLevel();
 
         if (serverLevel != null) {
             double d0 = (double)blockpos.getX() + serverLevel.random.nextDouble();
@@ -235,11 +235,11 @@ public class GrimInfuserBlockEntity extends ModBlockEntity implements Clearable,
     }
 
     private boolean checkSpawner() {
-        return this.level != null && this.level.getBlockState(new BlockPos(this.getBlockPos().getX(), this.getBlockPos().getY() - 1, this.getBlockPos().getZ())).is(Blocks.SPAWNER);
+        return this.getLevel() != null && this.getLevel().getBlockState(new BlockPos(this.getBlockPos().getX(), this.getBlockPos().getY() - 1, this.getBlockPos().getZ())).is(Blocks.SPAWNER);
     }
 
     public Optional<CursedInfuserRecipes> getRecipes(ItemStack pStack) {
-        return this.items.stream().noneMatch(ItemStack::isEmpty) ? Optional.empty() : this.level.getRecipeManager().getRecipeFor(ModRecipeSerializer.CURSED_INFUSER.get(), new SingleRecipeInput(pStack), this.level).map(net.minecraft.world.item.crafting.RecipeHolder::value);
+        return this.items.stream().noneMatch(ItemStack::isEmpty) ? Optional.empty() : this.getLevel().getRecipeManager().getRecipeFor(ModRecipeSerializer.CURSED_INFUSER.get(), new SingleRecipeInput(pStack), this.getLevel()).map(net.minecraft.world.item.crafting.RecipeHolder::value);
     }
 
     @Override
@@ -257,7 +257,7 @@ public class GrimInfuserBlockEntity extends ModBlockEntity implements Clearable,
         Optional<CursedInfuserRecipes> optional = this.getRecipes(pItemStack);
         if (optional.isEmpty()) return false;
         if (!this.checkSpawner()) return false;
-        return this.level != null && !this.level.isClientSide && this.placeItem(pItemStack, optional.get().getCookingTime());
+        return this.getLevel() != null && !this.getLevel().isClientSide && this.placeItem(pItemStack, optional.get().getCookingTime());
     }
 
     @Override

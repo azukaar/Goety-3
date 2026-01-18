@@ -124,10 +124,10 @@ public class DoppelgangerRenderer extends HumanoidMobRenderer<Doppelganger, Play
         }
     }
 
-    protected void setupRotations(Doppelganger p_117802_, PoseStack p_117803_, float p_117804_, float p_117805_, float p_117806_) {
+    protected void setupRotations(Doppelganger p_117802_, PoseStack p_117803_, float p_117804_, float p_117805_, float p_117806_, float p_117807_) {
         float f = p_117802_.getSwimAmount(p_117806_);
         if (p_117802_.isFallFlying()) {
-            super.setupRotations(p_117802_, p_117803_, p_117804_, p_117805_, p_117806_);
+            super.setupRotations(p_117802_, p_117803_, p_117804_, p_117805_, p_117806_, p_117807_);
             float f1 = (float)p_117802_.getFallFlyingTicks() + p_117806_;
             float f2 = Mth.clamp(f1 * f1 / 100.0F, 0.0F, 1.0F);
             if (!p_117802_.isAutoSpinAttack()) {
@@ -144,7 +144,7 @@ public class DoppelgangerRenderer extends HumanoidMobRenderer<Doppelganger, Play
                 p_117803_.mulPose(Axis.YP.rotation((float)(Math.signum(d3) * Math.acos(d2))));
             }
         } else if (f > 0.0F) {
-            super.setupRotations(p_117802_, p_117803_, p_117804_, p_117805_, p_117806_);
+            super.setupRotations(p_117802_, p_117803_, p_117804_, p_117805_, p_117806_, p_117807_);
             float f3 = p_117802_.isInWater() || p_117802_.isInFluidType((fluidType, height) -> p_117802_.canSwimInFluidType(fluidType)) ? -90.0F - p_117802_.getXRot() : -90.0F;
             float f4 = Mth.lerp(f, 0.0F, f3);
             p_117803_.mulPose(Axis.XP.rotationDegrees(f4));
@@ -152,7 +152,7 @@ public class DoppelgangerRenderer extends HumanoidMobRenderer<Doppelganger, Play
                 p_117803_.translate(0.0D, -1.0D, (double)0.3F);
             }
         } else {
-            super.setupRotations(p_117802_, p_117803_, p_117804_, p_117805_, p_117806_);
+            super.setupRotations(p_117802_, p_117803_, p_117804_, p_117805_, p_117806_, p_117807_);
         }
 
     }

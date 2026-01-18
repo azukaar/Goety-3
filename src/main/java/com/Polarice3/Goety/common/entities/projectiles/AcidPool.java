@@ -104,7 +104,7 @@ public class AcidPool extends AbstractTrap {
     }
 
     public void setRadius(float p_19713_) {
-        if (!this.level.isClientSide) {
+        if (!this.level().isClientSide) {
             this.getEntityData().set(DATA_RADIUS, Mth.clamp(p_19713_, 0.0F, 32.0F));
         }
     }
@@ -164,7 +164,7 @@ public class AcidPool extends AbstractTrap {
 
     public void tick() {
         super.tick();
-        if (this.level instanceof ServerLevel serverLevel) {
+        if (this.level() instanceof ServerLevel serverLevel) {
             if (this.getWarmupDelayTicks() <= 0) {
                 if (!this.sentSpikeEvent) {
                     this.sentSpikeEvent = true;
@@ -178,7 +178,7 @@ public class AcidPool extends AbstractTrap {
                 }
             } else {
                 --this.warmupDelayTicks;
-                if (this.level.getRandom().nextBoolean()) {
+                if (this.level().getRandom().nextBoolean()) {
                     ColorUtil colorUtil = new ColorUtil(this.getWarmupColor());
                     ServerParticleUtil.circularParticles(serverLevel, ModParticleTypes.BIG_CULT_SPELL.get(), this.getX(), this.getY() - 0.5F, this.getZ(), colorUtil.red(), colorUtil.green(), colorUtil.blue(), this.radius() / 2.0F);
                 }
@@ -192,7 +192,7 @@ public class AcidPool extends AbstractTrap {
                     }
                 }
                 List<LivingEntity> targets = new ArrayList<>();
-                for (LivingEntity livingEntity : this.level.getEntitiesOfClass(LivingEntity.class, this.getBoundingBox())){
+                for (LivingEntity livingEntity : this.level().getEntitiesOfClass(LivingEntity.class, this.getBoundingBox())){
                     if (this.owner != null) {
                         if (livingEntity != this.owner && !MobUtil.areAllies(this.owner, livingEntity)) {
                             targets.add(livingEntity);

@@ -319,7 +319,7 @@ public class BoundCryologer extends AbstractBoundIllager implements IBreathing {
         float damage = 1.0F;
         if (target.hurt(ModDamageSource.frostBreath(this, this), damage)) {
             if (target instanceof LivingEntity living) {
-                living.addEffect(new MobEffectInstance(GoetyEffects.FREEZING.getHolder().get(), MathHelper.secondsToTicks(1)));
+                living.addEffect(new MobEffectInstance(GoetyEffects.FREEZING.getHolder(), MathHelper.secondsToTicks(1)));
             }
         }
     }

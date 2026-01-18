@@ -17,7 +17,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.UseAnim;
 
 public class HauntedArmorRenderer extends HumanoidMobRenderer<AbstractHauntedArmor, HauntedArmorModel> {
-    private static final ResourceLocation ZOMBIE_LOCATION = new ResourceLocation(Goety.MOD_ID, "textures/entity/haunted_armor.png");
+    private static final ResourceLocation ZOMBIE_LOCATION = ResourceLocation.fromNamespaceAndPath(Goety.MOD_ID, "textures/entity/haunted_armor.png");
 
     public HauntedArmorRenderer(EntityRendererProvider.Context p_174557_) {
         super(p_174557_, new HauntedArmorModel(p_174557_.bakeLayer(ModelLayers.PLAYER)), 0.5F);

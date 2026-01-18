@@ -61,6 +61,7 @@ import net.minecraft.world.level.pathfinder.PathType;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.common.NeoForge;
 
 import net.neoforged.neoforge.event.entity.EntityTeleportEvent;
 import org.jetbrains.annotations.NotNull;
@@ -132,7 +133,8 @@ public class EnderKeeper extends AbstractEnderling implements Enemy {
         super(p_33002_, p_33003_);
         this.setHostile(true);
         this.bossInfo = new ModServerBossInfo(this, BossEvent.BossBarColor.PURPLE, true, false);
-        this.setMaxUpStep(2.0F);
+        // setMaxUpStep removed in 1.21
+        // this.setMaxUpStep(2.0F);
         this.setPathfindingMalus(PathType.UNPASSABLE_RAIL, 0.0F);
         this.setPathfindingMalus(PathType.WATER, -1.0F);
     }
@@ -868,10 +870,10 @@ public class EnderKeeper extends AbstractEnderling implements Enemy {
         return false;
     }
 
-    @Override
-    public boolean canChangeDimensions() {
-        return false;
-    }
+    // @Override
+    // public boolean canChangeDimensions() {
+    //    return false;
+    // }
 
     @Nullable
     @Override
@@ -891,20 +893,20 @@ public class EnderKeeper extends AbstractEnderling implements Enemy {
     }
 
     public boolean canBeAffected(MobEffectInstance pPotioneffect) {
-        return pPotioneffect.getEffect().isBeneficial() && super.canBeAffected(pPotioneffect);
+        return pPotioneffect.getEffect().value().isBeneficial() && super.canBeAffected(pPotioneffect);
     }
 
     public boolean addEffect(MobEffectInstance pPotioneffect, @Nullable Entity entity) {
         if (entity == this) {
             return super.addEffect(pPotioneffect, entity);
         } else {
-            return pPotioneffect.getEffect().isBeneficial();
+            return pPotioneffect.getEffect().value().isBeneficial();
         }
     }
 
     public VoidShrineBlockEntity getVoidShrine() {
         if (this.getBoundPos() != null) {
-            if (this.level.getBlockEntity(this.getBoundPos()) instanceof VoidShrineBlockEntity blockEntity) {
+            if (this.level().getBlockEntity(this.getBoundPos()) instanceof VoidShrineBlockEntity blockEntity) {
                 return blockEntity;
             }
         }
@@ -913,10 +915,10 @@ public class EnderKeeper extends AbstractEnderling implements Enemy {
 
     private BlockPos getSafeGround() {
         BlockPos position = this.blockPosition();
-        while (position.getY() < 256 && !this.level.getFluidState(position).isEmpty()) {
+        while (position.getY() < 256 && !this.level().getFluidState(position).isEmpty()) {
             position = position.above();
         }
-        while (position.getY() > 1 && this.level.isEmptyBlock(position)) {
+        while (position.getY() > 1 && this.level().isEmptyBlock(position)) {
             position = position.below();
         }
         return position;
@@ -932,9 +934,9 @@ public class EnderKeeper extends AbstractEnderling implements Enemy {
     protected void tickDeath() {
         ++this.deathTime;
         if (this.deathTime >= MathHelper.secondsToTicks(2.5F) && this.deathTime < MathHelper.secondsToTicks(6)) {
-            if (this.level instanceof ServerLevel serverLevel) {
+            if (this.level() instanceof ServerLevel serverLevel) {
                 for (int i = 0; i < 8; ++i) {
-                    serverLevel.sendParticles(new MagicSmokeParticle.Option(0, 0, this.level.getRandom().nextIntBetweenInclusive(40, 80), 0.25F), this.getRandomX(0.5D), this.getRandomY(), this.getRandomZ(0.5D), 0, this.level.getRandom().nextBoolean() ? 0.01D : -0.01D, 0.1D, this.level.getRandom().nextBoolean() ? 0.01D : -0.01D, 0.5F);
+                    serverLevel.sendParticles(new MagicSmokeParticle.Option(0, 0, this.level().getRandom().nextIntBetweenInclusive(40, 80), 0.25F), this.getRandomX(0.5D), this.getRandomY(), this.getRandomZ(0.5D), 0, this.level().getRandom().nextBoolean() ? 0.01D : -0.01D, 0.1D, this.level().getRandom().nextBoolean() ? 0.01D : -0.01D, 0.5F);
                 }
             }
         }
@@ -949,17 +951,18 @@ public class EnderKeeper extends AbstractEnderling implements Enemy {
     }
 
     @Override
-    protected void dropCustomDeathLoot(DamageSource pSource, int pLooting, boolean pRecentlyHit) {
-        super.dropCustomDeathLoot(pSource, pLooting, pRecentlyHit);
-        if (this.level.getGameRules().getBoolean(GameRules.RULE_DOMOBLOOT)) {
+    protected void dropCustomDeathLoot(ServerLevel pLevel, DamageSource pSource, boolean pRecentlyHit) {
+        super.dropCustomDeathLoot(pLevel, pSource, pRecentlyHit);
+        if (this.level().getGameRules().getBoolean(GameRules.RULE_DOMOBLOOT)) {
             if (this.getVoidShrine() != null) {
                 try {
-                    this.getVoidShrine().getCapability(Capabilities.ITEM_HANDLER).ifPresent(handler -> {
+                    net.neoforged.neoforge.items.IItemHandler handler = this.getVoidShrine().getLevel().getCapability(Capabilities.ItemHandler.BLOCK, this.getVoidShrine().getBlockPos(), null);
+                    if (handler != null) {
                         ItemStack itemStack = handler.getStackInSlot(0);
                         if (itemStack.isEmpty()) {
                             handler.insertItem(0, new ItemStack(ModItems.SHROUDED_BLUEPRINT.get()), false);
                         }
-                    });
+                    }
                 } catch (NullPointerException exception) {
                     ItemEntity itementity = this.spawnAtLocation(ModItems.SHROUDED_BLUEPRINT.get());
                     if (itementity != null) {
@@ -989,13 +992,13 @@ public class EnderKeeper extends AbstractEnderling implements Enemy {
             this.setYBodyRot(this.deathRotation);
         }
         MiscCapHelper.updateMobTarget(this);
-        if (this.level.isClientSide) {
+        if (this.level().isClientSide) {
             this.idleAnimationState.animateWhen(!this.walkAnimation.isMoving() && this.isCurrentAnimation(IDLE) && !this.isDeadOrDying(), this.tickCount);
             if (this.shakeSword > 0) {
                 --this.shakeSword;
             }
             if (!this.isDeadOrDying() && !this.isHiding()) {
-                this.level.addParticle(ParticleTypes.LARGE_SMOKE, this.getX(), this.getRandomY(), this.getZ(), 0.0D, 0.0D, 0.0D);
+                this.level().addParticle(ParticleTypes.LARGE_SMOKE, this.getX(), this.getRandomY(), this.getZ(), 0.0D, 0.0D, 0.0D);
             }
         }
     }
@@ -1051,7 +1054,7 @@ public class EnderKeeper extends AbstractEnderling implements Enemy {
             --this.moddedInvul;
         }
 
-        if (!this.level.isClientSide) {
+        if (!this.level().isClientSide) {
             if (this.getBoundPos() == null) {
                 if (this.tickCount % 100 == 0 || this.lastSafePosition == null) {
                     BlockPos blockPos = this.getSafeGround();
@@ -1060,7 +1063,7 @@ public class EnderKeeper extends AbstractEnderling implements Enemy {
                     }
                 }
             }
-            if (this.getY() <= this.level.getMinBuildHeight()) {
+            if (this.getY() <= this.level().getMinBuildHeight()) {
                 BlockPos blockPos = null;
                 if (this.getBoundPos() != null) {
                     blockPos = this.getBoundPos();
@@ -1082,7 +1085,7 @@ public class EnderKeeper extends AbstractEnderling implements Enemy {
                     this.playSound(ModSounds.OBSIDIAN_CLAYMORE_SWING.get(), 2.0F, this.getVoicePitch());
                 }
                 if (this.attackTick == 18) {
-                    CameraShake.cameraShake(this.level, this.position(), 15.0F, 0.1F, 0, 10);
+                    CameraShake.cameraShake(this.level(), this.position(), 15.0F, 0.1F, 0, 10);
                     this.pushOn(1.35F, 1.35F);
                     this.areaAttack(6.5F, 6, 90, damage, 60, false);
                 }
@@ -1092,7 +1095,7 @@ public class EnderKeeper extends AbstractEnderling implements Enemy {
                     this.playSound(ModSounds.OBSIDIAN_CLAYMORE_SWING.get(), 2.0F, this.getVoicePitch());
                 }
                 if (this.attackTick == 18 || this.attackTick == 34) {
-                    CameraShake.cameraShake(this.level, this.position(), 15.0F, 0.1F, 0, 10);
+                    CameraShake.cameraShake(this.level(), this.position(), 15.0F, 0.1F, 0, 10);
                     this.pushOn(1.35F, 1.35F);
                     this.areaAttack(6.5F, 6, 90, damage, 60, false);
                 }
@@ -1102,15 +1105,15 @@ public class EnderKeeper extends AbstractEnderling implements Enemy {
                     this.playSound(ModSounds.OBSIDIAN_CLAYMORE_SWING.get(), 2.0F, this.getVoicePitch());
                 }
                 if (this.attackTick == 18 || this.attackTick == 34) {
-                    CameraShake.cameraShake(this.level, this.position(), 15.0F, 0.1F, 0, 10);
+                    CameraShake.cameraShake(this.level(), this.position(), 15.0F, 0.1F, 0, 10);
                     this.pushOn(1.35F, 1.35F);
                     this.areaAttack(6.5F, 6, 90, damage, 60, false);
                 }
                 if (this.attackTick == 56) {
-                    CameraShake.cameraShake(this.level, this.position(), 15.0F, 0.1F, 0, 10);
+                    CameraShake.cameraShake(this.level(), this.position(), 15.0F, 0.1F, 0, 10);
                     this.areaAttack(6.5F, 8, 100, damage, 100, false);
                     this.playSound(ModSounds.OBSIDIAN_CLAYMORE_SMASH.get(), 3.0F, this.getVoicePitch() * 0.5F);
-                    this.playSound(SoundEvents.GENERIC_EXPLODE, 3.0F, this.getVoicePitch() * 0.5F);
+                    this.playSound(SoundEvents.GENERIC_EXPLODE.value(), 3.0F, this.getVoicePitch() * 0.5F);
                     this.playSound(SoundEvents.TOTEM_USE, 3.0F, this.getVoicePitch() * 0.5F);
                 }
                 for (int i = 56; i < 66; ++i) {
@@ -1162,12 +1165,12 @@ public class EnderKeeper extends AbstractEnderling implements Enemy {
                     }
                     if (this.attackTick == 15 || this.attackTick == 21 || this.attackTick == 27 || this.attackTick == 33 || this.attackTick == 39 || this.attackTick == 45 || this.attackTick == 51) {
                         this.areaAttack(6.5F, 6, 120, damage, 60, false);
-                        VoidSlash voidSlash = new VoidSlash(this.level, this);
+                        VoidSlash voidSlash = new VoidSlash(this.level(), this);
                         voidSlash.setPos(this.getEyePosition());
                         voidSlash.setVoidLevel(3);
                         voidSlash.slash(this.getLookAngle(), 1.0F);
                         voidSlash.setDamage(damage);
-                        this.level.addFreshEntity(voidSlash);
+                        this.level().addFreshEntity(voidSlash);
                     }
                 }
             }
@@ -1185,14 +1188,14 @@ public class EnderKeeper extends AbstractEnderling implements Enemy {
                     }
                 }
                 if (this.attackTick >= 18 && this.attackTick < 27) {
-                    if (this.level instanceof ServerLevel serverLevel) {
+                    if (this.level() instanceof ServerLevel serverLevel) {
                         int width = serverLevel.getRandom().nextIntBetweenInclusive(1, 4);
                         float height = serverLevel.getRandom().nextFloat() * 0.5F;
                         Vec3 vec3 = this.getEyePosition().offsetRandom(serverLevel.getRandom(), 2.0F);
                         Vec3 angle = this.getLookAngle().multiply(-1.0D, 1.0D, -1.0D);
                         serverLevel.sendParticles(new WindBlowParticle.Option(new ColorUtil(ChatFormatting.LIGHT_PURPLE), width, height), vec3.x, vec3.y, vec3.z, 0, angle.x, angle.y, angle.z, 1.0F);
                     }
-                    for (LivingEntity entityHit : this.level.getEntitiesOfClass(LivingEntity.class, this.getBoundingBox().inflate(1.2D))) {
+                    for (LivingEntity entityHit : this.level().getEntitiesOfClass(LivingEntity.class, this.getBoundingBox().inflate(1.2D))) {
                         if (!MobUtil.areAllies(this, entityHit)) {
                             boolean flag = entityHit.hurt(this.damageSources().mobAttack(this), damage + (entityHit.getMaxHealth() * AttributesConfig.EnderKeeperHPPercentDamage.get().floatValue()));
                             if (entityHit.isDamageSourceBlocked(this.damageSources().mobAttack(this))) {
@@ -1213,11 +1216,11 @@ public class EnderKeeper extends AbstractEnderling implements Enemy {
                 if (this.attackTick >= 10 && this.attackTick < 35) {
                     int tickRate = MobUtil.healthIsHalved(this) ? 2 : 5;
                     if (this.attackTick % tickRate == 0) {
-                        VoidShock voidShock = new VoidShock(this, this.getTarget(), this.level);
-                        voidShock.setPos(this.position().add(this.level.getRandom().nextInt(-3, 3), 4.0D, this.level.getRandom().nextInt(-3, 3)));
+                        VoidShock voidShock = new VoidShock(this, this.getTarget(), this.level());
+                        voidShock.setPos(this.position().add(this.level().getRandom().nextInt(-3, 3), 4.0D, this.level().getRandom().nextInt(-3, 3)));
                         voidShock.setPower(Vec3.ZERO, 10);
                         voidShock.setBaseDamage(damage);
-                        this.level.addFreshEntity(voidShock);
+                        this.level().addFreshEntity(voidShock);
                         this.playSound(ModSounds.TELEPORT_ORB_THROW.get(), 2.0F, this.getVoicePitch());
                     }
                 }
@@ -1227,26 +1230,26 @@ public class EnderKeeper extends AbstractEnderling implements Enemy {
             }
             if (this.isCurrentAnimation(SPELL_2)) {
                 if (this.attackTick > 10 && this.attackTick <= 28) {
-                    if (this.level instanceof ServerLevel serverLevel) {
+                    if (this.level() instanceof ServerLevel serverLevel) {
                         ColorUtil colorUtil = new ColorUtil(ChatFormatting.DARK_PURPLE);
                         ServerParticleUtil.gatheringParticles(new GatherTrailParticle.Option(colorUtil, this.position().add(0, 8, 0)), this, serverLevel, 2);
                     }
                 }
                 if (this.attackTick == 43) {
-                    VoidShockBomb voidShock = new VoidShockBomb(this, this.level);
+                    VoidShockBomb voidShock = new VoidShockBomb(this, this.level());
                     voidShock.setPos(this.position().add(0, 6.0D, 0));
                     voidShock.setBaseDamage(damage);
                     voidShock.shootFromRotation(this, this.getXRot(), this.getYRot(), 0.0F, 1.0F, 1.0F);
-                    this.level.addFreshEntity(voidShock);
+                    this.level().addFreshEntity(voidShock);
                     this.playSound(ModSounds.HEAVY_WOOSH.get(), 3.0F, this.getVoicePitch());
                     this.playSound(ModSounds.TELEPORT_ORB_THROW.get(), 3.0F, this.getVoicePitch() - 0.5F);
                     if (MobUtil.healthIsHalved(this)) {
                         for (int i = 0; i < 2; ++i){
-                            VoidShockBomb voidShock2 = new VoidShockBomb(this, this.level);
+                            VoidShockBomb voidShock2 = new VoidShockBomb(this, this.level());
                             voidShock2.setPos(this.position().add(0, 6.0D, 0));
                             voidShock2.setBaseDamage(damage);
-                            voidShock2.shootFromRotation(this, this.getXRot(), this.getYRot(), 0.0F, 0.5F + this.level.getRandom().nextFloat(), 8.0F);
-                            this.level.addFreshEntity(voidShock2);
+                            voidShock2.shootFromRotation(this, this.getXRot(), this.getYRot(), 0.0F, 0.5F + this.level().getRandom().nextFloat(), 8.0F);
+                            this.level().addFreshEntity(voidShock2);
                         }
                     }
                 }
@@ -1259,26 +1262,26 @@ public class EnderKeeper extends AbstractEnderling implements Enemy {
                         if (this.attackTick < 40 && this.getTarget() != null) {
                             blockPos = this.getTarget().blockPosition();
                         }
-                        BlockPos blockPos1 = blockPos.offset(this.level.getRandom().nextInt(-16, 16), 0, this.level.getRandom().nextInt(-16, 16));
-                        BlockPos blockPos2 = blockPos.offset(this.level.getRandom().nextInt(-16, 16), 0, this.level.getRandom().nextInt(-16, 16));
+                        BlockPos blockPos1 = blockPos.offset(this.level().getRandom().nextInt(-16, 16), 0, this.level().getRandom().nextInt(-16, 16));
+                        BlockPos blockPos2 = blockPos.offset(this.level().getRandom().nextInt(-16, 16), 0, this.level().getRandom().nextInt(-16, 16));
                         Vec3 vec3 = Vec3.atBottomCenterOf(blockPos1);
                         Vec3 vec32 = Vec3.atBottomCenterOf(blockPos2);
-                        VoidLightningTrap trap = new VoidLightningTrap(this.level, vec3.x, vec3.y, vec3.z);
+                        VoidLightningTrap trap = new VoidLightningTrap(this.level(), vec3.x, vec3.y, vec3.z);
                         trap.setOwner(this);
                         trap.setDuration(40);
                         trap.setDamage(damage);
-                        if (!this.level.getEntitiesOfClass(VoidLightningTrap.class, new AABB(blockPos1)).isEmpty()) {
+                        if (!this.level().getEntitiesOfClass(VoidLightningTrap.class, new AABB(blockPos1)).isEmpty()) {
                             trap.setPos(vec32.x(), vec32.y(), vec32.z());
                         }
                         MobUtil.moveDownToGround(trap);
-                        this.level.addFreshEntity(trap);
+                        this.level().addFreshEntity(trap);
                     }
                 }
             }
             if (this.isCurrentAnimation(LIFE_STEAL)) {
                 double radius = this.getBoundingBox().getSize() * 2.0F;
                 if (this.attackTick < 40) {
-                    if (this.level instanceof ServerLevel serverWorld) {
+                    if (this.level() instanceof ServerLevel serverWorld) {
                         ServerParticleUtil.gatheringParticles(ParticleTypes.PORTAL, this, serverWorld, 20);
                     }
                 }
@@ -1286,14 +1289,14 @@ public class EnderKeeper extends AbstractEnderling implements Enemy {
                     this.playSound(ModSounds.VHOE_PINWHEEL.get(), 2.0F, 0.75F);
                 }
                 if (this.attackTick == 60) {
-                    if (this.level instanceof ServerLevel serverWorld) {
+                    if (this.level() instanceof ServerLevel serverWorld) {
                         ColorUtil colorUtil = new ColorUtil(ChatFormatting.LIGHT_PURPLE);
                         serverWorld.sendParticles(new AoEParticleOption(0, 4.0F / 60.0F, 4.0F, 60), this.getX(), this.getY() + 0.1F, this.getZ(), 0, colorUtil.red, colorUtil.green, colorUtil.blue, 1.0F);
                     }
                 }
                 if (this.attackTick >= 40 && this.attackTick < 120) {
-                    this.level.broadcastEntityEvent(this, (byte) 6);
-                    if (this.level instanceof ServerLevel serverWorld) {
+                    this.level().broadcastEntityEvent(this, (byte) 6);
+                    if (this.level() instanceof ServerLevel serverWorld) {
                         ColorUtil colorUtil = new ColorUtil(ChatFormatting.LIGHT_PURPLE);
                         ServerParticleUtil.gatheringParticles(new GatherTrailParticle.Option(colorUtil, this.position().add(0, 1, 0)), this, serverWorld, 4);
                         ServerParticleUtil.windParticle(serverWorld, colorUtil, (float) radius, 1.0F, this.getId(), this.position());
@@ -1304,15 +1307,15 @@ public class EnderKeeper extends AbstractEnderling implements Enemy {
                     }
                     if (MobUtil.healthIsHalved(this)) {
                         if (this.attackTick % 10 == 0) {
-                            VoidShock voidShock = new VoidShock(this, this.getTarget(), this.level);
+                            VoidShock voidShock = new VoidShock(this, this.getTarget(), this.level());
                             voidShock.setPos(this.position().add(0.0D, 4.0D, 0.0D));
                             voidShock.setPower(Vec3.ZERO, 10);
                             voidShock.setBaseDamage(damage);
-                            this.level.addFreshEntity(voidShock);
+                            this.level().addFreshEntity(voidShock);
                             this.playSound(ModSounds.TELEPORT_ORB_THROW.get(), 2.0F, this.getVoicePitch());
                         }
                     }
-                    for (LivingEntity livingEntity : this.level.getEntitiesOfClass(LivingEntity.class, this.getBoundingBox().inflate(20.0F))) {
+                    for (LivingEntity livingEntity : this.level().getEntitiesOfClass(LivingEntity.class, this.getBoundingBox().inflate(20.0F))) {
                         if (!MobUtil.areAllies(this, livingEntity) && EntitySelector.NO_CREATIVE_OR_SPECTATOR.test(livingEntity) && livingEntity.isAlive()) {
                             Vec3 vec30 = this.position().subtract(livingEntity.position());
                             vec30 = vec30.normalize();
@@ -1324,7 +1327,7 @@ public class EnderKeeper extends AbstractEnderling implements Enemy {
                             if (this.distanceTo(livingEntity) < radius) {
                                 float lifeSteal = ((livingEntity.getMaxHealth() - livingEntity.getHealth()) * 0.25F) + 1.0F;
                                 if (livingEntity.hurt(this.damageSources().indirectMagic(this, this), lifeSteal)) {
-                                    if (this.level instanceof ServerLevel serverLevel) {
+                                    if (this.level() instanceof ServerLevel serverLevel) {
                                         ColorUtil colorUtil = new ColorUtil(ChatFormatting.DARK_PURPLE);
                                         Vec3 vec3 = new Vec3(livingEntity.getX(), livingEntity.getY() + (livingEntity.getBbHeight() / 2.0F), livingEntity.getZ());
                                         Vec3 vector3d1 = new Vec3(this.getRandomX(1.0F), this.getEyeY(), this.getRandomZ(1.0F));
@@ -1349,18 +1352,18 @@ public class EnderKeeper extends AbstractEnderling implements Enemy {
                     this.playSound(ModSounds.OBSIDIAN_CLAYMORE_SWING.get(), 2.0F, this.getVoicePitch());
                 }
                 if (this.attackTick == 119) {
-                    CameraShake.cameraShake(this.level, this.position(), 15.0F, 0.1F, 0, 10);
+                    CameraShake.cameraShake(this.level(), this.position(), 15.0F, 0.1F, 0, 10);
                     this.areaAttack(6.5F, 6, 90, damage, 60, false);
                 }
                 if (this.attackTick == 120) {
-                    if (this.level instanceof ServerLevel serverLevel) {
+                    if (this.level() instanceof ServerLevel serverLevel) {
                         new SpellExplosion(serverLevel, this, this.damageSources().indirectMagic(this, this), this.getX(), this.getY(), this.getZ(), 4.0F, damage) {
                             @Override
                             public void explodeHurt(Entity target, DamageSource damageSource, double x, double y, double z, double seen, float actualDamage) {
                                 super.explodeHurt(target, damageSource, x, y, z, seen, actualDamage);
                                 if (EntitySelector.NO_CREATIVE_OR_SPECTATOR.test(target)) {
-                                    if (target instanceof LivingEntity livingEntity && !livingEntity.hasEffect(GoetyEffects.VOID_TOUCHED.get())) {
-                                        livingEntity.addEffect(new MobEffectInstance(GoetyEffects.VOID_TOUCHED.get(), MathHelper.secondsToTicks(3), 2, false, true));
+                                    if (target instanceof LivingEntity livingEntity && !livingEntity.hasEffect(GoetyEffects.VOID_TOUCHED.getHolder())) {
+                                        livingEntity.addEffect(new MobEffectInstance(GoetyEffects.VOID_TOUCHED.getHolder(), MathHelper.secondsToTicks(3), 2, false, true));
                                     }
                                 }
                             }
@@ -1384,11 +1387,11 @@ public class EnderKeeper extends AbstractEnderling implements Enemy {
                     this.playSound(ModSounds.OBSIDIAN_CLAYMORE_SMASH.get(), 2.0F, this.getVoicePitch());
                 }
                 if (this.attackTick == 5) {
-                    if (this.level instanceof ServerLevel serverLevel) {
+                    if (this.level() instanceof ServerLevel serverLevel) {
                         ColorUtil colorUtil = new ColorUtil(ChatFormatting.DARK_PURPLE);
                         serverLevel.sendParticles(new CircleExplodeParticleOption(colorUtil.red, colorUtil.green, colorUtil.blue, this.groundPoundSize, 1), this.getX(), BlockFinder.moveDownToGround(this), this.getZ(), 1, 0.0D, 0.0D, 0.0D, 0.0D);
                     }
-                    CameraShake.cameraShake(this.level, this.position(), 25.0F, 0.2F, 0, 20);
+                    CameraShake.cameraShake(this.level(), this.position(), 25.0F, 0.2F, 0, 20);
                 }
 
                 for (int i = 5; i < 5 + this.groundPoundSize; ++i) {
@@ -1405,12 +1408,12 @@ public class EnderKeeper extends AbstractEnderling implements Enemy {
                         this.playSound(ModSounds.SWIRLINGS.get(), 2.0F, this.getVoicePitch() - 0.25F);
                     }
                     if (this.attackTick >= 38 && this.attackTick < 58) {
-                        if (this.level instanceof ServerLevel serverLevel) {
+                        if (this.level() instanceof ServerLevel serverLevel) {
                             serverLevel.sendParticles(new WindParticleOption(new ColorUtil(ChatFormatting.DARK_PURPLE), 4.5F, 1.5F, this.getId()), this.getX(), this.getY(), this.getZ(), 1, 0, 0, 0, 1.0F);
                             serverLevel.sendParticles(new WindParticleOption(new ColorUtil(ChatFormatting.DARK_PURPLE), 6.0F, 1.0F, this.getId()), this.getX(), this.getY(), this.getZ(), 1, 0, 0, 0, 1.0F);
                             serverLevel.sendParticles(new WindParticleOption(new ColorUtil(ChatFormatting.DARK_PURPLE), 4.5F, 0.5F, this.getId()), this.getX(), this.getY(), this.getZ(), 1, 0, 0, 0, 1.0F);
                         }
-                        for (LivingEntity entityHit : this.level.getEntitiesOfClass(LivingEntity.class, this.getBoundingBox().inflate(6.0D, 0.0D, 6.0D))) {
+                        for (LivingEntity entityHit : this.level().getEntitiesOfClass(LivingEntity.class, this.getBoundingBox().inflate(6.0D, 0.0D, 6.0D))) {
                             if (!MobUtil.areAllies(this, entityHit)) {
                                 boolean flag = entityHit.hurt(this.damageSources().mobAttack(this), damage + (entityHit.getMaxHealth() * AttributesConfig.EnderKeeperHPPercentDamage.get().floatValue()));
                                 if (entityHit.isDamageSourceBlocked(this.damageSources().mobAttack(this))) {
@@ -1472,7 +1475,7 @@ public class EnderKeeper extends AbstractEnderling implements Enemy {
             }
         }
         if (this.getTarget() != null) {
-            this.getTarget().addEffect(new MobEffectInstance(GoetyEffects.PLUNGE.get(), 5, 0, false, false));
+            this.getTarget().addEffect(new MobEffectInstance(GoetyEffects.PLUNGE.getHolder(), 5, 0, false, false));
             if (this.getTarget() instanceof Player player) {
                 player.getAbilities().flying &= player.isCreative();
             }
@@ -1501,8 +1504,8 @@ public class EnderKeeper extends AbstractEnderling implements Enemy {
     }
 
     public void applyVoidTouched(Entity entity) {
-        if (entity instanceof LivingEntity livingEntity && !livingEntity.hasEffect(GoetyEffects.VOID_TOUCHED.get())) {
-            livingEntity.addEffect(new MobEffectInstance(GoetyEffects.VOID_TOUCHED.get(), MathHelper.secondsToTicks(5), 1, false, true));
+        if (entity instanceof LivingEntity livingEntity && !livingEntity.hasEffect(GoetyEffects.VOID_TOUCHED.getHolder())) {
+            livingEntity.addEffect(new MobEffectInstance(GoetyEffects.VOID_TOUCHED.getHolder(), MathHelper.secondsToTicks(5), 1, false, true));
         }
     }
 
@@ -1536,15 +1539,15 @@ public class EnderKeeper extends AbstractEnderling implements Enemy {
             if (blockState.getRenderShape() != RenderShape.MODEL) {
                 blockState = Blocks.AIR.defaultBlockState();
             }
-            BlockState blockAbove = this.level.getBlockState(blockPos.above());
+            BlockState blockAbove = this.level().getBlockState(blockPos.above());
 
             if (blockState != Blocks.AIR.defaultBlockState() && !blockState.hasBlockEntity() && !blockAbove.blocksMotion()) {
-                ModFallingBlock fallingBlock = new ModFallingBlock(this.level, Vec3.atCenterOf(blockPos.above()), blockState, (float) (0.2D + this.getRandom().nextGaussian() * 0.15D));
-                this.level.addFreshEntity(fallingBlock);
+                ModFallingBlock fallingBlock = new ModFallingBlock(this.level(), Vec3.atCenterOf(blockPos.above()), blockState, (float) (0.2D + this.getRandom().nextGaussian() * 0.15D));
+                this.level().addFreshEntity(fallingBlock);
             }
 
             AABB selection = new AABB(px - 0.5D, minY, pz - 0.5D, px + 0.5D, maxY, pz + 0.5D);
-            List<LivingEntity> entities = this.level.getEntitiesOfClass(LivingEntity.class, selection);
+            List<LivingEntity> entities = this.level().getEntitiesOfClass(LivingEntity.class, selection);
             for (LivingEntity target : entities) {
                 if (!MobUtil.areAllies(target, this) && target != this) {
                     boolean flag = target.hurt(this.damageSources().mobAttack(this), damage + (target.getMaxHealth() * AttributesConfig.EnderKeeperHPPercentDamage.get().floatValue()));
@@ -1635,7 +1638,7 @@ public class EnderKeeper extends AbstractEnderling implements Enemy {
         return this.calculateViewVector(0, this.getYRot());
     }
 
-    @Override
+    // @Override
     public double getMeleeAttackRangeSqr(LivingEntity livingEntity) {
         return Mth.square(6.0D);
     }
@@ -1664,15 +1667,18 @@ public class EnderKeeper extends AbstractEnderling implements Enemy {
         boolean flag = blockstate.blocksMotion();
         boolean flag1 = blockstate.getFluidState().is(FluidTags.WATER);
         if (flag && !flag1) {
-            EntityTeleportEvent.EnderEntity event = true;
+            double d0 = this.getX() + (this.random.nextDouble() - 0.5D) * 64.0D;
+            double d1 = this.getY() + (double)(this.random.nextInt(64) - 32);
+            double d2 = this.getZ() + (this.random.nextDouble() - 0.5D) * 64.0D;
+            EntityTeleportEvent.EnderEntity event = new EntityTeleportEvent.EnderEntity(this, d0, d1, d2);
             if (event.isCanceled()) return false;
             Vec3 vec3 = this.position();
             boolean flag2 = this.randomTeleport(event.getTargetX(), event.getTargetY(), event.getTargetZ(), false);
             if (flag2) {
-                if (!this.level.isClientSide) {
+                if (!this.level().isClientSide) {
                     ModNetwork.sendToALL(new SRepositionPacket(this.getId(), this.getX(), this.getY(), this.getZ()));
                 }
-                this.level.gameEvent(GameEvent.TELEPORT, vec3, GameEvent.Context.of(this));
+                this.level().gameEvent(GameEvent.TELEPORT, vec3, GameEvent.Context.of(this));
             }
 
             return flag2;
@@ -1683,22 +1689,22 @@ public class EnderKeeper extends AbstractEnderling implements Enemy {
 
     @Override
     public void teleportTowards(Entity entity, double range) {
-        if (!this.level.isClientSide() && this.isAlive()) {
+        if (!this.level().isClientSide() && this.isAlive()) {
             if (entity == null) {
                 return;
             }
             try {
                 for (int i = 0; i < 128; ++i) {
                     int range2 = Mth.floor(range);
-                    double d1 = entity.getX() + this.level.getRandom().nextIntBetweenInclusive(-range2, range2);
+                    double d1 = entity.getX() + this.level().getRandom().nextIntBetweenInclusive(-range2, range2);
                     double d2 = entity.getY();
-                    double d3 = entity.getZ() + this.level.getRandom().nextIntBetweenInclusive(-range2, range2);
-                    EntityTeleportEvent.EnderEntity event = true;
+                    double d3 = entity.getZ() + this.level().getRandom().nextIntBetweenInclusive(-range2, range2);
+                    EntityTeleportEvent.EnderEntity event = new EntityTeleportEvent.EnderEntity(this, d1, d2, d3);
                     if (event.isCanceled()) {
                         break;
                     }
                     Vec3 vec3 = new Vec3(event.getTargetX(), event.getTargetY(), event.getTargetZ());
-                    if (this.level.noCollision(this.getBoundingBox().move(vec3)) && !this.level.containsAnyLiquid(this.getBoundingBox().move(vec3))) {
+                    if (this.level().noCollision(this.getBoundingBox().move(vec3)) && !this.level().containsAnyLiquid(this.getBoundingBox().move(vec3))) {
                         this.teleportTo(vec3.x, vec3.y, vec3.z);
                         MobUtil.instaLook(this, entity, true);
                         break;
@@ -1715,7 +1721,7 @@ public class EnderKeeper extends AbstractEnderling implements Enemy {
 
     public void teleportIn() {
         super.teleportIn();
-        if (!this.level.isClientSide) {
+        if (!this.level().isClientSide) {
             ModNetwork.sendToALL(new SRepositionPacket(this.getId(), this.getX(), this.getY(), this.getZ()));
         }
     }

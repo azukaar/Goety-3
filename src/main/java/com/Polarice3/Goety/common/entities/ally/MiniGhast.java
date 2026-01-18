@@ -88,7 +88,7 @@ public class MiniGhast extends Malghast {
             LivingEntity livingentity = this.ghast.getTarget();
             float d0 = 64.0F;
             if (livingentity != null && livingentity.distanceToSqr(this.ghast) < Mth.square(d0) && this.ghast.hasLineOfSight(livingentity)) {
-                Level world = this.ghast.level;
+                Level world = this.ghast.level();
                 ++this.chargeTime;
                 if (this.chargeTime == 10) {
                     this.shotTimes = this.ghast.random.nextFloat() >= 0.25F;

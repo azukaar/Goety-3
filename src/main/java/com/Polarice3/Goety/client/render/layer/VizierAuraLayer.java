@@ -12,7 +12,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 
 public class VizierAuraLayer extends EnergySwirlLayer<Vizier, VizierModel> {
-    private static final ResourceLocation VIZIER_ARMOR = new ResourceLocation(Goety.MOD_ID, "textures/entity/illagers/vizierarmor.png");
+    private static final ResourceLocation VIZIER_ARMOR = ResourceLocation.fromNamespaceAndPath(Goety.MOD_ID, "textures/entity/illagers/vizierarmor.png");
     private final VizierModel model;
 
     public VizierAuraLayer(RenderLayerParent<Vizier, VizierModel> p_174554_, EntityModelSet p_174555_) {

@@ -90,10 +90,10 @@ public class VanguardServant extends AbstractSkeletonServant {
     public void reassessWeaponGoal() {
     }
 
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.entityData.define(HAS_SHIELD, true);
-        this.entityData.define(DATA_FLAGS_ID, (byte) 0);
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(HAS_SHIELD, true);
+        builder.define(DATA_FLAGS_ID, (byte) 0);
     }
 
     public void readAdditionalSaveData(CompoundTag pCompound) {
@@ -309,15 +309,15 @@ public class VanguardServant extends AbstractSkeletonServant {
     public boolean doHurtTarget(Entity p_21372_) {
         float f = (float) this.getAttributeValue(Attributes.ATTACK_DAMAGE);
         float f1 = (float) this.getAttributeValue(Attributes.ATTACK_KNOCKBACK);
-        if (p_21372_ instanceof LivingEntity) {
-            f += EnchantmentHelper.getDamageBonus(this.getMainHandItem(), ((LivingEntity) p_21372_).getMobType());
-            f1 += (float) EnchantmentHelper.getKnockbackBonus(this);
-        }
-
-        int i = EnchantmentHelper.getFireAspect(this);
-        if (i > 0) {
-            p_21372_.igniteForSeconds(i * 4);
-        }
+        // TODO: EnchantmentHelper methods changed in 1.21
+        // if (p_21372_ instanceof LivingEntity) {
+        //     f += EnchantmentHelper.getDamageBonus(this.getMainHandItem(), ((LivingEntity) p_21372_).getMobType());
+        //     f1 += (float) EnchantmentHelper.getKnockbackBonus(this);
+        // }
+        // int i = EnchantmentHelper.getFireAspect(this);
+        // if (i > 0) {
+        //     p_21372_.igniteForSeconds(i * 4);
+        // }
 
         boolean flag = p_21372_.hurt(this.getServantAttack(), f);
         if (flag) {
@@ -326,7 +326,7 @@ public class VanguardServant extends AbstractSkeletonServant {
                         (double) (-Mth.cos(this.getYRot() * ((float) Math.PI / 180F))));
             }
 
-            this.doEnchantDamageEffects(this, p_21372_);
+            // this.doEnchantDamageEffects(this, p_21372_); // Removed in 1.21
             this.setLastHurtMob(p_21372_);
         }
 
@@ -376,7 +376,7 @@ public class VanguardServant extends AbstractSkeletonServant {
                     this.setShield(true);
                     this.setShieldHealth(1);
                     this.level().broadcastEntityEvent(this, (byte) 6);
-                    this.playSound(SoundEvents.ARMOR_EQUIP_GENERIC, 1.0F, 1.0F);
+                    this.playSound(SoundEvents.ARMOR_EQUIP_GENERIC.value(), 1.0F, 1.0F);
                     return InteractionResult.SUCCESS;
                 }
             }
@@ -423,7 +423,7 @@ public class VanguardServant extends AbstractSkeletonServant {
                     livingentity.getBoundingBox().minY, livingentity.getZ()));
         }
 
-        @Override
+        // checkAndPerformAttack signature changed in 1.21
         protected void checkAndPerformAttack(LivingEntity enemy, double distToEnemySqr) {
             if (VanguardServant.this.targetClose(enemy, distToEnemySqr)) {
                 if (!VanguardServant.this.isMeleeAttacking()) {

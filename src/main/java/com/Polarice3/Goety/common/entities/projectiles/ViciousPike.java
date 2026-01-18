@@ -47,7 +47,7 @@ public class ViciousPike extends Entity implements ISpellEntity {
     }
 
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
-        super.defineSynchedData(builder);
+        // No data to define
     }
 
     @Override
@@ -71,8 +71,8 @@ public class ViciousPike extends Entity implements ISpellEntity {
 
     @Nullable
     public LivingEntity getOwner() {
-        if (this.owner == null && this.ownerUUID != null && this.level instanceof ServerLevel) {
-            Entity entity = ((ServerLevel)this.level).getEntity(this.ownerUUID);
+        if (this.owner == null && this.ownerUUID != null && this.level() instanceof ServerLevel) {
+            Entity entity = ((ServerLevel)this.level()).getEntity(this.ownerUUID);
             if (entity instanceof LivingEntity) {
                 this.owner = (LivingEntity)entity;
             }
@@ -82,17 +82,17 @@ public class ViciousPike extends Entity implements ISpellEntity {
     }
     public void tick() {
         super.tick();
-        if (this.level.isClientSide) {
+        if (this.level().isClientSide) {
             --this.lifeTicks;
         } else {
             if (this.tickCount == 2) {
-                for (LivingEntity livingentity : this.level.getEntitiesOfClass(LivingEntity.class, this.getBoundingBox().inflate(0.2D, 0.0D, 0.2D))) {
+                for (LivingEntity livingentity : this.level().getEntitiesOfClass(LivingEntity.class, this.getBoundingBox().inflate(0.2D, 0.0D, 0.2D))) {
                     this.dealDamageTo(livingentity);
                 }
             }
 
             if (!this.sentSpikeEvent) {
-                this.level.broadcastEntityEvent(this, (byte)4);
+                this.level().broadcastEntityEvent(this, (byte)4);
                 this.sentSpikeEvent = true;
             }
 
@@ -132,7 +132,7 @@ public class ViciousPike extends Entity implements ISpellEntity {
         if (p_36935_ == 4) {
             this.mainAnimationState.start(this.tickCount);
             if (!this.isSilent()) {
-                this.level.playLocalSound(this.getX(), this.getY(), this.getZ(), ModSounds.IMPALE.get(), this.getSoundSource(), 1.0F, this.random.nextFloat() * 0.2F + 0.85F, false);
+                this.level().playLocalSound(this.getX(), this.getY(), this.getZ(), ModSounds.IMPALE.get(), this.getSoundSource(), 1.0F, this.random.nextFloat() * 0.2F + 0.85F, false);
             }
         }
 
@@ -143,7 +143,7 @@ public class ViciousPike extends Entity implements ISpellEntity {
         return i <= 0 ? 1.0F : 1.0F - ((float)i - p_36937_) / 20.0F;
     }
 
-    public Packet<ClientGamePacketListener> getAddEntityPacket() {
+    /*public Packet<ClientGamePacketListener> getAddEntityPacket() {
         return new net.minecraft.network.protocol.game.ClientboundAddEntityPacket(this);
-    }
+    }*/
 }

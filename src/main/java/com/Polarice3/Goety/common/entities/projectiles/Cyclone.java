@@ -26,7 +26,7 @@ public class Cyclone extends AbstractCyclone {
 
     public void tick() {
         super.tick();
-        if (!this.level.isClientSide) {
+        if (!this.level().isClientSide) {
             if (this.tickCount % 40 == 0) {
                 this.playSound(ModSounds.FLIGHT.get(), 0.5F, 0.5F);
             }
@@ -34,7 +34,7 @@ public class Cyclone extends AbstractCyclone {
     }
 
     public void fakeRemove(double x, double y, double z){
-        Cyclone cyclone = new Cyclone(this.level, this.getTrueOwner(), x, y, z);
+        Cyclone cyclone = new Cyclone(this.level(), this.getTrueOwner(), x, y, z);
         cyclone.setOwner(this.getTrueOwner());
         cyclone.setTarget(this.getTarget());
         cyclone.setLifespan(this.getLifespan());
@@ -44,14 +44,14 @@ public class Cyclone extends AbstractCyclone {
         cyclone.setDamage(this.getDamage());
         cyclone.setExtraDamage(this.getExtraDamage());
         cyclone.setPos(this.getX(), this.getY(), this.getZ());
-        this.level.addFreshEntity(cyclone);
+        this.level().addFreshEntity(cyclone);
         this.remove();
     }
 
     public void remove() {
-        if (!this.level.isClientSide){
+        if (!this.level().isClientSide){
             if (this.getLifespan() >= this.getTotalLife()) {
-                ServerLevel serverWorld = (ServerLevel) this.level;
+                ServerLevel serverWorld = (ServerLevel) this.level();
                 for (int k = 0; k < 50; ++k) {
                     float f2 = random.nextFloat() * 4.0F;
                     float f1 = random.nextFloat() * ((float) Math.PI * 2F);

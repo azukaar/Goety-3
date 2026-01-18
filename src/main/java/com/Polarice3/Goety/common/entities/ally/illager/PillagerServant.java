@@ -90,7 +90,7 @@ public class PillagerServant extends AbstractIllagerServant implements CrossbowA
     }
 
     public void reassessWeaponGoal() {
-        if (!this.level.isClientSide) {
+        if (!this.level().isClientSide) {
             this.goalSelector.removeGoal(this.meleeGoal);
             this.goalSelector.removeGoal(this.crossBowGoal);
             ItemStack itemstack = this.getItemInHand(ProjectileUtil.getWeaponHoldingHand(this, item -> item instanceof ProjectileWeaponItem));
@@ -110,7 +110,7 @@ public class PillagerServant extends AbstractIllagerServant implements CrossbowA
 
     public void setItemSlot(EquipmentSlot pSlot, ItemStack pStack) {
         super.setItemSlot(pSlot, pStack);
-        if (!this.level.isClientSide) {
+        if (!this.level().isClientSide) {
             this.reassessWeaponGoal();
         }
 
@@ -230,7 +230,7 @@ public class PillagerServant extends AbstractIllagerServant implements CrossbowA
 
     @Override
     public void die(DamageSource pCause) {
-        if (!this.level.isClientSide) {
+        if (!this.level().isClientSide) {
             if (this.getIdol() == null) {
                 if (this.getTrueOwner() != null) {
                     if (CuriosFinder.hasNamelessSet(this.getTrueOwner())){
@@ -239,7 +239,7 @@ public class PillagerServant extends AbstractIllagerServant implements CrossbowA
                             servant.setTrueOwner(this.getTrueOwner());
                             net.neoforged.event.net.neoforged.neoforge.event.EventHooks.onLivingConvert(this, servant);
                             if (!this.isSilent()) {
-                                this.level.levelEvent((Player)null, 1026, this.blockPosition(), 0);
+                                this.level().levelEvent((Player)null, 1026, this.blockPosition(), 0);
                             }
                         }
                     }
@@ -260,7 +260,7 @@ public class PillagerServant extends AbstractIllagerServant implements CrossbowA
                     this.dropEquipment(EquipmentSlot.MAINHAND, itemstack2.copyAndClear());
                     this.setItemSlot(EquipmentSlot.MAINHAND, itemstack.copyWithCount(1));
                     this.setGuaranteedDrop(EquipmentSlot.MAINHAND);
-                    if (this.level instanceof ServerLevel serverLevel) {
+                    if (this.level() instanceof ServerLevel serverLevel) {
                         for (int i = 0; i < 7; ++i) {
                             double d0 = this.random.nextGaussian() * 0.02D;
                             double d1 = this.random.nextGaussian() * 0.02D;
@@ -277,7 +277,7 @@ public class PillagerServant extends AbstractIllagerServant implements CrossbowA
                     this.dropEquipment(EquipmentSlot.OFFHAND, this.getOffhandItem().copyAndClear());
                     this.setItemSlot(EquipmentSlot.OFFHAND, itemstack.split(64));
                     this.setGuaranteedDrop(EquipmentSlot.OFFHAND);
-                    if (this.level instanceof ServerLevel serverLevel) {
+                    if (this.level() instanceof ServerLevel serverLevel) {
                         for (int i = 0; i < 7; ++i) {
                             double d0 = this.random.nextGaussian() * 0.02D;
                             double d1 = this.random.nextGaussian() * 0.02D;

@@ -1,5 +1,11 @@
 package com.Polarice3.Goety.common.entities.ally.illager;
 
+import com.Polarice3.Goety.Goety;
+import net.minecraft.core.Holder;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.alchemy.PotionContents;
+
 import com.Polarice3.Goety.api.items.magic.IWand;
 import com.Polarice3.Goety.client.particles.ModParticleTypes;
 import com.Polarice3.Goety.common.entities.ai.AvoidTargetGoal;
@@ -61,9 +67,8 @@ import java.util.List;
 import java.util.UUID;
 
 public class MaverickServant extends CultistServant {
-    private static final UUID SPEED_MODIFIER_DRINKING_UUID = UUID.fromString("5CD17E52-A79A-43D3-A529-90FDE04B181E");
-    private static final AttributeModifier SPEED_MODIFIER_DRINKING = new AttributeModifier(SPEED_MODIFIER_DRINKING_UUID,
-            "Drinking speed penalty", -0.25D, AttributeModifier.Operation.ADDITION);
+    private static final ResourceLocation SPEED_MODIFIER_DRINKING_ID = Goety.location("drinking_speed_penalty");
+    private static final AttributeModifier SPEED_MODIFIER_DRINKING = new AttributeModifier(SPEED_MODIFIER_DRINKING_ID, -0.25D, AttributeModifier.Operation.ADD_VALUE);
     private static final EntityDataAccessor<Boolean> DATA_USING_ITEM = SynchedEntityData.defineId(MaverickServant.class,
             EntityDataSerializers.BOOLEAN);
     private int usingTime;
@@ -154,15 +159,15 @@ public class MaverickServant extends CultistServant {
 
     public boolean hasHarmfulEffect() {
         return this.getActiveEffects().stream()
-                .anyMatch(instance -> instance.getEffect().getCategory() == MobEffectCategory.HARMFUL
-                        && instance.isCurativeItem(new ItemStack(Items.MILK_BUCKET)) && instance.getDuration() > 100);
+                .anyMatch(instance -> instance.getEffect().value().getCategory() == MobEffectCategory.HARMFUL
+                        && /*instance.isCurativeItem(new ItemStack(Items.MILK_BUCKET)) &&*/ instance.getDuration() > 100);
     }
 
     @Nullable
     @Override
     public SpawnGroupData finalizeSpawn(ServerLevelAccessor p_37856_, DifficultyInstance p_37857_,
-            MobSpawnType p_37858_, @Nullable SpawnGroupData p_37859_, @Nullable CompoundTag p_37860_) {
-        SpawnGroupData spawnGroupData = super.finalizeSpawn(p_37856_, p_37857_, p_37858_, p_37859_, p_37860_);
+            MobSpawnType p_37858_, @Nullable SpawnGroupData p_37859_) {
+        SpawnGroupData spawnGroupData = super.finalizeSpawn(p_37856_, p_37857_, p_37858_, p_37859_);
         this.populateDefaultEquipmentSlots(p_37856_.getRandom(), p_37857_);
         return spawnGroupData;
     }
@@ -185,7 +190,7 @@ public class MaverickServant extends CultistServant {
     }
 
     public void aiStep() {
-        if (!this.level.isClientSide && this.isAlive()) {
+        if (!this.level().isClientSide && this.isAlive()) {
             this.setAggressive(this.getTarget() != null);
             if (this.fleeTime > 0) {
                 --this.fleeTime;
@@ -195,9 +200,9 @@ public class MaverickServant extends CultistServant {
                 int i = this.usingTime;
                 if (i % 4 == 0) {
                     if (!this.isSilent()) {
-                        this.level.playSound(null, this.getX(), this.getY(), this.getZ(),
+                        this.level().playSound(null, this.getX(), this.getY(), this.getZ(),
                                 this.getDrinkingSound(this.getOffhandItem()), this.getSoundSource(), 0.5F,
-                                this.level.random.nextFloat() * 0.1F + 0.9F);
+                                this.level().random.nextFloat() * 0.1F + 0.9F);
                     }
                 }
                 if (this.usingTime-- <= 0) {
@@ -205,26 +210,26 @@ public class MaverickServant extends CultistServant {
                     ItemStack itemstack = this.getOffhandItem();
                     this.setItemSlot(EquipmentSlot.OFFHAND, ItemStack.EMPTY);
                     if (itemstack.is(Items.POTION)) {
-                        List<MobEffectInstance> list = PotionUtils.getMobEffects(itemstack);
-                        if (!list.isEmpty()) {
-                            for (MobEffectInstance mobeffectinstance : list) {
+                        PotionContents potionContents = itemstack.get(DataComponents.POTION_CONTENTS);
+                        if (potionContents != null) {
+                            for (MobEffectInstance mobeffectinstance : potionContents.getAllEffects()) {
                                 this.addEffect(new MobEffectInstance(mobeffectinstance));
                             }
                         }
                     } else if (itemstack.is(Items.MILK_BUCKET)) {
-                        this.curePotionEffects(itemstack);
+                        this.removeAllEffects();
                     }
 
                     if (attributeinstance != null) {
-                        attributeinstance.removeModifier(SPEED_MODIFIER_DRINKING);
+                        attributeinstance.removeModifier(SPEED_MODIFIER_DRINKING_ID);
                     }
                 }
             } else {
-                Potion potion = null;
+                Holder<Potion> potion = null;
                 ItemStack milk = ItemStack.EMPTY;
                 if (this.random.nextFloat() < 0.15F && this.hasHarmfulEffect()) {
                     milk = new ItemStack(Items.MILK_BUCKET);
-                } else if (this.random.nextFloat() < 0.15F && this.isEyeInFluidType(NeoForgeMod.WATER_TYPE.get())
+                } else if (this.random.nextFloat() < 0.15F && this.isEyeInFluidType(NeoForgeMod.WATER_TYPE.value())
                         && !this.hasEffect(MobEffects.WATER_BREATHING)) {
                     potion = Potions.WATER_BREATHING;
                 } else if (this.random.nextFloat() < 0.15F
@@ -235,7 +240,7 @@ public class MaverickServant extends CultistServant {
                 } else if (this.random.nextFloat() < 0.05F && this.getHealth() < this.getMaxHealth()
                         && (this.getTarget() == null || this.getTarget().distanceTo(this) >= 8.0D)) {
                     if (!this.hasEffect(MobEffects.INVISIBILITY) && !this.isInvisible()
-                            && this.level
+                            && this.level()
                                     .getEntitiesOfClass(Maverick.class, this.getBoundingBox().inflate(8.0D),
                                             maverick -> MobUtil.areAllies(this, maverick) && maverick.isInvisible())
                                     .size() <= 2) {
@@ -256,7 +261,8 @@ public class MaverickServant extends CultistServant {
                     if (!milk.isEmpty()) {
                         itemStack = milk;
                     } else if (potion != null) {
-                        itemStack = PotionUtils.setPotion(new ItemStack(Items.POTION), potion);
+                        itemStack = new ItemStack(Items.POTION);
+                        itemStack.set(DataComponents.POTION_CONTENTS, new PotionContents(potion));
                     }
                 }
                 if (!itemStack.isEmpty()) {
@@ -265,7 +271,7 @@ public class MaverickServant extends CultistServant {
                     this.setUsingItem(true);
 
                     if (attributeinstance != null) {
-                        attributeinstance.removeModifier(SPEED_MODIFIER_DRINKING);
+                        attributeinstance.removeModifier(SPEED_MODIFIER_DRINKING_ID);
                         attributeinstance.addTransientModifier(SPEED_MODIFIER_DRINKING);
                     }
                 }
@@ -273,7 +279,7 @@ public class MaverickServant extends CultistServant {
         }
 
         if (this.random.nextFloat() < 7.5E-4F) {
-            this.level.broadcastEntityEvent(this, (byte) 15);
+            this.level().broadcastEntityEvent(this, (byte) 15);
         }
 
         super.aiStep();
@@ -293,7 +299,7 @@ public class MaverickServant extends CultistServant {
     @Override
     public boolean doHurtTarget(Entity target) {
         boolean flag = false;
-        Potion potion = Potions.HARMING;
+        Holder<Potion> potion = Potions.HARMING;
         if (target instanceof LivingEntity livingEntity) {
             if (!livingEntity.hasEffect(MobEffects.MOVEMENT_SLOWDOWN)
                     && !livingEntity.hasEffect(MobEffects.MOVEMENT_SLOWDOWN)
@@ -313,8 +319,8 @@ public class MaverickServant extends CultistServant {
             List<MobEffectInstance> instants = new ArrayList<>();
             List<MobEffectInstance> effects = new ArrayList<>();
 
-            for (MobEffectInstance instance : potion.getEffects()) {
-                if (instance.getEffect().isInstantenous()) {
+            for (MobEffectInstance instance : potion.value().getEffects()) {
+                if (instance.getEffect().value().isInstantenous()) {
                     instants.add(instance);
                 } else {
                     effects.add(instance);
@@ -338,7 +344,7 @@ public class MaverickServant extends CultistServant {
                     }
                     if (!instants.isEmpty()) {
                         for (MobEffectInstance instance : instants) {
-                            instance.getEffect().applyInstantenousEffect(this, this, livingEntity,
+                            instance.getEffect().value().applyInstantenousEffect(this, this, livingEntity,
                                     instance.getAmplifier(), 1.0D);
                         }
                     }
@@ -350,7 +356,7 @@ public class MaverickServant extends CultistServant {
             if (flag) {
                 if (this.hasEffect(MobEffects.INVISIBILITY)) {
                     this.removeEffect(MobEffects.INVISIBILITY);
-                    if (this.level instanceof ServerLevel serverLevel) {
+                    if (this.level() instanceof ServerLevel serverLevel) {
                         for (int i = 0; i < 8; ++i) {
                             ColorUtil colorUtil = new ColorUtil(0x3e293c);
                             serverLevel.sendParticles(ModParticleTypes.BIG_CULT_SPELL.get(), this.getRandomX(1.0D),
@@ -409,7 +415,7 @@ public class MaverickServant extends CultistServant {
         if (isOwner) {
             if (!(pPlayer.getOffhandItem().getItem() instanceof IWand)) {
                 if (item instanceof SwordItem) {
-                    this.playSound(SoundEvents.ARMOR_EQUIP_GENERIC, 1.0F, 1.0F);
+                    this.playSound(SoundEvents.ARMOR_EQUIP_GENERIC.value(), 1.0F, 1.0F);
                     this.setItemSlot(EquipmentSlot.MAINHAND, itemstack.copyWithCount(1));
                     this.dropEquipment(EquipmentSlot.MAINHAND, itemstack2);
                     this.setGuaranteedDrop(EquipmentSlot.MAINHAND);
@@ -417,7 +423,7 @@ public class MaverickServant extends CultistServant {
                         double d0 = this.random.nextGaussian() * 0.02D;
                         double d1 = this.random.nextGaussian() * 0.02D;
                         double d2 = this.random.nextGaussian() * 0.02D;
-                        this.level.addParticle(ParticleTypes.HAPPY_VILLAGER, this.getRandomX(1.0D),
+                        this.level().addParticle(ParticleTypes.HAPPY_VILLAGER, this.getRandomX(1.0D),
                                 this.getRandomY() + 0.5D, this.getRandomZ(1.0D), d0, d1, d2);
                     }
                     if (!pPlayer.getAbilities().instabuild) {
@@ -436,7 +442,7 @@ public class MaverickServant extends CultistServant {
             this.setTrader(null);
         } else if (p_34138_ == 15) {
             for (int i = 0; i < this.random.nextInt(35) + 10; ++i) {
-                this.level.addParticle(ParticleTypes.WITCH, this.getX() + this.random.nextGaussian() * (double) 0.13F,
+                this.level().addParticle(ParticleTypes.WITCH, this.getX() + this.random.nextGaussian() * (double) 0.13F,
                         this.getBoundingBox().maxY + 0.5D + this.random.nextGaussian() * (double) 0.13F,
                         this.getZ() + this.random.nextGaussian() * (double) 0.13F, 0.0D, 0.0D, 0.0D);
             }
@@ -472,16 +478,16 @@ public class MaverickServant extends CultistServant {
             }
             if (this.progress <= 0) {
                 Vec3 vec3 = trader != null ? trader.position() : this.maverick.position();
-                if (!this.maverick.level.isClientSide) {
-                    if (this.maverick.level.getServer() != null) {
+                if (!this.maverick.level().isClientSide) {
+                    if (this.maverick.level().getServer() != null) {
                         float luck = 0.0F;
                         if (this.maverick.getOffhandItem().is(ModTags.Items.WITCH_BETTER_CURRENCY)) {
                             luck = 1.0F;
                         }
-                        LootTable loottable = this.maverick.level.getServer().getLootData()
+                        LootTable loottable = this.maverick.level().getServer().reloadableRegistries()
                                 .getLootTable(ModLootTables.MAVERICK_BARTER);
                         List<ItemStack> list = loottable
-                                .getRandomItems((new LootParams.Builder((ServerLevel) this.maverick.level))
+                                .getRandomItems((new LootParams.Builder((ServerLevel) this.maverick.level()))
                                         .withParameter(LootContextParams.THIS_ENTITY, this.maverick)
                                         .withParameter(LootContextParams.ORIGIN, this.maverick.position())
                                         .withLuck(luck).create(LootContextParamSets.GIFT));
@@ -504,8 +510,8 @@ public class MaverickServant extends CultistServant {
         }
 
         protected void addParticlesAroundSelf(ParticleOptions p_35288_) {
-            if (!this.maverick.level.isClientSide) {
-                ServerLevel serverLevel = (ServerLevel) this.maverick.level;
+            if (!this.maverick.level().isClientSide) {
+                ServerLevel serverLevel = (ServerLevel) this.maverick.level();
                 for (int i = 0; i < 5; ++i) {
                     double d0 = this.maverick.getRandom().nextGaussian() * 0.02D;
                     double d1 = this.maverick.getRandom().nextGaussian() * 0.02D;
@@ -533,7 +539,7 @@ public class MaverickServant extends CultistServant {
         public void clearTrade() {
             this.maverick.setItemInHand(InteractionHand.OFF_HAND, ItemStack.EMPTY);
             this.maverick.setTrader(null);
-            this.maverick.level.broadcastEntityEvent(this.maverick, (byte) 4);
+            this.maverick.level().broadcastEntityEvent(this.maverick, (byte) 4);
         }
 
         @Override

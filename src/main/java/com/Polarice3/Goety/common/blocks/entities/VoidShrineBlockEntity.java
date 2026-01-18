@@ -37,7 +37,7 @@ public class VoidShrineBlockEntity extends PedestalBlockEntity {
     }
 
     public void tick() {
-        if (this.level instanceof ServerLevel serverLevel) {
+        if (this.getLevel() instanceof ServerLevel serverLevel) {
             if (this.getBlockState().getValue(VoidShrineBlock.CHARGE) >= 4) {
                 if (!this.getBlockState().getValue(VoidShrineBlock.TRIGGERED)) {
                     serverLevel.setBlockAndUpdate(this.worldPosition, this.getBlockState().setValue(VoidShrineBlock.TRIGGERED, true));
@@ -49,16 +49,16 @@ public class VoidShrineBlockEntity extends PedestalBlockEntity {
                     }
                     if (this.tick < 100) {
                         Vec3 vec3 = Vec3.atCenterOf(this.getBlockPos());
-                        if (this.level.getRandom().nextInt(20) == 0) {
+                        if (this.getLevel().getRandom().nextInt(20) == 0) {
                             Vec3 endVec = vec3.add(0.0D, 2.5D, 0.0D);
                             ModNetwork.sendToALL(new SLightningPacket(vec3, endVec, new ColorUtil(ChatFormatting.LIGHT_PURPLE), 2));
                         }
                         if (this.tick % 5 == 0){
                             serverLevel.sendParticles(new TeleportInShockwaveParticleOption(4, 1), vec3.x, vec3.y + 0.25F, vec3.z, 0, 0, 0, 0, 0.5F);
                         }
-                        int width = this.level.getRandom().nextIntBetweenInclusive(1, 4);
-                        float height = this.level.getRandom().nextFloat() * 0.5F;
-                        vec3 = vec3.offsetRandom(this.level.getRandom(), 3.0F);
+                        int width = this.getLevel().getRandom().nextIntBetweenInclusive(1, 4);
+                        float height = this.getLevel().getRandom().nextFloat() * 0.5F;
+                        vec3 = vec3.offsetRandom(this.getLevel().getRandom(), 3.0F);
                         serverLevel.sendParticles(new WindBlowParticle.Option(new ColorUtil(ChatFormatting.LIGHT_PURPLE), width, height), vec3.x, vec3.y, vec3.z, 0, 0.0F, 1.0F, 0.0F, 1.0F);
                     }
                     if (this.tick == 100) {
@@ -95,7 +95,7 @@ public class VoidShrineBlockEntity extends PedestalBlockEntity {
     }
 
     public void breakBlocksAround() {
-        if (this.level == null) {
+        if (this.getLevel() == null) {
             return;
         }
         int radius = 7;
@@ -103,9 +103,9 @@ public class VoidShrineBlockEntity extends PedestalBlockEntity {
             for (int j = 1; j <= radius; ++j) {
                 for (int k = -radius; k <= radius; ++k) {
                     BlockPos blockpos = this.worldPosition.offset(i, j, k);
-                    BlockState block = this.level.getBlockState(blockpos);
+                    BlockState block = this.getLevel().getBlockState(blockpos);
                     if (block != Blocks.AIR.defaultBlockState() && !block.is(BlockTags.WITHER_IMMUNE)) {
-                        this.level.destroyBlock(blockpos, false);
+                        this.getLevel().destroyBlock(blockpos, false);
                     }
                 }
             }

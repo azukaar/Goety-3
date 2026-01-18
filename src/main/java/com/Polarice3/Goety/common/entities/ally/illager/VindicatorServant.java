@@ -158,7 +158,7 @@ public class VindicatorServant extends AbstractIllagerServant {
 
     @Override
     public void die(DamageSource pCause) {
-        if (!this.level.isClientSide) {
+        if (!this.level().isClientSide) {
             if (this.getIdol() == null) {
                 if (this.getTrueOwner() != null) {
                     if (CuriosFinder.hasNamelessSet(this.getTrueOwner())) {
@@ -168,7 +168,7 @@ public class VindicatorServant extends AbstractIllagerServant {
                             servant.setTrueOwner(this.getTrueOwner());
                             net.neoforged.neoforge.event.EventHooks.onLivingConvert(this, servant);
                             if (!this.isSilent()) {
-                                this.level.levelEvent((Player) null, 1026, this.blockPosition(), 0);
+                                this.level().levelEvent((Player) null, 1026, this.blockPosition(), 0);
                             }
                         }
                     }
@@ -194,7 +194,7 @@ public class VindicatorServant extends AbstractIllagerServant {
                         double d0 = this.random.nextGaussian() * 0.02D;
                         double d1 = this.random.nextGaussian() * 0.02D;
                         double d2 = this.random.nextGaussian() * 0.02D;
-                        this.level.addParticle(ParticleTypes.HAPPY_VILLAGER, this.getRandomX(1.0D),
+                        this.level().addParticle(ParticleTypes.HAPPY_VILLAGER, this.getRandomX(1.0D),
                                 this.getRandomY() + 0.5D, this.getRandomZ(1.0D), d0, d1, d2);
                     }
                     if (!pPlayer.getAbilities().instabuild) {

@@ -69,9 +69,9 @@ public class Preacher extends HuntingIllagerEntity{
         MobUtil.setBaseAttributes(this.getAttribute(Attributes.ARMOR), AttributesConfig.PreacherArmor.get());
     }
 
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.entityData.define(DATA_FLAGS_ID, (byte)0);
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(DATA_FLAGS_ID, (byte)0);
     }
 
     public void readAdditionalSaveData(CompoundTag pCompound) {
@@ -106,7 +106,7 @@ public class Preacher extends HuntingIllagerEntity{
 
     public void tick() {
         super.tick();
-        if (this.level.isClientSide){
+        if (this.level().isClientSide){
             if (this.isAlive()){
                 if (!this.isHealing()) {
                     this.healAnimationState.stop();
@@ -132,7 +132,7 @@ public class Preacher extends HuntingIllagerEntity{
             this.healTick = 0;
         }
 
-        if (!this.level.isClientSide){
+        if (!this.level().isClientSide){
             if (this.healCool > 0){
                 --this.healCool;
             }
@@ -162,7 +162,7 @@ public class Preacher extends HuntingIllagerEntity{
     public void setHealing(boolean attacking) {
         this.setFlag(1, attacking);
         this.healTick = 0;
-        this.level.broadcastEntityEvent(this, (byte) 5);
+        this.level().broadcastEntityEvent(this, (byte) 5);
     }
 
     protected SoundEvent getAmbientSound() {
@@ -187,7 +187,7 @@ public class Preacher extends HuntingIllagerEntity{
     }
 
     @Override
-    public void applyRaidBuffs(int p_37844_, boolean p_37845_) {
+    public void applyRaidBuffs(ServerLevel p_37843_, int p_37844_, boolean p_37845_) {
 
     }
 
@@ -250,7 +250,7 @@ public class Preacher extends HuntingIllagerEntity{
                             && !(p_26058_ instanceof Tormentor)
                             && this.preacher.hasLineOfSight(illager)
                             && illager.getTarget() != this.preacher);
-            this.target = this.preacher.level.getNearestEntity(this.preacher.level.getEntitiesOfClass(Raider.class, this.getTargetSearchArea(this.getFollowDistance()), (p_148152_) -> {
+            this.target = this.preacher.level().getNearestEntity(this.preacher.level().getEntitiesOfClass(Raider.class, this.getTargetSearchArea(this.getFollowDistance()), (p_148152_) -> {
                 return true;
             }), targetConditions, this.preacher, this.preacher.getX(), this.preacher.getEyeY(), this.preacher.getZ());
         }
@@ -258,7 +258,7 @@ public class Preacher extends HuntingIllagerEntity{
         @Override
         public void start() {
             super.start();
-            this.preacher.level.broadcastEntityEvent(this.preacher, (byte) 4);
+            this.preacher.level().broadcastEntityEvent(this.preacher, (byte) 4);
             this.preacher.setHealing(true);
             this.preacher.playSound(this.preacher.getCastingSoundEvent(), this.preacher.getSoundVolume(), this.preacher.getVoicePitch());
         }
@@ -271,8 +271,8 @@ public class Preacher extends HuntingIllagerEntity{
                 MobUtil.instaLook(this.preacher, this.target);
                 if (this.preacher.healTick == 10){
                     this.target.heal(AttributesConfig.PreacherHeal.get().floatValue());
-                    if (!this.preacher.level.isClientSide) {
-                        ServerLevel serverWorld = (ServerLevel) this.preacher.level;
+                    if (!this.preacher.level().isClientSide) {
+                        ServerLevel serverWorld = (ServerLevel) this.preacher.level();
                         for (int i = 0; i < serverWorld.random.nextInt(10) + 10; ++i) {
                             serverWorld.sendParticles(ModParticleTypes.HEAL_EFFECT_2.get(), this.target.getRandomX(1.5D), this.target.getRandomY(), this.target.getRandomZ(1.5D), 0, 0.0F, 1.0F, 0.0F, 1.0F);
                         }

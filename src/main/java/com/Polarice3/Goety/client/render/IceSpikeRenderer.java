@@ -14,6 +14,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import org.joml.Matrix3f;
 import org.joml.Matrix4f;
+import org.joml.Vector3f;
 
 public class IceSpikeRenderer<T extends IceSpike> extends ArrowRenderer<T> {
     public static final ResourceLocation TEXTURE_LOCATION = Goety.location("textures/entity/projectiles/ice_spike.png");
@@ -63,7 +64,9 @@ public class IceSpikeRenderer<T extends IceSpike> extends ArrowRenderer<T> {
     }
 
     public void vertex(Matrix4f p_113826_, Matrix3f p_113827_, VertexConsumer p_113828_, int p_113829_, int p_113830_, int p_113831_, float p_113832_, float p_113833_, int p_113834_, int p_113835_, int p_113836_, int p_113837_, float alpha) {
-        p_113828_.vertex(p_113826_, (float)p_113829_, (float)p_113830_, (float)p_113831_).color(1.0F, 1.0F, 1.0F, alpha).uv(p_113832_, p_113833_).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(p_113837_).normal(p_113827_, (float)p_113834_, (float)p_113836_, (float)p_113835_).endVertex();
+        Vector3f vector3f = new Vector3f((float)p_113834_, (float)p_113836_, (float)p_113835_);
+        p_113827_.transform(vector3f);
+        p_113828_.addVertex(p_113826_, (float)p_113829_, (float)p_113830_, (float)p_113831_).setColor(1.0F, 1.0F, 1.0F, alpha).setUv(p_113832_, p_113833_).setOverlay(OverlayTexture.NO_OVERLAY).setLight(p_113837_).setNormal(vector3f.x(), vector3f.y(), vector3f.z());
     }
 
     @Override

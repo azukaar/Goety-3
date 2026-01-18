@@ -77,9 +77,9 @@ public class HauntedJugBlockEntity extends ModBlockEntity {
     }
 
     public void tick() {
-        if (this.level != null) {
-            if (!this.level.isClientSide) {
-                if (BlockFinder.isPassableBlock(this.level, this.getBlockPos().above())){
+        if (this.getLevel() != null) {
+            if (!this.getLevel().isClientSide) {
+                if (BlockFinder.isPassableBlock(this.getLevel(), this.getBlockPos().above())){
                     ++this.search;
                     int radius = 5;
                     int x = this.search / radius % radius;
@@ -89,16 +89,16 @@ public class HauntedJugBlockEntity extends ModBlockEntity {
                         this.search = 0;
                     }
                     BlockPos blockPos = this.getBlockPos().offset(x - 2, y - 1, z - 2);
-                    BlockState blockState = this.level.getBlockState(blockPos);
-                    BlockEntity blockEntity = this.level.getBlockEntity(blockPos);
+                    BlockState blockState = this.getLevel().getBlockState(blockPos);
+                    BlockEntity blockEntity = this.getLevel().getBlockEntity(blockPos);
                     boolean fluidHandler0 = blockEntity != null && !(blockEntity instanceof HauntedJugBlockEntity) && (blockEntity instanceof IFluidHandler || blockEntity.getCapability(Capabilities.FLUID_HANDLER, Direction.UP).isPresent()) && !blockEntity.getBlockState().getBlock().getDescriptionId().contains("pipe");
                     boolean water = blockState.getBlock() == Blocks.WATER_CAULDRON && blockState.getValue(LayeredCauldronBlock.LEVEL) < 3;
                     boolean vanillaCauldron = blockState.getBlock() == Blocks.CAULDRON || water;
                     boolean brewCauldron = blockState.getBlock() instanceof BrewCauldronBlock && blockEntity instanceof BrewCauldronBlockEntity cauldronEntity && blockState.getValue(BrewCauldronBlock.LEVEL) < 3 && BrewUtils.isEmpty(cauldronEntity.getBrew());
                     AABB aabb = new AABB(blockPos);
-                    List<LivingEntity> list = this.level.getEntitiesOfClass(LivingEntity.class, aabb, livingEntity -> livingEntity.isAlive() && (livingEntity.getRemainingFireTicks() > 0 || livingEntity instanceof Axolotl));
+                    List<LivingEntity> list = this.getLevel().getEntitiesOfClass(LivingEntity.class, aabb, livingEntity -> livingEntity.isAlive() && (livingEntity.getRemainingFireTicks() > 0 || livingEntity instanceof Axolotl));
                     if (!list.isEmpty()){
-                        LivingEntity livingEntity = list.get(this.level.random.nextInt(list.size()));
+                        LivingEntity livingEntity = list.get(this.getLevel().random.nextInt(list.size()));
                         this.streamWater(blockPos);
                         livingEntity.extinguishFire();
                         if (livingEntity.isSensitiveToWater()) {
@@ -123,18 +123,18 @@ public class HauntedJugBlockEntity extends ModBlockEntity {
                             }
                         }
                     } else if (brewCauldron) {
-                        this.level.setBlock(blockPos, blockState.cycle(BrewCauldronBlock.LEVEL), 2);
-                        this.level.updateNeighborsAt(blockPos, blockState.getBlock());
+                        this.getLevel().setBlock(blockPos, blockState.cycle(BrewCauldronBlock.LEVEL), 2);
+                        this.getLevel().updateNeighborsAt(blockPos, blockState.getBlock());
                         this.streamWater(blockPos);
                         this.fluidTank.drain(new FluidStack(Fluids.WATER, 333), IFluidHandler.FluidAction.EXECUTE);
                         this.markUpdated();
                     } else if (vanillaCauldron) {
                         if (water) {
-                            this.level.setBlock(blockPos, blockState.cycle(LayeredCauldronBlock.LEVEL), 2);
+                            this.getLevel().setBlock(blockPos, blockState.cycle(LayeredCauldronBlock.LEVEL), 2);
                         } else if (blockState.getBlock() == Blocks.CAULDRON) {
-                            this.level.setBlock(blockPos, Blocks.WATER_CAULDRON.defaultBlockState(), 2);
+                            this.getLevel().setBlock(blockPos, Blocks.WATER_CAULDRON.defaultBlockState(), 2);
                         }
-                        this.level.updateNeighborsAt(blockPos, blockState.getBlock());
+                        this.getLevel().updateNeighborsAt(blockPos, blockState.getBlock());
                         this.streamWater(blockPos);
                         this.fluidTank.drain(new FluidStack(Fluids.WATER, 333), IFluidHandler.FluidAction.EXECUTE);
                         this.markUpdated();
@@ -142,7 +142,7 @@ public class HauntedJugBlockEntity extends ModBlockEntity {
                         // TODO(1.21): Botania integration is disabled until Botania updates for 1.21.1.
                     }
                 } else {
-                    BlockEntity blockEntity = this.level.getBlockEntity(this.getBlockPos().above());
+                    BlockEntity blockEntity = this.getLevel().getBlockEntity(this.getBlockPos().above());
                     if (blockEntity != null) {
                         if (blockEntity.getCapability(Capabilities.FLUID_HANDLER, Direction.DOWN).resolve().isPresent()) {
                             IFluidHandler fluidHandler = blockEntity.getCapability(Capabilities.FLUID_HANDLER, Direction.DOWN).resolve().get();
@@ -159,14 +159,14 @@ public class HauntedJugBlockEntity extends ModBlockEntity {
     }
 
     public void streamWater(BlockPos target){
-        if (this.level != null) {
-            this.level.playSound(null, this.getBlockPos(), SoundEvents.WATER_AMBIENT, SoundSource.BLOCKS, 0.33F, 1.0F);
-            if (this.level instanceof ServerLevel serverLevel) {
+        if (this.getLevel() != null) {
+            this.getLevel().playSound(null, this.getBlockPos(), SoundEvents.WATER_AMBIENT, SoundSource.BLOCKS, 0.33F, 1.0F);
+            if (this.getLevel() instanceof ServerLevel serverLevel) {
                 Vec3 vec3 = Vec3.atBottomCenterOf(this.getBlockPos().above());
                 Vec3 vec31 = Vec3.atBottomCenterOf(target);
                 serverLevel.sendParticles(ModParticleTypes.WATER_STREAM.get(), vec3.x, vec3.y, vec3.z, 0, vec31.x, vec31.y, vec31.z, 1.0F);
             }
-            this.level.playSound(null, target, SoundEvents.GENERIC_SPLASH, SoundSource.BLOCKS, 0.33F, 1.0F);
+            this.getLevel().playSound(null, target, SoundEvents.GENERIC_SPLASH, SoundSource.BLOCKS, 0.33F, 1.0F);
         }
     }
 

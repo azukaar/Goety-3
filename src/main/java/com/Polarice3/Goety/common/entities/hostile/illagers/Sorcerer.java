@@ -134,7 +134,7 @@ public class Sorcerer extends HuntingIllagerEntity {
     }
 
     public boolean isCastingSpell2() {
-        if (this.level.isClientSide) {
+        if (this.level().isClientSide) {
             return this.entityData.get(IS_CASTING_SPELL) > 0;
         } else {
             return this.castingTime > 0;
@@ -193,7 +193,7 @@ public class Sorcerer extends HuntingIllagerEntity {
         if (!this.hasSpawned){
             this.hasSpawned = true;
         }
-        if (!this.level.isClientSide){
+        if (!this.level().isClientSide){
             for (SorcererSpell spell : SorcererSpell.values()){
                 if (this.spellCoolDown[spell.trueId] > 0){
                     --this.spellCoolDown[spell.trueId];
@@ -309,8 +309,8 @@ public class Sorcerer extends HuntingIllagerEntity {
         public void stop() {
             super.stop();
             Sorcerer.this.setIsCastingSpell(0);
-            Sorcerer.this.level.broadcastEntityEvent(Sorcerer.this, (byte) 5);
-            Sorcerer.this.level.broadcastEntityEvent(Sorcerer.this, (byte) 7);
+            Sorcerer.this.level().broadcastEntityEvent(Sorcerer.this, (byte) 5);
+            Sorcerer.this.level().broadcastEntityEvent(Sorcerer.this, (byte) 7);
             Sorcerer.this.coolDown = 20;
         }
 
@@ -395,7 +395,7 @@ public class Sorcerer extends HuntingIllagerEntity {
             List<SorcererSpell> spells = new ArrayList<>();
             for (SorcererSpell spell1 : SorcererSpell.values()){
                 if (Sorcerer.this.getSorcererLevel() >= spell1.minLevel && Sorcerer.this.getSorcererLevel() <= spell1.maxLevel) {
-                    if (spell1.getSpell().conditionsMet(Sorcerer.this.level, Sorcerer.this)) {
+                    if (spell1.getSpell().conditionsMet(Sorcerer.this.level(), Sorcerer.this)) {
                         if (Sorcerer.this.spellCoolDown[spell1.trueId] <= 0) {
                             if (spell1.getSpell() instanceof SummonSpell && !Sorcerer.this.hasEffect(GoetyEffects.SUMMON_DOWN.get())) {
                                 spells.add(spell1);
@@ -420,7 +420,7 @@ public class Sorcerer extends HuntingIllagerEntity {
         public void tick() {
             super.tick();
             if (this.spell.getSpell() instanceof IChargingSpell){
-                if (!this.spell.getSpell().conditionsMet(Sorcerer.this.level, Sorcerer.this)){
+                if (!this.spell.getSpell().conditionsMet(Sorcerer.this.level(), Sorcerer.this)){
                     this.cancelSpell();
                 }
                 --this.chargeTicks;
@@ -438,24 +438,24 @@ public class Sorcerer extends HuntingIllagerEntity {
                         breathingSpell.showWandBreath(Sorcerer.this, ItemStack.EMPTY, WandUtil.getStats(Sorcerer.this, breathingSpell));
                     }
                 }
-                Sorcerer.this.level.broadcastEntityEvent(Sorcerer.this, (byte) 4);
+                Sorcerer.this.level().broadcastEntityEvent(Sorcerer.this, (byte) 4);
             } else {
-                Sorcerer.this.level.broadcastEntityEvent(Sorcerer.this, (byte) 5);
+                Sorcerer.this.level().broadcastEntityEvent(Sorcerer.this, (byte) 5);
                 if (this.spell.throwingSpell()){
-                    Sorcerer.this.level.broadcastEntityEvent(Sorcerer.this, (byte) 6);
+                    Sorcerer.this.level().broadcastEntityEvent(Sorcerer.this, (byte) 6);
                 } else {
-                    Sorcerer.this.level.broadcastEntityEvent(Sorcerer.this, (byte) 7);
+                    Sorcerer.this.level().broadcastEntityEvent(Sorcerer.this, (byte) 7);
                 }
             }
-            this.spell.getSpell().useParticle(Sorcerer.this.level, Sorcerer.this, ItemStack.EMPTY);
+            this.spell.getSpell().useParticle(Sorcerer.this.level(), Sorcerer.this, ItemStack.EMPTY);
         }
 
         public void cancelSpell() {
             this.attackWarmupDelay = 0;
             Sorcerer.this.castingTime = 0;
             Sorcerer.this.setIsCastingSpell(0);
-            Sorcerer.this.level.broadcastEntityEvent(Sorcerer.this, (byte) 5);
-            Sorcerer.this.level.broadcastEntityEvent(Sorcerer.this, (byte) 7);
+            Sorcerer.this.level().broadcastEntityEvent(Sorcerer.this, (byte) 5);
+            Sorcerer.this.level().broadcastEntityEvent(Sorcerer.this, (byte) 7);
             Sorcerer.this.coolDown = 20;
         }
 
@@ -468,9 +468,9 @@ public class Sorcerer extends HuntingIllagerEntity {
                     spellStat.setPotency(spellStat.getPotency() + (Sorcerer.this.getSorcererLevel() - this.spell.minLevel));
                 }
                 if (this.spell.throwingSpell()){
-                    Sorcerer.this.level.broadcastEntityEvent(Sorcerer.this, (byte) 6);
+                    Sorcerer.this.level().broadcastEntityEvent(Sorcerer.this, (byte) 6);
                 } else {
-                    Sorcerer.this.level.broadcastEntityEvent(Sorcerer.this, (byte) 7);
+                    Sorcerer.this.level().broadcastEntityEvent(Sorcerer.this, (byte) 7);
                 }
                 spell1.mobSpellResult(Sorcerer.this, Sorcerer.this.getSorcererLevel() >= this.spell.upgradeStaff.getB() ? this.spell.upgradeStaff.getA() : ItemStack.EMPTY, spellStat);
             }

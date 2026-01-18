@@ -37,9 +37,9 @@ public class EntangleVines extends TangleEntity {
         super(ModEntityType.ENTANGLE_VINES.get(), p_19871_, owner, blockPos);
     }
 
-    @Override
-    protected void defineSynchedData() {
-        this.entityData.define(ANIM_STATE, 0);
+    public void defineSynchedData(SynchedEntityData.Builder builder) {
+        // super.defineSynchedData(builder);
+        builder.define(ANIM_STATE, 0);
     }
 
     public void setAnimationState(String input) {
@@ -61,7 +61,10 @@ public class EntangleVines extends TangleEntity {
             return 0;
         }
     }
-
+    // @Override
+    // public Packet<ClientGamePacketListener> getAddEntityPacket(ServerEntity p_33965_) {
+    //    return new ClientboundAddEntityPacket(this, p_33965_);
+    // }
     public List<AnimationState> getAllAnimations(){
         List<AnimationState> list = new ArrayList<>();
         list.add(this.hiddenAnimationState);
@@ -81,7 +84,7 @@ public class EntangleVines extends TangleEntity {
 
     public void onSyncedDataUpdated(EntityDataAccessor<?> accessor) {
         if (ANIM_STATE.equals(accessor)) {
-            if (this.level.isClientSide){
+            if (this.level().isClientSide){
                 switch (this.entityData.get(ANIM_STATE)) {
                     case 0 -> {
                         this.hiddenAnimationState.startIfStopped(this.tickCount);

@@ -15,16 +15,16 @@ public class HauntedMirrorBlockEntity extends BlockEntity {
     }
 
     public void tick() {
-        if (this.level != null) {
-            this.level.setBlock(this.getBlockPos(), this.getBlockState().setValue(HauntedMirrorBlock.LIT, this.hasEntitySight()), 3);
+        if (this.getLevel() != null) {
+            this.getLevel().setBlock(this.getBlockPos(), this.getBlockState().setValue(HauntedMirrorBlock.LIT, this.hasEntitySight()), 3);
         }
     }
 
     public boolean hasEntitySight(){
-        if (this.level == null){
+        if (this.getLevel() == null){
             return false;
         }
-        return !this.level.getEntitiesOfClass(LivingEntity.class, this.getSightBBox(this.getBlockPos(), this.getBlockState())).isEmpty();
+        return !this.getLevel().getEntitiesOfClass(LivingEntity.class, this.getSightBBox(this.getBlockPos(), this.getBlockState())).isEmpty();
     }
 
     public AABB getSightBBox(BlockPos blockPos, BlockState blockState) {

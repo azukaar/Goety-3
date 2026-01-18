@@ -38,13 +38,13 @@ public abstract class SummonedFlying extends Summoned {
             BlockPos ground = BlockPos.containing(this.getX(), this.getY() - 1.0D, this.getZ());
             float f = 0.91F;
             if (this.onGround()) {
-                f = this.level.getBlockState(ground).getFriction(this.level, ground, this) * 0.91F;
+                f = this.level().getBlockState(ground).getFriction(this.level(), ground, this) * 0.91F;
             }
 
             float f1 = 0.16277137F / (f * f * f);
             f = 0.91F;
             if (this.onGround()) {
-                f = this.level.getBlockState(ground).getFriction(this.level, ground, this) * 0.91F;
+                f = this.level().getBlockState(ground).getFriction(this.level(), ground, this) * 0.91F;
             }
 
             this.moveRelative(this.onGround()? 0.1F * f1 : 0.02F, pTravelVector);

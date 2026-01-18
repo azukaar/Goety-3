@@ -77,7 +77,7 @@ public class IceGolem extends AbstractGolemServant{
                 .add(Attributes.ATTACK_DAMAGE, AttributesConfig.IceGolemDamage.get())
                 .add(Attributes.KNOCKBACK_RESISTANCE, 1.0D)
                 .add(Attributes.ATTACK_KNOCKBACK, 1.0D)
-                .add(NeoForgeMod.STEP_HEIGHT_ADDITION.get(), 1.0D)
+                // .add(NeoForgeMod.STEP_HEIGHT.get(), 1.0D)
                 .add(Attributes.FOLLOW_RANGE, AttributesConfig.IceGolemFollowRange.get());
     }
 
@@ -88,10 +88,11 @@ public class IceGolem extends AbstractGolemServant{
         MobUtil.setBaseAttributes(this.getAttribute(Attributes.FOLLOW_RANGE), AttributesConfig.IceGolemFollowRange.get());
     }
 
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.entityData.define(DATA_FLAGS_ID, (byte)0);
-        this.entityData.define(ANIM_STATE, 0);
+    @Override
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(DATA_FLAGS_ID, (byte)0);
+        builder.define(ANIM_STATE, 0);
     }
 
     @Nullable
@@ -166,7 +167,7 @@ public class IceGolem extends AbstractGolemServant{
 
     public void onSyncedDataUpdated(EntityDataAccessor<?> accessor) {
         if (ANIM_STATE.equals(accessor)) {
-            if (this.level.isClientSide){
+            if (this.level().isClientSide){
                 switch (this.entityData.get(ANIM_STATE)){
                     case 0:
                         break;
@@ -268,15 +269,15 @@ public class IceGolem extends AbstractGolemServant{
         }
     }
 
-    @Override
+    // @Override
     public MobType getMobType() {
-        return ModMobType.FROST;
+        return com.Polarice3.Goety.utils.ModMobType.FROST;
     }
 
     @Override
     public void tick() {
         super.tick();
-        if (!this.level.isClientSide){
+        if (!this.level().isClientSide){
             if (!this.isMeleeAttacking() && !this.isSmashing()){
                 if (!this.isMoving()){
                     this.setAnimationState("idle");
@@ -311,12 +312,12 @@ public class IceGolem extends AbstractGolemServant{
                 }
             }
             if (this.isUpgraded()){
-                if (this.level instanceof ServerLevel serverLevel){
+                if (this.level() instanceof ServerLevel serverLevel){
                     ServerParticleUtil.addAuraParticles(serverLevel, ParticleTypes.SNOWFLAKE, this, 1.0F);
                     for (LivingEntity living : serverLevel.getEntitiesOfClass(LivingEntity.class, this.getBoundingBox().inflate(1.0F))) {
                         if (!living.isFreezing() && living.canFreeze() && MobUtil.validEntity(living) && !MobUtil.areAllies(this, living)) {
                             ServerParticleUtil.addParticlesAroundSelf(serverLevel, ParticleTypes.SNOWFLAKE, living);
-                            living.addEffect(new MobEffectInstance(GoetyEffects.FREEZING.get(), 100, 0));
+                            living.addEffect(new MobEffectInstance(GoetyEffects.FREEZING.getHolder(), 100, 0));
                         }
                     }
                 }
@@ -330,7 +331,7 @@ public class IceGolem extends AbstractGolemServant{
     }
 
     public InteractionResult mobInteract(Player pPlayer, InteractionHand p_230254_2_) {
-        if (!this.level.isClientSide){
+        if (!this.level().isClientSide){
             ItemStack itemstack = pPlayer.getItemInHand(p_230254_2_);
             Item item = itemstack.getItem();
             if (this.getTrueOwner() != null && pPlayer == this.getTrueOwner()) {
@@ -346,7 +347,7 @@ public class IceGolem extends AbstractGolemServant{
                     } else {
                         this.heal(18.0F);
                     }
-                    if (this.level instanceof ServerLevel serverLevel) {
+                    if (this.level() instanceof ServerLevel serverLevel) {
                         for (int i = 0; i < 7; ++i) {
                             double d0 = this.random.nextGaussian() * 0.02D;
                             double d1 = this.random.nextGaussian() * 0.02D;
@@ -388,7 +389,7 @@ public class IceGolem extends AbstractGolemServant{
         @Override
         public void start() {
             this.iceGolem.setAggressive(true);
-            this.iceGolem.level.broadcastEntityEvent(this.iceGolem, (byte) 5);
+            this.iceGolem.level().broadcastEntityEvent(this.iceGolem, (byte) 5);
             this.delayCounter = 0;
         }
 
@@ -397,7 +398,7 @@ public class IceGolem extends AbstractGolemServant{
             this.iceGolem.setMeleeAttacking(false);
             this.iceGolem.setAggressive(false);
             this.iceGolem.setSmashing(false);
-            this.iceGolem.level.broadcastEntityEvent(this.iceGolem, (byte) 6);
+            this.iceGolem.level().broadcastEntityEvent(this.iceGolem, (byte) 6);
             this.iceGolem.setAnimationState("idle");
         }
 
@@ -445,7 +446,7 @@ public class IceGolem extends AbstractGolemServant{
         }
 
         public List<LivingEntity> getNearbyTargets(){
-            return this.iceGolem.level.getEntitiesOfClass(LivingEntity.class, this.iceGolem.getBoundingBox().inflate(4.0D, 2.0D, 4.0D), living -> SummonTargetGoal.predicate(this.iceGolem).test(living));
+            return this.iceGolem.level().getEntitiesOfClass(LivingEntity.class, this.iceGolem.getBoundingBox().inflate(4.0D, 2.0D, 4.0D), living -> SummonTargetGoal.predicate(this.iceGolem).test(living));
         }
     }
 }

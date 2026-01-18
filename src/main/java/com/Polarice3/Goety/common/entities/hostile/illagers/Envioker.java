@@ -220,11 +220,11 @@ public class Envioker extends HuntingIllagerEntity {
 
             do {
                 BlockPos blockpos1 = blockpos.below();
-                BlockState blockstate = Envioker.this.level.getBlockState(blockpos1);
-                if (blockstate.isFaceSturdy(Envioker.this.level, blockpos1, Direction.UP)) {
-                    if (!Envioker.this.level.isEmptyBlock(blockpos)) {
-                        BlockState blockstate1 = Envioker.this.level.getBlockState(blockpos);
-                        VoxelShape voxelshape = blockstate1.getCollisionShape(Envioker.this.level, blockpos);
+                BlockState blockstate = Envioker.this.level().getBlockState(blockpos1);
+                if (blockstate.isFaceSturdy(Envioker.this.level(), blockpos1, Direction.UP)) {
+                    if (!Envioker.this.level().isEmptyBlock(blockpos)) {
+                        BlockState blockstate1 = Envioker.this.level().getBlockState(blockpos);
+                        VoxelShape voxelshape = blockstate1.getCollisionShape(Envioker.this.level(), blockpos);
                         if (!voxelshape.isEmpty()) {
                             d0 = voxelshape.max(Direction.Axis.Y);
                         }
@@ -238,7 +238,7 @@ public class Envioker extends HuntingIllagerEntity {
             } while(blockpos.getY() >= Mth.floor(p_190876_5_) - 1);
 
             if (flag) {
-                Envioker.this.level.addFreshEntity(new EvokerFangs(Envioker.this.level, p_190876_1_, (double)blockpos.getY() + d0, p_190876_3_, p_190876_9_, p_190876_10_, Envioker.this));
+                Envioker.this.level().addFreshEntity(new EvokerFangs(Envioker.this.level(), p_190876_1_, (double)blockpos.getY() + d0, p_190876_3_, p_190876_9_, p_190876_10_, Envioker.this));
             }
 
         }
@@ -273,7 +273,7 @@ public class Envioker extends HuntingIllagerEntity {
                 return false;
             } else {
                 return Envioker.this.getTarget() != null
-                        && Envioker.this.level.getDifficulty() == Difficulty.HARD
+                        && Envioker.this.level().getDifficulty() == Difficulty.HARD
                         && Envioker.this.isMagic()
                         && Envioker.this.getMainHandItem().getItem() instanceof SwordItem
                         && Envioker.this.hasLineOfSight(Envioker.this.getTarget());
@@ -292,14 +292,14 @@ public class Envioker extends HuntingIllagerEntity {
             LivingEntity livingentity = Envioker.this.getTarget();
             if (livingentity != null) {
                 if (Envioker.this.getSensing().hasLineOfSight(livingentity)) {
-                    SwordProjectile swordProjectile = new SwordProjectile(Envioker.this, Envioker.this.level, Envioker.this.getMainHandItem());
+                    SwordProjectile swordProjectile = new SwordProjectile(Envioker.this, Envioker.this.level(), Envioker.this.getMainHandItem());
                     double d0 = livingentity.getX() - Envioker.this.getX();
                     double d1 = livingentity.getY(0.3333333333333333D) - swordProjectile.getY();
                     double d2 = livingentity.getZ() - Envioker.this.getZ();
                     double d3 = Mth.sqrt((float) (d0 * d0 + d2 * d2));
                     swordProjectile.pickup = AbstractArrow.Pickup.CREATIVE_ONLY;
                     swordProjectile.shoot(d0, d1 + d3 * (double)0.2F, d2, 1.6F, 1.0F);
-                    Envioker.this.level.addFreshEntity(swordProjectile);
+                    Envioker.this.level().addFreshEntity(swordProjectile);
                     if (!Envioker.this.isSilent()) {
                         Envioker.this.playSound(SoundEvents.DROWNED_SHOOT, 1.0F, 1.0F);
                     }
@@ -327,7 +327,7 @@ public class Envioker extends HuntingIllagerEntity {
             if (!super.canUse()) {
                 return false;
             } else {
-                int i = Envioker.this.level.getNearbyEntities(Tormentor.class, this.vexCountTargeting, Envioker.this, Envioker.this.getBoundingBox().inflate(16.0D)).size();
+                int i = Envioker.this.level().getNearbyEntities(Tormentor.class, this.vexCountTargeting, Envioker.this, Envioker.this.getBoundingBox().inflate(16.0D)).size();
                 return Envioker.this.getTarget() != null
                         && i < 1 && Envioker.this.isMagic()
                         && Envioker.this.hasLineOfSight(Envioker.this.getTarget());
@@ -343,13 +343,13 @@ public class Envioker extends HuntingIllagerEntity {
         }
 
         protected void performSpellCasting() {
-            ServerLevel serverworld = (ServerLevel)Envioker.this.level;
+            ServerLevel serverworld = (ServerLevel)Envioker.this.level();
 
             BlockPos blockpos = Envioker.this.blockPosition().offset(-2 + Envioker.this.random.nextInt(5), 1, -2 + Envioker.this.random.nextInt(5));
-            Tormentor tormentorEntity = ModEntityType.TORMENTOR.get().create(Envioker.this.level);
+            Tormentor tormentorEntity = ModEntityType.TORMENTOR.get().create(Envioker.this.level());
             if (tormentorEntity != null) {
                 tormentorEntity.moveTo(blockpos, 0.0F, 0.0F);
-                tormentorEntity.finalizeSpawn(serverworld, Envioker.this.level.getCurrentDifficultyAt(blockpos), MobSpawnType.MOB_SUMMONED, null, (CompoundTag) null);
+                tormentorEntity.finalizeSpawn(serverworld, Envioker.this.level().getCurrentDifficultyAt(blockpos), MobSpawnType.MOB_SUMMONED, null, (CompoundTag) null);
                 tormentorEntity.setOwner(Envioker.this);
                 tormentorEntity.setBoundOrigin(blockpos);
                 tormentorEntity.setLimitedLife(20 * (30 + Envioker.this.random.nextInt(90)));

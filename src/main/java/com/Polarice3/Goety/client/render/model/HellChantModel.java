@@ -28,18 +28,18 @@ public class HellChantModel<T extends HellChant> extends EntityModel<T> {
 	}
 
 	@Override
-	public void renderToBuffer(PoseStack stack, VertexConsumer consumer, int pPackedLight, int pOverlay, float r, float g, float b, float a) {
+	public void renderToBuffer(PoseStack stack, VertexConsumer consumer, int pPackedLight, int pOverlay, int color) {
 		stack.pushPose();
-		float progress = this.entity.getGrowProgress(Minecraft.getInstance().getPartialTick());
+		float progress = this.entity.getGrowProgress(Minecraft.getInstance().getTimer().getGameTimeDeltaPartialTick(true));
 		float scale = 0.6F + progress;
 		stack.scale(scale, scale, scale);
-		this.scream.render(stack, consumer, pPackedLight, pOverlay, r, g, b, a - (0.25F * progress));
+		this.scream.render(stack, consumer, pPackedLight, pOverlay, color);
 		stack.popPose();
 	}
 
 	@Override
 	public void setupAnim(T scream, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
 		this.entity = scream;
-		this.scream.xRot = (float) -Math.toRadians(Mth.lerp(Minecraft.getInstance().getPartialTick(), this.entity.xRotO, this.entity.getXRot()));
+		this.scream.xRot = (float) -Math.toRadians(Mth.lerp(Minecraft.getInstance().getTimer().getGameTimeDeltaPartialTick(true), this.entity.xRotO, this.entity.getXRot()));
 	}
 }

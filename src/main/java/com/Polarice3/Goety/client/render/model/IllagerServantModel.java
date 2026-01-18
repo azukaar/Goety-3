@@ -179,29 +179,33 @@ public class IllagerServantModel<T extends LivingEntity> extends HierarchicalMod
         this.clothes.visible = !flag2;
     }
 
-    public void renderToBuffer(PoseStack p_102034_, VertexConsumer p_102035_, int p_102036_, int p_102037_, float p_102038_, float p_102039_, float p_102040_, float p_102041_) {
+    @Override
+    public void renderToBuffer(PoseStack p_102034_, VertexConsumer p_102035_, int p_102036_, int p_102037_, int p_102038_) {
         if (this.young) {
             p_102034_.pushPose();
             float f = 1.5F / 2.0F;
             p_102034_.scale(f, f, f);
-
-            p_102034_.translate(0.0F, 1.0F, 0.0F);
+            p_102034_.translate(0.0F, 16.0F * f, 0.0F);
             this.headParts().forEach((p_102081_) -> {
-                p_102081_.render(p_102034_, p_102035_, p_102036_, p_102037_, p_102038_, p_102039_, p_102040_, p_102041_);
+                p_102081_.render(p_102034_, p_102035_, p_102036_, p_102037_, p_102038_);
             });
             p_102034_.popPose();
             p_102034_.pushPose();
             float f1 = 1.0F / 2.0F;
             p_102034_.scale(f1, f1, f1);
-            p_102034_.translate(0.0F, 24.0F / 16.0F, 0.0F);
+            p_102034_.translate(0.0F, 24.0F * f1, 0.0F);
             this.bodyParts().forEach((p_102071_) -> {
-                p_102071_.render(p_102034_, p_102035_, p_102036_, p_102037_, p_102038_, p_102039_, p_102040_, p_102041_);
+                p_102071_.render(p_102034_, p_102035_, p_102036_, p_102037_, p_102038_);
             });
             p_102034_.popPose();
         } else {
-            super.renderToBuffer(p_102034_, p_102035_, p_102036_, p_102037_, p_102038_, p_102039_, p_102040_, p_102041_);
+            this.headParts().forEach((p_102061_) -> {
+                p_102061_.render(p_102034_, p_102035_, p_102036_, p_102037_, p_102038_);
+            });
+            this.bodyParts().forEach((p_102051_) -> {
+                p_102051_.render(p_102034_, p_102035_, p_102036_, p_102037_, p_102038_);
+            });
         }
-
     }
 
     public void copyPropertiesTo(IllagerServantModel<T> p_102873_) {

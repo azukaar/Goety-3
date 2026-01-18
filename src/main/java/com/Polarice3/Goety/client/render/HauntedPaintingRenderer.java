@@ -39,8 +39,8 @@ public class HauntedPaintingRenderer extends EntityRenderer<HauntedPainting> {
       EntityModelSet modelSet = Minecraft.getInstance().getEntityModels();
       PaintingVariant variant = entity.getVariant().value();
       Direction direction = entity.getDirection();
-      int width = variant.getWidth();
-      int height = variant.getHeight();
+      int width = variant.width();
+      int height = variant.height();
       HauntedPaintingModel model;
       ResourceLocation frameTexture;
       if (width == 32 && height == 32) {
@@ -85,7 +85,7 @@ public class HauntedPaintingRenderer extends EntityRenderer<HauntedPainting> {
          poseStack.translate(0.0F, 0.875F, 0.0F);
          poseStack.mulPose(Axis.YN.rotationDegrees(direction.getOpposite().toYRot()));
          poseStack.mulPose(Axis.XP.rotationDegrees(180));
-         model.renderToBuffer(poseStack, buffer.getBuffer(RenderType.entitySolid(frameTexture)), packedLight, OverlayTexture.NO_OVERLAY, 1.0f, 1.0f, 1.0f, 1.0f);
+         model.renderToBuffer(poseStack, buffer.getBuffer(RenderType.entitySolid(frameTexture)), packedLight, OverlayTexture.NO_OVERLAY, -1);
 
          poseStack.translate(0.0F, 0.0F, 0.01F);
          poseStack.scale(width / 16.0F, height / 16.0F, 1.0F);
@@ -109,15 +109,15 @@ public class HauntedPaintingRenderer extends EntityRenderer<HauntedPainting> {
 
    private static void renderPainting(PoseStack poseStack, VertexConsumer consumer, Direction dir, int light, int overlay) {
       Vec3i normal = dir.getNormal();
-      consumer.vertex(poseStack.last().pose(), 0, 0, 0).color(255, 255, 255, 255).uv(0, 0).overlayCoords(overlay).uv2(light).normal(poseStack.last().normal(), normal.getX(), normal.getY(), normal.getZ()).endVertex();
-      consumer.vertex(poseStack.last().pose(), 0, 1, 0).color(255, 255, 255, 255).uv(0, 1).overlayCoords(overlay).uv2(light).normal(poseStack.last().normal(), normal.getX(), normal.getY(), normal.getZ()).endVertex();
-      consumer.vertex(poseStack.last().pose(), -1, 1, 0).color(255, 255, 255, 255).uv(1, 1).overlayCoords(overlay).uv2(light).normal(poseStack.last().normal(), normal.getX(), normal.getY(), normal.getZ()).endVertex();
-      consumer.vertex(poseStack.last().pose(), -1, 0, 0).color(255, 255, 255, 255).uv(1, 0).overlayCoords(overlay).uv2(light).normal(poseStack.last().normal(), normal.getX(), normal.getY(), normal.getZ()).endVertex();
+      consumer.addVertex(poseStack.last().pose(), 0, 0, 0).setColor(255, 255, 255, 255).setUv(0, 0).setOverlay(overlay).setLight(light).setNormal(normal.getX(), normal.getY(), normal.getZ());
+      consumer.addVertex(poseStack.last().pose(), 0, 1, 0).setColor(255, 255, 255, 255).setUv(0, 1).setOverlay(overlay).setLight(light).setNormal(normal.getX(), normal.getY(), normal.getZ());
+      consumer.addVertex(poseStack.last().pose(), -1, 1, 0).setColor(255, 255, 255, 255).setUv(1, 1).setOverlay(overlay).setLight(light).setNormal(normal.getX(), normal.getY(), normal.getZ());
+      consumer.addVertex(poseStack.last().pose(), -1, 0, 0).setColor(255, 255, 255, 255).setUv(1, 0).setOverlay(overlay).setLight(light).setNormal(normal.getX(), normal.getY(), normal.getZ());
    }
 
    @Override
    public ResourceLocation getTextureLocation(HauntedPainting entity) {
-      return Goety.location("textures/painting/" + BuiltInRegistries.PAINTING_VARIANT.getKey(entity.getVariant().value()).getPath() + ".png");
+      return Goety.location("textures/painting/" + entity.getVariant().unwrapKey().get().location().getPath() + ".png");
    }
 
    public class CloseablePoseStack implements AutoCloseable {

@@ -155,13 +155,13 @@ public class Codger extends Cultist implements RangedAttackMob {
             --this.coolDown;
         }
 
-        if (!this.level.isClientSide){
+        if (!this.level().isClientSide){
             if (this.isAlive()){
                 this.healRaidersGoal.decrementCooldown();
                 this.attackPlayersGoal.setCanAttack(this.healRaidersGoal.getCooldown() <= 0);
             }
             if (this.random.nextFloat() < 7.5E-4F) {
-                this.level.broadcastEntityEvent(this, (byte)15);
+                this.level().broadcastEntityEvent(this, (byte)15);
             }
             if (this.getTarget() != null) {
                 if (!(this.getTarget() instanceof Raider)) {
@@ -192,7 +192,7 @@ public class Codger extends Cultist implements RangedAttackMob {
                     }
                     if (flag){
                         if (this.tickCount % 60 == 0){
-                            Wartling wartling = new Wartling(ModEntityType.WARTLING.get(), this.level);
+                            Wartling wartling = new Wartling(ModEntityType.WARTLING.get(), this.level());
                             wartling.moveTo(this.blockPosition(), this.getYRot(), this.getXRot());
                             this.summonWartlings(wartling);
                         }
@@ -206,7 +206,7 @@ public class Codger extends Cultist implements RangedAttackMob {
     public void handleEntityEvent(byte p_34138_) {
         if (p_34138_ == 15) {
             for(int i = 0; i < this.random.nextInt(35) + 10; ++i) {
-                this.level.addParticle(ModParticleTypes.WARLOCK.get(), this.getX() + this.random.nextGaussian() * (double)0.13F, this.getBoundingBox().maxY + this.random.nextGaussian() * (double)0.13F, this.getZ() + this.random.nextGaussian() * (double)0.13F, 0.0D, 0.0D, 0.0D);
+                this.level().addParticle(ModParticleTypes.WARLOCK.get(), this.getX() + this.random.nextGaussian() * (double)0.13F, this.getBoundingBox().maxY + this.random.nextGaussian() * (double)0.13F, this.getZ() + this.random.nextGaussian() * (double)0.13F, 0.0D, 0.0D, 0.0D);
             }
         } else {
             super.handleEntityEvent(p_34138_);
@@ -242,7 +242,7 @@ public class Codger extends Cultist implements RangedAttackMob {
 
         if (!pSource.is(DamageTypeTags.AVOIDS_GUARDIAN_THORNS) && !pSource.is(DamageTypes.THORNS) && pSource.getEntity() instanceof LivingEntity livingentity && livingentity != this) {
             float thorn = 2.0F;
-            if (this.level.getDifficulty() == Difficulty.HARD){
+            if (this.level().getDifficulty() == Difficulty.HARD){
                 thorn *= 2.0F;
             }
             livingentity.hurt(this.damageSources().thorns(this), thorn);
@@ -253,7 +253,7 @@ public class Codger extends Cultist implements RangedAttackMob {
 
     @Override
     public void performRangedAttack(LivingEntity p_33317_, float p_33318_) {
-        if (p_33317_.distanceTo(this) < 6.0F && this.coolDown <= 0 && this.level.getBlockState(this.blockPosition().above(2)).isAir() && !(this.getTarget() instanceof Raider)) {
+        if (p_33317_.distanceTo(this) < 6.0F && this.coolDown <= 0 && this.level().getBlockState(this.blockPosition().above(2)).isAir() && !(this.getTarget() instanceof Raider)) {
             this.totalCool = Mth.nextInt(this.random, 6, 10);
             for (int i = 0; i < this.totalCool; ++i) {
                 MobUtil.throwBlastFungus(this, level);
@@ -264,27 +264,27 @@ public class Codger extends Cultist implements RangedAttackMob {
                 this.coolDown = MathHelper.secondsToTicks(this.totalCool);
             }
             if (!this.isSilent()) {
-                this.level.playSound((Player) null, this.getX(), this.getY(), this.getZ(), ModSounds.BLAST_FUNGUS_THROW.get(), this.getSoundSource(), 2.0F, 0.8F + this.random.nextFloat() * 0.4F);
+                this.level().playSound((Player) null, this.getX(), this.getY(), this.getZ(), ModSounds.BLAST_FUNGUS_THROW.get(), this.getSoundSource(), 2.0F, 0.8F + this.random.nextFloat() * 0.4F);
             }
         } else {
             if (this.getTarget() instanceof Raider){
                 if (!this.isSilent()) {
-                    this.level.playSound((Player) null, this.getX(), this.getY(), this.getZ(), ModSounds.BLAST_FUNGUS_THROW.get(), this.getSoundSource(), 2.0F, 0.8F + this.random.nextFloat() * 0.4F);
+                    this.level().playSound((Player) null, this.getX(), this.getY(), this.getZ(), ModSounds.BLAST_FUNGUS_THROW.get(), this.getSoundSource(), 2.0F, 0.8F + this.random.nextFloat() * 0.4F);
                 }
             }
-            if (this.level instanceof ServerLevel) {
+            if (this.level() instanceof ServerLevel) {
                 if (this.getTarget() instanceof Raider raider){
                     Vec3 vec3 = raider.getDeltaMovement();
                     double d0 = raider.getX() + vec3.x - this.getX();
                     double d1 = raider.getEyeY() - (double)1.1F - this.getY();
                     double d2 = raider.getZ() + vec3.z - this.getZ();
                     double d3 = Math.sqrt(d0 * d0 + d2 * d2);
-                    BerserkFungus berserkFungus = new BerserkFungus(this, this.level);
+                    BerserkFungus berserkFungus = new BerserkFungus(this, this.level());
                     berserkFungus.setXRot(berserkFungus.getXRot() - 20.0F);
                     berserkFungus.shoot(d0, d1 + d3 * 0.2D, d2, 0.75F, 8.0F);
-                    this.level.addFreshEntity(berserkFungus);
+                    this.level().addFreshEntity(berserkFungus);
                 } else {
-                    Wartling wartling = new Wartling(ModEntityType.WARTLING.get(), this.level);
+                    Wartling wartling = new Wartling(ModEntityType.WARTLING.get(), this.level());
                     wartling.setTarget(p_33317_);
                     if (this.isInFluidType()){
                         wartling.setPos(this.getX(), this.getY(0.5F), this.getZ());
@@ -305,7 +305,7 @@ public class Codger extends Cultist implements RangedAttackMob {
     }
 
     private void summonWartlings(Wartling wartling){
-        if (this.level instanceof ServerLevel serverLevel) {
+        if (this.level() instanceof ServerLevel serverLevel) {
             wartling.setTrueOwner(this);
             wartling.setLimitedLife(MathHelper.secondsToTicks(9));
             this.getActiveEffects().stream().filter(mobEffect -> mobEffect.getEffect().getCategory() == MobEffectCategory.HARMFUL && !mobEffect.getEffect().getCurativeItems().isEmpty()).findFirst().ifPresent(effect -> {
@@ -314,12 +314,12 @@ public class Codger extends Cultist implements RangedAttackMob {
             });
             wartling.finalizeSpawn(serverLevel, serverLevel.getCurrentDifficultyAt(this.blockPosition()), MobSpawnType.MOB_SUMMONED, null, null);
             wartling.setMega();
-            this.level.addFreshEntity(wartling);
+            this.level().addFreshEntity(wartling);
         }
     }
 
     private boolean teleportTowards(Entity entity) {
-        if (!this.level.isClientSide() && this.isAlive()) {
+        if (!this.level().isClientSide() && this.isAlive()) {
             for(int i = 0; i < 128; ++i) {
                 Vec3 vector3d = new Vec3(this.getX() - entity.getX(), this.getY(0.5D) - entity.getEyeY(), this.getZ() - entity.getZ());
                 vector3d = vector3d.normalize();
@@ -345,10 +345,10 @@ public class Codger extends Cultist implements RangedAttackMob {
     }
 
     public void teleportHits(){
-        this.level.broadcastEntityEvent(this, (byte) 46);
-        this.level.gameEvent(GameEvent.TELEPORT, this.position(), GameEvent.Context.of(this));
+        this.level().broadcastEntityEvent(this, (byte) 46);
+        this.level().gameEvent(GameEvent.TELEPORT, this.position(), GameEvent.Context.of(this));
         if (!this.isSilent()) {
-            this.level.playSound((Player) null, this.xo, this.yo, this.zo, SoundEvents.ENDERMAN_TELEPORT, this.getSoundSource(), 1.0F, 0.75F);
+            this.level().playSound((Player) null, this.xo, this.yo, this.zo, SoundEvents.ENDERMAN_TELEPORT, this.getSoundSource(), 1.0F, 0.75F);
             this.playSound(SoundEvents.ENDERMAN_TELEPORT, 1.0F, 0.75F);
         }
     }

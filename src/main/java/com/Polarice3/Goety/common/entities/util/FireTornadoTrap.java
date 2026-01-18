@@ -30,28 +30,28 @@ public class FireTornadoTrap extends AbstractTrap {
                         double d1 = livingentity.getX() - this.getX();
                         double d2 = livingentity.getY(0.5D) - this.getY(0.5D);
                         double d3 = livingentity.getZ() - this.getZ();
-                        FireTornado fireTornadoEntity = new FireTornado(this.level, this.owner, d1, d2, d3);
+                        FireTornado fireTornadoEntity = new FireTornado(this.level(), this.owner, d1, d2, d3);
                         fireTornadoEntity.setOwnerId(this.owner.getUUID());
                         fireTornadoEntity.setTotalLife(1200);
                         fireTornadoEntity.setPos(this.getX(), this.getY(), this.getZ());
-                        this.level.addFreshEntity(fireTornadoEntity);
+                        this.level().addFreshEntity(fireTornadoEntity);
                         this.discard();
                     } else {
                         this.discard();
                     }
                 } else {
-                    FireTornado fireTornadoEntity = new FireTornado(this.level, this.owner, 0, 0, 0);
+                    FireTornado fireTornadoEntity = new FireTornado(this.level(), this.owner, 0, 0, 0);
                     fireTornadoEntity.setOwnerId(this.owner.getUUID());
                     fireTornadoEntity.setTotalLife(1200);
                     fireTornadoEntity.setPos(this.getX(), this.getY(), this.getZ());
-                    this.level.addFreshEntity(fireTornadoEntity);
+                    this.level().addFreshEntity(fireTornadoEntity);
                     this.discard();
                 }
             } else {
-                FireTornado fireTornadoEntity = new FireTornado(ModEntityType.FIRE_TORNADO.get(), this.level);
+                FireTornado fireTornadoEntity = new FireTornado(ModEntityType.FIRE_TORNADO.get(), this.level());
                 fireTornadoEntity.setTotalLife(1200);
                 fireTornadoEntity.setPos(this.getX(), this.getY(), this.getZ());
-                this.level.addFreshEntity(fireTornadoEntity);
+                this.level().addFreshEntity(fireTornadoEntity);
                 this.discard();
             }
         }

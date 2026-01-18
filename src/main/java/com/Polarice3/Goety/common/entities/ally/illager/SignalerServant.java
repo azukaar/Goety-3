@@ -73,7 +73,7 @@ public class SignalerServant extends AbstractIllagerServant{
             if (this.isUsingItem() && this.getUseItem().is(Items.SPYGLASS)) {
                 original *= 2.0D;
             }
-            double heightMap = this.level.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING, this.blockPosition()).getY();
+            double heightMap = this.level().getHeightmapPos(Heightmap.Types.MOTION_BLOCKING, this.blockPosition()).getY();
             if (original > heightMap) {
                 double diff = original - heightMap;
                 original += diff;
@@ -95,7 +95,7 @@ public class SignalerServant extends AbstractIllagerServant{
     @Override
     public void tick() {
         super.tick();
-        if (!this.level.isClientSide) {
+        if (!this.level().isClientSide) {
             if (this.isCelebrating()) {
                 this.stopUsingItem();
             } else {
@@ -160,7 +160,7 @@ public class SignalerServant extends AbstractIllagerServant{
                     Predicate<Mob> predicate = mob -> mob instanceof IServant servant && servant.isGuardingArea() && servant.getMasterOwner() == this.getMasterOwner() && mob != this;
                     Predicate<Mob> predicate2 = mob -> mob instanceof RaiderServant servant && servant.getLeader() != null && servant.getLeader().isGuardingArea() && servant.getMasterOwner() == this.getMasterOwner() && mob != this;
                     Predicate<Mob> mainPredicate = predicate.or(predicate2);
-                    List<Mob> alliedList = this.level.getEntitiesOfClass(Mob.class, this.getBoundingBox().inflate(this.getAttributeValue(Attributes.FOLLOW_RANGE)), mainPredicate);
+                    List<Mob> alliedList = this.level().getEntitiesOfClass(Mob.class, this.getBoundingBox().inflate(this.getAttributeValue(Attributes.FOLLOW_RANGE)), mainPredicate);
                     if (hordeList.stream().filter(livingEntity -> livingEntity instanceof Mob mob && mob.getTarget() instanceof Mob ally && mainPredicate.test(ally)).toList().size() >= hordeList.size()) {
                         return;
                     }
@@ -183,7 +183,7 @@ public class SignalerServant extends AbstractIllagerServant{
                     }
                     this.setPriorityTarget(target);
                     MobUtil.instaLook(this, target);
-                    if (this.level instanceof ServerLevel serverLevel) {
+                    if (this.level() instanceof ServerLevel serverLevel) {
                         for(int j1 = 0; j1 < 5; ++j1) {
                             serverLevel.sendParticles(new ModShriekParticleOption(j1 * 5), this.getX(), this.getY() + this.getBbHeight(), this.getZ(), 0, 1.0D, 1.0D, 1.0D, 1.0F);
                         }
@@ -215,7 +215,7 @@ public class SignalerServant extends AbstractIllagerServant{
     }
 
     public List<LivingEntity> hordeOfTargets(LivingEntity mainTarget) {
-        return this.level.getEntitiesOfClass(LivingEntity.class, mainTarget.getBoundingBox().inflate(16.0F), MobUtil.ownedPredicate(this));
+        return this.level().getEntitiesOfClass(LivingEntity.class, mainTarget.getBoundingBox().inflate(16.0F), MobUtil.ownedPredicate(this));
     }
 
     public void swapItemHand() {

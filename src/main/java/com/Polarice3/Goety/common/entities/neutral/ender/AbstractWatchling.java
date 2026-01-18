@@ -23,14 +23,14 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.UUID;
+import net.minecraft.resources.ResourceLocation;
 import java.util.function.Predicate;
 
 public class AbstractWatchling extends AbstractEnderling {
     protected static final EntityDataAccessor<Byte> DATA_FLAGS_ID = SynchedEntityData.defineId(AbstractWatchling.class, EntityDataSerializers.BYTE);
     public static final EntityDataAccessor<Integer> ANIM_STATE = SynchedEntityData.defineId(AbstractWatchling.class, EntityDataSerializers.INT);
-    private static final UUID SMASH_ATTACK_MODIFIER_UUID = UUID.fromString("b872b3d4-b0f4-4d1d-a0f4-80706dc0d252");
-    private static final AttributeModifier SMASH_ATTACK_MODIFIER = new AttributeModifier(SMASH_ATTACK_MODIFIER_UUID, "Smash Attack Bonus", 0.65D, AttributeModifier.Operation.MULTIPLY_TOTAL);
+    private static final ResourceLocation SMASH_ATTACK_MODIFIER_UUID = com.Polarice3.Goety.Goety.location("smash_attack_bonus");
+    private static final AttributeModifier SMASH_ATTACK_MODIFIER = new AttributeModifier(SMASH_ATTACK_MODIFIER_UUID, 0.65D, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL);
     public static String IDLE = "idle";
     public static String ATTACK = "attack";
     public static String SMASH = "smash";
@@ -70,15 +70,15 @@ public class AbstractWatchling extends AbstractEnderling {
         MobUtil.setBaseAttributes(this.getAttribute(Attributes.ATTACK_DAMAGE), AttributesConfig.WatchlingDamage.get());
     }
 
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.entityData.define(DATA_FLAGS_ID, (byte)0);
-        this.entityData.define(ANIM_STATE, 0);
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(DATA_FLAGS_ID, (byte)0);
+        builder.define(ANIM_STATE, 0);
     }
 
     public void onSyncedDataUpdated(EntityDataAccessor<?> p_33609_) {
         if (ANIM_STATE.equals(p_33609_)) {
-            if (this.level.isClientSide) {
+            if (this.level().isClientSide) {
                 switch (this.entityData.get(ANIM_STATE)) {
                     case 0:
                         this.stopAllAnimations();
@@ -217,7 +217,7 @@ public class AbstractWatchling extends AbstractEnderling {
     @Override
     public void tick() {
         super.tick();
-        if (this.level.isClientSide) {
+        if (this.level().isClientSide) {
             this.blinkAnimationState.animateWhen(!this.isDeadOrDying(), this.tickCount);
             this.idleAnimationState.animateWhen(!this.walkAnimation.isMoving() && this.getCurrentAnimation() == 0, this.tickCount);
         }
@@ -233,7 +233,7 @@ public class AbstractWatchling extends AbstractEnderling {
         } else if (this.postTeleportTick == 13) {
             this.setAnimationState(TELEPORT_IN);
         }
-        if (!this.level.isClientSide) {
+        if (!this.level().isClientSide) {
             if (!this.isDeadOrDying()) {
                 this.setAggressive(this.getTarget() != null);
                 if (this.isMeleeAttacking()) {
@@ -249,8 +249,8 @@ public class AbstractWatchling extends AbstractEnderling {
                             instance.addTransientModifier(SMASH_ATTACK_MODIFIER);
                         }
                     } else {
-                        if (instance.hasModifier(SMASH_ATTACK_MODIFIER)) {
-                            instance.removeModifier(SMASH_ATTACK_MODIFIER);
+                        if (instance.hasModifier(SMASH_ATTACK_MODIFIER.id())) {
+                            instance.removeModifier(SMASH_ATTACK_MODIFIER.id());
                         }
                     }
                 }
@@ -349,11 +349,12 @@ public class AbstractWatchling extends AbstractEnderling {
                 AbstractWatchling.this.getNavigation().moveTo(livingentity, this.moveSpeed);
             }
 
-            this.checkAndPerformAttack(livingentity, AbstractWatchling.this.distanceToSqr(livingentity.getX(), livingentity.getY(), livingentity.getZ()));
+            this.checkAndPerformAttack(livingentity);
         }
 
         @Override
-        protected void checkAndPerformAttack(LivingEntity enemy, double distToEnemySqr) {
+        protected void checkAndPerformAttack(LivingEntity enemy) {
+            double distToEnemySqr = this.mob.distanceToSqr(enemy);
             double d0 = this.getAttackReachSqr(enemy);
             boolean smash = AbstractWatchling.this.random.nextBoolean();
 
@@ -407,7 +408,6 @@ public class AbstractWatchling extends AbstractEnderling {
             }
         }
 
-        @Override
         protected double getAttackReachSqr(LivingEntity livingEntity) {
             return this.mob.getBbWidth() * 4.0F * this.mob.getBbWidth() * 4.0F + livingEntity.getBbWidth();
         }

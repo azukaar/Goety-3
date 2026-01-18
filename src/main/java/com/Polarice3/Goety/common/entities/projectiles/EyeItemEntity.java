@@ -131,7 +131,7 @@ public class EyeItemEntity extends SpellEntity implements ItemSupplier {
       double d3 = vec3.horizontalDistance();
       this.setXRot(lerpRotation(this.xRotO, (float)(Mth.atan2(vec3.y, d3) * (double)(180F / (float)Math.PI))));
       this.setYRot(lerpRotation(this.yRotO, (float)(Mth.atan2(vec3.x, vec3.z) * (double)(180F / (float)Math.PI))));
-      if (!this.level.isClientSide) {
+      if (!this.level().isClientSide) {
          double d4 = this.tx - d0;
          double d5 = this.tz - d2;
          float f = (float)Math.sqrt(d4 * d4 + d5 * d5);
@@ -151,22 +151,22 @@ public class EyeItemEntity extends SpellEntity implements ItemSupplier {
       float f2 = 0.25F;
       if (this.isInWater()) {
          for(int i = 0; i < 4; ++i) {
-            this.level.addParticle(ParticleTypes.BUBBLE, d0 - vec3.x * 0.25D, d1 - vec3.y * 0.25D, d2 - vec3.z * 0.25D, vec3.x, vec3.y, vec3.z);
+            this.level().addParticle(ParticleTypes.BUBBLE, d0 - vec3.x * 0.25D, d1 - vec3.y * 0.25D, d2 - vec3.z * 0.25D, vec3.x, vec3.y, vec3.z);
          }
       } else {
-         this.level.addParticle(this.getParticle(), d0 - vec3.x * 0.25D + this.random.nextDouble() * 0.6D - 0.3D, d1 - vec3.y * 0.25D - 0.5D, d2 - vec3.z * 0.25D + this.random.nextDouble() * 0.6D - 0.3D, vec3.x, vec3.y, vec3.z);
+         this.level().addParticle(this.getParticle(), d0 - vec3.x * 0.25D + this.random.nextDouble() * 0.6D - 0.3D, d1 - vec3.y * 0.25D - 0.5D, d2 - vec3.z * 0.25D + this.random.nextDouble() * 0.6D - 0.3D, vec3.x, vec3.y, vec3.z);
       }
 
-      if (!this.level.isClientSide) {
+      if (!this.level().isClientSide) {
          this.setPos(d0, d1, d2);
          ++this.life;
-         if (this.life > 80 && !this.level.isClientSide) {
+         if (this.life > 80 && !this.level().isClientSide) {
             this.playSound(SoundEvents.ENDER_EYE_DEATH, 1.0F, 1.0F);
             this.discard();
             if (this.surviveAfterDeath) {
-               this.level.addFreshEntity(new ItemEntity(this.level, this.getX(), this.getY(), this.getZ(), this.getItem()));
+               this.level().addFreshEntity(new ItemEntity(this.level(), this.getX(), this.getY(), this.getZ(), this.getItem()));
             } else {
-               this.breakParticles((ServerLevel) this.level, this.blockPosition());
+               this.breakParticles((ServerLevel) this.level(), this.blockPosition());
                if (this.getOwner() != null){
                   this.drawParticleBeam(this.getOwner());
                }

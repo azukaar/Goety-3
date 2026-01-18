@@ -98,13 +98,13 @@ public class Hellfire extends GroundProjectile {
 
     public void tick() {
         super.tick();
-        if (this.level.isClientSide) {
+        if (this.level().isClientSide) {
             if (this.lifeTicks <= 26) {
                 --this.lifeTicks;
             }
-            this.level.addParticle(new MagicSmokeParticle.Option(0xcf7a06, 0xb13f00, 10 + this.level.getRandom().nextInt(10), 0.2F), this.getRandomX(0.5D), this.getRandomY(), this.getRandomZ(0.5D), 0.0D, 0.0D, 0.0D);
-            if (this.level.random.nextInt(24) == 0) {
-                this.level.playLocalSound((double)this.blockPosition().getX() + 0.5D, (double)this.blockPosition().getY() + 0.5D, (double)this.blockPosition().getZ() + 0.5D, SoundEvents.FIRE_AMBIENT, SoundSource.BLOCKS, 1.0F + this.level.random.nextFloat(), this.level.random.nextFloat() * 0.7F + 0.3F, false);
+            this.level().addParticle(new MagicSmokeParticle.Option(0xcf7a06, 0xb13f00, 10 + this.level().getRandom().nextInt(10), 0.2F), this.getRandomX(0.5D), this.getRandomY(), this.getRandomZ(0.5D), 0.0D, 0.0D, 0.0D);
+            if (this.level().random.nextInt(24) == 0) {
+                this.level().playLocalSound((double)this.blockPosition().getX() + 0.5D, (double)this.blockPosition().getY() + 0.5D, (double)this.blockPosition().getZ() + 0.5D, SoundEvents.FIRE_AMBIENT, SoundSource.BLOCKS, 1.0F + this.level().random.nextFloat(), this.level().random.nextFloat() * 0.7F + 0.3F, false);
             }
         } else {
             if (!this.isNoGravity()) {
@@ -112,21 +112,21 @@ public class Hellfire extends GroundProjectile {
             }
 
             if (this.lifeTicks > 13) {
-                for (LivingEntity livingentity : this.level.getEntitiesOfClass(LivingEntity.class, this.getBoundingBox())) {
+                for (LivingEntity livingentity : this.level().getEntitiesOfClass(LivingEntity.class, this.getBoundingBox())) {
                     this.dealDamageTo(livingentity);
                 }
             }
 
             --this.lifeTicks;
             if (this.lifeTicks <= 26){
-                this.level.broadcastEntityEvent(this, (byte)7);
+                this.level().broadcastEntityEvent(this, (byte)7);
             }
             if (this.lifeTicks < 0) {
                 this.discard();
             }
 
             if (this.isInLava()){
-                this.level.broadcastEntityEvent(this, (byte)6);
+                this.level().broadcastEntityEvent(this, (byte)6);
                 this.discard();
             }
         }
@@ -139,7 +139,7 @@ public class Hellfire extends GroundProjectile {
         damage += this.getExtraDamage();
         if (target.isAlive() && !target.isInvulnerable()) {
             if (owner == null) {
-                if (target.hurt(ModDamageSource.getDamageSource(this.level, ModDamageSource.HELLFIRE), damage) && !target.fireImmune()) {
+                if (target.hurt(ModDamageSource.getDamageSource(this.level(), ModDamageSource.HELLFIRE), damage) && !target.fireImmune()) {
                     target.invulnerableTime = 15;
                 }
             } else {
@@ -183,7 +183,7 @@ public class Hellfire extends GroundProjectile {
         super.handleEntityEvent(pId);
         if (pId == 6){
             if (!this.isSilent()) {
-                this.level.playLocalSound(this.getX(), this.getY(), this.getZ(), SoundEvents.FIRE_EXTINGUISH, this.getSoundSource(), 1.0F, 1.0F, false);
+                this.level().playLocalSound(this.getX(), this.getY(), this.getZ(), SoundEvents.FIRE_EXTINGUISH, this.getSoundSource(), 1.0F, 1.0F, false);
             }
         }
         if (pId == 7){
@@ -195,8 +195,8 @@ public class Hellfire extends GroundProjectile {
 
     }
 
-    @Override
-    public Packet<ClientGamePacketListener> getAddEntityPacket() {
-        return new net.minecraft.network.protocol.game.ClientboundAddEntityPacket(this);
-    }
+    // @Override
+    // public Packet<ClientGamePacketListener> getAddEntityPacket() {
+    //    return new net.minecraft.network.protocol.game.ClientboundAddEntityPacket(this);
+    // }
 }

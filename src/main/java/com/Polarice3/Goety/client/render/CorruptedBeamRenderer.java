@@ -37,7 +37,7 @@ public class CorruptedBeamRenderer<T extends CorruptedBeam> extends EntityRender
     }
 
     private static void drawBeams(double distance, CorruptedBeam entity, float ticks, float speedModifier, PoseStack pMatrixStack) {
-        long gameTime = entity.level.getGameTime();
+        long gameTime = entity.level().getGameTime();
         double velocity = gameTime * speedModifier;
         float additiveThickness = (entity.getBeamWidth() * 1.75f) * calculateLaserFlickerModifier(gameTime);
 
@@ -169,10 +169,10 @@ public class CorruptedBeamRenderer<T extends CorruptedBeam> extends EntityRender
     }
 
     private static void drawQuad(VertexConsumer builder, float v1, float v2, float alpha, Vector3f vector3f, Vector4f vec1, Vector4f vec2, Vector4f vec3, Vector4f vec4) {
-        builder.vertex(vec4.x(), vec4.y(), vec4.z(), 1.0F, 1.0F, 1.0F, alpha, 0, v1, OverlayTexture.NO_OVERLAY, 15728880, vector3f.x(), vector3f.y(), vector3f.z());
-        builder.vertex(vec3.x(), vec3.y(), vec3.z(), 1.0F, 1.0F, 1.0F, alpha, 0, v2, OverlayTexture.NO_OVERLAY, 15728880, vector3f.x(), vector3f.y(), vector3f.z());
-        builder.vertex(vec2.x(), vec2.y(), vec2.z(), 1.0F, 1.0F, 1.0F, alpha, 1, v2, OverlayTexture.NO_OVERLAY, 15728880, vector3f.x(), vector3f.y(), vector3f.z());
-        builder.vertex(vec1.x(), vec1.y(), vec1.z(), 1.0F, 1.0F, 1.0F, alpha, 1, v1, OverlayTexture.NO_OVERLAY, 15728880, vector3f.x(), vector3f.y(), vector3f.z());
+        builder.addVertex(vec4.x(), vec4.y(), vec4.z()).setColor(255, 255, 255, (int)(alpha * 255)).setUv(0, v1).setOverlay(OverlayTexture.NO_OVERLAY).setLight(15728880).setNormal(vector3f.x(), vector3f.y(), vector3f.z());
+        builder.addVertex(vec3.x(), vec3.y(), vec3.z()).setColor(255, 255, 255, (int)(alpha * 255)).setUv(0, v2).setOverlay(OverlayTexture.NO_OVERLAY).setLight(15728880).setNormal(vector3f.x(), vector3f.y(), vector3f.z());
+        builder.addVertex(vec2.x(), vec2.y(), vec2.z()).setColor(255, 255, 255, (int)(alpha * 255)).setUv(1, v2).setOverlay(OverlayTexture.NO_OVERLAY).setLight(15728880).setNormal(vector3f.x(), vector3f.y(), vector3f.z());
+        builder.addVertex(vec1.x(), vec1.y(), vec1.z()).setColor(255, 255, 255, (int)(alpha * 255)).setUv(1, v1).setOverlay(OverlayTexture.NO_OVERLAY).setLight(15728880).setNormal(vector3f.x(), vector3f.y(), vector3f.z());
     }
 
     @Override

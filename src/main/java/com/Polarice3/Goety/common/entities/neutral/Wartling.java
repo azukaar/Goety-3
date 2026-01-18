@@ -41,8 +41,8 @@ public class Wartling extends AbstractSpiderServant {
     }
 
     public void tick() {
-        if (!this.level.isClientSide) {
-            ServerLevel serverLevel = (ServerLevel) this.level;
+        if (!this.level().isClientSide) {
+            ServerLevel serverLevel = (ServerLevel) this.level();
             if (this.getStoredEffect() != null){
                 int i = getColor(this.getStoredEffect());
                 if (i > 0) {
@@ -57,7 +57,7 @@ public class Wartling extends AbstractSpiderServant {
                         double d0 = (double)(i >> 16 & 255) / 255.0D;
                         double d1 = (double)(i >> 8 & 255) / 255.0D;
                         double d2 = (double)(i >> 0 & 255) / 255.0D;
-                        serverLevel.sendParticles(ParticleTypes.ENTITY_EFFECT, this.getRandomX(0.5D), this.getRandomY(), this.getRandomZ(0.5D), 0, d0, d1, d2, 0.5F);
+                        serverLevel.sendParticles(net.minecraft.core.particles.ColorParticleOption.create(ParticleTypes.ENTITY_EFFECT, (float)d0, (float)d1, (float)d2), this.getRandomX(0.5D), this.getRandomY(), this.getRandomZ(0.5D), 0, 0, 0, 0, 0.5F);
                     }
                 }
             }
@@ -98,7 +98,7 @@ public class Wartling extends AbstractSpiderServant {
     public void addAdditionalSaveData(CompoundTag p_21145_) {
         super.addAdditionalSaveData(p_21145_);
         if (this.getStoredEffect() != null){
-            p_21145_.put("StoredEffect", this.getStoredEffect().save(new CompoundTag()));
+            p_21145_.put("StoredEffect", this.getStoredEffect().save());
         }
         p_21145_.putInt("SearchTime", this.searchTime);
         p_21145_.putBoolean("Mega", this.isMega());
@@ -159,11 +159,11 @@ public class Wartling extends AbstractSpiderServant {
         if (this.isMega()){
             if (entityIn instanceof LivingEntity livingEntity){
                 if (this.getStoredEffect() != null) {
-                    if (!this.getStoredEffect().getEffect().isBeneficial()) {
+                    if (!this.getStoredEffect().getEffect().value().isBeneficial()) {
                         livingEntity.addEffect(this.getStoredEffect());
                     }
                 } else if (!livingEntity.getActiveEffects().isEmpty()){
-                    livingEntity.getActiveEffects().stream().filter(mobEffect -> mobEffect.getEffect().isBeneficial() && !mobEffect.getEffect().getCurativeItems().isEmpty()).findFirst().ifPresent(effect -> {
+                    livingEntity.getActiveEffects().stream().filter(mobEffect -> mobEffect.getEffect().value().isBeneficial()).findFirst().ifPresent(effect -> {
                         this.setStoredEffect(effect);
                         livingEntity.removeEffect(effect.getEffect());
                         this.playSound(ModSounds.SPIDER_BITE.get());
@@ -177,14 +177,14 @@ public class Wartling extends AbstractSpiderServant {
     @Override
     public void die(DamageSource pCause) {
         super.die(pCause);
-        if (!this.level.isClientSide) {
+        if (!this.level().isClientSide) {
             if (this.getStoredEffect() != null) {
-                AreaEffectCloud areaEffectCloud = new AreaEffectCloud(this.level, this.getX(), this.getY(), this.getZ());
+                AreaEffectCloud areaEffectCloud = new AreaEffectCloud(this.level(), this.getX(), this.getY(), this.getZ());
                 areaEffectCloud.setRadius(1.0F);
                 areaEffectCloud.setWaitTime(0);
                 areaEffectCloud.setDuration(MathHelper.secondsToTicks(2));
                 areaEffectCloud.addEffect(this.getStoredEffect());
-                this.level.addFreshEntity(areaEffectCloud);
+                this.level().addFreshEntity(areaEffectCloud);
             }
         }
     }
@@ -193,23 +193,23 @@ public class Wartling extends AbstractSpiderServant {
         if (this.getTrueOwner() != null
                 && this.getTrueOwner().isAlive()
                 && !this.getTrueOwner().isDeadOrDying()
-                && (this.getStoredEffect() == null || this.getStoredEffect().getEffect().isBeneficial())){
+                && (this.getStoredEffect() == null || this.getStoredEffect().getEffect().value().isBeneficial())){
             this.getNavigation().moveTo(this.getTrueOwner(), 1.25F);
             this.setTarget(null);
             ++this.searchTime;
             if (this.getBoundingBox().intersects(this.getTrueOwner().getBoundingBox())){
                 this.getTrueOwner().heal(this.getHealth());
                 for (MobEffectInstance mobEffectInstance : this.getActiveEffects()){
-                    if (mobEffectInstance.getEffect().isBeneficial()){
+                    if (mobEffectInstance.getEffect().value().isBeneficial()){
                         this.getTrueOwner().addEffect(mobEffectInstance);
                     }
                 }
-                if (this.getStoredEffect() != null && this.getStoredEffect().getEffect().isBeneficial()){
+                if (this.getStoredEffect() != null && this.getStoredEffect().getEffect().value().isBeneficial()){
                     this.getTrueOwner().addEffect(this.getStoredEffect());
                 }
                 this.playSound(SoundEvents.SCULK_BLOCK_SPREAD, 1.0F, 1.0F);
-                if (!this.level.isClientSide) {
-                    this.level.broadcastEntityEvent(this, (byte) 15);
+                if (!this.level().isClientSide) {
+                    this.level().broadcastEntityEvent(this, (byte) 15);
                 }
                 this.discard();
             } else if (this.searchTime >= MathHelper.secondsToTicks(5)){
@@ -245,7 +245,7 @@ public class Wartling extends AbstractSpiderServant {
             float f2 = 0.0F;
             int j = 0;
 
-            int k = mobEffectInstance.getEffect().getColor();
+            int k = mobEffectInstance.getEffect().value().getColor();
             int l = mobEffectInstance.getAmplifier() + 1;
             f += (float)(l * (k >> 16 & 255)) / 255.0F;
             f1 += (float)(l * (k >> 8 & 255)) / 255.0F;
@@ -266,7 +266,7 @@ public class Wartling extends AbstractSpiderServant {
     public void handleEntityEvent(byte p_34138_) {
         if (p_34138_ == 15) {
             for(int i = 0; i < this.random.nextInt(35) + 10; ++i) {
-                this.level.addParticle(ModParticleTypes.CULT_SPELL.get(), this.getX() + this.random.nextGaussian() * (double)0.13F, this.getY() + this.random.nextGaussian() * (double)0.13F, this.getZ() + this.random.nextGaussian() * (double)0.13F, 1.0D, 1.0D, 1.0D);
+                this.level().addParticle(ModParticleTypes.CULT_SPELL.get(), this.getX() + this.random.nextGaussian() * (double)0.13F, this.getY() + this.random.nextGaussian() * (double)0.13F, this.getZ() + this.random.nextGaussian() * (double)0.13F, 1.0D, 1.0D, 1.0D);
             }
         } else {
             super.handleEntityEvent(p_34138_);
@@ -280,9 +280,15 @@ public class Wartling extends AbstractSpiderServant {
         return spawnDataIn;
     }
 
-    public EntityDimensions getDimensions(Pose p_33113_) {
-        EntityDimensions entitydimensions = super.getDimensions(p_33113_);
-        return this.isMega() ? entitydimensions.scale(2.0F) : super.getDimensions(p_33113_);
+    // getDimensions overridden method is final in 1.21
+    // public EntityDimensions getDimensions(Pose p_33113_) {
+    //    EntityDimensions entitydimensions = super.getDimensions(p_33113_);
+    //    return this.isMega() ? entitydimensions.scale(2.0F) : super.getDimensions(p_33113_);
+    // }
+    @Override
+    public EntityDimensions getDefaultDimensions(Pose p_33113_) {
+        EntityDimensions entitydimensions = super.getDefaultDimensions(p_33113_);
+        return this.isMega() ? entitydimensions.scale(2.0F) : super.getDefaultDimensions(p_33113_);
     }
 
     public static class AvoidOwnerGoal extends Goal {
@@ -316,7 +322,7 @@ public class Wartling extends AbstractSpiderServant {
                     this.path = this.pathNav.createPath(vec3.x, vec3.y, vec3.z, 0);
                     return this.path != null
                             && this.mob.getStoredEffect() != null
-                            && this.mob.getStoredEffect().getEffect().getCategory() != MobEffectCategory.BENEFICIAL
+                            && this.mob.getStoredEffect().getEffect().value().getCategory() != MobEffectCategory.BENEFICIAL
                             && this.mob.getTarget() == null;
                 }
             }

@@ -149,7 +149,7 @@ public class WitchServant extends RaiderServant implements RangedAttackMob {
 
     public void aiStep() {
         AttributeInstance attributeinstance = this.getAttribute(Attributes.MOVEMENT_SPEED);
-        if (!this.level.isClientSide && this.isAlive()) {
+        if (!this.level().isClientSide && this.isAlive()) {
             --this.cooldown;
             if (this.cooldown <= 0 && this.getRandom().nextBoolean()) {
                 this.findTarget();
@@ -236,7 +236,7 @@ public class WitchServant extends RaiderServant implements RangedAttackMob {
     }
 
     protected void findTarget() {
-        this.shootTarget = this.level.getNearestEntity(this.level.getEntitiesOfClass(LivingEntity.class,
+        this.shootTarget = this.level().getNearestEntity(this.level().getEntitiesOfClass(LivingEntity.class,
                 this.getTargetSearchArea(this.getAttributeValue(Attributes.FOLLOW_RANGE)), (p_148152_) -> {
                     return true;
                 }), TargetingConditions.forNonCombat().range(this.getAttributeValue(Attributes.FOLLOW_RANGE))
@@ -307,16 +307,16 @@ public class WitchServant extends RaiderServant implements RangedAttackMob {
                 potion = Potions.WEAKNESS;
             }
 
-            ThrownPotion thrownpotion = new ThrownPotion(this.level, this);
+            ThrownPotion thrownpotion = new ThrownPotion(this.level(), this);
             thrownpotion.setItem(PotionUtils.setPotion(new ItemStack(Items.SPLASH_POTION), potion));
             thrownpotion.setXRot(thrownpotion.getXRot() - -20.0F);
             thrownpotion.shoot(d0, d1 + d3 * 0.2D, d2, 0.75F, 8.0F);
             if (!this.isSilent()) {
-                this.level.playSound((Player) null, this.getX(), this.getY(), this.getZ(), SoundEvents.WITCH_THROW,
+                this.level().playSound((Player) null, this.getX(), this.getY(), this.getZ(), SoundEvents.WITCH_THROW,
                         this.getSoundSource(), 1.0F, 0.8F + this.random.nextFloat() * 0.4F);
             }
 
-            this.level.addFreshEntity(thrownpotion);
+            this.level().addFreshEntity(thrownpotion);
         }
     }
 

@@ -138,7 +138,7 @@ public class ZombieRavager extends ModRavager {
 
     @Override
     public void convertNewEquipment(Entity entity){
-        if (!this.level.isClientSide) {
+        if (!this.level().isClientSide) {
             if (entity instanceof Ravager) {
                 this.equipSaddle(false);
                 this.setHealth(((Ravager) entity).getHealth());
@@ -154,11 +154,11 @@ public class ZombieRavager extends ModRavager {
     }
 
     public void tick() {
-        if (!this.level.isClientSide && this.isAlive() && this.isConverting()) {
+        if (!this.level().isClientSide && this.isAlive() && this.isConverting()) {
             int i = this.getConversionProgress();
             this.villagerConversionTime -= i;
             if (this.villagerConversionTime <= 0 && net.neoforged.event.net.neoforged.neoforge.event.EventHooks.canLivingConvert(this, EntityType.VILLAGER, (timer) -> this.villagerConversionTime = timer)) {
-                this.finishConversion((ServerLevel)this.level);
+                this.finishConversion((ServerLevel)this.level());
             }
         }
 
@@ -173,7 +173,7 @@ public class ZombieRavager extends ModRavager {
                     itemstack.shrink(1);
                 }
 
-                if (!this.level.isClientSide) {
+                if (!this.level().isClientSide) {
                     this.startConverting(p_34394_.getUUID(), this.random.nextInt(2401) + 3600);
                 }
 
@@ -195,14 +195,14 @@ public class ZombieRavager extends ModRavager {
         this.villagerConversionTime = p_34385_;
         this.getEntityData().set(DATA_CONVERTING_ID, true);
         this.removeEffect(MobEffects.WEAKNESS);
-        this.addEffect(new MobEffectInstance(MobEffects.DAMAGE_BOOST, p_34385_, Math.min(this.level.getDifficulty().getId() - 1, 0)));
-        this.level.broadcastEntityEvent(this, (byte)16);
+        this.addEffect(new MobEffectInstance(MobEffects.DAMAGE_BOOST, p_34385_, Math.min(this.level().getDifficulty().getId() - 1, 0)));
+        this.level().broadcastEntityEvent(this, (byte)16);
     }
 
     public void handleEntityEvent(byte p_34372_) {
         if (p_34372_ == 16) {
             if (!this.isSilent()) {
-                this.level.playLocalSound(this.getX(), this.getEyeY(), this.getZ(), SoundEvents.ZOMBIE_VILLAGER_CURE, this.getSoundSource(), 1.0F + this.random.nextFloat(), this.random.nextFloat() * 0.7F + 0.3F, false);
+                this.level().playLocalSound(this.getX(), this.getEyeY(), this.getZ(), SoundEvents.ZOMBIE_VILLAGER_CURE, this.getSoundSource(), 1.0F + this.random.nextFloat(), this.random.nextFloat() * 0.7F + 0.3F, false);
             }
 
         } else {
@@ -244,7 +244,7 @@ public class ZombieRavager extends ModRavager {
             for(int k = (int)this.getX() - 4; k < (int)this.getX() + 4 && j < 14; ++k) {
                 for(int l = (int)this.getY() - 4; l < (int)this.getY() + 4 && j < 14; ++l) {
                     for(int i1 = (int)this.getZ() - 4; i1 < (int)this.getZ() + 4 && j < 14; ++i1) {
-                        BlockState blockstate = this.level.getBlockState(blockpos$mutableblockpos.set(k, l, i1));
+                        BlockState blockstate = this.level().getBlockState(blockpos$mutableblockpos.set(k, l, i1));
                         if (blockstate.is(Blocks.IRON_BARS) || blockstate.getBlock() instanceof BedBlock) {
                             if (this.random.nextFloat() < 0.3F) {
                                 ++i;

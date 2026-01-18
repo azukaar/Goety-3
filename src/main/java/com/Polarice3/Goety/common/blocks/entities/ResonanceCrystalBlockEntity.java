@@ -40,21 +40,21 @@ public class ResonanceCrystalBlockEntity extends ModBlockEntity implements IWind
     }
 
     public void tick(){
-        if (this.level != null) {
+        if (this.getLevel() != null) {
             if (this.active > 0) {
                 --this.active;
             }
             if (this.getBlockState().getValue(ResonanceCrystalBlock.POWERED)) {
                 if (!this.isOn){
-                    this.level.playSound(null, this.getBlockPos(), ModSounds.RESONANCE_CRYSTAL_ON.get(), SoundSource.BLOCKS, 1.0F, 1.0F);
+                    this.getLevel().playSound(null, this.getBlockPos(), ModSounds.RESONANCE_CRYSTAL_ON.get(), SoundSource.BLOCKS, 1.0F, 1.0F);
                     this.isOn = true;
                 } else {
-                    if (this.level.getGameTime() % MathHelper.secondsToTicks(6) == 0){
-                        this.level.playSound(null, this.getBlockPos(), ModSounds.RESONANCE_CRYSTAL_LOOP.get(), SoundSource.BLOCKS, 1.0F, 1.0F);
+                    if (this.getLevel().getGameTime() % MathHelper.secondsToTicks(6) == 0){
+                        this.getLevel().playSound(null, this.getBlockPos(), ModSounds.RESONANCE_CRYSTAL_LOOP.get(), SoundSource.BLOCKS, 1.0F, 1.0F);
                     }
                 }
-                if (this.level instanceof ServerLevel world) {
-                    ChunkPos chunkPos = this.level.getChunkAt(this.worldPosition).getPos();
+                if (this.getLevel() instanceof ServerLevel world) {
+                    ChunkPos chunkPos = this.getLevel().getChunkAt(this.worldPosition).getPos();
                     if (--this.ticketTime <= 0L) {
                         world.getChunkSource().addRegionTicket(ModTicketTypes.BLOCK, chunkPos, 5, this.worldPosition);
                         this.ticketTime = ModTicketTypes.BLOCK.timeout() - 1L;
@@ -90,7 +90,7 @@ public class ResonanceCrystalBlockEntity extends ModBlockEntity implements IWind
                 }
                 if (!this.getBlockPosList().isEmpty()){
                     for (BlockPos blockPos1 : this.getBlockPosList()){
-                        BlockEntity blockEntity = this.level.getBlockEntity(blockPos1);
+                        BlockEntity blockEntity = this.getLevel().getBlockEntity(blockPos1);
                         if (blockEntity instanceof ResonanceCrystalBlockEntity crystalBlock){
                             crystalBlock.activate(20);
                         }
@@ -98,11 +98,11 @@ public class ResonanceCrystalBlockEntity extends ModBlockEntity implements IWind
                 }
             } else {
                 if (this.isOn){
-                    this.level.playSound(null, this.getBlockPos(), ModSounds.RESONANCE_CRYSTAL_OFF.get(), SoundSource.BLOCKS, 1.0F, 1.0F);
+                    this.getLevel().playSound(null, this.getBlockPos(), ModSounds.RESONANCE_CRYSTAL_OFF.get(), SoundSource.BLOCKS, 1.0F, 1.0F);
                     this.isOn = false;
                 }
             }
-            this.level.setBlock(this.getBlockPos(), this.getBlockState().setValue(ResonanceCrystalBlock.POWERED, this.active > 0), 3);
+            this.getLevel().setBlock(this.getBlockPos(), this.getBlockState().setValue(ResonanceCrystalBlock.POWERED, this.active > 0), 3);
         }
     }
 

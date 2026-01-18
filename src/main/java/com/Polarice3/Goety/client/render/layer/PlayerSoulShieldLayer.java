@@ -17,7 +17,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
 
 public class PlayerSoulShieldLayer<T extends LivingEntity, M extends EntityModel<T>> extends RenderLayer<T, M> {
-    private static final ResourceLocation POWER_LOCATION = new ResourceLocation("textures/entity/wither/wither_armor.png");
+    private static final ResourceLocation POWER_LOCATION = ResourceLocation.withDefaultNamespace("textures/entity/wither/wither_armor.png");
     private final PlayerModel<T> model;
 
     public PlayerSoulShieldLayer(RenderLayerParent<T, M> p_i50926_1_, EntityModelSet p_174555_) {
@@ -34,7 +34,7 @@ public class PlayerSoulShieldLayer<T extends LivingEntity, M extends EntityModel
             new ClientEvents().followBodyRotations(pLivingEntity, entitymodel);
             VertexConsumer ivertexbuilder = pBuffer.getBuffer(RenderType.energySwirl(POWER_LOCATION, this.xOffset(f), f * 0.01F));
             entitymodel.setupAnim(pLivingEntity, pLimbSwing, pLimbSwingAmount, pAgeInTicks, pNetHeadYaw, pHeadPitch);
-            entitymodel.renderToBuffer(pMatrixStack, ivertexbuilder, pPackedLight, OverlayTexture.NO_OVERLAY, 0.5F, 0.5F, 0.5F, 1.0F);
+            entitymodel.renderToBuffer(pMatrixStack, ivertexbuilder, pPackedLight, OverlayTexture.NO_OVERLAY, 0x80808080);
         }
     }
 

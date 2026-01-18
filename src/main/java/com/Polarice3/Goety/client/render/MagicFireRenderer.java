@@ -43,6 +43,6 @@ public class MagicFireRenderer extends EntityRenderer<MagicFire> {
     }
 
     public ResourceLocation getTextureLocation(MagicFire entity) {
-        return Goety.location("textures/entity/projectiles/magic_fire/" + entity.level.getGameTime() % 31 + ".png");
+        return Goety.location("textures/entity/projectiles/magic_fire/" + entity.level().getGameTime() % 31 + ".png");
     }
 }

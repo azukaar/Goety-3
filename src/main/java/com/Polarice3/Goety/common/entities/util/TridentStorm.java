@@ -75,11 +75,11 @@ public class TridentStorm extends CastSpellTrap{
     public void tick() {
         super.tick();
         ++this.tickTime;
-        if (!this.level.isClientSide) {
+        if (!this.level().isClientSide) {
             int time = this.instant ? 0 : this.getWarmUp();
             if (this.tickTime >= time + this.delay) {
                 if (!this.isActivated()) {
-                    this.level.broadcastEntityEvent(this, (byte) 4);
+                    this.level().broadcastEntityEvent(this, (byte) 4);
                     this.setActivated(true);
                 }
             }
@@ -87,8 +87,8 @@ public class TridentStorm extends CastSpellTrap{
                 float damage = SpellConfig.TridentStormDamage.get().floatValue() * WandUtil.damageMultiply();
                 float radius = 2.0F;
                 List<LivingEntity> targets = new ArrayList<>();
-                AABB aabb = EntityType.TRIDENT.getAABB(this.position().x, this.position().y, this.position().z);
-                for (Entity entity : this.level.getEntitiesOfClass(Entity.class, aabb.inflate(1, 16, 1))) {
+                AABB aabb = EntityType.TRIDENT.getDimensions().makeBoundingBox(this.position());
+                for (Entity entity : this.level().getEntitiesOfClass(Entity.class, aabb.inflate(1, 16, 1))) {
                     LivingEntity livingEntity = MobUtil.getLivingTarget(entity);
                     if (livingEntity != null) {
                         if (livingEntity.getY() > this.getY() + 1) {
@@ -111,8 +111,8 @@ public class TridentStorm extends CastSpellTrap{
                 if (optional.isPresent()) {
                     vec3 = optional.get().position();
                 }
-                new SpellExplosion(this.level, this, ModDamageSource.lightning(this, this.getOwner()), vec3.x, vec3.y, vec3.z, radius, damage + this.getExtraDamage());
-                if (this.level instanceof ServerLevel serverLevel){
+                new SpellExplosion(this.level(), this, ModDamageSource.lightning(this, this.getOwner()), vec3.x, vec3.y, vec3.z, radius, damage + this.getExtraDamage());
+                if (this.level() instanceof ServerLevel serverLevel){
                     ColorUtil colorUtil = ColorUtil.WHITE;
                     serverLevel.sendParticles(new CircleExplodeParticleOption(colorUtil.red, colorUtil.green, colorUtil.blue, radius, 1), vec3.x, vec3.y, vec3.z, 1, 0.0D, 0.0D, 0.0D, 0.0D);
                 }
@@ -134,14 +134,14 @@ public class TridentStorm extends CastSpellTrap{
             this.setActivated(true);
             this.mainAnimationState.start(this.tickCount);
             if (!this.isSilent()) {
-                this.level.playLocalSound(this.getX(), this.getY(), this.getZ(), ModSounds.TRIDENT_STORM_EXPLODE.get(), this.getSoundSource(), 2.0F, this.random.nextFloat() * 0.2F + 0.85F, false);
+                this.level().playLocalSound(this.getX(), this.getY(), this.getZ(), ModSounds.TRIDENT_STORM_EXPLODE.get(), this.getSoundSource(), 2.0F, this.random.nextFloat() * 0.2F + 0.85F, false);
             }
         }
 
     }
 
-    @Override
+    /*@Override
     public @NotNull Packet<ClientGamePacketListener> getAddEntityPacket() {
         return new net.minecraft.network.protocol.game.ClientboundAddEntityPacket(this);
-    }
+    }*/
 }

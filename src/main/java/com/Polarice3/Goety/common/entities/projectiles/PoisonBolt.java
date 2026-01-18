@@ -98,7 +98,7 @@ public class PoisonBolt extends SpellHurtingProjectile {
 
     protected void onHitEntity(EntityHitResult p_37626_) {
         super.onHitEntity(p_37626_);
-        if (!this.level.isClientSide) {
+        if (!this.level().isClientSide) {
             float baseDamage = SpellConfig.SoulBoltDamage.get().floatValue() * WandUtil.damageMultiply();
             Entity entity = p_37626_.getEntity();
             Entity entity1 = this.getOwner();
@@ -134,12 +134,12 @@ public class PoisonBolt extends SpellHurtingProjectile {
     protected void onHit(HitResult p_37628_) {
         super.onHit(p_37628_);
         this.playSound(ModSounds.POISON_BOLT_IMPACT.get());
-        if (!this.level.isClientSide) {
-            ServerLevel serverLevel = (ServerLevel) this.level;
+        if (!this.level().isClientSide) {
+            ServerLevel serverLevel = (ServerLevel) this.level();
             for (int p = 0; p < 32; ++p) {
-                double d0 = (double)this.getX() + this.level.random.nextDouble();
-                double d1 = (double)this.getY() + this.level.random.nextDouble();
-                double d2 = (double)this.getZ() + this.level.random.nextDouble();
+                double d0 = (double)this.getX() + this.level().random.nextDouble();
+                double d1 = (double)this.getY() + this.level().random.nextDouble();
+                double d2 = (double)this.getZ() + this.level().random.nextDouble();
                 double[] colors = MathHelper.rgbParticle(2735172);
                 serverLevel.sendParticles(ModParticleTypes.CULT_SPELL.get(), d0, d1, d2, 0, colors[0], colors[1], colors[2], 1.0F);
             }
@@ -159,15 +159,15 @@ public class PoisonBolt extends SpellHurtingProjectile {
         if (this.tickCount >= MathHelper.secondsToTicks(10)){
             this.discard();
         }
-        if (this.level.isClientSide || (entity == null || !entity.isRemoved()) && this.level.hasChunkAt(this.blockPosition())) {
+        if (this.level().isClientSide || (entity == null || !entity.isRemoved()) && this.level().hasChunkAt(this.blockPosition())) {
             Vec3 vec3 = this.getDeltaMovement();
             double d0 = this.getX() - vec3.x;
             double d1 = this.getY() - vec3.y;
             double d2 = this.getZ() - vec3.z;
-            this.level.addParticle(ModParticleTypes.SUMMON_TRAIL.get(),
-                    d0 + ((this.level.random.nextDouble() / 4) * (this.level.random.nextIntBetweenInclusive(-1, 1))),
+            this.level().addParticle(ModParticleTypes.SUMMON_TRAIL.get(),
+                    d0 + ((this.level().random.nextDouble() / 4) * (this.level().random.nextIntBetweenInclusive(-1, 1))),
                     d1 + 0.15D,
-                    d2 + ((this.level.random.nextDouble() / 4) * (this.level.random.nextIntBetweenInclusive(-1, 1))),
+                    d2 + ((this.level().random.nextDouble() / 4) * (this.level().random.nextIntBetweenInclusive(-1, 1))),
                     0.0D, 0.0D, 0.0D);
         }
         Vec3 trailAt = this.position().add(0, this.getBbHeight() / 2F, 0);

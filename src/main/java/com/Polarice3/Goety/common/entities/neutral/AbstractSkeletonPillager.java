@@ -58,7 +58,7 @@ public class AbstractSkeletonPillager extends AbstractSkeletonServant implements
     }
 
     public void reassessWeaponGoal() {
-        if (!this.level.isClientSide) {
+        if (!this.level().isClientSide) {
             this.goalSelector.removeGoal(this.meleeGoal);
             this.goalSelector.removeGoal(this.crossbowAttackGoal);
             ItemStack itemstack = this.getMainHandItem();
