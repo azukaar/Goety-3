@@ -45,18 +45,14 @@ public class PedestalBlockEntity extends RitualBlockEntity {
 
 
     @Override
-    public void readNetwork(CompoundTag compound) {
-        if (this.getLevel() != null) {
-            this.itemStackHandler.deserializeNBT(this.getLevel().registryAccess(), compound.getCompound("inventory"));
-        }
+    public void readNetwork(CompoundTag compound, net.minecraft.core.HolderLookup.Provider pRegistries) {
+        this.itemStackHandler.deserializeNBT(pRegistries, compound.getCompound("inventory"));
         this.lastChangeTime = compound.getLong("lastChangeTime");
     }
 
     @Override
-    public CompoundTag writeNetwork(CompoundTag compound) {
-        if (this.getLevel() != null) {
-            compound.put("inventory", this.itemStackHandler.serializeNBT(this.getLevel().registryAccess()));
-        }
+    public CompoundTag writeNetwork(CompoundTag compound, net.minecraft.core.HolderLookup.Provider pRegistries) {
+        compound.put("inventory", this.itemStackHandler.serializeNBT(pRegistries));
         compound.putLong("lastChangeTime", this.lastChangeTime);
         return compound;
     }

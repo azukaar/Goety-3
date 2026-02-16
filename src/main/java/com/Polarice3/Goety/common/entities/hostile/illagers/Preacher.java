@@ -58,15 +58,15 @@ public class Preacher extends HuntingIllagerEntity{
 
     public static AttributeSupplier.Builder setCustomAttributes() {
         return Mob.createMobAttributes()
-                .add(Attributes.MAX_HEALTH, AttributesConfig.PreacherHealth.get())
-                .add(Attributes.ARMOR, AttributesConfig.PreacherArmor.get())
+                .add(Attributes.MAX_HEALTH, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.PreacherHealth, 20.0D))
+                .add(Attributes.ARMOR, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.PreacherArmor, 20.0D))
                 .add(Attributes.FOLLOW_RANGE, 16.0D)
                 .add(Attributes.MOVEMENT_SPEED, 0.35D);
     }
 
     public void setConfigurableAttributes(){
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.MAX_HEALTH), AttributesConfig.PreacherHealth.get());
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ARMOR), AttributesConfig.PreacherArmor.get());
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.MAX_HEALTH), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.PreacherHealth, 20.0D));
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ARMOR), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.PreacherArmor, 20.0D));
     }
 
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
@@ -270,7 +270,7 @@ public class Preacher extends HuntingIllagerEntity{
             if (this.target != null && !this.target.isDeadOrDying()){
                 MobUtil.instaLook(this.preacher, this.target);
                 if (this.preacher.healTick == 10){
-                    this.target.heal(AttributesConfig.PreacherHeal.get().floatValue());
+                    this.target.heal((float)com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.PreacherHeal, 20.0D));
                     if (!this.preacher.level().isClientSide) {
                         ServerLevel serverWorld = (ServerLevel) this.preacher.level();
                         for (int i = 0; i < serverWorld.random.nextInt(10) + 10; ++i) {

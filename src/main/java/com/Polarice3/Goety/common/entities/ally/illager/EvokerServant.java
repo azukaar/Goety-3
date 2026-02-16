@@ -78,15 +78,15 @@ public class EvokerServant extends SpellcasterIllagerServant{
     public static AttributeSupplier.Builder setCustomAttributes() {
         return Monster.createMonsterAttributes()
                 .add(Attributes.MOVEMENT_SPEED, 0.5D)
-                .add(Attributes.FOLLOW_RANGE, AttributesConfig.EvokerServantFollowRange.get())
-                .add(Attributes.ARMOR, AttributesConfig.EvokerServantArmor.get())
-                .add(Attributes.MAX_HEALTH, AttributesConfig.EvokerServantHealth.get());
+                .add(Attributes.FOLLOW_RANGE, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.EvokerServantFollowRange, 20.0D))
+                .add(Attributes.ARMOR, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.EvokerServantArmor, 20.0D))
+                .add(Attributes.MAX_HEALTH, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.EvokerServantHealth, 20.0D));
     }
 
     public void setConfigurableAttributes(){
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.MAX_HEALTH), AttributesConfig.EvokerServantHealth.get());
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ARMOR), AttributesConfig.EvokerServantArmor.get());
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.FOLLOW_RANGE), AttributesConfig.EvokerServantFollowRange.get());
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.MAX_HEALTH), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.EvokerServantHealth, 20.0D));
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ARMOR), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.EvokerServantArmor, 20.0D));
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.FOLLOW_RANGE), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.EvokerServantFollowRange, 20.0D));
     }
 
     @Override

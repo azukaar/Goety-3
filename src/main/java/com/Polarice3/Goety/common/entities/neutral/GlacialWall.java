@@ -43,8 +43,8 @@ public class GlacialWall extends AbstractMonolith{
     }
 
     @Nullable
-    public SpawnGroupData finalizeSpawn(ServerLevelAccessor pLevel, DifficultyInstance pDifficulty, MobSpawnType pReason, @Nullable SpawnGroupData pSpawnData, @Nullable CompoundTag pDataTag) {
-        pSpawnData = super.finalizeSpawn(pLevel, pDifficulty, pReason, pSpawnData, pDataTag);
+    public SpawnGroupData finalizeSpawn(ServerLevelAccessor pLevel, DifficultyInstance pDifficulty, MobSpawnType pReason, @Nullable SpawnGroupData pSpawnData) {
+        pSpawnData = super.finalizeSpawn(pLevel, pDifficulty, pReason, pSpawnData);
         if (this.canSpawn(pLevel.getLevel())){
             this.playSound(ModSounds.WALL_SPAWN.get(), 1.0F, 2.0F);
             this.playSound(ModSounds.WALL_ERUPT.get(), 1.0F, 2.0F);
@@ -70,7 +70,7 @@ public class GlacialWall extends AbstractMonolith{
                 if (pSource.getDirectEntity() instanceof LivingEntity living) {
                     if (living.getMainHandItem().isCorrectToolForDrops(this.getState())){
                         damage = true;
-                        efficiency += EnchantmentHelper.getBlockEfficiency(living);
+                        efficiency += living.level().registryAccess().lookupOrThrow(net.minecraft.core.registries.Registries.ENCHANTMENT).get(net.minecraft.world.item.enchantment.Enchantments.EFFICIENCY).map(efficiencyHolder -> EnchantmentHelper.getEnchantmentLevel(efficiencyHolder, living)).orElse(0);
                     }
                 }
             }

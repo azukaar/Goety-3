@@ -1,5 +1,7 @@
 package com.Polarice3.Goety.common.entities.neutral;
 
+import com.Polarice3.Goety.utils.MobType;
+
 import com.Polarice3.Goety.Goety;
 import com.Polarice3.Goety.api.entities.IAutoRideable;
 import com.Polarice3.Goety.api.entities.IOwned;
@@ -180,19 +182,19 @@ public class AbstractBroodMother extends Summoned implements IAutoRideable, Play
     @SuppressWarnings("removal")
     public static AttributeSupplier.Builder setCustomAttributes() {
         return Mob.createMobAttributes()
-                .add(Attributes.MAX_HEALTH, AttributesConfig.BroodMotherHealth.get())
+                .add(Attributes.MAX_HEALTH, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.BroodMotherHealth, 20.0D))
                 .add(Attributes.MOVEMENT_SPEED, 0.35F)
-                .add(Attributes.ARMOR, AttributesConfig.BroodMotherArmor.get())
-                .add(Attributes.ATTACK_DAMAGE, AttributesConfig.BroodMotherDamage.get())
+                .add(Attributes.ARMOR, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.BroodMotherArmor, 20.0D))
+                .add(Attributes.ATTACK_DAMAGE, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.BroodMotherDamage, 20.0D))
                 .add(Attributes.FOLLOW_RANGE, 32.0D)
                 .add(Attributes.STEP_HEIGHT, 2.0D)
                 .add(Attributes.KNOCKBACK_RESISTANCE, 1.0D);
     }
 
     public void setConfigurableAttributes() {
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.MAX_HEALTH), AttributesConfig.BroodMotherHealth.get());
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ARMOR), AttributesConfig.BroodMotherArmor.get());
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ATTACK_DAMAGE), AttributesConfig.BroodMotherDamage.get());
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.MAX_HEALTH), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.BroodMotherHealth, 20.0D));
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ARMOR), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.BroodMotherArmor, 20.0D));
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ATTACK_DAMAGE), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.BroodMotherDamage, 20.0D));
     }
 
     @Override
@@ -413,7 +415,7 @@ public class AbstractBroodMother extends Summoned implements IAutoRideable, Play
 
     @Override
     public boolean canBeAffected(MobEffectInstance instance) {
-        if (instance.getEffect() == GoetyEffects.ACID_VENOM.getHolder().unwrap().map(o -> o, o -> o) || instance.getEffect() == MobEffects.POISON) {
+        if (instance.getEffect() == GoetyEffects.ACID_VENOM.unwrap().map(o -> o, o -> o) || instance.getEffect() == MobEffects.POISON) {
             net.neoforged.neoforge.event.entity.living.MobEffectEvent.Applicable event = new net.neoforged.neoforge.event.entity.living.MobEffectEvent.Applicable(this, instance);
             net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(event);
             return false; // event.getResult() == net.neoforged.bus.api.Event.Result.ALLOW;
@@ -705,7 +707,7 @@ public class AbstractBroodMother extends Summoned implements IAutoRideable, Play
                 if (livingEntity.hurt(this.getServantAttack(), (float) this.getAttributeValue(Attributes.ATTACK_DAMAGE))) {
                     this.playSound(SoundEvents.PLAYER_ATTACK_KNOCKBACK, 1.0F, 1.0F);
                     livingEntity.hurtMarked = true;
-                    if (!livingEntity.hasEffect(GoetyEffects.TANGLED.getHolder())) {
+                    if (!livingEntity.hasEffect(GoetyEffects.TANGLED)) {
                         MobUtil.push(livingEntity, -xPower / distance * 2.0D, -yPower / distance * 2.0D + 0.5D, -zPower / distance * 2.0D);
                     }
                 }
@@ -769,7 +771,7 @@ public class AbstractBroodMother extends Summoned implements IAutoRideable, Play
                     i = 30;
                 }
 
-                livingEntity.addEffect(new MobEffectInstance(GoetyEffects.ACID_VENOM.getHolder(), i * 20, 1), this);
+                livingEntity.addEffect(new MobEffectInstance(GoetyEffects.ACID_VENOM, i * 20, 1), this);
             }
             this.playSound(ModSounds.SPIDER_BITE.get(), this.getSoundVolume(), this.getVoicePitch() + 0.25F);
             return true;
@@ -1121,7 +1123,7 @@ public class AbstractBroodMother extends Summoned implements IAutoRideable, Play
                     && AbstractBroodMother.this.getChargeCooldown() <= 0
                     && !AbstractBroodMother.this.isStaying()
                     && AbstractBroodMother.this.hasLineOfSight(AbstractBroodMother.this.getTarget())
-                    && AbstractBroodMother.this.getTarget().hasEffect(GoetyEffects.TANGLED.getHolder());
+                    && AbstractBroodMother.this.getTarget().hasEffect(GoetyEffects.TANGLED);
         }
 
         public boolean canContinueToUse() {

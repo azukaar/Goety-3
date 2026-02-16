@@ -4,13 +4,31 @@ import com.Polarice3.Goety.Goety;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.advancements.critereon.KilledTrigger;
 import net.minecraft.advancements.critereon.PlayerTrigger;
+import net.minecraft.core.registries.Registries;
+import net.neoforged.neoforge.registries.RegisterEvent;
 
 public class ModCriteriaTriggers {
-    public static final KilledTrigger SERVANT_KILLED_ENTITY = new KilledTrigger(Goety.location("servant_killed_entity"));
-    public static final PlayerTrigger SERVANT_RAID_VICTORY = new PlayerTrigger(Goety.location("servant_raid_victory"));
+    private static KilledTrigger SERVANT_KILLED_ENTITY_INTERNAL;
+    private static PlayerTrigger SERVANT_RAID_VICTORY_INTERNAL;
 
-    public static void init() {
-        CriteriaTriggers.register(SERVANT_KILLED_ENTITY);
-        CriteriaTriggers.register(SERVANT_RAID_VICTORY);
+    public static void register(RegisterEvent event) {
+        if (event.getRegistryKey() == Registries.TRIGGER_TYPE) {
+            SERVANT_KILLED_ENTITY_INTERNAL = CriteriaTriggers.register(Goety.location("servant_killed_entity").toString(), new KilledTrigger());
+            SERVANT_RAID_VICTORY_INTERNAL = CriteriaTriggers.register(Goety.location("servant_raid_victory").toString(), new PlayerTrigger());
+        }
+    }
+
+    public static KilledTrigger SERVANT_KILLED_ENTITY() {
+        if (SERVANT_KILLED_ENTITY_INTERNAL == null) {
+            throw new IllegalStateException("ModCriteriaTriggers not registered! Ensure register() is called during RegisterEvent for TRIGGER_TYPE.");
+        }
+        return SERVANT_KILLED_ENTITY_INTERNAL;
+    }
+
+    public static PlayerTrigger SERVANT_RAID_VICTORY() {
+        if (SERVANT_RAID_VICTORY_INTERNAL == null) {
+            throw new IllegalStateException("ModCriteriaTriggers not registered! Ensure register() is called during RegisterEvent for TRIGGER_TYPE.");
+        }
+        return SERVANT_RAID_VICTORY_INTERNAL;
     }
 }

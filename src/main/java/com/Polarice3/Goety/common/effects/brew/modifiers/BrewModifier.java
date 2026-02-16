@@ -21,12 +21,16 @@ public class BrewModifier {
 
     public BrewModifier(String id, int level){
         this.id = id;
-        this.level() = level;
+        this.setLevel(level);
     }
 
     public BrewModifier(String id){
         this.id = id;
-        this.level() = 0;
+        this.setLevel(0);
+    }
+
+    public void setLevel(int level) {
+        this.level = level;
     }
 
     public String getId() {
@@ -34,6 +38,6 @@ public class BrewModifier {
     }
 
     public int getLevel() {
-        return this.level();
+        return this.level;
     }
 }

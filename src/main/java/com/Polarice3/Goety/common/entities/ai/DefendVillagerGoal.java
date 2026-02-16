@@ -27,7 +27,7 @@ public class DefendVillagerGoal extends TargetGoal {
     @Override
     public boolean canUse() {
         AABB aabb = this.protector.getBoundingBox().inflate(10.0D, 8.0D, 10.0D);
-        List<Mob> list = this.protector.level.getEntitiesOfClass(Mob.class, aabb);
+        List<Mob> list = this.protector.level().getEntitiesOfClass(Mob.class, aabb);
         for (Mob mob1 : list) {
             if (mob1 instanceof Villager villager) {
                 if (villager.getLastHurtByMob() instanceof IOwned) {

@@ -40,7 +40,7 @@ public class IcySpiderServantRenderer<T extends IcySpiderServant> extends MobRen
    }
 
    public ResourceLocation getTextureLocation(IcySpiderServant p_113972_) {
-      if (p_113972_.isHostile() || !MobsConfig.IcySpiderServantTexture.get()){
+      if (p_113972_.isHostile() || !com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MobsConfig.IcySpiderServantTexture, false)){
          return HOSTILE_LOCATION;
       }
       return SPIDER_LOCATION;

@@ -1,6 +1,7 @@
 package com.Polarice3.Goety.common.blocks;
 
 import com.Polarice3.Goety.common.blocks.entities.VoidShrineBlockEntity;
+import com.mojang.serialization.MapCodec;
 import com.Polarice3.Goety.common.items.ModItems;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
@@ -9,6 +10,7 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.Containers;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
@@ -43,6 +45,12 @@ import net.neoforged.neoforge.items.ItemHandlerHelper;
 import javax.annotation.Nullable;
 
 public class VoidShrineBlock extends BaseEntityBlock {
+    public static final MapCodec<VoidShrineBlock> CODEC = simpleCodec(p -> new VoidShrineBlock());
+
+    @Override
+    protected MapCodec<? extends BaseEntityBlock> codec() {
+        return CODEC;
+    }
     public static final VoxelShape SHAPE_BASE = Block.box(0.0D, 0.0D, 16.0D,
             16.0D, 2.0D, 16.0D);
     public static final VoxelShape SHAPE_BASE_2 = Block.box(1.0D, 2.0D, 1.0D,
@@ -67,35 +75,52 @@ public class VoidShrineBlock extends BaseEntityBlock {
         this.registerDefaultState(this.stateDefinition.any().setValue(CHARGE, 0).setValue(TRIGGERED, Boolean.FALSE).setValue(OCCUPIED, Boolean.FALSE));
     }
 
-    public InteractionResult use(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
-        ItemStack itemstack = player.getMainHandItem();
+    @Override
+    protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
+        ItemStack itemstack = stack;
         if (itemstack.is(ModItems.VOID_SHARD.get()) && canBeCharged(state)) {
             charge(player, world, pos, state);
             if (!player.getAbilities().instabuild) {
                 itemstack.shrink(1);
             }
 
-            return InteractionResult.sidedSuccess(world.isClientSide);
+            return ItemInteractionResult.sidedSuccess(world.isClientSide);
         } else {
-            ItemStack heldItem = player.getItemInHand(hand);
             BlockEntity blockEntity = world.getBlockEntity(pos);
             if (blockEntity instanceof VoidShrineBlockEntity pedestal) {
-                pedestal.getCapability(Capabilities.ITEM_HANDLER, hit.getDirection()).ifPresent(handler -> {
+                net.neoforged.neoforge.items.IItemHandler handler = world.getCapability(Capabilities.ItemHandler.BLOCK, pos, hit.getDirection());
+                if (handler != null) {
                     ItemStack itemStack = handler.getStackInSlot(0);
                     if (!player.isShiftKeyDown() && !player.isCrouching() && !itemStack.isEmpty()) {
-                        if (heldItem.isEmpty()) {
-                            player.setItemInHand(hand, handler.extractItem(0, 64, false));
-                        } else {
-                            ItemHandlerHelper.giveItemToPlayer(player, handler.extractItem(0, 64, false));
-                        }
+                        ItemHandlerHelper.giveItemToPlayer(player, handler.extractItem(0, 64, false));
                         world.playSound(null, pos, SoundEvents.ITEM_FRAME_REMOVE_ITEM, SoundSource.BLOCKS, 1, 1);
                         pedestal.setChanged();
                     } else if (state.getValue(CHARGE) < 4) {
                         player.displayClientMessage(Component.translatable("info.goety.shrine.shard"), true);
                     }
-                });
-                return InteractionResult.SUCCESS;
+                };
+                return ItemInteractionResult.SUCCESS;
             }
+        }
+        return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+    }
+
+    @Override
+    protected InteractionResult useWithoutItem(BlockState state, Level world, BlockPos pos, Player player, BlockHitResult hit) {
+        BlockEntity blockEntity = world.getBlockEntity(pos);
+        if (blockEntity instanceof VoidShrineBlockEntity pedestal) {
+            net.neoforged.neoforge.items.IItemHandler handler = world.getCapability(Capabilities.ItemHandler.BLOCK, pos, hit.getDirection());
+            if (handler != null) {
+                ItemStack itemStack = handler.getStackInSlot(0);
+                if (!player.isShiftKeyDown() && !player.isCrouching() && !itemStack.isEmpty()) {
+                    ItemHandlerHelper.giveItemToPlayer(player, handler.extractItem(0, 64, false));
+                    world.playSound(null, pos, SoundEvents.ITEM_FRAME_REMOVE_ITEM, SoundSource.BLOCKS, 1, 1);
+                    pedestal.setChanged();
+                } else if (state.getValue(CHARGE) < 4) {
+                    player.displayClientMessage(Component.translatable("info.goety.shrine.shard"), true);
+                }
+            };
+            return InteractionResult.SUCCESS;
         }
         return InteractionResult.PASS;
     }
@@ -104,9 +129,10 @@ public class VoidShrineBlock extends BaseEntityBlock {
         if (!pState.is(pNewState.getBlock())) {
             BlockEntity tileentity = pLevel.getBlockEntity(pPos);
             if (tileentity instanceof VoidShrineBlockEntity) {
-                tileentity.getCapability(Capabilities.ITEM_HANDLER).ifPresent(handler -> {
+                net.neoforged.neoforge.items.IItemHandler handler = pLevel.getCapability(Capabilities.ItemHandler.BLOCK, pPos, null);
+                if (handler != null) {
                     dropInventoryItems(tileentity.getLevel(), tileentity.getBlockPos(), handler);
-                });
+                };
             }
 
             super.onRemove(pState, pLevel, pPos, pNewState, pIsMoving);

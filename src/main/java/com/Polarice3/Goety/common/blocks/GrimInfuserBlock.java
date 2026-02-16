@@ -1,19 +1,20 @@
 package com.Polarice3.Goety.common.blocks;
 
 import com.Polarice3.Goety.common.blocks.entities.GrimInfuserBlockEntity;
+import com.mojang.serialization.MapCodec;
 import com.Polarice3.Goety.common.crafting.CursedInfuserRecipes;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.Containers;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
-import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
@@ -32,6 +33,26 @@ import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.pathfinder.PathType;
 import net.minecraft.world.level.pathfinder.PathComputationType;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.block.*;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityTicker;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
+import net.minecraft.world.level.block.state.properties.NoteBlockInstrument;
+import net.minecraft.world.level.material.FluidState;
+import net.minecraft.world.level.material.Fluids;
+import net.minecraft.world.level.material.MapColor;
+import net.minecraft.world.level.pathfinder.PathType;
+import net.minecraft.world.level.pathfinder.PathComputationType;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
@@ -41,6 +62,12 @@ import java.util.Optional;
 import java.util.function.ToIntFunction;
 
 public class GrimInfuserBlock extends BaseEntityBlock implements SimpleWaterloggedBlock {
+    public static final MapCodec<GrimInfuserBlock> CODEC = simpleCodec(p -> new GrimInfuserBlock());
+
+    @Override
+    protected MapCodec<? extends BaseEntityBlock> codec() {
+        return CODEC;
+    }
     protected static final VoxelShape SHAPE = Block.box(0.0D, 0.0D, 0.0D, 16.0D, 7.0D, 16.0D);
     public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
     public static final BooleanProperty LIT = BlockStateProperties.LIT;
@@ -62,29 +89,30 @@ public class GrimInfuserBlock extends BaseEntityBlock implements SimpleWaterlogg
         return (state) -> state.getValue(BlockStateProperties.LIT) ? 10 : 0;
     }
 
-    public InteractionResult use(BlockState pState, Level pLevel, BlockPos pPos, Player pPlayer, InteractionHand pHand, BlockHitResult pHit) {
+    @Override
+    protected ItemInteractionResult useItemOn(ItemStack stack, BlockState pState, Level pLevel, BlockPos pPos, Player pPlayer, InteractionHand pHand, BlockHitResult pHit) {
         BlockEntity tileentity = pLevel.getBlockEntity(pPos);
         if (tileentity instanceof GrimInfuserBlockEntity burnerTileEntity) {
-            ItemStack itemstack = pPlayer.getItemInHand(pHand);
+            ItemStack itemstack = stack;
             Optional<CursedInfuserRecipes> optional = burnerTileEntity.getRecipes(itemstack);
             if (optional.isPresent()) {
                 if (!pLevel.isClientSide && burnerTileEntity.placeItem(pPlayer.getAbilities().instabuild ? itemstack.copy() : itemstack, optional.get().getCookingTime())) {
-                    return InteractionResult.SUCCESS;
+                    return ItemInteractionResult.SUCCESS;
                 }
 
-                return InteractionResult.CONSUME;
+                return ItemInteractionResult.CONSUME;
             }
             if (itemstack.isEmpty() || itemstack == burnerTileEntity.getItems().get(0)){
                 if (!burnerTileEntity.getItems().isEmpty()){
                     Containers.dropContents(pLevel, pPlayer.blockPosition(), burnerTileEntity.getItems());
                     burnerTileEntity.getItems().clear();
-                    return InteractionResult.SUCCESS;
+                    return ItemInteractionResult.SUCCESS;
                 }
-                return InteractionResult.CONSUME;
+                return ItemInteractionResult.CONSUME;
             }
         }
 
-        return InteractionResult.PASS;
+        return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
     }
 
     public void onRemove(BlockState pState, Level pLevel, BlockPos pPos, BlockState pNewState, boolean pIsMoving) {
@@ -99,7 +127,7 @@ public class GrimInfuserBlock extends BaseEntityBlock implements SimpleWaterlogg
     }
 
     public void entityInside(BlockState pState, Level pLevel, BlockPos pPos, Entity pEntity) {
-        if (!pEntity.fireImmune() && pState.getValue(LIT) && pEntity instanceof LivingEntity && !EnchantmentHelper.hasFrostWalker((LivingEntity)pEntity)) {
+        if (!pEntity.fireImmune() && pState.getValue(LIT) && pEntity instanceof LivingEntity living && !living.onClimbable()) {
             pEntity.hurt(pEntity.damageSources().inFire(), 1.0F);
         }
 

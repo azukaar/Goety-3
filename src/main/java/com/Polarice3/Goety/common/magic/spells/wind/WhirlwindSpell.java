@@ -33,22 +33,22 @@ public class WhirlwindSpell extends EverChargeSpell {
 
     @Override
     public int defaultSoulCost() {
-        return SpellConfig.WhirlwindCost.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.WhirlwindCost, 0);
     }
 
     @Override
     public int defaultCastUp() {
-        return SpellConfig.WhirlwindChargeUp.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.WhirlwindChargeUp, 0);
     }
 
     @Override
     public int shotsNumber() {
-        return SpellConfig.WhirlwindDuration.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.WhirlwindDuration, 0);
     }
 
     @Override
     public int defaultSpellCooldown() {
-        return SpellConfig.WhirlwindCoolDown.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.WhirlwindCoolDown, 0);
     }
 
     @Nullable

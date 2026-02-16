@@ -51,7 +51,7 @@ public class SpawnFromBlock {
                 }
             }
         }
-        return count < SpellConfig.SlimyLimit.get();
+        return count < com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.SlimyLimit, 0);
     }
 
     public static boolean spawnServant(Player player, ItemStack stack, Level level, BlockPos blockPos) {
@@ -71,7 +71,7 @@ public class SpawnFromBlock {
             if (summoned != null){
                 if (conditionsMet(level, player)){
                     summoned.setTrueOwner(player);
-                    summoned.finalizeSpawn((ServerLevelAccessor) level, level.getCurrentDifficultyAt(summoned.blockPosition()), MobSpawnType.MOB_SUMMONED, null, null);
+                    summoned.finalizeSpawn((ServerLevelAccessor) level, level.getCurrentDifficultyAt(summoned.blockPosition()), MobSpawnType.MOB_SUMMONED, null);
                     summoned.moveTo((double) blockPos.getX() + 0.5D, (double) blockPos.getY() + 0.05D, (double) blockPos.getZ() + 0.5D, 0.0F, 0.0F);
                     if (summoned instanceof SlimeServant slime) {
                         slime.setSize(2, true);

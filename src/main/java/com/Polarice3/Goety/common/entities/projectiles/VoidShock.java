@@ -41,7 +41,7 @@ public class VoidShock extends SpellEntity {
     public double zPower;
     public double badMath = 1.0D;
     public float extraRadius = 0.0F;
-    public float baseDamage = SpellConfig.VoidShockDamage.get().floatValue() * WandUtil.damageMultiply();
+    public float baseDamage = com.Polarice3.Goety.utils.ConfigHelper.getFloat(SpellConfig.VoidShockDamage, 1.0F) * WandUtil.damageMultiply();
     public int life;
     public int initTime = MathHelper.secondsToTicks(2);
     private Vec3[] trailPositions;
@@ -266,8 +266,8 @@ public class VoidShock extends SpellEntity {
                     public void explodeHurt(Entity target, DamageSource damageSource, double x, double y, double z, double seen, float actualDamage) {
                         super.explodeHurt(target, damageSource, x, y, z, seen, actualDamage);
                         if (target.level().getRandom().nextFloat() <= 0.25F) {
-                            if (target instanceof LivingEntity livingEntity && !livingEntity.hasEffect(GoetyEffects.VOID_TOUCHED.getHolder())) {
-                                livingEntity.addEffect(new MobEffectInstance(GoetyEffects.VOID_TOUCHED.getHolder(), MathHelper.secondsToTicks(3), 2, false, true));
+                            if (target instanceof LivingEntity livingEntity && !livingEntity.hasEffect(GoetyEffects.VOID_TOUCHED)) {
+                                livingEntity.addEffect(new MobEffectInstance(GoetyEffects.VOID_TOUCHED, MathHelper.secondsToTicks(3), 2, false, true));
                             }
                         }
                     }
@@ -297,8 +297,8 @@ public class VoidShock extends SpellEntity {
                 // this.doEnchantDamageEffects(living, entity); // Removed in 1.21
                 if (EntitySelector.NO_CREATIVE_OR_SPECTATOR.test(living)) {
                     if (living.level().getRandom().nextFloat() <= 0.25F) {
-                        if (!living.hasEffect(GoetyEffects.VOID_TOUCHED.getHolder())) {
-                            living.addEffect(new MobEffectInstance(GoetyEffects.VOID_TOUCHED.getHolder(), MathHelper.secondsToTicks(3), 2, false, true));
+                        if (!living.hasEffect(GoetyEffects.VOID_TOUCHED)) {
+                            living.addEffect(new MobEffectInstance(GoetyEffects.VOID_TOUCHED, MathHelper.secondsToTicks(3), 2, false, true));
                         }
                     }
                 }

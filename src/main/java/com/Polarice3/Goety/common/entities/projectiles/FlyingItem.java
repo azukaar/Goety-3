@@ -66,10 +66,11 @@ public class FlyingItem extends SpellEntity implements ItemSupplier {
         return itemstack.isEmpty() ? new ItemStack(Items.ENDER_EYE) : itemstack;
     }
 
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.getEntityData().define(DATA_ITEM_STACK, ItemStack.EMPTY);
-        this.getEntityData().define(DATA_PARTICLE, ParticleTypes.PORTAL);
+    @Override
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(DATA_ITEM_STACK, ItemStack.EMPTY);
+        builder.define(DATA_PARTICLE, ParticleTypes.PORTAL);
     }
 
     public ParticleOptions getParticle() {
@@ -121,7 +122,7 @@ public class FlyingItem extends SpellEntity implements ItemSupplier {
             if (this.life < 80){
                 this.setDeltaMovement(0.0D, 0.05D, 0.0D);
             } else if (this.life > 100) {
-                if (this.getOwner() != null && this.getOwner().level.dimension() == this.level().dimension()) {
+                if (this.getOwner() != null && this.getOwner().level().dimension() == this.level().dimension()) {
                     if (this.getOwner().distanceTo(this) >= 64){
                         this.teleportTowards(this.getOwner());
                     } else {
@@ -206,8 +207,8 @@ public class FlyingItem extends SpellEntity implements ItemSupplier {
         d0 = d0 / d3;
         d1 = d1 / d3;
         d2 = d2 / d3;
-        double d4 = pSource.level.random.nextDouble();
-        if (pSource.level instanceof ServerLevel serverWorld) {
+        double d4 = pSource.level().random.nextDouble();
+        if (pSource.level() instanceof ServerLevel serverWorld) {
             while (d4 < d3) {
                 d4 += 1.0D;
                 serverWorld.sendParticles(ParticleTypes.ELECTRIC_SPARK, pSource.getX() + d0 * d4, pSource.getY() + d1 * d4 + (double) pSource.getEyeHeight() * 0.5D, pSource.getZ() + d2 * d4, 1, 0.0D, 0.0D, 0.0D, 0.0D);
@@ -229,10 +230,11 @@ public class FlyingItem extends SpellEntity implements ItemSupplier {
 
     public void addAdditionalSaveData(CompoundTag p_36975_) {
         super.addAdditionalSaveData(p_36975_);
-        p_36975_.putString("Particle", this.getParticle().writeToString());
+        // p_36975_.putString("Particle", this.getParticle().writeToString());
+        // TODO: ParticleOptions.writeToString replacement
         ItemStack itemstack = this.getItemRaw();
         if (!itemstack.isEmpty()) {
-            p_36975_.put("Item", itemstack.save(new CompoundTag()));
+            p_36975_.put("Item", itemstack.save(this.registryAccess(), new CompoundTag()));
         }
         p_36975_.putInt("Life", this.life);
         p_36975_.putInt("Cool", this.secondsCool);
@@ -242,11 +244,11 @@ public class FlyingItem extends SpellEntity implements ItemSupplier {
         super.readAdditionalSaveData(p_36970_);
         if (p_36970_.contains("Particle", 8)) {
             try {
-                this.setParticle(ParticleArgument.readParticle(new StringReader(p_36970_.getString("Particle")), BuiltInRegistries.PARTICLE_TYPE.asLookup()));
+                this.setParticle(ParticleArgument.readParticle(new StringReader(p_36970_.getString("Particle")), this.registryAccess()));
             } catch (CommandSyntaxException ignored) {
             }
         }
-        ItemStack itemstack = ItemStack.of(p_36970_.getCompound("Item"));
+        ItemStack itemstack = ItemStack.parse(this.registryAccess(), p_36970_.getCompound("Item")).orElse(ItemStack.EMPTY);
         this.setItem(itemstack);
         if (p_36970_.contains("Life")){
             this.life = p_36970_.getInt("Life");

@@ -28,6 +28,9 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
+import net.minecraft.server.level.ServerEntity;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
 public class MagicBolt extends SpellHurtingProjectile {
     public static final EntityDataAccessor<Integer> DATA_EXTRA_DURATION = SynchedEntityData.defineId(MagicBolt.class, EntityDataSerializers.INT);
 
@@ -80,7 +83,7 @@ public class MagicBolt extends SpellHurtingProjectile {
             double d0 = this.getX() + vector3d.x;
             double d1 = this.getY() + vector3d.y;
             double d2 = this.getZ() + vector3d.z;
-            this.level().addParticle(ParticleTypes.WITCH, d0 + level.random.nextDouble()/2, d1 + 0.5D, d2 + level.random.nextDouble()/2, 0.0D, 0.0D, 0.0D);
+            this.level().addParticle(ParticleTypes.WITCH, d0 + this.level().random.nextDouble()/2, d1 + 0.5D, d2 + this.level().random.nextDouble()/2, 0.0D, 0.0D, 0.0D);
         }
     }
 
@@ -89,7 +92,7 @@ public class MagicBolt extends SpellHurtingProjectile {
         Entity target = pResult.getEntity();
         Entity owner = this.getOwner();
         LivingEntity livingentity = owner instanceof LivingEntity ? (LivingEntity)owner : null;
-        float damage = SpellConfig.MagicBoltDamage.get().floatValue() * WandUtil.damageMultiply();
+        float damage = com.Polarice3.Goety.utils.ConfigHelper.getFloat(SpellConfig.MagicBoltDamage, 1.0F) * WandUtil.damageMultiply();
         boolean flag;
         if (livingentity != null) {
             if (livingentity instanceof Mob mob && mob.getAttribute(Attributes.ATTACK_DAMAGE) != null){
@@ -98,7 +101,9 @@ public class MagicBolt extends SpellHurtingProjectile {
             damage += this.getExtraDamage();
             flag = target.hurt(ModDamageSource.magicBolt(this, livingentity), damage);
             if (flag) {
-                this.doEnchantDamageEffects(livingentity, target);
+                if (this.level() instanceof ServerLevel serverLevel) {
+                    EnchantmentHelper.doPostAttackEffects(serverLevel, livingentity, this.damageSources().mobAttack(livingentity));
+                }
             }
         } else {
             flag = target.hurt(ModDamageSource.magicBolt(this, this), 4.0F);
@@ -110,7 +115,7 @@ public class MagicBolt extends SpellHurtingProjectile {
                 if (livingentity != null) {
                     duration *= this.getExtraDuration() + 1;
                 }
-                livingTarget.addEffect(new MobEffectInstance(GoetyEffects.CURSED.get(), duration));
+                livingTarget.addEffect(new MobEffectInstance(GoetyEffects.CURSED, duration));
             }
         }
     }
@@ -188,7 +193,7 @@ public class MagicBolt extends SpellHurtingProjectile {
     }
 
     @Override
-    public Packet<ClientGamePacketListener> getAddEntityPacket() {
-        return new net.minecraft.network.protocol.game.ClientboundAddEntityPacket(this);
+    public Packet<ClientGamePacketListener> getAddEntityPacket(ServerEntity p_345759_) {
+        return new net.minecraft.network.protocol.game.ClientboundAddEntityPacket(this, p_345759_);
     }
 }

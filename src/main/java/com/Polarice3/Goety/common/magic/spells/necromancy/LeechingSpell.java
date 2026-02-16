@@ -33,22 +33,22 @@ public class LeechingSpell extends EverChargeSpell {
     }
 
     public int defaultSoulCost() {
-        return SpellConfig.LeechingCost.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.LeechingCost, 0);
     }
 
     @Override
     public int defaultCastUp() {
-        return SpellConfig.LeechingChargeUp.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.LeechingChargeUp, 0);
     }
 
     @Override
     public int shotsNumber() {
-        return SpellConfig.LeechingDuration.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.LeechingDuration, 0);
     }
 
     @Override
     public int defaultSpellCooldown() {
-        return SpellConfig.LeechingCoolDown.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.LeechingCoolDown, 0);
     }
 
     @Nullable
@@ -72,7 +72,7 @@ public class LeechingSpell extends EverChargeSpell {
 
     @Override
     public void SpellResult(ServerLevel worldIn, LivingEntity caster, ItemStack staff, SpellStat spellStat) {
-        float potency = SpellConfig.LeechingDamage.get().floatValue() * WandUtil.damageMultiply();
+        float potency = com.Polarice3.Goety.utils.ConfigHelper.getFloat(SpellConfig.LeechingDamage, 1.0F) * WandUtil.damageMultiply();
         int range = spellStat.getRange();
         if (WandUtil.enchantedFocus(caster)){
             potency += WandUtil.getPotencyLevel(caster) / 2.0F;

@@ -58,7 +58,7 @@ public class DarkAnvilMenu extends AnvilMenu {
 
     protected void onTake(Player p_150474_, ItemStack p_150475_) {
         if (!p_150474_.getAbilities().instabuild) {
-            if (MainConfig.DarkAnvilTakePoints.get()) {
+            if (com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MainConfig.DarkAnvilTakePoints, false)) {
                 p_150474_.giveExperiencePoints(-this.cost.get());
             } else {
                 p_150474_.giveExperienceLevels(-this.cost.get());
@@ -210,7 +210,7 @@ public class DarkAnvilMenu extends AnvilMenu {
                             flag3 = true;
                         } else {
                             flag2 = true;
-                            if (!MainConfig.DarkAnvilIgnoreMaxLevels.get() && j2 > enchantment1.value().getMaxLevel()) {
+                            if (!com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MainConfig.DarkAnvilIgnoreMaxLevels, false) && j2 > enchantment1.value().getMaxLevel()) {
                                 j2 = enchantment1.value().getMaxLevel();
                             }
 
@@ -229,7 +229,7 @@ public class DarkAnvilMenu extends AnvilMenu {
 
                             i += k3 * j2;
                             if (itemstack.getCount() > 1) {
-                                i = MainConfig.DarkAnvilRepairCost.get();
+                                i = com.Polarice3.Goety.utils.ConfigHelper.getInt(MainConfig.DarkAnvilRepairCost, 0);
                             }
                         }
                     }
@@ -266,15 +266,15 @@ public class DarkAnvilMenu extends AnvilMenu {
                 itemstack1 = ItemStack.EMPTY;
             }
 
-            if (this.cost.get() > MainConfig.DarkAnvilRepairCost.get()) {
-                this.cost.set(MainConfig.DarkAnvilRepairCost.get());
+            if (this.cost.get() > com.Polarice3.Goety.utils.ConfigHelper.getInt(MainConfig.DarkAnvilRepairCost, 0)) {
+                this.cost.set(com.Polarice3.Goety.utils.ConfigHelper.getInt(MainConfig.DarkAnvilRepairCost, 0));
             }
 
             if (k == i && k > 0) {
                 this.cost.set(1);
             }
 
-            if (MainConfig.DarkAnvilCap.get() && this.cost.get() >= MainConfig.DarkAnvilRepairCost.get()
+            if (com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MainConfig.DarkAnvilCap, false) && this.cost.get() >= com.Polarice3.Goety.utils.ConfigHelper.getInt(MainConfig.DarkAnvilRepairCost, 0)
                     && !this.player.getAbilities().instabuild) {
                 itemstack1 = ItemStack.EMPTY;
             }

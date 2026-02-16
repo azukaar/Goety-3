@@ -23,11 +23,13 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
@@ -75,7 +77,8 @@ public class CrystalBallBlock extends Block {
         return !state.getValue(POWERED) ? 6.0F : 3600000.0F;
     }
 
-    public InteractionResult use(BlockState pState, Level pLevel, BlockPos pPos, Player pPlayer, InteractionHand pHand, BlockHitResult pHit) {
+    @Override
+    protected ItemInteractionResult useItemOn(ItemStack stack, BlockState pState, Level pLevel, BlockPos pPos, Player pPlayer, InteractionHand pHand, BlockHitResult pHit) {
         if (!pLevel.isClientSide && pLevel.getDifficulty() != Difficulty.PEACEFUL) {
             if (pLevel instanceof ServerLevel serverLevel) {
                 if (pState.getValue(POWERED)) {
@@ -88,7 +91,7 @@ public class CrystalBallBlock extends Block {
                     if (!CuriosFinder.hasWitchSet(pPlayer) && MobUtil.validEntity(pPlayer)){
                         crone.setTarget(pPlayer);
                     }
-                    crone.finalizeSpawn(serverLevel, serverLevel.getCurrentDifficultyAt(pPos), MobSpawnType.MOB_SUMMONED, null, null);
+                    crone.finalizeSpawn(serverLevel, serverLevel.getCurrentDifficultyAt(pPos), MobSpawnType.MOB_SUMMONED, null);
                     crone.setPersistenceRequired();
                     SummonCircleBoss summonCircle = new SummonCircleBoss(serverLevel, blockPos, crone);
                     if (pLevel.addFreshEntity(summonCircle)) {
@@ -97,26 +100,26 @@ public class CrystalBallBlock extends Block {
                         ServerParticleUtil.smokeParticles(ParticleTypes.SMOKE, pPos.getX() + 0.5F, pPos.getY() + 0.5F, pPos.getZ() + 0.5F, serverLevel);
                         pLevel.setBlockAndUpdate(pPos, ModBlocks.CRYSTAL_BALL.get().defaultBlockState().setValue(POWERED, false));
                     }
-                } else if (pPlayer.getItemInHand(pHand).getItem() instanceof TaglockKit && TaglockKit.hasEntity(pPlayer.getItemInHand(pHand))){
-                    ItemStack itemStack = pPlayer.getItemInHand(pHand);
+                } else if (stack.getItem() instanceof TaglockKit && TaglockKit.hasEntity(stack)){
+                    ItemStack itemStack = stack;
                     if (TaglockKit.isSameDimension(pPlayer, itemStack)) {
-                        SEHelper.setCamera(pPlayer, TaglockKit.getEntity(pPlayer.getItemInHand(pHand)));
+                        SEHelper.setCamera(pPlayer, TaglockKit.getEntity(stack));
                         ModNetwork.sendTo(pPlayer, new SPlayPlayerSoundPacket(ModSounds.END_WALK.get(), 1.0F, 0.5F));
                         pLevel.playSound(pPlayer, pPlayer.blockPosition(), ModSounds.END_WALK.get(), SoundSource.PLAYERS, 1.0F, 0.5F);
                     } else {
                         pPlayer.displayClientMessage(Component.translatable("info.goety.taglock.difDimension"), true);
                     }
-                } else if (pPlayer.getItemInHand(pHand).getItem() instanceof WaystoneItem && WaystoneItem.hasBlock(pPlayer.getItemInHand(pHand))){
-                    ItemStack itemStack = pPlayer.getItemInHand(pHand);
+                } else if (stack.getItem() instanceof WaystoneItem && WaystoneItem.hasBlock(stack)){
+                    ItemStack itemStack = stack;
                     if (WaystoneItem.isSameDimension(pPlayer, itemStack)) {
-                        SEHelper.setCamera(pPlayer, null, WaystoneItem.getPosition(pPlayer.getItemInHand(pHand)).pos());
+                        SEHelper.setCamera(pPlayer, null, WaystoneItem.getPosition(stack).pos());
                         ModNetwork.sendTo(pPlayer, new SPlayPlayerSoundPacket(ModSounds.END_WALK.get(), 1.0F, 0.5F));
                         pLevel.playSound(pPlayer, pPlayer.blockPosition(), ModSounds.END_WALK.get(), SoundSource.PLAYERS, 1.0F, 0.5F);
                     } else {
                         pPlayer.displayClientMessage(Component.translatable("info.goety.waystone.difDimension"), true);
                     }
-                } else if (pPlayer.getItemInHand(pHand).is(ModTags.Items.RESPAWN_BOSS) && MainConfig.CrystalBallRespawn.get() && BlockFinder.findStructure(serverLevel, pPlayer, ModTags.Structures.CRONE_SPAWNS)) {
-                    ItemStack itemStack = pPlayer.getItemInHand(pHand);
+                } else if (stack.is(ModTags.Items.RESPAWN_BOSS) && com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MainConfig.CrystalBallRespawn, false) && BlockFinder.findStructure(serverLevel, pPlayer, ModTags.Structures.CRONE_SPAWNS)) {
+                    ItemStack itemStack = stack;
                     if (pPlayer instanceof ServerPlayer serverPlayer) {
                         CriteriaTriggers.ITEM_USED_ON_BLOCK.trigger(serverPlayer, pPos, itemStack);
                     }
@@ -126,7 +129,7 @@ public class CrystalBallBlock extends Block {
                 }
             }
         }
-        return InteractionResult.sidedSuccess(pLevel.isClientSide);
+        return ItemInteractionResult.sidedSuccess(pLevel.isClientSide);
     }
 
     public RenderShape getRenderShape(BlockState state) {
@@ -155,7 +158,7 @@ public class CrystalBallBlock extends Block {
     }
 
     @Override
-    public ItemStack getCloneItemStack(BlockState state, HitResult target, BlockGetter level, BlockPos pos, Player player) {
+    public ItemStack getCloneItemStack(LevelReader reader, BlockPos pos, BlockState state) {
         return new ItemStack(ModBlocks.CRYSTAL_BALL.get());
     }
 

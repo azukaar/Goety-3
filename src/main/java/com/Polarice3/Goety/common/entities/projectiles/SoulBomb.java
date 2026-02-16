@@ -31,7 +31,7 @@ public class SoulBomb extends ThrowableProjectile {
 
     @Override
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
-        super.defineSynchedData(builder);
+        // super.defineSynchedData(builder);
     }
 
     protected void onHit(HitResult p_37406_) {

@@ -26,7 +26,7 @@ public class WindCallerServantRenderer<T extends WindCallerServant> extends MobR
 
     @Override
     public ResourceLocation getTextureLocation(T entity) {
-        if (entity.isHostile() || !MobsConfig.WindCallerServantTexture.get()){
+        if (entity.isHostile() || !com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MobsConfig.WindCallerServantTexture, false)){
             return ORIGINAL;
         } else {
             return TEXTURE;

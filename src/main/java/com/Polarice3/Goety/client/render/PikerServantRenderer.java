@@ -26,7 +26,7 @@ public class PikerServantRenderer<T extends PikerServant> extends MobRenderer<T,
 
     @Override
     public ResourceLocation getTextureLocation(T entity) {
-        if (entity.isHostile() || !MobsConfig.PikerServantTexture.get()){
+        if (entity.isHostile() || !com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MobsConfig.PikerServantTexture, false)){
             return ORIGINAL;
         } else {
             return TEXTURE;

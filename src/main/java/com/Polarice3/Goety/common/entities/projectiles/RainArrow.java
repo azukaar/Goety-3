@@ -22,11 +22,14 @@ public class RainArrow extends Arrow {
     }
 
     public RainArrow(Level p_36861_, double p_36862_, double p_36863_, double p_36864_) {
-        super(p_36861_, p_36862_, p_36863_, p_36864_);
+        super(ModEntityType.RAIN_ARROW.get(), p_36861_);
+        this.setPos(p_36862_, p_36863_, p_36864_);
     }
 
     public RainArrow(Level p_36866_, LivingEntity p_36867_) {
-        super(p_36866_, p_36867_);
+        super(ModEntityType.RAIN_ARROW.get(), p_36866_);
+        this.setOwner(p_36867_);
+        this.setPos(p_36867_.getX(), p_36867_.getEyeY() - 0.1, p_36867_.getZ());
     }
 
     @Override

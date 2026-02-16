@@ -1,6 +1,7 @@
 package com.Polarice3.Goety.utils;
 
 import net.minecraft.core.Holder;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageType;
@@ -56,7 +57,7 @@ public class NoKnockBackDamageSource extends DamageSource {
             Component itextcomponent = this.owner == null ? this.entity.getDisplayName() : this.owner.getDisplayName();
             ItemStack itemstack = this.owner instanceof LivingEntity ? ((LivingEntity)this.owner).getMainHandItem() : ItemStack.EMPTY;
             String s1 = s + ".item";
-            return !itemstack.isEmpty() && itemstack.hasCustomHoverName() ? Component.translatable(s1, pLivingEntity.getDisplayName(), itextcomponent, itemstack.getDisplayName()) : Component.translatable(s, pLivingEntity.getDisplayName(), itextcomponent);
+            return !itemstack.isEmpty() && itemstack.has(DataComponents.CUSTOM_NAME) ? Component.translatable(s1, pLivingEntity.getDisplayName(), itextcomponent, itemstack.getDisplayName()) : Component.translatable(s, pLivingEntity.getDisplayName(), itextcomponent);
         } else {
             String s1 = s + ".player";
             return Component.translatable(s1, pLivingEntity.getDisplayName(), pLivingEntity.getDisplayName());

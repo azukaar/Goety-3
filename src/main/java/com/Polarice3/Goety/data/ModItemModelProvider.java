@@ -22,7 +22,7 @@ public class ModItemModelProvider extends ItemModelProvider {
                 if (resourceLocation != null) {
                     if (item instanceof SpawnEggItem && resourceLocation.getNamespace().equals(Goety.MOD_ID)) {
                         getBuilder(resourceLocation.getPath())
-                                .parent(getExistingFile(new ResourceLocation("item/template_spawn_egg")));
+                                .parent(getExistingFile(ResourceLocation.parse("item/template_spawn_egg")));
                     }
                 }
             }

@@ -31,12 +31,12 @@ public class FlameStrikeSpell extends Spell {
 
     @Override
     public int defaultSoulCost() {
-        return SpellConfig.FlameStrikeCost.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.FlameStrikeCost, 0);
     }
 
     @Override
     public int defaultCastDuration() {
-        return SpellConfig.FlameStrikeDuration.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.FlameStrikeDuration, 0);
     }
 
     @Nullable
@@ -47,7 +47,7 @@ public class FlameStrikeSpell extends Spell {
 
     @Override
     public int defaultSpellCooldown() {
-        return SpellConfig.FlameStrikeCoolDown.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.FlameStrikeCoolDown, 0);
     }
 
     @Override

@@ -84,7 +84,7 @@ public class TridentStorm extends CastSpellTrap{
                 }
             }
             if (this.tickTime == (time + this.delay + 5)) {
-                float damage = SpellConfig.TridentStormDamage.get().floatValue() * WandUtil.damageMultiply();
+                float damage = com.Polarice3.Goety.utils.ConfigHelper.getFloat(SpellConfig.TridentStormDamage, 1.0F) * WandUtil.damageMultiply();
                 float radius = 2.0F;
                 List<LivingEntity> targets = new ArrayList<>();
                 AABB aabb = EntityType.TRIDENT.getDimensions().makeBoundingBox(this.position());

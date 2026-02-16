@@ -3,15 +3,14 @@ package com.Polarice3.Goety.mixin;
 import com.Polarice3.Goety.common.entities.ModEntityType;
 import com.Polarice3.Goety.common.entities.ally.illager.WitchServant;
 import com.Polarice3.Goety.utils.CuriosFinder;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LightningBolt;
 import net.minecraft.world.entity.MobSpawnType;
-import net.minecraft.world.entity.SpawnGroupData;
 import net.minecraft.world.entity.npc.AbstractVillager;
 import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.level.Level;
+import net.neoforged.neoforge.event.EventHooks;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -34,7 +33,7 @@ public abstract class VillagerMixin extends AbstractVillager {
                 if (witch != null) {
                     witch.moveTo(this.getX(), this.getY(), this.getZ(), this.getYRot(), this.getXRot());
                     witch.setTrueOwner(lightningBolt.getCause());
-                    witch.finalizeSpawn(serverLevel, serverLevel.getCurrentDifficultyAt(witch.blockPosition()), MobSpawnType.CONVERSION, (SpawnGroupData)null, (CompoundTag)null);
+                    witch.finalizeSpawn(serverLevel, serverLevel.getCurrentDifficultyAt(witch.blockPosition()), MobSpawnType.CONVERSION, null);
                     witch.setNoAi(this.isNoAi());
                     if (this.hasCustomName()) {
                         witch.setCustomName(this.getCustomName());
@@ -42,7 +41,7 @@ public abstract class VillagerMixin extends AbstractVillager {
                     }
 
                     witch.setPersistenceRequired();
-                    net.neoforged.event.net.neoforged.neoforge.event.EventHooks.onLivingConvert(this, witch);
+                    EventHooks.onLivingConvert(this, witch);
                     serverLevel.addFreshEntityWithPassengers(witch);
                     this.releaseAllPois();
                     this.discard();

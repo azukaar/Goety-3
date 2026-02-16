@@ -74,17 +74,17 @@ public class AbstractBlastling extends AbstractEnderling implements RangedAttack
 
     public static AttributeSupplier.Builder setCustomAttributes() {
         return Mob.createMobAttributes()
-                .add(Attributes.MAX_HEALTH, AttributesConfig.BlastlingHealth.get())
-                .add(Attributes.ARMOR, AttributesConfig.BlastlingArmor.get())
+                .add(Attributes.MAX_HEALTH, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.BlastlingHealth, 20.0D))
+                .add(Attributes.ARMOR, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.BlastlingArmor, 20.0D))
                 .add(Attributes.FOLLOW_RANGE, 15.0D)
                 .add(Attributes.MOVEMENT_SPEED, 0.25D)
-                .add(Attributes.ATTACK_DAMAGE, AttributesConfig.BlastlingDamage.get());
+                .add(Attributes.ATTACK_DAMAGE, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.BlastlingDamage, 20.0D));
     }
 
     public void setConfigurableAttributes() {
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.MAX_HEALTH), AttributesConfig.BlastlingHealth.get());
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ARMOR), AttributesConfig.BlastlingArmor.get());
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ATTACK_DAMAGE), AttributesConfig.BlastlingDamage.get());
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.MAX_HEALTH), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.BlastlingHealth, 20.0D));
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ARMOR), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.BlastlingArmor, 20.0D));
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ATTACK_DAMAGE), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.BlastlingDamage, 20.0D));
     }
 
     protected void defineSynchedData(SynchedEntityData.Builder builder) {

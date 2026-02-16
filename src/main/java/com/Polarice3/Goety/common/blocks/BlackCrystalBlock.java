@@ -1,5 +1,7 @@
 package com.Polarice3.Goety.common.blocks;
 
+import com.mojang.serialization.MapCodec;
+
 import com.Polarice3.Goety.common.blocks.entities.BlackCrystalBlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.LivingEntity;
@@ -20,23 +22,22 @@ import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.material.PushReaction;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
+import net.minecraft.world.level.block.BaseEntityBlock;
 import org.jetbrains.annotations.Nullable;
 
 public class BlackCrystalBlock extends EnchanteableBlock {
     public static final VoxelShape SHAPE = Block.box(3.0D, 0.0D, 3.0D,
             13.0D, 20.0D, 13.0D);
 
-    public BlackCrystalBlock() {
-        super(BlockBehaviour.Properties.of()
-                .instrument(NoteBlockInstrument.HAT)
-                .mapColor(MapColor.COLOR_PURPLE)
-                .noOcclusion()
-                .requiresCorrectToolForDrops()
-                .strength(25.0F, 1200.0F)
-                .sound(SoundType.AMETHYST_CLUSTER)
-                .pushReaction(PushReaction.BLOCK)
-                .isValidSpawn(ModBlocks::never)
-                .isSuffocating(ModBlocks::never));
+    public static final MapCodec<BlackCrystalBlock> CODEC = simpleCodec(BlackCrystalBlock::new);
+
+    @Override
+    protected MapCodec<? extends BaseEntityBlock> codec() {
+        return CODEC;
+    }
+
+    public BlackCrystalBlock(Properties properties) {
+        super(properties);
     }
 
     public void setPlacedBy(Level pLevel, BlockPos pPos, BlockState pState, @javax.annotation.Nullable LivingEntity pPlacer, ItemStack pStack) {

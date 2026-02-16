@@ -1,6 +1,7 @@
 package com.Polarice3.Goety.common.blocks;
 
 import com.Polarice3.Goety.common.blocks.entities.HoleBlockEntity;
+import com.mojang.serialization.MapCodec;
 import com.Polarice3.Goety.config.SpellConfig;
 import com.Polarice3.Goety.init.ModTags;
 import net.minecraft.core.BlockPos;
@@ -24,6 +25,12 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.Nullable;
 
 public class HoleBlock extends BaseEntityBlock {
+    public static final MapCodec<HoleBlock> CODEC = simpleCodec(p -> new HoleBlock());
+
+    @Override
+    protected MapCodec<? extends BaseEntityBlock> codec() {
+        return CODEC;
+    }
     public HoleBlock() {
         super(Properties.of()
                 .noCollission()
@@ -42,13 +49,18 @@ public class HoleBlock extends BaseEntityBlock {
     }
 
     public VoxelShape getShape(BlockState state, BlockGetter world, BlockPos pos, CollisionContext context) {
-        if (SpellConfig.TunnelHaveBlacklist.get()) {
-            if (context instanceof EntityCollisionContext context1) {
-                Entity entity = context1.getEntity();
-                if (entity != null && entity.getType().is(ModTags.EntityTypes.HOLE_IMMUNE)) {
-                    return Shapes.block();
+        // Access config lazily - check if config is loaded before accessing
+        try {
+            if (com.Polarice3.Goety.utils.ConfigHelper.getBoolean(SpellConfig.TunnelHaveBlacklist, false)) {
+                if (context instanceof EntityCollisionContext context1) {
+                    Entity entity = context1.getEntity();
+                    if (entity != null && entity.getType().is(ModTags.EntityTypes.HOLE_IMMUNE)) {
+                        return Shapes.block();
+                    }
                 }
             }
+        } catch (IllegalStateException e) {
+            // Config not loaded yet, use default behavior (empty shape)
         }
         return Shapes.empty();
     }
@@ -63,7 +75,7 @@ public class HoleBlock extends BaseEntityBlock {
         return Shapes.block();
     }
 
-    public boolean canSustainPlant(BlockState state, BlockGetter world, BlockPos pos, Direction facing, net.neoforged.common.IPlantable plantable) {
+    public boolean canSustainPlant(BlockState state, BlockGetter world, BlockPos pos, Direction facing, com.Polarice3.Goety.compat.legacy.common.IPlantable plantable) {
         return true;
     }
 

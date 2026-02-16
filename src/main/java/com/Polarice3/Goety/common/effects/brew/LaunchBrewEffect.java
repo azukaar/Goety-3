@@ -14,7 +14,7 @@ import javax.annotation.Nullable;
 
 public class LaunchBrewEffect extends BrewEffect {
     public LaunchBrewEffect() {
-        super("launch", BrewConfig.LaunchCost.get(), MobEffectCategory.NEUTRAL, 0xb2ccd1);
+        super("launch", com.Polarice3.Goety.utils.ConfigHelper.getInt(BrewConfig.LaunchCost, 0), MobEffectCategory.NEUTRAL, 0xb2ccd1);
     }
 
     @Override
@@ -28,7 +28,7 @@ public class LaunchBrewEffect extends BrewEffect {
     }
 
     public void applyEntityEffect(LivingEntity pTarget, @Nullable Entity pSource, @Nullable Entity pIndirectSource, int pAmplifier){
-        if (!pTarget.level.isClientSide) {
+        if (!pTarget.level().isClientSide) {
             ModNetwork.sendToALL(new SPlayWorldSoundPacket(pTarget.blockPosition(), SoundEvents.FIREWORK_ROCKET_LAUNCH, 1.0F, 1.0F));
         }
         pTarget.playSound(SoundEvents.FIREWORK_ROCKET_LAUNCH);

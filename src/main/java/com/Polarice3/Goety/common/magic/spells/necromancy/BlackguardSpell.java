@@ -31,15 +31,15 @@ import java.util.function.Predicate;
 public class BlackguardSpell extends SummonSpell {
 
     public int defaultSoulCost() {
-        return SpellConfig.BlackguardCost.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.BlackguardCost, 0);
     }
 
     public int defaultCastDuration() {
-        return SpellConfig.BlackguardDuration.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.BlackguardDuration, 0);
     }
 
     public int SummonDownDuration() {
-        return SpellConfig.BlackguardSummonDown.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.BlackguardSummonDown, 0);
     }
 
     public SoundEvent CastingSound() {
@@ -53,7 +53,7 @@ public class BlackguardSpell extends SummonSpell {
 
     @Override
     public int defaultSpellCooldown() {
-        return SpellConfig.BlackguardCoolDown.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.BlackguardCoolDown, 0);
     }
 
     @Override
@@ -76,12 +76,12 @@ public class BlackguardSpell extends SummonSpell {
 
     @Override
     public int summonLimit() {
-        return SpellConfig.BlackguardLimit.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.BlackguardLimit, 0);
     }
 
     @Override
     public void commonResultHit(ServerLevel worldIn, LivingEntity caster) {
-        for (int i = 0; i < caster.level.random.nextInt(35) + 10; ++i) {
+        for (int i = 0; i < caster.level().random.nextInt(35) + 10; ++i) {
             worldIn.sendParticles(ModParticleTypes.LICH.get(), caster.getX(), caster.getEyeY(), caster.getZ(), 1, 0.0F, 0.0F, 0.0F, 0);
         }
         this.playSound(worldIn, caster, ModSounds.VANGUARD_SUMMON.get());
@@ -106,14 +106,14 @@ public class BlackguardSpell extends SummonSpell {
                     summonedentity.setTrueOwner(caster);
                     Vec3 vec32 = new Vec3(((2 * stepX) + (i1 * stepZ)) + vec3.x(), vec3.y(), ((2 * stepZ) + (i1 * stepX)) + vec3.z());
                     if (!worldIn.noCollision(summonedentity, summonedentity.getBoundingBox().move(vec32))){
-                        vec32 = Vec3.atCenterOf(BlockFinder.SummonRadius(caster.blockPosition(), summonedentity, caster.level));
+                        vec32 = Vec3.atCenterOf(BlockFinder.SummonRadius(caster.blockPosition(), summonedentity, caster.level()));
                     }
                     summonedentity.setPos(vec32);
                     MobUtil.moveDownToGround(summonedentity);
                     summonedentity.setPersistenceRequired();
                     summonedentity.setLimitedLife(MobUtil.getSummonLifespan(worldIn) * duration);
                     this.buffSummon(caster, summonedentity, potency);
-                    summonedentity.finalizeSpawn(worldIn, caster.level.getCurrentDifficultyAt(caster.blockPosition()), MobSpawnType.MOB_SUMMONED, null, null);
+                    summonedentity.finalizeSpawn(worldIn, caster.level().getCurrentDifficultyAt(caster.blockPosition()), MobSpawnType.MOB_SUMMONED, null);
                     summonedentity.setYHeadRot(caster.getYHeadRot());
                     summonedentity.setYRot(caster.getYRot());
                     this.SummonSap(caster, summonedentity);
@@ -129,7 +129,7 @@ public class BlackguardSpell extends SummonSpell {
             } else {
                 int i = 1;
                 if (rightStaff(staff)){
-                    i = 2 + caster.level.random.nextInt(6);
+                    i = 2 + caster.level().random.nextInt(6);
                 }
                 for (int i1 = 0; i1 < i; ++i1) {
                     BlackguardServant summonedentity = new BlackguardServant(ModEntityType.BLACKGUARD_SERVANT.get(), worldIn);
@@ -139,7 +139,7 @@ public class BlackguardSpell extends SummonSpell {
                     summonedentity.setPersistenceRequired();
                     summonedentity.setLimitedLife(MobUtil.getSummonLifespan(worldIn) * duration);
                     this.buffSummon(caster, summonedentity, potency);
-                    summonedentity.finalizeSpawn(worldIn, caster.level.getCurrentDifficultyAt(caster.blockPosition()), MobSpawnType.MOB_SUMMONED, null, null);
+                    summonedentity.finalizeSpawn(worldIn, caster.level().getCurrentDifficultyAt(caster.blockPosition()), MobSpawnType.MOB_SUMMONED, null);
                     this.SummonSap(caster, summonedentity);
                     this.setTarget(caster, summonedentity);
                     if (worldIn.addFreshEntity(summonedentity)) {
@@ -153,3 +153,4 @@ public class BlackguardSpell extends SummonSpell {
         }
     }
 }
+

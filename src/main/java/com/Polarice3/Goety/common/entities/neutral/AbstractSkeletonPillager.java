@@ -1,5 +1,7 @@
 package com.Polarice3.Goety.common.entities.neutral;
 
+import com.Polarice3.Goety.utils.MobType;
+
 import com.Polarice3.Goety.common.entities.ai.CreatureCrossbowAttackGoal;
 import com.Polarice3.Goety.common.entities.ally.undead.skeleton.AbstractSkeletonServant;
 import com.Polarice3.Goety.config.AttributesConfig;
@@ -26,6 +28,7 @@ import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.ServerLevelAccessor;
 
 import java.util.Map;
 
@@ -40,21 +43,21 @@ public class AbstractSkeletonPillager extends AbstractSkeletonServant implements
     public static AttributeSupplier.Builder setCustomAttributes() {
         return Mob.createMobAttributes()
                 .add(Attributes.MOVEMENT_SPEED, 0.25F)
-                .add(Attributes.MAX_HEALTH, AttributesConfig.SkeletonPillagerHealth.get())
-                .add(Attributes.ARMOR, AttributesConfig.SkeletonPillagerArmor.get())
-                .add(Attributes.ATTACK_DAMAGE, AttributesConfig.SkeletonPillagerDamage.get())
+                .add(Attributes.MAX_HEALTH, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.SkeletonPillagerHealth, 20.0D))
+                .add(Attributes.ARMOR, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.SkeletonPillagerArmor, 20.0D))
+                .add(Attributes.ATTACK_DAMAGE, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.SkeletonPillagerDamage, 20.0D))
                 .add(Attributes.FOLLOW_RANGE, 32.0D);
     }
 
     public void setConfigurableAttributes(){
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.MAX_HEALTH), AttributesConfig.SkeletonPillagerHealth.get());
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ARMOR), AttributesConfig.SkeletonPillagerArmor.get());
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ATTACK_DAMAGE), AttributesConfig.SkeletonPillagerDamage.get());
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.MAX_HEALTH), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.SkeletonPillagerHealth, 20.0D));
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ARMOR), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.SkeletonPillagerArmor, 20.0D));
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ATTACK_DAMAGE), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.SkeletonPillagerDamage, 20.0D));
     }
 
     @Override
     public double getBaseRangeDamage() {
-        return AttributesConfig.SkeletonPillagerRangeDamage.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.SkeletonPillagerRangeDamage, 20.0D);
     }
 
     public void reassessWeaponGoal() {
@@ -122,14 +125,14 @@ public class AbstractSkeletonPillager extends AbstractSkeletonServant implements
         this.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.CROSSBOW));
     }
 
-    protected void enchantSpawnedWeapon(RandomSource p_219056_, float p_219057_) {
-        super.enchantSpawnedWeapon(p_219056_, p_219057_);
-        if (p_219056_.nextInt(300) == 0) {
+    protected void enchantSpawnedWeapon(ServerLevelAccessor p_219056_, RandomSource p_219057_, DifficultyInstance p_219058_) {
+        super.enchantSpawnedWeapon(p_219056_, p_219057_, p_219058_);
+        if (p_219056_.getRandom().nextInt(300) == 0) {
             ItemStack itemstack = this.getMainHandItem();
             if (itemstack.is(Items.CROSSBOW)) {
-                Map<Enchantment, Integer> map = EnchantmentHelper.getEnchantments(itemstack);
-                map.putIfAbsent(Enchantments.PIERCING, 1);
-                EnchantmentHelper.setEnchantments(map, itemstack);
+                // Map<Enchantment, Integer> map = EnchantmentHelper.getEnchantments(itemstack);
+                // map.putIfAbsent(Enchantments.PIERCING, 1);
+                // EnchantmentHelper.setEnchantments(map, itemstack);
                 this.setItemSlot(EquipmentSlot.MAINHAND, itemstack);
             }
         }
@@ -144,6 +147,6 @@ public class AbstractSkeletonPillager extends AbstractSkeletonServant implements
         if (p_33277_ instanceof AbstractArrow arrow){
             arrow.setBaseDamage(arrow.getBaseDamage() + this.getArrowPower() + this.getBaseRangeDamage());
         }
-        this.shootCrossbowProjectile(this, p_33275_, p_33277_, p_33278_, 1.6F);
+        this.performCrossbowAttack(this, 1.6F); // Replaced self-call with performCrossbowAttack
     }
 }

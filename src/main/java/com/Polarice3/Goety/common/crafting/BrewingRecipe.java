@@ -24,9 +24,30 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.item.crafting.RecipeInput;
 import org.jetbrains.annotations.Nullable;
 
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.world.item.crafting.RecipeInput;
+import java.util.Optional;
+
 public class BrewingRecipe implements Recipe<RecipeInput> {
-    public static Serializer SERIALIZER = new Serializer();
-    private final ResourceLocation id;
+    public static final MapCodec<BrewingRecipe> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
+            Ingredient.CODEC_NONEMPTY.fieldOf("ingredient").forGetter(BrewingRecipe::getInput),
+            EntityInput.CODEC.optionalFieldOf("entity").forGetter(BrewingRecipe::getEntityInput),
+            BuiltInRegistries.MOB_EFFECT.holderByNameCodec().fieldOf("effect").forGetter(BrewingRecipe::getOutput),
+            Codec.INT.fieldOf("soulCost").forGetter(BrewingRecipe::getSoulCost),
+            Codec.INT.optionalFieldOf("capacityExtra", 0).forGetter(BrewingRecipe::getCapacityExtra),
+            Codec.INT.fieldOf("duration").forGetter(BrewingRecipe::getDuration)
+    ).apply(instance, BrewingRecipe::new));
+
+    public static final StreamCodec<RegistryFriendlyByteBuf, BrewingRecipe> STREAM_CODEC = StreamCodec.of(
+            BrewingRecipe::toNetwork, BrewingRecipe::fromNetwork
+    );
+
     public final Ingredient input;
     private final TagKey<EntityType<?>> entityTypeTag;
     private final EntityType<?> entityType;
@@ -35,33 +56,77 @@ public class BrewingRecipe implements Recipe<RecipeInput> {
     public final int capacityExtra;
     public final int duration;
 
-    public BrewingRecipe(ResourceLocation location,
-            Ingredient ingredient,
-            @Nullable TagKey<EntityType<?>> entityTypeTag,
-            @Nullable EntityType<?> entityType, Holder<MobEffect> mobEffect, int soulCost, int capacityExtra, int duration) {
-        this.id = location;
-        this.input = ingredient;
-        this.entityTypeTag = entityTypeTag;
-        this.entityType = entityType;
-        this.output = mobEffect;
+    public BrewingRecipe(Ingredient input, Optional<EntityInput> entityInput, Holder<MobEffect> output, int soulCost, int capacityExtra, int duration) {
+        this.input = input;
+        this.entityTypeTag = entityInput.flatMap(EntityInput::tag).orElse(null);
+        this.entityType = entityInput.flatMap(EntityInput::type).orElse(null);
+        this.output = output;
         this.soulCost = soulCost;
         this.capacityExtra = capacityExtra;
         this.duration = duration;
     }
 
+    // Helper constructor for internal usage if needed, or keep logic in main constructor
+    private Optional<EntityInput> getEntityInput() {
+        if (entityTypeTag != null) return Optional.of(new EntityInput(Optional.of(entityTypeTag), Optional.empty()));
+        if (entityType != null) return Optional.of(new EntityInput(Optional.empty(), Optional.of(entityType)));
+        return Optional.empty();
+    }
+
+    private static void toNetwork(RegistryFriendlyByteBuf buf, BrewingRecipe recipe) {
+        Ingredient.CONTENTS_STREAM_CODEC.encode(buf, recipe.input);
+        buf.writeBoolean(recipe.entityTypeTag != null);
+        if (recipe.entityTypeTag != null) {
+            buf.writeResourceLocation(recipe.entityTypeTag.location());
+        }
+        buf.writeBoolean(recipe.entityType != null);
+        if (recipe.entityType != null) {
+            ByteBufCodecs.registry(Registries.ENTITY_TYPE).encode(buf, recipe.entityType);
+        }
+        ByteBufCodecs.holderRegistry(Registries.MOB_EFFECT).encode(buf, recipe.output);
+        buf.writeInt(recipe.soulCost);
+        buf.writeInt(recipe.capacityExtra);
+        buf.writeInt(recipe.duration);
+    }
+
+    private static BrewingRecipe fromNetwork(RegistryFriendlyByteBuf buf) {
+        Ingredient input = Ingredient.CONTENTS_STREAM_CODEC.decode(buf);
+        TagKey<EntityType<?>> entityTag = null;
+        EntityType<?> entityType = null;
+        if (buf.readBoolean()) {
+            entityTag = TagKey.create(Registries.ENTITY_TYPE, buf.readResourceLocation());
+        }
+        if (buf.readBoolean()) {
+            entityType = ByteBufCodecs.registry(Registries.ENTITY_TYPE).decode(buf);
+        }
+        Holder<MobEffect> output = ByteBufCodecs.holderRegistry(Registries.MOB_EFFECT).decode(buf);
+        int soulCost = buf.readInt();
+        int capacityExtra = buf.readInt();
+        int duration = buf.readInt();
+        
+        Optional<EntityInput> entityInput = Optional.empty();
+        if (entityTag != null) entityInput = Optional.of(new EntityInput(Optional.of(entityTag), Optional.empty()));
+        if (entityType != null) entityInput = Optional.of(new EntityInput(Optional.empty(), Optional.of(entityType)));
+
+        return new BrewingRecipe(input, entityInput, output, soulCost, capacityExtra, duration);
+    }
+
     @Override
     public boolean matches(RecipeInput p_44002_, Level p_44003_) {
+        // Implement actual matching logic if needed, previously it returned false?
+        // Original code: return false;
+        // Keeping it false for now as per original code, or maybe it was incomplete?
         return false;
     }
 
     @Override
-    public ItemStack assemble(RecipeInput p_44001_, net.minecraft.core.HolderLookup.Provider p_267052_) {
+    public ItemStack assemble(RecipeInput p_44001_, HolderLookup.Provider p_267052_) {
         return this.getResultItem(p_267052_);
     }
 
     @Override
     public boolean canCraftInDimensions(int p_43999_, int p_44000_) {
-        return false;
+        return false; // Original was false
     }
 
     public Ingredient getInput() {
@@ -95,102 +160,25 @@ public class BrewingRecipe implements Recipe<RecipeInput> {
     }
 
     @Override
-    public ItemStack getResultItem(RegistryAccess p_267052_) {
+    public ItemStack getResultItem(HolderLookup.Provider p_267052_) {
         return ItemStack.EMPTY;
     }
 
     @Override
-    public ResourceLocation getId() {
-        return id;
-    }
-
-    @Override
     public RecipeSerializer<?> getSerializer() {
-        return SERIALIZER;
+        return ModRecipeSerializer.BREWING.get();
     }
 
     @Override
     public RecipeType<?> getType() {
         return ModRecipeSerializer.BREWING_TYPE.get();
     }
-
-    public static class Serializer implements RecipeSerializer<BrewingRecipe> {
-        @Override
-        public BrewingRecipe fromJson(ResourceLocation id, JsonObject json) {
-            Ingredient ingredient = Ingredient.fromJson(GsonHelper.getAsJsonObject(json, "ingredient"));
-            EntityType<?> entityType = null;
-            TagKey<EntityType<?>> entityTag = null;
-            if (json.has("entity")) {
-                JsonObject data2 = json.getAsJsonObject("entity");
-                if (data2 != null) {
-                    if (data2.has("entity_type")) {
-                        ResourceLocation resourceLocation = ResourceLocation.parse(
-                                data2.getAsJsonPrimitive("entity_type").getAsString());
-                        entityType = BuiltInRegistries.ENTITY_TYPE.get(resourceLocation);
-                    } else if (data2.has("tag")) {
-                        ResourceLocation resourceLocation = ResourceLocation.parse(
-                                data2.getAsJsonPrimitive("tag").getAsString());
-                        entityTag = TagKey.create(BuiltInRegistries.ENTITY_TYPE.key(), resourceLocation);
-                    }
-                }
-            }
-            return new BrewingRecipe(id,
-                    ingredient,
-                    entityTag,
-                    entityType,
-                    BuiltInRegistries.MOB_EFFECT
-                            .getHolderOrThrow(ResourceKey.create(Registries.MOB_EFFECT, ResourceLocation.parse(GsonHelper.getAsString(json, "effect")))),
-                    GsonHelper.getAsInt(json, "soulCost"),
-                    GsonHelper.getAsInt(json, "capacityExtra"),
-                    GsonHelper.getAsInt(json, "duration"));
-        }
-
-        @Override
-        public BrewingRecipe fromNetwork(ResourceLocation id, FriendlyByteBuf buf) {
-            Ingredient ingredient = Ingredient.fromNetwork(buf);
-            TagKey<EntityType<?>> entityTag = null;
-            EntityType<?> entityType = null;
-
-            if (buf.readBoolean()) {
-                var tagRL = buf.readResourceLocation();
-                entityTag = TagKey.create(Registries.ENTITY_TYPE, tagRL);
-            }
-
-            if (buf.readBoolean()) {
-                entityType = buf.readRegistryId();
-            }
-
-            Holder<MobEffect> mobEffect = BuiltInRegistries.MOB_EFFECT.getHolderOrThrow(ResourceKey.create(Registries.MOB_EFFECT, ResourceLocation.parse(buf.readUtf())));
-
-            int soulCost = buf.readInt();
-            int capacityExtra = buf.readInt();
-            int duration = buf.readInt();
-
-            return new BrewingRecipe(id,
-                    ingredient,
-                    entityTag,
-                    entityType,
-                    mobEffect,
-                    soulCost,
-                    capacityExtra,
-                    duration);
-        }
-
-        @Override
-        public void toNetwork(FriendlyByteBuf buf, BrewingRecipe recipe) {
-            recipe.input.toNetwork(buf);
-            buf.writeBoolean(recipe.entityTypeTag != null);
-            if (recipe.entityTypeTag != null) {
-                buf.writeResourceLocation(recipe.entityTypeTag.location());
-            }
-            buf.writeBoolean(recipe.entityType != null);
-            if (recipe.entityType != null) {
-                buf.writeRegistryId(BuiltInRegistries.ENTITY_TYPE, recipe.entityType);
-            }
-            buf.writeUtf(BuiltInRegistries.MOB_EFFECT.getKey(recipe.output.value()).toString());
-            buf.writeInt(recipe.soulCost);
-            buf.writeInt(recipe.capacityExtra);
-            buf.writeInt(recipe.duration);
-        }
+    
+    // Helper record
+    record EntityInput(Optional<TagKey<EntityType<?>>> tag, Optional<EntityType<?>> type) {
+        public static final Codec<EntityInput> CODEC = RecordCodecBuilder.create(inst -> inst.group(
+            TagKey.codec(Registries.ENTITY_TYPE).optionalFieldOf("tag").forGetter(EntityInput::tag),
+            BuiltInRegistries.ENTITY_TYPE.byNameCodec().optionalFieldOf("entity_type").forGetter(EntityInput::type)
+        ).apply(inst, EntityInput::new));
     }
 }

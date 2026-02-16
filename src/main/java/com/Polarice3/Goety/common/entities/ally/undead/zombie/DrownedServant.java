@@ -62,17 +62,17 @@ public class DrownedServant extends ZombieServant implements RangedAttackMob {
 
     public static AttributeSupplier.Builder setCustomAttributes() {
         return Mob.createMobAttributes()
-                .add(Attributes.MAX_HEALTH, AttributesConfig.DrownedServantHealth.get())
+                .add(Attributes.MAX_HEALTH, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.DrownedServantHealth, 20.0D))
                 .add(Attributes.FOLLOW_RANGE, 35.0D)
                 .add(Attributes.MOVEMENT_SPEED, 0.23D)
-                .add(Attributes.ATTACK_DAMAGE, AttributesConfig.DrownedServantDamage.get())
-                .add(Attributes.ARMOR, AttributesConfig.DrownedServantArmor.get());
+                .add(Attributes.ATTACK_DAMAGE, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.DrownedServantDamage, 20.0D))
+                .add(Attributes.ARMOR, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.DrownedServantArmor, 20.0D));
     }
 
     public void setConfigurableAttributes(){
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.MAX_HEALTH), AttributesConfig.DrownedServantHealth.get());
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ARMOR), AttributesConfig.DrownedServantArmor.get());
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ATTACK_DAMAGE), AttributesConfig.DrownedServantDamage.get());
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.MAX_HEALTH), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.DrownedServantHealth, 20.0D));
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ARMOR), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.DrownedServantArmor, 20.0D));
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ATTACK_DAMAGE), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.DrownedServantDamage, 20.0D));
     }
 
     protected SoundEvent getAmbientSound() {

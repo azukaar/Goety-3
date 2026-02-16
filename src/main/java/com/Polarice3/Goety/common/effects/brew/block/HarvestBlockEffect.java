@@ -17,13 +17,13 @@ import net.minecraft.world.level.block.CocoaBlock;
 import net.minecraft.world.level.block.CropBlock;
 import net.minecraft.world.level.block.NetherWartBlock;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.neoforge.common.IPlantable;
+import com.Polarice3.Goety.compat.legacy.neoforge.common.IPlantable;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class HarvestBlockEffect extends BrewEffect {
     public HarvestBlockEffect() {
-        super("harvest", BrewConfig.HarvestCost.get(), MobEffectCategory.NEUTRAL, 0x67a124);
+        super("harvest", com.Polarice3.Goety.utils.ConfigHelper.getInt(BrewConfig.HarvestCost, 0), MobEffectCategory.NEUTRAL, 0x67a124);
     }
 
     @Override
@@ -72,7 +72,9 @@ public class HarvestBlockEffect extends BrewEffect {
         AtomicBoolean removedReplant = new AtomicBoolean(false);
         ItemStack fakeHoe = new ItemStack(Items.IRON_HOE);
         if (pAmplifier > 0) {
-            fakeHoe.enchant(Enchantments.BLOCK_FORTUNE, pAmplifier);
+            world.registryAccess().lookupOrThrow(net.minecraft.core.registries.Registries.ENCHANTMENT)
+                .get(Enchantments.FORTUNE)
+                .ifPresent(p -> fakeHoe.enchant(p, pAmplifier));
         }
 
         Block.getDrops(state, world, pos, null, entity, fakeHoe).forEach(stack -> {

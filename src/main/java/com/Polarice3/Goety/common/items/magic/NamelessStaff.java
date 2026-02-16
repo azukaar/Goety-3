@@ -10,17 +10,18 @@ import java.util.function.Consumer;
 
 public class NamelessStaff extends DarkStaff{
     public NamelessStaff() {
-        super(ItemConfig.NamelessStaffDamage.get(), SpellType.NECROMANCY);
+        // Lazy evaluation to avoid accessing config before it's loaded
+        super(getNamelessStaffDamage(), SpellType.NECROMANCY);
+    }
+    
+    private static double getNamelessStaffDamage() {
+        try {
+            return com.Polarice3.Goety.utils.ConfigHelper.getDouble(ItemConfig.NamelessStaffDamage, 20.0D);
+        } catch (IllegalStateException e) {
+            // Config not loaded yet, use default
+            return 4.0D;
+        }
     }
 
-    @Override
-    public void initializeClient(Consumer<IClientItemExtensions> consumer) {
-        super.initializeClient(consumer);
-        consumer.accept(new DarkWandClient() {
-            @Override
-            public BlockEntityWithoutLevelRenderer getCustomRenderer() {
-                return new CustomItemsRenderer();
-            }
-        });
-    }
+
 }

@@ -29,7 +29,7 @@ import java.util.Objects;
 
 public class GraverobberShovelItem extends ShovelItem {
     public GraverobberShovelItem() {
-        super(ModTiers.SPECIAL, 1.5F, -3.0F, (new Properties()).rarity(Rarity.UNCOMMON));
+        super(ModTiers.SPECIAL, (new Properties()).rarity(Rarity.UNCOMMON));
     }
 
     public boolean mineBlock(ItemStack pStack, Level pLevel, BlockState pState, BlockPos pPos, LivingEntity pEntityLiving) {
@@ -40,8 +40,7 @@ public class GraverobberShovelItem extends ShovelItem {
                     if (blockstate.is(BlockTags.MINEABLE_WITH_SHOVEL)) {
                         if (BlockFinder.breakBlock(pLevel, blockPos, pStack, pEntityLiving)) {
                             if (blockstate.getDestroySpeed(pLevel, blockPos) != 0) {
-                                pStack.hurtAndBreak(1, pEntityLiving, (p_220044_0_)
-                                        -> p_220044_0_.broadcastBreakEvent(EquipmentSlot.MAINHAND));
+                                pStack.hurtAndBreak(1, pEntityLiving, EquipmentSlot.MAINHAND);
                             }
                         }
                     }
@@ -51,18 +50,18 @@ public class GraverobberShovelItem extends ShovelItem {
                 double d0 = (double) (pLevel.random.nextFloat() * 0.5F) + 0.25D;
                 double d1 = (double) (pLevel.random.nextFloat() * 0.5F) + 0.25D;
                 double d2 = (double) (pLevel.random.nextFloat() * 0.5F) + 0.25D;
-                LootTable loottable = pLevel.getServer().getLootData().getLootTable(EntityType.SKELETON.getDefaultLootTable());
+                LootTable loottable = pLevel.getServer().reloadableRegistries().getLootTable(EntityType.SKELETON.getDefaultLootTable());
                 if ((pState.is(BlockTags.DIRT) || pState.is(BlockTags.SAND))){
                     if (pLevel.random.nextFloat() <= 0.1F){
                         if (pLevel.random.nextBoolean()){
-                            loottable = pLevel.getServer().getLootData().getLootTable(EntityType.ZOMBIE.getDefaultLootTable());
+                            loottable = pLevel.getServer().reloadableRegistries().getLootTable(EntityType.ZOMBIE.getDefaultLootTable());
                         }
                         LootParams.Builder lootcontext$builder = MobUtil.createLootContext(pLevel.damageSources().generic(), pEntityLiving);
                         LootParams ctx = lootcontext$builder.create(LootContextParamSets.ENTITY);
                         loottable.getRandomItems(ctx).forEach((loot) -> {
                             ItemEntity itemEntity = new ItemEntity(pLevel, pPos.getX() + d0, pPos.getY() + d1, pPos.getZ() + d2, loot);
                             if (pState.is(BlockTags.SAND)) {
-                                if (loot.getFoodProperties(pEntityLiving) != null && Objects.requireNonNull(loot.getFoodProperties(pEntityLiving)).getEffects().isEmpty()) {
+                                if (loot.getFoodProperties(pEntityLiving) != null) {
                                     itemEntity.setItem(new ItemStack(Items.BONE));
                                 }
                             }

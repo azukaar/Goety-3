@@ -34,16 +34,16 @@ public class StormlanderItem extends HammerItem {
 
     @Override
     public void smash(ItemStack pStack, LivingEntity pTarget, Player player) {
-        player.level.playSound((Player) null, player.getX(), player.getY(), player.getZ(), ModSounds.HAMMER_SWING.get(),
+        player.level().playSound((Player) null, player.getX(), player.getY(), player.getZ(), ModSounds.HAMMER_SWING.get(),
                 player.getSoundSource(), 1.0F, 1.0F);
-        player.level.playSound((Player) null, pTarget.getX(), pTarget.getY(), pTarget.getZ(),
+        player.level().playSound((Player) null, pTarget.getX(), pTarget.getY(), pTarget.getZ(),
                 ModSounds.DIRT_DEBRIS.get(), player.getSoundSource(), 1.0F, 1.0F);
-        if (player.level instanceof ServerLevel serverLevel) {
+        if (player.level() instanceof ServerLevel serverLevel) {
             BlockPos blockPos = BlockPos.containing(pTarget.getX(), pTarget.getY() - 1.0F, pTarget.getZ());
             BlockParticleOption option = new BlockParticleOption(ParticleTypes.BLOCK,
                     serverLevel.getBlockState(blockPos));
             float area = 1.75F;
-            area += pStack.getEnchantmentLevel(ModEnchantments.RADIUS.get());
+            area += pStack.getEnchantmentLevel(ModEnchantments.RADIUS);
             for (int i = 0; i < 8; ++i) {
                 ServerParticleUtil.circularParticles(serverLevel, option, pTarget.getX(), pTarget.getY() + 0.25D,
                         pTarget.getZ(), area);
@@ -71,12 +71,12 @@ public class StormlanderItem extends HammerItem {
 
     public void attackMobs(LivingEntity pTarget, Player pPlayer, ItemStack pStack) {
         float f = (float) pPlayer.getAttributeValue(Attributes.ATTACK_DAMAGE);
-        float f1 = EnchantmentHelper.getDamageBonus(pPlayer.getMainHandItem(), pTarget.getMobType());
-        int j = EnchantmentHelper.getFireAspect(pPlayer);
+        float f1 = 0.0F;
+        int j = 0;
         pPlayer.playSound(ModSounds.THUNDER_STRIKE_FAST.get());
         double area = 1.75D;
-        area += pStack.getEnchantmentLevel(ModEnchantments.RADIUS.get());
-        for (LivingEntity livingentity : pPlayer.level.getEntitiesOfClass(LivingEntity.class,
+        area += pStack.getEnchantmentLevel(ModEnchantments.RADIUS);
+        for (LivingEntity livingentity : pPlayer.level().getEntitiesOfClass(LivingEntity.class,
                 pTarget.getBoundingBox().inflate(area, 0.25D, area))) {
             if (livingentity != pPlayer && livingentity != pTarget && !MobUtil.areAllies(pPlayer, livingentity)
                     && (!(livingentity instanceof ArmorStand) || !((ArmorStand) livingentity).isMarker())
@@ -87,19 +87,17 @@ public class StormlanderItem extends HammerItem {
                     if (j > 0) {
                         livingentity.igniteForSeconds(j * 4);
                     }
-                    EnchantmentHelper.doPostHurtEffects(livingentity, pPlayer);
-                    EnchantmentHelper.doPostDamageEffects(pPlayer, livingentity);
                 }
             }
         }
 
-        pPlayer.level.playSound((Player) null, pPlayer.getX(), pPlayer.getY(), pPlayer.getZ(),
+        pPlayer.level().playSound((Player) null, pPlayer.getX(), pPlayer.getY(), pPlayer.getZ(),
                 ModSounds.HAMMER_IMPACT.get(), pPlayer.getSoundSource(), 1.0F, 1.0F);
     }
 
     public void chain(LivingEntity pTarget, LivingEntity pAttacker) {
         double range = 6;
-        Level level = pAttacker.level;
+        Level level = pAttacker.level();
         float oDamage = getInitialDamage();
 
         List<Entity> harmed = new ArrayList<>();

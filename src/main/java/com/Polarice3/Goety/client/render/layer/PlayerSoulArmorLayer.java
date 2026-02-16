@@ -28,7 +28,7 @@ public class PlayerSoulArmorLayer<T extends LivingEntity, M extends EntityModel<
 
     @Override
     public void render(PoseStack pMatrixStack, MultiBufferSource pBuffer, int pPackedLight, T pLivingEntity, float pLimbSwing, float pLimbSwingAmount, float pPartialTicks, float pAgeInTicks, float pNetHeadYaw, float pHeadPitch) {
-        if (pLivingEntity.hasEffect(GoetyEffects.SOUL_ARMOR.getHolder()) && pLivingEntity.hurtTime > 0) {
+        if (pLivingEntity.hasEffect(GoetyEffects.SOUL_ARMOR) && pLivingEntity.hurtTime > 0) {
             float f = (float) pLivingEntity.tickCount + pPartialTicks;
             PlayerModel<T> entitymodel = this.model;
             entitymodel.prepareMobModel(pLivingEntity, pLimbSwing, pLimbSwingAmount, pPartialTicks);

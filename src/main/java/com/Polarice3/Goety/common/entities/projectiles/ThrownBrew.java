@@ -28,7 +28,7 @@ import net.minecraft.world.entity.projectile.ThrowableItemProjectile;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.alchemy.Potion;
-import net.minecraft.world.item.alchemy.PotionUtils;
+import com.Polarice3.Goety.utils.PotionUtils;
 import net.minecraft.world.item.alchemy.Potions;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.AbstractCandleBlock;
@@ -64,7 +64,7 @@ public class ThrownBrew extends ThrowableItemProjectile implements ItemSupplier 
         return ModItems.SPLASH_BREW.get();
     }
 
-    protected float getGravity() {
+    protected double getDefaultGravity() {
         return 0.05F;
     }
 
@@ -97,7 +97,7 @@ public class ThrownBrew extends ThrowableItemProjectile implements ItemSupplier 
         if (!this.level().isClientSide) {
             if (!this.isGas()) {
                 ItemStack itemstack = this.getItem();
-                Potion potion = PotionUtils.getPotion(itemstack);
+                Potion potion = itemstack.getOrDefault(net.minecraft.core.component.DataComponents.POTION_CONTENTS, net.minecraft.world.item.alchemy.PotionContents.EMPTY).potion().get().value();
                 List<BrewEffectInstance> list = BrewUtils.getBrewEffects(itemstack);
                 boolean flag = potion == Potions.WATER && list.isEmpty();
                 Direction direction = p_37541_.getDirection();
@@ -138,7 +138,7 @@ public class ThrownBrew extends ThrowableItemProjectile implements ItemSupplier 
         super.onHit(p_37543_);
         if (!this.level().isClientSide) {
             ItemStack itemstack = this.getItem();
-            Potion potion = PotionUtils.getPotion(itemstack);
+            Potion potion = itemstack.getOrDefault(net.minecraft.core.component.DataComponents.POTION_CONTENTS, net.minecraft.world.item.alchemy.PotionContents.EMPTY).potion().get().value();
             List<MobEffectInstance> list = PotionUtils.getMobEffects(itemstack);
             List<BrewEffectInstance> list1 = BrewUtils.getBrewEffects(itemstack);
             boolean flag = potion == Potions.WATER && list.isEmpty();
@@ -200,13 +200,13 @@ public class ThrownBrew extends ThrowableItemProjectile implements ItemSupplier 
 
                         if (!mobEffectInstances.isEmpty()) {
                             for (MobEffectInstance mobeffectinstance : mobEffectInstances) {
-                                MobEffect mobeffect = mobeffectinstance.getEffect();
+                                MobEffect mobeffect = mobeffectinstance.getEffect().value();
                                 if (mobeffect.isInstantenous()) {
                                     mobeffect.applyInstantenousEffect(this, this.getOwner(), livingentity, mobeffectinstance.getAmplifier(), d1);
                                 } else {
                                     int i = (int) (d1 * (double) mobeffectinstance.getDuration() + 0.5D);
                                     if (i > 20) {
-                                        livingentity.addEffect(new MobEffectInstance(mobeffect, i, mobeffectinstance.getAmplifier(), mobeffectinstance.isAmbient(), mobeffectinstance.isVisible()), entity);
+                                        livingentity.addEffect(new MobEffectInstance(mobeffectinstance.getEffect(), i, mobeffectinstance.getAmplifier(), mobeffectinstance.isAmbient(), mobeffectinstance.isVisible()), entity);
                                     }
                                 }
                             }
@@ -253,9 +253,9 @@ public class ThrownBrew extends ThrowableItemProjectile implements ItemSupplier 
             }
         }
 
-        CompoundTag compoundtag = p_37538_.getTag();
-        if (compoundtag != null && compoundtag.contains("CustomPotionColor", 99)) {
-            brewEffectCloud.setFixedColor(compoundtag.getInt("CustomPotionColor"));
+        net.minecraft.world.item.component.CustomData customData = p_37538_.get(net.minecraft.core.component.DataComponents.CUSTOM_DATA);
+        if (customData != null && customData.copyTag().contains("CustomPotionColor", 99)) {
+            brewEffectCloud.setFixedColor(customData.copyTag().getInt("CustomPotionColor"));
         }
 
         this.level().addFreshEntity(brewEffectCloud);

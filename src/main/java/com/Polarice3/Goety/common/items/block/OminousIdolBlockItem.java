@@ -3,7 +3,9 @@ package com.Polarice3.Goety.common.items.block;
 import com.Polarice3.Goety.common.blocks.ModBlocks;
 import com.Polarice3.Goety.common.entities.ally.illager.RaiderServant;
 import com.Polarice3.Goety.utils.EntityFinder;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.item.component.CustomData;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.world.InteractionHand;
@@ -29,9 +31,12 @@ public class OminousIdolBlockItem extends BlockItemBase{
     public void inventoryTick(@NotNull ItemStack stack, Level worldIn, @NotNull Entity entityIn, int itemSlot, boolean isSelected) {
         if (!worldIn.isClientSide) {
             ListTag listTag = getIllagerList(stack, worldIn);
-            if (listTag != null && stack.getTag() != null){
+            CustomData customData = stack.get(DataComponents.CUSTOM_DATA);
+            if (listTag != null && customData != null){
                 if (listTag.isEmpty()){
-                    stack.getTag().remove(ILLAGER_LIST);
+                    CompoundTag tag = customData.copyTag();
+                    tag.remove(ILLAGER_LIST);
+                    stack.set(DataComponents.CUSTOM_DATA, CustomData.of(tag));
                 }
             }
             if (!getIllagers(stack, worldIn).isEmpty()) {
@@ -40,9 +45,11 @@ public class OminousIdolBlockItem extends BlockItemBase{
                         removeIllager(stack, illagerServant, worldIn);
                     }
                 }
-            } else if (stack.getTag() != null){
-                if (stack.getTag().contains(ILLAGER_LIST)){
-                    stack.getTag().remove(ILLAGER_LIST);
+            } else if (customData != null){
+                if (customData.contains(ILLAGER_LIST)){
+                    CompoundTag tag = customData.copyTag();
+                    tag.remove(ILLAGER_LIST);
+                    stack.set(DataComponents.CUSTOM_DATA, CustomData.of(tag));
                 }
             }
         }
@@ -51,15 +58,19 @@ public class OminousIdolBlockItem extends BlockItemBase{
 
     @Override
     public boolean isFoil(ItemStack p_41453_) {
-        return p_41453_.getTag() != null && p_41453_.getTag().contains(ILLAGER_LIST);
+        CustomData customData = p_41453_.get(DataComponents.CUSTOM_DATA);
+        return customData != null && customData.contains(ILLAGER_LIST);
     }
 
     public @NotNull InteractionResultHolder<ItemStack> use(@NotNull Level level, Player player, InteractionHand hand) {
         ItemStack itemstack = player.getItemInHand(hand);
         if (player.isShiftKeyDown() || player.isCrouching()){
             if (itemstack.getItem() instanceof OminousIdolBlockItem){
-                if (itemstack.getTag() != null){
-                    itemstack.getTag().remove(ILLAGER_LIST);
+                CustomData customData = itemstack.get(DataComponents.CUSTOM_DATA);
+                if (customData != null){
+                    CompoundTag tag = customData.copyTag();
+                    tag.remove(ILLAGER_LIST);
+                    itemstack.set(DataComponents.CUSTOM_DATA, CustomData.of(tag));
                 }
             }
             return InteractionResultHolder.sidedSuccess(itemstack, level.isClientSide());
@@ -70,8 +81,9 @@ public class OminousIdolBlockItem extends BlockItemBase{
     public static ListTag getIllagerList(ItemStack stack, Level level){
         if (!level.isClientSide) {
             CompoundTag compound = new CompoundTag();
-            if (stack.hasTag()) {
-                compound = stack.getTag();
+            CustomData customData = stack.get(DataComponents.CUSTOM_DATA);
+            if (customData != null) {
+                compound = customData.copyTag();
             }
             if (compound != null) {
                 if (compound.contains(ILLAGER_LIST)) {
@@ -85,8 +97,9 @@ public class OminousIdolBlockItem extends BlockItemBase{
     public static void removeIllager(ItemStack stack, RaiderServant illagerServant, Level level){
         if (!level.isClientSide) {
             CompoundTag compound = new CompoundTag();
-            if (stack.hasTag()) {
-                compound = stack.getTag();
+            CustomData customData = stack.get(DataComponents.CUSTOM_DATA);
+            if (customData != null) {
+                compound = customData.copyTag();
             }
             List<String> list = new ArrayList<>();
             if (compound != null) {
@@ -104,7 +117,7 @@ public class OminousIdolBlockItem extends BlockItemBase{
 
                     nbttaglist.remove(StringTag.valueOf(illagerServant.getStringUUID()));
                     compound.put(ILLAGER_LIST, nbttaglist);
-                    stack.setTag(compound);
+                    stack.set(DataComponents.CUSTOM_DATA, CustomData.of(compound));
                 }
             }
         }
@@ -112,8 +125,10 @@ public class OminousIdolBlockItem extends BlockItemBase{
 
     public static List<RaiderServant> getIllagers(ItemStack stack, Level level){
         List<RaiderServant> illagerServants = new ArrayList<>();
-        if (!level.isClientSide && stack.getTag() != null){
-            ListTag list = stack.getTag().getList(ILLAGER_LIST, 8);
+        CustomData customData = stack.get(DataComponents.CUSTOM_DATA);
+        if (!level.isClientSide && customData != null){
+            CompoundTag tag = customData.copyTag();
+            ListTag list = tag.getList(ILLAGER_LIST, 8);
             for(int i = 0; i < list.size(); ++i) {
                 Entity entity = EntityFinder.getEntityByUuiD(UUID.fromString(list.getString(i)));
                 if (entity instanceof RaiderServant servant){
@@ -125,10 +140,11 @@ public class OminousIdolBlockItem extends BlockItemBase{
     }
 
     public static void setIllager(ItemStack stack, Player player, RaiderServant illagerServant){
-        if (!player.level.isClientSide) {
+        if (!player.level().isClientSide) {
             CompoundTag compound = new CompoundTag();
-            if (stack.hasTag()) {
-                compound = stack.getTag();
+            CustomData customData = stack.get(DataComponents.CUSTOM_DATA);
+            if (customData != null) {
+                compound = customData.copyTag();
             }
             List<String> list = new ArrayList<>();
             if (compound != null) {
@@ -146,7 +162,7 @@ public class OminousIdolBlockItem extends BlockItemBase{
 
                     nbttaglist.add(StringTag.valueOf(illagerServant.getStringUUID()));
                     compound.put(ILLAGER_LIST, nbttaglist);
-                    stack.setTag(compound);
+                    stack.set(DataComponents.CUSTOM_DATA, CustomData.of(compound));
                 }
             }
         }
@@ -154,8 +170,9 @@ public class OminousIdolBlockItem extends BlockItemBase{
 
     public static void setUUIDs(ItemStack stack, UUID uuid){
         CompoundTag compound = new CompoundTag();
-        if (stack.hasTag()) {
-            compound = stack.getTag();
+        CustomData customData = stack.get(DataComponents.CUSTOM_DATA);
+        if (customData != null) {
+            compound = customData.copyTag();
         }
         List<String> list = new ArrayList<>();
         if (compound != null) {
@@ -173,15 +190,18 @@ public class OminousIdolBlockItem extends BlockItemBase{
 
                 nbttaglist.add(StringTag.valueOf(uuid.toString()));
                 compound.put(ILLAGER_LIST, nbttaglist);
-                stack.setTag(compound);
+                stack.set(DataComponents.CUSTOM_DATA, CustomData.of(compound));
             }
         }
     }
 
     public static void clearUUIDs(ItemStack stack) {
-        if (stack.getTag() != null) {
-            if (stack.getTag().contains(ILLAGER_LIST)) {
-                stack.getTag().remove(ILLAGER_LIST);
+        CustomData customData = stack.get(DataComponents.CUSTOM_DATA);
+        if (customData != null) {
+            if (customData.contains(ILLAGER_LIST)) {
+                CompoundTag tag = customData.copyTag();
+                tag.remove(ILLAGER_LIST);
+                stack.set(DataComponents.CUSTOM_DATA, CustomData.of(tag));
             }
         }
     }

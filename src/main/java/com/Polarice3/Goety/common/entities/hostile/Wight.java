@@ -156,17 +156,17 @@ public class Wight extends Summoned implements Enemy, NeutralMob, IHiding {
 
     public static AttributeSupplier.Builder setCustomAttributes() {
         return Mob.createMobAttributes()
-                .add(Attributes.MAX_HEALTH, AttributesConfig.WightHealth.get())
+                .add(Attributes.MAX_HEALTH, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.WightHealth, 20.0D))
                 .add(Attributes.MOVEMENT_SPEED, 0.3D)
-                .add(Attributes.ATTACK_DAMAGE, AttributesConfig.WightDamage.get())
+                .add(Attributes.ATTACK_DAMAGE, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.WightDamage, 20.0D))
                 .add(Attributes.KNOCKBACK_RESISTANCE, 0.5D)
                 .add(Attributes.ATTACK_KNOCKBACK, 1.0D)
                 .add(Attributes.FOLLOW_RANGE, 64.0D);
     }
 
     public void setConfigurableAttributes() {
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.MAX_HEALTH), AttributesConfig.WightHealth.get());
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ATTACK_DAMAGE), AttributesConfig.WightDamage.get());
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.MAX_HEALTH), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.WightHealth, 20.0D));
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ATTACK_DAMAGE), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.WightDamage, 20.0D));
     }
 
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
@@ -1108,16 +1108,16 @@ public class Wight extends Summoned implements Enemy, NeutralMob, IHiding {
             if (flag) {
                 if (entityIn instanceof LivingEntity living) {
                     if (entityIn instanceof Player player) {
-                        if (SEHelper.getSoulsAmount(player, AttributesConfig.WightSoulAbsorb.get())) {
-                            SEHelper.decreaseSouls(player, AttributesConfig.WightSoulAbsorb.get());
-                            this.regenHeal += AttributesConfig.WightSoulHeal.get();
+                        if (SEHelper.getSoulsAmount(player, com.Polarice3.Goety.utils.ConfigHelper.getInt(AttributesConfig.WightSoulAbsorb, 20))) {
+                            SEHelper.decreaseSouls(player, com.Polarice3.Goety.utils.ConfigHelper.getInt(AttributesConfig.WightSoulAbsorb, 20));
+                            this.regenHeal += com.Polarice3.Goety.utils.ConfigHelper.getInt(AttributesConfig.WightSoulHeal, 20);
                         } else {
                             player.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, 100, 0, false, false));
                         }
                     } else {
                         living.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, 100, 0, false, false));
                     }
-                    living.addEffect(new MobEffectInstance(GoetyEffects.CURSED.getHolder(), 60, 0, false, false));
+                    living.addEffect(new MobEffectInstance(GoetyEffects.CURSED, 60, 0, false, false));
                     if (this.isEasterEgg()) {
                         living.addEffect(new MobEffectInstance(MobEffects.CONFUSION, 100, 0, false, false));
                     }
@@ -1147,8 +1147,8 @@ public class Wight extends Summoned implements Enemy, NeutralMob, IHiding {
                         }
                     }
                 }
-                health.setBaseValue(AttributesConfig.WightHealth.get() * (h * d0));
-                attack.setBaseValue(AttributesConfig.WightDamage.get() * (a * d0));
+                health.setBaseValue(com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.WightHealth, 20.0D) * (h * d0));
+                attack.setBaseValue(com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.WightDamage, 20.0D) * (a * d0));
                 speed.setBaseValue(Math.min(0.45D, 0.3D + d1));
                 this.setHealth(this.getMaxHealth());
             }

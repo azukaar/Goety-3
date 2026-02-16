@@ -50,7 +50,7 @@ public class HellCloud extends AbstractSpellCloud{
             baseDamage += this.getExtraDamage();
             if (livingEntity.hurt(ModDamageSource.hellfire(this, this.getOwner()), baseDamage)) {
                 if (this.getOwner() instanceof Apostle) {
-                    livingEntity.addEffect(new MobEffectInstance(GoetyEffects.BURN_HEX.get(), 1200));
+                    livingEntity.addEffect(new MobEffectInstance(GoetyEffects.BURN_HEX, 1200));
                 }
             }
         }

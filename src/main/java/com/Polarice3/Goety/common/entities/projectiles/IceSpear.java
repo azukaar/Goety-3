@@ -70,7 +70,7 @@ public class IceSpear extends IceSpike {
 
     protected void onHitEntity(EntityHitResult p_37626_) {
         if (!this.level().isClientSide) {
-            float baseDamage = SpellConfig.IceSpikeDamage.get().floatValue() * WandUtil.damageMultiply();
+            float baseDamage = com.Polarice3.Goety.utils.ConfigHelper.getFloat(SpellConfig.IceSpikeDamage, 1.0F) * WandUtil.damageMultiply();
             Entity entity = p_37626_.getEntity();
             if (this.getPierceLevel() > 0) {
                 if (this.piercingIgnoreEntityIds == null) {
@@ -106,7 +106,7 @@ public class IceSpear extends IceSpike {
             }
 
             if (flag && entity instanceof LivingEntity livingEntity) {
-                livingEntity.addEffect(new MobEffectInstance(GoetyEffects.FREEZING.getHolder(), MathHelper.secondsToTicks(3 + livingEntity.getRandom().nextInt(2))));
+                livingEntity.addEffect(new MobEffectInstance(GoetyEffects.FREEZING, MathHelper.secondsToTicks(3 + livingEntity.getRandom().nextInt(2))));
                 this.playSound(ModSounds.ICE_SPIKE_HIT.get(), 1.0F, 1.2F / (this.random.nextFloat() * 0.2F + 0.9F));
                 if (livingEntity.level() instanceof ServerLevel serverLevel){
                     ServerParticleUtil.addParticlesAroundSelf(serverLevel, new BlockParticleOption(ParticleTypes.BLOCK, Blocks.PACKED_ICE.defaultBlockState()), livingEntity);

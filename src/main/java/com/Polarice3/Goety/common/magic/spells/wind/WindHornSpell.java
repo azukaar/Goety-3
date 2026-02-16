@@ -29,12 +29,12 @@ public class WindHornSpell extends Spell {
 
     @Override
     public int defaultSoulCost() {
-        return SpellConfig.TremblingCost.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.TremblingCost, 0);
     }
 
     @Override
     public int defaultCastDuration() {
-        return SpellConfig.TremblingDuration.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.TremblingDuration, 0);
     }
 
     @Nullable
@@ -45,7 +45,7 @@ public class WindHornSpell extends Spell {
 
     @Override
     public int defaultSpellCooldown() {
-        return SpellConfig.TremblingCoolDown.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.TremblingCoolDown, 0);
     }
 
     @Override

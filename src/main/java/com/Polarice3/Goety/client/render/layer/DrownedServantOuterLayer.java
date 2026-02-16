@@ -28,7 +28,7 @@ public class DrownedServantOuterLayer<T extends DrownedServant> extends RenderLa
    public void render(PoseStack p_116924_, MultiBufferSource p_116925_, int p_116926_, T p_116927_, float p_116928_,
          float p_116929_, float p_116930_, float p_116931_, float p_116932_, float p_116933_) {
       ResourceLocation resourceLocation = TEXTURES;
-      if (p_116927_.isHostile() || !MobsConfig.DrownedServantTexture.get()) {
+      if (p_116927_.isHostile() || !com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MobsConfig.DrownedServantTexture, false)) {
          resourceLocation = DROWNED_OUTER_LAYER_LOCATION;
       }
       coloredCutoutModelCopyLayerRender(this.getParentModel(), this.model, resourceLocation, p_116924_, p_116925_,

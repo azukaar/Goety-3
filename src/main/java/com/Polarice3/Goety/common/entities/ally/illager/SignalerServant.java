@@ -43,16 +43,16 @@ public class SignalerServant extends AbstractIllagerServant{
     public static AttributeSupplier.Builder setCustomAttributes() {
         return Mob.createMobAttributes()
                 .add(Attributes.MOVEMENT_SPEED, 0.35F)
-                .add(Attributes.MAX_HEALTH, AttributesConfig.SignalerServantHealth.get())
-                .add(Attributes.ARMOR, AttributesConfig.SignalerServantArmor.get())
+                .add(Attributes.MAX_HEALTH, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.SignalerServantHealth, 20.0D))
+                .add(Attributes.ARMOR, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.SignalerServantArmor, 20.0D))
                 .add(Attributes.ATTACK_DAMAGE, 5.0F)
-                .add(Attributes.FOLLOW_RANGE, AttributesConfig.SignalerServantFollowRange.get());
+                .add(Attributes.FOLLOW_RANGE, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.SignalerServantFollowRange, 20.0D));
     }
 
     public void setConfigurableAttributes(){
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.MAX_HEALTH), AttributesConfig.SignalerServantHealth.get());
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ARMOR), AttributesConfig.SignalerServantArmor.get());
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.FOLLOW_RANGE), AttributesConfig.SignalerServantFollowRange.get());
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.MAX_HEALTH), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.SignalerServantHealth, 20.0D));
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ARMOR), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.SignalerServantArmor, 20.0D));
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.FOLLOW_RANGE), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.SignalerServantFollowRange, 20.0D));
     }
 
     public IllagerServantArmPose getArmPose() {
@@ -64,11 +64,11 @@ public class SignalerServant extends AbstractIllagerServant{
     }
 
     @Override
-    public double getAttributeValue(Attribute attribute) {
+    public double getAttributeValue(net.minecraft.core.Holder<Attribute> attribute) {
         double original = super.getAttributeValue(attribute);
         if (attribute == Attributes.FOLLOW_RANGE) {
             if (this.getAttribute(Attributes.FOLLOW_RANGE) == null) {
-                original = AttributesConfig.SignalerServantFollowRange.get();
+                original = com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.SignalerServantFollowRange, 20.0D);
             }
             if (this.isUsingItem() && this.getUseItem().is(Items.SPYGLASS)) {
                 original *= 2.0D;
@@ -136,8 +136,8 @@ public class SignalerServant extends AbstractIllagerServant{
 
     @Nullable
     @Override
-    public SpawnGroupData finalizeSpawn(ServerLevelAccessor pLevel, DifficultyInstance pDifficulty, MobSpawnType pReason, @Nullable SpawnGroupData pSpawnData, @Nullable CompoundTag pDataTag) {
-        SpawnGroupData data = super.finalizeSpawn(pLevel, pDifficulty, pReason, pSpawnData, pDataTag);
+    public SpawnGroupData finalizeSpawn(ServerLevelAccessor pLevel, DifficultyInstance pDifficulty, MobSpawnType pReason, @Nullable SpawnGroupData pSpawnData) {
+        SpawnGroupData data = super.finalizeSpawn(pLevel, pDifficulty, pReason, pSpawnData);
         this.populateDefaultWeapons(pLevel.getRandom(), pDifficulty);
         return data;
     }

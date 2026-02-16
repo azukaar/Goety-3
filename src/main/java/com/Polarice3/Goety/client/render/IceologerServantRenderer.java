@@ -28,7 +28,7 @@ public class IceologerServantRenderer<T extends IceologerServant> extends MobRen
 
     @Override
     public ResourceLocation getTextureLocation(T entity) {
-        if (entity.isHostile() || !MobsConfig.IceologerServantTexture.get()){
+        if (entity.isHostile() || !com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MobsConfig.IceologerServantTexture, false)){
             return ORIGINAL;
         } else {
             return TEXTURE;

@@ -28,12 +28,12 @@ public class SensingSpell extends Spell {
 
     @Override
     public int defaultSoulCost() {
-        return SpellConfig.SensingCost.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.SensingCost, 0);
     }
 
     @Override
     public int defaultCastDuration() {
-        return SpellConfig.SensingDuration.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.SensingDuration, 0);
     }
 
     @Override
@@ -48,7 +48,7 @@ public class SensingSpell extends Spell {
 
     @Override
     public int defaultSpellCooldown() {
-        return SpellConfig.SensingCoolDown.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.SensingCoolDown, 0);
     }
 
     @Override
@@ -67,7 +67,7 @@ public class SensingSpell extends Spell {
             potency += WandUtil.getPotencyLevel(caster);
             duration += WandUtil.getLevels(ModEnchantments.DURATION.get(), caster);
         }
-        caster.addEffect(new MobEffectInstance(GoetyEffects.TREMOR_SENSE.get(), MathHelper.secondsToTicks(duration), potency, false, false, true));
+        caster.addEffect(new MobEffectInstance(GoetyEffects.TREMOR_SENSE, MathHelper.secondsToTicks(duration), potency, false, false, true));
         worldIn.playSound(null, caster.getX(), caster.getY(), caster.getZ(), ModSounds.DIRT_DEBRIS.get(), this.getSoundSource(), 1.0F, 1.0F);
     }
 }

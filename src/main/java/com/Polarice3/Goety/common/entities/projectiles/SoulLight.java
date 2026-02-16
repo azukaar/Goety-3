@@ -6,6 +6,7 @@ import com.Polarice3.Goety.common.entities.ModEntityType;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
+import net.minecraft.server.level.ServerEntity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
@@ -17,11 +18,11 @@ public class SoulLight extends LightProjectile {
     }
 
     public SoulLight(final Level Level, final double x, final double y, final double z) {
-        super(Level, x, y, z);
+        super(ModEntityType.SOUL_LIGHT.get(), Level, x, y, z);
     }
 
     public SoulLight(final Level Level, final LivingEntity shooter) {
-        super(Level, shooter);
+        super(ModEntityType.SOUL_LIGHT.get(), Level, shooter);
     }
 
     @Override
@@ -45,7 +46,7 @@ public class SoulLight extends LightProjectile {
     }
 
     @Override
-    public Packet<ClientGamePacketListener> getAddEntityPacket() {
-        return new net.minecraft.network.protocol.game.ClientboundAddEntityPacket(this);
+    public Packet<ClientGamePacketListener> getAddEntityPacket(ServerEntity p_345759_) {
+        return new net.minecraft.network.protocol.game.ClientboundAddEntityPacket(this, p_345759_);
     }
 }

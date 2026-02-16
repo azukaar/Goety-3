@@ -1,211 +1,103 @@
 package com.Polarice3.Goety.common.items.magic;
 
-import com.Polarice3.Goety.Goety;
-import com.Polarice3.Goety.common.blocks.ArcaBlock;
-import com.Polarice3.Goety.common.blocks.entities.ArcaBlockEntity;
-import com.Polarice3.Goety.common.events.ArcaTeleporter;
-import com.Polarice3.Goety.common.magic.spells.void_spells.RecallSpell;
-import com.Polarice3.Goety.init.ModTags;
+import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
-import net.minecraft.nbt.NbtUtils;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.sounds.SoundSource;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
-import net.minecraft.world.InteractionResultHolder;
-import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.item.context.UseOnContext;
+import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.RespawnAnchorBlock;
-import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.phys.Vec3;
 
-import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Optional;
 
-public class RecallFocus extends MagicFocus{
-    public static final String TAG_POS = "RecallPos";
-    public static final String TAG_DIMENSION = "RecallDimension";
+public class RecallFocus extends Item {
+    private static final String TAG_DIMENSION = "RecallDimension";
+    private static final String TAG_POS = "RecallPos";
 
     public RecallFocus() {
-        super(new RecallSpell());
+        super(new Item.Properties().stacksTo(1));
     }
 
-    public InteractionResult useOn(UseOnContext pContext) {
-        Level world = pContext.getLevel();
-        ItemStack stack = pContext.getItemInHand();
-        Player player = pContext.getPlayer();
-        if (player != null) {
-            if (!stack.isEmpty() && !hasRecall(stack)) {
-                CompoundTag compoundTag = stack.getOrCreateTag();
-                if (stack.getItem() instanceof RecallFocus) {
-                    BlockPos blockpos = pContext.getClickedPos();
-                    BlockEntity tileEntity = world.getBlockEntity(blockpos);
-                    if (tileEntity instanceof ArcaBlockEntity arcaTile) {
-                        if (pContext.getPlayer() == arcaTile.getPlayer() && arcaTile.getLevel() != null) {
-                            this.addRecallTags(arcaTile.getLevel().dimension(), arcaTile.getBlockPos(), compoundTag);
-                            stack.setTag(compoundTag);
-                            player.playSound(SoundEvents.ARROW_HIT_PLAYER, 1.0F, 0.45F);
-                            return InteractionResult.sidedSuccess(world.isClientSide);
-                        }
-                    }
-                    BlockState blockstate = world.getBlockState(blockpos);
-                    if (blockstate.is(ModTags.Blocks.RECALL_BLOCKS)) {
-                        this.addRecallTags(world.dimension(), blockpos, compoundTag);
-                        stack.setTag(compoundTag);
-                        player.playSound(SoundEvents.ARROW_HIT_PLAYER, 1.0F, 0.45F);
-                        return InteractionResult.sidedSuccess(world.isClientSide);
-                    }
-                }
-            }
+    public static boolean hasRecall(ItemStack stack) {
+        CompoundTag tag = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();
+        return tag.contains(TAG_DIMENSION) && tag.contains(TAG_POS);
+    }
+
+    public static Optional<ResourceKey<Level>> getDimension(ItemStack stack) {
+        CompoundTag tag = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();
+        if (!tag.contains(TAG_DIMENSION)) {
+            return Optional.empty();
         }
-        return InteractionResult.PASS;
+        return ResourceKey.codec(Registries.DIMENSION).parse(NbtOps.INSTANCE, tag.get(TAG_DIMENSION)).result();
     }
 
-    public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
-        ItemStack itemstack = player.getItemInHand(hand);
-        if (player.isShiftKeyDown() || player.isCrouching()){
-            if (itemstack.getItem() instanceof RecallFocus){
-                if (hasRecall(itemstack) && itemstack.getTag() != null){
-                    itemstack.getTag().remove(TAG_DIMENSION);
-                    itemstack.getTag().remove(TAG_POS);
-                }
-            }
-            return InteractionResultHolder.sidedSuccess(itemstack, level.isClientSide());
-        }
-        return InteractionResultHolder.pass(itemstack);
+    public static BlockPos getRecallBlockPos(ItemStack stack) {
+        CompoundTag tag = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();
+        return NbtUtilsCompat.readBlockPos(tag, TAG_POS);
     }
 
-    public static boolean recall(LivingEntity livingEntity, ItemStack stack){
-        if (hasRecall(stack) && stack.getTag() != null) {
-            if (getDimension(stack.getTag()).isPresent() && getRecallBlockPos(stack.getTag()) != null) {
-                BlockPos blockPos = getRecallBlockPos(stack.getTag());
-                if (blockPos != null) {
-                    if (getDimension(stack.getTag()).get() == livingEntity.level.dimension()) {
-                        Optional<Vec3> optional = RespawnAnchorBlock.findStandUpPosition(EntityType.PLAYER, livingEntity.level, blockPos);
-                        if (optional.isPresent()) {
-                            Vec3 pos = optional.get();
-                            net.neoforged.neoforge.event.entity.EntityTeleportEvent.EnderEntity event = new net.neoforged.neoforge.event.entity.EntityTeleportEvent.EnderEntity(livingEntity, pos.x, pos.y, pos.z);
-                            net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(event);
-                            if (event.isCanceled()) {
-                                return false;
-                            }
-                            livingEntity.teleportTo(event.getTargetX(), event.getTargetY(), event.getTargetZ());
-                            if (livingEntity.level instanceof ServerLevel serverLevel) {
-                                serverLevel.playSound(null, BlockPos.containing(livingEntity.xo, livingEntity.yo, livingEntity.zo), SoundEvents.ENDERMAN_TELEPORT, SoundSource.NEUTRAL, 1.0F, 1.0F);
-                                serverLevel.playSound(null, BlockPos.containing(optional.get()), SoundEvents.ENDERMAN_TELEPORT, SoundSource.NEUTRAL, 1.0F, 1.0F);
-                            }
-                            return true;
-                        }
-                    } else {
-                        if (livingEntity.getServer() != null) {
-                            ServerLevel serverWorld = livingEntity.getServer().getLevel(getDimension(stack.getTag()).get());
-                            if (serverWorld != null) {
-                                Optional<Vec3> optional = RespawnAnchorBlock.findStandUpPosition(EntityType.PLAYER, serverWorld, blockPos);
-                                if (optional.isPresent()) {
-                                    Vec3 pos = optional.get();
-                            net.neoforged.neoforge.event.entity.EntityTeleportEvent.EnderEntity event = new net.neoforged.neoforge.event.entity.EntityTeleportEvent.EnderEntity(livingEntity, pos.x, pos.y, pos.z);
-                            net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(event);
-                                    if (event.isCanceled()) {
-                                        return false;
-                                    }
-                                    livingEntity.changeDimension(ArcaTeleporter.transition(serverWorld, livingEntity, optional.get()));
-                                    livingEntity.teleportTo(event.getTargetX(), event.getTargetY(), event.getTargetZ());
-                                    return true;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        return false;
-    }
-
-    public static boolean hasRecall(ItemStack p_40737_) {
-        CompoundTag compoundtag = p_40737_.getTag();
-        return compoundtag != null && (compoundtag.contains(TAG_DIMENSION) || compoundtag.contains(TAG_POS));
-    }
-
-    @Nullable
-    public static BlockPos getRecallBlockPos(ItemStack itemStack) {
-        if (itemStack.getTag() != null) {
-            return getRecallBlockPos(itemStack.getTag());
-        }
-        return null;
-    }
-
-    public static BlockPos getRecallBlockPos(CompoundTag compoundTag){
-        boolean flag = compoundTag.contains(TAG_POS);
-        boolean flag1 = compoundTag.contains(TAG_DIMENSION);
-        if (flag && flag1) {
-            Optional<ResourceKey<Level>> optional = getDimension(compoundTag);
-            if (optional.isPresent()) {
-                return NbtUtils.readBlockPos(compoundTag.getCompound(TAG_POS));
-            }
-        }
-        return null;
-    }
-
-    public static Optional<ResourceKey<Level>> getDimension(CompoundTag p_40728_) {
-        return Level.RESOURCE_KEY_CODEC.parse(NbtOps.INSTANCE, p_40728_.get(TAG_DIMENSION)).result();
-    }
-
-    public void addRecallTags(ResourceKey<Level> p_40733_, BlockPos p_40734_, CompoundTag p_40735_) {
-        p_40735_.put(TAG_POS, NbtUtils.writeBlockPos(p_40734_));
-        Level.RESOURCE_KEY_CODEC.encodeStart(NbtOps.INSTANCE, p_40733_).resultOrPartial(Goety.LOGGER::error).ifPresent((p_40731_) -> {
-            p_40735_.put(TAG_DIMENSION, p_40731_);
+    public static void setRecall(ItemStack stack, ResourceKey<Level> dimension, BlockPos pos) {
+        CustomData.update(DataComponents.CUSTOM_DATA, stack, tag -> {
+            ResourceKey.codec(Registries.DIMENSION).encodeStart(NbtOps.INSTANCE, dimension).result().ifPresent(n -> tag.put(TAG_DIMENSION, n));
+            tag.put(TAG_POS, net.minecraft.nbt.NbtUtils.writeBlockPos(pos));
         });
     }
 
-    public static boolean isValid(ServerLevel serverLevel, ItemStack stack){
-        if (hasRecall(stack) && stack.getTag() != null) {
-            if (getDimension(stack.getTag()).isPresent()) {
-                ServerLevel serverLevel1 = serverLevel.getServer().getLevel(getDimension(stack.getTag()).get());
-                if (serverLevel1 != null) {
-                    if (getRecallBlockPos(stack.getTag()) != null) {
-                        BlockPos blockPos = getRecallBlockPos(stack.getTag());
-                        if (blockPos != null) {
-                            BlockState blockState = serverLevel1.getBlockState(blockPos);
-                            Block block = blockState.getBlock();
-                            return block instanceof ArcaBlock || blockState.is(ModTags.Blocks.RECALL_BLOCKS);
-                        }
-                    }
-                }
-            }
+    public static void clearRecall(ItemStack stack) {
+        CustomData.update(DataComponents.CUSTOM_DATA, stack, tag -> {
+            tag.remove(TAG_DIMENSION);
+            tag.remove(TAG_POS);
+        });
+    }
+
+    public static boolean isValid(Level level, ItemStack stack) {
+        Optional<ResourceKey<Level>> dim = getDimension(stack);
+        return hasRecall(stack) && dim.isPresent() && getRecallBlockPos(stack) != null && dim.get() == level.dimension();
+    }
+
+    public static void recall(LivingEntity livingEntity, ItemStack stack) {
+        BlockPos target = getRecallBlockPos(stack);
+        if (target == null) {
+            return;
         }
-        return false;
+        Optional<ResourceKey<Level>> dim = getDimension(stack);
+        if (dim.isEmpty() || dim.get() != livingEntity.level().dimension()) {
+            return;
+        }
+        livingEntity.teleportTo(target.getX() + 0.5D, target.getY() + 0.1D, target.getZ() + 0.5D);
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
-        super.appendHoverText(stack, worldIn, tooltip, flagIn);
-        addRecallText(stack, tooltip);
+    public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltip, TooltipFlag flagIn) {
+        super.appendHoverText(stack, context, tooltip, flagIn);
+        BlockPos blockPos = getRecallBlockPos(stack);
+        Optional<ResourceKey<Level>> dim = getDimension(stack);
+        if (blockPos != null && dim.isPresent()) {
+            ResourceLocation loc = dim.get().location();
+            tooltip.add(Component.translatable("info.goety.focus.Position", blockPos.getX(), blockPos.getY(), blockPos.getZ()).withStyle(ChatFormatting.GRAY));
+            tooltip.add(Component.translatable("info.goety.focus.PosDim", loc.toString()).withStyle(ChatFormatting.DARK_GRAY));
+        }
     }
 
-    public static void addRecallText(ItemStack stack, List<Component> tooltip){
-        if (stack.getTag() != null) {
-            if (!hasRecall(stack)) {
-                tooltip.add(Component.translatable("info.goety.focus.noPos"));
-            } else {
-                BlockPos blockPos = getRecallBlockPos(stack.getTag());
-                if (blockPos != null && getDimension(stack.getTag()).isPresent()) {
-                    tooltip.add(Component.translatable("info.goety.focus.Pos").append(" ").append(Component.translatable("info.goety.focus.PosNum", blockPos.getX(), blockPos.getY(), blockPos.getZ())));
-                    tooltip.add(Component.translatable("info.goety.focus.PosDim", getDimension(stack.getTag()).get().location().toString()));
-                }
+    private static final class NbtUtilsCompat {
+        private NbtUtilsCompat() {
+        }
+
+        private static BlockPos readBlockPos(CompoundTag tag, String key) {
+            if (!tag.contains(key, 10)) {
+                return null;
             }
+            return net.minecraft.nbt.NbtUtils.readBlockPos(tag, key).orElse(null);
         }
     }
 }

@@ -75,7 +75,7 @@ public class SpiderNestBlockEntity extends TrainingBlockEntity {
             } else if (BlockFinder.findStructure(serverLevel, blockPos, StructureTags.MINESHAFT)
                     || (getBlocks(blockState -> blockState.is(Blocks.PODZOL), 8)
                     && getBlocks(blockState -> blockState.getBlock() instanceof MushroomBlock, 8)
-                    && getBlocks(blockState -> blockState.is(Tags.Blocks.STONE), 8))){
+                    && getBlocks(blockState -> blockState.is(Tags.Blocks.STONES), 8))){
                 if (this.getTrainMob() != ModEntityType.CAVE_SPIDER_SERVANT.get()){
                     this.setEntityType(ModEntityType.CAVE_SPIDER_SERVANT.get());
                     this.markUpdated();
@@ -126,11 +126,11 @@ public class SpiderNestBlockEntity extends TrainingBlockEntity {
                 }
             }
         }
-        return count >= SpellConfig.SpiderLimit.get();
+        return count >= com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.SpiderLimit, 0);
     }
 
     @Override
     public boolean isFuel(ItemStack itemStack) {
-        return itemStack.getItem().isEdible() && this.getPlayer() != null && itemStack.getItem().getFoodProperties(itemStack, this.getPlayer()).isMeat();
+        return itemStack.has(net.minecraft.core.component.DataComponents.FOOD) && this.getPlayer() != null && itemStack.getItem().getFoodProperties(itemStack, this.getPlayer()).nutrition() > 0;
     }
 }

@@ -121,19 +121,19 @@ public class IceStorm extends SpellHurtingProjectile {
             if (this.tickCount >= MathHelper.secondsToTicks(5) + (this.getRange() * 10)){
                 this.discard();
             }
-            float baseDamage = SpellConfig.IceStormDamage.get().floatValue() * WandUtil.damageMultiply();
+            float baseDamage = com.Polarice3.Goety.utils.ConfigHelper.getFloat(SpellConfig.IceStormDamage, 1.0F) * WandUtil.damageMultiply();
             for (Entity entity : this.level().getEntitiesOfClass(Entity.class, this.getBoundingBox().inflate(1.0F), EntitySelector.NO_CREATIVE_OR_SPECTATOR)){
                 LivingEntity livingEntity = MobUtil.getLivingTarget(entity);
                 if (livingEntity != null) {
                     if (owner != null) {
                         if (!MobUtil.areAllies(owner, livingEntity) && livingEntity != owner) {
                             if (livingEntity.hurt(ModDamageSource.indirectFreeze(this, owner), baseDamage + this.getExtraDamage())) {
-                                livingEntity.addEffect(new MobEffectInstance(GoetyEffects.FREEZING.getHolder(), MathHelper.secondsToTicks(1 + this.getDuration())));
+                                livingEntity.addEffect(new MobEffectInstance(GoetyEffects.FREEZING, MathHelper.secondsToTicks(1 + this.getDuration())));
                             }
                         }
                     } else {
                         if (livingEntity.hurt(ModDamageSource.indirectFreeze(this, this), baseDamage + this.getExtraDamage())) {
-                            livingEntity.addEffect(new MobEffectInstance(GoetyEffects.FREEZING.getHolder(), MathHelper.secondsToTicks(1 + this.getDuration())));
+                            livingEntity.addEffect(new MobEffectInstance(GoetyEffects.FREEZING, MathHelper.secondsToTicks(1 + this.getDuration())));
                         }
                     }
                 }

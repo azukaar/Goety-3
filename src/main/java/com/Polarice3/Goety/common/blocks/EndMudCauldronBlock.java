@@ -1,7 +1,9 @@
 package com.Polarice3.Goety.common.blocks;
 
 import com.Polarice3.Goety.init.ModCauldronInteraction;
+import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.cauldron.CauldronInteraction;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.AbstractCauldronBlock;
@@ -14,10 +16,16 @@ import net.minecraft.world.level.block.state.properties.IntegerProperty;
 import net.minecraft.world.level.gameevent.GameEvent;
 
 public class EndMudCauldronBlock extends AbstractCauldronBlock {
+    public static final MapCodec<EndMudCauldronBlock> CODEC = simpleCodec(EndMudCauldronBlock::new);
+
+    @Override
+    protected MapCodec<? extends AbstractCauldronBlock> codec() {
+        return CODEC;
+    }
     public static final IntegerProperty LEVEL = BlockStateProperties.LEVEL_CAULDRON;
 
     public EndMudCauldronBlock(Properties p_153498_) {
-        super(p_153498_, ModCauldronInteraction.MUD);
+        super(p_153498_, CauldronInteraction.EMPTY);
         this.registerDefaultState(this.stateDefinition.any().setValue(LEVEL, 1));
     }
 

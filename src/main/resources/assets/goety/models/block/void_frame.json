@@ -22,23 +22,23 @@
         {   "from": [ 4, 13, 4 ],
             "to": [ 12, 16, 12 ],
             "faces": {
-                "up":    { "uv": [ 4, 4, 12, 12 ], "texture": "#eye", "cullface": "up", "forge_data": {
+                "up":    { "uv": [ 4, 4, 12, 12 ], "texture": "#eye", "cullface": "up", "neoforge_data": {
                     "block_light": 15,
                     "sky_light": 15
                 } },
-                "north": { "uv": [ 4, 0, 12,  3 ], "texture": "#eye", "forge_data": {
+                "north": { "uv": [ 4, 0, 12,  3 ], "texture": "#eye", "neoforge_data": {
                     "block_light": 15,
                     "sky_light": 15
                 } },
-                "south": { "uv": [ 4, 0, 12,  3 ], "texture": "#eye", "forge_data": {
+                "south": { "uv": [ 4, 0, 12,  3 ], "texture": "#eye", "neoforge_data": {
                     "block_light": 15,
                     "sky_light": 15
                 } },
-                "west":  { "uv": [ 4, 0, 12,  3 ], "texture": "#eye", "forge_data": {
+                "west":  { "uv": [ 4, 0, 12,  3 ], "texture": "#eye", "neoforge_data": {
                     "block_light": 15,
                     "sky_light": 15
                 } },
-                "east":  { "uv": [ 4, 0, 12,  3 ], "texture": "#eye", "forge_data": {
+                "east":  { "uv": [ 4, 0, 12,  3 ], "texture": "#eye", "neoforge_data": {
                     "block_light": 15,
                     "sky_light": 15
                 } }

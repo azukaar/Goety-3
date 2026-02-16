@@ -27,6 +27,7 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.monster.Endermite;
+import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -141,7 +142,7 @@ public class VoidRift extends CastSpellTrap {
     public void tick() {
         super.tick();
         if (!this.isActivated()){
-            int count = SpellConfig.RuptureDuration.get() / 3;
+            int count = com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.RuptureDuration, 0) / 3;
             if (this.tickCount % count == 0) {
                 if (this.level().isClientSide) {
                     if (this.getAnimation() < 2) {
@@ -216,7 +217,7 @@ public class VoidRift extends CastSpellTrap {
                         MobUtil.pull(entity, vec3.x, vec3.y, vec3.z, 0.5D);
                         if (entity.distanceTo(this) <= this.getBoundingBox().getSize()){
                             if (entity instanceof LivingEntity livingEntity) {
-                                float damage = SpellConfig.RuptureDamage.get().floatValue() * WandUtil.damageMultiply();
+                                float damage = com.Polarice3.Goety.utils.ConfigHelper.getFloat(SpellConfig.RuptureDamage, 1.0F) * WandUtil.damageMultiply();
                                 if (this.getOwner() != null) {
                                     if (this.getOwner() instanceof Mob mob && mob.getAttribute(Attributes.ATTACK_DAMAGE) != null) {
                                         damage = (float) mob.getAttributeValue(Attributes.ATTACK_DAMAGE) / 2.0F;
@@ -251,8 +252,8 @@ public class VoidRift extends CastSpellTrap {
                         float range = 8.0F * (this.getSize() + 1.0F);
                         serverLevel.sendParticles(new ShockwaveParticleOption(colorUtil.red, colorUtil.green, colorUtil.blue, range, 0, true), this.getX(), this.getY() + 0.5D, this.getZ(), 0, 0, 0, 0, 0);
                         ServerParticleUtil.createParticleBall(ParticleTypes.DRAGON_BREATH, this.getX(), this.getY() + 0.5D, this.getZ(), serverLevel,  8 + (int) this.getSize());
-                        this.playSound(SoundEvents.RESPAWN_ANCHOR_DEPLETE.get(), 5.0F, 0.5F);
-                        this.playSound(SoundEvents.GENERIC_EXPLODE, 5.0F, 0.5F);
+                        this.playSound(SoundEvents.RESPAWN_ANCHOR_DEPLETE.value(), 5.0F, 0.5F);
+                        this.playSound(SoundEvents.GENERIC_EXPLODE.value(), 5.0F, 0.5F);
                         new SpellExplosion(this.level(), this.getOwner() != null ? this.getOwner() : this, this.damageSources().indirectMagic(this, this.getOwner()), this.blockPosition(), range / 4, 0.0F) {
                             @Override
                             public void explodeHurt(Entity target, DamageSource damageSource, double x, double y, double z, double seen, float actualDamage) {
@@ -260,7 +261,7 @@ public class VoidRift extends CastSpellTrap {
                                 if (VoidRift.this.isStaff()) {
                                     if (EntitySelector.NO_CREATIVE_OR_SPECTATOR.test(target)) {
                                         if (target instanceof LivingEntity livingEntity) {
-                                            livingEntity.addEffect(new MobEffectInstance(GoetyEffects.VOID_TOUCHED.get(), MathHelper.secondsToTicks(3), 2, false, true));
+                                            livingEntity.addEffect(new MobEffectInstance(net.minecraft.core.Holder.direct(GoetyEffects.VOID_TOUCHED.get()), MathHelper.secondsToTicks(3), 2, false, true));
                                         }
                                     }
                                 }
@@ -278,7 +279,7 @@ public class VoidRift extends CastSpellTrap {
         int MthY = Mth.floor(this.getY());
         int MthZ = Mth.floor(this.getZ());
         if (!this.level().isClientSide) {
-            if (this.level().getGameRules().getBoolean(GameRules.RULE_MOB_GRIEFING)) {
+            if (this.level().getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING)) {
                 for (int i = -x; i <= x; ++i) {
                     for (int j = -y; j <= y; ++j) {
                         for (int k = -z; k <= z; ++k) {

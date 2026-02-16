@@ -97,21 +97,21 @@ public class SquallGolem extends AbstractGolemServant implements IWindPowered {
     @SuppressWarnings("removal")
     public static AttributeSupplier.Builder setCustomAttributes() {
         return Monster.createMonsterAttributes()
-                .add(Attributes.MAX_HEALTH, AttributesConfig.SquallGolemHealth.get())
-                .add(Attributes.ARMOR, AttributesConfig.SquallGolemArmor.get())
+                .add(Attributes.MAX_HEALTH, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.SquallGolemHealth, 20.0D))
+                .add(Attributes.ARMOR, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.SquallGolemArmor, 20.0D))
                 .add(Attributes.MOVEMENT_SPEED, 0.3D)
                 .add(Attributes.KNOCKBACK_RESISTANCE, 1.0D)
                 .add(Attributes.ATTACK_KNOCKBACK, 1.25D)
                 .add(Attributes.STEP_HEIGHT, 1.0D)
-                .add(Attributes.ATTACK_DAMAGE, AttributesConfig.SquallGolemDamage.get())
-                .add(Attributes.FOLLOW_RANGE, AttributesConfig.SquallGolemFollowRange.get());
+                .add(Attributes.ATTACK_DAMAGE, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.SquallGolemDamage, 20.0D))
+                .add(Attributes.FOLLOW_RANGE, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.SquallGolemFollowRange, 20.0D));
     }
 
     public void setConfigurableAttributes(){
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.MAX_HEALTH), AttributesConfig.SquallGolemHealth.get());
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ARMOR), AttributesConfig.SquallGolemArmor.get());
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ATTACK_DAMAGE), AttributesConfig.SquallGolemDamage.get());
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.FOLLOW_RANGE), AttributesConfig.SquallGolemFollowRange.get());
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.MAX_HEALTH), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.SquallGolemHealth, 20.0D));
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ARMOR), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.SquallGolemArmor, 20.0D));
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ATTACK_DAMAGE), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.SquallGolemDamage, 20.0D));
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.FOLLOW_RANGE), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.SquallGolemFollowRange, 20.0D));
     }
 
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
@@ -278,7 +278,7 @@ public class SquallGolem extends AbstractGolemServant implements IWindPowered {
             this.setRequiresPower(true);
             this.setProximity(true);
             this.setBoundPos(this.blockPosition());
-            this.setHealth(AttributesConfig.SquallGolemHealth.get().floatValue());
+            this.setHealth((float)com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.SquallGolemHealth, 20.0D));
         } else if (pReason != MobSpawnType.MOB_SUMMONED && pReason != MobSpawnType.COMMAND){
             this.setActivated(true);
             this.setRequiresPower(false);

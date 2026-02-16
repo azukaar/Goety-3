@@ -103,7 +103,7 @@ public class WitherBolt extends SpellHurtingProjectile {
     protected void onHitEntity(EntityHitResult p_37626_) {
         super.onHitEntity(p_37626_);
         if (!this.level().isClientSide) {
-            float baseDamage = SpellConfig.SoulBoltDamage.get().floatValue() * WandUtil.damageMultiply();
+            float baseDamage = com.Polarice3.Goety.utils.ConfigHelper.getFloat(SpellConfig.SoulBoltDamage, 1.0F) * WandUtil.damageMultiply();
             Entity entity = p_37626_.getEntity();
             Entity entity1 = this.getOwner();
             boolean flag;
@@ -117,7 +117,7 @@ public class WitherBolt extends SpellHurtingProjectile {
                 flag = entity.hurt(entity.damageSources().indirectMagic(this, livingentity), baseDamage);
                 if (flag) {
                     if (entity.isAlive()) {
-                        this.doEnchantDamageEffects(livingentity, entity);
+                        // this.doEnchantDamageEffects(livingentity, entity);
                     } else {
                         livingentity.heal(2.0F);
                     }
@@ -176,7 +176,7 @@ public class WitherBolt extends SpellHurtingProjectile {
                     }
                 }
             };
-            this.playSound(SoundEvents.GENERIC_EXPLODE, 1.0F, 1.0F);
+            this.playSound(SoundEvents.GENERIC_EXPLODE.value(), 1.0F, 1.0F);
             this.playSound(ModSounds.HELL_BOLT_IMPACT.get(), 1.0F, 1.0F);
             this.discard();
         }
@@ -223,8 +223,8 @@ public class WitherBolt extends SpellHurtingProjectile {
         return false;
     }
 
-    @Override
-    public @NotNull Packet<ClientGamePacketListener> getAddEntityPacket() {
-        return new net.minecraft.network.protocol.game.ClientboundAddEntityPacket(this);
-    }
+    // @Override
+    // public @NotNull Packet<ClientGamePacketListener> getAddEntityPacket() {
+    //     return new net.minecraft.network.protocol.game.ClientboundAddEntityPacket(this);
+    // }
 }

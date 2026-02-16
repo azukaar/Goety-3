@@ -13,6 +13,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import org.joml.Matrix3f;
 import org.joml.Matrix4f;
+import org.joml.Vector3f;
 
 public class ScytheSlashRenderer extends EntityRenderer<ScytheSlash> {
 
@@ -44,7 +45,8 @@ public class ScytheSlashRenderer extends EntityRenderer<ScytheSlash> {
     }
 
     private static void vertex(VertexConsumer p_229045_0_, Matrix4f p_229045_1_, Matrix3f p_229045_2_, int p_229045_3_, float p_229045_4_, int p_229045_5_, int p_229045_6_, int p_229045_7_) {
-        p_229045_0_.vertex(p_229045_1_, p_229045_4_ - 0.5F, (float)p_229045_5_ - 0.25F, 0.0F).color(255, 255, 255, 255).uv((float)p_229045_6_, (float)p_229045_7_).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(p_229045_3_).normal(p_229045_2_, 0.0F, 1.0F, 0.0F).endVertex();
+        Vector3f n = new Vector3f(0.0F, 1.0F, 0.0F).mul(p_229045_2_);
+        p_229045_0_.addVertex(p_229045_1_, p_229045_4_ - 0.5F, (float)p_229045_5_ - 0.25F, 0.0F).setColor(255, 255, 255, 255).setUv((float)p_229045_6_, (float)p_229045_7_).setOverlay(OverlayTexture.NO_OVERLAY).setLight(p_229045_3_).setNormal(n.x, n.y, n.z);
     }
 
     public ResourceLocation getTextureLocation(ScytheSlash entity) {

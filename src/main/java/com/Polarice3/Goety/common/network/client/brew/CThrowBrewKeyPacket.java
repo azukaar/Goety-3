@@ -7,14 +7,14 @@ import com.Polarice3.Goety.utils.BrewUtils;
 import com.Polarice3.Goety.utils.CuriosFinder;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.protocol.game.ClientboundSoundPacket;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.stats.Stats;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.network.NetworkEvent;
-import net.neoforged.neoforge.registries.NeoForgeRegistries;
+import com.Polarice3.Goety.compat.legacy.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
@@ -34,7 +34,12 @@ public class CThrowBrewKeyPacket {
     }
 
     public static void consume(CThrowBrewKeyPacket packet, Supplier<NetworkEvent.Context> ctx) {
-        ctx.get().enqueueWork(() -> swapFocus(packet.chosenBrew, ctx.get().getSender()));
+        ctx.get().enqueueWork(() -> {
+            Player player = com.Polarice3.Goety.common.network.NetworkContextHelper.getServerPlayer(ctx);
+            if (player != null) {
+                swapFocus(packet.chosenBrew, player);
+            }
+        });
     }
 
     public static void swapFocus(int swapSlot, Player player) {
@@ -47,12 +52,12 @@ public class CThrowBrewKeyPacket {
 
         ItemStack bagFocus = bagHandler.getStackInSlot(swapSlot);
         if (bagFocus.getItem() instanceof ThrowableBrewItem) {
-            if (!player.level.isClientSide) {
-                ThrownBrew thrownBrew = new ThrownBrew(player.level, player);
+            if (!player.level().isClientSide) {
+                ThrownBrew thrownBrew = new ThrownBrew(player.level(), player);
                 thrownBrew.setItem(bagFocus);
                 float velocity = 0.5F + BrewUtils.getVelocity(bagFocus);
                 thrownBrew.shootFromRotation(player, player.getXRot(), player.getYRot(), -20.0F, velocity, 1.0F);
-                player.level.addFreshEntity(thrownBrew);
+                player.level().addFreshEntity(thrownBrew);
             }
 
             player.awardStat(Stats.ITEM_USED.get(bagFocus.getItem()));
@@ -60,8 +65,12 @@ public class CThrowBrewKeyPacket {
                 bagFocus.shrink(1);
             }
             if (player instanceof ServerPlayer serverPlayer) {
-                serverPlayer.connection.send(new ClientboundSoundPacket(NeoForgeRegistries.SOUND_EVENTS.getHolder(SoundEvents.SPLASH_POTION_THROW).get(), SoundSource.PLAYERS, serverPlayer.position().x, serverPlayer.position().y, serverPlayer.position().z, 1.0F, 1.0F, serverPlayer.level().getRandom().nextLong()));
+                serverPlayer.connection.send(new ClientboundSoundPacket(BuiltInRegistries.SOUND_EVENT.wrapAsHolder(SoundEvents.SPLASH_POTION_THROW), SoundSource.PLAYERS, serverPlayer.position().x, serverPlayer.position().y, serverPlayer.position().z, 1.0F, 1.0F, serverPlayer.level().getRandom().nextLong()));
             }
         }
     }
 }
+
+
+
+

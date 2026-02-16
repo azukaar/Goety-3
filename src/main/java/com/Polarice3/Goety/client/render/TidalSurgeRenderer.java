@@ -55,7 +55,7 @@ public class TidalSurgeRenderer<T extends AbstractWave> extends EntityRenderer<T
         this.model.setupAnim(entityIn, 0.0F, 0.0F, ageInTicks, 0.0F, 0.0F);
         VertexConsumer waveConsumer = bufferIn
                 .getBuffer(RenderType.entityTranslucent(getWaveTexture(entityIn.activeWaveTicks)));
-        int waterColorAt = entityIn.level.getBiome(entityIn.blockPosition()).get().getWaterColor();
+        int waterColorAt = entityIn.level().getBiome(entityIn.blockPosition()).value().getWaterColor();
         float[] color = MathHelper.rgbFloat(waterColorAt);
         this.model.renderToBuffer(matrixStackIn, waveConsumer, packedLightIn, OverlayTexture.NO_OVERLAY,
                 0xFF000000 | waterColorAt);

@@ -24,6 +24,10 @@ import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Objects;
 
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.world.item.component.CustomData;
+import net.minecraft.world.item.Item;
+
 public class WardingCharmItem extends SingleStackItem{
     private static final String SOULUSE = "Soul Use";
 
@@ -32,12 +36,12 @@ public class WardingCharmItem extends SingleStackItem{
     }
 
     public boolean SoulCostUp(LivingEntity entityLiving){
-        return entityLiving.hasEffect(GoetyEffects.SUMMON_DOWN.get());
+        return entityLiving.hasEffect(GoetyEffects.SUMMON_DOWN);
     }
 
     public int SoulCalculation(LivingEntity entityLiving){
         if (SoulCostUp(entityLiving)){
-            int amp = Objects.requireNonNull(entityLiving.getEffect(GoetyEffects.SUMMON_DOWN.get())).getAmplifier() + 2;
+            int amp = Objects.requireNonNull(entityLiving.getEffect(GoetyEffects.SUMMON_DOWN)).getAmplifier() + 2;
             return new IronHideSpell().defaultSoulCost() * amp;
         } else if (SoulDiscount(entityLiving)){
             return new IronHideSpell().defaultSoulCost() / 2;
@@ -57,11 +61,10 @@ public class WardingCharmItem extends SingleStackItem{
     @Override
     public void inventoryTick(ItemStack stack, Level worldIn, Entity entityIn, int itemSlot, boolean isSelected) {
         if (entityIn instanceof LivingEntity livingEntity) {
-            CompoundTag compound = stack.getOrCreateTag();
-            compound.putInt(SOULUSE, SoulUse(livingEntity, stack));
+            CustomData.update(DataComponents.CUSTOM_DATA, stack, tag -> tag.putInt(SOULUSE, SoulUse(livingEntity, stack)));
             if (!worldIn.isClientSide) {
                 if (livingEntity instanceof Player player) {
-                    if (!player.hasEffect(GoetyEffects.SOUL_ARMOR.get())) {
+                    if (!player.hasEffect(GoetyEffects.SOUL_ARMOR)) {
                         if (SEHelper.getSoulsAmount(player, SoulUse(player, stack))) {
                             List<Mob> mobs = worldIn.getEntitiesOfClass(Mob.class, player.getBoundingBox().inflate(64, 16, 64));
                             Mob hostile = mobs.stream().filter(mob -> mob.getTarget() == player).findFirst().orElse(null);
@@ -71,10 +74,10 @@ public class WardingCharmItem extends SingleStackItem{
                                 int enchantment = 0;
                                 int duration = 1;
                                 if (stack.isEnchanted()) {
-                                    enchantment = this.getEnchantmentLevel(stack, ModEnchantments.POTENCY.get());
-                                    duration += this.getEnchantmentLevel(stack, ModEnchantments.DURATION.get());
+                                    enchantment = stack.getEnchantmentLevel(ModEnchantments.POTENCY);
+                                    duration += stack.getEnchantmentLevel(ModEnchantments.DURATION);
                                 }
-                                player.addEffect(new MobEffectInstance(GoetyEffects.SOUL_ARMOR.get(), MathHelper.minutesToTicks(duration), enchantment, false, false, true));
+                                player.addEffect(new MobEffectInstance(GoetyEffects.SOUL_ARMOR, MathHelper.minutesToTicks(duration), enchantment, false, false, true));
                                 worldIn.playSound(null, player.getX(), player.getY(), player.getZ(), ModSounds.IRON_HIDE.get(), SoundSource.PLAYERS, 1.0F, 1.0F);
                             }
                         }
@@ -98,10 +101,11 @@ public class WardingCharmItem extends SingleStackItem{
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
-        super.appendHoverText(stack, worldIn, tooltip, flagIn);
-        if (stack.getTag() != null) {
-            int SoulUse = stack.getTag().getInt(SOULUSE);
+    public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltip, TooltipFlag flagIn) {
+        super.appendHoverText(stack, context, tooltip, flagIn);
+        CompoundTag tag = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();
+        if (tag.contains(SOULUSE)) {
+            int SoulUse = tag.getInt(SOULUSE);
             tooltip.add(Component.translatable("info.goety.wand.cost", SoulUse));
         }
     }

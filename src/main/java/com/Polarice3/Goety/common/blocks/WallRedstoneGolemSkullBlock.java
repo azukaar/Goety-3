@@ -1,6 +1,7 @@
 package com.Polarice3.Goety.common.blocks;
 
 import com.Polarice3.Goety.common.blocks.entities.RedstoneGolemSkullBlockEntity;
+import com.mojang.serialization.MapCodec;
 import com.Polarice3.Goety.common.items.block.RedstoneGolemSkullItem;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
@@ -11,6 +12,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -26,6 +28,12 @@ import javax.annotation.Nullable;
 import java.util.Map;
 
 public class WallRedstoneGolemSkullBlock extends BaseEntityBlock {
+    public static final MapCodec<WallRedstoneGolemSkullBlock> CODEC = simpleCodec(p -> new WallRedstoneGolemSkullBlock());
+
+    @Override
+    protected MapCodec<? extends BaseEntityBlock> codec() {
+        return CODEC;
+    }
     public static final DirectionProperty FACING = HorizontalDirectionalBlock.FACING;
     private static final Map<Direction, VoxelShape> AABBS = Maps.newEnumMap(ImmutableMap.of(
             Direction.NORTH, Block.box(0.0D, 4.0D, 6.0D, 16.0D, 20.0D, 16.0D),
@@ -41,14 +49,13 @@ public class WallRedstoneGolemSkullBlock extends BaseEntityBlock {
         this.registerDefaultState(this.stateDefinition.any().setValue(FACING, Direction.NORTH));
     }
 
-    public ItemStack getCloneItemStack(BlockState state, HitResult target, BlockGetter world, BlockPos pos, Player player) {
+    @Override
+    public ItemStack getCloneItemStack(LevelReader world, BlockPos pos, BlockState state) {
         ItemStack itemStack = new ItemStack(this);
-        if (player.isCrouching()) {
-            BlockEntity tileEntity = world.getBlockEntity(pos);
-            if (tileEntity instanceof RedstoneGolemSkullBlockEntity) {
-                this.setOwner(itemStack, tileEntity);
-                this.setModCustomName(itemStack, tileEntity);
-            }
+        BlockEntity tileEntity = world.getBlockEntity(pos);
+        if (tileEntity instanceof RedstoneGolemSkullBlockEntity) {
+            this.setOwner(itemStack, tileEntity);
+            this.setModCustomName(itemStack, tileEntity);
         }
         return itemStack;
     }

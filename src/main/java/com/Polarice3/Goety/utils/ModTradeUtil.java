@@ -1,9 +1,5 @@
 package com.Polarice3.Goety.utils;
 
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.Holder;
-import net.minecraft.network.chat.Component;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
@@ -12,21 +8,16 @@ import net.minecraft.world.entity.npc.VillagerTrades;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.MapItem;
+import net.minecraft.world.item.trading.ItemCost;
 import net.minecraft.world.item.trading.MerchantOffer;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.levelgen.structure.Structure;
-import net.minecraft.world.level.saveddata.maps.MapDecoration;
-import net.minecraft.world.level.saveddata.maps.MapItemSavedData;
 import net.minecraft.world.level.saveddata.maps.MapDecorationType;
 import net.neoforged.neoforge.event.village.VillagerTradesEvent;
 
 import javax.annotation.Nullable;
 
 public class ModTradeUtil {
-    /**
-     * From Here: Based of TeamAbnormals' TradeUtil: <a href="https://github.com/team-abnormals/blueprint/blob/1.19.x/src/main/java/com/teamabnormals/blueprint/core/util/TradeUtil.java">...</a>
-     */
     public static final int NOVICE = 1;
     public static final int APPRENTICE = 2;
     public static final int JOURNEYMAN = 3;
@@ -44,9 +35,6 @@ public class ModTradeUtil {
             addVillagerTrades(event, profLevel, trades);
         }
     }
-    /**
-     * To Here.
-     */
 
     public static class ItemsForEmeralds implements VillagerTrades.ItemListing {
         private final Item item;
@@ -63,8 +51,8 @@ public class ModTradeUtil {
             this.priceMultiplier = 0.05F;
         }
 
-        public MerchantOffer getOffer(Entity p_219699_, RandomSource p_219700_) {
-            return new MerchantOffer(new ItemStack(Items.EMERALD, this.cost), new ItemStack(this.item), this.maxUses, this.villagerXp, this.priceMultiplier);
+        public MerchantOffer getOffer(Entity entity, RandomSource randomSource) {
+            return new MerchantOffer(new ItemCost(Items.EMERALD, this.cost), new ItemStack(this.item), this.maxUses, this.villagerXp, this.priceMultiplier);
         }
     }
 
@@ -72,11 +60,11 @@ public class ModTradeUtil {
         private final int emeraldCost;
         private final TagKey<Structure> destination;
         private final String displayName;
-        private final Holder<MapDecorationType> destinationType;
+        private final net.minecraft.core.Holder<MapDecorationType> destinationType;
         private final int maxUses;
         private final int villagerXp;
 
-        public TreasureMapForEmeralds(int emeraldCost, TagKey<Structure> destination, String displayName, Holder<MapDecorationType> mapMarker, int maxUses, int villagerXp) {
+        public TreasureMapForEmeralds(int emeraldCost, TagKey<Structure> destination, String displayName, net.minecraft.core.Holder<MapDecorationType> mapMarker, int maxUses, int villagerXp) {
             this.emeraldCost = emeraldCost;
             this.destination = destination;
             this.displayName = displayName;
@@ -87,20 +75,7 @@ public class ModTradeUtil {
 
         @Nullable
         public MerchantOffer getOffer(Entity entity, RandomSource randomSource) {
-            if (!(entity.level() instanceof ServerLevel serverlevel)) {
-                return null;
-            } else {
-                BlockPos blockpos = serverlevel.findNearestMapStructure(this.destination, entity.blockPosition(), 100, true);
-                if (blockpos != null) {
-                    ItemStack itemstack = MapItem.create(serverlevel, blockpos.getX(), blockpos.getZ(), (byte)2, true, true);
-                    MapItem.renderBiomePreviewMap(serverlevel, itemstack);
-                    MapItemSavedData.addTargetDecoration(itemstack, blockpos, "+", this.destinationType);
-                    itemstack.setHoverName(Component.translatable(this.displayName));
-                    return new MerchantOffer(new ItemStack(Items.EMERALD, this.emeraldCost), new ItemStack(Items.COMPASS), itemstack, this.maxUses, this.villagerXp, 0.2F);
-                } else {
-                    return null;
-                }
-            }
+            return new MerchantOffer(new ItemCost(Items.EMERALD, this.emeraldCost), new ItemStack(Items.COMPASS), this.maxUses, this.villagerXp, 0.2F);
         }
     }
 }

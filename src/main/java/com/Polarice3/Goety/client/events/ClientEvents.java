@@ -168,7 +168,7 @@ public class ClientEvents {
         float delta = PARTIAL_TICK;
         if (player != null) {
             float ticksExistedDelta = player.tickCount + delta;
-            if (MainConfig.CameraShake.get() && !Minecraft.getInstance().isPaused()) {
+            if (com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MainConfig.CameraShake, false) && !Minecraft.getInstance().isPaused()) {
                 float shakeAmplitude = 0;
                 for (CameraShake cameraShake : player.level().getEntitiesOfClass(CameraShake.class, player.getBoundingBox().inflate(20))) {
                     if (cameraShake.distanceTo(player) < cameraShake.getRadius()) {
@@ -255,7 +255,7 @@ public class ClientEvents {
                     guardianServant.playAttackSound = false;
                 }
             }
-            if (MainConfig.BossMusic.get()) {
+            if (com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MainConfig.BossMusic, false)) {
                 if (entity instanceof LivingEntity livingEntity) {
                     if (entity instanceof Wight wight && !wight.isNoAi()) {
                         playPreBossMusic(ModSounds.ENDERMAN_THEME_PRE.get(), ModSounds.ARENA_END.get(), wight, 0.75F, 1.0F, 64);
@@ -306,7 +306,7 @@ public class ClientEvents {
     }
 
     public static void playPreBossMusic(SoundEvent soundEvent, SoundEvent postBossMusic, Mob mob, float volume, float pitch, int withinRange){
-        if (MainConfig.BossMusic.get()) {
+        if (com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MainConfig.BossMusic, false)) {
             Minecraft minecraft = Minecraft.getInstance();
             if (soundEvent != null && mob.isAlive()) {
                 if (PRE_BOSS_MUSIC == null) {
@@ -334,7 +334,7 @@ public class ClientEvents {
     }
 
     public static void playBossMusic(SoundEvent soundEvent, SoundEvent postBossMusic, Mob mob, float volume, float pitch){
-        if (MainConfig.BossMusic.get()) {
+        if (com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MainConfig.BossMusic, false)) {
             Minecraft minecraft = Minecraft.getInstance();
             if (soundEvent != null && mob.isAlive()) {
                 if (BOSS_MUSIC == null) {
@@ -351,7 +351,7 @@ public class ClientEvents {
 
     @SubscribeEvent
     public static void renderGlove(RenderArmEvent event){
-        if (event.isCanceled() || !ItemConfig.FirstPersonGloves.get()){
+        if (event.isCanceled() || !com.Polarice3.Goety.utils.ConfigHelper.getBoolean(ItemConfig.FirstPersonGloves, false)){
             return;
         }
 
@@ -377,7 +377,7 @@ public class ClientEvents {
             }
             poseStack.popPose();
         }
-        if (event.getPlayer().hasEffect(GoetyEffects.SHADOW_WALK.getHolder())){
+        if (event.getPlayer().hasEffect(GoetyEffects.SHADOW_WALK)){
             if (event.getPlayer().getMainHandItem().isEmpty() && event.getArm() == event.getPlayer().getMainArm()){
                 event.setCanceled(true);
             } else if (event.getPlayer().getOffhandItem().isEmpty() && event.getArm() != event.getPlayer().getMainArm()){
@@ -402,7 +402,7 @@ public class ClientEvents {
     @SubscribeEvent
     public static void onPlayerRenderPre(RenderPlayerEvent.Pre event) {
         final Player player = event.getEntity();
-        if (player.hasEffect(GoetyEffects.SHADOW_WALK.getHolder())){
+        if (player.hasEffect(GoetyEffects.SHADOW_WALK)){
             event.setCanceled(true);
         }
         if (player.isInvisible() && CuriosFinder.hasIllusionRobe(player)){
@@ -444,7 +444,7 @@ public class ClientEvents {
                                 RenderSystem.enableBlend();
                                 RenderSystem.defaultBlendFunc();
                                 int SoulEnergy = SEHelper.getSESouls(player);
-                                int SoulEnergyTotal = MainConfig.MaxArcaSouls.get();
+                                int SoulEnergyTotal = com.Polarice3.Goety.utils.ConfigHelper.getInt(MainConfig.MaxArcaSouls, 0);
                                 String s = Component.translatable("tooltip.goety.blockSoul").getString() + SoulEnergy + "/" + SoulEnergyTotal;
                                 int l = fontRenderer.width(s);
                                 event.getGuiGraphics().drawString(fontRenderer, s, (-l / 2), -4, 0xFFFFFF);
@@ -585,7 +585,7 @@ public class ClientEvents {
                                 poseStack.translate((float) (width / 2), (float) (height - 68), 0.0F);
                                 RenderSystem.enableBlend();
                                 RenderSystem.defaultBlendFunc();
-                                String s2 = Component.translatable("tooltip.goety.idol.count").getString() + idol.getClientCount() + "/" + MainConfig.OminousIdolLimit.get();
+                                String s2 = Component.translatable("tooltip.goety.idol.count").getString() + idol.getClientCount() + "/" + com.Polarice3.Goety.utils.ConfigHelper.getInt(MainConfig.OminousIdolLimit, 0);
                                 int l2 = fontRenderer.width(s2);
                                 event.getGuiGraphics().drawString(fontRenderer, s2, (-l2 / 2), -4, 0xFFFFFF);
                                 RenderSystem.disableBlend();
@@ -854,7 +854,7 @@ public class ClientEvents {
         Player player = event.getEntity();
         Input input = event.getInput();
         if (player instanceof LocalPlayer localPlayer) {
-            if (MainConfig.WheelGuiMovement.get()) {
+            if (com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MainConfig.WheelGuiMovement, false)) {
                 if (Minecraft.getInstance().screen instanceof FocusRadialMenuScreen || Minecraft.getInstance().screen instanceof BrewRadialMenuScreen) {
                     Options settings = Minecraft.getInstance().options;
                     input.up = isKeyDown0(settings.keyUp);
@@ -872,7 +872,7 @@ public class ClientEvents {
                     }
                 }
             }
-            if (SpellConfig.FullStopCast.get()) {
+            if (com.Polarice3.Goety.utils.ConfigHelper.getBoolean(SpellConfig.FullStopCast, false)) {
                 if (localPlayer.isUsingItem() && !localPlayer.isPassenger()) {
                     if (MobUtil.isSpellCasting(localPlayer)) {
                         input.leftImpulse = 0.0F;
@@ -891,7 +891,7 @@ public class ClientEvents {
     public static void KeyInputs(InputEvent.Key event) {
         Minecraft MINECRAFT = Minecraft.getInstance();
 
-        if (MainConfig.WheelGuiMovement.get()) {
+        if (com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MainConfig.WheelGuiMovement, false)) {
             if (MINECRAFT.screen instanceof FocusRadialMenuScreen || MINECRAFT.screen instanceof BrewRadialMenuScreen) {
                 InputConstants.Key inputconstants$key = InputConstants.getKey(event.getKey(), event.getScanCode());
                 if (event.getAction() == 0) {
@@ -949,7 +949,7 @@ public class ClientEvents {
         }
         if (ModKeybindings.keyBindings[6].isDown() && MINECRAFT.isWindowActive()){
             ModNetwork.sendToServer(new CSetLichNightVisionMode());
-            if (MINECRAFT.player != null && MainConfig.LichNightVision.get()){
+            if (MINECRAFT.player != null && com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MainConfig.LichNightVision, false)){
                 if (LichdomHelper.isLich(MINECRAFT.player)){
                     MINECRAFT.player.playSound(SoundEvents.END_PORTAL_FRAME_FILL);
                 }

@@ -128,7 +128,7 @@ public class ViciousTooth extends Entity implements ISpellEntity {
     }
 
     public void damageTargets(LivingEntity livingEntity){
-        float damage = SpellConfig.ViciousToothDamage.get().floatValue() * WandUtil.damageMultiply();
+        float damage = com.Polarice3.Goety.utils.ConfigHelper.getFloat(SpellConfig.ViciousToothDamage, 1.0F) * WandUtil.damageMultiply();
         damage += this.extraDamage;
         if (livingEntity != null) {
             if ((this.getOwner() != null && !MobUtil.areAllies(this.getOwner(), livingEntity)) || this.getOwner() == null) {

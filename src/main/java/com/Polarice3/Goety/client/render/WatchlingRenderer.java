@@ -26,7 +26,7 @@ public class WatchlingRenderer<T extends AbstractWatchling> extends MobRenderer<
     }
 
     public ResourceLocation getTextureLocation(T pEntity) {
-        if (pEntity.isHostile() || !MobsConfig.WatchlingServantTexture.get()) {
+        if (pEntity.isHostile() || !com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MobsConfig.WatchlingServantTexture, false)) {
             return TEXTURE_LOCATION;
         }
         return SERVANT_LOCATION;
@@ -52,7 +52,7 @@ public class WatchlingRenderer<T extends AbstractWatchling> extends MobRenderer<
         }
 
         public RenderType getRenderType(T pEntity) {
-            if (pEntity.isHostile() || !MobsConfig.WatchlingServantTexture.get()) {
+            if (pEntity.isHostile() || !com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MobsConfig.WatchlingServantTexture, false)) {
                 return this.renderType();
             }
             return SERVANT_TYPE;

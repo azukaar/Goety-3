@@ -13,6 +13,8 @@ import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.resources.ResourceLocation;
+import com.Polarice3.Goety.Goety;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.tags.DamageTypeTags;
@@ -39,11 +41,14 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.alchemy.Potion;
-import net.minecraft.world.item.alchemy.PotionUtils;
+import com.Polarice3.Goety.utils.PotionUtils;
 import net.minecraft.world.item.alchemy.Potions;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
+import net.minecraft.core.Holder;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.world.item.alchemy.PotionContents;
 import net.neoforged.neoforge.common.NeoForgeMod;
 
 import javax.annotation.Nullable;
@@ -51,9 +56,9 @@ import java.util.List;
 import java.util.UUID;
 
 public class WitchServant extends RaiderServant implements RangedAttackMob {
-    private static final UUID SPEED_MODIFIER_DRINKING_UUID = UUID.fromString("5CD17E52-A79A-43D3-A529-90FDE04B181E");
-    private static final AttributeModifier SPEED_MODIFIER_DRINKING = new AttributeModifier(SPEED_MODIFIER_DRINKING_UUID,
-            "Drinking speed penalty", -0.25D, AttributeModifier.Operation.ADDITION);
+    public static final ResourceLocation SPEED_MODIFIER_DRINKING_ID = Goety.location("drinking_speed_penalty");
+    private static final AttributeModifier SPEED_MODIFIER_DRINKING = new AttributeModifier(SPEED_MODIFIER_DRINKING_ID,
+            -0.25D, AttributeModifier.Operation.ADD_VALUE);
     private static final EntityDataAccessor<Boolean> DATA_USING_ITEM = SynchedEntityData.defineId(WitchServant.class,
             EntityDataSerializers.BOOLEAN);
     private LivingEntity shootTarget;
@@ -134,17 +139,17 @@ public class WitchServant extends RaiderServant implements RangedAttackMob {
 
     public static AttributeSupplier.Builder setCustomAttributes() {
         return Monster.createMonsterAttributes()
-                .add(Attributes.MAX_HEALTH, AttributesConfig.WitchServantHealth.get())
-                .add(Attributes.FOLLOW_RANGE, AttributesConfig.WitchServantFollowRange.get())
-                .add(Attributes.ARMOR, AttributesConfig.WitchServantArmor.get())
+                .add(Attributes.MAX_HEALTH, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.WitchServantHealth, 20.0D))
+                .add(Attributes.FOLLOW_RANGE, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.WitchServantFollowRange, 20.0D))
+                .add(Attributes.ARMOR, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.WitchServantArmor, 20.0D))
                 .add(Attributes.MOVEMENT_SPEED, 0.25D);
     }
 
     public void setConfigurableAttributes() {
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.MAX_HEALTH), AttributesConfig.WitchServantHealth.get());
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ARMOR), AttributesConfig.WitchServantArmor.get());
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.MAX_HEALTH), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.WitchServantHealth, 20.0D));
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ARMOR), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.WitchServantArmor, 20.0D));
         MobUtil.setBaseAttributes(this.getAttribute(Attributes.FOLLOW_RANGE),
-                AttributesConfig.WitchServantFollowRange.get());
+                com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.WitchServantFollowRange, 20.0D));
     }
 
     public void aiStep() {
@@ -167,21 +172,21 @@ public class WitchServant extends RaiderServant implements RangedAttackMob {
                     ItemStack itemstack = this.getMainHandItem();
                     this.setItemSlot(EquipmentSlot.MAINHAND, ItemStack.EMPTY);
                     if (itemstack.is(Items.POTION)) {
-                        List<MobEffectInstance> list = PotionUtils.getMobEffects(itemstack);
-                        if (list != null) {
-                            for (MobEffectInstance mobeffectinstance : list) {
+                        PotionContents contents = itemstack.get(DataComponents.POTION_CONTENTS);
+                        if (contents != null) {
+                            for (MobEffectInstance mobeffectinstance : contents.getAllEffects()) {
                                 this.addEffect(new MobEffectInstance(mobeffectinstance));
                             }
                         }
                     }
 
                     if (attributeinstance != null) {
-                        attributeinstance.removeModifier(SPEED_MODIFIER_DRINKING);
+                        attributeinstance.removeModifier(SPEED_MODIFIER_DRINKING.id());
                     }
                 }
             } else {
-                Potion potion = null;
-                if (this.random.nextFloat() < 0.15F && this.isEyeInFluidType(NeoForgeMod.WATER_TYPE.get())
+                Holder<Potion> potion = null;
+                if (this.random.nextFloat() < 0.15F && this.isEyeInFluidType(NeoForgeMod.WATER_TYPE.value())
                         && !this.hasEffect(MobEffects.WATER_BREATHING)) {
                     potion = Potions.WATER_BREATHING;
                 } else if (this.random.nextFloat() < 0.15F
@@ -198,8 +203,9 @@ public class WitchServant extends RaiderServant implements RangedAttackMob {
                 }
 
                 if (potion != null) {
-                    this.setItemSlot(EquipmentSlot.MAINHAND,
-                            PotionUtils.setPotion(new ItemStack(Items.POTION), potion));
+                    ItemStack potionStack = new ItemStack(Items.POTION);
+                    potionStack.set(DataComponents.POTION_CONTENTS, new PotionContents(potion));
+                    this.setItemSlot(EquipmentSlot.MAINHAND, potionStack);
                     this.usingTime = this.getMainHandItem().getUseDuration(this);
                     this.setUsingItem(true);
                     if (!this.isSilent()) {
@@ -209,7 +215,7 @@ public class WitchServant extends RaiderServant implements RangedAttackMob {
                     }
 
                     if (attributeinstance != null) {
-                        attributeinstance.removeModifier(SPEED_MODIFIER_DRINKING);
+                        attributeinstance.removeModifier(SPEED_MODIFIER_DRINKING.id());
                         attributeinstance.addTransientModifier(SPEED_MODIFIER_DRINKING);
                     }
                 }
@@ -282,7 +288,7 @@ public class WitchServant extends RaiderServant implements RangedAttackMob {
             double d1 = target.getEyeY() - (double) 1.1F - this.getY();
             double d2 = target.getZ() + vec3.z - this.getZ();
             double d3 = Math.sqrt(d0 * d0 + d2 * d2);
-            Potion potion = Potions.HARMING;
+            Holder<Potion> potion = Potions.HARMING;
             if (target.isInvertedHealAndHarm()) {
                 potion = Potions.HEALING;
             }
@@ -308,7 +314,9 @@ public class WitchServant extends RaiderServant implements RangedAttackMob {
             }
 
             ThrownPotion thrownpotion = new ThrownPotion(this.level(), this);
-            thrownpotion.setItem(PotionUtils.setPotion(new ItemStack(Items.SPLASH_POTION), potion));
+            ItemStack potionStack = new ItemStack(Items.SPLASH_POTION);
+            potionStack.set(DataComponents.POTION_CONTENTS, new PotionContents(potion));
+            thrownpotion.setItem(potionStack);
             thrownpotion.setXRot(thrownpotion.getXRot() - -20.0F);
             thrownpotion.shoot(d0, d1 + d3 * 0.2D, d2, 0.75F, 8.0F);
             if (!this.isSilent()) {

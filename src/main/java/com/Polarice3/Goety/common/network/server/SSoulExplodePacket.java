@@ -3,7 +3,7 @@ package com.Polarice3.Goety.common.network.server;
 import com.Polarice3.Goety.Goety;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
-import net.neoforged.network.NetworkEvent;
+import com.Polarice3.Goety.compat.legacy.network.NetworkEvent;
 
 import java.util.function.Supplier;
 

@@ -198,10 +198,10 @@ public class Apostle extends SpellCastingCultist implements RangedAttackMob {
     @SuppressWarnings("removal")
     public static AttributeSupplier.Builder setCustomAttributes() {
         return Mob.createMobAttributes()
-                .add(Attributes.MAX_HEALTH, AttributesConfig.ApostleHealth.get())
+                .add(Attributes.MAX_HEALTH, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.ApostleHealth, 200.0D))
                 .add(Attributes.MOVEMENT_SPEED, 0.35D)
-                .add(Attributes.ARMOR, AttributesConfig.ApostleArmor.get())
-                .add(Attributes.ARMOR_TOUGHNESS, AttributesConfig.ApostleToughness.get())
+                .add(Attributes.ARMOR, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.ApostleArmor, 10.0D))
+                .add(Attributes.ARMOR_TOUGHNESS, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.ApostleToughness, 5.0D))
                 .add(Attributes.KNOCKBACK_RESISTANCE, 0.75D)
                 .add(Attributes.FOLLOW_RANGE, 40.0D)
                 .add(Attributes.STEP_HEIGHT, 1.0F)
@@ -209,10 +209,10 @@ public class Apostle extends SpellCastingCultist implements RangedAttackMob {
     }
 
     public void setConfigurableAttributes() {
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.MAX_HEALTH), AttributesConfig.ApostleHealth.get());
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ARMOR), AttributesConfig.ApostleArmor.get());
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.MAX_HEALTH), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.ApostleHealth, 20.0D));
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ARMOR), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.ApostleArmor, 20.0D));
         MobUtil.setBaseAttributes(this.getAttribute(Attributes.ARMOR_TOUGHNESS),
-                AttributesConfig.ApostleToughness.get());
+                com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.ApostleToughness, 20.0D));
     }
 
     protected PathNavigation createNavigation(Level p_33913_) {
@@ -847,7 +847,7 @@ public class Apostle extends SpellCastingCultist implements RangedAttackMob {
     protected void actuallyHurt(DamageSource source, float amount) {
         float initialAmount = amount;
         if (!source.is(DamageTypeTags.BYPASSES_INVULNERABILITY)) {
-            amount = Math.min(initialAmount, AttributesConfig.ApostleDamageCap.get().floatValue());
+            amount = Math.min(initialAmount, (float)com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.ApostleDamageCap, 20.0D));
         }
         if (this.moddedInvul <= 0) {
             super.actuallyHurt(source, amount);
@@ -939,7 +939,7 @@ public class Apostle extends SpellCastingCultist implements RangedAttackMob {
                 if (this.randomTeleport(d3, d4, d5, false)) {
                     this.stuckTime = 0;
                     this.level().broadcastEntityEvent(this, (byte) 100);
-                    this.level().gameEvent(GameEvent.TELEPORT, this.position(), GameEvent.Context.of(this));
+        this.level().gameEvent(GameEvent.TELEPORT, this.position(), GameEvent.Context.of(this));
                     if (!this.isSilent()) {
                         this.level().playSound((Player) null, this.prevX, this.prevY, this.prevZ,
                                 ModSounds.APOSTLE_TELEPORT.get(), this.getSoundSource(), 1.0F, 1.0F);
@@ -1467,7 +1467,7 @@ public class Apostle extends SpellCastingCultist implements RangedAttackMob {
         }
         if (this.isInNether()) {
             if (target != null) {
-                target.addEffect(new MobEffectInstance(GoetyEffects.BURN_HEX.getHolder(), 100));
+                target.addEffect(new MobEffectInstance(GoetyEffects.BURN_HEX, 100));
             }
         }
     }
@@ -1504,7 +1504,7 @@ public class Apostle extends SpellCastingCultist implements RangedAttackMob {
         ItemStack itemstack = this.getProjectile(
                 this.getItemInHand(ProjectileUtil.getWeaponHoldingHand(this, item -> item instanceof BowItem)));
         AbstractArrow abstractarrowentity = this.getArrow(itemstack,
-                pDistanceFactor * AttributesConfig.ApostleBowDamage.get());
+                pDistanceFactor * com.Polarice3.Goety.utils.ConfigHelper.getInt(AttributesConfig.ApostleBowDamage, 2));
         if (this.getMainHandItem().getItem() instanceof BowItem) {
             abstractarrowentity = ((BowItem) this.getMainHandItem().getItem()).customArrow(abstractarrowentity, ItemStack.EMPTY, this.getMainHandItem());
             abstractarrowentity.setBaseDamage(this.getAttributeValue(Attributes.ATTACK_DAMAGE));
@@ -1550,7 +1550,7 @@ public class Apostle extends SpellCastingCultist implements RangedAttackMob {
 
             if (this.isSecondPhase()) {
                 if (this.getArrowEffect() == MobEffects.POISON.value()) {
-                    mobEffect = GoetyEffects.ACID_VENOM.getHolder();
+                    mobEffect = GoetyEffects.ACID_VENOM;
                 }
                 if (this.getArrowEffect() == MobEffects.DARKNESS.value()) {
                     mobEffect = MobEffects.BLINDNESS;

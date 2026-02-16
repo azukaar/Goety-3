@@ -105,39 +105,39 @@ public class ModDamageSource extends DamageSource {
     }
 
     public static DamageSource summonAttack(LivingEntity owned, LivingEntity owner) {
-        return ownedDamageSource(owned.level, SUMMON, owned, owner);
+        return ownedDamageSource(owned.level(), SUMMON, owned, owner);
     }
 
     public static DamageSource directShock(LivingEntity pMob) {
-        return ModDamageSource.entityDamageSource(pMob.level, DIRECT_SHOCK, pMob);
+        return ModDamageSource.entityDamageSource(pMob.level(), DIRECT_SHOCK, pMob);
     }
 
     public static DamageSource indirectShock(Entity pSource, @Nullable Entity pIndirectEntity) {
-        return ModDamageSource.indirectEntityDamageSource(pSource.level, INDIRECT_SHOCK, pSource, pIndirectEntity);
+        return ModDamageSource.indirectEntityDamageSource(pSource.level(), INDIRECT_SHOCK, pSource, pIndirectEntity);
     }
 
     public static DamageSource lightning(Entity pSource, @Nullable Entity pIndirectEntity) {
-        return ModDamageSource.indirectEntityDamageSource(pSource.level, LIGHTNING, pSource, pIndirectEntity);
+        return ModDamageSource.indirectEntityDamageSource(pSource.level(), LIGHTNING, pSource, pIndirectEntity);
     }
 
     public static DamageSource directFreeze(LivingEntity pMob) {
-        return ModDamageSource.entityDamageSource(pMob.level, DIRECT_FREEZE, pMob);
+        return ModDamageSource.entityDamageSource(pMob.level(), DIRECT_FREEZE, pMob);
     }
 
     public static DamageSource indirectFreeze(Entity pSource, @Nullable Entity pIndirectEntity) {
-        return ModDamageSource.indirectEntityDamageSource(pSource.level, INDIRECT_FREEZE, pSource, pIndirectEntity);
+        return ModDamageSource.indirectEntityDamageSource(pSource.level(), INDIRECT_FREEZE, pSource, pIndirectEntity);
     }
 
     public static DamageSource iceSpike(Entity pSource, @Nullable Entity pIndirectEntity) {
-        return ModDamageSource.indirectEntityDamageSource(pSource.level, ICE_SPIKE, pSource, pIndirectEntity);
+        return ModDamageSource.indirectEntityDamageSource(pSource.level(), ICE_SPIKE, pSource, pIndirectEntity);
     }
 
     public static DamageSource directDrench(LivingEntity pMob) {
-        return ModDamageSource.entityDamageSource(pMob.level, DIRECT_DRENCH, pMob);
+        return ModDamageSource.entityDamageSource(pMob.level(), DIRECT_DRENCH, pMob);
     }
 
     public static DamageSource indirectDrench(Entity pSource, @Nullable Entity pIndirectEntity) {
-        return ModDamageSource.indirectEntityDamageSource(pSource.level, INDIRECT_DRENCH, pSource, pIndirectEntity);
+        return ModDamageSource.indirectEntityDamageSource(pSource.level(), INDIRECT_DRENCH, pSource, pIndirectEntity);
     }
 
     public static DamageSource modFireball(@Nullable Entity pIndirectEntity, Level world){
@@ -154,51 +154,51 @@ public class ModDamageSource extends DamageSource {
     }
 
     public static DamageSource sword(Entity pSource, @Nullable Entity pIndirectEntity){
-        return indirectEntityDamageSource(pSource.level, SWORD, pSource, pIndirectEntity);
+        return indirectEntityDamageSource(pSource.level(), SWORD, pSource, pIndirectEntity);
     }
 
     public static DamageSource iceBouquet(Entity pSource, @Nullable Entity pIndirectEntity){
-        return noKnockbackDamageSource(pSource.level, ICE_BOUQUET, pSource, pIndirectEntity);
+        return noKnockbackDamageSource(pSource.level(), ICE_BOUQUET, pSource, pIndirectEntity);
     }
 
     public static DamageSource hellfire(Entity pSource, @Nullable Entity pIndirectEntity){
-        return noKnockbackDamageSource(pSource.level, HELLFIRE, pSource, pIndirectEntity);
+        return noKnockbackDamageSource(pSource.level(), HELLFIRE, pSource, pIndirectEntity);
     }
 
     public static DamageSource fireBreath(Entity pSource, @Nullable Entity pIndirectEntity){
-        return noKnockbackDamageSource(pSource.level, FIRE_BREATH, pSource, pIndirectEntity);
+        return noKnockbackDamageSource(pSource.level(), FIRE_BREATH, pSource, pIndirectEntity);
     }
 
     public static DamageSource magicFireBreath(Entity pSource, @Nullable Entity pIndirectEntity){
-        return noKnockbackDamageSource(pSource.level, MAGIC_FIRE, pSource, pIndirectEntity);
+        return noKnockbackDamageSource(pSource.level(), MAGIC_FIRE, pSource, pIndirectEntity);
     }
 
     public static DamageSource frostBreath(Entity pSource, @Nullable Entity pIndirectEntity){
-        return noKnockbackDamageSource(pSource.level, FROST_BREATH, pSource, pIndirectEntity);
+        return noKnockbackDamageSource(pSource.level(), FROST_BREATH, pSource, pIndirectEntity);
     }
 
     public static DamageSource bubbleStream(Entity pSource, @Nullable Entity pIndirectEntity){
-        return noKnockbackDamageSource(pSource.level, BUBBLE_STREAM, pSource, pIndirectEntity);
+        return noKnockbackDamageSource(pSource.level(), BUBBLE_STREAM, pSource, pIndirectEntity);
     }
 
     public static DamageSource magicBolt(Entity pSource, @Nullable Entity pIndirectEntity){
-        return noKnockbackDamageSource(pSource.level, MAGIC_BOLT, pSource, pIndirectEntity);
+        return noKnockbackDamageSource(pSource.level(), MAGIC_BOLT, pSource, pIndirectEntity);
     }
 
     public static DamageSource acid(Entity pSource, @Nullable Entity pIndirectEntity){
-        return noKnockbackDamageSource(pSource.level, ACID, pSource, pIndirectEntity);
+        return noKnockbackDamageSource(pSource.level(), ACID, pSource, pIndirectEntity);
     }
 
     public static DamageSource spike(Entity pSource, @Nullable Entity pIndirectEntity){
-        return noKnockbackDamageSource(pSource.level, SPIKE, pSource, pIndirectEntity);
+        return noKnockbackDamageSource(pSource.level(), SPIKE, pSource, pIndirectEntity);
     }
 
     public static DamageSource windBlast(Entity pSource, @Nullable Entity pIndirectEntity){
-        return indirectEntityDamageSource(pSource.level, WIND_BLAST, pSource, pIndirectEntity);
+        return indirectEntityDamageSource(pSource.level(), WIND_BLAST, pSource, pIndirectEntity);
     }
 
     public static DamageSource deathCurse(Entity pSource){
-        return noKnockbackDamageSource(pSource.level, DEATH, pSource, pSource);
+        return noKnockbackDamageSource(pSource.level(), DEATH, pSource, pSource);
     }
 
     public static boolean hellfireAttacks(DamageSource source){
@@ -251,19 +251,19 @@ public class ModDamageSource extends DamageSource {
     }
 
     public static DamageSource soulLeech(Entity pSource, @Nullable Entity pIndirectEntity){
-        return noKnockbackDamageSource(pSource.level, SOUL_LEECH, pSource, pIndirectEntity);
+        return noKnockbackDamageSource(pSource.level(), SOUL_LEECH, pSource, pIndirectEntity);
     }
 
     public static DamageSource lifeLeech(Entity pSource, @Nullable Entity pIndirectEntity){
-        return noKnockbackDamageSource(pSource.level, LIFE_LEECH, pSource, pIndirectEntity);
+        return noKnockbackDamageSource(pSource.level(), LIFE_LEECH, pSource, pIndirectEntity);
     }
 
     public static DamageSource choke(Entity pSource, @Nullable Entity pIndirectEntity) {
-        return noKnockbackDamageSource(pSource.level, CHOKE, pSource, pIndirectEntity);
+        return noKnockbackDamageSource(pSource.level(), CHOKE, pSource, pIndirectEntity);
     }
 
     public static DamageSource swarm(Entity pSource, @Nullable Entity pIndirectEntity) {
-        return noKnockbackDamageSource(pSource.level, SWARM, pSource, pIndirectEntity);
+        return noKnockbackDamageSource(pSource.level(), SWARM, pSource, pIndirectEntity);
     }
 
     public static boolean wantingAttacks(DamageSource source){

@@ -11,6 +11,8 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.Items;
 
 public class SnapFungus extends ThrowableFungus {
 
@@ -24,6 +26,10 @@ public class SnapFungus extends ThrowableFungus {
 
     public SnapFungus(LivingEntity p_37463_, Level p_37464_) {
         super(ModEntityType.SNAP_FUNGUS.get(), p_37463_, p_37464_);
+    }
+
+    protected Item getDefaultItem() {
+        return Items.WARPED_FUNGUS;
     }
 
     protected void onHit(HitResult p_37406_) {

@@ -46,7 +46,7 @@ public class Pyroclast extends ThrowableProjectile implements ISpellEntity {
 
     @Override
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
-        super.defineSynchedData(builder);
+        // super.defineSynchedData(builder);
         builder.define(DATA_DANGEROUS, false);
     }
 
@@ -119,10 +119,10 @@ public class Pyroclast extends ThrowableProjectile implements ISpellEntity {
         double d0 = this.getX() + vector3d.x;
         double d1 = this.getY() + vector3d.y;
         double d2 = this.getZ() + vector3d.z;
-        this.level().addParticle(ParticleTypes.LARGE_SMOKE, d0 + level.random.nextDouble() / 2, d1 + 0.5D,
-                d2 + level.random.nextDouble() / 2, 0.0D, 0.0D, 0.0D);
-        this.level().addParticle(ParticleTypes.FLAME, d0 + level.random.nextDouble() / 2, d1 + 0.5D,
-                d2 + level.random.nextDouble() / 2, 0.0D, 0.0D, 0.0D);
+        this.level().addParticle(ParticleTypes.LARGE_SMOKE, d0 + this.level().random.nextDouble() / 2, d1 + 0.5D,
+                d2 + this.level().random.nextDouble() / 2, 0.0D, 0.0D, 0.0D);
+        this.level().addParticle(ParticleTypes.FLAME, d0 + this.level().random.nextDouble() / 2, d1 + 0.5D,
+                d2 + this.level().random.nextDouble() / 2, 0.0D, 0.0D, 0.0D);
     }
 
     public void explode() {
@@ -130,7 +130,7 @@ public class Pyroclast extends ThrowableProjectile implements ISpellEntity {
             Entity owner = this.getOwner();
             boolean flag = this.isDangerous();
             if (owner instanceof Player) {
-                if (!SpellConfig.PyroclastGriefing.get()) {
+                if (!com.Polarice3.Goety.utils.ConfigHelper.getBoolean(SpellConfig.PyroclastGriefing, false)) {
                     flag = false;
                 }
             }
@@ -149,7 +149,7 @@ public class Pyroclast extends ThrowableProjectile implements ISpellEntity {
         Entity entity1 = this.getOwner();
         float damage = 6.0F;
         if (entity1 instanceof Player) {
-            damage = SpellConfig.PyroclastDamage.get().floatValue() * WandUtil.damageMultiply();
+            damage = com.Polarice3.Goety.utils.ConfigHelper.getFloat(SpellConfig.PyroclastDamage, 1.0F) * WandUtil.damageMultiply();
         }
         entity.hurt(ModDamageSource.modFireball(this.getOwner(), this.level()), damage + this.potency);
 
@@ -157,7 +157,7 @@ public class Pyroclast extends ThrowableProjectile implements ISpellEntity {
             entity.igniteForSeconds(5 * this.flaming);
         }
         if (entity1 instanceof LivingEntity) {
-            this.doEnchantDamageEffects((LivingEntity) entity1, entity);
+            // this.doEnchantDamageEffects((LivingEntity) entity1, entity);
         }
     }
 
@@ -193,8 +193,8 @@ public class Pyroclast extends ThrowableProjectile implements ISpellEntity {
         return (!pEntity.isSpectator() && pEntity.isAlive() && pEntity.isPickable()) || this.getOwner() == null;
     }
 
-    @Override
-    public Packet<ClientGamePacketListener> getAddEntityPacket() {
-        return new net.minecraft.network.protocol.game.ClientboundAddEntityPacket(this);
-    }
+    // @Override
+    // public Packet<ClientGamePacketListener> getAddEntityPacket() {
+    //    return new net.minecraft.network.protocol.game.ClientboundAddEntityPacket(this);
+    // }
 }

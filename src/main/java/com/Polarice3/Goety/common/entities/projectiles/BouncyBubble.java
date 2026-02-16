@@ -34,7 +34,7 @@ import net.minecraft.world.phys.Vec3;
 public class BouncyBubble extends SpellHurtingProjectile{
     private static final EntityDataAccessor<Integer> BOUNCE_TIMES = SynchedEntityData.defineId(BouncyBubble.class, EntityDataSerializers.INT);
     private static final EntityDataAccessor<Float> SIZE = SynchedEntityData.defineId(BouncyBubble.class, EntityDataSerializers.FLOAT);
-    public float damage = SpellConfig.BouncyBubbleDamage.get().floatValue() * WandUtil.damageMultiply();
+    public float damage = com.Polarice3.Goety.utils.ConfigHelper.getFloat(SpellConfig.BouncyBubbleDamage, 1.0F) * WandUtil.damageMultiply();
 
     public BouncyBubble(EntityType<? extends AbstractHurtingProjectile> p_36833_, Level p_36834_) {
         super(p_36833_, p_36834_);

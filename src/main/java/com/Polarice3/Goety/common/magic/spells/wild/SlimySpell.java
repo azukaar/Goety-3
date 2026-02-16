@@ -33,12 +33,12 @@ public class SlimySpell extends SummonSpell {
 
     @Override
     public int defaultSoulCost() {
-        return SpellConfig.SlimyCost.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.SlimyCost, 0);
     }
 
     @Override
     public int defaultCastDuration() {
-        return SpellConfig.SlimyDuration.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.SlimyDuration, 0);
     }
 
     @Nullable
@@ -49,12 +49,12 @@ public class SlimySpell extends SummonSpell {
 
     @Override
     public int defaultSpellCooldown() {
-        return SpellConfig.SlimyCoolDown.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.SlimyCoolDown, 0);
     }
 
     @Override
     public int SummonDownDuration() {
-        return SpellConfig.SlimySummonDown.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.SlimySummonDown, 0);
     }
 
     @Override
@@ -77,7 +77,7 @@ public class SlimySpell extends SummonSpell {
 
     @Override
     public int summonLimit() {
-        return SpellConfig.SlimyLimit.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.SlimyLimit, 0);
     }
 
     public boolean specialStaffs(ItemStack stack){
@@ -98,7 +98,7 @@ public class SlimySpell extends SummonSpell {
         if (!isShifting(caster)) {
             int i = 1;
             if (rightStaff(staff)){
-                i = 2 + caster.level.random.nextInt(2);
+                i = 2 + caster.level().random.nextInt(2);
             } else if (specialStaffs(staff)){
                 i = 2;
             }
@@ -132,7 +132,7 @@ public class SlimySpell extends SummonSpell {
                 }
                 slimeServant.setLimitedLife(MobUtil.getSummonLifespan(worldIn) * duration);
                 slimeServant.setPersistenceRequired();
-                slimeServant.finalizeSpawn(worldIn, caster.level.getCurrentDifficultyAt(caster.blockPosition()), MobSpawnType.MOB_SUMMONED,null,null);
+                slimeServant.finalizeSpawn(worldIn, caster.level().getCurrentDifficultyAt(caster.blockPosition()), MobSpawnType.MOB_SUMMONED,null);
                 slimeServant.setSize(2, true);
                 this.buffSummon(caster, slimeServant, potency);
                 this.SummonSap(caster, slimeServant);
@@ -145,3 +145,4 @@ public class SlimySpell extends SummonSpell {
         }
     }
 }
+

@@ -59,7 +59,7 @@ public class PioneerRock extends SpellEntity {
         return true;
     }
 
-    protected Vec3 getRelativePortalPosition(Direction.Axis p_38335_, BlockUtil.FoundRectangle p_38336_) {
+    public Vec3 getRelativePortalPosition(Direction.Axis p_38335_, BlockUtil.FoundRectangle p_38336_) {
         return LivingEntity.resetForwardDirectionOfRelativePortalPosition(super.getRelativePortalPosition(p_38335_, p_38336_));
     }
 
@@ -191,7 +191,7 @@ public class PioneerRock extends SpellEntity {
     protected void positionRider(Entity p_289552_, Entity.MoveFunction p_289571_) {
         if (this.hasPassenger(p_289552_)) {
             float f = this.getSinglePassengerXOffset();
-            float f1 = (float)((this.isRemoved() ? (double)0.01F : this.getPassengersRidingOffset()) + p_289552_.getMyRidingOffset());
+            float f1 = (float)(this.isRemoved() ? 0.01D : 0.6D);
             if (this.getPassengers().size() > 1) {
                 int i = this.getPassengers().indexOf(p_289552_);
                 if (i == 0) {

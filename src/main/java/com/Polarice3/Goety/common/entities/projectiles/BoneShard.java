@@ -7,6 +7,12 @@ import com.Polarice3.Goety.utils.MobUtil;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.sounds.SoundEvent;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ClientGamePacketListener;
+import net.minecraft.server.level.ServerEntity;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ClientGamePacketListener;
+import net.minecraft.server.level.ServerEntity;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -14,7 +20,9 @@ import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
+import com.Polarice3.Goety.common.items.ModItems;
 import org.jetbrains.annotations.NotNull;
 
 public class BoneShard extends AbstractArrow {
@@ -23,15 +31,20 @@ public class BoneShard extends AbstractArrow {
     }
 
     public BoneShard(double p_36712_, double p_36713_, double p_36714_, Level p_36715_) {
-        super(ModEntityType.BONE_SHARD.get(), p_36712_, p_36713_, p_36714_, p_36715_);
+        super(ModEntityType.BONE_SHARD.get(), p_36712_, p_36713_, p_36714_, p_36715_, new ItemStack(ModItems.BONE_SHARD.get()), ItemStack.EMPTY);
     }
 
     public BoneShard(LivingEntity p_36718_, Level p_36719_) {
-        super(ModEntityType.BONE_SHARD.get(), p_36718_, p_36719_);
+        super(ModEntityType.BONE_SHARD.get(), p_36718_, p_36719_, new ItemStack(ModItems.BONE_SHARD.get()), ItemStack.EMPTY);
     }
 
     protected boolean tryPickup(Player p_150196_) {
         return false;
+    }
+
+    @Override
+    protected ItemStack getDefaultPickupItem() {
+        return new ItemStack(ModItems.BONE_SHARD.get());
     }
 
     @Override
@@ -63,7 +76,7 @@ public class BoneShard extends AbstractArrow {
     }
 
     @Override
-    public @NotNull Packet<ClientGamePacketListener> getAddEntityPacket() {
-        return new net.minecraft.network.protocol.game.ClientboundAddEntityPacket(this);
+    public Packet<ClientGamePacketListener> getAddEntityPacket(ServerEntity p_345759_) {
+        return new net.minecraft.network.protocol.game.ClientboundAddEntityPacket(this, p_345759_);
     }
 }

@@ -49,17 +49,17 @@ public class AbstractZombieVindicator extends ZombieServant {
 
     public static AttributeSupplier.Builder setCustomAttributes() {
         return Mob.createMobAttributes()
-                .add(Attributes.MAX_HEALTH, AttributesConfig.ZombieVindicatorHealth.get())
+                .add(Attributes.MAX_HEALTH, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.ZombieVindicatorHealth, 20.0D))
                 .add(Attributes.FOLLOW_RANGE, 35.0D)
                 .add(Attributes.MOVEMENT_SPEED, (double)0.23F)
-                .add(Attributes.ATTACK_DAMAGE, AttributesConfig.ZombieVindicatorDamage.get())
-                .add(Attributes.ARMOR, AttributesConfig.ZombieVindicatorArmor.get());
+                .add(Attributes.ATTACK_DAMAGE, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.ZombieVindicatorDamage, 20.0D))
+                .add(Attributes.ARMOR, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.ZombieVindicatorArmor, 20.0D));
     }
 
     public void setConfigurableAttributes(){
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.MAX_HEALTH), AttributesConfig.ZombieVindicatorHealth.get());
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ARMOR), AttributesConfig.ZombieVindicatorArmor.get());
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ATTACK_DAMAGE), AttributesConfig.ZombieVindicatorDamage.get());
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.MAX_HEALTH), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.ZombieVindicatorHealth, 20.0D));
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ARMOR), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.ZombieVindicatorArmor, 20.0D));
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ATTACK_DAMAGE), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.ZombieVindicatorDamage, 20.0D));
     }
 
     @Override
@@ -87,7 +87,7 @@ public class AbstractZombieVindicator extends ZombieServant {
         if (this.level() instanceof ServerLevel serverLevel && this.isAlive() && this.isConverting()) {
             int i = this.getConversionProgress();
             this.villagerConversionTime -= i;
-            if (this.villagerConversionTime <= 0 && net.neoforged.event.net.neoforged.neoforge.event.EventHooks.canLivingConvert(this, ModEntityType.VINDICATOR_SERVANT.get(), (timer) -> this.villagerConversionTime = timer)) {
+            if (this.villagerConversionTime <= 0 && net.neoforged.neoforge.event.EventHooks.canLivingConvert(this, ModEntityType.VINDICATOR_SERVANT.get(), (timer) -> this.villagerConversionTime = timer)) {
                 this.finishConversion(serverLevel);
             }
         }
@@ -135,10 +135,10 @@ public class AbstractZombieVindicator extends ZombieServant {
     }
 
     protected void handleAttributes(float difficulty) {
-        Objects.requireNonNull(this.getAttribute(Attributes.KNOCKBACK_RESISTANCE)).addPermanentModifier(new AttributeModifier("random spawn bonus", this.random.nextDouble() * (double)0.05F, AttributeModifier.Operation.ADDITION));
+        Objects.requireNonNull(this.getAttribute(Attributes.KNOCKBACK_RESISTANCE)).addPermanentModifier(new AttributeModifier(net.minecraft.resources.ResourceLocation.withDefaultNamespace("random_spawn_bonus"), this.random.nextDouble() * (double)0.05F, AttributeModifier.Operation.ADD_VALUE));
         double d0 = this.random.nextDouble() * 1.5D * (double)difficulty;
         if (d0 > 1.0D) {
-            Objects.requireNonNull(this.getAttribute(Attributes.FOLLOW_RANGE)).addPermanentModifier(new AttributeModifier("random zombie-spawn bonus", d0, AttributeModifier.Operation.MULTIPLY_TOTAL));
+            Objects.requireNonNull(this.getAttribute(Attributes.FOLLOW_RANGE)).addPermanentModifier(new AttributeModifier(net.minecraft.resources.ResourceLocation.withDefaultNamespace("random_zombie_spawn_bonus"), d0, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL));
         }
 
     }
@@ -186,7 +186,7 @@ public class AbstractZombieVindicator extends ZombieServant {
             if (!this.isSilent()) {
                 serverLevel.levelEvent((Player)null, 1027, this.blockPosition(), 0);
             }
-            net.neoforged.event.net.neoforged.neoforge.event.EventHooks.onLivingConvert(this, vindicator);
+            net.neoforged.neoforge.event.EventHooks.onLivingConvert(this, vindicator);
         }
     }
 

@@ -33,12 +33,12 @@ public class EarthFistSpell extends Spell {
 
     @Override
     public int defaultSoulCost() {
-        return SpellConfig.EarthFistCost.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.EarthFistCost, 0);
     }
 
     @Override
     public int defaultCastDuration() {
-        return SpellConfig.EarthFistDuration.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.EarthFistDuration, 0);
     }
 
     @Nullable
@@ -49,7 +49,7 @@ public class EarthFistSpell extends Spell {
 
     @Override
     public int defaultSpellCooldown() {
-        return SpellConfig.EarthFistCoolDown.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.EarthFistCoolDown, 0);
     }
 
     @Override

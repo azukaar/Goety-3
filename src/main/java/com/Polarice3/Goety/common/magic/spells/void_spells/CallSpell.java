@@ -17,12 +17,12 @@ import net.minecraft.world.item.ItemStack;
 public class CallSpell extends Spell {
     @Override
     public int defaultSoulCost() {
-        return SpellConfig.CallCost.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.CallCost, 0);
     }
 
     @Override
     public int defaultCastDuration() {
-        return SpellConfig.CallDuration.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.CallDuration, 0);
     }
 
     @Override
@@ -32,7 +32,7 @@ public class CallSpell extends Spell {
 
     @Override
     public int defaultSpellCooldown() {
-        return SpellConfig.CallCoolDown.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.CallCoolDown, 0);
     }
 
     @Override

@@ -33,12 +33,12 @@ import java.util.function.Predicate;
 public class HuntingSpell extends SummonSpell {
     @Override
     public int defaultSoulCost() {
-        return SpellConfig.HuntingCost.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.HuntingCost, 0);
     }
 
     @Override
     public int defaultCastDuration() {
-        return SpellConfig.HuntingDuration.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.HuntingDuration, 0);
     }
 
     @Nullable
@@ -49,12 +49,12 @@ public class HuntingSpell extends SummonSpell {
 
     @Override
     public int defaultSpellCooldown() {
-        return SpellConfig.HuntingCoolDown.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.HuntingCoolDown, 0);
     }
 
     @Override
     public int SummonDownDuration() {
-        return SpellConfig.HuntingSummonDown.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.HuntingSummonDown, 0);
     }
 
     @Override
@@ -77,7 +77,7 @@ public class HuntingSpell extends SummonSpell {
 
     @Override
     public int summonLimit() {
-        return SpellConfig.HuntingLimit.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.HuntingLimit, 0);
     }
 
     @Override
@@ -143,7 +143,7 @@ public class HuntingSpell extends SummonSpell {
                 }
                 summonedentity.setLimitedLife(MobUtil.getSummonLifespan(worldIn) * duration);
                 summonedentity.setPersistenceRequired();
-                summonedentity.finalizeSpawn(worldIn, caster.level.getCurrentDifficultyAt(caster.blockPosition()), MobSpawnType.MOB_SUMMONED,null,null);
+                summonedentity.finalizeSpawn(worldIn, caster.level().getCurrentDifficultyAt(caster.blockPosition()), MobSpawnType.MOB_SUMMONED,null);
                 this.buffSummon(caster, summonedentity, potency);
                 this.SummonSap(caster, summonedentity);
                 this.setTarget(caster, summonedentity);

@@ -27,7 +27,7 @@ import net.minecraft.world.level.pathfinder.PathComputationType;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.neoforged.neoforge.common.IPlantable;
+import com.Polarice3.Goety.compat.legacy.neoforge.common.IPlantable;
 
 public class MagicThornBlock extends Block implements IPlantable, SimpleWaterloggedBlock {
    protected static final VoxelShape COLLISION_SHAPE = Block.box(1.0D, 0.0D, 1.0D, 15.0D, 15.0D, 15.0D);
@@ -127,7 +127,6 @@ public class MagicThornBlock extends Block implements IPlantable, SimpleWaterlog
       return state.getBlock() instanceof MagicThornBlock;
    }
 
-   @Override
    public BlockState getPlant(BlockGetter level, BlockPos pos) {
       BlockState state = level.getBlockState(pos);
       if (state.getBlock() != this) return defaultBlockState();

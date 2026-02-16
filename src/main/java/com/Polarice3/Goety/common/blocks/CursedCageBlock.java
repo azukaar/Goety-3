@@ -1,4 +1,5 @@
 package com.Polarice3.Goety.common.blocks;
+import com.mojang.serialization.MapCodec;
 
 import com.Polarice3.Goety.common.blocks.entities.CursedCageBlockEntity;
 import net.minecraft.core.BlockPos;
@@ -27,30 +28,39 @@ import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.pathfinder.PathComputationType;
 import net.minecraft.world.phys.BlockHitResult;
-import net.neoforged.neoforge.common.extensions.IForgeBlock;
+import com.Polarice3.Goety.compat.legacy.neoforge.common.extensions.IForgeBlock;
 
 import javax.annotation.Nullable;
 
 public class CursedCageBlock extends BaseEntityBlock implements IForgeBlock {
+    public static final MapCodec<CursedCageBlock> CODEC = simpleCodec(CursedCageBlock::new);
+
+    @Override
+    protected MapCodec<? extends BaseEntityBlock> codec() {
+        return CODEC;
+    }
     public static final BooleanProperty POWERED = BlockStateProperties.POWERED;
 
+    public CursedCageBlock(Properties properties) {
+        super(properties);
+        this.registerDefaultState(this.stateDefinition.any().setValue(POWERED, Boolean.FALSE));
+    }
+
     public CursedCageBlock() {
-        super(Properties.of()
+        this(Properties.of()
                 .mapColor(MapColor.STONE)
                 .strength(5.0F)
                 .sound(SoundType.METAL)
                 .requiresCorrectToolForDrops()
                 .noOcclusion()
-                .dynamicShape()
-        );
-        this.registerDefaultState(this.stateDefinition.any().setValue(POWERED, Boolean.FALSE));
+                .dynamicShape());
     }
 
     public void setPlacedBy(Level pLevel, BlockPos pPos, BlockState pState, @Nullable LivingEntity pPlacer, ItemStack pStack) {
         super.setPlacedBy(pLevel, pPos, pState, pPlacer, pStack);
-        CompoundTag compoundnbt = pStack.getOrCreateTag();
-        if (compoundnbt.contains("BlockEntityTag")) {
-            CompoundTag compoundnbt1 = compoundnbt.getCompound("BlockEntityTag");
+        // In 1.21+, block entity data is stored in DataComponents
+        if (pStack.has(net.minecraft.core.component.DataComponents.BLOCK_ENTITY_DATA)) {
+            CompoundTag compoundnbt1 = pStack.get(net.minecraft.core.component.DataComponents.BLOCK_ENTITY_DATA).copyTag();
             if (compoundnbt1.contains("item")) {
                 pLevel.setBlock(pPos, pState.setValue(POWERED, Boolean.TRUE), 2);
             }
@@ -58,8 +68,9 @@ public class CursedCageBlock extends BaseEntityBlock implements IForgeBlock {
 
     }
 
-    public InteractionResult use(BlockState pState, Level pLevel, BlockPos pPos, Player pPlayer, InteractionHand pHand, BlockHitResult pHit) {
-        if (pHand == InteractionHand.MAIN_HAND && pState.getValue(POWERED) && pPlayer.getMainHandItem().isEmpty()) {
+    @Override
+    protected InteractionResult useWithoutItem(BlockState pState, Level pLevel, BlockPos pPos, Player pPlayer, BlockHitResult pHit) {
+        if (pState.getValue(POWERED) && pPlayer.getMainHandItem().isEmpty()) {
             this.dropItem(pLevel, pPos, pPlayer);
             pState = pState.setValue(POWERED, Boolean.FALSE);
             pLevel.setBlock(pPos, pState, 2);
@@ -91,7 +102,7 @@ public class CursedCageBlock extends BaseEntityBlock implements IForgeBlock {
                     if (player != null) {
                         if (player.getItemInHand(InteractionHand.MAIN_HAND).isEmpty()) {
                             player.setItemInHand(InteractionHand.MAIN_HAND, itemstack1);
-                            pLevel.playSound(null, pPos, SoundEvents.ARMOR_EQUIP_GENERIC, SoundSource.BLOCKS, 1.0F, 1.0F);
+                            pLevel.playSound(null, pPos, SoundEvents.ARMOR_EQUIP_GENERIC.value(), SoundSource.BLOCKS, 1.0F, 1.0F);
                         } else if (!player.addItem(itemstack1)){
                             flag = true;
                         }
@@ -106,7 +117,7 @@ public class CursedCageBlock extends BaseEntityBlock implements IForgeBlock {
                         ItemEntity itementity = new ItemEntity(pLevel, (double)pPos.getX() + d0, (double)pPos.getY() + d1, (double)pPos.getZ() + d2, itemstack1);
                         itementity.setDefaultPickUpDelay();
                         if (pLevel.addFreshEntity(itementity)){
-                            pLevel.playSound(null, pPos, SoundEvents.ARMOR_EQUIP_GENERIC, SoundSource.BLOCKS, 1.0F, 1.0F);
+                            pLevel.playSound(null, pPos, SoundEvents.ARMOR_EQUIP_GENERIC.value(), SoundSource.BLOCKS, 1.0F, 1.0F);
                         }
                     }
                 }

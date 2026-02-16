@@ -27,15 +27,15 @@ import java.util.function.Predicate;
 public class BlastlingSpell extends SummonSpell {
 
     public int defaultSoulCost() {
-        return SpellConfig.BlastlingCost.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.BlastlingCost, 0);
     }
 
     public int defaultCastDuration() {
-        return SpellConfig.BlastlingDuration.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.BlastlingDuration, 0);
     }
 
     public int SummonDownDuration() {
-        return SpellConfig.BlastlingSummonDown.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.BlastlingSummonDown, 0);
     }
 
     public SoundEvent CastingSound() {
@@ -44,7 +44,7 @@ public class BlastlingSpell extends SummonSpell {
 
     @Override
     public int defaultSpellCooldown() {
-        return SpellConfig.BlastlingCoolDown.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.BlastlingCoolDown, 0);
     }
 
     @Override
@@ -67,7 +67,7 @@ public class BlastlingSpell extends SummonSpell {
 
     @Override
     public int summonLimit() {
-        return SpellConfig.BlastlingLimit.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.BlastlingLimit, 0);
     }
 
     public void SpellResult(ServerLevel worldIn, LivingEntity caster, ItemStack staff, SpellStat spellStat) {
@@ -91,7 +91,7 @@ public class BlastlingSpell extends SummonSpell {
                 MobUtil.moveDownToGround(summonedentity);
                 summonedentity.setLimitedLife(MobUtil.getSummonLifespan(worldIn) * duration);
                 summonedentity.setPersistenceRequired();
-                summonedentity.finalizeSpawn(worldIn, caster.level.getCurrentDifficultyAt(caster.blockPosition()), MobSpawnType.MOB_SUMMONED,null,null);
+                summonedentity.finalizeSpawn(worldIn, caster.level().getCurrentDifficultyAt(caster.blockPosition()), MobSpawnType.MOB_SUMMONED,null);
                 this.buffSummon(caster, summonedentity, potency);
                 this.SummonSap(caster, summonedentity);
                 this.setTarget(caster, summonedentity);
@@ -103,3 +103,4 @@ public class BlastlingSpell extends SummonSpell {
         }
     }
 }
+

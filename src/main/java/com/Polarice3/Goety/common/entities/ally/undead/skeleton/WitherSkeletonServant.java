@@ -31,23 +31,23 @@ public class WitherSkeletonServant extends AbstractSkeletonServant {
 
    public static AttributeSupplier.Builder setCustomAttributes() {
       return Mob.createMobAttributes()
-            .add(Attributes.MAX_HEALTH, AttributesConfig.WitherSkeletonServantHealth.get())
-            .add(Attributes.ARMOR, AttributesConfig.WitherSkeletonServantArmor.get())
+            .add(Attributes.MAX_HEALTH, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.WitherSkeletonServantHealth, 20.0D))
+            .add(Attributes.ARMOR, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.WitherSkeletonServantArmor, 20.0D))
             .add(Attributes.MOVEMENT_SPEED, 0.25F)
-            .add(Attributes.ATTACK_DAMAGE, AttributesConfig.WitherSkeletonServantDamage.get());
+            .add(Attributes.ATTACK_DAMAGE, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.WitherSkeletonServantDamage, 20.0D));
    }
 
    public void setConfigurableAttributes() {
       MobUtil.setBaseAttributes(this.getAttribute(Attributes.MAX_HEALTH),
-            AttributesConfig.WitherSkeletonServantHealth.get());
-      MobUtil.setBaseAttributes(this.getAttribute(Attributes.ARMOR), AttributesConfig.WitherSkeletonServantArmor.get());
+            com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.WitherSkeletonServantHealth, 20.0D));
+      MobUtil.setBaseAttributes(this.getAttribute(Attributes.ARMOR), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.WitherSkeletonServantArmor, 20.0D));
       MobUtil.setBaseAttributes(this.getAttribute(Attributes.ATTACK_DAMAGE),
-            AttributesConfig.WitherSkeletonServantDamage.get());
+            com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.WitherSkeletonServantDamage, 20.0D));
    }
 
    @Override
    public double getBaseRangeDamage() {
-      return AttributesConfig.WitherSkeletonServantRangeDamage.get();
+      return com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.WitherSkeletonServantRangeDamage, 20.0D);
    }
 
    protected SoundEvent getAmbientSound() {

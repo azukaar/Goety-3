@@ -80,17 +80,17 @@ public class StormCasterServant extends AbstractIllagerServant {
     public static AttributeSupplier.Builder setCustomAttributes(){
         return Mob.createMobAttributes()
                 .add(Attributes.FOLLOW_RANGE, 16.0D)
-                .add(NeoForgeMod.STEP_HEIGHT_ADDITION.get(), 1.0D)
-                .add(Attributes.MAX_HEALTH, AttributesConfig.StormCasterHealth.get())
-                .add(Attributes.ARMOR, AttributesConfig.StormCasterArmor.get())
+                .add(net.minecraft.world.entity.ai.attributes.Attributes.STEP_HEIGHT, 1.0D)
+                .add(Attributes.MAX_HEALTH, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.StormCasterHealth, 20.0D))
+                .add(Attributes.ARMOR, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.StormCasterArmor, 20.0D))
                 .add(Attributes.MOVEMENT_SPEED, 0.35D)
-                .add(Attributes.ATTACK_DAMAGE, AttributesConfig.StormCasterDamage.get());
+                .add(Attributes.ATTACK_DAMAGE, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.StormCasterDamage, 20.0D));
     }
 
     public void setConfigurableAttributes(){
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.MAX_HEALTH), AttributesConfig.StormCasterHealth.get());
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ARMOR), AttributesConfig.StormCasterArmor.get());
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ATTACK_DAMAGE), AttributesConfig.StormCasterDamage.get());
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.MAX_HEALTH), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.StormCasterHealth, 20.0D));
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ARMOR), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.StormCasterArmor, 20.0D));
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ATTACK_DAMAGE), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.StormCasterDamage, 20.0D));
     }
 
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
@@ -257,7 +257,7 @@ public class StormCasterServant extends AbstractIllagerServant {
                         BoundStormCaster servant = this.convertTo(ModEntityType.BOUND_STORM_CASTER.get(), true);
                         if (servant != null) {
                             servant.setTrueOwner(this.getTrueOwner());
-                            net.neoforged.event.net.neoforged.neoforge.event.EventHooks.onLivingConvert(this, servant);
+                            net.neoforged.neoforge.event.EventHooks.onLivingConvert(this, servant);
                             if (!this.isSilent()) {
                                 this.level().levelEvent((Player)null, 1026, this.blockPosition(), 0);
                             }

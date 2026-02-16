@@ -34,12 +34,12 @@ public class MiniGhast extends Malghast {
 
     public static AttributeSupplier.Builder setCustomAttributes() {
         return Mob.createMobAttributes()
-                .add(Attributes.MAX_HEALTH, AttributesConfig.MiniGhastHealth.get())
+                .add(Attributes.MAX_HEALTH, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.MiniGhastHealth, 20.0D))
                 .add(Attributes.FOLLOW_RANGE, 32.0D);
     }
 
     public void setConfigurableAttributes(){
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.MAX_HEALTH), AttributesConfig.MiniGhastHealth.get());
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.MAX_HEALTH), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.MiniGhastHealth, 20.0D));
     }
 
     protected float getStandingEyeHeight(Pose pPose, EntityDimensions pSize) {
@@ -109,7 +109,7 @@ public class MiniGhast extends Malghast {
                     ModFireball fireball = new ModFireball(world, this.ghast, d2, d3, d4);
                     double y = this.ghast.getY() <= livingentity.getEyeY() ? this.ghast.getY(0.5D) : this.ghast.getY();
                     fireball.setDangerous(false);
-                    fireball.setDamage(AttributesConfig.MiniGhastDamage.get().floatValue() + this.ghast.getFireBallDamage());
+                    fireball.setDamage((float)com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.MiniGhastDamage, 20.0D) + this.ghast.getFireBallDamage());
                     fireball.setPos(this.ghast.getX() + vector3d.x * d1, y, fireball.getZ() + vector3d.z * d1);
                     world.addFreshEntity(fireball);
                     this.chargeTime = 0;

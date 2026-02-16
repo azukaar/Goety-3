@@ -5,6 +5,7 @@ import com.Polarice3.Goety.common.effects.GoetyEffects;
 import com.Polarice3.Goety.init.ModSounds;
 import com.Polarice3.Goety.utils.MathHelper;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -38,7 +39,7 @@ public class VoidFrameBlockEntity extends BlockEntity {
                 ++this.coolTick;
                 if (this.coolTick < 20) {
                     for (Player player : serverLevel.getEntitiesOfClass(Player.class, new AABB(this.getBlockPos()).inflate(64.0F), EntitySelector.NO_CREATIVE_OR_SPECTATOR)) {
-                        player.addEffect(new MobEffectInstance(GoetyEffects.IMPAIRED.get(), 5, 0, false, false));
+                        player.addEffect(new MobEffectInstance(GoetyEffects.IMPAIRED, 5, 0, false, false));
                     }
                 }
                 if (this.coolTick >= MathHelper.minecraftDayToTicks(1)) {
@@ -66,8 +67,8 @@ public class VoidFrameBlockEntity extends BlockEntity {
     }
 
     //Allows custom Endersent to be spawned with either different Eye types or what effects they get
-    public void load(CompoundTag compoundTag) {
-        super.load(compoundTag);
+    public void loadAdditional(CompoundTag compoundTag, HolderLookup.Provider p_324471_) {
+        super.loadAdditional(compoundTag, p_324471_);
         if (compoundTag.contains("EyeType")) {
             this.eyeType = compoundTag.getInt("EyeType");
         }
@@ -85,13 +86,13 @@ public class VoidFrameBlockEntity extends BlockEntity {
         this.coolTick = compoundTag.getInt("CoolTick");
     }
 
-    protected void saveAdditional(CompoundTag compoundTag) {
-        super.saveAdditional(compoundTag);
+    protected void saveAdditional(CompoundTag compoundTag, HolderLookup.Provider p_323635_) {
+        super.saveAdditional(compoundTag, p_323635_);
         if (!this.eyeEffects.isEmpty()) {
             ListTag listtag = new ListTag();
 
             for(MobEffectInstance mobeffectinstance : this.eyeEffects) {
-                listtag.add(mobeffectinstance.save(new CompoundTag()));
+                listtag.add(mobeffectinstance.save());
             }
 
             compoundTag.put("EyeEffects", listtag);
@@ -105,14 +106,14 @@ public class VoidFrameBlockEntity extends BlockEntity {
     }
 
     @Override
-    public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt) {
+    public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt, HolderLookup.Provider p_324471_) {
         if (pkt.getTag() != null) {
-            this.load(pkt.getTag());
+            this.loadAdditional(pkt.getTag(), p_324471_);
         }
-        super.onDataPacket(net, pkt);
+        super.onDataPacket(net, pkt, p_324471_);
     }
 
-    public CompoundTag getUpdateTag() {
-        return this.saveWithoutMetadata();
+    public CompoundTag getUpdateTag(HolderLookup.Provider p_324471_) {
+        return this.saveWithoutMetadata(p_324471_);
     }
 }

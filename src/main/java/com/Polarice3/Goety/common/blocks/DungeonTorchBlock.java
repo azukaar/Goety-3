@@ -32,7 +32,8 @@ public class DungeonTorchBlock extends Block {
         this.registerDefaultState(this.stateDefinition.any().setValue(LIT, Boolean.TRUE));
     }
 
-    public InteractionResult use(BlockState pState, Level pLevel, BlockPos pPos, Player pPlayer, InteractionHand pHand, BlockHitResult pHit) {
+    @Override
+    protected InteractionResult useWithoutItem(BlockState pState, Level pLevel, BlockPos pPos, Player pPlayer, BlockHitResult pHit) {
         RandomSource randomsource = pLevel.getRandom();
         if (canLight(pState)){
             pLevel.playSound((Player)null, pPos, SoundEvents.FIRECHARGE_USE, SoundSource.BLOCKS, 1.0F, (randomsource.nextFloat() - randomsource.nextFloat()) * 0.2F + 1.0F);

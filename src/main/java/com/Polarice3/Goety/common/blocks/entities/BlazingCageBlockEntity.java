@@ -88,7 +88,7 @@ public class BlazingCageBlockEntity extends TrainingBlockEntity {
                 }
             }
         }
-        return count >= SpellConfig.BlazeLimit.get();
+        return count >= com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.BlazeLimit, 0);
     }
 
     @Override

@@ -88,13 +88,13 @@ public class AllyIrk extends Minion {
 
     public static AttributeSupplier.Builder setCustomAttributes(){
         return Mob.createMobAttributes()
-                .add(Attributes.MAX_HEALTH, AttributesConfig.SummonedIrkHealth.get())
-                .add(Attributes.ATTACK_DAMAGE, AttributesConfig.SummonedIrkDamage.get());
+                .add(Attributes.MAX_HEALTH, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.SummonedIrkHealth, 20.0D))
+                .add(Attributes.ATTACK_DAMAGE, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.SummonedIrkDamage, 20.0D));
     }
 
     public void setConfigurableAttributes(){
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.MAX_HEALTH), AttributesConfig.SummonedIrkHealth.get());
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ATTACK_DAMAGE), AttributesConfig.SummonedIrkDamage.get());
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.MAX_HEALTH), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.SummonedIrkHealth, 20.0D));
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ATTACK_DAMAGE), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.SummonedIrkDamage, 20.0D));
     }
 
     public void die(DamageSource cause) {

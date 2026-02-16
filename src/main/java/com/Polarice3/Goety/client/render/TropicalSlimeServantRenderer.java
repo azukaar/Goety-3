@@ -51,7 +51,7 @@ public class TropicalSlimeServantRenderer
    }
 
    public ResourceLocation getTextureLocation(TropicalSlimeServant p_115974_) {
-      if (p_115974_.isHostile() || !MobsConfig.SlimeServantTexture.get()) {
+      if (p_115974_.isHostile() || !com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MobsConfig.SlimeServantTexture, false)) {
          return ORIGINAL;
       }
       return SLIME_LOCATION;

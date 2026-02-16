@@ -39,7 +39,7 @@ public class MaverickServantRenderer<T extends MaverickServant> extends MobRende
 
     @Override
     public ResourceLocation getTextureLocation(T entity) {
-        if (entity.isHostile() || !MobsConfig.MaverickServantTexture.get()) {
+        if (entity.isHostile() || !com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MobsConfig.MaverickServantTexture, false)) {
             return ORIGINAL;
         }
         return WITCH_LOCATION;

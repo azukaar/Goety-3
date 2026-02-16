@@ -103,7 +103,7 @@ public class GuardianLaserRenderer {
     }
 
     public static float getAttackAnimationScale(float time, float p_32813_) {
-        return (time + p_32813_) / (float) SpellConfig.PrismaBeamDuration.get();
+        return (time + p_32813_) / (float) com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.PrismaBeamDuration, 0);
     }
 
     private static Vec3 getPosition(LivingEntity livingEntity, double height, float partialTicks) {

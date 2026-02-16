@@ -73,20 +73,20 @@ public class PillagerServant extends AbstractIllagerServant implements CrossbowA
     public static AttributeSupplier.Builder setCustomAttributes() {
         return Mob.createMobAttributes()
                 .add(Attributes.MOVEMENT_SPEED, 0.35F)
-                .add(Attributes.MAX_HEALTH, AttributesConfig.PillagerServantHealth.get())
-                .add(Attributes.ARMOR, AttributesConfig.PillagerServantArmor.get())
-                .add(Attributes.ATTACK_DAMAGE, AttributesConfig.PillagerServantDamage.get())
+                .add(Attributes.MAX_HEALTH, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.PillagerServantHealth, 20.0D))
+                .add(Attributes.ARMOR, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.PillagerServantArmor, 20.0D))
+                .add(Attributes.ATTACK_DAMAGE, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.PillagerServantDamage, 20.0D))
                 .add(Attributes.FOLLOW_RANGE, 32.0D);
     }
 
     public void setConfigurableAttributes(){
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.MAX_HEALTH), AttributesConfig.PillagerServantHealth.get());
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ARMOR), AttributesConfig.PillagerServantArmor.get());
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ATTACK_DAMAGE), AttributesConfig.PillagerServantDamage.get());
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.MAX_HEALTH), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.PillagerServantHealth, 20.0D));
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ARMOR), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.PillagerServantArmor, 20.0D));
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ATTACK_DAMAGE), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.PillagerServantDamage, 20.0D));
     }
 
     public double getBaseRangeDamage(){
-        return AttributesConfig.PillagerServantRangeDamage.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.PillagerServantRangeDamage, 20.0D);
     }
 
     public void reassessWeaponGoal() {
@@ -174,12 +174,12 @@ public class PillagerServant extends AbstractIllagerServant implements CrossbowA
     }
 
     @Nullable
-    public SpawnGroupData finalizeSpawn(ServerLevelAccessor p_33282_, DifficultyInstance p_33283_, MobSpawnType p_33284_, @Nullable SpawnGroupData p_33285_, @Nullable CompoundTag p_33286_) {
+    public SpawnGroupData finalizeSpawn(ServerLevelAccessor p_33282_, DifficultyInstance p_33283_, MobSpawnType p_33284_, @Nullable SpawnGroupData p_33285_) {
         RandomSource randomsource = p_33282_.getRandom();
         this.populateDefaultEquipmentSlots(randomsource, p_33283_);
-        this.populateDefaultEquipmentEnchantments(randomsource, p_33283_);
+        this.populateDefaultEquipmentEnchantments(p_33282_, randomsource, p_33283_);
         this.reassessWeaponGoal();
-        return super.finalizeSpawn(p_33282_, p_33283_, p_33284_, p_33285_, p_33286_);
+        return super.finalizeSpawn(p_33282_, p_33283_, p_33284_, p_33285_);
     }
 
     protected void populateDefaultEquipmentSlots(RandomSource p_219059_, DifficultyInstance p_219060_) {
@@ -187,14 +187,14 @@ public class PillagerServant extends AbstractIllagerServant implements CrossbowA
         this.setDropChance(EquipmentSlot.MAINHAND, 0.0F);
     }
 
-    protected void enchantSpawnedWeapon(RandomSource p_219056_, float p_219057_) {
-        super.enchantSpawnedWeapon(p_219056_, p_219057_);
-        if (p_219056_.nextInt(300) == 0) {
+    protected void enchantSpawnedWeapon(ServerLevelAccessor p_219056_, RandomSource p_219057_, DifficultyInstance p_219058_) {
+        super.enchantSpawnedWeapon(p_219056_, p_219057_, p_219058_);
+        if (p_219057_.nextInt(300) == 0) {
             ItemStack itemstack = this.getMainHandItem();
             if (itemstack.is(Items.CROSSBOW)) {
-                Map<Enchantment, Integer> map = EnchantmentHelper.getEnchantments(itemstack);
-                map.putIfAbsent(Enchantments.PIERCING, 1);
-                EnchantmentHelper.setEnchantments(map, itemstack);
+                // Map<Enchantment, Integer> map = EnchantmentHelper.getEnchantments(itemstack);
+                // map.putIfAbsent(Enchantments.PIERCING, 1);
+                // EnchantmentHelper.setEnchantments(map, itemstack);
                 this.setItemSlot(EquipmentSlot.MAINHAND, itemstack);
             }
         }
@@ -221,7 +221,12 @@ public class PillagerServant extends AbstractIllagerServant implements CrossbowA
         if (p_33277_ instanceof AbstractArrow arrow){
             arrow.setBaseDamage(arrow.getBaseDamage() + this.getArrowPower() + this.getBaseRangeDamage());
         }
-        this.shootCrossbowProjectile(this, p_33275_, p_33277_, p_33278_, 1.6F);
+        double d0 = p_33275_.getX() - this.getX();
+        double d1 = p_33275_.getY(0.3333333333333333D) - p_33277_.getY();
+        double d2 = p_33275_.getZ() - this.getZ();
+        double d3 = Math.sqrt(d0 * d0 + d2 * d2);
+        p_33277_.shoot(d0, d1 + d3 * (double)0.2F, d2, 1.6F, (float)(14 - this.level().getDifficulty().getId() * 4));
+        this.playSound(SoundEvents.CROSSBOW_SHOOT, 1.0F, 1.0F / (this.getRandom().nextFloat() * 0.4F + 0.8F));
     }
 
     public SoundEvent getCelebrateSound() {
@@ -237,7 +242,7 @@ public class PillagerServant extends AbstractIllagerServant implements CrossbowA
                         SkeletonPillagerServant servant = this.convertTo(ModEntityType.SKELETON_PILLAGER_SERVANT.get(), true);
                         if (servant != null) {
                             servant.setTrueOwner(this.getTrueOwner());
-                            net.neoforged.event.net.neoforged.neoforge.event.EventHooks.onLivingConvert(this, servant);
+                            net.neoforged.neoforge.event.EventHooks.onLivingConvert(this, servant);
                             if (!this.isSilent()) {
                                 this.level().levelEvent((Player)null, 1026, this.blockPosition(), 0);
                             }
@@ -256,7 +261,7 @@ public class PillagerServant extends AbstractIllagerServant implements CrossbowA
         if (this.getTrueOwner() != null && pPlayer == this.getTrueOwner()) {
             if (!(pPlayer.getOffhandItem().getItem() instanceof IWand)) {
                 if (item instanceof CrossbowItem || itemstack.is(ModTags.Items.PILLAGER_WEAPONS)) {
-                    this.playSound(SoundEvents.ARMOR_EQUIP_GENERIC, 1.0F, 1.0F);
+                    this.playSound(SoundEvents.ARMOR_EQUIP_GENERIC.value(), 1.0F, 1.0F);
                     this.dropEquipment(EquipmentSlot.MAINHAND, itemstack2.copyAndClear());
                     this.setItemSlot(EquipmentSlot.MAINHAND, itemstack.copyWithCount(1));
                     this.setGuaranteedDrop(EquipmentSlot.MAINHAND);

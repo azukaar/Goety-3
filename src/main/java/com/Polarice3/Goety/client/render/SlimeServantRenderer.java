@@ -19,7 +19,7 @@ import net.minecraft.util.Mth;
 public class SlimeServantRenderer extends MobRenderer<SlimeServant, SlimeModel<SlimeServant>> {
    private static final ResourceLocation SLIME_LOCATION = Goety
          .location("textures/entity/servants/slime/slime_servant.png");
-   private static final ResourceLocation ORIGINAL = new ResourceLocation("textures/entity/slime/slime.png");
+   private static final ResourceLocation ORIGINAL = ResourceLocation.parse("textures/entity/slime/slime.png");
 
    public SlimeServantRenderer(EntityRendererProvider.Context p_174391_) {
       super(p_174391_, new SlimeModel<>(p_174391_.bakeLayer(ModelLayers.SLIME)), 0.25F);
@@ -44,7 +44,7 @@ public class SlimeServantRenderer extends MobRenderer<SlimeServant, SlimeModel<S
    }
 
    public ResourceLocation getTextureLocation(SlimeServant p_115974_) {
-      if (p_115974_.isHostile() || !MobsConfig.SlimeServantTexture.get()) {
+      if (p_115974_.isHostile() || !com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MobsConfig.SlimeServantTexture, false)) {
          return ORIGINAL;
       }
       return SLIME_LOCATION;

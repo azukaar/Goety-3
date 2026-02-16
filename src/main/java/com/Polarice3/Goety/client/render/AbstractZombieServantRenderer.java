@@ -19,7 +19,7 @@ public abstract class AbstractZombieServantRenderer<T extends ZombieServant, M e
    }
 
    public ResourceLocation getTextureLocation(ZombieServant p_113771_) {
-      if (p_113771_.isHostile() || !MobsConfig.ZombieServantTexture.get()){
+      if (p_113771_.isHostile() || !com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MobsConfig.ZombieServantTexture, false)){
          return ZOMBIE_LOCATION;
       } else {
          return TEXTURE;

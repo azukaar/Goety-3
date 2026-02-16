@@ -94,18 +94,18 @@ public class Gnasher extends AnimalSummon implements PlayerRideable, IAutoRideab
 
     public static AttributeSupplier.Builder setCustomAttributes() {
         return Mob.createMobAttributes()
-                .add(Attributes.MAX_HEALTH, AttributesConfig.GnasherHealth.get())
+                .add(Attributes.MAX_HEALTH, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.GnasherHealth, 20.0D))
                 .add(Attributes.FOLLOW_RANGE, 20.0D)
                 .add(Attributes.MOVEMENT_SPEED, 0.25D)
                 .add(Attributes.KNOCKBACK_RESISTANCE, 0.0D)
-                .add(Attributes.ARMOR, AttributesConfig.GnasherArmor.get())
-                .add(Attributes.ATTACK_DAMAGE, AttributesConfig.GnasherDamage.get());
+                .add(Attributes.ARMOR, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.GnasherArmor, 20.0D))
+                .add(Attributes.ATTACK_DAMAGE, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.GnasherDamage, 20.0D));
     }
 
     public void setConfigurableAttributes(){
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.MAX_HEALTH), AttributesConfig.GnasherHealth.get());
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ARMOR), AttributesConfig.GnasherArmor.get());
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ATTACK_DAMAGE), AttributesConfig.GnasherDamage.get());
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.MAX_HEALTH), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.GnasherHealth, 20.0D));
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ARMOR), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.GnasherArmor, 20.0D));
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ATTACK_DAMAGE), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.GnasherDamage, 20.0D));
     }
 
     @Override
@@ -410,7 +410,7 @@ public class Gnasher extends AnimalSummon implements PlayerRideable, IAutoRideab
             this.playSound(SoundEvents.PHANTOM_BITE, 1.0F, 0.75F);
             if (this.isUpgraded()){
                 if (entityIn instanceof LivingEntity livingEntity) {
-                    livingEntity.addEffect(new MobEffectInstance(GoetyEffects.SAPPED.getHolder(), MathHelper.secondsToTicks(5), 0), this);
+                    livingEntity.addEffect(new MobEffectInstance(GoetyEffects.SAPPED, MathHelper.secondsToTicks(5), 0), this);
                 }
             }
         }
@@ -426,14 +426,14 @@ public class Gnasher extends AnimalSummon implements PlayerRideable, IAutoRideab
         AttributeInstance knockback = this.getAttribute(Attributes.KNOCKBACK_RESISTANCE);
         if (health != null && attack != null && armor != null && knockback != null) {
             if (upgraded) {
-                health.setBaseValue(AttributesConfig.GnasherHealth.get() * 1.5D);
-                armor.setBaseValue(AttributesConfig.GnasherArmor.get() + 2.0D);
-                attack.setBaseValue(AttributesConfig.GnasherDamage.get() + 1.0D);
+                health.setBaseValue(com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.GnasherHealth, 20.0D) * 1.5D);
+                armor.setBaseValue(com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.GnasherArmor, 20.0D) + 2.0D);
+                attack.setBaseValue(com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.GnasherDamage, 20.0D) + 1.0D);
                 knockback.setBaseValue(1.0D);
             } else {
-                health.setBaseValue(AttributesConfig.GnasherHealth.get());
-                armor.setBaseValue(AttributesConfig.GnasherArmor.get());
-                attack.setBaseValue(AttributesConfig.GnasherDamage.get());
+                health.setBaseValue(com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.GnasherHealth, 20.0D));
+                armor.setBaseValue(com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.GnasherArmor, 20.0D));
+                attack.setBaseValue(com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.GnasherDamage, 20.0D));
                 knockback.setBaseValue(0.0D);
             }
         }

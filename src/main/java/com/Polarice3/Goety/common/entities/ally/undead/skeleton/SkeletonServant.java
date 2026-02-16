@@ -22,9 +22,9 @@ public class SkeletonServant extends AbstractSkeletonServant {
         super(type, worldIn);
     }
 
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.getEntityData().define(DATA_STRAY_CONVERSION_ID, false);
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(DATA_STRAY_CONVERSION_ID, false);
     }
 
     public boolean isFreezeConverting() {

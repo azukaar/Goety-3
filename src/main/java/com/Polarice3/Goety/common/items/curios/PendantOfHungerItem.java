@@ -16,6 +16,9 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
 
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.world.item.component.CustomData;
+import net.minecraft.world.item.Item;
 import javax.annotation.Nullable;
 import java.util.List;
 
@@ -25,11 +28,10 @@ public class PendantOfHungerItem extends SingleStackItem {
     @Override
     public void inventoryTick(ItemStack stack, Level worldIn, Entity entityIn, int itemSlot, boolean isSelected) {
         if (entityIn instanceof Player player) {
-            if (!stack.hasTag()) {
-                stack.setTag(new CompoundTag());
-                stack.getOrCreateTag().putInt(ROTTEN_FLESH, 0);
+            if (!stack.has(DataComponents.CUSTOM_DATA)) {
+                CustomData.update(DataComponents.CUSTOM_DATA, stack, tag -> tag.putInt(ROTTEN_FLESH, 0));
             } else if (CuriosFinder.hasCurio(player, this)){
-                if (getRottenFleshAmount(stack) < ItemConfig.PendantOfHungerLimit.get()) {
+                if (getRottenFleshAmount(stack) < com.Polarice3.Goety.utils.ConfigHelper.getInt(ItemConfig.PendantOfHungerLimit, 0)) {
                     if (!ItemHelper.findItem(player, Items.ROTTEN_FLESH).isEmpty()) {
                         increaseRottenFlesh(stack);
                         ItemHelper.findItem(player, Items.ROTTEN_FLESH).shrink(1);
@@ -39,7 +41,7 @@ public class PendantOfHungerItem extends SingleStackItem {
                     if (MobUtil.validNonLich(player)) {
                         player.addEffect(new MobEffectInstance(MobEffects.HUNGER, 600, 0, false, false));
                         if (player.getFoodData().needsFood()) {
-                            player.eat(player.level, new ItemStack(Items.ROTTEN_FLESH));
+                            player.eat(player.level(), new ItemStack(Items.ROTTEN_FLESH));
                             decreaseRottenFlesh(stack);
                         }
                     }
@@ -51,28 +53,20 @@ public class PendantOfHungerItem extends SingleStackItem {
 
     @Override
     public void onCraftedBy(ItemStack pStack, Level pLevel, Player pPlayer) {
-        CompoundTag compound = pStack.getOrCreateTag();
-        compound.putInt(ROTTEN_FLESH, 0);
+        CustomData.update(DataComponents.CUSTOM_DATA, pStack, tag -> tag.putInt(ROTTEN_FLESH, 0));
     }
 
     public void increaseRottenFlesh(ItemStack stack){
-        if (stack.getTag() != null) {
-            stack.getOrCreateTag().putInt(ROTTEN_FLESH, getRottenFleshAmount(stack) + 1);
-        }
+        CustomData.update(DataComponents.CUSTOM_DATA, stack, tag -> tag.putInt(ROTTEN_FLESH, getRottenFleshAmount(stack) + 1));
     }
 
     public void decreaseRottenFlesh(ItemStack stack){
-        if (stack.getTag() != null) {
-            stack.getOrCreateTag().putInt(ROTTEN_FLESH, getRottenFleshAmount(stack) - 1);
-        }
+        CustomData.update(DataComponents.CUSTOM_DATA, stack, tag -> tag.putInt(ROTTEN_FLESH, getRottenFleshAmount(stack) - 1));
     }
 
     public int getRottenFleshAmount(ItemStack stack) {
-        if (stack.getTag() != null) {
-            return stack.getOrCreateTag().getInt(ROTTEN_FLESH);
-        } else {
-            return 0;
-        }
+        CompoundTag tag = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();
+        return tag.getInt(ROTTEN_FLESH);
     }
 
     @Override
@@ -86,38 +80,28 @@ public class PendantOfHungerItem extends SingleStackItem {
     }
 
     public double amountColor(ItemStack stack){
-        if (stack.getTag() != null) {
-            int i = stack.getTag().getInt(ROTTEN_FLESH);
-            return 1.0D - (i / (double) ItemConfig.PendantOfHungerLimit.get());
-        } else {
-            return 1.0D;
-        }
+        int i = getRottenFleshAmount(stack);
+        return 1.0D - (i / (double) com.Polarice3.Goety.utils.ConfigHelper.getInt(ItemConfig.PendantOfHungerLimit, 0));
     }
 
     @Override
     public boolean isBarVisible(ItemStack stack) {
-        return stack.getTag() != null;
+        return getRottenFleshAmount(stack) > 0;
     }
 
     @Override
     public int getBarWidth(ItemStack stack){
-        if (stack.getTag() != null) {
-            int power = stack.getTag().getInt(ROTTEN_FLESH);
-            return Math.round((power * 13.0F / ItemConfig.PendantOfHungerLimit.get()));
-        } else {
-            return 0;
-        }
+        int power = getRottenFleshAmount(stack);
+        return Math.round((power * 13.0F / com.Polarice3.Goety.utils.ConfigHelper.getInt(ItemConfig.PendantOfHungerLimit, 0)));
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
-        super.appendHoverText(stack, worldIn, tooltip, flagIn);
-        if (stack.getTag() != null) {
-            int rottenFlesh = stack.getTag().getInt(ROTTEN_FLESH);
-            tooltip.add(Component.translatable("info.goety.hunger_pendent.amount", rottenFlesh));
-        } else {
-            tooltip.add(Component.translatable("info.goety.hunger_pendent.amount", 0));
-        }
+    public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltip, TooltipFlag flagIn) {
+        super.appendHoverText(stack, context, tooltip, flagIn);
+        int rottenFlesh = getRottenFleshAmount(stack);
+        tooltip.add(Component.translatable("info.goety.hunger_pendent.amount", rottenFlesh));
     }
 
 }
+
+

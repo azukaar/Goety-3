@@ -30,12 +30,12 @@ public class TunnelSpell extends BlockSpell {
 
     @Override
     public SpellStat defaultStats() {
-        return super.defaultStats().setRange(SpellConfig.TunnelDefaultDistance.get());
+        return super.defaultStats().setRange(com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.TunnelDefaultDistance, 0));
     }
 
     @Override
     public int defaultSoulCost() {
-        return SpellConfig.TunnelCost.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.TunnelCost, 0);
     }
 
     @Nullable
@@ -46,7 +46,7 @@ public class TunnelSpell extends BlockSpell {
 
     @Override
     public int defaultSpellCooldown() {
-        return SpellConfig.TunnelCoolDown.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.TunnelCoolDown, 0);
     }
 
     @Override
@@ -89,7 +89,7 @@ public class TunnelSpell extends BlockSpell {
             }
             blockPos = blockPos.relative(direction.getOpposite());
         }
-        createHole(worldIn, blockHitResult.getBlockPos(), direction, (byte)Math.round((float)(totalDistance + 1)), this.rightStaff(staff), SpellConfig.TunnelDefaultLifespan.get() + (extraLife * 20));
+        createHole(worldIn, blockHitResult.getBlockPos(), direction, (byte)Math.round((float)(totalDistance + 1)), this.rightStaff(staff), com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.TunnelDefaultLifespan, 0) + (extraLife * 20));
         this.playSound(worldIn, caster, ModSounds.CAST_SPELL.get());
     }
 

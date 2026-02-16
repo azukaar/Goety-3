@@ -2,7 +2,6 @@ package com.Polarice3.Goety.common.items.magic;
 
 import com.Polarice3.Goety.api.items.magic.IFocus;
 import com.Polarice3.Goety.api.magic.ISpell;
-import com.Polarice3.Goety.utils.ItemHelper;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.Item;
@@ -10,9 +9,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.enchantment.Enchantment;
-import net.minecraft.world.level.Level;
-
-import javax.annotation.Nullable;
 import java.util.List;
 
 public class MagicFocus extends Item implements IFocus {
@@ -26,7 +22,16 @@ public class MagicFocus extends Item implements IFocus {
                 .stacksTo(1)
         );
         this.spell = spell;
-        this.soulCost = spell.defaultSoulCost();
+        // Lazy evaluation to avoid accessing config before it's loaded
+        this.soulCost = 0; // Will be set lazily when needed
+    }
+
+    // Lazy getter for soul cost
+    public int getSoulCost() {
+        if (this.soulCost == 0 && this.spell != null) {
+            this.soulCost = this.spell.defaultSoulCost();
+        }
+        return this.soulCost;
     }
 
     public boolean isEnchantable(ItemStack pStack) {
@@ -53,16 +58,11 @@ public class MagicFocus extends Item implements IFocus {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
-        super.appendHoverText(stack, worldIn, tooltip, flagIn);
-        if (soulCost != 0) {
-            tooltip.add(Component.translatable("info.goety.focus.cost", soulCost));
-        } else {
-            tooltip.add(Component.translatable("info.goety.focus.cost", 0));
-        }
-        tooltip.add(Component.translatable("info.goety.focus.spellType", spell.getSpellType().getName()));
-        tooltip.add(Component.translatable("item.goety.focus.info").withStyle(ChatFormatting.BLUE).withStyle(ChatFormatting.UNDERLINE));
-        ItemHelper.addOnShift(tooltip, () -> addInformationAfterShift(tooltip));
+    public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltip, TooltipFlag flagIn) {
+        super.appendHoverText(stack, context, tooltip, flagIn);
+        int cost = getSoulCost();
+        tooltip.add(Component.translatable("info.goety.focus.cost", cost));
+        tooltip.add(Component.translatable("info.goety.focus.spellType", spell.getSpellType().getName()).withStyle(ChatFormatting.BLUE));
     }
 
     public void addInformationAfterShift(List<Component> tooltip) {
@@ -70,3 +70,4 @@ public class MagicFocus extends Item implements IFocus {
     }
 
 }
+

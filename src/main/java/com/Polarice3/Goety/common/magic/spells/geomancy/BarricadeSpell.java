@@ -26,16 +26,31 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class BarricadeSpell extends Spell {
-    public int trueCooldown = this.defaultSpellCooldown();
+    // Lazy evaluation to avoid accessing config before it's loaded
+    private int trueCooldownCache = -1;
+    
+    public int getTrueCooldown() {
+        if (trueCooldownCache < 0) {
+            trueCooldownCache = this.defaultSpellCooldown();
+        }
+        return trueCooldownCache;
+    }
+    
+    public void setTrueCooldown(int cooldown) {
+        this.trueCooldownCache = cooldown;
+    }
+    
+    @Deprecated // Use getTrueCooldown() instead
+    public int trueCooldown = 0; // Will be calculated lazily
 
     @Override
     public int defaultSoulCost() {
-        return SpellConfig.BarricadeCost.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.BarricadeCost, 0);
     }
 
     @Override
     public int defaultCastDuration() {
-        return SpellConfig.BarricadeDuration.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.BarricadeDuration, 0);
     }
 
     @Override
@@ -49,12 +64,12 @@ public class BarricadeSpell extends Spell {
     }
 
     public int spellCooldown(LivingEntity caster) {
-        return this.trueCooldown;
+        return getTrueCooldown();
     }
 
     @Override
     public int defaultSpellCooldown() {
-        return SpellConfig.BarricadeCoolDown.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.BarricadeCoolDown, 0);
     }
 
     @Override
@@ -89,12 +104,12 @@ public class BarricadeSpell extends Spell {
             if (this.isShifting(caster)) {
                 if (worldIn.random.nextFloat() <= chance) {
                     WandUtil.summonQuadOffensiveTrap(caster, target, ModEntityType.TOTEMIC_BOMB.get(), potency);
-                    this.trueCooldown += MathHelper.secondsToTicks(3);
+                    setTrueCooldown(getTrueCooldown() + MathHelper.secondsToTicks(3));
                 } else {
                     int xShift = worldIn.getRandom().nextInt(-1, 1);
                     int zShift = worldIn.getRandom().nextInt(-1, 1);
                     WandUtil.summonMonolith(caster, target, ModEntityType.TOTEMIC_BOMB.get(), xShift, zShift, potency);
-                    this.trueCooldown += MathHelper.secondsToTicks(2);
+                    setTrueCooldown(getTrueCooldown() + MathHelper.secondsToTicks(2));
                 }
             } else {
                 int random = worldIn.random.nextInt(3);
@@ -114,21 +129,21 @@ public class BarricadeSpell extends Spell {
                 } else {
                     WandUtil.summonRandomPillarsTrap(caster, target, entityType, duration);
                 }
-                this.trueCooldown = this.defaultSpellCooldown();
+                setTrueCooldown(this.defaultSpellCooldown());
             }
         } else if (rayTraceResult instanceof BlockHitResult) {
             BlockPos blockPos = ((BlockHitResult) rayTraceResult).getBlockPos();
             if (this.isShifting(caster)) {
                 if (worldIn.random.nextFloat() <= chance) {
                     WandUtil.summonQuadOffensiveTrap(caster, blockPos, ModEntityType.TOTEMIC_BOMB.get(), potency);
-                    this.trueCooldown += MathHelper.secondsToTicks(3);
+                    setTrueCooldown(getTrueCooldown() + MathHelper.secondsToTicks(3));
                 } else {
                     WandUtil.summonMonolith(caster, blockPos, ModEntityType.TOTEMIC_BOMB.get(), 0, 0, potency);
-                    this.trueCooldown += MathHelper.secondsToTicks(2);
+                    setTrueCooldown(getTrueCooldown() + MathHelper.secondsToTicks(2));
                 }
             } else {
                 WandUtil.summonWallTrap(caster, blockPos, entityType, duration);
-                this.trueCooldown = this.defaultSpellCooldown();
+                setTrueCooldown(this.defaultSpellCooldown());
             }
         }
     }

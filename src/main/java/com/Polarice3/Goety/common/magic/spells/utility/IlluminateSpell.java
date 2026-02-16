@@ -48,7 +48,7 @@ public class IlluminateSpell extends Spell {
 
     @Override
     public int defaultSoulCost() {
-        return SpellConfig.IlluminateCost.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.IlluminateCost, 0);
     }
 
     @Override
@@ -72,7 +72,7 @@ public class IlluminateSpell extends Spell {
 
     @Override
     public void useSpell(ServerLevel worldIn, LivingEntity caster, ItemStack staff, int castTime, SpellStat spellStat) {
-        if (castTime >= SpellConfig.IlluminateChargeUp.get()) {
+        if (castTime >= com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.IlluminateChargeUp, 0)) {
             double radius = spellStat.getRadius();
             if (WandUtil.enchantedFocus(caster)) {
                 radius *= WandUtil.getLevels(ModEnchantments.RADIUS.get(), caster) / 2.0D;
@@ -82,7 +82,7 @@ public class IlluminateSpell extends Spell {
 
             Stream<BlockPos> stream = BlockPos.betweenClosedStream(caster.blockPosition().offset(-radiusInt, -radiusInt / 2, -radiusInt), caster.blockPosition().offset(radiusInt, radiusInt / 2, radiusInt));
 
-            if (castTime % SpellConfig.IlluminateDuration.get() == 0) {
+            if (castTime % com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.IlluminateDuration, 0) == 0) {
                 if (stream.anyMatch(pos -> tryToPlaceAtPos(worldIn, caster, pos) || replaceSoulLight(pos, worldIn))) {
                     ServerParticleUtil.addParticlesAroundMiddleSelf(worldIn, ModParticleTypes.GLOW_EFFECT.get(), caster);
                 }
@@ -99,8 +99,8 @@ public class IlluminateSpell extends Spell {
     }
 
     public boolean tryToPlaceAtPos(ServerLevel world, LivingEntity caster, BlockPos pos) {
-        int lightLevel = caster.level.getBrightness(LightLayer.BLOCK, pos);
-        if (lightLevel > SpellConfig.IlluminateMinLightLevel.get()) {
+        int lightLevel = caster.level().getBrightness(LightLayer.BLOCK, pos);
+        if (lightLevel > com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.IlluminateMinLightLevel, 0)) {
             return false;
         }
 

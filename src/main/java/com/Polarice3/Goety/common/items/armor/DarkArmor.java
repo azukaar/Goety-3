@@ -17,6 +17,7 @@ import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.PlayerModelPart;
 import net.minecraft.world.item.ArmorItem;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
@@ -31,22 +32,13 @@ public class DarkArmor extends ArmorItem implements ISoulRepair, ISoulDiscount {
         super(ModArmorMaterials.DARK, p_40387_, ModItems.baseProperties());
     }
 
-    @Override
-    public String getArmorTexture(ItemStack stack, Entity entity, EquipmentSlot slot, String layer) {
-        if (slot == EquipmentSlot.LEGS) {
-            return Goety.location("textures/models/armor/dark_armor_layer.png").toString();
-        } else {
-            return Goety.location("textures/models/armor/dark_armor.png").toString();
-        }
-    }
+
 
     public int getSoulDiscount(EquipmentSlot equipmentSlot, ItemStack itemStack){
         return 5;
     }
 
-    @Override
     public void initializeClient(Consumer<IClientItemExtensions> consumer) {
-        super.initializeClient(consumer);
         consumer.accept(new IClientItemExtensions() {
            public HumanoidModel<?> getHumanoidArmorModel(LivingEntity livingEntity, ItemStack itemStack, EquipmentSlot equipmentSlot, HumanoidModel<?> original) {
                EntityModelSet modelSet = Minecraft.getInstance().getEntityModels();
@@ -61,9 +53,12 @@ public class DarkArmor extends ArmorItem implements ISoulRepair, ISoulDiscount {
                model.leftLeg.visible = equipmentSlot == EquipmentSlot.FEET;
 
                if (livingEntity instanceof AbstractClientPlayer player){
+                   // FIXME: Cape logic needs update for 1.21
+                   /*
                    if (player.isCapeLoaded() && player.isModelPartShown(PlayerModelPart.CAPE) && player.getCloakTextureLocation() != null){
                        model.cape.visible = false;
                    }
+                   */
                }
 
                model.young = original.young;
@@ -74,13 +69,22 @@ public class DarkArmor extends ArmorItem implements ISoulRepair, ISoulDiscount {
 
                return model;
            }
+
+            public String getArmorTexture(ItemStack stack, Entity entity, EquipmentSlot slot, String layer) {
+               if (slot == EquipmentSlot.LEGS) {
+                   return Goety.location("textures/models/armor/dark_armor_layer.png").toString();
+               } else {
+                   return Goety.location("textures/models/armor/dark_armor.png").toString();
+               }
+           }
+           // End of anonymous class
         });
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
-        super.appendHoverText(stack, worldIn, tooltip, flagIn);
-        int discount = this.getSoulDiscount(LivingEntity.getEquipmentSlotForItem(stack), stack);
+    public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltip, TooltipFlag flagIn) {
+        super.appendHoverText(stack, context, tooltip, flagIn);
+        int discount = this.getSoulDiscount(stack.getEquipmentSlot(), stack);
         if (discount > 0) {
             tooltip.add(this.soulDiscountTooltip(stack));
         }

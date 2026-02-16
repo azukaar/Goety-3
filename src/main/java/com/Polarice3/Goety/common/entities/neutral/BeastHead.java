@@ -130,7 +130,7 @@ public class BeastHead extends Owned {
                             if (this.getOwner() != null){
                                 damageSource = ModDamageSource.summonAttack(this, this.getOwner());
                             }
-                            if (livingEntity.hurt(damageSource, AttributesConfig.BlackBeastDamage.get().floatValue())) {
+                            if (livingEntity.hurt(damageSource, (float)com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.BlackBeastDamage, 20.0D))) {
                                 this.hitEntities.add(livingEntity);
                             }
                         }

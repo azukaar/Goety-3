@@ -1,5 +1,7 @@
 package com.Polarice3.Goety.common.entities.ally;
 
+import com.Polarice3.Goety.utils.MobType;
+
 import com.Polarice3.Goety.common.entities.ModEntityType;
 import com.Polarice3.Goety.common.entities.neutral.Owned;
 import com.Polarice3.Goety.config.MobsConfig;
@@ -455,7 +457,7 @@ public class SlimeServant extends Summoned {
     public InteractionResult mobInteract(Player p_34394_, InteractionHand p_34395_) {
         ItemStack itemstack = p_34394_.getItemInHand(p_34395_);
         if (itemstack.is(this.getIncreaseItem())) {
-            if (this.getSize() < MobsConfig.MaxSlimeSize.get()) {
+            if (this.getSize() < com.Polarice3.Goety.utils.ConfigHelper.getInt(MobsConfig.MaxSlimeSize, 0)) {
                 if (!p_34394_.getAbilities().instabuild) {
                     itemstack.shrink(1);
                 }

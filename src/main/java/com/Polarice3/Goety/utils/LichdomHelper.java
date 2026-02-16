@@ -2,9 +2,9 @@ package com.Polarice3.Goety.utils;
 
 import com.Polarice3.Goety.common.capabilities.lichdom.ILichdom;
 import com.Polarice3.Goety.common.capabilities.lichdom.LichImp;
-import com.Polarice3.Goety.common.capabilities.lichdom.LichProvider;
 import com.Polarice3.Goety.common.capabilities.lichdom.LichUpdatePacket;
 import com.Polarice3.Goety.common.network.ModNetwork;
+import com.Polarice3.Goety.init.ModAttachments;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -14,7 +14,7 @@ import javax.annotation.Nullable;
 
 public class LichdomHelper {
     public static ILichdom getCapability(Player player) {
-        return player.getCapability(LichProvider.CAPABILITY).orElse(new LichImp());
+        return player.getData(ModAttachments.LICHDOM);
     }
 
     public static void setLich(Player player, boolean lich) {
@@ -70,9 +70,18 @@ public class LichdomHelper {
     }
 
     public static void sendLichUpdatePacket(Player player) {
-        if (!player.level.isClientSide) {
+        if (!player.level().isClientSide) {
             ModNetwork.sendTo(player, new LichUpdatePacket(player));
         }
+    }
+
+    public static CompoundTag save(ILichdom lichdom) {
+        CompoundTag tag = new CompoundTag();
+        tag.putBoolean("lichdom", lichdom.getLichdom());
+        tag.putBoolean("lichMode", lichdom.isLichMode());
+        tag.putBoolean("nightVision", lichdom.nightVision());
+        tag.putInt("smited", lichdom.smited());
+        return tag;
     }
 
     public static CompoundTag save(CompoundTag tag, ILichdom lichdom) {
@@ -81,6 +90,11 @@ public class LichdomHelper {
         tag.putBoolean("nightVision", lichdom.nightVision());
         tag.putInt("smited", lichdom.smited());
         return tag;
+    }
+
+    public static ILichdom load(CompoundTag tag) {
+        ILichdom lichdom = new LichImp();
+        return load(tag, lichdom);
     }
 
     public static ILichdom load(CompoundTag tag, ILichdom lichdom) {

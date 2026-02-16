@@ -12,7 +12,7 @@ import net.minecraft.world.level.block.SweetBerryBushBlock;
 
 public class SweetBerriedEffect extends BrewEffect {
     public SweetBerriedEffect() {
-        super("sweet_thorns", BrewConfig.SweetThornsCost.get(), MobEffectCategory.HARMFUL, 0x286240);
+        super("sweet_thorns", com.Polarice3.Goety.utils.ConfigHelper.getInt(BrewConfig.SweetThornsCost, 0), MobEffectCategory.HARMFUL, 0x286240);
     }
 
     @Override

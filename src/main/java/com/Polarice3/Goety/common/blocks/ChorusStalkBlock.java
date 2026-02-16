@@ -15,10 +15,17 @@ import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.material.PushReaction;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.neoforged.neoforge.common.IForgeShearable;
-import net.neoforged.neoforge.common.IPlantable;
+import com.Polarice3.Goety.compat.legacy.neoforge.common.IForgeShearable;
+import com.Polarice3.Goety.compat.legacy.neoforge.common.IPlantable;
 
 public class ChorusStalkBlock extends BushBlock implements BonemealableBlock, IForgeShearable {
+   public static final com.mojang.serialization.MapCodec<ChorusStalkBlock> CODEC = simpleCodec(p -> new ChorusStalkBlock());
+   
+   @Override
+   public com.mojang.serialization.MapCodec<? extends BushBlock> codec() {
+      return CODEC;
+   }
+   
    protected static final VoxelShape SHAPE = Block.box(2.0D, 0.0D, 2.0D, 14.0D, 16.0D, 14.0D);
 
    public ChorusStalkBlock() {
@@ -46,7 +53,8 @@ public class ChorusStalkBlock extends BushBlock implements BonemealableBlock, IF
       return state.is(ModTags.Blocks.CHORUS_GROW) || state.isSolidRender(world, pos);
    }
 
-   public boolean isValidBonemealTarget(LevelReader p_255692_, BlockPos p_57326_, BlockState p_57327_, boolean p_57328_) {
+   @Override
+   public boolean isValidBonemealTarget(LevelReader level, BlockPos pos, BlockState state) {
       return true;
    }
 

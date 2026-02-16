@@ -7,6 +7,7 @@ import com.Polarice3.Goety.utils.BlockFinder;
 import com.Polarice3.Goety.utils.BrewUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
@@ -20,9 +21,9 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.capabilities.Capability;
+import com.Polarice3.Goety.compat.legacy.neoforge.capabilities.Capability;
 import net.neoforged.neoforge.capabilities.Capabilities;
-import net.neoforged.neoforge.common.util.LazyOptional;
+import com.Polarice3.Goety.compat.legacy.neoforge.common.util.LazyOptional;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.fluids.capability.templates.FluidTank;
@@ -35,7 +36,7 @@ public class HauntedJugBlockEntity extends ModBlockEntity {
 
         @Override
         public @NotNull FluidStack getFluid() {
-            return new FluidStack(Fluids.WATER, this.getCapacity());
+            return new FluidStack(BuiltInRegistries.FLUID.wrapAsHolder(Fluids.WATER), this.getCapacity());
         }
 
         @Override
@@ -48,8 +49,8 @@ public class HauntedJugBlockEntity extends ModBlockEntity {
             return Integer.MAX_VALUE;
         }
 
-        public CompoundTag writeToNBT(CompoundTag nbt) {
-            this.getFluid().writeToNBT(nbt);
+        public CompoundTag writeToNBT(net.minecraft.core.HolderLookup.Provider provider, CompoundTag nbt) {
+            this.getFluid().save(provider, nbt);
             return nbt;
         }
 
@@ -61,7 +62,7 @@ public class HauntedJugBlockEntity extends ModBlockEntity {
 
         @Override
         public @NotNull FluidStack drain(int maxDrain, FluidAction action) {
-            return new FluidStack(this.getFluid(), maxDrain);
+            return new FluidStack(this.getFluid().getFluid(), maxDrain);
         }
 
         @Override
@@ -91,7 +92,7 @@ public class HauntedJugBlockEntity extends ModBlockEntity {
                     BlockPos blockPos = this.getBlockPos().offset(x - 2, y - 1, z - 2);
                     BlockState blockState = this.getLevel().getBlockState(blockPos);
                     BlockEntity blockEntity = this.getLevel().getBlockEntity(blockPos);
-                    boolean fluidHandler0 = blockEntity != null && !(blockEntity instanceof HauntedJugBlockEntity) && (blockEntity instanceof IFluidHandler || blockEntity.getCapability(Capabilities.FLUID_HANDLER, Direction.UP).isPresent()) && !blockEntity.getBlockState().getBlock().getDescriptionId().contains("pipe");
+                    boolean fluidHandler0 = blockEntity != null && !(blockEntity instanceof HauntedJugBlockEntity) && (this.getLevel().getCapability(Capabilities.FluidHandler.BLOCK, blockPos, Direction.UP) != null) && !blockEntity.getBlockState().getBlock().getDescriptionId().contains("pipe");
                     boolean water = blockState.getBlock() == Blocks.WATER_CAULDRON && blockState.getValue(LayeredCauldronBlock.LEVEL) < 3;
                     boolean vanillaCauldron = blockState.getBlock() == Blocks.CAULDRON || water;
                     boolean brewCauldron = blockState.getBlock() instanceof BrewCauldronBlock && blockEntity instanceof BrewCauldronBlockEntity cauldronEntity && blockState.getValue(BrewCauldronBlock.LEVEL) < 3 && BrewUtils.isEmpty(cauldronEntity.getBrew());
@@ -108,17 +109,12 @@ public class HauntedJugBlockEntity extends ModBlockEntity {
                             axolotl.rehydrate();
                         }
                     } else if (fluidHandler0) {
-                        IFluidHandler fluidHandler;
-                        if (blockEntity instanceof IFluidHandler handler) {
-                            fluidHandler = handler;
-                        } else {
-                            fluidHandler = blockEntity.getCapability(Capabilities.FLUID_HANDLER, Direction.UP).resolve().orElse(null);
-                        }
+                        IFluidHandler fluidHandler = this.getLevel().getCapability(Capabilities.FluidHandler.BLOCK, blockPos, Direction.UP);
                         if (fluidHandler != null) {
-                            int filled = fluidHandler.fill(new FluidStack(Fluids.WATER, 250), IFluidHandler.FluidAction.EXECUTE);
+                            int filled = fluidHandler.fill(new FluidStack(BuiltInRegistries.FLUID.wrapAsHolder(Fluids.WATER), 250), IFluidHandler.FluidAction.EXECUTE);
                             if (filled > 0) {
                                 this.streamWater(blockPos);
-                                this.fluidTank.drain(new FluidStack(Fluids.WATER, filled), IFluidHandler.FluidAction.EXECUTE);
+                                this.fluidTank.drain(new FluidStack(BuiltInRegistries.FLUID.wrapAsHolder(Fluids.WATER), filled), IFluidHandler.FluidAction.EXECUTE);
                                 this.markUpdated();
                             }
                         }
@@ -126,7 +122,7 @@ public class HauntedJugBlockEntity extends ModBlockEntity {
                         this.getLevel().setBlock(blockPos, blockState.cycle(BrewCauldronBlock.LEVEL), 2);
                         this.getLevel().updateNeighborsAt(blockPos, blockState.getBlock());
                         this.streamWater(blockPos);
-                        this.fluidTank.drain(new FluidStack(Fluids.WATER, 333), IFluidHandler.FluidAction.EXECUTE);
+                        this.fluidTank.drain(new FluidStack(BuiltInRegistries.FLUID.wrapAsHolder(Fluids.WATER), 333), IFluidHandler.FluidAction.EXECUTE);
                         this.markUpdated();
                     } else if (vanillaCauldron) {
                         if (water) {
@@ -136,21 +132,18 @@ public class HauntedJugBlockEntity extends ModBlockEntity {
                         }
                         this.getLevel().updateNeighborsAt(blockPos, blockState.getBlock());
                         this.streamWater(blockPos);
-                        this.fluidTank.drain(new FluidStack(Fluids.WATER, 333), IFluidHandler.FluidAction.EXECUTE);
+                        this.fluidTank.drain(new FluidStack(BuiltInRegistries.FLUID.wrapAsHolder(Fluids.WATER), 333), IFluidHandler.FluidAction.EXECUTE);
                         this.markUpdated();
                     } else if (BotaniaLoaded.BOTANIA.isLoaded()){
                         // TODO(1.21): Botania integration is disabled until Botania updates for 1.21.1.
                     }
                 } else {
-                    BlockEntity blockEntity = this.getLevel().getBlockEntity(this.getBlockPos().above());
-                    if (blockEntity != null) {
-                        if (blockEntity.getCapability(Capabilities.FLUID_HANDLER, Direction.DOWN).resolve().isPresent()) {
-                            IFluidHandler fluidHandler = blockEntity.getCapability(Capabilities.FLUID_HANDLER, Direction.DOWN).resolve().get();
-                            int filled = fluidHandler.fill(new FluidStack(Fluids.WATER, FluidType.BUCKET_VOLUME), IFluidHandler.FluidAction.EXECUTE);
-                            if (filled > 0) {
-                                this.fluidTank.drain(new FluidStack(Fluids.WATER, filled), IFluidHandler.FluidAction.EXECUTE);
-                                this.markUpdated();
-                            }
+                    IFluidHandler fluidHandler = this.getLevel().getCapability(Capabilities.FluidHandler.BLOCK, this.getBlockPos().above(), Direction.DOWN);
+                    if (fluidHandler != null) {
+                        int filled = fluidHandler.fill(new FluidStack(Fluids.WATER, 1000), IFluidHandler.FluidAction.EXECUTE);
+                        if (filled > 0) {
+                            this.fluidTank.drain(new FluidStack(BuiltInRegistries.FLUID.wrapAsHolder(Fluids.WATER), filled), IFluidHandler.FluidAction.EXECUTE);
+                            this.markUpdated();
                         }
                     }
                 }
@@ -171,26 +164,12 @@ public class HauntedJugBlockEntity extends ModBlockEntity {
     }
 
     @Override
-    public void readNetwork(CompoundTag compoundNBT) {
-        this.fluidTank.readFromNBT(compoundNBT);
+    public void readNetwork(CompoundTag compoundNBT, net.minecraft.core.HolderLookup.Provider pRegistries) {
+        this.fluidTank.readFromNBT(pRegistries, compoundNBT);
     }
 
     @Override
-    public CompoundTag writeNetwork(CompoundTag pCompound) {
-        return this.fluidTank.writeToNBT(pCompound);
-    }
-
-    @Override
-    public void invalidateCaps() {
-        this.fluidCap.invalidate();
-        super.invalidateCaps();
-    }
-
-    @Override
-    public <T> LazyOptional<T> getCapability(Capability<T> cap, Direction side) {
-        if (cap == Capabilities.FLUID_HANDLER) {
-            return this.fluidCap.cast();
-        }
-        return super.getCapability(cap, side);
+    public CompoundTag writeNetwork(CompoundTag pCompound, net.minecraft.core.HolderLookup.Provider pRegistries) {
+        return this.fluidTank.writeToNBT(pRegistries, pCompound);
     }
 }

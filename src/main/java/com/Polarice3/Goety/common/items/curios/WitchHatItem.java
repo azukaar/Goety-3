@@ -15,7 +15,7 @@ public class WitchHatItem extends SingleStackItem{
             if (CuriosFinder.hasWitchSet(livingEntity)){
                 if (livingEntity.getRandom().nextFloat() < 7.5E-4F){
                     for(int i = 0; i < livingEntity.getRandom().nextInt(35) + 10; ++i) {
-                        livingEntity.level.addParticle(ParticleTypes.WITCH, livingEntity.getX() + livingEntity.getRandom().nextGaussian() * (double)0.13F, livingEntity.getBoundingBox().maxY + 0.5D + livingEntity.getRandom().nextGaussian() * (double)0.13F, livingEntity.getZ() + livingEntity.getRandom().nextGaussian() * (double)0.13F, 0.0D, 0.0D, 0.0D);
+                        livingEntity.level().addParticle(ParticleTypes.WITCH, livingEntity.getX() + livingEntity.getRandom().nextGaussian() * (double)0.13F, livingEntity.getBoundingBox().maxY + 0.5D + livingEntity.getRandom().nextGaussian() * (double)0.13F, livingEntity.getZ() + livingEntity.getRandom().nextGaussian() * (double)0.13F, 0.0D, 0.0D, 0.0D);
                     }
                 }
             }

@@ -40,7 +40,7 @@ public class GeometricParticle extends TextureSheetParticle {
 
     public GeometricParticle(ParticleContext particleContext, int particleAge, IParticleGeometry particleGeometry,
             boolean cycleSprites, boolean doCollision) {
-        super(particleContext.level, particleContext.pos().x(), particleContext.pos().y(), particleContext.pos().z());
+        super(particleContext.level(), particleContext.pos().x(), particleContext.pos().y(), particleContext.pos().z());
         this.particleContext = particleContext;
         this.lifetime = particleAge;
         this.particleGeometry = particleGeometry;

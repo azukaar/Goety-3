@@ -39,7 +39,6 @@ public class CameraShake extends Entity {
 
     @Override
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
-        super.defineSynchedData(builder);
         builder.define(RADIUS, 10.0F);
         builder.define(MAGNITUDE, 1.0F);
         builder.define(DURATION, 0);
@@ -155,7 +154,7 @@ public class CameraShake extends Entity {
     }
 
     @Override
-    public Packet<ClientGamePacketListener> getAddEntityPacket() {
-        return new net.minecraft.network.protocol.game.ClientboundAddEntityPacket(this);
+    public Packet<ClientGamePacketListener> getAddEntityPacket(net.minecraft.server.level.ServerEntity p_345759_) {
+        return new net.minecraft.network.protocol.game.ClientboundAddEntityPacket(this, p_345759_);
     }
 }

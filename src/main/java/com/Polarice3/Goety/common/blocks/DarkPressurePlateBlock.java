@@ -1,4 +1,5 @@
 package com.Polarice3.Goety.common.blocks;
+import com.mojang.serialization.MapCodec;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.Entity;
@@ -15,6 +16,12 @@ import net.minecraft.world.phys.AABB;
 import java.util.List;
 
 public class DarkPressurePlateBlock extends BasePressurePlateBlock {
+    public static final MapCodec<DarkPressurePlateBlock> CODEC = simpleCodec(DarkPressurePlateBlock::new);
+
+    @Override
+    protected MapCodec<? extends BasePressurePlateBlock> codec() {
+        return CODEC;
+    }
    public static final BooleanProperty POWERED = BlockStateProperties.POWERED;
 
    public DarkPressurePlateBlock(Properties p_55254_) {

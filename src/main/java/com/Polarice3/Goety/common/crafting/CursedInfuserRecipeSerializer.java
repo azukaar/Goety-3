@@ -11,58 +11,55 @@ import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.ShapedRecipe;
 
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
+
 public class CursedInfuserRecipeSerializer<T extends CursedInfuserRecipes> implements RecipeSerializer<T>{
     private final int defaultCookingTime;
     private final IFactory<T> factory;
+    private final MapCodec<T> codec;
+    private final StreamCodec<RegistryFriendlyByteBuf, T> streamCodec;
 
     public CursedInfuserRecipeSerializer(IFactory<T> pFactory, int pDefaultCookingTime) {
         this.defaultCookingTime = pDefaultCookingTime;
         this.factory = pFactory;
+        this.codec = RecordCodecBuilder.mapCodec(instance -> instance.group(
+                Codec.STRING.optionalFieldOf("group", "").forGetter(r -> r.group),
+                Ingredient.CODEC_NONEMPTY.fieldOf("ingredient").forGetter(r -> r.ingredient),
+                ItemStack.CODEC.fieldOf("result").forGetter(r -> r.result),
+                Codec.FLOAT.optionalFieldOf("experience", 0.0F).forGetter(r -> 0.0F), // Experience seems unused or constant 0.0F in factory create?
+                Codec.INT.optionalFieldOf("cookingTime", defaultCookingTime).forGetter(r -> r.cookingTime),
+                Codec.BOOL.optionalFieldOf("grim", false).forGetter(r -> r.grim)
+        ).apply(instance, (group, ingredient, result, experience, cookingTime, grim) -> 
+            pFactory.create(group, ingredient, result, experience, cookingTime, grim)
+        ));
+        
+        this.streamCodec = StreamCodec.composite(
+            ByteBufCodecs.STRING_UTF8, r -> r.group,
+            Ingredient.CONTENTS_STREAM_CODEC, r -> r.ingredient,
+            ItemStack.STREAM_CODEC, r -> r.result,
+            ByteBufCodecs.INT, r -> r.cookingTime,
+            ByteBufCodecs.BOOL, r -> r.grim,
+            (group, ingredient, result, cookingTime, grim) -> pFactory.create(group, ingredient, result, 0.0F, cookingTime, grim)
+        );
     }
 
-    public T fromJson(ResourceLocation pRecipeId, JsonObject pJson) {
-        String s = GsonHelper.getAsString(pJson, "group", "");
-        JsonElement jsonelement = GsonHelper.isArrayNode(pJson, "ingredient") ? GsonHelper.getAsJsonArray(pJson, "ingredient") : GsonHelper.getAsJsonObject(pJson, "ingredient");
-        Ingredient ingredient = Ingredient.fromJson(jsonelement);
-        boolean grim = false;
-        if (pJson.has("grim")){
-            grim = GsonHelper.getAsBoolean(pJson, "grim");
-        }
-        if (!pJson.has("result")) {
-            throw new com.google.gson.JsonSyntaxException("Missing result, expected to find a string or object");
-        }
-        ItemStack itemstack;
-        if (pJson.get("result").isJsonObject()) {
-            itemstack = ShapedRecipe.itemStackFromJson(GsonHelper.getAsJsonObject(pJson, "result"));
-        } else {
-            String s1 = GsonHelper.getAsString(pJson, "result");
-            ResourceLocation resourcelocation = new ResourceLocation(s1);
-            itemstack = new ItemStack(BuiltInRegistries.ITEM.getOptional(resourcelocation).orElseThrow(() -> {
-                return new IllegalStateException("Item: " + s1 + " does not exist");
-            }));
-        }
-        int i = GsonHelper.getAsInt(pJson, "cookingTime", this.defaultCookingTime);
-        return this.factory.create(pRecipeId, s, ingredient, itemstack, 0.0F, i, grim);
+    @Override
+    public MapCodec<T> codec() {
+        return codec;
     }
 
-    public T fromNetwork(ResourceLocation pRecipeId, FriendlyByteBuf pBuffer) {
-        String s = pBuffer.readUtf(32767);
-        Ingredient ingredient = Ingredient.fromNetwork(pBuffer);
-        ItemStack itemstack = pBuffer.readItem();
-        int i = pBuffer.readVarInt();
-        boolean grim = pBuffer.readBoolean();
-        return this.factory.create(pRecipeId, s, ingredient, itemstack, 0.0F, i, grim);
+    @Override
+    public StreamCodec<RegistryFriendlyByteBuf, T> streamCodec() {
+        return streamCodec;
     }
 
-    public void toNetwork(FriendlyByteBuf pBuffer, T pRecipe) {
-        pBuffer.writeUtf(pRecipe.group);
-        pRecipe.ingredient.toNetwork(pBuffer);
-        pBuffer.writeItem(pRecipe.result);
-        pBuffer.writeVarInt(pRecipe.cookingTime);
-        pBuffer.writeBoolean(pRecipe.grim);
-    }
-
-    interface IFactory<T extends CursedInfuserRecipes> {
-        T create(ResourceLocation p_create_1_, String p_create_2_, Ingredient p_create_3_, ItemStack p_create_4_, float p_create_5_, int p_create_6_, boolean p_create_7_);
+    public interface IFactory<T extends CursedInfuserRecipes> {
+        // ID is no longer passed
+        T create(String group, Ingredient ingredient, ItemStack result, float experience, int cookingTime, boolean grim);
     }
 }

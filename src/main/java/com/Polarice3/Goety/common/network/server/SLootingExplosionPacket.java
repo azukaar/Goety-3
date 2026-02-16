@@ -6,7 +6,7 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Explosion;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.network.NetworkEvent;
+import com.Polarice3.Goety.compat.legacy.network.NetworkEvent;
 
 import javax.annotation.Nullable;
 import java.util.function.Supplier;
@@ -54,7 +54,7 @@ public class SLootingExplosionPacket {
         ctx.get().enqueueWork(() -> {
             Player player = Goety.PROXY.getPlayer();
             if (player != null){
-                LootingExplosion explosion = new LootingExplosion(player.level, null, packet.x, packet.y, packet.z, packet.power, false, Explosion.BlockInteraction.KEEP, LootingExplosion.Mode.REGULAR);
+                LootingExplosion explosion = new LootingExplosion(player.level(), null, packet.x, packet.y, packet.z, packet.power, false, Explosion.BlockInteraction.KEEP, LootingExplosion.Mode.REGULAR);
                 explosion.finalizeExplosion(true);
                 player.setDeltaMovement(player.getDeltaMovement().add(packet.knockbackX, packet.knockbackY, packet.knockbackZ));
             }

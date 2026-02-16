@@ -44,7 +44,7 @@ public class DarkRobeModel extends HumanoidModel<LivingEntity> {
     public void setupAnim(LivingEntity entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch){
         super.setupAnim(entityIn, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch);
         this.bodyParts().forEach((modelPart -> modelPart.visible = !entityIn.isInvisible()));
-        this.head.visible = ItemConfig.ShowRobeHoods.get() && CuriosFinder.noHeadWear(entityIn) && entityIn.getItemBySlot(EquipmentSlot.HEAD).isEmpty();
+        this.head.visible = com.Polarice3.Goety.utils.ConfigHelper.getBoolean(ItemConfig.ShowRobeHoods, false) && CuriosFinder.noHeadWear(entityIn) && entityIn.getItemBySlot(EquipmentSlot.HEAD).isEmpty();
     }
 
     @Override

@@ -1,6 +1,9 @@
 package com.Polarice3.Goety.common.effects;
 
+import com.Polarice3.Goety.Goety;
 import com.Polarice3.Goety.utils.ModDamageSource;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
@@ -10,18 +13,21 @@ public class UnholyRageEffect extends GoetyBaseEffect{
     public UnholyRageEffect() {
         super(MobEffectCategory.NEUTRAL, 0);
         this.addAttributeModifier(Attributes.ATTACK_DAMAGE,
-                "08cdfeab-dca7-40a1-ad22-ae8909c2c7a3",
-                0.25D, AttributeModifier.Operation.MULTIPLY_TOTAL);
+                ResourceLocation.fromNamespaceAndPath(Goety.MOD_ID, "unholy_rage_attack"),
+                0.25D, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL);
         this.addAttributeModifier(Attributes.MOVEMENT_SPEED,
-                "da84b2ce-6812-4d03-bae5-7052e80e439b",
-                0.25D, AttributeModifier.Operation.MULTIPLY_TOTAL);
+                ResourceLocation.fromNamespaceAndPath(Goety.MOD_ID, "unholy_rage_speed"),
+                0.25D, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL);
     }
 
-    public void applyEffectTick(LivingEntity living, int amplify) {
-        if (living.tickCount % 20 == 0) {
-            float damage = living.getMaxHealth() * 0.1F;
-            living.hurt(ModDamageSource.getDamageSource(living.level, ModDamageSource.BOILING), damage);
+    @Override
+    public boolean applyEffectTick(LivingEntity living, int amplify) {
+        // Retaining damage calculation for syntactic correctness, as it was present in the original method
+        float damage = living.getMaxHealth() * 0.1F;
+        if (living.level() instanceof ServerLevel serverLevel){
+            living.hurt(ModDamageSource.getDamageSource(living.level(), ModDamageSource.BOILING), damage);
         }
+        return true;
     }
 
     public boolean isDurationEffectTick(int tick, int amplify) {

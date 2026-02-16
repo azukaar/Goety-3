@@ -33,6 +33,11 @@ public abstract class SpellEntity extends Entity implements OwnableEntity, ISpel
     }
 
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        builder.define(OWNER_UNIQUE_ID, Optional.empty());
+        builder.define(OWNER_CLIENT_ID, -1);
+        builder.define(TARGET_UNIQUE_ID, Optional.empty());
+        builder.define(TARGET_CLIENT_ID, -1);
+        builder.define(DATA_EXTRA_DAMAGE, 0.0F);
     }
 
     public void readAdditionalSaveData(CompoundTag compound) {

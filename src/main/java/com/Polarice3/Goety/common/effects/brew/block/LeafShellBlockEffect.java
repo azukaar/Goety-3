@@ -12,7 +12,7 @@ import net.minecraft.world.level.block.LeavesBlock;
 
 public class LeafShellBlockEffect extends BrewEffect {
     public LeafShellBlockEffect() {
-        super("leaf_shell", BrewConfig.LeafShellCost.get(), MobEffectCategory.NEUTRAL, 0x286240);
+        super("leaf_shell", com.Polarice3.Goety.utils.ConfigHelper.getInt(BrewConfig.LeafShellCost, 0), MobEffectCategory.NEUTRAL, 0x286240);
     }
 
     @Override

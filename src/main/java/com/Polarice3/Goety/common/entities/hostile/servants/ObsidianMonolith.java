@@ -79,17 +79,17 @@ public class ObsidianMonolith extends AbstractMonolith implements Enemy {
 
     public static AttributeSupplier.Builder setCustomAttributes() {
         return Mob.createMobAttributes()
-                .add(Attributes.MAX_HEALTH, AttributesConfig.ObsidianMonolithHealth.get())
+                .add(Attributes.MAX_HEALTH, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.ObsidianMonolithHealth, 20.0D))
                 .add(Attributes.MOVEMENT_SPEED, 0.0D)
-                .add(Attributes.ARMOR, AttributesConfig.ObsidianMonolithArmor.get())
+                .add(Attributes.ARMOR, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.ObsidianMonolithArmor, 20.0D))
                 .add(Attributes.KNOCKBACK_RESISTANCE, 1.0D)
                 .add(Attributes.FOLLOW_RANGE, 32.0D);
     }
 
     public void setConfigurableAttributes() {
         MobUtil.setBaseAttributes(this.getAttribute(Attributes.MAX_HEALTH),
-                AttributesConfig.ObsidianMonolithHealth.get());
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ARMOR), AttributesConfig.ObsidianMonolithArmor.get());
+                com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.ObsidianMonolithHealth, 20.0D));
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ARMOR), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.ObsidianMonolithArmor, 20.0D));
     }
 
     @Override

@@ -30,12 +30,12 @@ import java.util.List;
 public class OvergrowthSpell extends Spell {
     @Override
     public int defaultSoulCost() {
-        return SpellConfig.OvergrowthCost.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.OvergrowthCost, 0);
     }
 
     @Override
     public int defaultCastDuration() {
-        return SpellConfig.OvergrowthDuration.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.OvergrowthDuration, 0);
     }
 
     @Override
@@ -51,7 +51,7 @@ public class OvergrowthSpell extends Spell {
 
     @Override
     public int defaultSpellCooldown() {
-        return SpellConfig.OvergrowthCoolDown.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.OvergrowthCoolDown, 0);
     }
 
     @Override

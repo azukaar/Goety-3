@@ -77,7 +77,7 @@ public class ModIllagerType implements ITrainIllager {
                 && checker.hasBlocks(blockState -> blockState.is(Tags.Blocks.FENCES_WOODEN), 16)
                 && checker.hasBlocks(blockState -> blockState.is(BlockTags.WOOL), 20)
                 && checker.hasBlocks(blockState -> blockState.getBlock() instanceof BarrelBlock, 8)
-                && level.getBiome(blockPos).get().coldEnoughToSnow(blockPos)){
+                && level.getBiome(blockPos).value().coldEnoughToSnow(blockPos)){
             return ModEntityType.MOUNTAINEER_SERVANT.get();
         } else if (checker.hasBlocks(blockState -> blockState.is(BlockTags.PLANKS), 64)
                 && checker.hasBlocks(blockState -> blockState.getBlock().getDescriptionId().contains("bricks"), 64)
@@ -93,9 +93,9 @@ public class ModIllagerType implements ITrainIllager {
                 && checker.hasBlocks(blockState -> blockState.getBlock() instanceof StashUrnBlock, 4)
                 && checker.hasBlocks(blockState -> blockState.is(BlockTags.BANNERS), 2)
                 && checker.hasBlocks(blockState -> blockState.getBlock() instanceof AbstractSkullBlock || blockState.getBlock() instanceof TallSkullBlock || blockState.getBlock() instanceof WallTallSkullBlock, 4)
-                && checker.hasBlocks(blockState -> blockState.getBlock() instanceof FlowerPotBlock flowerPotBlock && flowerPotBlock.getContent() != Blocks.AIR, 4)) {
+                && checker.hasBlocks(blockState -> blockState.getBlock() instanceof FlowerPotBlock flowerPotBlock && flowerPotBlock.getPotted() != Blocks.AIR, 4)) {
             return ModEntityType.EVOKER_SERVANT.get();
-        } else if (checker.hasBlocks(blockState -> blockState.is(Tags.Blocks.STORAGE_BLOCKS_AMETHYST), 16)
+        } else if (checker.hasBlocks(blockState -> blockState.is(Blocks.AMETHYST_BLOCK), 16)
                 && checker.hasBlocks(blockState -> blockState.getBlock().getDescriptionId().contains("deepslate"), 64)
                 && checker.hasBlocks(blockState -> blockState.is(ModBlocks.CREEPER_TOTEM.get()), 16)) {
             return ModEntityType.GEOMANCER_SERVANT.get();
@@ -110,7 +110,7 @@ public class ModIllagerType implements ITrainIllager {
         } else if (BlockFinder.getNearbyEnchantPower(level, blockPos, range, 16)
                 && checker.hasBlocks(blockState -> blockState.is(Blocks.POWDER_SNOW), 32)
                 && checker.hasBlocks(blockState -> blockState.is(ModBlocks.CREEPER_TOTEM.get()), 16)
-                && level.getBiome(blockPos).get().coldEnoughToSnow(blockPos)) {
+                && level.getBiome(blockPos).value().coldEnoughToSnow(blockPos)) {
             return ModEntityType.CRYOLOGER_SERVANT.get();
         } else if (checker.hasBlocks(blockState -> blockState.getBlock().getDescriptionId().contains("copper"), 32)
                 && checker.hasBlocks(blockState -> blockState.getBlock().getDescriptionId().contains("bricks"), 64)

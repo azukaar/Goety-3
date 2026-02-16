@@ -1,6 +1,7 @@
 package com.Polarice3.Goety.common.blocks;
 
 import com.Polarice3.Goety.common.blocks.entities.PithosBlockEntity;
+import com.mojang.serialization.MapCodec;
 import com.Polarice3.Goety.common.entities.ModEntityType;
 import com.Polarice3.Goety.common.entities.hostile.SkullLord;
 import com.Polarice3.Goety.common.entities.util.SummonCircleBoss;
@@ -17,6 +18,7 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.*;
+import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -41,6 +43,12 @@ import net.minecraft.world.phys.Vec3;
 import javax.annotation.Nullable;
 
 public class PithosBlock extends BaseEntityBlock {
+    public static final MapCodec<PithosBlock> CODEC = simpleCodec(p -> new PithosBlock());
+
+    @Override
+    protected MapCodec<? extends BaseEntityBlock> codec() {
+        return CODEC;
+    }
     public static final BooleanProperty OPEN = BlockStateProperties.OPEN;
     public static final BooleanProperty LOCKED = BlockStateProperties.LOCKED;
     public static final BooleanProperty TRIGGERED = BlockStateProperties.TRIGGERED;
@@ -55,29 +63,42 @@ public class PithosBlock extends BaseEntityBlock {
         this.registerDefaultState(this.stateDefinition.any().setValue(OPEN, Boolean.FALSE).setValue(LOCKED, Boolean.TRUE).setValue(TRIGGERED, Boolean.FALSE));
     }
 
-    public InteractionResult use(BlockState pState, Level pLevel, BlockPos pPos, Player pPlayer, InteractionHand pHand, BlockHitResult pHit) {
+    @Override
+    protected ItemInteractionResult useItemOn(ItemStack stack, BlockState pState, Level pLevel, BlockPos pPos, Player pPlayer, InteractionHand pHand, BlockHitResult pHit) {
+        if (!pState.getValue(LOCKED)) {
+            BlockEntity tileentity = pLevel.getBlockEntity(pPos);
+            if (stack.is(ModTags.Items.RESPAWN_BOSS) && com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MainConfig.PithosRespawn, false) && pLevel instanceof ServerLevel serverLevel && BlockFinder.findStructure(serverLevel, pPlayer, ModTags.Structures.SKULL_LORD_SPAWNS)){
+                ItemStack itemStack = stack;
+                if (tileentity instanceof PithosBlockEntity pithosBlock) {
+                    pithosBlock.setLootTable(ModLootTables.CRYPT_TOMB, pLevel.random.nextLong());
+                }
+                if (pPlayer instanceof ServerPlayer serverPlayer){
+                    CriteriaTriggers.ITEM_USED_ON_BLOCK.trigger(serverPlayer, pPos, itemStack);
+                }
+                pLevel.setBlock(pPos, pState.setValue(LOCKED, Boolean.TRUE).setValue(TRIGGERED, Boolean.FALSE), 4);
+                itemStack.shrink(1);
+                pLevel.playSound(null, pPos , SoundEvents.RESPAWN_ANCHOR_SET_SPAWN, SoundSource.BLOCKS, 1.0F, 1.0F);
+                return ItemInteractionResult.SUCCESS;
+            }
+        }
+        return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+    }
+
+    @Override
+    protected InteractionResult useWithoutItem(BlockState pState, Level pLevel, BlockPos pPos, Player pPlayer, BlockHitResult pHit) {
         if (pLevel.isClientSide) {
             return InteractionResult.SUCCESS;
         } else {
             if (!pState.getValue(LOCKED)) {
                 BlockEntity tileentity = pLevel.getBlockEntity(pPos);
-                if (pPlayer.getItemInHand(pHand).is(ModTags.Items.RESPAWN_BOSS) && MainConfig.PithosRespawn.get() && pLevel instanceof ServerLevel serverLevel && BlockFinder.findStructure(serverLevel, pPlayer, ModTags.Structures.SKULL_LORD_SPAWNS)){
-                    ItemStack itemStack = pPlayer.getItemInHand(pHand);
-                    if (tileentity instanceof PithosBlockEntity pithosBlock) {
-                        pithosBlock.setLootTable(ModLootTables.CRYPT_TOMB, pLevel.random.nextLong());
-                    }
-                    if (pPlayer instanceof ServerPlayer serverPlayer){
-                        CriteriaTriggers.ITEM_USED_ON_BLOCK.trigger(serverPlayer, pPos, itemStack);
-                    }
-                    pLevel.setBlock(pPos, pState.setValue(LOCKED, Boolean.TRUE).setValue(TRIGGERED, Boolean.FALSE), 4);
-                    itemStack.shrink(1);
-                    pLevel.playSound(null, pPos , SoundEvents.RESPAWN_ANCHOR_SET_SPAWN, SoundSource.BLOCKS, 1.0F, 1.0F);
-                } else if (tileentity instanceof PithosBlockEntity) {
+                if (tileentity instanceof PithosBlockEntity) {
                     pPlayer.openMenu((PithosBlockEntity) tileentity);
+                    return InteractionResult.CONSUME;
                 }
             } else {
                 if (pLevel.getDifficulty() == Difficulty.PEACEFUL){
                     pLevel.setBlock(pPos, pState.setValue(LOCKED, Boolean.FALSE), 4);
+                    return InteractionResult.CONSUME;
                 } else if (!pState.getValue(TRIGGERED)){
                     SkullLord skullLord = ModEntityType.SKULL_LORD.get().create(pLevel);
                     if (skullLord != null){
@@ -89,10 +110,10 @@ public class PithosBlock extends BaseEntityBlock {
                         pLevel.addFreshEntity(summonCircleBoss);
                     }
                     pLevel.setBlock(pPos, pState.setValue(TRIGGERED, Boolean.TRUE), 4);
+                    return InteractionResult.CONSUME;
                 }
             }
-
-            return InteractionResult.CONSUME;
+            return InteractionResult.PASS;
         }
     }
 
@@ -126,7 +147,7 @@ public class PithosBlock extends BaseEntityBlock {
     }
 
     public void setPlacedBy(Level pLevel, BlockPos pPos, BlockState pState, @Nullable LivingEntity pPlacer, ItemStack pStack) {
-        if (pStack.hasCustomHoverName()) {
+        if (pStack.has(net.minecraft.core.component.DataComponents.CUSTOM_NAME)) {
             BlockEntity tileentity = pLevel.getBlockEntity(pPos);
             if (tileentity instanceof PithosBlockEntity) {
                 ((PithosBlockEntity)tileentity).setCustomName(pStack.getHoverName());

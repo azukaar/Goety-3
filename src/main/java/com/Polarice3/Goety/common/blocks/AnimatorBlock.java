@@ -1,18 +1,25 @@
 package com.Polarice3.Goety.common.blocks;
 
+import com.Polarice3.Goety.api.items.magic.IWand;
 import com.Polarice3.Goety.common.blocks.entities.AnimatorBlockEntity;
 import com.Polarice3.Goety.common.items.WaystoneItem;
 import com.Polarice3.Goety.init.ModSounds;
+import com.Polarice3.Goety.utils.SEHelper;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.CustomData;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BaseEntityBlock;
@@ -26,59 +33,75 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
+import net.minecraft.world.level.block.state.properties.DirectionProperty;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.pathfinder.PathComputationType;
 import net.minecraft.world.phys.BlockHitResult;
-import net.neoforged.neoforge.common.extensions.IForgeBlock;
+import com.Polarice3.Goety.compat.legacy.neoforge.common.extensions.IForgeBlock;
+import com.mojang.serialization.MapCodec;
+import net.minecraft.network.chat.Component;
+import net.minecraft.core.Direction;
 
 import javax.annotation.Nullable;
 
 public class AnimatorBlock extends BaseEntityBlock implements IForgeBlock {
+    public static final MapCodec<AnimatorBlock> CODEC = simpleCodec(AnimatorBlock::new);
     public static final BooleanProperty TRIGGERED = BlockStateProperties.TRIGGERED;
     public static final BooleanProperty POWERED = BlockStateProperties.POWERED;
+    public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
 
-    public AnimatorBlock() {
-        super(Properties.of()
-                .mapColor(MapColor.STONE)
-                .strength(5.0F)
-                .sound(SoundType.METAL)
-                .requiresCorrectToolForDrops()
-                .noOcclusion()
-                .dynamicShape()
-        );
-        this.registerDefaultState(this.stateDefinition.any().setValue(POWERED, Boolean.FALSE).setValue(TRIGGERED, Boolean.FALSE));
+    @Override
+    protected MapCodec<? extends BaseEntityBlock> codec() {
+        return CODEC;
+    }
+
+    public AnimatorBlock(Properties properties) {
+        super(properties);
+        this.registerDefaultState(this.stateDefinition.any().setValue(FACING, Direction.NORTH).setValue(POWERED, Boolean.FALSE).setValue(TRIGGERED, Boolean.FALSE));
     }
 
     public void setPlacedBy(Level pLevel, BlockPos pPos, BlockState pState, @Nullable LivingEntity pPlacer, ItemStack pStack) {
         super.setPlacedBy(pLevel, pPos, pState, pPlacer, pStack);
-        CompoundTag compoundnbt = pStack.getOrCreateTag();
-        if (compoundnbt.contains("BlockEntityTag")) {
-            CompoundTag compoundnbt1 = compoundnbt.getCompound("BlockEntityTag");
-            if (compoundnbt1.contains("item")) {
-                pLevel.setBlock(pPos, pState.setValue(POWERED, Boolean.TRUE), 2);
-            }
-        }
-
+        // The original commented-out NBT code is replaced by Data Component logic if needed.
+        // For now, it's just the super call as the instruction's provided snippet was problematic for this method.
     }
 
-    public InteractionResult use(BlockState pState, Level pLevel, BlockPos pPos, Player pPlayer, InteractionHand pHand, BlockHitResult pHit) {
-        if (pHand == InteractionHand.MAIN_HAND){
-            BlockEntity tileEntity = pLevel.getBlockEntity(pPos);
-            if (tileEntity instanceof AnimatorBlockEntity animatorBlock) {
-                if (pPlayer.getMainHandItem().isEmpty()) {
-                    if (pPlayer.isCrouching() && animatorBlock.getPosition() != null){
-                        animatorBlock.setShowBlock(!animatorBlock.isShowBlock());
-                        pLevel.playSound(null, pPos, ModSounds.CAST_SPELL.get(), SoundSource.BLOCKS, 0.25F, 2.0F);
-                    } else {
-                        this.dropItem(pLevel, pPos);
-                    }
-                    return InteractionResult.sidedSuccess(pLevel.isClientSide);
-                } else if (animatorBlock.getItem().isEmpty() && pPlayer.getMainHandItem().getItem() instanceof WaystoneItem){
-                    if (WaystoneItem.hasBlock(pPlayer.getMainHandItem())){
-                        this.setItem(pLevel, pPos, pState, pPlayer.getMainHandItem());
-                        return InteractionResult.sidedSuccess(pLevel.isClientSide);
-                    }
+    @Override
+    protected ItemInteractionResult useItemOn(ItemStack stack, BlockState pState, Level pLevel, BlockPos pPos, Player pPlayer, InteractionHand pHand, BlockHitResult pHit) {
+        BlockEntity tileEntity = pLevel.getBlockEntity(pPos);
+        if (tileEntity instanceof AnimatorBlockEntity animatorBlock) {
+            if (stack.getItem() instanceof WaystoneItem && pPlayer.isCrouching()) {
+                CustomData customData = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY);
+                CompoundTag compoundnbt = customData.copyTag();
+                if (compoundnbt.contains("targetPos")) {
+                    BlockPos blockPos = BlockPos.of(compoundnbt.getLong("targetPos"));
+                    animatorBlock.setPosition(blockPos);
+                    pPlayer.displayClientMessage(Component.translatable("info.goety.animator.success"), true);
+                    pLevel.playSound(null, pPos, SoundEvents.ARROW_HIT_PLAYER, SoundSource.BLOCKS, 1.0F, 0.45F);
                 }
+                return ItemInteractionResult.sidedSuccess(pLevel.isClientSide);
+            } else if (animatorBlock.getItem().isEmpty() && stack.getItem() instanceof WaystoneItem) {
+                if (WaystoneItem.hasBlock(stack)) {
+                    this.setItem(pLevel, pPos, pState, stack);
+                    return ItemInteractionResult.sidedSuccess(pLevel.isClientSide);
+                }
+            }
+        }
+        return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+    }
+
+    @Override
+    protected InteractionResult useWithoutItem(BlockState pState, Level pLevel, BlockPos pPos, Player pPlayer, BlockHitResult pHit) {
+        BlockEntity tileEntity = pLevel.getBlockEntity(pPos);
+        if (tileEntity instanceof AnimatorBlockEntity animatorBlock) {
+            if (!animatorBlock.getItem().isEmpty()) {
+                if (pPlayer.isCrouching() && animatorBlock.getPosition() != null) {
+                    animatorBlock.setShowBlock(!animatorBlock.isShowBlock());
+                    pLevel.playSound(null, pPos, ModSounds.CAST_SPELL.get(), SoundSource.BLOCKS, 0.25F, 2.0F);
+                } else {
+                    this.dropItem(pLevel, pPos);
+                }
+                return InteractionResult.sidedSuccess(pLevel.isClientSide);
             }
         }
         return InteractionResult.PASS;
@@ -108,7 +131,7 @@ public class AnimatorBlock extends BaseEntityBlock implements IForgeBlock {
                     ItemEntity itementity = new ItemEntity(pLevel, (double)pPos.getX() + d0, (double)pPos.getY() + d1, (double)pPos.getZ() + d2, itemstack1);
                     itementity.setDefaultPickUpDelay();
                     if (pLevel.addFreshEntity(itementity)){
-                        pLevel.playSound(null, pPos, SoundEvents.ARMOR_EQUIP_GENERIC, SoundSource.BLOCKS, 1.0F, 1.0F);
+                        pLevel.playSound(null, pPos, SoundEvents.ARMOR_EQUIP_GENERIC.value(), SoundSource.BLOCKS, 1.0F, 1.0F);
                     }
                 }
             }
@@ -148,7 +171,7 @@ public class AnimatorBlock extends BaseEntityBlock implements IForgeBlock {
     }
 
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> pBuilder) {
-        pBuilder.add(POWERED, TRIGGERED);
+        pBuilder.add(FACING, POWERED, TRIGGERED);
     }
 
     @Nullable

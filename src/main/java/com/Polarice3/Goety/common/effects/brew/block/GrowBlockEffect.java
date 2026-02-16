@@ -25,7 +25,7 @@ public class GrowBlockEffect extends BrewEffect {
     public void applyBlockEffect(Level pLevel, BlockPos pPos, LivingEntity pSource, int pAmplifier, int pAreaOfEffect) {
         for (BlockPos blockPos : this.getCubePos(pPos, pAreaOfEffect + 1)){
             if (pLevel.getBlockState(blockPos).getBlock() instanceof BonemealableBlock bonemealableBlock
-                    && bonemealableBlock.isValidBonemealTarget(pLevel, blockPos, pLevel.getBlockState(blockPos), pLevel.isClientSide)) {
+                    && bonemealableBlock.isValidBonemealTarget(pLevel, blockPos, pLevel.getBlockState(blockPos))) {
                 if (pLevel instanceof ServerLevel serverLevel) {
                     bonemealableBlock.performBonemeal(serverLevel, serverLevel.random, blockPos, pLevel.getBlockState(blockPos));
                 }
@@ -40,7 +40,7 @@ public class GrowBlockEffect extends BrewEffect {
     public void applyEntityEffect(LivingEntity pTarget, @Nullable Entity pSource, int pAmplifier){
         if (pTarget instanceof AbstractVine || pTarget instanceof Whisperer || pTarget instanceof Leapleaf){
             pTarget.heal(5.0F);
-            if (pTarget.level instanceof ServerLevel serverLevel) {
+            if (pTarget.level() instanceof ServerLevel serverLevel) {
                 for (int i = 0; i < 7; ++i) {
                     double d0 = pTarget.getRandom().nextGaussian() * 0.02D;
                     double d1 = pTarget.getRandom().nextGaussian() * 0.02D;

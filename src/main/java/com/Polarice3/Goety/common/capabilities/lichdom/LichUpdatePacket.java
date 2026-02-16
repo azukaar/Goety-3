@@ -1,52 +1,45 @@
 package com.Polarice3.Goety.common.capabilities.lichdom;
 
 import com.Polarice3.Goety.Goety;
+import com.Polarice3.Goety.init.ModAttachments;
 import com.Polarice3.Goety.utils.LichdomHelper;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
-import net.neoforged.network.NetworkDirection;
-import net.neoforged.network.NetworkEvent;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 import java.util.UUID;
-import java.util.function.Supplier;
 
-public class LichUpdatePacket {
-    private final UUID PlayerUUID;
-    private CompoundTag tag;
+public record LichUpdatePacket(UUID playerUUID, CompoundTag tag) implements CustomPacketPayload {
+    public static final CustomPacketPayload.Type<LichUpdatePacket> TYPE = 
+            new CustomPacketPayload.Type<>(ResourceLocation.fromNamespaceAndPath(Goety.MOD_ID, "lich_update"));
 
-    public LichUpdatePacket(UUID uuid, CompoundTag tag) {
-        this.PlayerUUID = uuid;
-        this.tag = tag;
-    }
+    public static final StreamCodec<FriendlyByteBuf, LichUpdatePacket> STREAM_CODEC = StreamCodec.composite(
+            ByteBufCodecs.STRING_UTF8.map(UUID::fromString, UUID::toString), LichUpdatePacket::playerUUID,
+            ByteBufCodecs.COMPOUND_TAG, LichUpdatePacket::tag,
+            LichUpdatePacket::new
+    );
 
     public LichUpdatePacket(Player player) {
-        this.PlayerUUID = player.getUUID();
-        player.getCapability(LichProvider.CAPABILITY, null).ifPresent((lichdom) -> {
-            this.tag = (CompoundTag) LichdomHelper.save(new CompoundTag(), lichdom);
-        });
+        this(player.getUUID(), LichdomHelper.save(player.getData(ModAttachments.LICHDOM)));
     }
 
-    public static void encode(LichUpdatePacket packet, FriendlyByteBuf buffer) {
-        buffer.writeUUID(packet.PlayerUUID);
-        buffer.writeNbt(packet.tag);
-    }
-
-    public static LichUpdatePacket decode(FriendlyByteBuf buffer) {
-        return new LichUpdatePacket(buffer.readUUID(), buffer.readNbt());
-    }
-
-    public static void consume(LichUpdatePacket packet, Supplier<NetworkEvent.Context> ctx) {
-        ctx.get().enqueueWork(() -> {
-            if (ctx.get().getDirection() == NetworkDirection.PLAY_TO_CLIENT) {
-                Player player = Goety.PROXY.getPlayer();
-                if (player != null) {
-                    player.getCapability(LichProvider.CAPABILITY).ifPresent((lichdom) -> {
-                        LichdomHelper.load(packet.tag, lichdom);
-                    });
-                }
+    public static void handle(LichUpdatePacket packet, IPayloadContext ctx) {
+        ctx.enqueueWork(() -> {
+            Player player = Goety.PROXY.getPlayer();
+            if (player != null) {
+                ILichdom lichdom = player.getData(ModAttachments.LICHDOM);
+                LichdomHelper.load(packet.tag, lichdom);
             }
         });
-        ctx.get().setPacketHandled(true);
+    }
+
+    @Override
+    public Type<? extends CustomPacketPayload> type() {
+        return TYPE;
     }
 }

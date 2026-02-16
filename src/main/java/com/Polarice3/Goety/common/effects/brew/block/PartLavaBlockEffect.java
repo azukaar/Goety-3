@@ -14,7 +14,7 @@ import net.minecraft.world.level.block.state.BlockState;
 
 public class PartLavaBlockEffect extends BrewEffect {
     public PartLavaBlockEffect() {
-        super("part_lava", BrewConfig.PartLavaCost.get(), MobEffectCategory.NEUTRAL, 0xe3c877);
+        super("part_lava", com.Polarice3.Goety.utils.ConfigHelper.getInt(BrewConfig.PartLavaCost, 0), MobEffectCategory.NEUTRAL, 0xe3c877);
         this.duration = MathHelper.secondsToTicks(30);
     }
 

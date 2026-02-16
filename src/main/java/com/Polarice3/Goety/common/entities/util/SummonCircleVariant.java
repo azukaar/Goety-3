@@ -68,7 +68,7 @@ public class SummonCircleVariant extends Entity {
 
     @Override
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
-        super.defineSynchedData(builder);
+        // super.defineSynchedData(builder);
         builder.define(OWNER_UNIQUE_ID, Optional.empty());
         builder.define(DATA_TYPE_ID, 0);
     }
@@ -169,7 +169,7 @@ public class SummonCircleVariant extends Entity {
                         owned.setTrueOwner(this.getTrueOwner());
                     }
                     if (this.entity instanceof Mob mob) {
-                        net.neoforged.neoforge.event.EventHooks.onFinalizeSpawn(mob, serverWorld, this.level().getCurrentDifficultyAt(this.blockPosition()), MobSpawnType.MOB_SUMMONED, null, null);
+                        net.neoforged.neoforge.event.EventHooks.finalizeMobSpawn(mob, serverWorld, this.level().getCurrentDifficultyAt(this.blockPosition()), MobSpawnType.MOB_SUMMONED, null);
                         if (this.getTrueOwner() != null && this.getTrueOwner() instanceof Mob mob1) {
                             if (mob1.getTarget() != null) {
                                 mob.setTarget(mob1.getTarget());
@@ -191,8 +191,8 @@ public class SummonCircleVariant extends Entity {
         }
     }
 
-    @Override
-    public Packet<ClientGamePacketListener> getAddEntityPacket() {
-        return new net.minecraft.network.protocol.game.ClientboundAddEntityPacket(this);
-    }
+    // @Override
+    // public Packet<ClientGamePacketListener> getAddEntityPacket() {
+    //     return new net.minecraft.network.protocol.game.ClientboundAddEntityPacket(this);
+    // }
 }

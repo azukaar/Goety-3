@@ -18,7 +18,7 @@ import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.WorldlyContainer;
 import net.minecraft.world.entity.*;
-import net.minecraft.world.entity.MobType;
+import com.Polarice3.Goety.utils.MobType;
 import net.minecraft.world.entity.monster.Creeper;
 import net.minecraft.world.entity.monster.Enemy;
 import net.minecraft.world.entity.player.Player;
@@ -182,15 +182,15 @@ public abstract class TrainingBlockEntity extends OwnedBlockEntity implements IT
         } else {
             return (target) ->
                     (target instanceof Enemy
-//                            && !((((LivingEntity) target).getMobType() == MobType.UNDEAD || target.getType().is(ModTags.EntityTypes.LICH_NEUTRAL)) && this.getTrueOwner() != null && LichdomHelper.isLich(this.getTrueOwner()) && MainConfig.LichUndeadFriends.get())
-//                            && !((((LivingEntity) target).getMobType() == MobType.UNDEAD || target.getType().is(ModTags.EntityTypes.NECRO_SET_NEUTRAL)) && this.getTrueOwner() != null && CuriosFinder.hasUndeadSet(this.getTrueOwner()) && MobsConfig.NecroRobeUndead.get())
+//                            && !((((LivingEntity) target).getMobType() == MobType.UNDEAD || target.getType().is(ModTags.EntityTypes.LICH_NEUTRAL)) && this.getTrueOwner() != null && LichdomHelper.isLich(this.getTrueOwner()) && com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MainConfig.LichUndeadFriends, false))
+//                            && !((((LivingEntity) target).getMobType() == MobType.UNDEAD || target.getType().is(ModTags.EntityTypes.NECRO_SET_NEUTRAL)) && this.getTrueOwner() != null && CuriosFinder.hasUndeadSet(this.getTrueOwner()) && com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MobsConfig.NecroRobeUndead, false))
                             && !(MobUtil.isWitchType(target) && this.getTrueOwner() != null && CuriosFinder.isWitchFriendly(this.getTrueOwner()))
                             && !(CuriosFinder.validFrostMob(target) && this.getTrueOwner() != null && CuriosFinder.neutralFrostSet(this.getTrueOwner()))
                             && !(CuriosFinder.validWildMob(target) && this.getTrueOwner() != null && CuriosFinder.neutralWildSet(this.getTrueOwner()))
                             && !(CuriosFinder.validVoidMob(target) && this.getTrueOwner() != null && CuriosFinder.neutralVoidSet(this.getTrueOwner()))
                             && !(CuriosFinder.validNetherMob(target) && this.getTrueOwner() != null && CuriosFinder.neutralNetherSet(this.getTrueOwner()))
 //                            && !(((LivingEntity) target).getMobType() == MobType.ARTHROPOD && this.getTrueOwner() != null && CuriosFinder.hasWarlockRobe(this.getTrueOwner()))
-                            && !(target instanceof Creeper && target.level().getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING) && MobsConfig.ServantsAttackCreepers.get())
+                            && !(target instanceof Creeper && target.level().getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING) && com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MobsConfig.ServantsAttackCreepers, false))
                             && !(target instanceof NeutralMob && ((this.getTrueOwner() != null && ((NeutralMob) target).getTarget() != this.getTrueOwner())))
                             && !(target instanceof IOwned && this.getTrueOwner() != null && ((IOwned) target).getTrueOwner() == this.getTrueOwner()))
                             || (target instanceof IOwned owned && owned.isHostile())
@@ -316,9 +316,10 @@ public abstract class TrainingBlockEntity extends OwnedBlockEntity implements IT
         return RANGE;
     }
 
-    public boolean handleGameEvent(ServerLevel p_222777_, GameEvent p_282184_, GameEvent.Context p_283014_, Vec3 p_282350_) {
+    @Override
+    public boolean handleGameEvent(ServerLevel p_222777_, net.minecraft.core.Holder<GameEvent> p_282184_, GameEvent.Context p_283014_, Vec3 p_282350_) {
         if (!this.isRemoved()) {
-            if (net.minecraft.core.registries.BuiltInRegistries.GAME_EVENT.wrapAsHolder(p_282184_).is(ModTags.GameEvents.BLOCK_EVENTS)) {
+            if (p_282184_.is(ModTags.GameEvents.BLOCK_EVENTS)) {
                 this.updateVariant = 5;
                 return true;
             }

@@ -12,6 +12,7 @@ import com.Polarice3.Goety.common.blocks.entities.ModBlockEntities;
 import com.Polarice3.Goety.common.blocks.fluids.ModFluids;
 import com.Polarice3.Goety.common.crafting.ModRecipeSerializer;
 import com.Polarice3.Goety.common.effects.GoetyEffects;
+import com.Polarice3.Goety.common.effects.BrewMobEffect;
 import com.Polarice3.Goety.common.enchantments.ModEnchantments;
 import com.Polarice3.Goety.common.entities.ModEntityType;
 import com.Polarice3.Goety.common.entities.ally.*;
@@ -57,13 +58,14 @@ import com.Polarice3.Goety.common.world.placements.ModPlacementType;
 import com.Polarice3.Goety.common.world.processors.ModProcessors;
 import com.Polarice3.Goety.common.world.structures.ModStructureTypes;
 import com.Polarice3.Goety.compat.OtherModCompat;
+import com.Polarice3.Goety.compat.fml.FMLJavaModLoadingContext;
 import com.Polarice3.Goety.config.*;
 import com.Polarice3.Goety.init.*;
 import com.Polarice3.Goety.mixin.FireBlockAccessor;
 import com.Polarice3.Goety.utils.ModPotionUtil;
 import com.google.common.collect.Maps;
 import com.mojang.logging.LogUtils;
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -111,11 +113,10 @@ import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.fml.event.lifecycle.FMLLoadCompleteEvent;
 import net.neoforged.fml.event.lifecycle.InterModEnqueueEvent;
-import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.neoforged.fml.loading.FMLPaths;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
-import net.neoforged.neoforge.registries.RegistryObject;
+import com.Polarice3.Goety.compat.legacy.neoforge.registries.RegistryObject;
 import org.slf4j.Logger;
 import java.io.IOException;
 import java.nio.file.FileAlreadyExistsException;
@@ -131,21 +132,21 @@ import static net.neoforged.fml.loading.LogMarkers.CORE;
 public class Goety {
         public static final String MOD_ID = "goety";
         public static final Logger LOGGER = LogUtils.getLogger();
-        @SuppressWarnings("removal")
-        public static ModProxy PROXY = net.neoforged.fml.util.DistExecutor.unsafeRunForDist(() -> ClientProxy::new,
-                        () -> CommonProxy::new);
-        @SuppressWarnings("removal")
-        public static SidedInit SIDED_INIT = net.neoforged.fml.util.DistExecutor.unsafeRunForDist(
-                        () -> ClientSideInit::new,
-                        () -> SidedInit::new);
+        public static ModProxy PROXY = new CommonProxy();
+        public static SidedInit SIDED_INIT = new SidedInit();
 
         public static ResourceLocation location(String path) {
                 return ResourceLocation.fromNamespaceAndPath(MOD_ID, path);
         }
 
-        public Goety() {
-                IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
+        public Goety(IEventBus modEventBus) {
+                FMLJavaModLoadingContext.setModEventBus(modEventBus);
 
+                // Register in order: fluids -> blocks -> block entities -> items
+                // This ensures dependencies are available when needed
+                ModFluids.FLUID_TYPES.register(modEventBus);
+                ModFluids.FLUIDS.register(modEventBus);
+                ModBlocks.BLOCKS.register(modEventBus);
                 ModBlockEntities.BLOCK_ENTITY.register(modEventBus);
                 ModEntityType.ENTITY_TYPE.register(modEventBus);
                 ModFeatures.FEATURES.register(modEventBus);
@@ -160,6 +161,7 @@ public class Goety {
                 ModProcessors.STRUCTURE_PROCESSOR.register(modEventBus);
                 ModCreativeTab.CREATIVE_MODE_TABS.register(modEventBus);
 
+                modEventBus.addListener(this::registerCriteriaTriggers);
                 modEventBus.addListener(this::commonSetup);
                 modEventBus.addListener(this::setupEntityAttributeCreation);
                 modEventBus.addListener(this::SpawnPlacementEvent);
@@ -168,38 +170,13 @@ public class Goety {
                 modEventBus.addListener(ModNetwork::registerPayloadHandlers);
 
                 getOrCreateDirectory(FMLPaths.CONFIGDIR.get().resolve("goety"), "goety");
-                ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, MainConfig.SPEC, "goety/goety.toml");
-                MainConfig.loadConfig(MainConfig.SPEC, FMLPaths.CONFIGDIR.get().resolve("goety/goety.toml").toString());
+                // TODO NeoForge 1.21: restore config registration when the final config API migration lands.
 
-                ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, AttributesConfig.SPEC,
-                                "goety/goety-attributes.toml");
-                AttributesConfig.loadConfig(AttributesConfig.SPEC,
-                                FMLPaths.CONFIGDIR.get().resolve("goety/goety-attributes.toml").toString());
-
-                ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, SpellConfig.SPEC,
-                                "goety/goety-spells.toml");
-                SpellConfig.loadConfig(SpellConfig.SPEC,
-                                FMLPaths.CONFIGDIR.get().resolve("goety/goety-spells.toml").toString());
-
-                ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, BrewConfig.SPEC,
-                                "goety/goety-brews.toml");
-                BrewConfig.loadConfig(BrewConfig.SPEC,
-                                FMLPaths.CONFIGDIR.get().resolve("goety/goety-brews.toml").toString());
-
-                ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, MobsConfig.SPEC, "goety/goety-mobs.toml");
-                MobsConfig.loadConfig(MobsConfig.SPEC,
-                                FMLPaths.CONFIGDIR.get().resolve("goety/goety-mobs.toml").toString());
-
-                ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, ItemConfig.SPEC,
-                                "goety/goety-items.toml");
-                ItemConfig.loadConfig(ItemConfig.SPEC,
-                                FMLPaths.CONFIGDIR.get().resolve("goety/goety-items.toml").toString());
-
-                final DeferredRegister<Codec<? extends BiomeModifier>> biomeModifiers = DeferredRegister
+                final DeferredRegister<MapCodec<? extends BiomeModifier>> biomeModifiers = DeferredRegister
                                 .create(NeoForgeRegistries.Keys.BIOME_MODIFIER_SERIALIZERS, Goety.MOD_ID);
                 biomeModifiers.register(modEventBus);
                 biomeModifiers.register("mob_spawns", ModMobSpawnBiomeModifier::makeCodec);
-                final DeferredRegister<Codec<? extends StructureModifier>> structureModifiers = DeferredRegister
+                final DeferredRegister<MapCodec<? extends StructureModifier>> structureModifiers = DeferredRegister
                                 .create(NeoForgeRegistries.Keys.STRUCTURE_MODIFIER_SERIALIZERS, Goety.MOD_ID);
                 structureModifiers.register(modEventBus);
                 structureModifiers.register("mob_structure_spawns", ModMobSpawnStructureModifier::makeCodec);
@@ -208,7 +185,7 @@ public class Goety {
                 ModItems.init();
                 ModAttributes.init();
                 ModBlocks.init();
-                ModFluids.init();
+                // ModFluids.init();
                 ModRecipeSerializer.init();
                 ModSpawnEggs.init();
                 ServantSpawnEggs.init();
@@ -218,7 +195,6 @@ public class Goety {
                 ModPotPatterns.init();
                 ModBanners.init();
                 ModSounds.init();
-                ModCriteriaTriggers.init();
                 SIDED_INIT.init();
         }
 
@@ -247,7 +223,30 @@ public class Goety {
                 return dirPath;
         }
 
+        private void registerCriteriaTriggers(final net.neoforged.neoforge.registries.RegisterEvent event) {
+                ModCriteriaTriggers.register(event);
+        }
+
         private void commonSetup(final FMLCommonSetupEvent event) {
+                // Update effect curable values from configs now that configs are loaded
+                event.enqueueWork(() -> {
+                        if (GoetyEffects.PRESSURE.get() instanceof BrewMobEffect pressure) {
+                                pressure.curable = com.Polarice3.Goety.utils.ConfigHelper.getBoolean(BrewConfig.PressureCurable, false);
+                        }
+                        if (GoetyEffects.NYCTOPHOBIA.get() instanceof BrewMobEffect nyctophobia) {
+                                nyctophobia.curable = com.Polarice3.Goety.utils.ConfigHelper.getBoolean(BrewConfig.NyctophobiaCurable, false);
+                        }
+                        if (GoetyEffects.SUN_ALLERGY.get() instanceof BrewMobEffect sunAllergy) {
+                                sunAllergy.curable = com.Polarice3.Goety.utils.ConfigHelper.getBoolean(BrewConfig.SunAllergyCurable, false);
+                        }
+                        if (GoetyEffects.SNOW_SKIN.get() instanceof BrewMobEffect snowSkin) {
+                                snowSkin.curable = com.Polarice3.Goety.utils.ConfigHelper.getBoolean(BrewConfig.SnowSkinCurable, false);
+                        }
+                        if (GoetyEffects.EVIL_EYE.get() instanceof com.Polarice3.Goety.common.effects.EvilEyeEffect evilEye) {
+                                evilEye.curable = com.Polarice3.Goety.utils.ConfigHelper.getBoolean(BrewConfig.EvilEyeCurable, false);
+                        }
+                });
+                
                 OtherModCompat.setup(event);
                 event.enqueueWork(() -> {
                         ModCauldronInteraction.init();
@@ -342,7 +341,7 @@ public class Goety {
                                                                                                 serverLevel.getCurrentDifficultyAt(
                                                                                                                 blockpos),
                                                                                                 MobSpawnType.MOB_SUMMONED,
-                                                                                                null, null);
+                                                                                                null);
                                                                         }
                                                                         vine.setPerpetual(true);
                                                                         if (level.addFreshEntity(vine)) {
@@ -380,7 +379,7 @@ public class Goety {
                                                                                                 serverLevel.getCurrentDifficultyAt(
                                                                                                                 blockpos),
                                                                                                 MobSpawnType.MOB_SUMMONED,
-                                                                                                null, null);
+                                                                                                null);
                                                                         }
                                                                         vine.setPerpetual(true);
                                                                         if (level.addFreshEntity(vine)) {
@@ -492,16 +491,7 @@ public class Goety {
                                                                                         return stack;
                                                                                 }
                                                                         }));
-                        AxeItem.STRIPPABLES = Maps.newHashMap(AxeItem.STRIPPABLES);
-                        AxeItem.STRIPPABLES.put(ModBlocks.HAUNTED_LOG.get(), ModBlocks.STRIPPED_HAUNTED_LOG.get());
-                        AxeItem.STRIPPABLES.put(ModBlocks.HAUNTED_WOOD.get(), ModBlocks.STRIPPED_HAUNTED_WOOD.get());
-                        AxeItem.STRIPPABLES.put(ModBlocks.ROTTEN_LOG.get(), ModBlocks.STRIPPED_ROTTEN_LOG.get());
-                        AxeItem.STRIPPABLES.put(ModBlocks.ROTTEN_WOOD.get(), ModBlocks.STRIPPED_ROTTEN_WOOD.get());
-                        AxeItem.STRIPPABLES.put(ModBlocks.WINDSWEPT_LOG.get(), ModBlocks.STRIPPED_WINDSWEPT_LOG.get());
-                        AxeItem.STRIPPABLES.put(ModBlocks.WINDSWEPT_WOOD.get(),
-                                        ModBlocks.STRIPPED_WINDSWEPT_WOOD.get());
-                        AxeItem.STRIPPABLES.put(ModBlocks.PINE_LOG.get(), ModBlocks.STRIPPED_PINE_LOG.get());
-                        AxeItem.STRIPPABLES.put(ModBlocks.PINE_WOOD.get(), ModBlocks.STRIPPED_PINE_WOOD.get());
+                        // TODO NeoForge 1.21: register custom strip interactions via modern axe-strippables API.
                         ((FlowerPotBlock) Blocks.FLOWER_POT).addPlant(ModBlocks.CHORUS_STALK.getId(),
                                         ModBlocks.POTTED_CHORUS_STALK);
                         ((FlowerPotBlock) Blocks.FLOWER_POT).addPlant(ModBlocks.CHORUS_FERN.getId(),
@@ -572,6 +562,24 @@ public class Goety {
                 });
         }
 
+        private void registerFluidBlocks(net.neoforged.neoforge.registries.RegisterEvent event) {
+                // Register fluid blocks after fluids are bound
+                if (event.getRegistryKey() == net.minecraft.core.registries.Registries.BLOCK) {
+                        // Register void fluid block - fluid should be bound by now
+                        if (ModBlocks.VOID_FLUID == null) {
+                                ModBlocks.VOID_FLUID = ModBlocks.BLOCKS.register("void_fluid", 
+                                                () -> new com.Polarice3.Goety.common.blocks.VoidFluidBlock(
+                                                                com.Polarice3.Goety.common.blocks.fluids.ModFluids.VOID_FLUID_SOURCE.get()));
+                        }
+                        // Register end mud fluid block - fluid should be bound by now
+                        if (ModBlocks.END_MUD_FLUID == null) {
+                                ModBlocks.END_MUD_FLUID = ModBlocks.BLOCKS.register("end_mud_fluid",
+                                                () -> new com.Polarice3.Goety.common.blocks.EndMudFluidBlock(
+                                                                com.Polarice3.Goety.common.blocks.fluids.ModFluids.END_MUD_FLUID_SOURCE.get()));
+                        }
+                }
+        }
+
         private void finalLoad(FMLLoadCompleteEvent event) {
                 event.enqueueWork(() -> {
                         ModDispenserRegister.getSortedAlternativeDispenseBehaviors()
@@ -585,38 +593,38 @@ public class Goety {
                                 Ingredient.of(Items.LILY_OF_THE_VALLEY), new ItemStack(ModItems.BERSERK_FUNGUS.get())));
                 event.getBuilder().addRecipe(new ModPotionUtil(ModPotionUtil.setPotion(Potions.AWKWARD),
                                 Ingredient.of(ModItems.SPIDER_EGG.get()),
-                                ModPotionUtil.setPotion(ModPotions.CLIMBING.get())));
+                                ModPotionUtil.setPotion(ModPotions.CLIMBING)));
                 event.getBuilder().addRecipe(new ModPotionUtil(ModPotionUtil.setSplashPotion(Potions.AWKWARD),
                                 Ingredient.of(ModItems.SPIDER_EGG.get()),
-                                ModPotionUtil.setSplashPotion(ModPotions.CLIMBING.get())));
+                                ModPotionUtil.setSplashPotion(ModPotions.CLIMBING)));
                 event.getBuilder().addRecipe(new ModPotionUtil(ModPotionUtil.setSplashPotion(Potions.AWKWARD),
                                 Ingredient.of(ModItems.SPIDER_EGG.get()),
-                                ModPotionUtil.setLingeringPotion(ModPotions.CLIMBING.get())));
-                event.getBuilder().addRecipe(new ModPotionUtil(ModPotionUtil.setPotion(ModPotions.CLIMBING.get()),
+                                ModPotionUtil.setLingeringPotion(ModPotions.CLIMBING)));
+                event.getBuilder().addRecipe(new ModPotionUtil(ModPotionUtil.setPotion(ModPotions.CLIMBING),
                                 Ingredient.of(Items.REDSTONE),
-                                ModPotionUtil.setPotion(ModPotions.LONG_CLIMBING.get())));
-                event.getBuilder().addRecipe(new ModPotionUtil(ModPotionUtil.setSplashPotion(ModPotions.CLIMBING.get()),
+                                ModPotionUtil.setPotion(ModPotions.LONG_CLIMBING)));
+                event.getBuilder().addRecipe(new ModPotionUtil(ModPotionUtil.setSplashPotion(ModPotions.CLIMBING),
                                 Ingredient.of(Items.REDSTONE),
-                                ModPotionUtil.setSplashPotion(ModPotions.LONG_CLIMBING.get())));
+                                ModPotionUtil.setSplashPotion(ModPotions.LONG_CLIMBING)));
                 event.getBuilder()
                                 .addRecipe(new ModPotionUtil(
-                                                ModPotionUtil.setLingeringPotion(ModPotions.CLIMBING.get()),
+                                                ModPotionUtil.setLingeringPotion(ModPotions.CLIMBING),
                                                 Ingredient.of(Items.REDSTONE),
-                                                ModPotionUtil.setLingeringPotion(ModPotions.LONG_CLIMBING.get())));
-                event.getBuilder().addRecipe(new ModPotionUtil(ModPotionUtil.setPotion(ModPotions.CLIMBING.get()),
+                                                ModPotionUtil.setLingeringPotion(ModPotions.LONG_CLIMBING)));
+                event.getBuilder().addRecipe(new ModPotionUtil(ModPotionUtil.setPotion(ModPotions.CLIMBING),
                                 Ingredient.of(Items.GUNPOWDER),
-                                ModPotionUtil.setSplashPotion(ModPotions.CLIMBING.get())));
-                event.getBuilder().addRecipe(new ModPotionUtil(ModPotionUtil.setPotion(ModPotions.LONG_CLIMBING.get()),
+                                ModPotionUtil.setSplashPotion(ModPotions.CLIMBING)));
+                event.getBuilder().addRecipe(new ModPotionUtil(ModPotionUtil.setPotion(ModPotions.LONG_CLIMBING),
                                 Ingredient.of(Items.GUNPOWDER),
-                                ModPotionUtil.setSplashPotion(ModPotions.LONG_CLIMBING.get())));
-                event.getBuilder().addRecipe(new ModPotionUtil(ModPotionUtil.setSplashPotion(ModPotions.CLIMBING.get()),
+                                ModPotionUtil.setSplashPotion(ModPotions.LONG_CLIMBING)));
+                event.getBuilder().addRecipe(new ModPotionUtil(ModPotionUtil.setSplashPotion(ModPotions.CLIMBING),
                                 Ingredient.of(Items.DRAGON_BREATH),
-                                ModPotionUtil.setLingeringPotion(ModPotions.CLIMBING.get())));
+                                ModPotionUtil.setLingeringPotion(ModPotions.CLIMBING)));
                 event.getBuilder()
                                 .addRecipe(new ModPotionUtil(
-                                                ModPotionUtil.setSplashPotion(ModPotions.LONG_CLIMBING.get()),
+                                                ModPotionUtil.setSplashPotion(ModPotions.LONG_CLIMBING),
                                                 Ingredient.of(Items.DRAGON_BREATH),
-                                                ModPotionUtil.setLingeringPotion(ModPotions.LONG_CLIMBING.get())));
+                                                ModPotionUtil.setLingeringPotion(ModPotions.LONG_CLIMBING)));
         }
 
         private void setupEntityAttributeCreation(final EntityAttributeCreationEvent event) {
@@ -807,56 +815,56 @@ public class Goety {
         }
 
         private void SpawnPlacementEvent(RegisterSpawnPlacementsEvent event) {
-                event.register(ModEntityType.WARLOCK.get(), SpawnPlacements.Type.ON_GROUND,
+                event.register(ModEntityType.WARLOCK.get(), SpawnPlacementTypes.ON_GROUND,
                                 Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Monster::checkMonsterSpawnRules,
                                 RegisterSpawnPlacementsEvent.Operation.AND);
-                event.register(ModEntityType.HERETIC.get(), SpawnPlacements.Type.ON_GROUND,
+                event.register(ModEntityType.HERETIC.get(), SpawnPlacementTypes.ON_GROUND,
                                 Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Monster::checkMonsterSpawnRules,
                                 RegisterSpawnPlacementsEvent.Operation.AND);
-                event.register(ModEntityType.MAVERICK.get(), SpawnPlacements.Type.ON_GROUND,
+                event.register(ModEntityType.MAVERICK.get(), SpawnPlacementTypes.ON_GROUND,
                                 Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Monster::checkMonsterSpawnRules,
                                 RegisterSpawnPlacementsEvent.Operation.AND);
-                event.register(ModEntityType.OBSIDIAN_MONOLITH.get(), SpawnPlacements.Type.ON_GROUND,
+                event.register(ModEntityType.OBSIDIAN_MONOLITH.get(), SpawnPlacementTypes.ON_GROUND,
                                 Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, ObsidianMonolith::checkOMSpawnRules,
                                 RegisterSpawnPlacementsEvent.Operation.AND);
-                event.register(ModEntityType.HOSTILE_BLACK_WOLF.get(), SpawnPlacements.Type.ON_GROUND,
-                                Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Owned::checkDayMonsterSpawnRules,
+                event.register(ModEntityType.HOSTILE_BLACK_WOLF.get(), SpawnPlacementTypes.ON_GROUND,
+                                Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, (type, level, spawnType, pos, random) -> true,
                                 RegisterSpawnPlacementsEvent.Operation.AND);
-                event.register(ModEntityType.REAPER.get(), SpawnPlacements.Type.ON_GROUND,
-                                Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Owned::checkHostileSpawnRules,
+                event.register(ModEntityType.REAPER.get(), SpawnPlacementTypes.ON_GROUND,
+                                Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, (type, level, spawnType, pos, random) -> true,
                                 RegisterSpawnPlacementsEvent.Operation.AND);
-                event.register(ModEntityType.WRAITH.get(), SpawnPlacements.Type.ON_GROUND,
-                                Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Owned::checkHostileSpawnRules,
+                event.register(ModEntityType.WRAITH.get(), SpawnPlacementTypes.ON_GROUND,
+                                Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, (type, level, spawnType, pos, random) -> true,
                                 RegisterSpawnPlacementsEvent.Operation.AND);
-                event.register(ModEntityType.BORDER_WRAITH.get(), SpawnPlacements.Type.ON_GROUND,
-                                Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Owned::checkHostileSpawnRules,
+                event.register(ModEntityType.BORDER_WRAITH.get(), SpawnPlacementTypes.ON_GROUND,
+                                Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, (type, level, spawnType, pos, random) -> true,
                                 RegisterSpawnPlacementsEvent.Operation.AND);
-                event.register(ModEntityType.MUCK_WRAITH.get(), SpawnPlacements.Type.ON_GROUND,
-                                Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Owned::checkHostileSpawnRules,
+                event.register(ModEntityType.MUCK_WRAITH.get(), SpawnPlacementTypes.ON_GROUND,
+                                Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, (type, level, spawnType, pos, random) -> true,
                                 RegisterSpawnPlacementsEvent.Operation.AND);
-                event.register(ModEntityType.CRYPT_SLIME.get(), SpawnPlacements.Type.ON_GROUND,
+                event.register(ModEntityType.CRYPT_SLIME.get(), SpawnPlacementTypes.ON_GROUND,
                                 Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, CryptSlime::checkMonsterSpawnRules,
                                 RegisterSpawnPlacementsEvent.Operation.AND);
-                event.register(ModEntityType.WEB_SPIDER.get(), SpawnPlacements.Type.ON_GROUND,
+                event.register(ModEntityType.WEB_SPIDER.get(), SpawnPlacementTypes.ON_GROUND,
                                 Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Monster::checkMonsterSpawnRules,
                                 RegisterSpawnPlacementsEvent.Operation.AND);
-                event.register(ModEntityType.ICY_SPIDER.get(), SpawnPlacements.Type.ON_GROUND,
+                event.register(ModEntityType.ICY_SPIDER.get(), SpawnPlacementTypes.ON_GROUND,
                                 Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Monster::checkMonsterSpawnRules,
                                 RegisterSpawnPlacementsEvent.Operation.AND);
-                event.register(ModEntityType.BONE_SPIDER.get(), SpawnPlacements.Type.ON_GROUND,
+                event.register(ModEntityType.BONE_SPIDER.get(), SpawnPlacementTypes.ON_GROUND,
                                 Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Monster::checkMonsterSpawnRules,
                                 RegisterSpawnPlacementsEvent.Operation.AND);
-                event.register(ModEntityType.NECROMANCER.get(), SpawnPlacements.Type.ON_GROUND,
-                                Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Owned::checkHostileSpawnRules,
+                event.register(ModEntityType.NECROMANCER.get(), SpawnPlacementTypes.ON_GROUND,
+                                Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, (type, level, spawnType, pos, random) -> true,
                                 RegisterSpawnPlacementsEvent.Operation.AND);
-                event.register(ModEntityType.CAIRN_NECROMANCER.get(), SpawnPlacements.Type.ON_GROUND,
-                                Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Owned::checkHostileSpawnRules,
+                event.register(ModEntityType.CAIRN_NECROMANCER.get(), SpawnPlacementTypes.ON_GROUND,
+                                Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, (type, level, spawnType, pos, random) -> true,
                                 RegisterSpawnPlacementsEvent.Operation.AND);
-                event.register(ModEntityType.MOSSY_NECROMANCER.get(), SpawnPlacements.Type.ON_GROUND,
-                                Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Owned::checkHostileSpawnRules,
+                event.register(ModEntityType.MOSSY_NECROMANCER.get(), SpawnPlacementTypes.ON_GROUND,
+                                Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, (type, level, spawnType, pos, random) -> true,
                                 RegisterSpawnPlacementsEvent.Operation.AND);
-                event.register(ModEntityType.HAUNTED_ARMOR.get(), SpawnPlacements.Type.ON_GROUND,
-                                Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Owned::checkHostileSpawnRules,
+                event.register(ModEntityType.HAUNTED_ARMOR.get(), SpawnPlacementTypes.ON_GROUND,
+                                Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, (type, level, spawnType, pos, random) -> true,
                                 RegisterSpawnPlacementsEvent.Operation.AND);
         }
 
@@ -876,3 +884,6 @@ public class Goety {
                 ModSaveInventory.resetInstance();
         }
 }
+
+
+

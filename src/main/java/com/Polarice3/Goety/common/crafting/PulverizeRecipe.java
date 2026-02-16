@@ -18,7 +18,7 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.network.codec.StreamCodec;
 
-public class PulverizeRecipe implements Recipe<Container> {
+public class PulverizeRecipe implements Recipe<RecipeInput> {
     public static final Serializer SERIALIZER = new Serializer();
     public static final MapCodec<PulverizeRecipe> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
             Ingredient.CODEC_NONEMPTY.fieldOf("ingredient").forGetter(r -> r.ingredient),
@@ -46,12 +46,12 @@ public class PulverizeRecipe implements Recipe<Container> {
     }
 
     @Override
-    public boolean matches(Container pInv, Level pLevel) {
+    public boolean matches(RecipeInput pInv, Level pLevel) {
         return this.ingredient.test(pInv.getItem(0));
     }
 
     @Override
-    public ItemStack assemble(Container p_44001_, net.minecraft.core.HolderLookup.Provider p_267165_) {
+    public ItemStack assemble(RecipeInput p_44001_, net.minecraft.core.HolderLookup.Provider p_267165_) {
         return this.itemResult.copy();
     }
 
@@ -61,7 +61,7 @@ public class PulverizeRecipe implements Recipe<Container> {
     }
 
     @Override
-    public ItemStack getResultItem(RegistryAccess p_267052_) {
+    public ItemStack getResultItem(net.minecraft.core.HolderLookup.Provider p_267052_) {
         return this.itemResult;
     }
 

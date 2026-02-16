@@ -22,7 +22,7 @@ import java.util.List;
 public class TridentStormSpell extends Spell {
 
     public int defaultSoulCost() {
-        return SpellConfig.TridentStormCost.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.TridentStormCost, 0);
     }
 
     public int defaultCastDuration() {
@@ -39,7 +39,7 @@ public class TridentStormSpell extends Spell {
 
     @Override
     public int defaultSpellCooldown() {
-        return SpellConfig.TridentStormCoolDown.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.TridentStormCoolDown, 0);
     }
 
     @Override

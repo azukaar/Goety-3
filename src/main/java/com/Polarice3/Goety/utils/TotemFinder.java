@@ -78,14 +78,6 @@ public class TotemFinder {
 
     public static ItemStack FindTotem(Player playerEntity){
         ItemStack foundStack = ItemStack.EMPTY;
-        if (CuriosLoaded.CURIOS.isLoaded()) {
-            Optional<SlotResult> slotResult = CuriosApi.getCuriosInventory(playerEntity).map(inv -> inv.findFirstCurio(TotemFinder::isTotem))
-                    .orElse(Optional.empty());
-            if (slotResult.isPresent()) {
-                foundStack = slotResult.get().stack();
-            }
-        }
-
         if (isTotem(playerEntity.getOffhandItem())){
             foundStack = playerEntity.getOffhandItem();
         } else {

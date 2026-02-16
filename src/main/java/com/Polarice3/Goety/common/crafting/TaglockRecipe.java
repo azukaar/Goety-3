@@ -2,28 +2,60 @@ package com.Polarice3.Goety.common.crafting;
 
 import com.Polarice3.Goety.common.items.magic.TaglockKit;
 import com.google.common.collect.Lists;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.RegistryAccess;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.CraftingBookCategory;
 import net.minecraft.world.item.crafting.CustomRecipe;
+import net.minecraft.world.item.crafting.CraftingInput;
+import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.world.item.crafting.RecipeInput;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.level.Level;
 
 import java.util.List;
 
 public class TaglockRecipe extends CustomRecipe {
-    public TaglockRecipe(ResourceLocation p_252125_, CraftingBookCategory p_249010_) {
-        super(p_252125_, p_249010_);
+    public static final RecipeSerializer<TaglockRecipe> SERIALIZER = new Serializer();
+    public static final MapCodec<TaglockRecipe> CODEC = RecordCodecBuilder.mapCodec(inst -> inst.group(
+            Ingredient.CODEC_NONEMPTY.fieldOf("ingredient").forGetter(r -> r.ingredient),
+            ItemStack.CODEC.fieldOf("result").forGetter(r -> r.result)
+    ).apply(inst, TaglockRecipe::new));
+    public static final StreamCodec<net.minecraft.network.RegistryFriendlyByteBuf, TaglockRecipe> STREAM_CODEC = StreamCodec.composite(
+            Ingredient.CONTENTS_STREAM_CODEC, r -> r.ingredient,
+            ItemStack.STREAM_CODEC, r -> r.result,
+            TaglockRecipe::new
+    );
+
+    public final Ingredient ingredient;
+    public final ItemStack result;
+
+    public TaglockRecipe(CraftingBookCategory category) {
+        super(category);
+        // Default values for ingredient and result, as this constructor doesn't provide them.
+        // This might need adjustment based on how this recipe is intended to be used with the new fields.
+        this.ingredient = Ingredient.EMPTY;
+        this.result = ItemStack.EMPTY;
+    }
+
+    // New constructor to match CODEC and STREAM_CODEC
+    public TaglockRecipe(Ingredient ingredient, ItemStack result) {
+        super(CraftingBookCategory.MISC); // Assuming a default category if not provided
+        this.ingredient = ingredient;
+        this.result = result;
     }
 
     @Override
-    public boolean matches(CraftingContainer p_44002_, Level p_44003_) {
+    public boolean matches(CraftingInput p_44002_, Level p_44003_) {
         List<ItemStack> list = Lists.newArrayList();
 
-        for(int i = 0; i < p_44002_.getContainerSize(); ++i) {
+        for(int i = 0; i < p_44002_.size(); ++i) {
             ItemStack itemstack = p_44002_.getItem(i);
             if (!itemstack.isEmpty()) {
                 list.add(itemstack);
@@ -40,9 +72,9 @@ public class TaglockRecipe extends CustomRecipe {
     }
 
     @Override
-    public ItemStack assemble(CraftingContainer p_44001_, RegistryAccess p_267165_) {
+    public ItemStack assemble(CraftingInput p_44001_, net.minecraft.core.HolderLookup.Provider p_267165_) {
         List<ItemStack> list = Lists.newArrayList();
-        for(int i = 0; i < p_44001_.getContainerSize(); ++i) {
+        for(int i = 0; i < p_44001_.size(); ++i) {
             ItemStack itemstack = p_44001_.getItem(i);
             if (!itemstack.isEmpty()) {
                 list.add(itemstack);
@@ -88,6 +120,18 @@ public class TaglockRecipe extends CustomRecipe {
 
     @Override
     public RecipeSerializer<?> getSerializer() {
-        return null;
+        return ModRecipeSerializer.TAGLOCK.get();
+    }
+
+    public static class Serializer implements RecipeSerializer<TaglockRecipe> {
+        @Override
+        public MapCodec<TaglockRecipe> codec() {
+            return CODEC;
+        }
+
+        @Override
+        public StreamCodec<net.minecraft.network.RegistryFriendlyByteBuf, TaglockRecipe> streamCodec() {
+            return STREAM_CODEC;
+        }
     }
 }

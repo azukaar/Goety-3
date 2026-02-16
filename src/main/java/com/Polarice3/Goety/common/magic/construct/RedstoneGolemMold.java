@@ -241,7 +241,7 @@ public class RedstoneGolemMold implements IMold {
                 }
             }
         }
-        return count < SpellConfig.RedstoneGolemLimit.get();
+        return count < com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.RedstoneGolemLimit, 0);
     }
 
     @Override
@@ -254,7 +254,7 @@ public class RedstoneGolemMold implements IMold {
                             RedstoneGolem redstoneGolem1 = ModEntityType.REDSTONE_GOLEM.get().create(level);
                             if (redstoneGolem1 != null) {
                                 redstoneGolem1.setTrueOwner(player);
-                                redstoneGolem1.finalizeSpawn((ServerLevelAccessor) level, level.getCurrentDifficultyAt(redstoneGolem1.blockPosition()), MobSpawnType.MOB_SUMMONED, null, null);
+                                redstoneGolem1.finalizeSpawn((ServerLevelAccessor) level, level.getCurrentDifficultyAt(redstoneGolem1.blockPosition()), MobSpawnType.MOB_SUMMONED, null);
                                 redstoneGolem1.moveTo((double) blockPos.getX() + 0.5D, (double) blockPos.getY() + 0.05D, (double) blockPos.getZ() + 0.5D, 0.0F, 0.0F);
                                 if (level.addFreshEntity(redstoneGolem1)) {
                                     removeBlocks(level, blockPos);
@@ -275,7 +275,7 @@ public class RedstoneGolemMold implements IMold {
 //                    player.displayClientMessage(Component.translatable("info.goety.block.fail"), true);
                     RedstoneCube redstoneCube = ModEntityType.REDSTONE_CUBE.get().create(level);
                     if (redstoneCube != null) {
-                        redstoneCube.finalizeSpawn((ServerLevelAccessor) level, level.getCurrentDifficultyAt(redstoneCube.blockPosition()), MobSpawnType.MOB_SUMMONED, null, null);
+                        redstoneCube.finalizeSpawn((ServerLevelAccessor) level, level.getCurrentDifficultyAt(redstoneCube.blockPosition()), MobSpawnType.MOB_SUMMONED, null);
                         redstoneCube.setTrueOwner(player);
                         redstoneCube.moveTo((double) blockPos.getX() + 0.5D, (double) blockPos.getY() + 0.05D, (double) blockPos.getZ() + 0.5D, 0.0F, 0.0F);
                         if (level.addFreshEntity(redstoneCube)) {

@@ -2,6 +2,7 @@ package com.Polarice3.Goety.common.blocks;
 
 import com.Polarice3.Goety.common.blocks.entities.ModBlockEntities;
 import com.Polarice3.Goety.common.blocks.entities.VoidVaultBlockEntity;
+import com.mojang.serialization.MapCodec;
 import com.Polarice3.Goety.common.blocks.entities.void_vault.VoidVaultState;
 import com.Polarice3.Goety.common.blocks.properties.ModStateProperties;
 import net.minecraft.core.BlockPos;
@@ -27,7 +28,21 @@ import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.phys.BlockHitResult;
 import org.jetbrains.annotations.Nullable;
 
+import com.Polarice3.Goety.common.items.ModItems;
+import net.minecraft.network.chat.Component;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.ItemInteractionResult;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.items.ItemHandlerHelper;
+
 public class VoidVaultBlock extends BaseEntityBlock {
+    public static final MapCodec<VoidVaultBlock> CODEC = simpleCodec(p -> new VoidVaultBlock());
+
+    @Override
+    protected MapCodec<? extends BaseEntityBlock> codec() {
+        return CODEC;
+    }
     public static final EnumProperty<VoidVaultState> STATE = ModStateProperties.VOID_VAULT_STATE;
     public static final DirectionProperty FACING = HorizontalDirectionalBlock.FACING;
 
@@ -45,20 +60,25 @@ public class VoidVaultBlock extends BaseEntityBlock {
     }
 
     @Override
-    public InteractionResult use(BlockState pState, Level pLevel, BlockPos pPos, Player pPlayer, InteractionHand pHand, BlockHitResult pHit) {
-        ItemStack itemStack = pPlayer.getItemInHand(pHand);
-        if (itemStack.isEmpty() || pState.getValue(STATE) != VoidVaultState.ACTIVE) {
-            return InteractionResult.PASS;
-        } else if (pLevel instanceof ServerLevel serverLevel) {
-            if (serverLevel.getBlockEntity(pPos) instanceof VoidVaultBlockEntity vaultBlockEntity) {
-                VoidVaultBlockEntity.Server.tryUnlock(serverLevel, pPos, pState, vaultBlockEntity.getConfig(), vaultBlockEntity.getServerData(), vaultBlockEntity.getSharedData(), pPlayer, itemStack);
-                return InteractionResult.SUCCESS;
+    protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
+        ItemStack itemstack = stack;
+        if (itemstack.isEmpty() || state.getValue(STATE) != VoidVaultState.ACTIVE) {
+            return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+        } else if (world instanceof ServerLevel serverLevel) {
+            if (serverLevel.getBlockEntity(pos) instanceof VoidVaultBlockEntity vaultBlockEntity) {
+                VoidVaultBlockEntity.Server.tryUnlock(serverLevel, pos, state, vaultBlockEntity.getConfig(), vaultBlockEntity.getServerData(), vaultBlockEntity.getSharedData(), player, itemstack);
+                return ItemInteractionResult.SUCCESS;
             } else {
-                return InteractionResult.PASS;
+                return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
             }
         } else {
-            return InteractionResult.CONSUME;
+            return ItemInteractionResult.CONSUME;
         }
+    }
+
+    @Override
+    protected InteractionResult useWithoutItem(BlockState pState, Level pLevel, BlockPos pPos, Player pPlayer, BlockHitResult pHit) {
+        return InteractionResult.PASS;
     }
 
     @Override

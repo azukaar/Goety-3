@@ -1,6 +1,7 @@
 package com.Polarice3.Goety.common.blocks;
 
 import com.Polarice3.Goety.common.blocks.entities.RedstoneMonstrosityHeadBlockEntity;
+import com.mojang.serialization.MapCodec;
 import com.Polarice3.Goety.common.items.block.RedstoneMonstrosityHeadItem;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
@@ -31,6 +32,12 @@ import javax.annotation.Nullable;
 import java.util.Map;
 
 public class WallRedstoneMonstrosityHeadBlock extends BaseEntityBlock {
+    public static final MapCodec<WallRedstoneMonstrosityHeadBlock> CODEC = simpleCodec(p -> new WallRedstoneMonstrosityHeadBlock());
+
+    @Override
+    protected MapCodec<? extends BaseEntityBlock> codec() {
+        return CODEC;
+    }
     public static final DirectionProperty FACING = HorizontalDirectionalBlock.FACING;
     public static final EnumProperty<DoubleBlockHalf> HALF = BlockStateProperties.DOUBLE_BLOCK_HALF;
     private static final Map<Direction, VoxelShape> AABBS = Maps.newEnumMap(ImmutableMap.of(
@@ -47,14 +54,13 @@ public class WallRedstoneMonstrosityHeadBlock extends BaseEntityBlock {
         this.registerDefaultState(this.stateDefinition.any().setValue(FACING, Direction.NORTH).setValue(HALF, DoubleBlockHalf.LOWER));
     }
 
-    public ItemStack getCloneItemStack(BlockState state, HitResult target, BlockGetter world, BlockPos pos, Player player) {
+    @Override
+    public ItemStack getCloneItemStack(LevelReader world, BlockPos pos, BlockState state) {
         ItemStack itemStack = new ItemStack(this);
-        if (player.isCrouching()) {
-            BlockEntity tileEntity = world.getBlockEntity(pos);
-            if (tileEntity instanceof RedstoneMonstrosityHeadBlockEntity) {
-                this.setOwner(itemStack, tileEntity);
-                this.setModCustomName(itemStack, tileEntity);
-            }
+        BlockEntity tileEntity = world.getBlockEntity(pos);
+        if (tileEntity instanceof RedstoneMonstrosityHeadBlockEntity) {
+            this.setOwner(itemStack, tileEntity);
+            this.setModCustomName(itemStack, tileEntity);
         }
         return itemStack;
     }

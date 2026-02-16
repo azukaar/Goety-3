@@ -169,7 +169,7 @@ public class SpiderEgg extends Owned {
                     }
                     spiderServant.setHostile(this.isHostile());
                     spiderServant.setPersistenceRequired();
-                    spiderServant.finalizeSpawn(serverLevel, serverLevel.getCurrentDifficultyAt(this.blockPosition()), MobSpawnType.MOB_SUMMONED, null, null);
+                    spiderServant.finalizeSpawn(serverLevel, serverLevel.getCurrentDifficultyAt(this.blockPosition()), MobSpawnType.MOB_SUMMONED, null);
                     if (serverLevel.addFreshEntity(spiderServant)) {
                         this.playSound(ModSounds.SPIDER_NEST_SPAWN.get());
                         this.die(this.damageSources().starve());

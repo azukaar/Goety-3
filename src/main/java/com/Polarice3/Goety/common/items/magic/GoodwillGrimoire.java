@@ -28,7 +28,7 @@ public class GoodwillGrimoire extends Item {
     }
 
     public boolean onLeftClickEntity(ItemStack stack, Player player, Entity entity) {
-        if (!entity.level.isClientSide) {
+        if (!entity.level().isClientSide) {
             if (entity instanceof LivingEntity pTarget) {
                 if (MobUtil.isShifting(player)) {
                     if (SEHelper.addAllyEntityType(player, pTarget.getType())) {
@@ -57,7 +57,7 @@ public class GoodwillGrimoire extends Item {
     @Nonnull
     @Override
     public InteractionResult interactLivingEntity(@NotNull ItemStack stack, Player player, LivingEntity target, InteractionHand hand){
-        if (!player.level.isClientSide) {
+        if (!player.level().isClientSide) {
             if (MobUtil.isShifting(player)) {
                 if (SEHelper.removeAllyEntityType(player, target.getType())) {
                     target.playSound(SoundEvents.FIRE_EXTINGUISH, 1.0F, 0.25F);

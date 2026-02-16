@@ -41,7 +41,7 @@ public class SoulMenderBlockEntity extends ModBlockEntity implements Clearable, 
                         if (!net.minecraft.world.item.enchantment.EnchantmentHelper.getEnchantmentsForCrafting(this.itemStack).isEmpty()) {
                             i += net.minecraft.world.item.enchantment.EnchantmentHelper.getEnchantmentsForCrafting(this.itemStack).size();
                         }
-                        if (this.cursedCageTile.getSouls() > (MainConfig.SoulMenderCost.get() * i)) {
+                        if (this.cursedCageTile.getSouls() > (com.Polarice3.Goety.utils.ConfigHelper.getInt(MainConfig.SoulMenderCost, 0) * i)) {
                             this.makeWorkParticles();
                         }
                     }
@@ -59,10 +59,10 @@ public class SoulMenderBlockEntity extends ModBlockEntity implements Clearable, 
                 if (!net.minecraft.world.item.enchantment.EnchantmentHelper.getEnchantmentsForCrafting(this.itemStack).isEmpty()) {
                     i += net.minecraft.world.item.enchantment.EnchantmentHelper.getEnchantmentsForCrafting(this.itemStack).size();
                 }
-                if (this.cursedCageTile.getSouls() > (MainConfig.SoulMenderCost.get() * i)) {
+                if (this.cursedCageTile.getSouls() > (com.Polarice3.Goety.utils.ConfigHelper.getInt(MainConfig.SoulMenderCost, 0) * i)) {
                     if (this.itemStack.getItem() instanceof ITotem){
                         if (!ITotem.isFull(this.itemStack)) {
-                            if (this.getLevel().getGameTime() % (MathHelper.secondsToTicks(MainConfig.SoulMenderSeconds.get().floatValue()) + 1) == 0) {
+                            if (this.getLevel().getGameTime() % (MathHelper.secondsToTicks(com.Polarice3.Goety.utils.ConfigHelper.getFloat(MainConfig.SoulMenderSeconds, 1.0F)) + 1) == 0) {
                                 ITotem.increaseSouls(this.itemStack, 1);
                                 this.cursedCageTile.decreaseSouls(1);
                             }
@@ -77,9 +77,9 @@ public class SoulMenderBlockEntity extends ModBlockEntity implements Clearable, 
                             this.markUpdated();
                         }
                     } else if (this.itemStack.isDamaged()) {
-                        if (this.getLevel().getGameTime() % (MathHelper.secondsToTicks(MainConfig.SoulMenderSeconds.get().floatValue()) + 1) == 0) {
+                        if (this.getLevel().getGameTime() % (MathHelper.secondsToTicks(com.Polarice3.Goety.utils.ConfigHelper.getFloat(MainConfig.SoulMenderSeconds, 1.0F)) + 1) == 0) {
                             this.itemStack.setDamageValue(this.itemStack.getDamageValue() - 1);
-                            this.cursedCageTile.decreaseSouls(MainConfig.SoulMenderCost.get() * i);
+                            this.cursedCageTile.decreaseSouls(com.Polarice3.Goety.utils.ConfigHelper.getInt(MainConfig.SoulMenderCost, 0) * i);
                         }
                         if (this.getLevel().random.nextInt(24) == 0) {
                             this.getLevel().playSound(null, this.getBlockPos(), SoundEvents.FIRE_AMBIENT, SoundSource.BLOCKS, 1.0F + this.getLevel().random.nextFloat(), this.getLevel().random.nextFloat() * 0.7F + 0.3F);

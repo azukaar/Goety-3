@@ -24,7 +24,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.alchemy.PotionBrewing;
-import net.minecraft.world.item.alchemy.PotionUtils;
+import com.Polarice3.Goety.utils.PotionUtils;
 import net.minecraft.world.item.alchemy.Potions;
 import net.minecraft.world.level.Level;
 
@@ -75,8 +75,8 @@ public class WitchRobeInventory extends SimpleContainer implements MenuProvider 
     private LivingEntity livingEntity;
 
 
-    public WitchRobeInventory(CompoundTag nbt) {
-        this.load(nbt);
+    public WitchRobeInventory(CompoundTag nbt, net.minecraft.core.HolderLookup.Provider provider) {
+        this.load(nbt, provider);
     }
 
     public WitchRobeInventory() {
@@ -126,7 +126,7 @@ public class WitchRobeInventory extends SimpleContainer implements MenuProvider 
         if (this.getLivingEntity() != null){
             if (CuriosFinder.hasWitchHat(this.getLivingEntity())) {
                 if (this.fuel < 20) {
-                    Level level = this.getLivingEntity().level;
+                    Level level = this.getLivingEntity().level();
                     if (level.isNight() && !level.isRaining() && level.canSeeSky(this.getLivingEntity().blockPosition())) {
                         if (this.getLivingEntity().tickCount % 100 == 0 && level.random.nextFloat() <= 0.25F) {
                             ++this.fuel;
@@ -268,7 +268,7 @@ public class WitchRobeInventory extends SimpleContainer implements MenuProvider 
         if (canPlaceItem(3, itemStack) && (isAirOrEmpty(this.items.get(3)) || sameItem(itemStack, this.items.get(3)) && this.items.get(3).getCount() < 64)){
             this.items.set(3, itemStack.copy());
             itemStack.shrink(1);
-            this.playSound(SoundEvents.ARMOR_EQUIP_GENERIC);
+            this.playSound(SoundEvents.ARMOR_EQUIP_GENERIC.value());
             this.setChanged();
         } else if (canPlaceItem(0, itemStack) || canPlaceItem(1, itemStack) || canPlaceItem(2, itemStack)){
             this.addBottles(itemStack, itemStack.copy());
@@ -280,7 +280,7 @@ public class WitchRobeInventory extends SimpleContainer implements MenuProvider 
             if (isAirOrEmpty(this.items.get(i)) && input.getCount() > 0){
                 this.items.set(i, newStack);
                 input.shrink(1);
-                this.playSound(SoundEvents.ARMOR_EQUIP_GENERIC);
+                this.playSound(SoundEvents.ARMOR_EQUIP_GENERIC.value());
                 this.setChanged();
             }
         }
@@ -294,8 +294,8 @@ public class WitchRobeInventory extends SimpleContainer implements MenuProvider 
                         this.playSound(SoundEvents.ITEM_PICKUP);
                     } else {
                         BlockPos blockPos = this.getLivingEntity().blockPosition();
-                        ItemEntity itemEntity = new ItemEntity(this.getLivingEntity().level, blockPos.getX(), blockPos.getY(), blockPos.getZ(), this.items.get(i));
-                        this.getLivingEntity().level.addFreshEntity(itemEntity);
+                        ItemEntity itemEntity = new ItemEntity(this.getLivingEntity().level(), blockPos.getX(), blockPos.getY(), blockPos.getZ(), this.items.get(i));
+                        this.getLivingEntity().level().addFreshEntity(itemEntity);
                         this.playSound(SoundEvents.ITEM_FRAME_REMOVE_ITEM);
                     }
                     this.items.get(i).shrink(1);
@@ -308,7 +308,7 @@ public class WitchRobeInventory extends SimpleContainer implements MenuProvider 
     public void playSound(SoundEvent soundEvent){
         if (this.getLivingEntity() != null) {
             this.getLivingEntity().playSound(soundEvent);
-            if (!this.getLivingEntity().level.isClientSide) {
+            if (!this.getLivingEntity().level().isClientSide) {
                 if (this.getLivingEntity() instanceof ServerPlayer serverPlayer) {
                     ModNetwork.sendTo(serverPlayer, new SPlayPlayerSoundPacket(soundEvent, 1.0F, 1.0F));
                 }
@@ -316,9 +316,9 @@ public class WitchRobeInventory extends SimpleContainer implements MenuProvider 
         }
     }
 
-    public void load(CompoundTag p_230337_2_) {
+    public void load(CompoundTag p_230337_2_, net.minecraft.core.HolderLookup.Provider provider) {
         this.items = NonNullList.withSize(this.getContainerSize(), ItemStack.EMPTY);
-        ContainerHelper.loadAllItems(p_230337_2_, this.items);
+        ContainerHelper.loadAllItems(p_230337_2_, this.items, provider);
         this.brewTime = p_230337_2_.getShort("BrewTime");
         this.fuel = p_230337_2_.getByte("Fuel");
         this.inventoryNum = p_230337_2_.getInt("InventoryNum");
@@ -326,9 +326,9 @@ public class WitchRobeInventory extends SimpleContainer implements MenuProvider 
         this.rest = p_230337_2_.getDouble("rest");
     }
 
-    public CompoundTag save(CompoundTag pCompound) {
+    public CompoundTag save(CompoundTag pCompound, net.minecraft.core.HolderLookup.Provider provider) {
         pCompound.putShort("BrewTime", (short) this.brewTime);
-        ContainerHelper.saveAllItems(pCompound, this.items);
+        ContainerHelper.saveAllItems(pCompound, this.items, provider);
         pCompound.putByte("Fuel", (byte) this.fuel);
         pCompound.putInt("InventoryNum", this.inventoryNum);
         pCompound.putInt("increaseSpeed", this.increaseSpeed);
@@ -372,13 +372,13 @@ public class WitchRobeInventory extends SimpleContainer implements MenuProvider 
     @Override
     public boolean canPlaceItem(int pIndex, ItemStack pStack) {
         if (pIndex == 3) {
-            return net.neoforged.common.brewing.BrewingRecipeRegistry.isValidIngredient(pStack);
+            return true; // FIXME: Needs PotionBrewing instance availability
         } else {
             Item item = pStack.getItem();
             if (pIndex == 4) {
                 return item == Items.BLAZE_POWDER;
             } else {
-                return net.neoforged.common.brewing.BrewingRecipeRegistry.isValidInput(pStack) && this.getItem(pIndex).isEmpty();
+                return true; // FIXME: Needs PotionBrewing instance availability && this.getItem(pIndex).isEmpty();
             }
         }
     }

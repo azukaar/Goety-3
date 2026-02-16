@@ -15,6 +15,7 @@ import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.server.level.ServerEntity;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.level.Level;
@@ -56,7 +57,6 @@ public class DelayedSummon extends Entity {
 
     @Override
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
-        super.defineSynchedData(builder);
         builder.define(OWNER_UNIQUE_ID, Optional.empty());
     }
 
@@ -154,7 +154,7 @@ public class DelayedSummon extends Entity {
                             owned.setTrueOwner(this.getTrueOwner());
                         }
                         if (this.entity instanceof Mob mob) {
-                            net.neoforged.neoforge.event.EventHooks.onFinalizeSpawn(mob, serverWorld, this.level().getCurrentDifficultyAt(this.blockPosition()), MobSpawnType.MOB_SUMMONED, null, null);
+                            net.neoforged.neoforge.event.EventHooks.finalizeMobSpawn(mob, serverWorld, this.level().getCurrentDifficultyAt(this.blockPosition()), MobSpawnType.MOB_SUMMONED, null);
                             if (this.getTrueOwner() != null && this.getTrueOwner() instanceof Mob mob1) {
                                 if (mob1.getTarget() != null) {
                                     mob.setTarget(mob1.getTarget());
@@ -169,7 +169,7 @@ public class DelayedSummon extends Entity {
                             serverWorld.sendParticles(ModParticleTypes.GOD_RAY.get(), this.entity.getX(), this.entity.getY(), this.entity.getZ(), 0, colorUtil.red(), colorUtil.green(), colorUtil.blue(), 1.0F);
 //                            ServerParticleUtil.windShockwaveParticle(serverWorld, colorUtil, 0.1F, 0.1F, 0.05F, -1, this.entity.position());
                             for (int i2 = 0; i2 < serverWorld.getRandom().nextInt(10) + 10; ++i2) {
-                                serverWorld.sendParticles(new MagicSmokeParticle.Option(0x17b0e0, 0xffffff, 10 + this.entity.level.getRandom().nextInt(10), 0.2F), this.entity.getRandomX(1.5D), this.entity.getRandomY(), this.entity.getRandomZ(1.5D), 0, 0.0F, 0.0F, 0.0F, 1.0F);
+                                serverWorld.sendParticles(new MagicSmokeParticle.Option(0x17b0e0, 0xffffff, 10 + this.entity.level().getRandom().nextInt(10), 0.2F), this.entity.getRandomX(1.5D), this.entity.getRandomY(), this.entity.getRandomZ(1.5D), 0, 0.0F, 0.0F, 0.0F, 1.0F);
                             }
                         }
                         this.discard();
@@ -180,7 +180,7 @@ public class DelayedSummon extends Entity {
     }
 
     @Override
-    public Packet<ClientGamePacketListener> getAddEntityPacket() {
-        return new net.minecraft.network.protocol.game.ClientboundAddEntityPacket(this);
+    public Packet<ClientGamePacketListener> getAddEntityPacket(ServerEntity p_345759_) {
+        return new net.minecraft.network.protocol.game.ClientboundAddEntityPacket(this, p_345759_);
     }
 }

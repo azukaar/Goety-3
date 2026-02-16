@@ -60,15 +60,15 @@ public class BoundIceologer extends AbstractBoundIllager{
         return Monster.createMonsterAttributes()
                 .add(Attributes.MOVEMENT_SPEED, 0.5D)
                 .add(Attributes.FLYING_SPEED, 0.15D)
-                .add(Attributes.FOLLOW_RANGE, AttributesConfig.BoundIceologerFollowRange.get())
-                .add(Attributes.ARMOR, AttributesConfig.BoundIceologerArmor.get())
-                .add(Attributes.MAX_HEALTH, AttributesConfig.BoundIceologerHealth.get());
+                .add(Attributes.FOLLOW_RANGE, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.BoundIceologerFollowRange, 20.0D))
+                .add(Attributes.ARMOR, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.BoundIceologerArmor, 20.0D))
+                .add(Attributes.MAX_HEALTH, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.BoundIceologerHealth, 20.0D));
     }
 
     public void setConfigurableAttributes(){
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.MAX_HEALTH), AttributesConfig.BoundIceologerHealth.get());
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ARMOR), AttributesConfig.BoundIceologerArmor.get());
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.FOLLOW_RANGE), AttributesConfig.BoundIceologerFollowRange.get());
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.MAX_HEALTH), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.BoundIceologerHealth, 20.0D));
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ARMOR), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.BoundIceologerArmor, 20.0D));
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.FOLLOW_RANGE), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.BoundIceologerFollowRange, 20.0D));
     }
 
     protected void defineSynchedData(SynchedEntityData.Builder builder) {

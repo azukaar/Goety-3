@@ -24,11 +24,14 @@ import com.Polarice3.Goety.common.research.ResearchList;
 import com.Polarice3.Goety.compat.minecolonies.MinecoloniesLoaded;
 import com.Polarice3.Goety.config.BrewConfig;
 import com.Polarice3.Goety.config.MainConfig;
+import com.Polarice3.Goety.init.ModAttachments;
+import com.Polarice3.Goety.init.ModTags;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.arguments.EntityAnchorArgument;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.*;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundSetCameraPacket;
@@ -66,7 +69,7 @@ import java.util.*;
 public class SEHelper {
 
     public static ISoulEnergy getCapability(Player player) {
-        return player.getCapability(SEProvider.CAPABILITY).orElse(new SEImp());
+        return player.getData(ModAttachments.SOUL_ENERGY);
     }
 
     public static boolean getSEActive(Player player) {
@@ -183,9 +186,9 @@ public class SEHelper {
             if (flag) {
                 if (SoulTakenListener.getSoulAmount(victim) > 0){
                     return SoulTakenListener.getSoulAmount(victim);
-                } else if (victim.getMobType() == MobType.UNDEAD) {
+                } else if (victim.isInvertedHealAndHarm()) {
                     return MainConfig.UndeadSouls.get();
-                } else if (victim.getMobType() == MobType.ARTHROPOD) {
+                } else if (victim.getType().is(ModTags.EntityTypes.WILD_HEAL)) {
                     return MainConfig.AnthropodSouls.get();
                 } else if (victim instanceof Animal || victim instanceof AnimalSummon) {
                     return MainConfig.AnimalSouls.get();
@@ -261,7 +264,7 @@ public class SEHelper {
         float init = 1.0F;
         for (ItemStack itemStack : living.getArmorSlots()){
             if (itemStack.getItem() instanceof ISoulDiscount soulDiscount){
-                init -= (soulDiscount.getSoulDiscount(LivingEntity.getEquipmentSlotForItem(itemStack), itemStack) / 100.0F);
+                init -= (soulDiscount.getSoulDiscount(EquipmentSlot.CHEST, itemStack) / 100.0F);
             }
         }
 
@@ -286,7 +289,7 @@ public class SEHelper {
         ItemStack weapon= livingEntity.getMainHandItem();
         int multiply = 1;
         if (ModDamageSource.physicalAttacks(source)) {
-            int i = weapon.getEnchantmentLevel(ModEnchantments.SOUL_EATER.get());
+            int i = 0;
             if (i > 0) {
                 multiply = Mth.clamp(i + 1, 1, 10);
             }
@@ -331,14 +334,14 @@ public class SEHelper {
         BlockPos blockPos = SEHelper.getArcaBlock(player);
         if (blockPos != null) {
             BlockPos blockPos1 = BlockPos.containing(blockPos.getX() + 0.5F, blockPos.getY() + 0.5F, blockPos.getZ() + 0.5F);
-            if (soulEnergy.getArcaBlockDimension() == player.level.dimension()) {
-                Optional<Vec3> optional = RespawnAnchorBlock.findStandUpPosition(EntityType.PLAYER, player.level, blockPos1);
+            if (soulEnergy.getArcaBlockDimension() == player.level().dimension()) {
+                Optional<Vec3> optional = RespawnAnchorBlock.findStandUpPosition(EntityType.PLAYER, player.level(), blockPos1);
                 if (optional.isPresent()) {
                     Vec3 vec3 = optional.get();
-                    if (player.level.getWorldBorder().isWithinBounds(vec3.x, vec3.y, vec3.z)) {
+                    if (player.level().getWorldBorder().isWithinBounds(vec3.x, vec3.y, vec3.z)) {
                         player.teleportTo(vec3.x, vec3.y, vec3.z);
                     } else {
-                        BlockPos blockPos2 = player.level.getSharedSpawnPos();
+                        BlockPos blockPos2 = player.level().getSharedSpawnPos();
                         player.teleportTo(blockPos2.getX(), blockPos2.getY(), blockPos2.getZ());
                     }
                     return true;
@@ -593,7 +596,7 @@ public class SEHelper {
     }
 
     public static void addCooldown(Player player, Item item, int duration){
-        getFocusCoolDown(player).addCooldown(player, player.level, item, duration);
+        getFocusCoolDown(player).addCooldown(player, player.level(), item, duration);
     }
 
     public static FocusCooldown.CooldownInstance getCooldownInstance(Player player, Item item){
@@ -618,11 +621,11 @@ public class SEHelper {
     }
 
     public static int getBottleLevel(Player player){
-        return getCapability(player).bottling() / BrewConfig.BottlingLevelReq.get();
+        return getCapability(player).bottling() / com.Polarice3.Goety.utils.ConfigHelper.getInt(BrewConfig.BottlingLevelReq, 0);
     }
 
     public static void setBottleLevel(Player player, int level){
-        getCapability(player).setBottling(BrewConfig.BottlingLevelReq.get() * level);
+        getCapability(player).setBottling(com.Polarice3.Goety.utils.ConfigHelper.getInt(BrewConfig.BottlingLevelReq, 0) * level);
         SEHelper.sendSEUpdatePacket(player);
     }
 
@@ -636,17 +639,17 @@ public class SEHelper {
     }
 
     public static void increaseBottling(Player player, int increase){
-        if (BrewConfig.MaxBottlingLevel.get() > 0) {
-            if (getBottling(player) < BrewConfig.MaxBottlingLevel.get() * BrewConfig.BottlingLevelReq.get()) {
+        if (com.Polarice3.Goety.utils.ConfigHelper.getInt(BrewConfig.MaxBottlingLevel, 0) > 0) {
+            if (getBottling(player) < com.Polarice3.Goety.utils.ConfigHelper.getInt(BrewConfig.MaxBottlingLevel, 0) * com.Polarice3.Goety.utils.ConfigHelper.getInt(BrewConfig.BottlingLevelReq, 0)) {
                 setBottling(player, getBottling(player) + increase);
-                if (getBottling(player) > 0 && getBottling(player) % BrewConfig.BottlingLevelReq.get() == 0) {
-                    if (!player.level.isClientSide){
+                if (getBottling(player) > 0 && getBottling(player) % com.Polarice3.Goety.utils.ConfigHelper.getInt(BrewConfig.BottlingLevelReq, 0) == 0) {
+                    if (!player.level().isClientSide){
                         ModNetwork.sendTo(player, new SPlayPlayerSoundPacket(SoundEvents.PLAYER_LEVELUP, 1.0F, 0.5F));
                     }
-                    if (getBottling(player) >= BrewConfig.MaxBottlingLevel.get() * BrewConfig.BottlingLevelReq.get()){
+                    if (getBottling(player) >= com.Polarice3.Goety.utils.ConfigHelper.getInt(BrewConfig.MaxBottlingLevel, 0) * com.Polarice3.Goety.utils.ConfigHelper.getInt(BrewConfig.BottlingLevelReq, 0)){
                         player.displayClientMessage(Component.translatable("info.goety.brew.max_level").withStyle(ChatFormatting.LIGHT_PURPLE), true);
                     } else {
-                        player.displayClientMessage(Component.translatable("info.goety.brew.level_up").withStyle(ChatFormatting.LIGHT_PURPLE), true);
+                        player.displayClientMessage(Component.translatable("info.goety.brew.LEVEL_up").withStyle(ChatFormatting.LIGHT_PURPLE), true);
                     }
                 }
             }
@@ -677,8 +680,8 @@ public class SEHelper {
             if ((getWardingLeft(player) - amount) <= 0){
                 setCurrentWarding(player, 0);
                 player.stopUsingItem();
-                player.addEffect(new MobEffectInstance(GoetyEffects.STUNNED.get(), 40));
-                if (!player.level.isClientSide){
+                player.addEffect(new MobEffectInstance(BuiltInRegistries.MOB_EFFECT.wrapAsHolder(GoetyEffects.STUNNED.get()), 40));
+                if (!player.level().isClientSide){
                     ModNetwork.sendTo(player, new SPlayPlayerSoundPacket(SoundEvents.SHIELD_BREAK, 1.0F, 1.0F));
                 }
             } else {
@@ -735,7 +738,7 @@ public class SEHelper {
     }
 
     public static boolean increaseAirJumpCount(Player player){
-        MobEffectInstance instance = player.getEffect(GoetyEffects.FROG_LEG.get());
+        MobEffectInstance instance = player.getEffect(BuiltInRegistries.MOB_EFFECT.wrapAsHolder(GoetyEffects.FROG_LEG.get()));
         int jumps = 0;
         if (instance != null) {
             jumps += instance.getAmplifier() + 1;
@@ -771,8 +774,8 @@ public class SEHelper {
         double zDelta = entity.getDeltaMovement().z() * 1.4D;
         entity.setDeltaMovement(xDelta, yDelta, zDelta);
         entity.resetFallDistance();
-        spawnDoubleJumpParticles(entity.level, entity.position(), 1.5D, 12);
-        entity.level.playSound(null, entity.position().x, entity.position().y, entity.position().z, SoundEvents.FROG_LONG_JUMP, SoundSource.PLAYERS, 1.0F, 0.9F + entity.level.random.nextFloat() * 0.2F);
+        spawnDoubleJumpParticles(entity.level(), entity.position(), 1.5D, 12);
+        entity.level().playSound(null, entity.position().x, entity.position().y, entity.position().z, SoundEvents.FROG_LONG_JUMP, SoundSource.PLAYERS, 1.0F, 0.9F + entity.level().random.nextFloat() * 0.2F);
     }
 
     public static void spawnDoubleJumpParticles(Level level, Vec3 vec3, double radius, int quantity) {
@@ -817,7 +820,7 @@ public class SEHelper {
         if (target != null || blockPos != null) {
             if (target == player || blockPos != null){
                 double Y;
-                SurveyEye surveyEye = new SurveyEye(ModEntityType.SURVEY_EYE.get(), player.level);
+                SurveyEye surveyEye = new SurveyEye(ModEntityType.SURVEY_EYE.get(), player.level());
                 BlockPos.MutableBlockPos blockpos$mutable;
                 if (target == player){
                     Y = player.getY();
@@ -827,7 +830,7 @@ public class SEHelper {
                     blockpos$mutable = new BlockPos.MutableBlockPos(blockPos.getX(), blockPos.getY() + 1, blockPos.getZ());
                 }
 
-                while(blockpos$mutable.getY() < Y + 16.0D && !player.level.getBlockState(blockpos$mutable).blocksMotion()) {
+                while(blockpos$mutable.getY() < Y + 16.0D && !player.level().getBlockState(blockpos$mutable).blocksMotion()) {
                     blockpos$mutable.move(Direction.UP);
                 }
                 surveyEye.setPos(Vec3.atCenterOf(blockpos$mutable));
@@ -837,7 +840,7 @@ public class SEHelper {
                     surveyEye.lookAt(EntityAnchorArgument.Anchor.EYES, Vec3.atBottomCenterOf(blockpos$mutable));
                 }
                 surveyEye.setOwner(player);
-                if (player.level.addFreshEntity(surveyEye)){
+                if (player.level().addFreshEntity(surveyEye)){
                     getCapability(player).setCameraUUID(surveyEye.getUUID());
                     target = surveyEye;
                 }
@@ -855,9 +858,17 @@ public class SEHelper {
     }
 
     public static void sendSEUpdatePacket(Player player) {
-        if (!player.level.isClientSide()) {
+        if (!player.level().isClientSide()) {
             ModNetwork.sendTo(player, new SEUpdatePacket(player));
         }
+    }
+
+    public static CompoundTag save(ISoulEnergy soulEnergy) {
+        return save(new CompoundTag(), soulEnergy);
+    }
+
+    public static ISoulEnergy load(CompoundTag tag) {
+        return load(tag, new SEImp());
     }
 
     public static CompoundTag save(CompoundTag tag, ISoulEnergy soulEnergy) {

@@ -1,35 +1,14 @@
 package com.Polarice3.Goety.common.capabilities.misc;
 
-import com.Polarice3.Goety.utils.MiscCapHelper;
-import net.minecraft.core.Direction;
-import net.minecraft.nbt.CompoundTag;
-import net.neoforged.neoforge.capabilities.*;
-import net.neoforged.neoforge.common.util.LazyOptional;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
-public class MiscProvider implements ICapabilitySerializable<CompoundTag> {
-    public static Capability<IMisc> CAPABILITY = CapabilityManager.get(new CapabilityToken<>() {
-    });
-
-    IMisc instance = new MiscImp();
-
-    // @Nonnull
-    // @Override
-    // public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap,
-    // @Nullable Direction side) {
-    // return cap == CAPABILITY ? LazyOptional.of(() -> (T) instance) :
-    // LazyOptional.empty();
-    // }
-
-    @Override
-    public CompoundTag serializeNBT() {
-        return MiscCapHelper.save(new CompoundTag(), instance);
-    }
-
-    @Override
-    public void deserializeNBT(CompoundTag nbt) {
-        MiscCapHelper.load(nbt, instance);
-    }
+/**
+ * MiscProvider is no longer needed in NeoForge 1.21+.
+ * Capabilities have been replaced with the AttachmentType system.
+ * See ModAttachments.MISC for the new registration.
+ * 
+ * This file is kept for reference only and may be deleted.
+ * @deprecated Use ModAttachments.MISC with entity.getData() instead
+ */
+@Deprecated(forRemoval = true)
+public class MiscProvider {
+    // No longer needed - use ModAttachments.MISC with entity.getData()
 }

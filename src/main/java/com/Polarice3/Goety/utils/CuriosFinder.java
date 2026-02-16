@@ -18,6 +18,8 @@ import com.Polarice3.Goety.config.MobsConfig;
 import com.Polarice3.Goety.init.ModTags;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
+import com.Polarice3.Goety.utils.MobType;
 import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.entity.monster.*;
 import net.minecraft.world.entity.player.Player;
@@ -86,12 +88,7 @@ public class CuriosFinder {
     }
 
     public static boolean noHeadWear(LivingEntity livingEntity) {
-        if (livingEntity != null) {
-            if (CuriosLoaded.CURIOS.isLoaded()) {
-                return CuriosApi.getCuriosInventory(livingEntity).map(inv -> inv.findCurios("head").isEmpty())
-                        .orElse(false);
-            }
-        }
+        // Curios lookup is disabled in the temporary 1.21 compatibility path.
         return true;
     }
 
@@ -105,7 +102,7 @@ public class CuriosFinder {
         if (player != null) {
             if (CuriosFinder.findRing(player).getItem() == ModItems.RING_OF_WANT.get()) {
                 if (CuriosFinder.findRing(player).isEnchanted()) {
-                    float wanting = EnchantmentHelper.getTagEnchantmentLevel(ModEnchantments.WANTING.get(),
+                    float wanting = EnchantmentHelper.getTagEnchantmentLevel(ModEnchantments.WANTING,
                             CuriosFinder.findRing(player));
                     return wanting > 0;
                 }
@@ -141,15 +138,13 @@ public class CuriosFinder {
     }
 
     public static boolean neutralWildSet(LivingEntity livingEntity) {
-        return hasWildSet(livingEntity) && ItemConfig.WildSetMobNeutral.get();
+        return hasWildSet(livingEntity) && com.Polarice3.Goety.utils.ConfigHelper.getBoolean(ItemConfig.WildSetMobNeutral, false);
     }
 
     public static boolean validWildMob(LivingEntity livingEntity) {
-        return (livingEntity.getMobType() == ModMobType.NATURAL
-                || livingEntity.getMobType() == MobType.ARTHROPOD
-                || livingEntity instanceof Animal
+        return (livingEntity instanceof Animal
                 || livingEntity.getType().is(ModTags.EntityTypes.WILD_SET_NEUTRAL))
-                && livingEntity.getMaxHealth() <= ItemConfig.WildSetMobNeutralHealth.get()
+                && livingEntity.getMaxHealth() <= com.Polarice3.Goety.utils.ConfigHelper.getDouble(ItemConfig.WildSetMobNeutralHealth, 50.0D)
                 && !(livingEntity instanceof IOwned && !(livingEntity instanceof Enemy));
     }
 
@@ -168,14 +163,14 @@ public class CuriosFinder {
     }
 
     public static boolean neutralVoidSet(LivingEntity livingEntity) {
-        return hasVoidSet(livingEntity) && ItemConfig.VoidSetMobNeutral.get();
+        return hasVoidSet(livingEntity) && com.Polarice3.Goety.utils.ConfigHelper.getBoolean(ItemConfig.VoidSetMobNeutral, false);
     }
 
     public static boolean validVoidMob(LivingEntity livingEntity) {
         return (livingEntity instanceof AbstractEnderling
                 || livingEntity instanceof EnderMan
                 || livingEntity.getType().is(ModTags.EntityTypes.VOID_SET_NEUTRAL))
-                && livingEntity.getMaxHealth() <= ItemConfig.VoidSetMobNeutralHealth.get()
+                && livingEntity.getMaxHealth() <= com.Polarice3.Goety.utils.ConfigHelper.getDouble(ItemConfig.VoidSetMobNeutralHealth, 50.0D)
                 && !(livingEntity instanceof IOwned && !(livingEntity instanceof Enemy));
     }
 
@@ -211,16 +206,15 @@ public class CuriosFinder {
     }
 
     public static boolean neutralNetherSet(LivingEntity livingEntity) {
-        return hasNetherSet(livingEntity) && ItemConfig.NetherSetMobNeutral.get();
+        return hasNetherSet(livingEntity) && com.Polarice3.Goety.utils.ConfigHelper.getBoolean(ItemConfig.NetherSetMobNeutral, false);
     }
 
     public static boolean validNetherMob(LivingEntity livingEntity) {
-        return (livingEntity.getMobType() == ModMobType.NETHER
-                || livingEntity instanceof Blaze
+        return (livingEntity instanceof Blaze
                 || livingEntity instanceof Ghast
                 || livingEntity instanceof MagmaCube
                 || livingEntity.getType().is(ModTags.EntityTypes.NETHER_SET_NEUTRAL))
-                && livingEntity.getMaxHealth() <= ItemConfig.NetherSetMobNeutralHealth.get()
+                && livingEntity.getMaxHealth() <= com.Polarice3.Goety.utils.ConfigHelper.getDouble(ItemConfig.NetherSetMobNeutralHealth, 50.0D)
                 && !(livingEntity instanceof IOwned && !(livingEntity instanceof Enemy));
     }
 
@@ -237,9 +231,9 @@ public class CuriosFinder {
     }
 
     public static boolean isWitchFriendly(LivingEntity livingEntity) {
-        return (hasWitchSet(livingEntity) && ItemConfig.WitchSetWitchNeutral.get())
-                || (hasWarlockRobe(livingEntity) && ItemConfig.WarlockRobeWitchNeutral.get())
-                || (hasNetherRobe(livingEntity) && ItemConfig.NetherRobeWitchNeutral.get())
+        return (hasWitchSet(livingEntity) && com.Polarice3.Goety.utils.ConfigHelper.getBoolean(ItemConfig.WitchSetWitchNeutral, false))
+                || (hasWarlockRobe(livingEntity) && com.Polarice3.Goety.utils.ConfigHelper.getBoolean(ItemConfig.WarlockRobeWitchNeutral, false))
+                || (hasNetherRobe(livingEntity) && com.Polarice3.Goety.utils.ConfigHelper.getBoolean(ItemConfig.NetherRobeWitchNeutral, false))
                 || (hasUnholyRobe(livingEntity) || hasUnholyHat(livingEntity));
     }
 
@@ -260,11 +254,11 @@ public class CuriosFinder {
     }
 
     public static boolean neutralNecroCrown(LivingEntity livingEntity) {
-        return hasNecroCrown(livingEntity) && ItemConfig.NecroSetUndeadNeutral.get();
+        return hasNecroCrown(livingEntity) && com.Polarice3.Goety.utils.ConfigHelper.getBoolean(ItemConfig.NecroSetUndeadNeutral, false);
     }
 
     public static boolean neutralNecroCape(LivingEntity livingEntity) {
-        return hasNecroCape(livingEntity) && ItemConfig.NecroSetUndeadNeutral.get();
+        return hasNecroCape(livingEntity) && com.Polarice3.Goety.utils.ConfigHelper.getBoolean(ItemConfig.NecroSetUndeadNeutral, false);
     }
 
     public static boolean hasNecroSet(LivingEntity livingEntity) {
@@ -272,13 +266,13 @@ public class CuriosFinder {
     }
 
     public static boolean neutralNecroSet(LivingEntity livingEntity) {
-        return hasNecroSet(livingEntity) && ItemConfig.NecroSetUndeadNeutral.get();
+        return hasNecroSet(livingEntity) && com.Polarice3.Goety.utils.ConfigHelper.getBoolean(ItemConfig.NecroSetUndeadNeutral, false);
     }
 
     public static boolean validNecroUndead(LivingEntity livingEntity) {
-        return (livingEntity.getMobType() == MobType.UNDEAD
+        return (livingEntity.isInvertedHealAndHarm()
                 || livingEntity.getType().is(ModTags.EntityTypes.NECRO_SET_NEUTRAL))
-                && livingEntity.getMaxHealth() <= ItemConfig.NecroSetUndeadNeutralHealth.get()
+                && livingEntity.getMaxHealth() <= com.Polarice3.Goety.utils.ConfigHelper.getDouble(ItemConfig.NecroSetUndeadNeutralHealth, 20.0D)
                 && !(livingEntity instanceof IOwned && !(livingEntity instanceof Enemy));
     }
 
@@ -294,11 +288,11 @@ public class CuriosFinder {
     }
 
     public static boolean neutralNamelessCrown(LivingEntity livingEntity) {
-        return hasNamelessCrown(livingEntity) && ItemConfig.NamelessSetUndeadNeutral.get();
+        return hasNamelessCrown(livingEntity) && com.Polarice3.Goety.utils.ConfigHelper.getBoolean(ItemConfig.NamelessSetUndeadNeutral, false);
     }
 
     public static boolean neutralNamelessCape(LivingEntity livingEntity) {
-        return hasNamelessCape(livingEntity) && ItemConfig.NamelessSetUndeadNeutral.get();
+        return hasNamelessCape(livingEntity) && com.Polarice3.Goety.utils.ConfigHelper.getBoolean(ItemConfig.NamelessSetUndeadNeutral, false);
     }
 
     public static boolean hasNamelessSet(LivingEntity livingEntity) {
@@ -306,20 +300,20 @@ public class CuriosFinder {
     }
 
     public static boolean neutralNamelessSet(LivingEntity livingEntity) {
-        return hasNamelessSet(livingEntity) && ItemConfig.NamelessSetUndeadNeutral.get();
+        return hasNamelessSet(livingEntity) && com.Polarice3.Goety.utils.ConfigHelper.getBoolean(ItemConfig.NamelessSetUndeadNeutral, false);
     }
 
     public static boolean validNamelessUndead(LivingEntity livingEntity) {
         return ((livingEntity.isInvertedHealAndHarm())
                 || livingEntity.getType().is(ModTags.EntityTypes.NECRO_SET_NEUTRAL))
-                && livingEntity.getMaxHealth() <= ItemConfig.NamelessSetUndeadNeutralHealth.get()
+                && livingEntity.getMaxHealth() <= com.Polarice3.Goety.utils.ConfigHelper.getDouble(ItemConfig.NamelessSetUndeadNeutralHealth, 50.0D)
                 && !(livingEntity instanceof IOwned && !(livingEntity instanceof Enemy));
     }
 
     public static boolean hasUndeadCrown(LivingEntity livingEntity) {
         return CuriosFinder.hasCurio(livingEntity,
                 itemStack -> itemStack.getItem() instanceof NecroGarbs.NecroCrownItem)
-                || (livingEntity instanceof AbstractNecromancer && MobsConfig.NecromancerSummonsLife.get());
+                || (livingEntity instanceof AbstractNecromancer && com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MobsConfig.NecromancerSummonsLife, false));
     }
 
     public static boolean hasUndeadCape(LivingEntity livingEntity) {
@@ -346,12 +340,12 @@ public class CuriosFinder {
     }
 
     public static boolean neutralFrostSet(LivingEntity livingEntity) {
-        return hasFrostSet(livingEntity) && ItemConfig.FrostSetMobNeutral.get();
+        return hasFrostSet(livingEntity) && com.Polarice3.Goety.utils.ConfigHelper.getBoolean(ItemConfig.FrostSetMobNeutral, false);
     }
 
     public static boolean validFrostMob(LivingEntity livingEntity) {
         return (livingEntity.getType().is(ModTags.EntityTypes.FROST_SET_NEUTRAL))
-                && livingEntity.getMaxHealth() <= ItemConfig.FrostSetMobNeutralHealth.get()
+                && livingEntity.getMaxHealth() <= com.Polarice3.Goety.utils.ConfigHelper.getDouble(ItemConfig.FrostSetMobNeutralHealth, 20.0D)
                 && !(livingEntity instanceof IOwned && !(livingEntity instanceof Enemy));
     }
 
@@ -374,13 +368,12 @@ public class CuriosFinder {
     }
 
     public static boolean neutralAbyssSet(LivingEntity livingEntity) {
-        return hasAbyssSet(livingEntity) && ItemConfig.AbyssSetMobNeutral.get();
+        return hasAbyssSet(livingEntity) && com.Polarice3.Goety.utils.ConfigHelper.getBoolean(ItemConfig.AbyssSetMobNeutral, false);
     }
 
     public static boolean validAbyssMob(LivingEntity livingEntity) {
-        return ((livingEntity instanceof net.minecraft.world.entity.Mob mob && mob.getMobType() == MobType.WATER)
-                || livingEntity.getType().is(ModTags.EntityTypes.ABYSS_SET_NEUTRAL))
-                && livingEntity.getMaxHealth() <= ItemConfig.AbyssSetMobNeutralHealth.get()
+        return (livingEntity.getType().is(ModTags.EntityTypes.ABYSS_SET_NEUTRAL))
+                && livingEntity.getMaxHealth() <= com.Polarice3.Goety.utils.ConfigHelper.getDouble(ItemConfig.AbyssSetMobNeutralHealth, 50.0D)
                 && !(livingEntity instanceof IOwned && !(livingEntity instanceof Enemy));
     }
 

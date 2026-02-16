@@ -64,12 +64,16 @@ public class ScytheSlash extends AbstractHurtingProjectile {
     }
 
     public ScytheSlash(ItemStack itemStack, Level world, double x, double y, double z, double xSpeed, double ySpeed, double zSpeed) {
-        super(ModEntityType.SCYTHE.get(), x, y, z, xSpeed, ySpeed, zSpeed, world);
+        super(ModEntityType.SCYTHE.get(), world);
+        this.setPos(x, y, z);
+        this.setDeltaMovement(xSpeed, ySpeed, zSpeed);
         this.weapon = itemStack;
     }
 
     public ScytheSlash(Level world, double x, double y, double z, double xSpeed, double ySpeed, double zSpeed) {
-        super(ModEntityType.SCYTHE.get(), x, y, z, xSpeed, ySpeed, zSpeed, world);
+        super(ModEntityType.SCYTHE.get(), world);
+        this.setPos(x, y, z);
+        this.setDeltaMovement(xSpeed, ySpeed, zSpeed);
     }
 
     public ResourceLocation getResourceLocation() {
@@ -149,7 +153,7 @@ public class ScytheSlash extends AbstractHurtingProjectile {
         } else {
             this.setAnimation(0);
         }
-        if (ItemConfig.ScytheSlashBreaks.get()) {
+        if (com.Polarice3.Goety.utils.ConfigHelper.getBoolean(ItemConfig.ScytheSlashBreaks, false)) {
             AABB aabb = this.getBoundingBox().inflate(0.2D);
 
             for (BlockPos blockpos : BlockPos.betweenClosed(Mth.floor(aabb.minX), Mth.floor(aabb.minY), Mth.floor(aabb.minZ), Mth.floor(aabb.maxX), Mth.floor(aabb.maxY), Mth.floor(aabb.maxZ))) {
@@ -180,7 +184,7 @@ public class ScytheSlash extends AbstractHurtingProjectile {
                         float f = this.getDamage();
                         if (this.getOwner() != null) {
                             if (entity instanceof LivingEntity) {
-                                f += EnchantmentHelper.getDamageBonus(this.weapon, ((LivingEntity) entity).getMobType());
+                                f += 0.0F; // EnchantmentHelper.getDamageBonus(this.weapon, ((LivingEntity) entity).getMobType());
                             }
                             if (this.getOwner() instanceof Player player) {
                                 boolean attack = entity.hurt(entity.damageSources().playerAttack(player), f);
@@ -188,9 +192,9 @@ public class ScytheSlash extends AbstractHurtingProjectile {
                                     attack = enderDragonEntity.hurt(entity.damageSources().playerAttack(player), f);
                                 }
                                 if (attack && entity instanceof LivingEntity) {
-                                    int enchantment = this.weapon.getEnchantmentLevel(ModEnchantments.SOUL_EATER.get());
+                                    int enchantment = this.weapon.getEnchantmentLevel(ModEnchantments.SOUL_EATER);
                                     int soulEater = Mth.clamp(enchantment + 1, 1, 10);
-                                    SEHelper.increaseSouls(player, ItemConfig.DarkScytheSouls.get() * soulEater);
+                                    SEHelper.increaseSouls(player, com.Polarice3.Goety.utils.ConfigHelper.getInt(ItemConfig.DarkScytheSouls, 1) * soulEater);
                                 }
                             } else {
                                 DamageSource damageSource = this.getOwner() instanceof LivingEntity livingEntity ? entity.damageSources().mobAttack(livingEntity) : entity.damageSources().thrown(this, this);
@@ -226,8 +230,8 @@ public class ScytheSlash extends AbstractHurtingProjectile {
         return ParticleTypes.CRIT;
     }
 
-    @Override
-    public Packet<ClientGamePacketListener> getAddEntityPacket() {
-        return new net.minecraft.network.protocol.game.ClientboundAddEntityPacket(this);
-    }
+    // @Override
+    // public Packet<ClientGamePacketListener> getAddEntityPacket() {
+    //     return new net.minecraft.network.protocol.game.ClientboundAddEntityPacket(this);
+    // }
 }

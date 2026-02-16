@@ -18,7 +18,7 @@ import net.minecraft.world.level.block.state.BlockState;
 
 public class ChopTreeBlockEffect extends BrewEffect {
     public ChopTreeBlockEffect() {
-        super("chop_tree", BrewConfig.ChopTreeCost.get(), MobEffectCategory.NEUTRAL, 0x6a5227);
+        super("chop_tree", com.Polarice3.Goety.utils.ConfigHelper.getInt(BrewConfig.ChopTreeCost, 0), MobEffectCategory.NEUTRAL, 0x6a5227);
     }
 
     @Override

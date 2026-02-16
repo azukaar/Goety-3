@@ -1,6 +1,7 @@
 package com.Polarice3.Goety.mixin;
 
 import com.Polarice3.Goety.common.effects.GoetyEffects;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -32,7 +33,7 @@ public abstract class BlockPlaceContextMixin extends UseOnContext {
     )
     public void goety_canPlace(CallbackInfoReturnable<Boolean> cir) {
         if (this.getPlayer() != null) {
-            if (this.getPlayer().hasEffect(GoetyEffects.IMPAIRED.get())) {
+            if (this.getPlayer().hasEffect(BuiltInRegistries.MOB_EFFECT.wrapAsHolder(GoetyEffects.IMPAIRED.get()))) {
                 cir.setReturnValue(false);
             }
         }

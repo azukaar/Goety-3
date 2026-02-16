@@ -43,25 +43,29 @@ import com.Polarice3.Goety.common.research.ResearchList;
 import com.Polarice3.Goety.config.ItemConfig;
 import com.Polarice3.Goety.init.ModSounds;
 import com.Polarice3.Goety.init.ModTags;
+import net.neoforged.neoforge.common.ModConfigSpec;
 import net.minecraft.world.food.Foods;
 import net.minecraft.world.item.*;
 // import net.minecraft.world.item.SimpleFoiledItem;
-import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
+import com.Polarice3.Goety.compat.fml.FMLJavaModLoadingContext;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.DeferredHolder;
-import net.neoforged.neoforge.registries.NeoForgeRegistries;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.core.registries.BuiltInRegistries;
 
 public class ModItems {
-        public static DeferredRegister<Item> ITEMS = DeferredRegister.create(NeoForgeRegistries.ITEMS, Goety.MOD_ID);
+        public static DeferredRegister<Item> ITEMS = DeferredRegister.create(Registries.ITEM, Goety.MOD_ID);
 
         public static void init() {
                 ModItems.ITEMS.register(FMLJavaModLoadingContext.get().getModEventBus());
         }
 
+        // Use default values during registration, config will be accessed when items are actually used
+        // Default max souls is typically 1000, so default to 10 for roots and 1000 for souls
         public static final DeferredHolder<Item, FullSpentTotem> TOTEM_OF_ROOTS = ITEMS.register("totem_of_roots",
-                        () -> new FullSpentTotem(Math.max(ITotem.MAX_SOULS / 100, 5)));
+                        () -> new FullSpentTotem(10)); // Default value, actual config accessed when needed
         public static final DeferredHolder<Item, TotemOfSouls> TOTEM_OF_SOULS = ITEMS.register("totem_of_souls",
-                        () -> new TotemOfSouls(ITotem.MAX_SOULS));
+                        () -> new TotemOfSouls(1000)); // Default value, actual config accessed when needed
 
         // Basic
         public static final DeferredHolder<Item, ? extends Item> SPENT_TOTEM = ITEMS.register("spent_totem",
@@ -176,9 +180,13 @@ public class ModItems {
 
         public static final DeferredHolder<Item, ? extends Item> VOID_BOTTLE = ITEMS.register("void_bottle",
                         VoidBottleItem::new);
+        // Access fluid lazily after it's registered
         public static final DeferredHolder<Item, ? extends Item> VOID_BUCKET = ITEMS.register("void_bucket",
-                        () -> new BucketItem(ModFluids.VOID_FLUID_SOURCE.get(),
-                                        (new Item.Properties()).craftRemainder(Items.BUCKET).stacksTo(1)));
+                        () -> {
+                                // Fluid will be available when item is created
+                                return new BucketItem(ModFluids.VOID_FLUID_SOURCE.get(),
+                                                (new Item.Properties()).craftRemainder(Items.BUCKET).stacksTo(1));
+                        });
 
         public static final DeferredHolder<Item, ? extends Item> END_MUD_BOTTLE = ITEMS.register("end_mud_bottle",
                         () -> new Item(new Item.Properties().craftRemainder(Items.GLASS_BOTTLE)));
@@ -449,15 +457,15 @@ public class ModItems {
         public static final DeferredHolder<Item, SingleStackItem> SEA_AMULET = ITEMS.register("sea_amulet",
                         SeaAmuletItem::new);
         public static final DeferredHolder<Item, SingleStackItem> FELINE_AMULET = ITEMS.register("feline_amulet",
-                        SingleStackItem::new);
+                        () -> new SingleStackItem());
         public static final DeferredHolder<Item, SingleStackItem> ALARMING_CHARM = ITEMS.register("alarming_charm",
-                        SingleStackItem::new);
+                        () -> new SingleStackItem());
         public static final DeferredHolder<Item, SingleStackItem> OMINOUS_CHARM = ITEMS.register("ominous_charm",
                         OminousCharmItem::new);
         public static final DeferredHolder<Item, SingleStackItem> WAYFARERS_BELT = ITEMS.register("wayfarers_belt",
                         WayfarersBeltItem::new);
         public static final DeferredHolder<Item, SingleStackItem> SPITEFUL_BELT = ITEMS.register("spiteful_belt",
-                        SingleStackItem::new);
+                        () -> new SingleStackItem());
         public static final DeferredHolder<Item, SingleStackItem> STAR_AMULET = ITEMS.register("star_amulet",
                         SingleFoiledStackItem::new);
         public static final DeferredHolder<Item, SingleStackItem> GRAVE_GLOVE = ITEMS.register("grave_glove",
@@ -778,29 +786,41 @@ public class ModItems {
                         () -> new DarkArmor(ArmorItem.Type.BOOTS));
 
         // Tools & Weapons
+        public static final DeferredHolder<Item, ? extends Item> WITCH_STAFF = ITEMS.register("witch_staff",
+                        () -> new WitchStaff(new Item.Properties().stacksTo(1)));
         public static final DeferredHolder<Item, ? extends Item> DARK_WAND = ITEMS.register("dark_wand",
                         () -> new DarkWand());
+        // Helper method to safely get config values with defaults
+        private static double getStaffDamage(ModConfigSpec.ConfigValue<Double> configValue, double defaultValue) {
+            try {
+                return configValue.get();
+            } catch (IllegalStateException e) {
+                // Config not loaded yet, use default
+                return defaultValue;
+            }
+        }
+        
         public static final DeferredHolder<Item, ? extends Item> OMINOUS_STAFF = ITEMS.register("ominous_staff",
-                        () -> new DarkStaff(ItemConfig.OminousStaffDamage.get(), SpellType.ILL));
+                        () -> new DarkStaff(getStaffDamage(ItemConfig.OminousStaffDamage, 4.0D), SpellType.ILL));
         public static final DeferredHolder<Item, ? extends Item> NECRO_STAFF = ITEMS.register("necro_staff",
-                        () -> new DarkStaff(ItemConfig.NecroStaffDamage.get(), SpellType.NECROMANCY));
+                        () -> new DarkStaff(getStaffDamage(ItemConfig.NecroStaffDamage, 4.0D), SpellType.NECROMANCY));
         public static final DeferredHolder<Item, ? extends Item> GEO_STAFF = ITEMS.register("geo_staff",
-                        () -> new DarkStaff(ItemConfig.GeoStaffDamage.get(), SpellType.GEOMANCY));
+                        () -> new DarkStaff(getStaffDamage(ItemConfig.GeoStaffDamage, 4.0D), SpellType.GEOMANCY));
         public static final DeferredHolder<Item, ? extends Item> WIND_STAFF = ITEMS.register("wind_staff",
-                        () -> new DarkStaff(ItemConfig.WindStaffDamage.get(), SpellType.WIND));
+                        () -> new DarkStaff(getStaffDamage(ItemConfig.WindStaffDamage, 4.0D), SpellType.WIND));
         public static final DeferredHolder<Item, ? extends Item> STORM_STAFF = ITEMS.register("storm_staff",
-                        () -> new DarkStaff(ItemConfig.StormStaffDamage.get(), SpellType.STORM));
+                        () -> new DarkStaff(getStaffDamage(ItemConfig.StormStaffDamage, 4.0D), SpellType.STORM));
         public static final DeferredHolder<Item, ? extends Item> FROST_STAFF = ITEMS.register("frost_staff",
-                        () -> new DarkStaff(ItemConfig.FrostStaffDamage.get(), SpellType.FROST));
+                        () -> new DarkStaff(getStaffDamage(ItemConfig.FrostStaffDamage, 4.0D), SpellType.FROST));
         public static final DeferredHolder<Item, ? extends Item> WILD_STAFF = ITEMS.register("wild_staff",
-                        () -> new DarkStaff(ItemConfig.WildStaffDamage.get(), SpellType.WILD));
+                        () -> new DarkStaff(getStaffDamage(ItemConfig.WildStaffDamage, 4.0D), SpellType.WILD));
         public static final DeferredHolder<Item, ? extends Item> ABYSS_STAFF = ITEMS.register("abyss_staff",
-                        () -> new DarkStaff(ItemConfig.AbyssStaffDamage.get(), -2.9D, SpellType.ABYSS));
+                        () -> new DarkStaff(getStaffDamage(ItemConfig.AbyssStaffDamage, 4.0D), -2.9D, SpellType.ABYSS));
         public static final DeferredHolder<Item, ? extends Item> VOID_STAFF = ITEMS.register("void_staff",
-                        () -> new DarkStaff(ItemConfig.VoidStaffDamage.get(), SpellType.VOID));
+                        () -> new DarkStaff(getStaffDamage(ItemConfig.VoidStaffDamage, 4.0D), SpellType.VOID));
         public static final DeferredHolder<Item, ? extends Item> NETHER_STAFF = ITEMS.register("nether_staff",
                         () -> new DarkStaff(DarkWand.wandProperties().fireResistant(),
-                                        ItemConfig.NetherStaffDamage.get(),
+                                        getStaffDamage(ItemConfig.NetherStaffDamage, 4.0D),
                                         SpellType.NETHER));
         public static final DeferredHolder<Item, ? extends Item> NAMELESS_STAFF = ITEMS.register("nameless_staff",
                         () -> new NamelessStaff());
@@ -848,9 +868,9 @@ public class ModItems {
         public static final DeferredHolder<Item, ? extends Item> HUNGRY_DAGGER = ITEMS.register("hungry_dagger",
                         () -> new FangedDaggerItem(ModTiers.DARK));
         public static final DeferredHolder<Item, ? extends Item> FELL_BLADE = ITEMS.register("fell_blade",
-                        () -> new SwordItem(ModTiers.SPECIAL, 3, -2.4F, new Item.Properties().durability(256)));
+                        () -> new SwordItem(ModTiers.SPECIAL, new Item.Properties().durability(256)));
         public static final DeferredHolder<Item, ? extends Item> FROZEN_BLADE = ITEMS.register("frozen_blade",
-                        () -> new SwordItem(ModTiers.SPECIAL, 4, -2.4F, new Item.Properties()));
+                        () -> new SwordItem(ModTiers.SPECIAL, new Item.Properties()));
         public static final DeferredHolder<Item, ? extends Item> INFERNAL_TOME = ITEMS.register("infernal_tome",
                         InfernalTome::new);
 
@@ -874,22 +894,16 @@ public class ModItems {
         // Discs
         public static final DeferredHolder<Item, ? extends Item> MUSIC_DISC_ENDERMAN = ITEMS.register(
                         "music_disc_enderman",
-                        () -> new RecordItem(14, ModSounds.MUSIC_DISC_ENDERMAN,
-                                        (new Item.Properties()).stacksTo(1).rarity(Rarity.RARE), 2240));
+                        () -> new Item((new Item.Properties()).stacksTo(1).rarity(Rarity.RARE)));
         public static final DeferredHolder<Item, ? extends Item> MUSIC_DISC_RM = ITEMS.register("music_disc_rm",
-                        () -> new RecordItem(14,
-                                        ModSounds.MUSIC_DISC_RM,
-                                        (new Item.Properties()).stacksTo(1).rarity(Rarity.RARE), 3200));
+                        () -> new Item((new Item.Properties()).stacksTo(1).rarity(Rarity.RARE)));
         public static final DeferredHolder<Item, ? extends Item> MUSIC_DISC_VIZIER = ITEMS.register("music_disc_vizier",
-                        () -> new RecordItem(14, ModSounds.MUSIC_DISC_VIZIER,
-                                        (new Item.Properties()).stacksTo(1).rarity(Rarity.RARE), 1860));
+                        () -> new Item((new Item.Properties()).stacksTo(1).rarity(Rarity.RARE)));
         public static final DeferredHolder<Item, ? extends Item> MUSIC_DISC_KEEPER = ITEMS.register("music_disc_keeper",
-                        () -> new RecordItem(14, ModSounds.MUSIC_DISC_KEEPER,
-                                        (new Item.Properties()).stacksTo(1).rarity(Rarity.RARE), 4640));
+                        () -> new Item((new Item.Properties()).stacksTo(1).rarity(Rarity.RARE)));
         public static final DeferredHolder<Item, ? extends Item> MUSIC_DISC_APOSTLE = ITEMS.register(
                         "music_disc_apostle",
-                        () -> new RecordItem(15, ModSounds.MUSIC_DISC_APOSTLE,
-                                        (new Item.Properties()).stacksTo(1).rarity(Rarity.RARE), 3440));
+                        () -> new Item((new Item.Properties()).stacksTo(1).rarity(Rarity.RARE)));
 
         // Dummies
         public static final DeferredHolder<Item, ? extends Item> PEDESTAL_DUMMY = ITEMS.register("pedestal_dummy",

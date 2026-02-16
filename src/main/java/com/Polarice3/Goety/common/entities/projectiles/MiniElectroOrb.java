@@ -61,7 +61,7 @@ public class MiniElectroOrb extends SpellHurtingProjectile{
     protected void onHit(HitResult hitResult) {
         if (!this.level().isClientSide) {
             DamageSource damageSource = ModDamageSource.getDamageSource(this.level(), ModDamageSource.SHOCK);
-            float damage = SpellConfig.ElectroOrbDamage.get().floatValue() * WandUtil.damageMultiply();
+            float damage = com.Polarice3.Goety.utils.ConfigHelper.getFloat(SpellConfig.ElectroOrbDamage, 1.0F) * WandUtil.damageMultiply();
             if (this.getOwner() != null) {
                 damageSource = ModDamageSource.indirectShock(this, this.getOwner());
             }
@@ -74,7 +74,7 @@ public class MiniElectroOrb extends SpellHurtingProjectile{
                     chance += 0.25F;
                 }
                 if (entity instanceof LivingEntity livingEntity && this.level().random.nextFloat() <= chance) {
-                    livingEntity.addEffect(new MobEffectInstance(GoetyEffects.SPASMS.getHolder(), MathHelper.secondsToTicks(5)));
+                    livingEntity.addEffect(new MobEffectInstance(GoetyEffects.SPASMS, MathHelper.secondsToTicks(5)));
                 }
             }
             this.playSound(ModSounds.THUNDERBOLT.get(), 1.0F, 1.0F + (this.random.nextFloat() - this.random.nextFloat()) * 0.2F);

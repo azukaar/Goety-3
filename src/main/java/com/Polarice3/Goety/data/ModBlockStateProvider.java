@@ -221,7 +221,7 @@ public class ModBlockStateProvider extends BlockStateProvider {
         slabBlockWithItem((SlabBlock) ModBlocks.END_ROCK_SLAB.get(), Goety.location("block/end_rock"), Goety.location("block/end_rock"), Goety.location("block/end_rock_top"));
         slabBlockWithItem((SlabBlock) ModBlocks.END_ROCK_BRICK_SLAB.get(), Goety.location("block/end_rock_bricks"));
 
-        slabBlockWithItem((SlabBlock) ModBlocks.END_STONE_SLAB.get(), new ResourceLocation("block/end_stone"));
+        slabBlockWithItem((SlabBlock) ModBlocks.END_STONE_SLAB.get(), ResourceLocation.parse("block/end_stone"));
         slabBlockWithItem((SlabBlock) ModBlocks.END_STONE_TILE_SLAB.get(), Goety.location("block/end_stone_tiles"));
         slabBlockWithItem((SlabBlock) ModBlocks.SMOOTH_END_STONE_SLAB.get(), Goety.location("block/smooth_end_stone"));
         slabBlockWithItem((SlabBlock) ModBlocks.COBBLED_END_STONE_SLAB.get(), Goety.location("block/cobbled_end_stone"));
@@ -301,7 +301,7 @@ public class ModBlockStateProvider extends BlockStateProvider {
         wallBlockWithItem((WallBlock) ModBlocks.SMOOTH_END_STONE_WALL_BLOCK.get(), Goety.location("block/smooth_end_stone"));
         wallBlockWithItem((WallBlock) ModBlocks.COBBLED_END_STONE_WALL_BLOCK.get(), Goety.location("block/cobbled_end_stone"));
 
-        wallBlockWithItem((WallBlock) ModBlocks.PURPUR_WALL.get(), new ResourceLocation("block/purpur_block"));
+        wallBlockWithItem((WallBlock) ModBlocks.PURPUR_WALL.get(), ResourceLocation.parse("block/purpur_block"));
 
         wallBlockWithItem((WallBlock) ModBlocks.WINDSWEPT_PLANK_WALL_BLOCK.get(), Goety.location("block/windswept_plank_wall"));
         wallBlockWithItem((WallBlock) ModBlocks.SNOWY_WINDSWEPT_PLANK_WALL_BLOCK.get(), Goety.location("block/snowy_windswept_plank_wall"));
@@ -458,7 +458,7 @@ public class ModBlockStateProvider extends BlockStateProvider {
     }
 
     private ResourceLocation extend(ResourceLocation rl, String suffix) {
-        return new ResourceLocation(rl.getNamespace(), rl.getPath() + suffix);
+        return ResourceLocation.fromNamespaceAndPath(rl.getNamespace(), rl.getPath() + suffix);
     }
 
     private String name(Block block) {

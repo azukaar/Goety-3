@@ -10,6 +10,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -43,12 +44,13 @@ public abstract class TrainingBlock extends BaseEntityBlock {
         }
     }
 
-    public InteractionResult use(BlockState pState, Level pLevel, BlockPos pPos, Player pPlayer, InteractionHand pHand, BlockHitResult pHit) {
+    @Override
+    protected ItemInteractionResult useItemOn(ItemStack stack, BlockState pState, Level pLevel, BlockPos pPos, Player pPlayer, InteractionHand pHand, BlockHitResult pHit) {
         BlockEntity tileentity = pLevel.getBlockEntity(pPos);
         if (tileentity instanceof TrainingBlockEntity blockEntity) {
-            ItemStack itemstack = pPlayer.getItemInHand(pHand);
+            ItemStack itemstack = stack;
             if (blockEntity.placeItem(itemstack)){
-                return InteractionResult.SUCCESS;
+                return ItemInteractionResult.SUCCESS;
             } else if (itemstack.getItem() instanceof IWand){
                 if (!pPlayer.isCrouching()) {
                     blockEntity.setSensorSensitive(!blockEntity.isSensorSensitive());
@@ -57,20 +59,30 @@ public abstract class TrainingBlock extends BaseEntityBlock {
                 }
                 pLevel.playSound(null, pPos, ModSounds.SUMMON_SPELL_FIERY.get(), SoundSource.BLOCKS, 0.25F, 2.0F);
                 pLevel.playSound(null, pPos, ModSounds.CAST_SPELL.get(), SoundSource.BLOCKS, 0.25F, 2.0F);
-                return InteractionResult.SUCCESS;
+                return ItemInteractionResult.SUCCESS;
             } else if (itemstack.getItem() instanceof GroundGrimoire){
                 blockEntity.setGrounding(!blockEntity.isGrounding());
                 pLevel.playSound(null, pPos, ModSounds.CAST_SPELL.get(), SoundSource.BLOCKS, 0.25F, 2.0F);
-                return InteractionResult.SUCCESS;
-            } else if (itemstack.isEmpty() && pPlayer.isCrouching()){
+                return ItemInteractionResult.SUCCESS;
+            }
+
+            return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+        }
+
+        return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+    }
+
+    @Override
+    protected InteractionResult useWithoutItem(BlockState pState, Level pLevel, BlockPos pPos, Player pPlayer, BlockHitResult pHit) {
+        BlockEntity tileentity = pLevel.getBlockEntity(pPos);
+        if (tileentity instanceof TrainingBlockEntity blockEntity) {
+            if (pPlayer.isCrouching()){
                 blockEntity.setShowArea(!blockEntity.isShowArea());
                 pLevel.playSound(null, pPos, ModSounds.CAST_SPELL.get(), SoundSource.BLOCKS, 0.25F, 2.0F);
                 return InteractionResult.SUCCESS;
             }
-
             return InteractionResult.CONSUME;
         }
-
         return InteractionResult.PASS;
     }
 

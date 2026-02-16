@@ -34,12 +34,12 @@ public class FrostNovaSpell extends Spell {
 
     @Override
     public int defaultSoulCost() {
-        return SpellConfig.FrostNovaCost.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.FrostNovaCost, 0);
     }
 
     @Override
     public int defaultCastDuration() {
-        return SpellConfig.FrostNovaDuration.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.FrostNovaDuration, 0);
     }
 
     @Nullable
@@ -50,7 +50,7 @@ public class FrostNovaSpell extends Spell {
 
     @Override
     public int defaultSpellCooldown() {
-        return SpellConfig.FrostNovaCoolDown.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.FrostNovaCoolDown, 0);
     }
 
     @Override
@@ -72,8 +72,8 @@ public class FrostNovaSpell extends Spell {
         float potency = spellStat.getPotency();
         float radius = (float) spellStat.getRadius();
         int duration = spellStat.getDuration();
-        float damage = SpellConfig.FrostNovaDamage.get().floatValue() * WandUtil.damageMultiply();
-        float maxDamage = SpellConfig.FrostNovaMaxDamage.get().floatValue() * WandUtil.damageMultiply();
+        float damage = com.Polarice3.Goety.utils.ConfigHelper.getFloat(SpellConfig.FrostNovaDamage, 1.0F) * WandUtil.damageMultiply();
+        float maxDamage = com.Polarice3.Goety.utils.ConfigHelper.getFloat(SpellConfig.FrostNovaMaxDamage, 1.0F) * WandUtil.damageMultiply();
         if (WandUtil.enchantedFocus(caster)){
             radius += WandUtil.getLevels(ModEnchantments.RADIUS.get(), caster);
             duration += WandUtil.getLevels(ModEnchantments.DURATION.get(), caster);
@@ -101,7 +101,7 @@ public class FrostNovaSpell extends Spell {
             public void explodeHurt(Entity target, DamageSource damageSource, double x, double y, double z, double seen, float actualDamage) {
                 if (target instanceof LivingEntity target1 && !MobUtil.areAllies(caster, target1) && EntitySelector.NO_CREATIVE_OR_SPECTATOR.test(target1)){
                     super.explodeHurt(target, damageSource, x, y, z, seen, actualDamage);
-                    target1.addEffect(new MobEffectInstance(GoetyEffects.FREEZING.get(), MathHelper.secondsToTicks(5) * finalDuration, finalAmp));
+                    target1.addEffect(new MobEffectInstance(GoetyEffects.FREEZING, MathHelper.secondsToTicks(5) * finalDuration, finalAmp));
                 }
             }
         };

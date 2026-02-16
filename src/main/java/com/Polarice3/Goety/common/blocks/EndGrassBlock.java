@@ -38,7 +38,8 @@ public class EndGrassBlock extends EndPlantBlock implements BonemealableBlock {
       return SHAPE;
    }
 
-   public boolean isValidBonemealTarget(LevelReader p_255692_, BlockPos p_57326_, BlockState p_57327_, boolean p_57328_) {
+   @Override
+   public boolean isValidBonemealTarget(LevelReader level, BlockPos pos, BlockState state) {
       return true;
    }
 

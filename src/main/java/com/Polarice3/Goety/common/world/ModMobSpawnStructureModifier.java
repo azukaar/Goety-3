@@ -1,21 +1,16 @@
 package com.Polarice3.Goety.common.world;
 
-import com.Polarice3.Goety.Goety;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import net.minecraft.core.Holder;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.levelgen.structure.Structure;
 import net.neoforged.neoforge.common.world.ModifiableStructureInfo;
 import net.neoforged.neoforge.common.world.StructureModifier;
-import net.neoforged.neoforge.registries.NeoForgeRegistries;
-import net.neoforged.neoforge.registries.RegistryObject;
 
 /**
  * Based of codes by @AlexModGuy
  */
 public class ModMobSpawnStructureModifier implements StructureModifier {
-    private static final RegistryObject<Codec<? extends StructureModifier >> SERIALIZER = RegistryObject.create(new ResourceLocation(Goety.MOD_ID, "mob_structure_spawns"), NeoForgeRegistries.Keys.STRUCTURE_MODIFIER_SERIALIZERS, Goety.MOD_ID);
-
     public ModMobSpawnStructureModifier() {
     }
 
@@ -25,11 +20,11 @@ public class ModMobSpawnStructureModifier implements StructureModifier {
         }
     }
 
-    public Codec<? extends StructureModifier > codec() {
-        return (Codec)SERIALIZER.get();
+    public MapCodec<? extends StructureModifier > codec() {
+        return makeCodec();
     }
 
-    public static Codec<ModMobSpawnStructureModifier> makeCodec() {
-        return Codec.unit(ModMobSpawnStructureModifier::new);
+    public static MapCodec<ModMobSpawnStructureModifier> makeCodec() {
+        return MapCodec.unit(new ModMobSpawnStructureModifier());
     }
 }

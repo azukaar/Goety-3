@@ -53,7 +53,7 @@ public class VoidBarrelBlockEntity extends BlockEntity {
                         };
                         new SpellExplosion(serverLevel, null, serverLevel.damageSources().explosion(null), vec3.x, vec3.y, vec3.z, 5.0F, 4.0F);
                         //this.getLevel().playSound(null, this.worldPosition, SoundEvents.GLASS_BREAK, SoundSource.BLOCKS, 4.0F, 1.0F);
-                        this.getLevel().playSound(null, this.worldPosition, SoundEvents.GENERIC_EXPLODE, SoundSource.BLOCKS, 4.0F, (1.0F + (serverLevel.getRandom().nextFloat() - serverLevel.getRandom().nextFloat()) * 0.2F) * 0.7F);
+                        this.getLevel().playSound(null, this.worldPosition, SoundEvents.GENERIC_EXPLODE.value(), SoundSource.BLOCKS, 4.0F, (1.0F + (serverLevel.getRandom().nextFloat() - serverLevel.getRandom().nextFloat()) * 0.2F) * 0.7F);
                         this.getLevel().setBlockAndUpdate(this.worldPosition, this.getBlockState().setValue(VoidBarrelBlock.LIT, true));
                     }
                 } else if (this.getBlockState().getValue(VoidBarrelBlock.LIT)) {
@@ -66,13 +66,15 @@ public class VoidBarrelBlockEntity extends BlockEntity {
         }
     }
 
-    public void load(CompoundTag p_155113_) {
-        super.load(p_155113_);
+    @Override
+    public void loadAdditional(CompoundTag p_155113_, net.minecraft.core.HolderLookup.Provider provider) {
+        super.loadAdditional(p_155113_, provider);
         this.tick = p_155113_.getInt("Tick");
     }
 
-    protected void saveAdditional(CompoundTag p_187463_) {
-        super.saveAdditional(p_187463_);
+    @Override
+    protected void saveAdditional(CompoundTag p_187463_, net.minecraft.core.HolderLookup.Provider provider) {
+        super.saveAdditional(p_187463_, provider);
         p_187463_.putInt("Tick", this.tick);
     }
 
@@ -81,14 +83,15 @@ public class VoidBarrelBlockEntity extends BlockEntity {
     }
 
     @Override
-    public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt) {
+    public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt, net.minecraft.core.HolderLookup.Provider provider) {
         if (pkt.getTag() != null) {
-            this.load(pkt.getTag());
+            this.loadAdditional(pkt.getTag(), provider);
         }
-        super.onDataPacket(net, pkt);
+        super.onDataPacket(net, pkt, provider);
     }
 
-    public CompoundTag getUpdateTag() {
-        return this.saveWithoutMetadata();
+    @Override
+    public CompoundTag getUpdateTag(net.minecraft.core.HolderLookup.Provider provider) {
+        return this.saveWithoutMetadata(provider);
     }
 }

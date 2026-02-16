@@ -1,6 +1,7 @@
 package com.Polarice3.Goety.common.blocks;
 
 import com.Polarice3.Goety.common.blocks.entities.SoulCandlestickBlockEntity;
+import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.sounds.SoundEvents;
@@ -29,6 +30,12 @@ import org.jetbrains.annotations.Nullable;
 import java.util.function.ToIntFunction;
 
 public class SoulCandlestickBlock extends BaseEntityBlock {
+    public static final MapCodec<SoulCandlestickBlock> CODEC = simpleCodec(p -> new SoulCandlestickBlock());
+
+    @Override
+    protected MapCodec<? extends BaseEntityBlock> codec() {
+        return CODEC;
+    }
     protected static final VoxelShape SHAPE_BASE = Block.box(5.0D, 0.0D, 5.0D,
             11.0D, 2.0D, 11.0D);
     protected static final VoxelShape SHAPE_MID = Block.box(7.0D, 2.0D, 7.0D,

@@ -21,12 +21,12 @@ public class LaunchSpell extends Spell {
 
     @Override
     public int defaultSoulCost() {
-        return SpellConfig.LaunchCost.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.LaunchCost, 0);
     }
 
     @Override
     public int defaultCastDuration() {
-        return SpellConfig.LaunchDuration.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.LaunchDuration, 0);
     }
 
     @Override
@@ -36,7 +36,7 @@ public class LaunchSpell extends Spell {
 
     @Override
     public int defaultSpellCooldown() {
-        return SpellConfig.LaunchCoolDown.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.LaunchCoolDown, 0);
     }
 
     @Override

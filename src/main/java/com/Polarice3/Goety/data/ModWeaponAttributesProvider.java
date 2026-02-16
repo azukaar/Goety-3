@@ -13,7 +13,7 @@ import net.minecraft.server.packs.PackType;
 import net.minecraft.world.item.Item;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
-import net.neoforged.neoforge.registries.RegistryObject;
+import com.Polarice3.Goety.compat.legacy.neoforge.registries.RegistryObject;
 import org.apache.commons.compress.utils.Lists;
 
 import java.nio.file.Path;

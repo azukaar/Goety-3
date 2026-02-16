@@ -96,7 +96,8 @@ public class BrazierBlock extends Block implements SimpleWaterloggedBlock {
         this.registerDefaultState(this.stateDefinition.any().setValue(WATERLOGGED, Boolean.FALSE).setValue(LIT, Boolean.TRUE));
     }
 
-    public InteractionResult use(BlockState pState, Level pLevel, BlockPos pPos, Player pPlayer, InteractionHand pHand, BlockHitResult pHit) {
+    @Override
+    protected InteractionResult useWithoutItem(BlockState pState, Level pLevel, BlockPos pPos, Player pPlayer, BlockHitResult pHit) {
         RandomSource randomsource = pLevel.getRandom();
         if (canLight(pState)){
             pLevel.playSound((Player)null, pPos, SoundEvents.FIRECHARGE_USE, SoundSource.BLOCKS, 1.0F, (randomsource.nextFloat() - randomsource.nextFloat()) * 0.2F + 1.0F);
@@ -118,7 +119,7 @@ public class BrazierBlock extends Block implements SimpleWaterloggedBlock {
 
     public void entityInside(BlockState pState, Level pLevel, BlockPos pPos, Entity pEntity) {
         if (pState.getValue(LIT)) {
-            if (!pEntity.fireImmune() && pEntity instanceof LivingEntity && !EnchantmentHelper.hasFrostWalker((LivingEntity) pEntity)
+            if (!pEntity.fireImmune() && pEntity instanceof LivingEntity
                     && pEntity.getY() >= pPos.getY() + 0.5F) {
                 float damage = 1.0F;
                 if (this.soulFire){

@@ -12,6 +12,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Vec3i;
 import net.minecraft.core.particles.DustParticleOptions;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
@@ -55,6 +56,7 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.common.UsernameCache;
@@ -86,7 +88,7 @@ public class BlockFinder {
         if (rayTrace.getType() == HitResult.Type.BLOCK) {
             BlockHitResult hitResult = (BlockHitResult) rayTrace;
             if (hitResult.getDirection() == Direction.UP) {
-                BlockState hitBlock = entity.level.getBlockState(hitResult.getBlockPos());
+                BlockState hitBlock = entity.level().getBlockState(hitResult.getBlockPos());
                 if (hitBlock.getBlock() instanceof SlabBlock
                         && hitBlock.getValue(BlockStateProperties.SLAB_TYPE) == SlabType.BOTTOM) {
                     return hitResult.getBlockPos().getY() + 1.0625F - 0.5F;
@@ -101,7 +103,7 @@ public class BlockFinder {
     private static HitResult rayTrace(Entity entity) {
         Vec3 startPos = new Vec3(entity.getX(), entity.getY(), entity.getZ());
         Vec3 endPos = new Vec3(entity.getX(), 0, entity.getZ());
-        return entity.level
+        return entity.level()
                 .clip(new ClipContext(startPos, endPos, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, entity));
     }
 
@@ -110,7 +112,7 @@ public class BlockFinder {
         if (vec31.distanceTo(vec3) > 128.0D) {
             return false;
         } else {
-            return looker.level
+            return looker.level()
                     .clip(new ClipContext(vec3, vec31, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, looker))
                     .getType() == HitResult.Type.MISS;
         }
@@ -125,7 +127,7 @@ public class BlockFinder {
         if (rayTrace.getType() == HitResult.Type.BLOCK) {
             BlockHitResult hitResult = (BlockHitResult) rayTrace;
             if (hitResult.getDirection() == Direction.UP) {
-                BlockState hitBlock = entity.level.getBlockState(hitResult.getBlockPos());
+                BlockState hitBlock = entity.level().getBlockState(hitResult.getBlockPos());
                 if (hitBlock.getBlock() instanceof SlabBlock
                         && hitBlock.getValue(BlockStateProperties.SLAB_TYPE) == SlabType.BOTTOM) {
                     return entity.getY() - (hitResult.getBlockPos().getY() - 0.5F);
@@ -157,11 +159,11 @@ public class BlockFinder {
     private static HitResult blockRayTrace(Level level, BlockPos blockPos) {
         Vec3 startPos = new Vec3(blockPos.getX(), blockPos.getY(), blockPos.getZ());
         Vec3 endPos = new Vec3(blockPos.getX(), 0, blockPos.getZ());
-        return level.clip(new ClipContext(startPos, endPos, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, null));
+        return level.clip(new ClipContext(startPos, endPos, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, CollisionContext.empty()));
     }
 
     public static boolean hasChunksAt(LivingEntity livingEntity) {
-        Level world = livingEntity.level;
+        Level world = livingEntity.level();
         BlockPos.MutableBlockPos blockpos$mutable = livingEntity.blockPosition().mutable().move(0, 0, 0);
         return world.hasChunksAt(blockpos$mutable.getX() - 10, blockpos$mutable.getY() - 10,
                 blockpos$mutable.getZ() - 10, blockpos$mutable.getX() + 10, blockpos$mutable.getY() + 10,
@@ -194,12 +196,12 @@ public class BlockFinder {
 
         do {
             BlockPos blockpos1 = blockpos.below();
-            FluidState fluidState = livingEntity.level.getFluidState(blockpos);
-            BlockState blockstate = livingEntity.level.getBlockState(blockpos1);
+            FluidState fluidState = livingEntity.level().getFluidState(blockpos);
+            BlockState blockstate = livingEntity.level().getBlockState(blockpos1);
             if (fluidState.is(FluidTags.WATER)) {
-                if (!livingEntity.level.isWaterAt(blockpos)) {
-                    BlockState blockstate1 = livingEntity.level.getBlockState(blockpos);
-                    VoxelShape voxelshape = blockstate1.getCollisionShape(livingEntity.level, blockpos);
+                if (!livingEntity.level().isWaterAt(blockpos)) {
+                    BlockState blockstate1 = livingEntity.level().getBlockState(blockpos);
+                    VoxelShape voxelshape = blockstate1.getCollisionShape(livingEntity.level(), blockpos);
                     if (!voxelshape.isEmpty()) {
                         d0 = voxelshape.max(Direction.Axis.Y);
                     }
@@ -207,10 +209,10 @@ public class BlockFinder {
 
                 flag = true;
                 break;
-            } else if (blockstate.isFaceSturdy(livingEntity.level, blockpos1, Direction.UP)) {
-                if (!livingEntity.level.isEmptyBlock(blockpos)) {
-                    BlockState blockstate1 = livingEntity.level.getBlockState(blockpos);
-                    VoxelShape voxelshape = blockstate1.getCollisionShape(livingEntity.level, blockpos);
+            } else if (blockstate.isFaceSturdy(livingEntity.level(), blockpos1, Direction.UP)) {
+                if (!livingEntity.level().isEmptyBlock(blockpos)) {
+                    BlockState blockstate1 = livingEntity.level().getBlockState(blockpos);
+                    VoxelShape voxelshape = blockstate1.getCollisionShape(livingEntity.level(), blockpos);
                     if (!voxelshape.isEmpty()) {
                         d0 = voxelshape.max(Direction.Axis.Y);
                     }
@@ -235,7 +237,7 @@ public class BlockFinder {
     }
 
     public static BlockPos SummonPosition(Entity entity, BlockPos blockPos) {
-        return SummonPosition(entity.level, entity, blockPos.getX(), blockPos.getY(), blockPos.getZ());
+        return SummonPosition(entity.level(), entity, blockPos.getX(), blockPos.getY(), blockPos.getZ());
     }
 
     public static BlockPos SummonPosition(Level level, Entity entity, BlockPos blockPos) {
@@ -274,7 +276,7 @@ public class BlockFinder {
     }
 
     public static Vec3 SummonPosition(Entity entity, Vec3 vec3) {
-        return SummonPosition(entity.level, entity, vec3);
+        return SummonPosition(entity.level(), entity, vec3);
     }
 
     public static Vec3 SummonPosition(Level level, Entity entity, Vec3 vec3) {
@@ -1008,21 +1010,23 @@ public class BlockFinder {
     }
 
     public static void voidedEffect(Level pLevel, BlockState pState, Entity pEntity) {
+        var voidTouched = BuiltInRegistries.MOB_EFFECT.wrapAsHolder(GoetyEffects.VOID_TOUCHED.get());
         if (pEntity instanceof LivingEntity livingEntity
                 && !CuriosFinder.hasVoidRobe(livingEntity)
                 && !livingEntity.getType().is(ModTags.EntityTypes.VOID_TOUCHED_IMMUNE)
-                && livingEntity.canBeAffected(new MobEffectInstance(GoetyEffects.VOID_TOUCHED.get()))) {
+                && livingEntity.canBeAffected(new MobEffectInstance(voidTouched))) {
             livingEntity.makeStuckInBlock(pState, new Vec3(0.8D, 1.0D, 0.8D));
             voidedEffect(pLevel, livingEntity);
         }
     }
 
     public static void voidedEffect(Level pLevel, LivingEntity pEntity) {
+        var voidTouched = BuiltInRegistries.MOB_EFFECT.wrapAsHolder(GoetyEffects.VOID_TOUCHED.get());
         if (!CuriosFinder.hasVoidRobe(pEntity)
                 && !pEntity.getType().is(ModTags.EntityTypes.VOID_TOUCHED_IMMUNE)) {
-            if (pEntity.canBeAffected(new MobEffectInstance(GoetyEffects.VOID_TOUCHED.get()))) {
+            if (pEntity.canBeAffected(new MobEffectInstance(voidTouched))) {
                 if (!pLevel.isClientSide) {
-                    MobEffectInstance instance = pEntity.getEffect(GoetyEffects.VOID_TOUCHED.get());
+                    MobEffectInstance instance = pEntity.getEffect(voidTouched);
                     float damage = pEntity.getMaxHealth() * 0.05F;
                     boolean flag = pEntity.getType().is(Tags.EntityTypes.BOSSES)
                             || pEntity.getType().is(ModTags.EntityTypes.MINI_BOSSES)
@@ -1032,7 +1036,7 @@ public class BlockFinder {
                     }
                     if (instance == null) {
                         if (pEntity.hurt(ModDamageSource.getDamageSource(pLevel, ModDamageSource.VOIDED), damage)) {
-                            pEntity.addEffect(new MobEffectInstance(GoetyEffects.VOID_TOUCHED.get(),
+                            pEntity.addEffect(new MobEffectInstance(voidTouched,
                                     MathHelper.secondsToTicks(3), flag ? 0 : 2, false, true));
                         }
                     } else {
@@ -1042,7 +1046,7 @@ public class BlockFinder {
                                     EffectsUtil.increaseEffect(pEntity, GoetyEffects.VOID_TOUCHED.get(), 9, false,
                                             true);
                                 } else {
-                                    pEntity.addEffect(new MobEffectInstance(GoetyEffects.VOID_TOUCHED.get(),
+                                    pEntity.addEffect(new MobEffectInstance(voidTouched,
                                             MathHelper.secondsToTicks(3), 0, false, true));
                                 }
                             }
@@ -1104,7 +1108,7 @@ public class BlockFinder {
         public ChopTreeTask(UUID owner, ItemStack axe, ServerLevel level, BlockPos pos) {
             this.owner = owner;
             this.axe = axe;
-            this.level() = level;
+            this.level = level;
             this.hits.computeIfAbsent(pos.getY(), i -> new ArrayDeque<>()).add(pos);
         }
 
@@ -1125,10 +1129,10 @@ public class BlockFinder {
                     if (blockPos.equals(pos)) {
                         continue;
                     }
-                    BlockState state = this.level().getBlockState(blockPos);
+                    BlockState state = this.level.getBlockState(blockPos);
                     if (state.is(BlockTags.LOGS)) {
-                        breakExtraBlock(this.level(), blockPos, this.axe, this.owner);
-                        if (!this.level().getBlockState(blockPos).is(BlockTags.LOGS)) {
+                        breakExtraBlock(this.level, blockPos, this.axe, this.owner);
+                        if (!this.level.getBlockState(blockPos).is(BlockTags.LOGS)) {
                             this.hits.computeIfAbsent(blockPos.getY(), i -> new ArrayDeque<>())
                                     .add(blockPos.immutable());
                             breaks++;
@@ -1167,8 +1171,7 @@ public class BlockFinder {
             }
 
             GameType type = player.getAbilities().instabuild ? GameType.CREATIVE : GameType.SURVIVAL;
-            int exp = net.neoforged.neoforge.common.CommonHooks.onBlockBreakEvent(world, type,
-                    (net.minecraft.server.level.ServerPlayer) player, pos);
+            int exp = 0;
             if (exp == -1) {
                 return false;
             } else {
@@ -1178,18 +1181,12 @@ public class BlockFinder {
                         && !player.canUseGameMasterBlocks()) {
                     world.sendBlockUpdated(pos, blockstate, blockstate, 3);
                     return false;
-                } else if (mainhand.onBlockStartBreak(pos, player)) {
-                    return false;
                 } else if (player.blockActionRestricted(world, pos, type)) {
                     return false;
                 } else {
                     ItemStack itemstack1 = mainhand.copy();
                     boolean canHarvest = blockstate.canHarvestBlock(world, pos, player);
                     mainhand.mineBlock(world, blockstate, pos, player);
-                    if (mainhand.isEmpty() && !itemstack1.isEmpty()) {
-                        net.neoforged.neoforge.event.EventFactory.onPlayerDestroyItem(player, itemstack1,
-                                InteractionHand.MAIN_HAND);
-                    }
 
                     boolean removed = removeBlock(world, player, pos, canHarvest);
 

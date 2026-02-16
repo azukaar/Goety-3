@@ -22,13 +22,13 @@ public class CaveSpiderServant extends SpiderServant{
 
     public static AttributeSupplier.Builder setCustomAttributes() {
         return SpiderServant.setCustomAttributes()
-                .add(Attributes.MAX_HEALTH, AttributesConfig.CaveSpiderServantHealth.get())
-                .add(Attributes.ATTACK_DAMAGE, AttributesConfig.CaveSpiderServantDamage.get());
+                .add(Attributes.MAX_HEALTH, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.CaveSpiderServantHealth, 20.0D))
+                .add(Attributes.ATTACK_DAMAGE, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.CaveSpiderServantDamage, 20.0D));
     }
 
     public void setConfigurableAttributes() {
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.MAX_HEALTH), AttributesConfig.CaveSpiderServantHealth.get());
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ATTACK_DAMAGE), AttributesConfig.CaveSpiderServantDamage.get());
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.MAX_HEALTH), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.CaveSpiderServantHealth, 20.0D));
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ATTACK_DAMAGE), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.CaveSpiderServantDamage, 20.0D));
     }
 
     public boolean doHurtTarget(Entity target) {
@@ -45,7 +45,7 @@ public class CaveSpiderServant extends SpiderServant{
                 if (i > 0) {
                     Holder<MobEffect> effect = MobEffects.POISON;
                     if (i == 15){
-                        effect = GoetyEffects.ACID_VENOM.getHolder();
+                        effect = GoetyEffects.ACID_VENOM;
                     }
                     livingEntity.addEffect(new MobEffectInstance(effect, i * 20, 0), this);
                 }

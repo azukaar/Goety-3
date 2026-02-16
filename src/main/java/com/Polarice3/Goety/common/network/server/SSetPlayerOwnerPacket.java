@@ -8,8 +8,8 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
-import net.neoforged.network.NetworkDirection;
-import net.neoforged.network.NetworkEvent;
+import com.Polarice3.Goety.compat.legacy.network.NetworkDirection;
+import com.Polarice3.Goety.compat.legacy.network.NetworkEvent;
 
 import java.util.UUID;
 import java.util.function.Supplier;
@@ -35,7 +35,7 @@ public class SSetPlayerOwnerPacket {
 
     public static void consume(SSetPlayerOwnerPacket packet, Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
-            if (ctx.get().getDirection() == NetworkDirection.PLAY_TO_CLIENT) {
+            if (null == NetworkDirection.PLAY_TO_CLIENT) {
                 Level level = Goety.PROXY.getLevel();
                 if (level instanceof ClientLevel clientWorld) {
                     Entity entity = EntityFinder.getEntityByUuiDGlobal(packet.summoned).isPresent() ? EntityFinder.getEntityByUuiDGlobal(packet.summoned).get() : null;
@@ -51,3 +51,4 @@ public class SSetPlayerOwnerPacket {
         ctx.get().setPacketHandled(true);
     }
 }
+

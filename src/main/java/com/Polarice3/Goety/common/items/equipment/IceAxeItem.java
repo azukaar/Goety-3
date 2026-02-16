@@ -8,6 +8,7 @@ import net.minecraft.tags.BlockTags;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.DiggerItem;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Tier;
 import net.minecraft.world.item.TooltipFlag;
@@ -20,7 +21,7 @@ import java.util.List;
 
 public class IceAxeItem extends DiggerItem {
     public IceAxeItem(Tier tier) {
-        super(6.0F, -3.1F, tier, BlockTags.ICE, new Properties());
+        super(tier, BlockTags.ICE, new Properties());
     }
 
     @Override
@@ -42,8 +43,8 @@ public class IceAxeItem extends DiggerItem {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
-        super.appendHoverText(stack, worldIn, tooltip, flagIn);
+    public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltip, TooltipFlag flagIn) {
+        super.appendHoverText(stack, context, tooltip, flagIn);
         ChatFormatting main = ChatFormatting.DARK_PURPLE;
         ChatFormatting secondary = ChatFormatting.BLUE;
         tooltip.add(Component.translatable("info.goety.ice_axe").withStyle(main));

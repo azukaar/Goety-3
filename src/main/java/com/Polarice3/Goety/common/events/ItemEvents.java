@@ -24,8 +24,10 @@ import com.google.common.collect.ImmutableList;
 import net.minecraft.commands.arguments.EntityAnchorArgument;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.Holder;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -47,7 +49,7 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.item.*;
-import net.minecraft.world.item.alchemy.PotionUtils;
+import com.Polarice3.Goety.utils.PotionUtils;
 import net.minecraft.world.item.alchemy.Potions;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.Enchantments;
@@ -76,12 +78,12 @@ public class ItemEvents {
     public static void PlayerTick(PlayerTickEvent.Post event){
         Player player = event.getEntity();
         if (ItemHelper.findHelmet(player, ModItems.DARK_HELMET.get())){
-            if (ItemConfig.DarkHelmetDarkness.get()) {
+            if (com.Polarice3.Goety.utils.ConfigHelper.getBoolean(ItemConfig.DarkHelmetDarkness, false)) {
                 if (player.getEffect(MobEffects.DARKNESS) != null) {
                     player.removeEffect(MobEffects.DARKNESS);
                 }
             }
-            if (ItemConfig.DarkHelmetBlindness.get()) {
+            if (com.Polarice3.Goety.utils.ConfigHelper.getBoolean(ItemConfig.DarkHelmetBlindness, false)) {
                 if (player.getEffect(MobEffects.BLINDNESS) != null) {
                     player.removeEffect(MobEffects.BLINDNESS);
                 }
@@ -105,7 +107,7 @@ public class ItemEvents {
             }
         }
 
-        if (ItemHelper.armorSet(player, ModArmorMaterials.DARK)){
+        if (ItemHelper.armorSet(player, ModArmorMaterials.DARK.value())){
             if (player.getFoodData().needsFood()){
                 if (player.tickCount % 40 == 0){
                     player.heal(1.0F);
@@ -117,31 +119,31 @@ public class ItemEvents {
         boolean scythe = player.getMainHandItem().getItem() instanceof DarkScytheItem;
 
         float increaseAttackSpeed0 = 0.25F;
-        AttributeModifier attributemodifier0 = new AttributeModifier(UUID.fromString("0c091f42-8c6d-4fde-96e9-148115731cbf"), "Two Handed Scythe", increaseAttackSpeed0, AttributeModifier.Operation.MULTIPLY_TOTAL);
+        AttributeModifier attributemodifier0 = new AttributeModifier(Goety.location("item_modifiers/two_handed_scythe"), (double)increaseAttackSpeed0, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL);
         boolean flag0 = scythe && player.getOffhandItem().isEmpty();
         if (attackSpeed != null){
             if (flag0){
-                if (!attackSpeed.hasModifier(attributemodifier0)){
+                if (!attackSpeed.hasModifier(attributemodifier0.id())){
                     attackSpeed.addPermanentModifier(attributemodifier0);
                 }
             } else {
-                if (attackSpeed.hasModifier(attributemodifier0)){
-                    attackSpeed.removeModifier(attributemodifier0);
+                if (attackSpeed.hasModifier(attributemodifier0.id())){
+                    attackSpeed.removeModifier(attributemodifier0.id());
                 }
             }
         }
 
         float increaseAttackSpeed = 0.5F;
-        AttributeModifier attributemodifier = new AttributeModifier(UUID.fromString("d4818bbc-54ed-4ecf-95a3-a15fbf71b31d"), "Scythe Proficiency", increaseAttackSpeed, AttributeModifier.Operation.MULTIPLY_TOTAL);
+        AttributeModifier attributemodifier = new AttributeModifier(Goety.location("item_modifiers/scythe_proficiency"), (double)increaseAttackSpeed, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL);
         boolean flag = CuriosFinder.hasCurio(player, ModItems.GRAVE_GLOVE.get()) && (scythe || player.getMainHandItem().is(ModTags.Items.GRAVE_GLOVE_BOOST));
         if (attackSpeed != null){
             if (flag){
-                if (!attackSpeed.hasModifier(attributemodifier)){
+                if (!attackSpeed.hasModifier(attributemodifier.id())){
                     attackSpeed.addPermanentModifier(attributemodifier);
                 }
             } else {
-                if (attackSpeed.hasModifier(attributemodifier)){
-                    attackSpeed.removeModifier(attributemodifier);
+                if (attackSpeed.hasModifier(attributemodifier.id())){
+                    attackSpeed.removeModifier(attributemodifier.id());
                 }
             }
         }
@@ -149,48 +151,48 @@ public class ItemEvents {
         boolean hammer = player.getMainHandItem().getItem() instanceof HammerItem;
 
         float increaseAttackSpeed1 = 0.25F;
-        AttributeModifier attributemodifier1 = new AttributeModifier(UUID.fromString("3f0d53a8-f075-4d27-a0b7-a4d923542d4f"), "Two Handed Hammer", increaseAttackSpeed1, AttributeModifier.Operation.MULTIPLY_TOTAL);
+        AttributeModifier attributemodifier1 = new AttributeModifier(Goety.location("item_modifiers/two_handed_hammer"), (double)increaseAttackSpeed1, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL);
         boolean flag1 = hammer && player.getOffhandItem().isEmpty();
         if (attackSpeed != null){
             if (flag1){
-                if (!attackSpeed.hasModifier(attributemodifier1)){
+                if (!attackSpeed.hasModifier(attributemodifier1.id())){
                     attackSpeed.addPermanentModifier(attributemodifier1);
                 }
             } else {
-                if (attackSpeed.hasModifier(attributemodifier1)){
-                    attackSpeed.removeModifier(attributemodifier1);
+                if (attackSpeed.hasModifier(attributemodifier1.id())){
+                    attackSpeed.removeModifier(attributemodifier1.id());
                 }
             }
         }
 
         float increaseAttackSpeed2 = 0.5F;
-        AttributeModifier attributemodifier2 = new AttributeModifier(UUID.fromString("39c01496-8161-4fde-ac2c-0bea379ceb37"), "Hammer Proficiency", increaseAttackSpeed2, AttributeModifier.Operation.MULTIPLY_TOTAL);
+        AttributeModifier attributemodifier2 = new AttributeModifier(Goety.location("item_modifiers/hammer_proficiency"), (double)increaseAttackSpeed2, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL);
         boolean flag2 = CuriosFinder.hasCurio(player, ModItems.THRASH_GLOVE.get()) && (hammer || player.getMainHandItem().is(ModTags.Items.THRASH_GLOVE_BOOST));
         if (attackSpeed != null){
             if (flag2){
-                if (!attackSpeed.hasModifier(attributemodifier2)){
+                if (!attackSpeed.hasModifier(attributemodifier2.id())){
                     attackSpeed.addPermanentModifier(attributemodifier2);
                 }
             } else {
-                if (attackSpeed.hasModifier(attributemodifier2)){
-                    attackSpeed.removeModifier(attributemodifier2);
+                if (attackSpeed.hasModifier(attributemodifier2.id())){
+                    attackSpeed.removeModifier(attributemodifier2.id());
                 }
             }
         }
 
-        boolean staff = player.getOffhandItem().getItem() instanceof DarkStaff && ItemConfig.StaffOffhandBuff.get();
+        boolean staff = player.getOffhandItem().getItem() instanceof DarkStaff && com.Polarice3.Goety.utils.ConfigHelper.getBoolean(ItemConfig.StaffOffhandBuff, false);
 
         AttributeInstance attackDamage = player.getAttribute(Attributes.ATTACK_DAMAGE);
 
-        AttributeModifier attributemodifier3 = new AttributeModifier(UUID.fromString("6dc7952d-11a6-4bf4-954b-b527b35787c6"), "Dark Staff Proficiency", 0.25D, AttributeModifier.Operation.MULTIPLY_TOTAL);
+        AttributeModifier attributemodifier3 = new AttributeModifier(Goety.location("item_modifiers/dark_staff_proficiency"), 0.25D, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL);
         if (attackDamage != null){
             if (staff){
-                if (!attackDamage.hasModifier(attributemodifier3)){
+                if (!attackDamage.hasModifier(attributemodifier3.id())){
                     attackDamage.addPermanentModifier(attributemodifier3);
                 }
             } else {
-                if (attackDamage.hasModifier(attributemodifier3)){
-                    attackDamage.removeModifier(attributemodifier3);
+                if (attackDamage.hasModifier(attributemodifier3.id())){
+                    attackDamage.removeModifier(attributemodifier3.id());
                 }
             }
         }
@@ -205,29 +207,29 @@ public class ItemEvents {
             return;
         }
         if (livingEntity != null && livingEntity.isAlive()){
-            AttributeModifier attributemodifier = new AttributeModifier(UUID.fromString("17cb060f-0465-412e-abe7-a9c397b2e548"), "Increase Armor", 4.0D, AttributeModifier.Operation.ADDITION);
+            AttributeModifier attributemodifier = new AttributeModifier(Goety.location("item_modifiers/increase_armor"), 4.0D, AttributeModifier.Operation.ADD_VALUE);
             AttributeInstance armor = livingEntity.getAttribute(Attributes.ARMOR);
-            AttributeModifier attributemodifier1 = new AttributeModifier(UUID.fromString("c3c510ca-76eb-4eb5-9f69-6763b7e40be2"), "Increase Toughness", 4.0D, AttributeModifier.Operation.ADDITION);
+            AttributeModifier attributemodifier1 = new AttributeModifier(Goety.location("item_modifiers/increase_toughness"), 4.0D, AttributeModifier.Operation.ADD_VALUE);
             AttributeInstance toughness = livingEntity.getAttribute(Attributes.ARMOR_TOUGHNESS);
             if (armor != null){
-                if (ItemHelper.armorSet(livingEntity, ModArmorMaterials.CURSED_KNIGHT) || ItemHelper.armorSet(livingEntity, ModArmorMaterials.CURSED_PALADIN)){
-                    if (!armor.hasModifier(attributemodifier)){
+                if (ItemHelper.armorSet(livingEntity, ModArmorMaterials.CURSED_KNIGHT.value()) || ItemHelper.armorSet(livingEntity, ModArmorMaterials.CURSED_PALADIN.value())){
+                    if (!armor.hasModifier(attributemodifier.id())){
                         armor.addPermanentModifier(attributemodifier);
                     }
                 } else {
-                    if (armor.hasModifier(attributemodifier)){
-                        armor.removeModifier(attributemodifier);
+                    if (armor.hasModifier(attributemodifier.id())){
+                        armor.removeModifier(attributemodifier.id());
                     }
                 }
             }
             if (toughness != null){
-                if (ItemHelper.armorSet(livingEntity, ModArmorMaterials.CURSED_PALADIN)){
-                    if (!toughness.hasModifier(attributemodifier1)){
+                if (ItemHelper.armorSet(livingEntity, ModArmorMaterials.CURSED_PALADIN.value())){
+                    if (!toughness.hasModifier(attributemodifier1.id())){
                         toughness.addPermanentModifier(attributemodifier1);
                     }
                 } else {
-                    if (toughness.hasModifier(attributemodifier1)){
-                        toughness.removeModifier(attributemodifier1);
+                    if (toughness.hasModifier(attributemodifier1.id())){
+                        toughness.removeModifier(attributemodifier1.id());
                     }
                 }
             }
@@ -244,22 +246,22 @@ public class ItemEvents {
                     ItemHelper.setItemEffect(livingAttacker.getMainHandItem(), victim);
                     if (livingAttacker.getMainHandItem().getItem() instanceof TieredItem weapon) {
                         if (weapon == ModItems.FANGED_DAGGER.get()){
-                            MobEffect effect = MobEffects.POISON;
+                            Holder<MobEffect> effect = MobEffects.POISON;
                             if (CuriosFinder.hasWildRobe(livingAttacker)){
-                                effect = GoetyEffects.ACID_VENOM.get();
+                                effect = GoetyEffects.ACID_VENOM;
                             }
-                            if (livingAttacker.hasEffect(GoetyEffects.VENOMOUS_HANDS.get())){
-                                EffectsUtil.increaseDuration(victim, effect, 600);
+                            if (livingAttacker.hasEffect(GoetyEffects.VENOMOUS_HANDS)){
+                                EffectsUtil.increaseDuration(victim, effect.value(), 600);
                             } else {
                                 victim.addEffect(new MobEffectInstance(effect, 200));
                             }
                         }
                         if (weapon == ModItems.HUNGRY_DAGGER.get()){
-                            int soulEat = EnchantmentHelper.getEnchantmentLevel(ModEnchantments.SOUL_EATER.get(), livingAttacker) + 1;
-                            livingAttacker.heal(event.getNewDamage() * (0.05F * soulEat));
+                            int soulEat = livingAttacker.getMainHandItem().getEnchantmentLevel(livingAttacker.level().registryAccess().lookupOrThrow(net.minecraft.core.registries.Registries.ENCHANTMENT).getOrThrow(ModEnchantments.SOUL_EATER.getKey()));
+                            livingAttacker.heal(event.getNewDamage() * (0.05F * (soulEat + 1)));
                         }
                         if (weapon instanceof BladeOfEnderItem) {
-                            MobEffect effect = GoetyEffects.VOID_TOUCHED.get();
+                            Holder<MobEffect> effect = GoetyEffects.VOID_TOUCHED;
                             int amp = 0;
                             if (livingAttacker instanceof Player player) {
                                 if (!player.isSpectator()) {
@@ -268,7 +270,7 @@ public class ItemEvents {
                                     }
                                 }
                             }
-                            if (!livingAttacker.hasEffect(GoetyEffects.VOID_TOUCHED.get())) {
+                            if (!livingAttacker.hasEffect(GoetyEffects.VOID_TOUCHED)) {
                                 victim.addEffect(new MobEffectInstance(effect, MathHelper.secondsToTicks(5), amp, false, true));
                             }
                         }
@@ -276,16 +278,17 @@ public class ItemEvents {
                             victim.playSound(ModSounds.SCYTHE_HIT_MEATY.get());
                         }
                         if (weapon instanceof DeathScytheItem) {
-                            if (!victim.hasEffect(GoetyEffects.SAPPED.get())) {
-                                victim.addEffect(new MobEffectInstance(GoetyEffects.SAPPED.get(), 100));
+                            if (!victim.hasEffect(GoetyEffects.SAPPED)) {
+                                victim.addEffect(new MobEffectInstance(GoetyEffects.SAPPED, 100));
                                 victim.playSound(SoundEvents.SHIELD_BREAK, 2.0F, 1.0F);
                             } else {
-                                if (victim.level.random.nextFloat() <= 0.2F) {
+                                MobEffectInstance effectinstance = victim.getEffect(GoetyEffects.SAPPED);
+                                if (effectinstance != null) {
                                     EffectsUtil.amplifyEffect(victim, GoetyEffects.SAPPED.get(), 100);
-                                    victim.playSound(SoundEvents.SHIELD_BREAK, 2.0F, 1.0F);
                                 } else {
                                     EffectsUtil.resetDuration(victim, GoetyEffects.SAPPED.get(), 100);
                                 }
+                                victim.playSound(SoundEvents.SHIELD_BREAK, 2.0F, 1.0F);
                             }
                         }
                     }
@@ -294,11 +297,11 @@ public class ItemEvents {
         }
         if (victim instanceof Player player) {
             if (CuriosFinder.hasCurio(victim, ModItems.SPITEFUL_BELT.get())) {
-                int a = EnchantmentHelper.getTagEnchantmentLevel(Enchantments.THORNS, CuriosFinder.findCurio(victim, ModItems.SPITEFUL_BELT.get()));
-                if (SEHelper.getSoulsAmount(player, ItemConfig.SpitefulBeltUseAmount.get() * (a + 1))) {
+                int a = EnchantmentHelper.getItemEnchantmentLevel(victim.registryAccess().holderOrThrow(Enchantments.THORNS), CuriosFinder.findCurio(victim, ModItems.SPITEFUL_BELT.get()));
+                if (SEHelper.getSoulsAmount(player, com.Polarice3.Goety.utils.ConfigHelper.getInt(ItemConfig.SpitefulBeltUseAmount, 0) * (a + 1))) {
                     if (!event.getSource().is(DamageTypeTags.AVOIDS_GUARDIAN_THORNS) && !event.getSource().is(DamageTypes.THORNS) && event.getSource().getEntity() instanceof LivingEntity livingentity && livingentity != victim) {
                         livingentity.hurt(livingentity.damageSources().thorns(victim), 2.0F + a);
-                        SEHelper.decreaseSouls(player, ItemConfig.SpitefulBeltUseAmount.get() * (a + 1));
+                        SEHelper.decreaseSouls(player, com.Polarice3.Goety.utils.ConfigHelper.getInt(ItemConfig.SpitefulBeltUseAmount, 0) * (a + 1));
                     }
                 }
             }
@@ -331,9 +334,9 @@ public class ItemEvents {
 
     @SubscribeEvent
     public static void usingItemEvents(LivingEntityUseItemEvent.Tick event){
-        if (!event.getEntity().level.isClientSide) {
+        if (!event.getEntity().level().isClientSide) {
             if (event.getItem().getItem() instanceof IWand && CuriosFinder.hasCurio(event.getEntity(), ModItems.TARGETING_MONOCLE.get())) {
-                Entity entity = MobUtil.getSingleTarget(event.getEntity().level, event.getEntity(), 16, 3);
+                Entity entity = MobUtil.getSingleTarget(event.getEntity().level(), event.getEntity(), 16, 3);
                 if (entity instanceof LivingEntity living && !MobUtil.areAllies(entity, event.getEntity())) {
                     event.getEntity().lookAt(EntityAnchorArgument.Anchor.EYES, new Vec3(living.getX(), living.getEyeY(), living.getZ()));
                 }
@@ -391,25 +394,25 @@ public class ItemEvents {
     @SubscribeEvent
     public static void UseItemEvent(LivingEntityUseItemEvent.Finish event){
         if (CuriosFinder.hasCurio(event.getEntity(), ModItems.CRONE_HAT.get())){
-            if (event.getEntity().level.random.nextFloat() <= 0.25F){
+            if (event.getEntity().level().random.nextFloat() <= 0.25F){
                 if (event.getItem().getItem() instanceof PotionItem){
                     event.setResultStack(event.getItem());
                 }
             }
-            if (event.getEntity().level.random.nextFloat() <= 0.1F){
+            if (event.getEntity().level().random.nextFloat() <= 0.1F){
                 if (event.getItem().getItem() instanceof BrewItem){
                     event.setResultStack(event.getItem());
                 }
             }
         } else if (CuriosFinder.hasCurio(event.getEntity(), itemStack -> itemStack.getItem() instanceof WitchHatItem)){
-            if (event.getEntity().level.random.nextFloat() <= 0.1F){
+            if (event.getEntity().level().random.nextFloat() <= 0.1F){
                 if (event.getItem().getItem() instanceof PotionItem){
                     event.setResultStack(event.getItem());
                 }
             }
         }
         if (event.getEntity() instanceof Player player) {
-            if (MainConfig.WandCoolItemUse.get()) {
+            if (com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MainConfig.WandCoolItemUse, false)) {
                 if (!(event.getItem().getItem() instanceof IWand)) {
                     Item main = event.getEntity().getMainHandItem().getItem();
                     Item off = event.getEntity().getOffhandItem().getItem();
@@ -430,17 +433,17 @@ public class ItemEvents {
         Level world = killed.getCommandSenderWorld();
         if (killer instanceof LivingEntity livingEntity) {
             if (ModDamageSource.physicalAttacks(event.getSource()) && livingEntity.getMainHandItem().getItem() instanceof RampagingAxeItem) {
-                MobEffectInstance effectinstance1 = livingEntity.getEffect(GoetyEffects.RAMPAGE.get());
-                if (!livingEntity.hasEffect(GoetyEffects.RAMPAGE.get())){
-                    livingEntity.addEffect(new MobEffectInstance(GoetyEffects.RAMPAGE.get(), MathHelper.secondsToTicks(ItemConfig.RampagingAxeDuration.get())));
+                MobEffectInstance effectinstance1 = livingEntity.getEffect(GoetyEffects.RAMPAGE);
+                if (!livingEntity.hasEffect(GoetyEffects.RAMPAGE)){
+                    livingEntity.addEffect(new MobEffectInstance(GoetyEffects.RAMPAGE, MathHelper.secondsToTicks(com.Polarice3.Goety.utils.ConfigHelper.getInt(ItemConfig.RampagingAxeDuration, 0))));
                 } else if (effectinstance1 != null){
                     int random = killed.getMaxHealth() >= 20 ? 0 : world.random.nextInt(4);
                     if (effectinstance1.getAmplifier() < 4) {
                         if (random == 0) {
-                            EffectsUtil.amplifyEffect(livingEntity, GoetyEffects.RAMPAGE.get(), MathHelper.secondsToTicks(ItemConfig.RampagingAxeDuration.get()));
+                            EffectsUtil.amplifyEffect(livingEntity, GoetyEffects.RAMPAGE.value(), MathHelper.secondsToTicks(com.Polarice3.Goety.utils.ConfigHelper.getInt(ItemConfig.RampagingAxeDuration, 0)));
                         }
                     } else {
-                        livingEntity.removeEffect(GoetyEffects.RAMPAGE.get());
+                        livingEntity.removeEffect(GoetyEffects.RAMPAGE);
                         if (world instanceof ServerLevel serverLevel) {
                             serverLevel.sendParticles(new ShockwaveParticleOption(), livingEntity.getX(), livingEntity.getY() + 0.5F, livingEntity.getZ(), 0, 0.0D, 0.0D, 0.0D, 0);
                             serverLevel.sendParticles(ParticleTypes.EXPLOSION_EMITTER, livingEntity.getX(), livingEntity.getY(), livingEntity.getZ(), 0, 1.0D, 0.0D, 0.0D, 0.5F);
@@ -453,11 +456,11 @@ public class ItemEvents {
         }
     }
 
-    @SubscribeEvent
-    public static void HunterLoot(/* LootingLevelEvent event */){
-        // TODO(1.21): LootingLevelEvent no longer exists. If this behavior is still desired,
-        // port it to LivingDropsEvent / loot context hooks.
-    }
+    // TODO(1.21): LootingLevelEvent no longer exists. If this behavior is still desired,
+    // port it to LivingDropsEvent / loot context hooks.
+    // Removed @SubscribeEvent annotation since the event no longer exists
+    // public static void HunterLoot(LootingLevelEvent event) {
+    // }
 
     @SubscribeEvent
     public static void EmptyClickEvents(PlayerInteractEvent.LeftClickEmpty event){
@@ -466,7 +469,7 @@ public class ItemEvents {
 
     @SubscribeEvent
     public static void PlayerAttackEvents(AttackEntityEvent event){
-        DeathScytheItem.entityClick(event.getEntity(), event.getEntity().level);
+        DeathScytheItem.entityClick(event.getEntity(), event.getEntity().level());
     }
 
     @SubscribeEvent

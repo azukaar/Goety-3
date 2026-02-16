@@ -39,9 +39,9 @@ public class HauntedPaintingItem extends ModHangingEntityItem {
 
             hangingentity = optional.get();
 
-            CompoundTag compoundtag = itemstack.getTag();
-            if (compoundtag != null) {
-                EntityType.updateCustomEntityTag(level, player, hangingentity, compoundtag);
+            net.minecraft.world.item.component.CustomData customData = itemstack.get(net.minecraft.core.component.DataComponents.CUSTOM_DATA);
+            if (customData != null) {
+                EntityType.updateCustomEntityTag(level, player, hangingentity, customData);
             }
 
             if (hangingentity.survives()) {

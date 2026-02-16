@@ -29,7 +29,7 @@ public class CorruptedBeam extends AbstractBeam {
         for (LivingEntity entity : entities) {
             entity.invulnerableTime = 0;
             Vec3 deltaMovement = entity.getDeltaMovement();
-            float damage = SpellConfig.CorruptedBeamDamage.get().floatValue() * WandUtil.damageMultiply();
+            float damage = com.Polarice3.Goety.utils.ConfigHelper.getFloat(SpellConfig.CorruptedBeamDamage, 1.0F) * WandUtil.damageMultiply();
             damage += this.extraDamage;
             entity.hurt(entity.damageSources().indirectMagic(owner, owner), damage);
             entity.setDeltaMovement(deltaMovement);

@@ -106,7 +106,7 @@ public class EarthFist extends SpellEntity {
 
     private void dealDamageTo(LivingEntity target) {
         LivingEntity livingentity = this.getOwner();
-        float baseDamage = SpellConfig.EarthFistDamage.get().floatValue() * WandUtil.damageMultiply();
+        float baseDamage = com.Polarice3.Goety.utils.ConfigHelper.getFloat(SpellConfig.EarthFistDamage, 1.0F) * WandUtil.damageMultiply();
         baseDamage += this.getExtraDamage();
         if (target.isAlive() && !target.isInvulnerable()) {
             boolean hurt;

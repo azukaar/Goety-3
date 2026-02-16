@@ -30,12 +30,12 @@ public class GuardianSpell extends SummonSpell {
 
     @Override
     public int defaultSoulCost() {
-        return SpellConfig.GuardianCost.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.GuardianCost, 0);
     }
 
     @Override
     public int defaultCastDuration() {
-        return SpellConfig.GuardianDuration.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.GuardianDuration, 0);
     }
 
     @Nullable
@@ -46,12 +46,12 @@ public class GuardianSpell extends SummonSpell {
 
     @Override
     public int defaultSpellCooldown() {
-        return SpellConfig.GuardianCoolDown.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.GuardianCoolDown, 0);
     }
 
     @Override
     public int SummonDownDuration() {
-        return SpellConfig.GuardianSummonDown.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.GuardianSummonDown, 0);
     }
 
     @Override
@@ -74,12 +74,12 @@ public class GuardianSpell extends SummonSpell {
 
     @Override
     public int summonLimit() {
-        return SpellConfig.GuardianLimit.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.GuardianLimit, 0);
     }
 
     @Override
     public void commonResultHit(ServerLevel worldIn, LivingEntity caster) {
-        for (int i = 0; i < caster.level.random.nextInt(35) + 10; ++i) {
+        for (int i = 0; i < caster.level().random.nextInt(35) + 10; ++i) {
             worldIn.sendParticles(ParticleTypes.POOF, caster.getX(), caster.getEyeY(), caster.getZ(), 1, 0.0F, 0.0F, 0.0F, 0);
         }
         this.playSound(worldIn, caster, ModSounds.DROWNED_NECROMANCER_SUMMON.get());
@@ -109,7 +109,7 @@ public class GuardianSpell extends SummonSpell {
                 summonedentity.moveTo(blockPos, 0.0F, 0.0F);
                 summonedentity.setLimitedLife(MobUtil.getSummonLifespan(worldIn) * duration);
                 summonedentity.setPersistenceRequired();
-                summonedentity.finalizeSpawn(worldIn, caster.level.getCurrentDifficultyAt(caster.blockPosition()), MobSpawnType.MOB_SUMMONED,null,null);
+                summonedentity.finalizeSpawn(worldIn, caster.level().getCurrentDifficultyAt(caster.blockPosition()), MobSpawnType.MOB_SUMMONED,null);
                 this.buffSummon(caster, summonedentity, potency);
                 this.SummonSap(caster, summonedentity);
                 this.setTarget(caster, summonedentity);
@@ -121,3 +121,4 @@ public class GuardianSpell extends SummonSpell {
         }
     }
 }
+

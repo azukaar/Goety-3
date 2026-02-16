@@ -225,11 +225,11 @@ public abstract class AbstractVine extends AbstractMonolith{
                             int soulCost = 0;
                             int healRate = 0;
                             float healAmount = 0;
-                            if (MobsConfig.NaturalMinionHeal.get()){
+                            if (com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MobsConfig.NaturalMinionHeal, false)){
                                 curio = CuriosFinder.hasWildRobe(owner);
-                                soulCost = MobsConfig.NaturalMinionHealCost.get();
-                                healRate = MobsConfig.NaturalMinionHealTime.get();
-                                healAmount = MobsConfig.NaturalMinionHealAmount.get().floatValue();
+                                soulCost = com.Polarice3.Goety.utils.ConfigHelper.getInt(MobsConfig.NaturalMinionHealCost, 0);
+                                healRate = com.Polarice3.Goety.utils.ConfigHelper.getInt(MobsConfig.NaturalMinionHealTime, 0);
+                                healAmount = com.Polarice3.Goety.utils.ConfigHelper.getFloat(MobsConfig.NaturalMinionHealAmount, 1.0F);
                             }
                             if (curio) {
                                 if (SEHelper.getSoulsAmount(owner, soulCost)) {

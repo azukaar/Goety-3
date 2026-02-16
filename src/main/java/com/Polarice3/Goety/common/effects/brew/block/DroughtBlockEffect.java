@@ -16,11 +16,13 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.FluidState;
 
+import com.Polarice3.Goety.utils.MobType;
+
 import javax.annotation.Nullable;
 
 public class DroughtBlockEffect extends BrewEffect {
     public DroughtBlockEffect() {
-        super("drought", BrewConfig.DroughtCost.get(), MobEffectCategory.NEUTRAL, 0x9d8f39);
+        super("drought", com.Polarice3.Goety.utils.ConfigHelper.getInt(BrewConfig.DroughtCost, 0), MobEffectCategory.NEUTRAL, 0x9d8f39);
     }
 
     @Override
@@ -30,12 +32,12 @@ public class DroughtBlockEffect extends BrewEffect {
 
     @Override
     public void applyBlockEffect(Level pLevel, BlockPos pPos, LivingEntity pSource, int pAmplifier, int pAreaOfEffect) {
-        if (this.removeWaterBreadthFirstSearch(pLevel, pPos, pAreaOfEffect)) {
+        if (this.removeWaterBreadthFirstSearch(pLevel, pPos, pAreaOfEffect, pSource instanceof net.minecraft.world.entity.player.Player ? (net.minecraft.world.entity.player.Player)pSource : null)) {
             pLevel.levelEvent(2001, pPos, Block.getId(Blocks.WATER.defaultBlockState()));
         }
     }
 
-    private boolean removeWaterBreadthFirstSearch(Level p_56808_, BlockPos p_56809_, int pAreaOfEffect) {
+    private boolean removeWaterBreadthFirstSearch(Level p_56808_, BlockPos p_56809_, int pAreaOfEffect, @Nullable net.minecraft.world.entity.player.Player player) {
         BlockState spongeState = p_56808_.getBlockState(p_56809_);
         Direction[] ALL_DIRECTIONS = Direction.values();
         return BlockPos.breadthFirstTraversal(p_56809_, 6 * (pAreaOfEffect + 1), 65 * (pAreaOfEffect + 1), (p_277519_, p_277492_) -> {
@@ -55,7 +57,7 @@ public class DroughtBlockEffect extends BrewEffect {
                     Block block = blockstate.getBlock();
                     if (block instanceof BucketPickup) {
                         BucketPickup bucketpickup = (BucketPickup)block;
-                        if (!bucketpickup.pickupBlock(p_56808_, p_279054_, blockstate).isEmpty()) {
+                        if (!bucketpickup.pickupBlock(player, p_56808_, p_279054_, blockstate).isEmpty()) {
                             return true;
                         }
                     }
@@ -80,7 +82,7 @@ public class DroughtBlockEffect extends BrewEffect {
 
     @Override
     public void applyEntityEffect(LivingEntity pTarget, @Nullable Entity pSource, int pAmplifier){
-        if (pTarget.getMobType() == MobType.WATER){
+        if (pTarget.getType().is(net.minecraft.tags.EntityTypeTags.AQUATIC)){
             pTarget.hurt(pTarget.damageSources().dryOut(), pAmplifier + 5.0F);
         }
     }

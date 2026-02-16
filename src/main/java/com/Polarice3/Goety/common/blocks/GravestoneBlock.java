@@ -1,12 +1,16 @@
 package com.Polarice3.Goety.common.blocks;
-
+ 
+import static com.Polarice3.Goety.common.blocks.TrainingBlock.POWERED;
+ 
 import com.Polarice3.Goety.common.blocks.entities.GravestoneBlockEntity;
+import com.mojang.serialization.MapCodec;
 import com.Polarice3.Goety.common.blocks.entities.ModBlockEntities;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.block.BaseEntityBlock;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.SimpleWaterloggedBlock;
@@ -24,6 +28,12 @@ import net.minecraft.world.level.pathfinder.PathComputationType;
 import javax.annotation.Nullable;
 
 public class GravestoneBlock extends TrainingBlock implements SimpleWaterloggedBlock {
+    public static final MapCodec<GravestoneBlock> CODEC = simpleCodec(p -> new GravestoneBlock());
+ 
+    @Override
+    protected MapCodec<? extends BaseEntityBlock> codec() {
+        return CODEC;
+    }
     public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
 
     public GravestoneBlock() {

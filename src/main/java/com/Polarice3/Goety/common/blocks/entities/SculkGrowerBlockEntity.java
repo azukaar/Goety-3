@@ -59,7 +59,7 @@ public class SculkGrowerBlockEntity extends ModBlockEntity implements IEnchanted
             if (this.growCharges <= 0) {
                 if (!this.growablePlantPos.isEmpty() && this.checkCage()) {
                     if (this.takeSouls()) {
-                        this.growCharges = MainConfig.SculkGrowerCharge.get();
+                        this.growCharges = com.Polarice3.Goety.utils.ConfigHelper.getInt(MainConfig.SculkGrowerCharge, 0);
                     }
                 }
             } else {
@@ -160,7 +160,7 @@ public class SculkGrowerBlockEntity extends ModBlockEntity implements IEnchanted
         if (this.getLevel() != null && this.getLevel() instanceof ServerLevel serverLevel) {
             if (!this.growablePlantPos.isEmpty()) {
                 int potency = 1 + this.enchantments.getOrDefault(ModEnchantments.POTENCY.get(), 0);
-                if (!MainConfig.SculkGrowerPotency.get()) {
+                if (!com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MainConfig.SculkGrowerPotency, false)) {
                     potency = 1;
                 }
                 int random = serverLevel.random.nextInt(this.growablePlantPos.size());
@@ -195,7 +195,7 @@ public class SculkGrowerBlockEntity extends ModBlockEntity implements IEnchanted
         Block cropBlock = blockState.getBlock();
         return cropBlock != Blocks.GRASS_BLOCK && !(cropBlock instanceof DoublePlantBlock)
                 && cropBlock instanceof BonemealableBlock && ((BonemealableBlock) cropBlock)
-                        .isValidBonemealTarget(this.getLevel(), blockPos, blockState, this.getLevel().isClientSide);
+                        .isValidBonemealTarget(this.getLevel(), blockPos, blockState);
     }
 
     private boolean takeSouls() {
@@ -203,10 +203,10 @@ public class SculkGrowerBlockEntity extends ModBlockEntity implements IEnchanted
             return false;
         }
         int potency = 1 + this.enchantments.getOrDefault(ModEnchantments.POTENCY.get(), 0);
-        if (!MainConfig.SculkGrowerPotency.get()) {
+        if (!com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MainConfig.SculkGrowerPotency, false)) {
             potency = 1;
         }
-        int cost = MainConfig.SculkGrowerCost.get() * potency;
+        int cost = com.Polarice3.Goety.utils.ConfigHelper.getInt(MainConfig.SculkGrowerCost, 0) * potency;
         if (this.getCursedCageTile().getSouls() > cost) {
             this.getCursedCageTile().decreaseSouls(cost);
             this.getCursedCageTile().generateManyParticles();
@@ -240,14 +240,14 @@ public class SculkGrowerBlockEntity extends ModBlockEntity implements IEnchanted
     }
 
     @Override
-    public void readNetwork(CompoundTag compoundNBT) {
+    public void readNetwork(CompoundTag compoundNBT, net.minecraft.core.HolderLookup.Provider pRegistries) {
         this.growCharges = compoundNBT.getInt("GrowCharges");
         this.decayTimer = compoundNBT.getInt("DecayTimer");
         this.loadEnchants(compoundNBT);
     }
 
     @Override
-    public CompoundTag writeNetwork(CompoundTag pCompound) {
+    public CompoundTag writeNetwork(CompoundTag pCompound, net.minecraft.core.HolderLookup.Provider pRegistries) {
         pCompound.putInt("GrowCharges", this.growCharges);
         pCompound.putInt("DecayTimer", this.decayTimer);
         this.saveEnchants(pCompound, ModBlocks.SCULK_GROWER.get().asItem());

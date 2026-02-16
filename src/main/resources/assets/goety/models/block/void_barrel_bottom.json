@@ -3,7 +3,7 @@
 	"textures": {
 		"particle": "goety:block/void_barrel"
 	},
-	"loader": "forge:composite",
+	"loader": "neoforge:composite",
 	"children": {
 		"barrel" : {
 			"textures": {

@@ -27,6 +27,12 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import javax.annotation.Nullable;
 
 public class SpiderNestBlock extends TrainingBlock {
+    public static final com.mojang.serialization.MapCodec<SpiderNestBlock> CODEC = simpleCodec(p -> new SpiderNestBlock());
+
+    @Override
+    protected com.mojang.serialization.MapCodec<? extends BaseEntityBlock> codec() {
+        return CODEC;
+    }
     public static final DirectionProperty FACING = BlockStateProperties.FACING;
     protected static final VoxelShape UP_SHAPE = Block.box(1.0D, 0.0D, 1.0D, 15.0D, 16.0D, 15.0D);
     protected static final VoxelShape DOWN_SHAPE = Block.box(1.0D, 0.0D, 1.0D, 15.0D, 16.0D, 15.0D);
@@ -123,6 +129,6 @@ public class SpiderNestBlock extends TrainingBlock {
 
     @Nullable
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level p_152755_, BlockState p_152756_, BlockEntityType<T> p_152757_) {
-        return createTickerHelper(p_152757_, ModBlockEntities.SPIDER_NEST.get(), p_152755_.isClientSide ? SpiderNestBlockEntity::clientTick : SpiderNestBlockEntity::serverTick);
+        return createTickerHelper(p_152757_, ModBlockEntities.SPIDER_NEST.get(), (pLevel, pPos, pState, pBlockEntity) -> pBlockEntity.tick(pLevel, pPos, pState, pBlockEntity));
     }
 }

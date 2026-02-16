@@ -24,6 +24,12 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import javax.annotation.Nullable;
 
 public class SculkRelayBlock extends Block {
+    public static final com.mojang.serialization.MapCodec<SculkRelayBlock> CODEC = simpleCodec(p -> new SculkRelayBlock());
+
+    @Override
+    protected com.mojang.serialization.MapCodec<? extends Block> codec() {
+        return CODEC;
+    }
     public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
     public static final VoxelShape SHAPE_BASE = Block.box(0.0D, 0.0D, 0.0D,
             16.0D, 8.0D, 16.0D);
@@ -81,8 +87,4 @@ public class SculkRelayBlock extends Block {
         super.spawnAfterBreak(p_222192_, p_222193_, p_222194_, p_222195_, p_222196_);
     }
 
-    @Override
-    public int getExpDrop(BlockState state, net.minecraft.world.level.LevelReader level, RandomSource randomSource, BlockPos pos, int fortuneLevel, int silkTouchLevel) {
-        return silkTouchLevel == 0 ? 5 : 0;
-    }
 }

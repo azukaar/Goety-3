@@ -15,7 +15,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.projectile.Arrow;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.alchemy.PotionUtils;
+import com.Polarice3.Goety.utils.PotionUtils;
 import net.minecraft.world.level.Level;
 
 import java.util.Collection;
@@ -32,16 +32,16 @@ public class BrewArrow extends Arrow {
     }
 
     public BrewArrow(Level p_36861_, double p_36862_, double p_36863_, double p_36864_) {
-        super(p_36861_, p_36862_, p_36863_, p_36864_);
+        super(p_36861_, p_36862_, p_36863_, p_36864_, ItemStack.EMPTY, null);
     }
 
     public BrewArrow(Level p_36866_, LivingEntity p_36867_) {
-        super(p_36866_, p_36867_);
+        super(p_36866_, p_36867_, ItemStack.EMPTY, null);
     }
 
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.entityData.define(ID_EFFECT_COLOR, -1);
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(ID_EFFECT_COLOR, -1);
     }
 
     public void setEffectsFromItem(ItemStack p_36879_) {
@@ -74,8 +74,8 @@ public class BrewArrow extends Arrow {
     }
 
     public static int getCustomColor(ItemStack p_36885_) {
-        CompoundTag compoundtag = p_36885_.getTag();
-        return compoundtag != null && compoundtag.contains("CustomPotionColor", 99) ? compoundtag.getInt("CustomPotionColor") : -1;
+        net.minecraft.world.item.component.CustomData customData = p_36885_.get(net.minecraft.core.component.DataComponents.CUSTOM_DATA);
+        return customData != null && customData.copyTag().contains("CustomPotionColor", 99) ? customData.copyTag().getInt("CustomPotionColor") : -1;
     }
 
     private void updateColor() {
@@ -117,7 +117,7 @@ public class BrewArrow extends Arrow {
             ListTag listtag = new ListTag();
 
             for(MobEffectInstance mobeffectinstance : this.effects) {
-                listtag.add(mobeffectinstance.save(new CompoundTag()));
+                listtag.add(mobeffectinstance.save());
             }
 
             p_36881_.put("Effects", listtag);
@@ -197,10 +197,14 @@ public class BrewArrow extends Arrow {
             ItemStack itemstack = new ItemStack(Items.TIPPED_ARROW);
             PotionUtils.setCustomEffects(itemstack, this.effects);
             if (this.fixedColor) {
-                itemstack.getOrCreateTag().putInt("CustomPotionColor", this.getColor());
+                itemstack.update(net.minecraft.core.component.DataComponents.CUSTOM_DATA, net.minecraft.world.item.component.CustomData.EMPTY, customData -> customData.update(tag -> tag.putInt("CustomPotionColor", this.getColor())));
             }
 
             return itemstack;
         }
+    }
+    @Override
+    protected ItemStack getDefaultPickupItem() {
+        return new ItemStack(Items.ARROW);
     }
 }

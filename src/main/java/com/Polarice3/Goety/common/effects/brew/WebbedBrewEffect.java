@@ -25,7 +25,7 @@ public class WebbedBrewEffect extends BrewEffect {
     }
 
     public void applyEntityEffect(LivingEntity pTarget, @Nullable Entity pSource, @Nullable Entity pIndirectSource, int pAmplifier){
-        Level level = pTarget.level;
+        Level level = pTarget.level();
         level.setBlockAndUpdate(pTarget.blockPosition(), Blocks.COBWEB.defaultBlockState());
         for (BlockPos blockPos : this.getSpherePos(pTarget.blockPosition(), pAmplifier + 1)){
             if (level.getBlockState(blockPos).isAir()){

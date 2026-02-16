@@ -24,13 +24,13 @@ public class IcySpiderServant extends SpiderServant{
 
     public static AttributeSupplier.Builder setCustomAttributes() {
         return SpiderServant.setCustomAttributes()
-                .add(Attributes.MAX_HEALTH, AttributesConfig.IcySpiderServantHealth.get())
-                .add(Attributes.ATTACK_DAMAGE, AttributesConfig.IcySpiderServantDamage.get());
+                .add(Attributes.MAX_HEALTH, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.IcySpiderServantHealth, 20.0D))
+                .add(Attributes.ATTACK_DAMAGE, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.IcySpiderServantDamage, 20.0D));
     }
 
     public void setConfigurableAttributes() {
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.MAX_HEALTH), AttributesConfig.IcySpiderServantHealth.get());
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ATTACK_DAMAGE), AttributesConfig.IcySpiderServantDamage.get());
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.MAX_HEALTH), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.IcySpiderServantHealth, 20.0D));
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ATTACK_DAMAGE), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.IcySpiderServantDamage, 20.0D));
     }
 
     public boolean doHurtTarget(Entity target) {
@@ -46,7 +46,7 @@ public class IcySpiderServant extends SpiderServant{
                 if (i > 0) {
                     Holder<MobEffect> effect = MobEffects.MOVEMENT_SLOWDOWN;
                     if (CuriosFinder.hasFrostRobes(this.getMasterOwner())){
-                        effect = GoetyEffects.FREEZING.getHolder();
+                        effect = GoetyEffects.FREEZING;
                     }
                     livingEntity.addEffect(new MobEffectInstance(effect, i * 20, 0), this);
                 }

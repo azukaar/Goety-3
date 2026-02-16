@@ -20,7 +20,7 @@ public final class ModShaders {
     static void registerShaders(RegisterShadersEvent event) throws IOException {
         event.registerShader(
                 new ShaderInstance(event.getResourceProvider(),
-                        new ResourceLocation(Goety.MOD_ID, "hole"),
+                        ResourceLocation.fromNamespaceAndPath(Goety.MOD_ID, "hole"),
                         DefaultVertexFormat.POSITION),
                 shader -> holeShader = shader
         );

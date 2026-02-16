@@ -80,23 +80,24 @@ public class StormCaster extends HuntingIllagerEntity{
     public static AttributeSupplier.Builder setCustomAttributes(){
         return Mob.createMobAttributes()
                 .add(Attributes.FOLLOW_RANGE, 16.0D)
-                .add(NeoForgeMod.STEP_HEIGHT_ADDITION.get(), 1.0D)
-                .add(Attributes.MAX_HEALTH, AttributesConfig.StormCasterHealth.get())
-                .add(Attributes.ARMOR, AttributesConfig.StormCasterArmor.get())
+                .add(net.minecraft.world.entity.ai.attributes.Attributes.STEP_HEIGHT, 1.0D)
+                .add(Attributes.MAX_HEALTH, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.StormCasterHealth, 20.0D))
+                .add(Attributes.ARMOR, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.StormCasterArmor, 20.0D))
                 .add(Attributes.MOVEMENT_SPEED, 0.35D)
-                .add(Attributes.ATTACK_DAMAGE, AttributesConfig.StormCasterDamage.get());
+                .add(Attributes.ATTACK_DAMAGE, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.StormCasterDamage, 20.0D));
     }
 
     public void setConfigurableAttributes(){
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.MAX_HEALTH), AttributesConfig.StormCasterHealth.get());
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ARMOR), AttributesConfig.StormCasterArmor.get());
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ATTACK_DAMAGE), AttributesConfig.StormCasterDamage.get());
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.MAX_HEALTH), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.StormCasterHealth, 20.0D));
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ARMOR), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.StormCasterArmor, 20.0D));
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ATTACK_DAMAGE), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.StormCasterDamage, 20.0D));
     }
 
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.entityData.define(IS_CASTING_SPELL, (byte)0);
-        this.entityData.define(ANIM_STATE, 0);
+    @Override
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(IS_CASTING_SPELL, (byte)0);
+        builder.define(ANIM_STATE, 0);
     }
 
     public void readAdditionalSaveData(CompoundTag p_33732_) {
@@ -282,6 +283,8 @@ public class StormCaster extends HuntingIllagerEntity{
     }
 
     @Override
+    public void applyRaidBuffs(net.minecraft.server.level.ServerLevel pLevel, int pWave, boolean p_37845_) {
+    }
     public void applyRaidBuffs(int p_37844_, boolean p_37845_) {
 
     }

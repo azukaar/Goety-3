@@ -12,7 +12,7 @@ import javax.annotation.Nullable;
 
 public class FertilityBrewEffect extends BrewEffect {
     public FertilityBrewEffect() {
-        super("fertility", BrewConfig.FertilityCost.get(), MobEffectCategory.BENEFICIAL, 0x515151);
+        super("fertility", com.Polarice3.Goety.utils.ConfigHelper.getInt(BrewConfig.FertilityCost, 0), MobEffectCategory.BENEFICIAL, 0x515151);
     }
 
     @Override
@@ -26,7 +26,7 @@ public class FertilityBrewEffect extends BrewEffect {
     }
 
     public void applyEntityEffect(LivingEntity pTarget, @Nullable Entity pSource, @Nullable Entity pIndirectSource, int pAmplifier){
-        if (!pTarget.level.isClientSide) {
+        if (!pTarget.level().isClientSide) {
             if (pTarget instanceof Animal animal){
                 if (animal.getAge() > 0){
                     animal.setAge(0);

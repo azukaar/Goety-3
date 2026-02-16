@@ -26,6 +26,16 @@ forge*changelog.txt
 
 # Logs
 *.log
-build_log_*.txt
+build_log*.txt
 build_errors.log
 compile_log.txt
+
+
+# Build output text files
+build/**/*.txt
+build_output*.txt
+build_errors*.txt
+errors*.txt
+fresh_errors.txt
+initialize_client_list.txt
+water_fix_list.txt

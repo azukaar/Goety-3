@@ -3,9 +3,9 @@ package com.Polarice3.Goety.utils;
 import com.Polarice3.Goety.common.capabilities.misc.IMisc;
 import com.Polarice3.Goety.common.capabilities.misc.MiscCapUpdatePacket;
 import com.Polarice3.Goety.common.capabilities.misc.MiscImp;
-import com.Polarice3.Goety.common.capabilities.misc.MiscProvider;
 import com.Polarice3.Goety.common.network.ModNetwork;
 import com.Polarice3.Goety.common.network.server.SPlayPlayerSoundPacket;
+import com.Polarice3.Goety.init.ModAttachments;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
@@ -21,7 +21,7 @@ import java.util.ArrayList;
 
 public class MiscCapHelper {
     public static IMisc getCapability(LivingEntity livingEntity) {
-        return livingEntity.getCapability(MiscProvider.CAPABILITY).orElse(new MiscImp());
+        return livingEntity.getData(ModAttachments.MISC);
     }
 
     public static boolean isFreezing(LivingEntity livingEntity){
@@ -34,7 +34,7 @@ public class MiscCapHelper {
 
     public static void setFreezing(LivingEntity livingEntity, int freeze){
         getCapability(livingEntity).setFreezeLevel(freeze);
-        if (!livingEntity.level.isClientSide){
+        if (!livingEntity.level().isClientSide){
             sendMiscUpdatePacket(livingEntity);
         }
     }
@@ -56,7 +56,7 @@ public class MiscCapHelper {
     public static void decreaseShields(LivingEntity livingEntity){
         getCapability(livingEntity).breakShield();
         MiscCapHelper.sendMiscUpdatePacket(livingEntity);
-        if (!livingEntity.level.isClientSide){
+        if (!livingEntity.level().isClientSide){
             if (livingEntity instanceof Player player) {
                 ModNetwork.sendTo(player, new SPlayPlayerSoundPacket(SoundEvents.SHIELD_BREAK, 1.0F, 1.0F));
             } else {
@@ -117,7 +117,7 @@ public class MiscCapHelper {
 
     @Nullable
     public static Entity getClientTarget(LivingEntity livingEntity){
-        return livingEntity.level.getEntity(getClientTargetID(livingEntity));
+        return livingEntity.level().getEntity(getClientTargetID(livingEntity));
     }
 
     public static void setClientTarget(LivingEntity livingEntity, @Nullable Entity entity){
@@ -139,7 +139,7 @@ public class MiscCapHelper {
 
     @Nullable
     public static Entity getMobTarget(LivingEntity livingEntity){
-        return livingEntity.level.getEntity(getMobTargetID(livingEntity));
+        return livingEntity.level().getEntity(getMobTargetID(livingEntity));
     }
 
     public static void setMobTarget(LivingEntity livingEntity, @Nullable Entity entity){
@@ -151,7 +151,7 @@ public class MiscCapHelper {
     }
 
     public static void updateMobTarget(Mob mob){
-        if (!mob.level.isClientSide) {
+        if (!mob.level().isClientSide) {
             if (getMobTarget(mob) != mob.getTarget()) {
                 setMobTarget(mob, mob.getTarget());
             }
@@ -182,7 +182,7 @@ public class MiscCapHelper {
         if (string.isEmpty()){
             return null;
         }
-        return new ResourceLocation(getCapability(livingEntity).customSpinTexture());
+        return ResourceLocation.parse(getCapability(livingEntity).customSpinTexture());
     }
 
     public static void setCustomSpinTexture(LivingEntity livingEntity, @Nullable String string){
@@ -196,6 +196,10 @@ public class MiscCapHelper {
     public static void clearGoals(GoalSelector goalSelector) {
         ArrayList<WrappedGoal> wrappedGoals = new ArrayList<>(goalSelector.getAvailableGoals());
         wrappedGoals.forEach(prioritizedGoal -> goalSelector.removeGoal(prioritizedGoal.getGoal()));
+    }
+
+    public static CompoundTag save(IMisc misc) {
+        return save(new CompoundTag(), misc);
     }
 
     public static CompoundTag save(CompoundTag tag, IMisc misc) {
@@ -214,6 +218,10 @@ public class MiscCapHelper {
             tag.putString("customSpinTexture", misc.customSpinTexture());
         }
         return tag;
+    }
+
+    public static IMisc load(CompoundTag tag) {
+        return load(tag, new MiscImp());
     }
 
     public static IMisc load(CompoundTag tag, IMisc misc) {
@@ -251,7 +259,7 @@ public class MiscCapHelper {
     }
 
     public static void sendMiscUpdatePacket(LivingEntity livingEntity) {
-        if (!livingEntity.level.isClientSide) {
+        if (!livingEntity.level().isClientSide) {
             ModNetwork.sentToTrackingEntityAndPlayer(livingEntity, new MiscCapUpdatePacket(livingEntity));
         }
     }

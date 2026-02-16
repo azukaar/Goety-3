@@ -13,6 +13,7 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.projectile.AbstractHurtingProjectile;
 import net.minecraft.world.entity.projectile.SmallFireball;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
 
 public class FireRainTrap extends AbstractTrap {
     private static final EntityDataAccessor<Boolean> HELLFIRE = SynchedEntityData.defineId(FireRainTrap.class, EntityDataSerializers.BOOLEAN);
@@ -67,7 +68,7 @@ public class FireRainTrap extends AbstractTrap {
             if (this.isHellfire()){
                 fireballEntity = new HellBolt(this.getOwner(), 0, -900D, 0, this.level());
             } else {
-                fireballEntity = new SmallFireball(this.level(), this.getOwner(), 0, -900D, 0);
+                fireballEntity = new SmallFireball(this.level(), this.getOwner(), new Vec3(0, -900D, 0));
             }
             fireballEntity.setPos(this.getX() + this.random.nextInt(5), blockpos$mutable.getY(), this.getZ() + this.random.nextInt(5));
             if (fireballEntity instanceof HellBolt hellBolt){

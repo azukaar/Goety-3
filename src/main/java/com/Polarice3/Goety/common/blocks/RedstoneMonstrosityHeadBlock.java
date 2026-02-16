@@ -1,6 +1,7 @@
 package com.Polarice3.Goety.common.blocks;
 
 import com.Polarice3.Goety.common.blocks.entities.RedstoneMonstrosityHeadBlockEntity;
+import com.mojang.serialization.MapCodec;
 import com.Polarice3.Goety.common.entities.ModEntityType;
 import com.Polarice3.Goety.common.entities.ally.golem.RedstoneMonstrosity;
 import com.Polarice3.Goety.common.items.block.RedstoneMonstrosityHeadItem;
@@ -37,6 +38,12 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import javax.annotation.Nullable;
 
 public class RedstoneMonstrosityHeadBlock extends BaseEntityBlock {
+    public static final MapCodec<RedstoneMonstrosityHeadBlock> CODEC = simpleCodec(p -> new RedstoneMonstrosityHeadBlock());
+
+    @Override
+    protected MapCodec<? extends BaseEntityBlock> codec() {
+        return CODEC;
+    }
     public static final IntegerProperty ROTATION = BlockStateProperties.ROTATION_16;
     protected static final VoxelShape SHAPE = Block.box(0.0D, 0.0D, 0.0D, 16.0D, 32.0D, 16.0D);
     public static final EnumProperty<DoubleBlockHalf> HALF = BlockStateProperties.DOUBLE_BLOCK_HALF;
@@ -54,14 +61,13 @@ public class RedstoneMonstrosityHeadBlock extends BaseEntityBlock {
         this.registerDefaultState(this.stateDefinition.any().setValue(ROTATION, 0).setValue(HALF, DoubleBlockHalf.LOWER));
     }
 
-    public ItemStack getCloneItemStack(BlockState state, HitResult target, BlockGetter world, BlockPos pos, Player player) {
+    @Override
+    public ItemStack getCloneItemStack(LevelReader world, BlockPos pos, BlockState state) {
         ItemStack itemStack = new ItemStack(this);
-        if (player.isCrouching()) {
-            BlockEntity tileEntity = world.getBlockEntity(pos);
-            if (tileEntity instanceof RedstoneMonstrosityHeadBlockEntity) {
-                this.setOwner(itemStack, tileEntity);
-                this.setModCustomName(itemStack, tileEntity);
-            }
+        BlockEntity tileEntity = world.getBlockEntity(pos);
+        if (tileEntity instanceof RedstoneMonstrosityHeadBlockEntity) {
+            this.setOwner(itemStack, tileEntity);
+            this.setModCustomName(itemStack, tileEntity);
         }
         return itemStack;
     }
@@ -159,7 +165,7 @@ public class RedstoneMonstrosityHeadBlock extends BaseEntityBlock {
                 }
                 redstoneGolem.moveTo((double) blockpos.getX() + 0.5D, (double) blockpos.getY() + 0.05D, (double) blockpos.getZ() + 0.5D, 0.0F, 0.0F);
                 if (p_51379_ instanceof ServerLevel serverLevel) {
-                    redstoneGolem.finalizeSpawn(serverLevel, p_51379_.getCurrentDifficultyAt(p_51380_), MobSpawnType.MOB_SUMMONED, null, null);
+                    redstoneGolem.finalizeSpawn(serverLevel, p_51379_.getCurrentDifficultyAt(p_51380_), MobSpawnType.MOB_SUMMONED, null);
                 }
                 p_51379_.addFreshEntity(redstoneGolem);
             }

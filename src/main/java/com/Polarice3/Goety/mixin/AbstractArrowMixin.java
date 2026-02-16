@@ -26,7 +26,7 @@ public abstract class AbstractArrowMixin extends Projectile {
     )
     protected void canHitEntity(Entity pEntity, CallbackInfoReturnable<Boolean> callback) {
         if (this.getOwner() instanceof AbstractIllagerServant servant
-                && MobsConfig.IllagerServantGhostArrows.get()) {
+                && com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MobsConfig.IllagerServantGhostArrows, false)) {
             AbstractArrow arrow = (AbstractArrow) (Object) this;
             if (!MobUtil.canHitEntity(arrow, pEntity)) {
                 callback.setReturnValue(false);

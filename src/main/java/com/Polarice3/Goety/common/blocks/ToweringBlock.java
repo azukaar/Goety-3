@@ -23,7 +23,7 @@ public class ToweringBlock extends Block {
         }
         BlockState blockState = pLevel.getBlockState(pPos.below());
         if (blockState.getBlock() == this) {
-            if (blockState.getValue(LEVEL) < this.levelLimit) {
+            if (blockState.getValue(LEVEL) < this.LevelLimit) {
                 pLevel.setBlock(pPos, pState.setValue(LEVEL, blockState.getValue(LEVEL) + 1), 3);
             } else {
                 pLevel.setBlockAndUpdate(pPos, pState.setValue(LEVEL, 0));

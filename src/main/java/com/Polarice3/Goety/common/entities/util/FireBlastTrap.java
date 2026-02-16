@@ -17,6 +17,7 @@ import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
+import net.minecraft.server.level.ServerEntity;
 import net.minecraft.util.Mth;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.*;
@@ -52,7 +53,6 @@ public class FireBlastTrap extends Entity implements ISpellEntity {
 
     @Override
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
-        super.defineSynchedData(builder);
         builder.define(IMMEDIATE, false);
     }
 
@@ -182,10 +182,10 @@ public class FireBlastTrap extends Entity implements ISpellEntity {
                     for (Entity entity : targets) {
                         if ((this.owner != null && CuriosFinder.hasUnholySet(this.owner))) {
                             if (entity instanceof LivingEntity livingEntity) {
-                                livingEntity.addEffect(new MobEffectInstance(GoetyEffects.BURN_HEX.get(), 1200));
+                                livingEntity.addEffect(new MobEffectInstance(GoetyEffects.BURN_HEX, 1200));
                             }
                             entity.hurt(ModDamageSource.hellfire(this, this.owner),
-                                    AttributesConfig.ApostleMagicDamage.get().floatValue() + this.getExtraDamage());
+                                    (float)com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.ApostleMagicDamage, 20.0D) + this.getExtraDamage());
                         } else {
                             if (this.owner != null) {
                                 float damage = 5.0F;
@@ -214,7 +214,7 @@ public class FireBlastTrap extends Entity implements ISpellEntity {
             this.move(MoverType.SELF, this.getDeltaMovement());
         }
         if (this.tickCount == 20 || (this.getImmediate() && this.tickCount == 5)) {
-            this.playSound(SoundEvents.GENERIC_EXPLODE, 1.0F, 0.5F);
+            this.playSound(SoundEvents.GENERIC_EXPLODE.value(), 1.0F, 0.5F);
         }
         if (this.owner != null) {
             if (this.owner.isDeadOrDying() || this.owner.isRemoved()) {
@@ -231,7 +231,7 @@ public class FireBlastTrap extends Entity implements ISpellEntity {
     }
 
     @Override
-    public Packet<ClientGamePacketListener> getAddEntityPacket() {
-        return new ClientboundAddEntityPacket(this);
+    public Packet<ClientGamePacketListener> getAddEntityPacket(ServerEntity p_345759_) {
+        return new ClientboundAddEntityPacket(this, p_345759_);
     }
 }

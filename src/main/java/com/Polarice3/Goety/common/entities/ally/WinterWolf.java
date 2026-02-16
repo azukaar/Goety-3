@@ -11,6 +11,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
+import net.minecraft.core.Holder;
 
 public class WinterWolf extends BlackWolf{
 
@@ -23,9 +24,9 @@ public class WinterWolf extends BlackWolf{
         boolean flag = super.doHurtTarget(entityIn);
         if (flag) {
             if (entityIn instanceof LivingEntity livingEntity) {
-                MobEffect effect = MobEffects.MOVEMENT_SLOWDOWN;
+                Holder<MobEffect> effect = MobEffects.MOVEMENT_SLOWDOWN;
                 if (CuriosFinder.hasFrostRobes(this.getMasterOwner())){
-                    effect = GoetyEffects.FREEZING.get();
+                    effect = GoetyEffects.FREEZING;
                 }
                 livingEntity.addEffect(new MobEffectInstance(effect, MathHelper.secondsToTicks(5), 0), this);
             }

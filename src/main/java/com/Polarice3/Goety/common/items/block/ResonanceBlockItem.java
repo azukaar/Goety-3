@@ -5,7 +5,9 @@ import com.Polarice3.Goety.common.entities.ally.golem.SquallGolem;
 import com.Polarice3.Goety.common.network.ModNetwork;
 import com.Polarice3.Goety.common.network.server.SPlayPlayerSoundPacket;
 import com.Polarice3.Goety.utils.EntityFinder;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.item.component.CustomData;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.sounds.SoundEvents;
@@ -32,9 +34,12 @@ public class ResonanceBlockItem extends BlockItemBase{
     public void inventoryTick(@NotNull ItemStack stack, Level worldIn, @NotNull Entity entityIn, int itemSlot, boolean isSelected) {
         if (!worldIn.isClientSide) {
             ListTag listTag = getGolemList(stack, worldIn);
-            if (listTag != null && stack.getTag() != null){
-                if (listTag.size() == 0){
-                    stack.getTag().remove(GOLEM_LIST);
+            CustomData customData = stack.get(DataComponents.CUSTOM_DATA);
+            if (listTag != null && customData != null){
+                if (listTag.isEmpty()){
+                    CompoundTag tag = customData.copyTag();
+                    tag.remove(GOLEM_LIST);
+                    stack.set(DataComponents.CUSTOM_DATA, CustomData.of(tag));
                 }
             }
             if (!getGolems(stack, worldIn).isEmpty()) {
@@ -50,15 +55,19 @@ public class ResonanceBlockItem extends BlockItemBase{
 
     @Override
     public boolean isFoil(ItemStack p_41453_) {
-        return p_41453_.getTag() != null && p_41453_.getTag().contains(GOLEM_LIST);
+        CustomData customData = p_41453_.get(DataComponents.CUSTOM_DATA);
+        return customData != null && customData.contains(GOLEM_LIST);
     }
 
     public @NotNull InteractionResultHolder<ItemStack> use(@NotNull Level level, Player player, InteractionHand hand) {
         ItemStack itemstack = player.getItemInHand(hand);
         if (player.isShiftKeyDown() || player.isCrouching()){
             if (itemstack.getItem() instanceof ResonanceBlockItem){
-                if (itemstack.getTag() != null){
-                    itemstack.getTag().remove(GOLEM_LIST);
+                CustomData customData = itemstack.get(DataComponents.CUSTOM_DATA);
+                if (customData != null){
+                    CompoundTag tag = customData.copyTag();
+                    tag.remove(GOLEM_LIST);
+                    itemstack.set(DataComponents.CUSTOM_DATA, CustomData.of(tag));
                 }
             }
             return InteractionResultHolder.sidedSuccess(itemstack, level.isClientSide());
@@ -67,9 +76,9 @@ public class ResonanceBlockItem extends BlockItemBase{
     }
 
     public boolean onLeftClickEntity(ItemStack stack, Player player, Entity entity) {
-        if (!player.level.isClientSide) {
+        if (!player.level().isClientSide) {
             if (entity instanceof SquallGolem squallGolem) {
-                ListTag listTag = getGolemList(stack, player.level);
+                ListTag listTag = getGolemList(stack, player.level());
                 if (listTag == null || listTag.size() < 4) {
                     setGolems(stack, player, squallGolem);
                     ModNetwork.sendTo(player, new SPlayPlayerSoundPacket(SoundEvents.ARROW_HIT_PLAYER, 1.0F, 0.45F));
@@ -82,8 +91,9 @@ public class ResonanceBlockItem extends BlockItemBase{
     public static ListTag getGolemList(ItemStack stack, Level level){
         if (!level.isClientSide) {
             CompoundTag compound = new CompoundTag();
-            if (stack.hasTag()) {
-                compound = stack.getTag();
+            CustomData customData = stack.get(DataComponents.CUSTOM_DATA);
+            if (customData != null) {
+                compound = customData.copyTag();
             }
             if (compound != null) {
                 if (compound.contains(GOLEM_LIST)) {
@@ -97,8 +107,9 @@ public class ResonanceBlockItem extends BlockItemBase{
     public static void removeGolem(ItemStack stack, SquallGolem squallGolem, Level level){
         if (!level.isClientSide) {
             CompoundTag compound = new CompoundTag();
-            if (stack.hasTag()) {
-                compound = stack.getTag();
+            CustomData customData = stack.get(DataComponents.CUSTOM_DATA);
+            if (customData != null) {
+                compound = customData.copyTag();
             }
             List<String> list = new ArrayList<>();
             if (compound != null) {
@@ -116,7 +127,7 @@ public class ResonanceBlockItem extends BlockItemBase{
 
                     nbttaglist.remove(StringTag.valueOf(squallGolem.getStringUUID()));
                     compound.put(GOLEM_LIST, nbttaglist);
-                    stack.setTag(compound);
+                    stack.set(DataComponents.CUSTOM_DATA, CustomData.of(compound));
                 }
             }
         }
@@ -124,8 +135,10 @@ public class ResonanceBlockItem extends BlockItemBase{
 
     public static List<SquallGolem> getGolems(ItemStack stack, Level level){
         List<SquallGolem> squallGolems = new ArrayList<>();
-        if (!level.isClientSide && stack.getTag() != null){
-            ListTag list = stack.getTag().getList(GOLEM_LIST, 8);
+        CustomData customData = stack.get(DataComponents.CUSTOM_DATA);
+        if (!level.isClientSide && customData != null){
+            CompoundTag tag = customData.copyTag();
+            ListTag list = tag.getList(GOLEM_LIST, 8);
             for(int i = 0; i < list.size(); ++i) {
                 Entity entity = EntityFinder.getEntityByUuiD(UUID.fromString(list.getString(i)));
                 if (entity instanceof SquallGolem squallGolem){
@@ -137,10 +150,11 @@ public class ResonanceBlockItem extends BlockItemBase{
     }
 
     public static void setGolems(ItemStack stack, Player player, SquallGolem squallGolem){
-        if (!player.level.isClientSide) {
+        if (!player.level().isClientSide) {
             CompoundTag compound = new CompoundTag();
-            if (stack.hasTag()) {
-                compound = stack.getTag();
+            CustomData customData = stack.get(DataComponents.CUSTOM_DATA);
+            if (customData != null) {
+                compound = customData.copyTag();
             }
             List<String> list = new ArrayList<>();
             if (compound != null) {
@@ -158,7 +172,7 @@ public class ResonanceBlockItem extends BlockItemBase{
 
                     nbttaglist.add(StringTag.valueOf(squallGolem.getStringUUID()));
                     compound.put(GOLEM_LIST, nbttaglist);
-                    stack.setTag(compound);
+                    stack.set(DataComponents.CUSTOM_DATA, CustomData.of(compound));
                 }
             }
         }
@@ -166,8 +180,9 @@ public class ResonanceBlockItem extends BlockItemBase{
 
     public static void setUUIDs(ItemStack stack, UUID uuid){
         CompoundTag compound = new CompoundTag();
-        if (stack.hasTag()) {
-            compound = stack.getTag();
+        CustomData customData = stack.get(DataComponents.CUSTOM_DATA);
+        if (customData != null) {
+            compound = customData.copyTag();
         }
         List<String> list = new ArrayList<>();
         if (compound != null) {
@@ -185,7 +200,7 @@ public class ResonanceBlockItem extends BlockItemBase{
 
                 nbttaglist.add(StringTag.valueOf(uuid.toString()));
                 compound.put(GOLEM_LIST, nbttaglist);
-                stack.setTag(compound);
+                stack.set(DataComponents.CUSTOM_DATA, CustomData.of(compound));
             }
         }
     }

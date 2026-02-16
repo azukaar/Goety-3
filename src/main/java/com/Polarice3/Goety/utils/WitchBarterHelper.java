@@ -3,8 +3,8 @@ package com.Polarice3.Goety.utils;
 import com.Polarice3.Goety.common.capabilities.witchbarter.IWitchBarter;
 import com.Polarice3.Goety.common.capabilities.witchbarter.WBUpdatePacket;
 import com.Polarice3.Goety.common.capabilities.witchbarter.WitchBarterImp;
-import com.Polarice3.Goety.common.capabilities.witchbarter.WitchBarterProvider;
 import com.Polarice3.Goety.common.network.ModNetwork;
+import com.Polarice3.Goety.init.ModAttachments;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.raid.Raider;
 
@@ -12,7 +12,10 @@ import javax.annotation.Nullable;
 
 public class WitchBarterHelper {
     public static IWitchBarter getCapability(LivingEntity livingEntity) {
-        return livingEntity.getCapability(WitchBarterProvider.CAPABILITY).orElse(new WitchBarterImp());
+        if (livingEntity instanceof Raider raider) {
+            return raider.getData(ModAttachments.WITCH_BARTER);
+        }
+        return new WitchBarterImp();
     }
 
     public static int getTimer(Raider witch){
@@ -31,7 +34,7 @@ public class WitchBarterHelper {
 
     @Nullable
     public static LivingEntity getTrader(Raider witch){
-        return witch.level.getEntity(getCapability(witch).getTraderID()) instanceof LivingEntity livingEntity ? livingEntity : null;
+        return witch.level().getEntity(getCapability(witch).getTraderID()) instanceof LivingEntity livingEntity ? livingEntity : null;
     }
 
     public static void setTrader(Raider witch, @Nullable LivingEntity livingEntity){
@@ -44,7 +47,7 @@ public class WitchBarterHelper {
     }
 
     public static void sendWitchBarterUpdatePacket(Raider witch) {
-        if (!witch.level.isClientSide()) {
+        if (!witch.level().isClientSide()) {
             ModNetwork.sentToTrackingEntityAndPlayer(witch, new WBUpdatePacket(witch));
         }
     }

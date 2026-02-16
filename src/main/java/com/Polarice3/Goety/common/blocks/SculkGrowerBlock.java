@@ -18,10 +18,17 @@ import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.material.MapColor;
+import net.minecraft.world.level.block.BaseEntityBlock;
 
 import javax.annotation.Nullable;
 
 public class SculkGrowerBlock extends EnchanteableBlock {
+    public static final com.mojang.serialization.MapCodec<SculkGrowerBlock> CODEC = simpleCodec(p -> new SculkGrowerBlock());
+
+    @Override
+    protected com.mojang.serialization.MapCodec<? extends BaseEntityBlock> codec() {
+        return CODEC;
+    }
     public static final BooleanProperty LIT = BlockStateProperties.LIT;
     public static final BooleanProperty POWERED = BlockStateProperties.POWERED;
     public static final BooleanProperty CHARGED = BooleanProperty.create("charged");
@@ -64,7 +71,7 @@ public class SculkGrowerBlock extends EnchanteableBlock {
         return (world, pos, state, blockEntity) -> {
             if (!world.isClientSide) {
                 if (blockEntity instanceof SculkGrowerBlockEntity blockEntity1) {
-                    if (MainConfig.SculkGrowerContinue.get()) {
+                    if (com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MainConfig.SculkGrowerContinue, false)) {
                         if (state.getValue(POWERED) || blockEntity1.getGrowCharges() > 0) {
                             blockEntity1.tick();
                         }

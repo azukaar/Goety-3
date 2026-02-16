@@ -21,6 +21,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BaseFireBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.EntityHitResult;
 
 public class ModFireball extends SmallFireball implements ISpellEntity {
@@ -39,11 +40,16 @@ public class ModFireball extends SmallFireball implements ISpellEntity {
 
     public ModFireball(Level p_i1771_1_, LivingEntity p_i1771_2_, double p_i1771_3_, double p_i1771_5_,
             double p_i1771_7_) {
-        super(p_i1771_1_, p_i1771_2_, p_i1771_3_, p_i1771_5_, p_i1771_7_);
+        super(ModEntityType.MOD_FIREBALL.get(), p_i1771_1_);
+        this.setOwner(p_i1771_2_);
+        this.setPos(p_i1771_2_.getX(), p_i1771_2_.getEyeY() - 0.1, p_i1771_2_.getZ());
+        this.setDeltaMovement(new Vec3(p_i1771_3_, p_i1771_5_, p_i1771_7_));
     }
 
     public ModFireball(Level pWorld, double pX, double pY, double pZ, double pAccelX, double pAccelY, double pAccelZ) {
-        super(pWorld, pX, pY, pZ, pAccelX, pAccelY, pAccelZ);
+        super(ModEntityType.MOD_FIREBALL.get(), pWorld);
+        this.setPos(pX, pY, pZ);
+        this.setDeltaMovement(new Vec3(pAccelX, pAccelY, pAccelZ));
     }
 
     @Override
@@ -131,7 +137,7 @@ public class ModFireball extends SmallFireball implements ISpellEntity {
             float damage = 5.0F;
             int flaming = 1 + this.getFiery();
             if (entity1 instanceof Player) {
-                damage = SpellConfig.FireballDamage.get().floatValue() * WandUtil.damageMultiply();
+                damage = com.Polarice3.Goety.utils.ConfigHelper.getFloat(SpellConfig.FireballDamage, 1.0F) * WandUtil.damageMultiply();
             } else if (entity1 instanceof LivingEntity) {
                 damage = this.getDamage();
             }
@@ -152,7 +158,7 @@ public class ModFireball extends SmallFireball implements ISpellEntity {
             if (!flag) {
                 entity.setRemainingFireTicks(i);
             } else if (entity1 instanceof LivingEntity) {
-                this.doEnchantDamageEffects((LivingEntity) entity1, entity);
+                // this.doEnchantDamageEffects((LivingEntity) entity1, entity);
             }
         }
     }
@@ -163,10 +169,10 @@ public class ModFireball extends SmallFireball implements ISpellEntity {
         if (!this.level().isClientSide) {
             Entity entity = this.getOwner();
             if (this.isDangerous()) {
-                boolean flag = this.level().getGameRules().getBoolean(GameRules.RULE_MOB_GRIEFING);
+                boolean flag = this.level().getGameRules().getBoolean(net.minecraft.world.level.GameRules.RULE_MOBGRIEFING);
                 if (entity instanceof Player
                         || (entity instanceof IOwned iOwned && iOwned.getTrueOwner() instanceof Player)) {
-                    flag = SpellConfig.FireballGriefing.get();
+                    flag = com.Polarice3.Goety.utils.ConfigHelper.getBoolean(SpellConfig.FireballGriefing, false);
                 }
                 if (flag) {
                     BlockPos blockpos = p_230299_1_.getBlockPos().relative(p_230299_1_.getDirection());

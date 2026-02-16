@@ -14,7 +14,7 @@ import net.minecraft.resources.ResourceLocation;
 
 public class VindicatorServantRenderer<T extends VindicatorServant> extends MobRenderer<T, IllagerServantModel<T>> {
     protected static final ResourceLocation TEXTURE = Goety.location("textures/entity/servants/illager/vindicator.png");
-    protected static final ResourceLocation ORIGINAL = new ResourceLocation("textures/entity/illager/vindicator.png");
+    protected static final ResourceLocation ORIGINAL = Goety.location("textures/entity/illager/vindicator.png");
 
     public VindicatorServantRenderer(EntityRendererProvider.Context renderManagerIn) {
         super(renderManagerIn, new IllagerServantModel<>(renderManagerIn.bakeLayer(ModModelLayer.ILLAGER_SERVANT)), 0.5F);
@@ -36,7 +36,7 @@ public class VindicatorServantRenderer<T extends VindicatorServant> extends MobR
 
     @Override
     public ResourceLocation getTextureLocation(T entity) {
-        if (entity.isHostile() || !MobsConfig.VindicatorServantTexture.get()){
+        if (entity.isHostile() || !com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MobsConfig.VindicatorServantTexture, false)){
             return ORIGINAL;
         } else {
             return TEXTURE;

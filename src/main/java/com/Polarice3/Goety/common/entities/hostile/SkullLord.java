@@ -1,5 +1,7 @@
 package com.Polarice3.Goety.common.entities.hostile;
 
+import com.Polarice3.Goety.utils.MobType;
+
 import com.Polarice3.Goety.api.entities.ICustomAttributes;
 import com.Polarice3.Goety.api.entities.IOwned;
 import com.Polarice3.Goety.client.particles.ModParticleTypes;
@@ -104,14 +106,14 @@ public class SkullLord extends Monster implements ICustomAttributes {
     public static AttributeSupplier.Builder setCustomAttributes() {
         return Mob.createMobAttributes()
                 .add(Attributes.FOLLOW_RANGE, 35.0D)
-                .add(Attributes.ATTACK_DAMAGE, AttributesConfig.SkullLordDamage.get())
+                .add(Attributes.ATTACK_DAMAGE, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.SkullLordDamage, 20.0D))
                 .add(Attributes.KNOCKBACK_RESISTANCE, 1.0D)
-                .add(Attributes.MAX_HEALTH, AttributesConfig.SkullLordHealth.get());
+                .add(Attributes.MAX_HEALTH, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.SkullLordHealth, 20.0D));
     }
 
     public void setConfigurableAttributes() {
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.MAX_HEALTH), AttributesConfig.SkullLordHealth.get());
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ATTACK_DAMAGE), AttributesConfig.SkullLordDamage.get());
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.MAX_HEALTH), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.SkullLordHealth, 20.0D));
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ATTACK_DAMAGE), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.SkullLordDamage, 20.0D));
     }
 
     public void move(MoverType typeIn, Vec3 pos) {
@@ -925,7 +927,7 @@ public class SkullLord extends Monster implements ICustomAttributes {
                             livingentity.igniteForSeconds(5);
                         }
                         if (skullLord.isHalfHealth()) {
-                            livingentity.addEffect(new MobEffectInstance(GoetyEffects.SAPPED.getHolder(), 100));
+                            livingentity.addEffect(new MobEffectInstance(GoetyEffects.SAPPED, 100));
                         }
                         skullLord.level().explode(skullLord, skullLord.getX(), skullLord.getY(), skullLord.getZ(),
                                 skullLord.explosionRadius, Level.ExplosionInteraction.NONE);

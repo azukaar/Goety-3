@@ -76,10 +76,10 @@ public class HailCloud extends AbstractSpellCloud{
 
     public void hurtEntities(LivingEntity livingEntity){
         if (livingEntity != null) {
-            float baseDamage = SpellConfig.HailDamage.get().floatValue() * WandUtil.damageMultiply();
+            float baseDamage = com.Polarice3.Goety.utils.ConfigHelper.getFloat(SpellConfig.HailDamage, 1.0F) * WandUtil.damageMultiply();
             baseDamage += this.getExtraDamage();
             if (livingEntity.hurt(ModDamageSource.frostBreath(this, this.getOwner()), baseDamage)) {
-                livingEntity.addEffect(new MobEffectInstance(GoetyEffects.FREEZING.get(), MathHelper.secondsToTicks(5)));
+                livingEntity.addEffect(new MobEffectInstance(GoetyEffects.FREEZING, MathHelper.secondsToTicks(5)));
             }
         }
     }

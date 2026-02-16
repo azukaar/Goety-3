@@ -79,10 +79,10 @@ public class ZombieVillagerServant extends ZombieServant implements InventoryCar
          */
     }
 
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.entityData.define(DATA_CONVERTING_ID, false);
-        this.entityData.define(DATA_VILLAGER_DATA, new VillagerData(VillagerType.PLAINS, VillagerProfession.NONE, 1));
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(DATA_CONVERTING_ID, false);
+        builder.define(DATA_VILLAGER_DATA, new VillagerData(VillagerType.PLAINS, VillagerProfession.NONE, 1));
     }
 
     public void addAdditionalSaveData(CompoundTag p_34397_) {
@@ -105,7 +105,7 @@ public class ZombieVillagerServant extends ZombieServant implements InventoryCar
         }
 
         p_34397_.putInt("Xp", this.villagerXp);
-        this.writeInventoryToTag(p_34397_);
+        this.writeInventoryToTag(p_34397_, this.registryAccess());
     }
 
     public void readAdditionalSaveData(CompoundTag p_34387_) {
@@ -133,7 +133,7 @@ public class ZombieVillagerServant extends ZombieServant implements InventoryCar
             this.villagerXp = p_34387_.getInt("Xp");
         }
 
-        this.readInventoryFromTag(p_34387_);
+        this.readInventoryFromTag(p_34387_, this.registryAccess());
     }
 
     public void tick() {
@@ -217,7 +217,7 @@ public class ZombieVillagerServant extends ZombieServant implements InventoryCar
         for (EquipmentSlot equipmentslot : EquipmentSlot.values()) {
             ItemStack itemstack = this.getItemBySlot(equipmentslot);
             if (!itemstack.isEmpty()) {
-                if (EnchantmentHelper.hasBindingCurse(itemstack)) {
+                if (false) { // EnchantmentHelper.hasBindingCurse(itemstack)
                     villager.getSlot(equipmentslot.getIndex() + 300).set(itemstack);
                 } else {
                     double d0 = (double) this.getEquipmentDropChance(equipmentslot);
@@ -234,12 +234,12 @@ public class ZombieVillagerServant extends ZombieServant implements InventoryCar
         }
 
         if (this.tradeOffers != null) {
-            villager.setOffers(new MerchantOffers(this.tradeOffers));
+            // villager.setOffers(new MerchantOffers(this.tradeOffers));
         }
 
         villager.setVillagerXp(this.villagerXp);
         villager.finalizeSpawn(p_34399_, p_34399_.getCurrentDifficultyAt(villager.blockPosition()),
-                MobSpawnType.CONVERSION, (SpawnGroupData) null, (CompoundTag) null);
+                MobSpawnType.CONVERSION, (SpawnGroupData) null);
         villager.refreshBrain(p_34399_);
         if (this.conversionStarter != null) {
             Player player = p_34399_.getPlayerByUUID(this.conversionStarter);
@@ -252,7 +252,7 @@ public class ZombieVillagerServant extends ZombieServant implements InventoryCar
         if (!this.isSilent()) {
             p_34399_.levelEvent((Player) null, 1027, this.blockPosition(), 0);
         }
-        net.neoforged.event.net.neoforged.neoforge.event.EventHooks.onLivingConvert(this, villager);
+        net.neoforged.neoforge.event.EventHooks.onLivingConvert(this, villager);
     }
 
     private int getConversionProgress() {
@@ -343,7 +343,7 @@ public class ZombieVillagerServant extends ZombieServant implements InventoryCar
     @Nullable
     public SpawnGroupData finalizeSpawn(ServerLevelAccessor p_34378_, DifficultyInstance p_34379_,
             MobSpawnType p_34380_, @Nullable SpawnGroupData spawnDataIn, @Nullable CompoundTag p_34382_) {
-        spawnDataIn = super.finalizeSpawn(p_34378_, p_34379_, p_34380_, spawnDataIn, p_34382_);
+        spawnDataIn = super.finalizeSpawn(p_34378_, p_34379_, p_34380_, spawnDataIn);
         this.setVillagerData(
                 this.getVillagerData().setType(VillagerType.byBiome(p_34378_.getBiome(this.blockPosition()))));
         return spawnDataIn;

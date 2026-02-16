@@ -19,6 +19,7 @@ import com.Polarice3.Goety.common.network.server.SLightningPacket;
 import com.Polarice3.Goety.common.network.server.SThunderBoltPacket;
 import com.Polarice3.Goety.config.SpellConfig;
 import com.Polarice3.Goety.init.ModAttributes;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
@@ -137,14 +138,14 @@ public class WandUtil {
 
     public static int getLevels(Enchantment enchantment, LivingEntity livingEntity){
         if (enchantedFocus(livingEntity)) {
-            return findFocus(livingEntity).getEnchantmentLevel(enchantment);
+            return 0;
         } else {
             return 0;
         }
     }
 
     public static float damageMultiply() {
-        return SpellConfig.SpellDamageMultiplier.get() * SpellConfig.SpellDamageMultiplierDecimal.get().floatValue();
+        return (float) (com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.SpellDamageMultiplier, 1) * com.Polarice3.Goety.utils.ConfigHelper.getDouble(SpellConfig.SpellDamageMultiplierDecimal, 1.0D));
     }
 
     public static int getPotencyLevel(LivingEntity livingEntity) {
@@ -178,7 +179,7 @@ public class WandUtil {
     }
 
     public static void chainLightning(LivingEntity pTarget, @Nullable LivingEntity pAttacker, ColorUtil colorUtil, double range, float damage, boolean small) {
-        Level level = pTarget.level;
+        Level level = pTarget.level();
 
         List<Entity> harmed = new ArrayList<>();
         Predicate<Entity> selector = entity -> entity instanceof LivingEntity livingEntity && !harmed.contains(livingEntity);
@@ -195,7 +196,7 @@ public class WandUtil {
             List<Entity> entities = level.getEntities(prevTarget, aabb, selector.and(entity -> MobUtil.hasLineOfSight(finalPrevTarget, entity)));
             if (!entities.isEmpty()) {
                 Entity target = entities.get(level.getRandom().nextInt(entities.size()));
-                DamageSource damageSource = ModDamageSource.getDamageSource(pTarget.level, ModDamageSource.SHOCK);
+                DamageSource damageSource = ModDamageSource.getDamageSource(pTarget.level(), ModDamageSource.SHOCK);
                 if (pAttacker != null){
                     damageSource = ModDamageSource.directShock(pAttacker);
                 }
@@ -229,11 +230,11 @@ public class WandUtil {
 
         do {
             BlockPos blockpos1 = blockpos.below();
-            BlockState blockstate = livingEntity.level.getBlockState(blockpos1);
-            if (blockstate.isFaceSturdy(livingEntity.level, blockpos1, Direction.UP)) {
-                if (!livingEntity.level.isEmptyBlock(blockpos)) {
-                    BlockState blockstate1 = livingEntity.level.getBlockState(blockpos);
-                    VoxelShape voxelshape = blockstate1.getCollisionShape(livingEntity.level, blockpos);
+            BlockState blockstate = livingEntity.level().getBlockState(blockpos1);
+            if (blockstate.isFaceSturdy(livingEntity.level(), blockpos1, Direction.UP)) {
+                if (!livingEntity.level().isEmptyBlock(blockpos)) {
+                    BlockState blockstate1 = livingEntity.level().getBlockState(blockpos);
+                    VoxelShape voxelshape = blockstate1.getCollisionShape(livingEntity.level(), blockpos);
                     if (!voxelshape.isEmpty()) {
                         d0 = voxelshape.max(Direction.Axis.Y);
                     }
@@ -247,7 +248,7 @@ public class WandUtil {
         } while(blockpos.getY() >= Mth.floor(PPPosY) - 1);
 
         if (flag) {
-            Fangs fangEntity = new Fangs(livingEntity.level, pPosX, (double)blockpos.getY() + d0, pPosZ, pYRot, pWarmUp, livingEntity);
+            Fangs fangEntity = new Fangs(livingEntity.level(), pPosX, (double)blockpos.getY() + d0, pPosZ, pYRot, pWarmUp, livingEntity);
             if (livingEntity instanceof Player player){
                 if (WandUtil.enchantedFocus(player)){
                     if (WandUtil.getLevels(ModEnchantments.ABSORB.get(), player) != 0){
@@ -260,7 +261,7 @@ public class WandUtil {
             }
             fangEntity.setDamage(pPotency);
             fangEntity.setBurning(pBurning);
-            livingEntity.level.addFreshEntity(fangEntity);
+            livingEntity.level().addFreshEntity(fangEntity);
         }
 
     }
@@ -272,11 +273,11 @@ public class WandUtil {
 
         do {
             BlockPos blockpos1 = blockpos.below();
-            BlockState blockstate = livingEntity.level.getBlockState(blockpos1);
-            if (blockstate.isFaceSturdy(livingEntity.level, blockpos1, Direction.UP)) {
-                if (!livingEntity.level.isEmptyBlock(blockpos)) {
-                    BlockState blockstate1 = livingEntity.level.getBlockState(blockpos);
-                    VoxelShape voxelshape = blockstate1.getCollisionShape(livingEntity.level, blockpos);
+            BlockState blockstate = livingEntity.level().getBlockState(blockpos1);
+            if (blockstate.isFaceSturdy(livingEntity.level(), blockpos1, Direction.UP)) {
+                if (!livingEntity.level().isEmptyBlock(blockpos)) {
+                    BlockState blockstate1 = livingEntity.level().getBlockState(blockpos);
+                    VoxelShape voxelshape = blockstate1.getCollisionShape(livingEntity.level(), blockpos);
                     if (!voxelshape.isEmpty()) {
                         d0 = voxelshape.max(Direction.Axis.Y);
                     }
@@ -290,7 +291,7 @@ public class WandUtil {
         } while(blockpos.getY() >= Mth.floor(PPPosY) - 1);
 
         if (flag) {
-            Spike spike = new Spike(livingEntity.level, pPosX, (double)blockpos.getY() + d0, pPosZ, pYRot, pWarmUp, livingEntity);
+            Spike spike = new Spike(livingEntity.level(), pPosX, (double)blockpos.getY() + d0, pPosZ, pYRot, pWarmUp, livingEntity);
             float enchantment = spellStat.getPotency();
             int burning = spellStat.getBurning();
             int soulEater = 0;
@@ -302,7 +303,7 @@ public class WandUtil {
             spike.setExtraDamage(enchantment);
             spike.setBurning(burning);
             spike.setSoulEater(soulEater);
-            livingEntity.level.addFreshEntity(spike);
+            livingEntity.level().addFreshEntity(spike);
         }
 
     }
@@ -381,7 +382,7 @@ public class WandUtil {
 
     public static void summonTridentStorm(LivingEntity casterEntity, Vec3 targetPos, double xshift, double zshift, int warmUp, int potency) {
         targetPos = targetPos.add(xshift, 0.5F, zshift);
-        Level level = casterEntity.level;
+        Level level = casterEntity.level();
         TridentStorm tridentStorm = ModEntityType.TRIDENT_STORM.get().create(level);
         if (tridentStorm != null) {
             tridentStorm.setOwner(casterEntity);
@@ -531,13 +532,10 @@ public class WandUtil {
     public static void summonMonolith(LivingEntity casterEntity, BlockPos targetPos, EntityType<? extends AbstractMonolith> wallEntityType, double xshift, double zshift, int delay, int extra) {
         targetPos = targetPos.offset((int) xshift, 1, (int) zshift);
         Vec3 vec3 = Vec3.atBottomCenterOf(targetPos);
-        Level level = casterEntity.level;
+        Level level = casterEntity.level();
         AbstractMonolith monolith = wallEntityType.create(level);
         if (monolith != null) {
-            Player player = null;
-            if (casterEntity instanceof Player player1){
-                player = player1;
-            }
+            Player player = casterEntity instanceof Player player1 ? player1 : null;
             EntityType<?> entityType = monolith.getVariant(player, level, targetPos);
             if (entityType != null){
                 monolith = (AbstractMonolith) entityType.create(level);
@@ -546,7 +544,7 @@ public class WandUtil {
                 monolith.setTrueOwner(casterEntity);
                 monolith.setPos(vec3.x(), vec3.y(), vec3.z());
                 if (level instanceof ServerLevel serverLevel) {
-                    monolith.finalizeSpawn(serverLevel, serverLevel.getCurrentDifficultyAt(targetPos), MobSpawnType.MOB_SUMMONED, null, null);
+                    monolith.finalizeSpawn(serverLevel, serverLevel.getCurrentDifficultyAt(targetPos), MobSpawnType.MOB_SUMMONED, null);
                 }
                 if (monolith instanceof AbstractVine vine) {
                     vine.setWarmup(delay);
@@ -573,13 +571,10 @@ public class WandUtil {
     public static void summonTurret(LivingEntity casterEntity, BlockPos targetPos, EntityType<? extends AbstractMonolith> wallEntityType, @Nullable Entity target, int delay, int duration, int potency) {
         targetPos = targetPos.above();
         Vec3 vec3 = Vec3.atBottomCenterOf(targetPos);
-        Level level = casterEntity.level;
+        Level level = casterEntity.level();
         AbstractMonolith monolith = wallEntityType.create(level);
         if (monolith != null) {
-            Player player = null;
-            if (casterEntity instanceof Player player1){
-                player = player1;
-            }
+            Player player = casterEntity instanceof Player player1 ? player1 : null;
             EntityType<?> entityType = monolith.getVariant(player, level, targetPos);
             if (entityType != null){
                 monolith = (AbstractMonolith) entityType.create(level);
@@ -588,13 +583,13 @@ public class WandUtil {
                 monolith.setTrueOwner(casterEntity);
                 monolith.setPos(vec3.x(), vec3.y(), vec3.z());
                 if (level instanceof ServerLevel serverLevel) {
-                    monolith.finalizeSpawn(serverLevel, serverLevel.getCurrentDifficultyAt(targetPos), MobSpawnType.MOB_SUMMONED, null, null);
+                    monolith.finalizeSpawn(serverLevel, serverLevel.getCurrentDifficultyAt(targetPos), MobSpawnType.MOB_SUMMONED, null);
                 }
                 if (monolith instanceof AbstractVine vine) {
                     vine.setWarmup(delay);
                 }
-                if (potency > 0 && !casterEntity.hasEffect(GoetyEffects.SUMMON_DOWN.get())) {
-                    monolith.addEffect(new MobEffectInstance(GoetyEffects.BUFF.get(), EffectsUtil.infiniteEffect(), potency - 1, false, false));
+                if (potency > 0 && !casterEntity.hasEffect(BuiltInRegistries.MOB_EFFECT.wrapAsHolder(GoetyEffects.SUMMON_DOWN.get()))) {
+                    monolith.addEffect(new MobEffectInstance(BuiltInRegistries.MOB_EFFECT.wrapAsHolder(GoetyEffects.BUFF.get()), EffectsUtil.infiniteEffect(), potency - 1, false, false));
                 }
                 if (target instanceof LivingEntity living) {
                     monolith.setTarget(living);
@@ -852,3 +847,4 @@ public class WandUtil {
         summonQuadOffensiveTrap(casterEntity, targetPos, entityType, extra);
     }
 }
+

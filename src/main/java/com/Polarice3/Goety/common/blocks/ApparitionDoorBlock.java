@@ -3,6 +3,7 @@ package com.Polarice3.Goety.common.blocks;
 import com.Polarice3.Goety.client.particles.ModParticleTypes;
 import com.Polarice3.Goety.init.ModSounds;
 import com.Polarice3.Goety.utils.ColorUtil;
+import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
@@ -31,6 +32,12 @@ public class ApparitionDoorBlock extends Block {
     public static final BooleanProperty ACTIVE = BooleanProperty.create("active");
     public static final BooleanProperty VANISHED = BooleanProperty.create("vanish");
     private static final VoxelShape VANISHED_SHAPE = Shapes.create(new AABB(0.375F, 0.375F, 0.375F, 0.625F, 0.625F, 0.625F));
+    public static final MapCodec<ApparitionDoorBlock> CODEC = simpleCodec(ApparitionDoorBlock::new);
+
+    @Override
+    protected MapCodec<? extends Block> codec() {
+        return CODEC;
+    }
 
     public ApparitionDoorBlock(Properties p_49795_) {
         super(p_49795_);
@@ -63,7 +70,7 @@ public class ApparitionDoorBlock extends Block {
     }
 
     @Override
-    public InteractionResult use(BlockState pState, Level pLevel, BlockPos pPos, Player pPlayer, InteractionHand pHand, BlockHitResult pHit) {
+    protected InteractionResult useWithoutItem(BlockState pState, Level pLevel, BlockPos pPos, Player pPlayer, BlockHitResult pHit) {
         return this.onActivation(pLevel, pPos, pState);
     }
 

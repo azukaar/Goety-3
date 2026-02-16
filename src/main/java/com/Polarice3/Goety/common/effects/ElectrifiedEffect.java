@@ -22,9 +22,9 @@ public class ElectrifiedEffect extends GoetyBaseEffect {
         super(MobEffectCategory.BENEFICIAL, 0);
     }
 
-    public void applyEffectTick(LivingEntity living, int amplify) {
+    public boolean applyEffectTick(LivingEntity living, int amplify) {
         if (living.isAlive()) {
-            if (living.level instanceof ServerLevel worldIn) {
+            if (living.level() instanceof ServerLevel worldIn) {
                 boolean flag;
                 if (living.isInvisible()) {
                     flag = living.getRandom().nextInt(15) == 0;
@@ -35,7 +35,7 @@ public class ElectrifiedEffect extends GoetyBaseEffect {
                     worldIn.sendParticles(ModParticleTypes.SPELL_ELECTRIC.get(), living.getRandomX(0.5D), living.getRandomY(), living.getRandomZ(0.5D), 1, 0.0D, 0.5D, 0.0D, 0);
                 }
                 if (living.tickCount % 80 == 0) {
-                    List<Entity> list = living.level.getEntities(living, living.getBoundingBox().inflate(4.0D), selected -> selected instanceof LivingEntity selected2 && living.hasLineOfSight(selected2) && MobUtil.isOwnedTargetable(living, selected2));
+                    List<Entity> list = living.level().getEntities(living, living.getBoundingBox().inflate(4.0D), selected -> selected instanceof LivingEntity selected2 && living.hasLineOfSight(selected2) && MobUtil.isOwnedTargetable(living, selected2));
                     Vec3 vec3 = living.getEyePosition();
                     Iterator<Entity> iterator = list.iterator();
                     int i = 0;
@@ -50,7 +50,7 @@ public class ElectrifiedEffect extends GoetyBaseEffect {
                                     chance += 0.25F;
                                 }
                                 if (worldIn.random.nextFloat() <= chance) {
-                                    target.addEffect(new MobEffectInstance(GoetyEffects.SPASMS.get(), MathHelper.secondsToTicks(5)));
+                                    target.addEffect(new MobEffectInstance(GoetyEffects.SPASMS, MathHelper.secondsToTicks(5)));
                                 }
                                 target.knockback(2.0F, living.getX() - target.getX(), living.getZ() - target.getZ());
                             }
@@ -61,5 +61,6 @@ public class ElectrifiedEffect extends GoetyBaseEffect {
                 }
             }
         }
+        return true;
     }
 }

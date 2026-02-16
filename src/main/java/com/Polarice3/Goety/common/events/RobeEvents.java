@@ -1,5 +1,7 @@
 package com.Polarice3.Goety.common.events;
 
+import com.Polarice3.Goety.utils.MobType;
+
 import com.Polarice3.Goety.Goety;
 import com.Polarice3.Goety.api.entities.IGolem;
 import com.Polarice3.Goety.api.entities.ally.IServant;
@@ -35,7 +37,9 @@ import net.neoforged.neoforge.event.entity.living.*;
 import net.neoforged.neoforge.event.level.BlockEvent;
 import net.neoforged.neoforge.event.tick.EntityTickEvent;
 import net.neoforged.bus.api.Event;
+import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.bus.api.EventPriority;
+import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
@@ -51,18 +55,18 @@ public class RobeEvents {
             return;
         }
         if (livingEntity != null) {
-            if (!livingEntity.level.isClientSide) {
-                if (MobsConfig.CompatMinionHeal.get()) {
+            if (!livingEntity.level().isClientSide) {
+                if (com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MobsConfig.CompatMinionHeal, false)) {
                     if (livingEntity instanceof OwnableEntity ownable && !(livingEntity instanceof IServant)) {
                         if (ownable.getOwnerUUID() != null) {
-                            Player owner = livingEntity.level.getPlayerByUUID(ownable.getOwnerUUID());
+                            Player owner = livingEntity.level().getPlayerByUUID(ownable.getOwnerUUID());
                             if (owner != null && MiscCapHelper.getNoHealTime(livingEntity) <= 0) {
                                 ServantUtil.healServant(owner, livingEntity);
                             }
                         }
                     }
                 }
-                if (MobsConfig.NecroSetDebuff.get() || MobsConfig.NamelessSetDebuff.get()) {
+                if (com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MobsConfig.NecroSetDebuff, false) || com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MobsConfig.NamelessSetDebuff, false)) {
                     if (MobUtil.getOwner(livingEntity) != null){
                         if (!livingEntity.getType().is(EntityTypeTags.UNDEAD)
                                 && !(livingEntity instanceof AbstractGolem)
@@ -70,7 +74,7 @@ public class RobeEvents {
                                 && !livingEntity.getType().is(ModTags.EntityTypes.NECRO_NO_DEBUFF)) {
                             boolean flag = false;
                             int amp = 0;
-                            if (MobsConfig.NecroSetDebuff.get()) {
+                            if (com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MobsConfig.NecroSetDebuff, false)) {
                                 if (CuriosFinder.hasNecroCrown(MobUtil.getOwner(livingEntity)) || CuriosFinder.hasNecroCape(MobUtil.getOwner(livingEntity))) {
                                     if (CuriosFinder.hasNecroSet(MobUtil.getOwner(livingEntity))) {
                                         amp += 2;
@@ -78,7 +82,7 @@ public class RobeEvents {
                                     flag = true;
                                 }
                             }
-                            if (MobsConfig.NamelessSetDebuff.get()) {
+                            if (com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MobsConfig.NamelessSetDebuff, false)) {
                                 if (CuriosFinder.hasNamelessCrown(MobUtil.getOwner(livingEntity)) || CuriosFinder.hasNamelessCrown(MobUtil.getOwner(livingEntity))) {
                                     if (CuriosFinder.hasNamelessSet(MobUtil.getOwner(livingEntity))) {
                                         amp += 2;
@@ -88,7 +92,7 @@ public class RobeEvents {
                             }
                             if (flag) {
                                 livingEntity.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, 20, 1 + amp));
-                                livingEntity.addEffect(new MobEffectInstance(GoetyEffects.SAPPED.get(), 20, 2 + amp));
+                                livingEntity.addEffect(new MobEffectInstance(GoetyEffects.SAPPED, 20, 2 + amp));
                             }
                         }
                     }
@@ -102,10 +106,10 @@ public class RobeEvents {
         Player player = event.getPlayer();
         if (CuriosFinder.hasWarlockRobe(player)){
             if (event.getState().is(ModBlocks.SNAP_WARTS.get()) && event.getState().getValue(SnapWartsBlock.AGE) >= 2){
-                if (!player.level.isClientSide) {
+                if (!player.level().isClientSide) {
                     if (!player.getAbilities().instabuild) {
                         if (player.getRandom().nextFloat() <= 0.25F) {
-                            Block.dropResources(event.getState(), player.level, event.getPos(), null, player, player.getUseItem());
+                            Block.dropResources(event.getState(), player.level(), event.getPos(), null, player, player.getUseItem());
                         }
                     }
                 }
@@ -118,7 +122,7 @@ public class RobeEvents {
         LivingEntity victim = event.getEntity();
         if (CuriosFinder.hasFrostRobes(victim)){
             if (ModDamageSource.freezeAttacks(event.getSource()) || event.getSource().is(DamageTypeTags.IS_FREEZING)){
-                float resistance = 1.0F - (ItemConfig.FrostRobeResistance.get() / 100.0F);
+                float resistance = 1.0F - (com.Polarice3.Goety.utils.ConfigHelper.getInt(ItemConfig.FrostRobeResistance, 0) / 100.0F);
                 event.setAmount(event.getAmount() * resistance);
             }
         }
@@ -131,7 +135,7 @@ public class RobeEvents {
             }
         }
         if (CuriosFinder.hasNetherRobe(victim)){
-            float resistance = 1.0F - (ItemConfig.NetherRobeResistance.get() / 100.0F);
+            float resistance = 1.0F - (com.Polarice3.Goety.utils.ConfigHelper.getInt(ItemConfig.NetherRobeResistance, 0) / 100.0F);
             if (resistance <= 0.0F){
                 event.setCanceled(true);
             } else {
@@ -146,15 +150,15 @@ public class RobeEvents {
         }
         if (CuriosFinder.hasCurio(victim, ModItems.GRAND_TURBAN.get())){
             if (victim instanceof Player player) {
-                if (SEHelper.getSoulsAmount(player, ItemConfig.ItemsRepairAmount.get())) {
-                    int irks = victim.level.getEntitiesOfClass(AllyIrk.class, victim.getBoundingBox().inflate(32)).size();
-                    if ((victim.level.random.nextBoolean() || victim.getHealth() <= victim.getMaxHealth() / 2) && irks < 16) {
-                        AllyIrk irk = new AllyIrk(ModEntityType.IRK_SERVANT.get(), victim.level);
+                if (SEHelper.getSoulsAmount(player, com.Polarice3.Goety.utils.ConfigHelper.getInt(ItemConfig.ItemsRepairAmount, 0))) {
+                    int irks = victim.level().getEntitiesOfClass(AllyIrk.class, victim.getBoundingBox().inflate(32)).size();
+                    if ((victim.level().random.nextBoolean() || victim.getHealth() <= victim.getMaxHealth() / 2) && irks < 16) {
+                        AllyIrk irk = new AllyIrk(ModEntityType.IRK_SERVANT.get(), victim.level());
                         irk.setPos(victim.getX(), victim.getY(), victim.getZ());
-                        irk.setLimitedLife(MobUtil.getSummonLifespan(victim.level));
+                        irk.setLimitedLife(MobUtil.getSummonLifespan(victim.level()));
                         irk.setTrueOwner(victim);
-                        if (victim.level.addFreshEntity(irk)) {
-                            SEHelper.decreaseSouls(player, ItemConfig.ItemsRepairAmount.get());
+                        if (victim.level().addFreshEntity(irk)) {
+                            SEHelper.decreaseSouls(player, com.Polarice3.Goety.utils.ConfigHelper.getInt(ItemConfig.ItemsRepairAmount, 0));
                         }
                     }
                 }
@@ -167,16 +171,16 @@ public class RobeEvents {
         }
         float damage = event.getAmount();
         if (CuriosFinder.hasUnholyHat(victim)){
-            if (victim.level.dimension() == Level.NETHER){
+            if (victim.level().dimension() == Level.NETHER){
                 damage /= 2.0F;
             }
             if (!event.getSource().is(DamageTypeTags.BYPASSES_INVULNERABILITY)){
-                damage = Math.min(damage, AttributesConfig.ApostleDamageCap.get().floatValue());
+                damage = Math.min(damage, com.Polarice3.Goety.utils.ConfigHelper.getFloat(AttributesConfig.ApostleDamageCap, 1.0F));
             }
             event.setAmount(damage);
         }
         if (CuriosFinder.hasUnholyRobe(victim)){
-            float resistance = 1.0F - (ItemConfig.NetherRobeResistance.get() / 100.0F);
+            float resistance = 1.0F - (com.Polarice3.Goety.utils.ConfigHelper.getInt(ItemConfig.NetherRobeResistance, 0) / 100.0F);
             if (ModDamageSource.hellfireAttacks(event.getSource())){
                 resistance = Math.max(0.75F, resistance);
                 damage *= resistance;
@@ -185,7 +189,7 @@ public class RobeEvents {
         }
         if(CuriosFinder.hasCurio(victim, ModItems.STORM_ROBE.get())){
             if (ModDamageSource.shockAttacks(event.getSource()) || event.getSource().is(DamageTypes.LIGHTNING_BOLT)){
-                float resistance = 1.0F - (ItemConfig.StormRobeResistance.get() / 100.0F);
+                float resistance = 1.0F - (com.Polarice3.Goety.utils.ConfigHelper.getInt(ItemConfig.StormRobeResistance, 0) / 100.0F);
                 event.setAmount(event.getAmount() * resistance);
             }
             if (event.getSource().is(DamageTypes.LIGHTNING_BOLT)){
@@ -194,10 +198,10 @@ public class RobeEvents {
         }
         if (CuriosFinder.hasWitchRobe(victim) || CuriosFinder.hasWarlockRobe(victim)){
             if (event.getSource().is(DamageTypeTags.WITCH_RESISTANT_TO)){
-                if (!(LichdomHelper.isLich(victim) && MainConfig.LichMagicResist.get())){
-                    float resistance = 1.0F - (ItemConfig.WitchRobeResistance.get() / 100.0F);
+                if (!(LichdomHelper.isLich(victim) && com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MainConfig.LichMagicResist, false))){
+                    float resistance = 1.0F - (com.Polarice3.Goety.utils.ConfigHelper.getInt(ItemConfig.WitchRobeResistance, 0) / 100.0F);
                     if (CuriosFinder.hasWarlockRobe(victim)){
-                        resistance = 1.0F - (ItemConfig.WarlockRobeResistance.get() / 100.0F);
+                        resistance = 1.0F - (com.Polarice3.Goety.utils.ConfigHelper.getInt(ItemConfig.WarlockRobeResistance, 0) / 100.0F);
                     }
                     event.setAmount(event.getAmount() * resistance);
                 }
@@ -210,7 +214,7 @@ public class RobeEvents {
         LivingEntity victim = event.getEntity();
         Entity source = event.getSource().getEntity();
         Entity direct = event.getSource().getDirectEntity();
-        if (!event.getEntity().level.isClientSide) {
+        if (!event.getEntity().level().isClientSide) {
             if (event.getSource().is(DamageTypeTags.IS_FIRE)){
                 LivingEntity source1 = null;
                 Entity direct1 = direct;
@@ -239,16 +243,16 @@ public class RobeEvents {
                 }
             }
             if (event.getAmount() > 0.0F) {
-                if (ItemConfig.VoidRobeTeleportChance.get() > 0) {
+                if (com.Polarice3.Goety.utils.ConfigHelper.getInt(ItemConfig.VoidRobeTeleportChance, 0) > 0) {
                     if (CuriosFinder.hasVoidRobe(victim)) {
                         if (!victim.isInvulnerableTo(event.getSource()) && EntitySelector.NO_CREATIVE_OR_SPECTATOR.test(victim)) {
-                            float chance = ItemConfig.VoidRobeTeleportChance.get() / 100.0F;
+                            float chance = com.Polarice3.Goety.utils.ConfigHelper.getInt(ItemConfig.VoidRobeTeleportChance, 0) / 100.0F;
                             if (victim.getRandom().nextFloat() <= chance) {
-                                double d0 = victim.getX() + (victim.getRandom().nextDouble() - 0.5D) * ItemConfig.VoidRobeTeleportDistance.get();
+                                double d0 = victim.getX() + (victim.getRandom().nextDouble() - 0.5D) * com.Polarice3.Goety.utils.ConfigHelper.getInt(ItemConfig.VoidRobeTeleportDistance, 0);
                                 double d1 = victim.getY();
-                                double d2 = victim.getZ() + (victim.getRandom().nextDouble() - 0.5D) * ItemConfig.VoidRobeTeleportDistance.get();
+                                double d2 = victim.getZ() + (victim.getRandom().nextDouble() - 0.5D) * com.Polarice3.Goety.utils.ConfigHelper.getInt(ItemConfig.VoidRobeTeleportDistance, 0);
                                 if (MobUtil.teleport(victim, d0, d1, d2)) {
-                                    if (ItemConfig.VoidRobeTeleportDamageCancel.get()) {
+                                    if (com.Polarice3.Goety.utils.ConfigHelper.getBoolean(ItemConfig.VoidRobeTeleportDamageCancel, false)) {
                                         event.setCanceled(true);
                                     }
                                 }
@@ -271,7 +275,7 @@ public class RobeEvents {
     @SubscribeEvent
     public static void TargetEvents(LivingChangeTargetEvent event) {
         LivingEntity attacker = event.getEntity();
-        LivingEntity target = event.getOriginalTarget();
+        LivingEntity target = event.getOriginalAboutToBeSetTarget();
         if (attacker instanceof Mob mobAttacker) {
             if (target != null) {
                 if (target instanceof Player) {
@@ -279,7 +283,7 @@ public class RobeEvents {
                         if (CuriosFinder.isWitchFriendly(target)) {
                             if (mobAttacker.getLastHurtByMob() != target) {
                                 if (event.getTargetType() == MOB_TARGET) {
-                                    event.setNewTarget(null);
+                                    event.setNewAboutToBeSetTarget(null);
                                 } else {
                                     event.setCanceled(true);
                                 }
@@ -290,8 +294,8 @@ public class RobeEvents {
                     }
                     if (CuriosFinder.neutralNecroSet(target) || CuriosFinder.neutralNamelessSet(target)) {
                         boolean undead = CuriosFinder.validNecroUndead(mobAttacker);
-                        if (target.level instanceof ServerLevel serverLevel) {
-                            if (MobsConfig.HostileCryptUndead.get()) {
+                        if (target.level() instanceof ServerLevel serverLevel) {
+                            if (com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MobsConfig.HostileCryptUndead, false)) {
                                 if (BlockFinder.findStructure(serverLevel, target.blockPosition(), ModStructureTags.NECRO_HOSTILE)
                                         && !CuriosFinder.neutralNamelessSet(target)) {
                                     undead = false;
@@ -301,7 +305,7 @@ public class RobeEvents {
                         if (undead || (CuriosFinder.neutralNamelessSet(target) && CuriosFinder.validNamelessUndead(mobAttacker))) {
                             if (mobAttacker.getLastHurtByMob() != target) {
                                 if (event.getTargetType() == MOB_TARGET) {
-                                    event.setNewTarget(null);
+                                    event.setNewAboutToBeSetTarget(null);
                                 } else {
                                     event.setCanceled(true);
                                 }
@@ -314,7 +318,7 @@ public class RobeEvents {
                         if (CuriosFinder.validAbyssMob(mobAttacker)) {
                             if (mobAttacker.getLastHurtByMob() != target) {
                                 if (event.getTargetType() == MOB_TARGET) {
-                                    event.setNewTarget(null);
+                                    event.setNewAboutToBeSetTarget(null);
                                 } else {
                                     event.setCanceled(true);
                                 }
@@ -327,7 +331,7 @@ public class RobeEvents {
                         if (CuriosFinder.validFrostMob(mobAttacker)) {
                             if (mobAttacker.getLastHurtByMob() != target) {
                                 if (event.getTargetType() == MOB_TARGET) {
-                                    event.setNewTarget(null);
+                                    event.setNewAboutToBeSetTarget(null);
                                 } else {
                                     event.setCanceled(true);
                                 }
@@ -340,7 +344,7 @@ public class RobeEvents {
                         if (CuriosFinder.validNetherMob(mobAttacker)) {
                             if (mobAttacker.getLastHurtByMob() != target) {
                                 if (event.getTargetType() == MOB_TARGET) {
-                                    event.setNewTarget(null);
+                                    event.setNewAboutToBeSetTarget(null);
                                 } else {
                                     event.setCanceled(true);
                                 }
@@ -352,7 +356,7 @@ public class RobeEvents {
                     if (CuriosFinder.hasUnholyRobe(target) || CuriosFinder.hasUnholyHat(target)) {
                         if (mobAttacker instanceof Ghast || mobAttacker instanceof Blaze || mobAttacker instanceof MagmaCube) {
                             if (event.getTargetType() == MOB_TARGET) {
-                                event.setNewTarget(null);
+                                event.setNewAboutToBeSetTarget(null);
                             } else {
                                 event.setCanceled(true);
                             }
@@ -360,8 +364,8 @@ public class RobeEvents {
                     }
                     if (CuriosFinder.neutralVoidSet(target)) {
                         boolean ender = CuriosFinder.validVoidMob(mobAttacker);
-                        if (target.level instanceof ServerLevel serverLevel) {
-                            if (MobsConfig.HostileTerminalEnder.get()) {
+                        if (target.level() instanceof ServerLevel serverLevel) {
+                            if (com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MobsConfig.HostileTerminalEnder, false)) {
                                 if (BlockFinder.findStructure(serverLevel, target.blockPosition(), ModStructureTags.VOID_HOSTILE)) {
                                     ender = false;
                                 }
@@ -370,7 +374,7 @@ public class RobeEvents {
                         if (ender) {
                             if (mobAttacker.getLastHurtByMob() != target) {
                                 if (event.getTargetType() == MOB_TARGET) {
-                                    event.setNewTarget(null);
+                                    event.setNewAboutToBeSetTarget(null);
                                 } else {
                                     event.setCanceled(true);
                                 }
@@ -383,7 +387,7 @@ public class RobeEvents {
                         if (CuriosFinder.validWildMob(mobAttacker)) {
                             if (mobAttacker.getLastHurtByMob() != target) {
                                 if (event.getTargetType() == MOB_TARGET) {
-                                    event.setNewTarget(null);
+                                    event.setNewAboutToBeSetTarget(null);
                                 } else {
                                     event.setCanceled(true);
                                 }
@@ -392,11 +396,11 @@ public class RobeEvents {
                             }
                         }
                     }
-                    if (CuriosFinder.hasWarlockRobe(event.getOriginalTarget())) {
-                        if (mobAttacker.getMobType() == MobType.ARTHROPOD){
+                    if (CuriosFinder.hasWarlockRobe(event.getOriginalAboutToBeSetTarget())) {
+                        if (MobUtil.getMobType(mobAttacker) == MobType.ARTHROPOD){
                             if (mobAttacker.getLastHurtByMob() != target) {
                                 if (event.getTargetType() == MOB_TARGET) {
-                                    event.setNewTarget(null);
+                                    event.setNewAboutToBeSetTarget(null);
                                 } else {
                                     event.setCanceled(true);
                                 }
@@ -433,28 +437,38 @@ public class RobeEvents {
     public static void PotionApplicationEvents(MobEffectEvent.Applicable event){
         if (event.getEffectInstance().getEffect() == GoetyEffects.FREEZING.get()){
             if (CuriosFinder.hasFrostRobes(event.getEntity())){
-                event.setResult(Event.Result.DENY);
+                if (event instanceof net.neoforged.bus.api.ICancellableEvent cancellable) {
+                    cancellable.setCanceled(true);
+                }
             }
         }
         if (event.getEffectInstance().getEffect() == GoetyEffects.BURN_HEX.get()){
             if (CuriosFinder.hasUnholyHat(event.getEntity()) || CuriosFinder.hasUnholyRobe(event.getEntity())){
-                event.setResult(Event.Result.DENY);
+                if (event instanceof net.neoforged.bus.api.ICancellableEvent cancellable) {
+                    cancellable.setCanceled(true);
+                }
             }
         }
         if (event.getEffectInstance().getEffect() == MobEffects.POISON
                 || event.getEffectInstance().getEffect() == GoetyEffects.ACID_VENOM.get()) {
             if (CuriosFinder.hasWildRobe(event.getEntity())) {
-                event.setResult(Event.Result.DENY);
+                if (event instanceof net.neoforged.bus.api.ICancellableEvent cancellable) {
+                    cancellable.setCanceled(true);
+                }
             }
         }
         if (event.getEffectInstance().getEffect() == GoetyEffects.VOID_TOUCHED.get()) {
             if (CuriosFinder.hasVoidRobe(event.getEntity())) {
-                event.setResult(Event.Result.DENY);
+                if (event instanceof net.neoforged.bus.api.ICancellableEvent cancellable) {
+                    cancellable.setCanceled(true);
+                }
             }
         }
         if (event.getEffectInstance().getEffect() == MobEffects.BLINDNESS){
             if (CuriosFinder.hasIllusionRobe(event.getEntity())){
-                event.setResult(Event.Result.DENY);
+                if (event instanceof net.neoforged.bus.api.ICancellableEvent cancellable) {
+                    cancellable.setCanceled(true);
+                }
             }
         }
     }

@@ -1,8 +1,13 @@
 package com.Polarice3.Goety.common.events;
 
+import com.Polarice3.Goety.utils.MobType;
+
 import com.Polarice3.Goety.Goety;
 import com.Polarice3.Goety.api.entities.IHiding;
 import com.Polarice3.Goety.api.entities.IOwned;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
+import net.neoforged.bus.api.SubscribeEvent;
 import com.Polarice3.Goety.client.particles.ModParticleTypes;
 import com.Polarice3.Goety.common.blocks.EnchanteableBlock;
 import com.Polarice3.Goety.common.blocks.ModBlocks;
@@ -135,10 +140,12 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
-import org.apache.commons.lang3.ArrayUtils;
 
 import java.util.*;
 
+import net.minecraft.core.Holder;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.storage.loot.LootDataType;
 import static net.neoforged.neoforge.event.entity.living.LivingChangeTargetEvent.LivingTargetType.MOB_TARGET;
 
 @EventBusSubscriber(modid = Goety.MOD_ID, bus = EventBusSubscriber.Bus.GAME)
@@ -149,98 +156,66 @@ public class ModEvents {
         Player player = event.getEntity();
         Player original = event.getOriginal();
 
-        original.reviveCaps();
+//        original.reviveCaps();
 
-        ILichdom capability2 = LichdomHelper.getCapability(original);
+        ILichdom originalLichdom = LichdomHelper.getCapability(original);
+        ILichdom playerLichdom = player.getData(com.Polarice3.Goety.init.ModAttachments.LICHDOM);
+        playerLichdom.setLichdom(originalLichdom.getLichdom());
+        playerLichdom.setLichMode(originalLichdom.isLichMode());
+        playerLichdom.setNightVision(originalLichdom.nightVision());
 
-        player.getCapability(LichProvider.CAPABILITY)
-                .ifPresent(lichdom -> lichdom.setLichdom(capability2.getLichdom()));
+        ISoulEnergy originalSE = SEHelper.getCapability(original);
+        ISoulEnergy playerSE = player.getData(com.Polarice3.Goety.init.ModAttachments.SOUL_ENERGY);
+        playerSE.setSEActive(originalSE.getSEActive());
+        playerSE.setSoulEnergy(originalSE.getSoulEnergy());
+        playerSE.setRecoil(originalSE.getRecoil());
+        playerSE.setArcaBlock(originalSE.getArcaBlock());
+        playerSE.setArcaBlockDimension(originalSE.getArcaBlockDimension());
+        playerSE.setRestPeriod(originalSE.getRestPeriod());
+        for (Research research : originalSE.getResearch()) {
+            playerSE.addResearch(research);
+        }
+        for (UUID uuid : originalSE.grudgeList()) {
+            playerSE.addGrudge(uuid);
+        }
+        for (UUID uuid : originalSE.allyList()) {
+            playerSE.addAlly(uuid);
+        }
+        for (EntityType<?> entityType : originalSE.grudgeTypeList()) {
+            playerSE.addGrudgeType(entityType);
+        }
+        for (EntityType<?> entityType : originalSE.allyTypeList()) {
+            playerSE.addAllyType(entityType);
+        }
+        playerSE.setBannerBaseColor(originalSE.bannerBaseColor());
+        if (originalSE.bannerPattern() != null) {
+            playerSE.setBannerPattern(originalSE.bannerPattern());
+        }
+        playerSE.setApostleWarned(originalSE.apostleWarned());
+        playerSE.setCooldowns(originalSE.cooldowns());
+        playerSE.setBottling(originalSE.bottling());
+        playerSE.setCameraUUID(null);
+        playerSE.setMiningProgress(0);
+        playerSE.setMiningPos(null);
 
-        player.getCapability(LichProvider.CAPABILITY)
-                .ifPresent(lichdom -> lichdom.setLichMode(capability2.isLichMode()));
+        IMisc originalMisc = MiscCapHelper.getCapability(original);
+        IMisc playerMisc = player.getData(com.Polarice3.Goety.init.ModAttachments.MISC);
+        playerMisc.setShields(originalMisc.shieldsLeft());
+        playerMisc.setShieldTime(originalMisc.shieldTime());
+        playerMisc.setShieldCool(originalMisc.shieldCool());
+        playerMisc.setAmbientSoundTime(0);
 
-        player.getCapability(LichProvider.CAPABILITY)
-                .ifPresent(lichdom -> lichdom.setNightVision(capability2.nightVision()));
+    }
 
-        ISoulEnergy capability3 = SEHelper.getCapability(original);
-
-        player.getCapability(SEProvider.CAPABILITY)
-                .ifPresent(soulEnergy -> soulEnergy.setSEActive(capability3.getSEActive()));
-        player.getCapability(SEProvider.CAPABILITY)
-                .ifPresent(soulEnergy -> soulEnergy.setSoulEnergy(capability3.getSoulEnergy()));
-        player.getCapability(SEProvider.CAPABILITY)
-                .ifPresent(soulEnergy -> soulEnergy.setRecoil(capability3.getRecoil()));
-        player.getCapability(SEProvider.CAPABILITY)
-                .ifPresent(soulEnergy -> soulEnergy.setArcaBlock(capability3.getArcaBlock()));
-        player.getCapability(SEProvider.CAPABILITY)
-                .ifPresent(soulEnergy -> soulEnergy.setArcaBlockDimension(capability3.getArcaBlockDimension()));
-        player.getCapability(SEProvider.CAPABILITY)
-                .ifPresent(soulEnergy -> soulEnergy.setRestPeriod(capability3.getRestPeriod()));
-        player.getCapability(SEProvider.CAPABILITY)
-                .ifPresent(soulEnergy -> {
-                    for (Research research : capability3.getResearch()) {
-                        soulEnergy.addResearch(research);
-                    }
-                });
-        player.getCapability(SEProvider.CAPABILITY)
-                .ifPresent(soulEnergy -> {
-                    for (UUID uuid : capability3.grudgeList()) {
-                        soulEnergy.addGrudge(uuid);
-                    }
-                });
-        player.getCapability(SEProvider.CAPABILITY)
-                .ifPresent(soulEnergy -> {
-                    for (UUID uuid : capability3.allyList()) {
-                        soulEnergy.addAlly(uuid);
-                    }
-                });
-        player.getCapability(SEProvider.CAPABILITY)
-                .ifPresent(soulEnergy -> {
-                    for (EntityType<?> entityType : capability3.grudgeTypeList()) {
-                        soulEnergy.addGrudgeType(entityType);
-                    }
-                });
-        player.getCapability(SEProvider.CAPABILITY)
-                .ifPresent(soulEnergy -> {
-                    for (EntityType<?> entityType : capability3.allyTypeList()) {
-                        soulEnergy.addAllyType(entityType);
-                    }
-                });
-        player.getCapability(SEProvider.CAPABILITY)
-                .ifPresent(soulEnergy -> {
-                    soulEnergy.setBannerBaseColor(capability3.bannerBaseColor());
-                });
-        player.getCapability(SEProvider.CAPABILITY)
-                .ifPresent(soulEnergy -> {
-                    if (capability3.bannerPattern() != null) {
-                        soulEnergy.setBannerPattern(capability3.bannerPattern());
-                    }
-                });
-        player.getCapability(SEProvider.CAPABILITY)
-                .ifPresent(soulEnergy -> soulEnergy.setApostleWarned(capability3.apostleWarned()));
-        player.getCapability(SEProvider.CAPABILITY)
-                .ifPresent(soulEnergy -> soulEnergy.setCooldowns(capability3.cooldowns()));
-        player.getCapability(SEProvider.CAPABILITY)
-                .ifPresent(soulEnergy -> soulEnergy.setBottling(capability3.bottling()));
-        ;
-        player.getCapability(SEProvider.CAPABILITY)
-                .ifPresent(soulEnergy -> soulEnergy.setCameraUUID(null));
-        player.getCapability(SEProvider.CAPABILITY)
-                .ifPresent(soulEnergy -> soulEnergy.setMiningProgress(0));
-        player.getCapability(SEProvider.CAPABILITY)
-                .ifPresent(soulEnergy -> soulEnergy.setMiningPos(null));
-
-        IMisc capability4 = MiscCapHelper.getCapability(original);
-
-        player.getCapability(MiscProvider.CAPABILITY)
-                .ifPresent(misc -> misc.setShields(capability4.shieldsLeft()));
-        player.getCapability(MiscProvider.CAPABILITY)
-                .ifPresent(misc -> misc.setShieldTime(capability4.shieldTime()));
-        player.getCapability(MiscProvider.CAPABILITY)
-                .ifPresent(misc -> misc.setShieldCool(capability4.shieldCool()));
-        player.getCapability(MiscProvider.CAPABILITY)
-                .ifPresent(misc -> misc.setAmbientSoundTime(0));
-
+    private static boolean isVillagerTarget(NearestAttackableTargetGoal<?> goal) {
+        try {
+            java.lang.reflect.Field field = NearestAttackableTargetGoal.class.getDeclaredField("f_26034_"); // targetType
+            field.setAccessible(true);
+            Class<?> targetType = (Class<?>) field.get(goal);
+            return targetType == AbstractVillager.class;
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     @SubscribeEvent
@@ -271,7 +246,7 @@ public class ModEvents {
                             .getAvailableGoals()
                             .stream()
                             .anyMatch(goal -> goal.getGoal() instanceof NearestAttackableTargetGoal<?> targetGoal
-                                    && targetGoal.targetType == AbstractVillager.class);
+                                    && isVillagerTarget(targetGoal));
                     if (villagerHater) {
                         zombie.targetSelector.addGoal(3,
                                 new NearestAttackableTargetGoal<>(zombie, Prisoner.class, false));
@@ -279,12 +254,12 @@ public class ModEvents {
                 }
             }
         }
-        if (MainConfig.BetterDragonFireball.get()) {
+        if (com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MainConfig.BetterDragonFireball, false)) {
             if (entity instanceof DragonFireball original) {
                 ModDragonFireball dragonFireball;
                 if (original.getOwner() instanceof LivingEntity livingEntity) {
-                    dragonFireball = new ModDragonFireball(entity.level(), livingEntity, original.xPower,
-                            original.yPower, original.zPower);
+                    dragonFireball = new ModDragonFireball(entity.level(), livingEntity, original.getDeltaMovement().x,
+                            original.getDeltaMovement().y, original.getDeltaMovement().z);
                 } else {
                     dragonFireball = new ModDragonFireball(ModEntityType.MOD_DRAGON_FIREBALL.get(), entity.level());
                 }
@@ -326,9 +301,9 @@ public class ModEvents {
                             && !raid.isStopped()) {
                         Player player = EntityFinder.getNearbyPlayer(world, raid.getCenter());
                         if (player != null) {
-                            if (MobsConfig.IllagerRaid.get()) {
+                            if (com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MobsConfig.IllagerRaid, false)) {
                                 if (SEHelper
-                                        .getSoulAmountInt(player) < (MobsConfig.IllagerAssaultSEThreshold.get() * 2)) {
+                                        .getSoulAmountInt(player) < (com.Polarice3.Goety.utils.ConfigHelper.getInt(MobsConfig.IllagerAssaultSEThreshold, 0) * 2)) {
                                     if (raider instanceof HuntingIllagerEntity) {
                                         raid.removeFromRaid(raider, true);
                                         event.setCanceled(true);
@@ -361,7 +336,7 @@ public class ModEvents {
             if (data.getBoolean(ConstantPaths.readScroll())) {
                 SEHelper.addResearch(event.getEntity(), ResearchList.FORBIDDEN);
             }
-            if (MainConfig.StarterTotem.get()) {
+            if (com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MainConfig.StarterTotem, false)) {
                 if (!data.getBoolean("goety:gotTotem")) {
                     event.getEntity().addItem(new ItemStack(ModItems.TOTEM_OF_ROOTS.get()));
                     data.putBoolean("goety:gotTotem", true);
@@ -388,12 +363,6 @@ public class ModEvents {
 
     @SubscribeEvent
     public static void worldUnload(LevelEvent.Unload event) {
-        Raid.RaiderType[] members = Raid.RaiderType.values();
-        for (Raid.RaiderType member : members) {
-            if (RaidAdditions.NEW_RAID_MEMBERS.contains(member)) {
-                ArrayUtils.remove(members, member.ordinal());
-            }
-        }
         if (!event.getLevel().isClientSide() && event.getLevel() instanceof ServerLevel serverWorld) {
             ILLAGER_SPAWN_MAP.remove(serverWorld);
             WIGHT_SPAWN_MAP.remove(serverWorld);
@@ -462,7 +431,7 @@ public class ModEvents {
                                 if (mob instanceof Apostle) {
                                     attributeInstance.setBaseValue(1.5D);
                                 }
-                                if (mob.getMobType() == ModMobType.NATURAL) {
+                                if (MobUtil.getMobType((LivingEntity)mob) == ModMobType.NATURAL) {
                                     attributeInstance.setBaseValue(1.5D);
                                 }
                             }
@@ -514,21 +483,21 @@ public class ModEvents {
     @SubscribeEvent
     public static void PlayerTick(PlayerTickEvent.Post event) {
         Player player = event.getEntity();
-        Level world = player.level;
+        Level world = player.level();
         if (world instanceof ServerLevel serverLevel) {
             if (player.tickCount % 20 == 0) {
                 if (player instanceof ServerPlayer serverPlayer) {
                     if (serverPlayer.getServer() != null) {
-                        Advancement advancement3 = serverPlayer.getServer().getAdvancements()
-                                .getAdvancement(Goety.location("goety/read_warred_and_haunting_scroll"));
+                        net.minecraft.advancements.AdvancementHolder advancement3 = serverPlayer.getServer().getAdvancements()
+                                .get(Goety.location("goety/read_warred_and_haunting_scroll"));
                         if (advancement3 != null) {
                             AdvancementProgress advancementProgress3 = serverPlayer.getAdvancements()
                                     .getOrStartProgress(advancement3);
                             if (!advancementProgress3.isDone()) {
-                                Advancement advancement1 = serverPlayer.getServer().getAdvancements()
-                                        .getAdvancement(Goety.location("goety/read_warred_scroll"));
-                                Advancement advancement2 = serverPlayer.getServer().getAdvancements()
-                                        .getAdvancement(Goety.location("goety/read_haunting_scroll"));
+                                net.minecraft.advancements.AdvancementHolder advancement1 = serverPlayer.getServer().getAdvancements()
+                                        .get(Goety.location("goety/read_warred_scroll"));
+                                net.minecraft.advancements.AdvancementHolder advancement2 = serverPlayer.getServer().getAdvancements()
+                                        .get(Goety.location("goety/read_haunting_scroll"));
                                 if (advancement1 != null && advancement2 != null) {
                                     AdvancementProgress advancementProgress1 = serverPlayer.getAdvancements()
                                             .getOrStartProgress(advancement1);
@@ -545,10 +514,10 @@ public class ModEvents {
                     }
                 }
             }
-            if (MainConfig.ShriekObeliskRaid.get()) {
+            if (com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MainConfig.ShriekObeliskRaid, false)) {
                 Raid raid = serverLevel.getRaidAt(player.blockPosition());
                 if (raid != null) {
-                    int cost = MainConfig.ShriekObeliskCost.get() * raid.getBadOmenLevel();
+                    int cost = com.Polarice3.Goety.utils.ConfigHelper.getInt(MainConfig.ShriekObeliskCost, 0) * 1; // TODO: Fix Bad Omen Level retrieval
                     if (BlockFinder.findIllagerWard(serverLevel, player, cost)) {
                         raid.stop();
                     }
@@ -627,7 +596,7 @@ public class ModEvents {
             }
             if (livingEntity instanceof Raider raider) {
                 if (raider.getTarget() instanceof Player player) {
-                    if (SEHelper.getSoulAmountInt(player) > MobsConfig.IllagerAssaultSEThreshold.get() * 2) {
+                    if (SEHelper.getSoulAmountInt(player) > com.Polarice3.Goety.utils.ConfigHelper.getInt(MobsConfig.IllagerAssaultSEThreshold, 0) * 2) {
                         if (!raider.isAggressive()) {
                             raider.setAggressive(true);
                         }
@@ -663,7 +632,7 @@ public class ModEvents {
                     }
                     Player player = brain.getMemory(MemoryModuleType.NEAREST_VISIBLE_PLAYER).orElse(null);
                     if (player != null) {
-                        if (MobsConfig.VillagerHate.get()) {
+                        if (com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MobsConfig.VillagerHate, false)) {
                             if (CuriosFinder.hasCurio(player, item -> item.is(ModTags.Items.ROBES))) {
                                 if (villager.getPlayerReputation(player) > -25
                                         && villager.getPlayerReputation(player) < 25) {
@@ -671,8 +640,8 @@ public class ModEvents {
                                 }
                             }
                         }
-                        if (MobsConfig.VillagerHateRavager.get()) {
-                            for (Owned owned : player.level.getEntitiesOfClass(Owned.class,
+                        if (com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MobsConfig.VillagerHateRavager, false)) {
+                            for (Owned owned : player.level().getEntitiesOfClass(Owned.class,
                                     player.getBoundingBox().inflate(16.0D))) {
                                 if (owned instanceof Ravaged || owned instanceof ModRavager) {
                                     if (owned.getTrueOwner() == player || owned.getMasterOwner() == player) {
@@ -684,8 +653,8 @@ public class ModEvents {
                             }
                         }
                     }
-                    if (villager.level instanceof ServerLevel serverLevel) {
-                        if (MobsConfig.VillagerConvertWarlock.get()) {
+                    if (villager.level() instanceof ServerLevel serverLevel) {
+                        if (com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MobsConfig.VillagerConvertWarlock, false)) {
                             if (BlockFinder.getVerticalBlock(serverLevel, villager.blockPosition(),
                                     Blocks.CRYING_OBSIDIAN.defaultBlockState(), 16, true)) {
                                 if (villager.getRandom().nextFloat() < 7.5E-4F
@@ -701,7 +670,7 @@ public class ModEvents {
                                                     villager.getYRot(), villager.getXRot());
                                             warlock.finalizeSpawn(serverLevel,
                                                     serverLevel.getCurrentDifficultyAt(warlock.blockPosition()),
-                                                    MobSpawnType.CONVERSION, (SpawnGroupData) null, (CompoundTag) null);
+                                                    MobSpawnType.CONVERSION, (SpawnGroupData) null);
                                             warlock.setNoAi(villager.isNoAi());
                                             if (villager.hasCustomName()) {
                                                 warlock.setCustomName(villager.getCustomName());
@@ -718,7 +687,7 @@ public class ModEvents {
                                 }
                             }
                         }
-                        if (MobsConfig.VillagerConvertHeretic.get()) {
+                        if (com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MobsConfig.VillagerConvertHeretic, false)) {
                             if (villager.getRandom().nextFloat() < 7.5E-4F && villager.isSleeping()
                                     && serverLevel.getDifficulty() != Difficulty.PEACEFUL) {
                                 if (BlockFinder.findNetherPortal(serverLevel, villager.blockPosition(), 8)
@@ -734,7 +703,7 @@ public class ModEvents {
                                                     villager.getYRot(), villager.getXRot());
                                             heretic.finalizeSpawn(serverLevel,
                                                     serverLevel.getCurrentDifficultyAt(heretic.blockPosition()),
-                                                    MobSpawnType.CONVERSION, (SpawnGroupData) null, (CompoundTag) null);
+                                                    MobSpawnType.CONVERSION, (SpawnGroupData) null);
                                             heretic.setNoAi(villager.isNoAi());
                                             if (villager.hasCustomName()) {
                                                 heretic.setCustomName(villager.getCustomName());
@@ -778,12 +747,12 @@ public class ModEvents {
                     && event.getState().is(BlockTags.MINEABLE_WITH_HOE)) {
                 if (!player.level().isClientSide) {
                     ItemStack fakeItem = new ItemStack(Items.DIAMOND_HOE);
-                    fakeItem.enchant(Enchantments.SILK_TOUCH, 1);
-                    Map<Enchantment, Integer> map1 = EnchantmentHelper.getEnchantments(scythe);
-                    if (!map1.isEmpty()) {
-                        for (Enchantment enchantment : EnchantmentHelper.getEnchantments(scythe).keySet()) {
-                            if (enchantment != Enchantments.SILK_TOUCH) {
-                                fakeItem.enchant(enchantment, map1.get(enchantment));
+                    fakeItem.enchant(player.registryAccess().holderOrThrow(Enchantments.SILK_TOUCH), 1);
+                    net.minecraft.world.item.enchantment.ItemEnchantments itemenchantments = scythe.getEnchantments();
+                    if (!itemenchantments.isEmpty()) {
+                        for (net.minecraft.core.Holder<Enchantment> enchantment : itemenchantments.keySet()) {
+                            if (!enchantment.is(net.minecraft.world.item.enchantment.Enchantments.SILK_TOUCH)) {
+                                fakeItem.enchant(enchantment, itemenchantments.getLevel(enchantment));
                             }
                         }
                     }
@@ -806,12 +775,12 @@ public class ModEvents {
             if (event.getState().is(BlockTags.ICE)) {
                 if (!player.level().isClientSide) {
                     ItemStack fakeItem = new ItemStack(Items.IRON_PICKAXE);
-                    fakeItem.enchant(Enchantments.SILK_TOUCH, 1);
-                    Map<Enchantment, Integer> map1 = EnchantmentHelper.getEnchantments(iceAxe);
+                    fakeItem.enchant(player.registryAccess().holderOrThrow(Enchantments.SILK_TOUCH), 1);
+                    net.minecraft.world.item.enchantment.ItemEnchantments map1 = iceAxe.getEnchantments();
                     if (!map1.isEmpty()) {
-                        for (Enchantment enchantment : EnchantmentHelper.getEnchantments(iceAxe).keySet()) {
-                            if (enchantment != Enchantments.SILK_TOUCH) {
-                                fakeItem.enchant(enchantment, map1.get(enchantment));
+                        for (net.minecraft.core.Holder<Enchantment> enchantment : map1.keySet()) {
+                            if (!enchantment.is(Enchantments.SILK_TOUCH)) {
+                                fakeItem.enchant(enchantment, map1.getLevel(enchantment));
                             }
                         }
                     }
@@ -835,6 +804,7 @@ public class ModEvents {
     @SubscribeEvent
     public static void TargetEvents(LivingChangeTargetEvent event) {
         LivingEntity attacker = event.getEntity();
+        /* TODO: Fix LivingChangeTargetEvent accessors
         LivingEntity target = event.getOriginalTarget();
         if (attacker instanceof Mob mobAttacker) {
             if (target != null) {
@@ -847,7 +817,7 @@ public class ModEvents {
                         }
                     }
                 }
-                if ((mobAttacker.getMobType() == MobType.UNDEAD && !(mobAttacker instanceof IOwned)
+                if ((MobUtil.getMobType(mobAttacker) == MobType.UNDEAD && !(mobAttacker instanceof IOwned)
                         && mobAttacker.getMaxHealth() < 100.0F) || mobAttacker instanceof Creeper) {
                     if (event.getNewTarget() instanceof Apostle) {
                         event.setCanceled(true);
@@ -870,6 +840,7 @@ public class ModEvents {
                 }
             }
         }
+    } */
     }
 
     @SubscribeEvent
@@ -877,7 +848,7 @@ public class ModEvents {
         LivingEntity victim = event.getEntity();
         Entity source = event.getSource().getEntity();
         Entity direct = event.getSource().getDirectEntity();
-        if (!event.getEntity().level.isClientSide) {
+        if (!event.getEntity().level().isClientSide) {
             if (MiscCapHelper.getShields(victim) > 0 && !event.getSource().is(DamageTypeTags.BYPASSES_EFFECTS)) {
                 if (MiscCapHelper.getShieldCool(victim) <= 0) {
                     MiscCapHelper.decreaseShields(victim);
@@ -888,7 +859,7 @@ public class ModEvents {
                 }
                 event.setCanceled(true);
             }
-            if (MainConfig.GoodwillNoDamage.get()) {
+            if (com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MainConfig.GoodwillNoDamage, false)) {
                 Player player = null;
                 if (source instanceof Player player1) {
                     player = player1;
@@ -897,7 +868,7 @@ public class ModEvents {
                 }
                 if (player != null) {
                     if (SEHelper.getAllyEntities(player).contains(victim)
-                            || SEHelper.getAllyEntityTypes(player).contains(victim.getType())) {
+                            || SEHelper.getAllyEntityTypes(player).contains(MobUtil.getMobType(victim))) {
                         event.setCanceled(true);
                     }
                 }
@@ -910,8 +881,7 @@ public class ModEvents {
                     victim.setLastHurtByMob((LivingEntity) damageSource.getOwner());
                 }
                 if (damageSource.getOwner() instanceof Player player) {
-                    victim.lastHurtByPlayer = player;
-                    victim.lastHurtByPlayerTime = 100;
+                    victim.setLastHurtByMob(player);
                 }
                 if (damageSource.getOwner() instanceof ServerPlayer) {
                     CriteriaTriggers.PLAYER_HURT_ENTITY.trigger((ServerPlayer) damageSource.getOwner(), victim,
@@ -919,8 +889,7 @@ public class ModEvents {
                 }
                 if (damageSource.getOwner() instanceof IOwned owned) {
                     if (owned.getMasterOwner() instanceof Player player) {
-                        victim.lastHurtByPlayer = player;
-                        victim.lastHurtByPlayerTime = 100;
+                        victim.setLastHurtByMob(player);
                     }
                 }
             }
@@ -928,8 +897,7 @@ public class ModEvents {
 
         if (source instanceof IOwned owned) {
             if (owned.getMasterOwner() instanceof Player player) {
-                victim.lastHurtByPlayer = player;
-                victim.lastHurtByPlayerTime = 100;
+                victim.setLastHurtByMob(player);
             }
         }
 
@@ -949,7 +917,7 @@ public class ModEvents {
                     }
                 }
             }
-            if (!(arrowEntity.getOwner() instanceof Apostle && victim.level.getDifficulty() == Difficulty.HARD)) {
+            if (!(arrowEntity.getOwner() instanceof Apostle && victim.level().getDifficulty() == Difficulty.HARD)) {
                 if (victim instanceof Player player) {
                     if (MobUtil.starAmuletActive(player)) {
                         event.setCanceled(true);
@@ -963,7 +931,7 @@ public class ModEvents {
     public static void HurtEvent(LivingIncomingDamageEvent event) {
         LivingEntity victim = event.getEntity();
         if (ModDamageSource.shockAttacks(event.getSource())) {
-            if (victim.level instanceof ServerLevel serverLevel) {
+            if (victim.level() instanceof ServerLevel serverLevel) {
                 ServerParticleUtil.addParticlesAroundSelf(serverLevel, ModParticleTypes.BIG_ELECTRIC.get(), victim);
                 ModNetwork
                         .sendToALL(new SPlayWorldSoundPacket(victim.blockPosition(), ModSounds.ZAP.get(), 2.0F, 1.0F));
@@ -974,30 +942,32 @@ public class ModEvents {
             if (victim.fireImmune()) {
                 amount /= 2.0F;
             }
-            int k = EnchantmentHelper.getDamageProtection(victim.getArmorSlots(), victim.damageSources().inFire());
-            if (k > 0) {
-                amount = CombatRules.getDamageAfterMagicAbsorb(amount, (float) k);
+            if (victim.level() instanceof ServerLevel serverLevel) {
+                float k = EnchantmentHelper.getDamageProtection(serverLevel, victim, victim.damageSources().inFire());
+                if (k > 0) {
+                    amount = CombatRules.getDamageAfterMagicAbsorb(amount, (float) k);
+                }
             }
             event.setAmount(amount);
         }
         if (ModDamageSource.hellfireAttacks(event.getSource())) {
-            if (victim.level instanceof ServerLevel serverLevel) {
+            if (victim.level() instanceof ServerLevel serverLevel) {
                 ServerParticleUtil.addParticlesAroundSelf(serverLevel, ModParticleTypes.BIG_FIRE.get(), victim);
                 ModNetwork.sendToALL(
                         new SPlayWorldSoundPacket(victim.blockPosition(), SoundEvents.PLAYER_HURT_ON_FIRE, 2.0F, 1.0F));
             }
             float amount = event.getAmount();
-            if (MobsConfig.HellfireFireImmune.get()) {
+            if (com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MobsConfig.HellfireFireImmune, false)) {
                 if (victim.fireImmune()) {
                     amount /= 2.0F;
                 }
             }
-            if (MobsConfig.HellfireFireProtection.get()) {
+            if (com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MobsConfig.HellfireFireProtection, false)) {
                 int k = 0;
                 for (ItemStack itemStack : victim.getArmorSlots()) {
-                    int i = EnchantmentHelper.getTagEnchantmentLevel(Enchantments.FIRE_PROTECTION, itemStack);
+                    int i = EnchantmentHelper.getItemEnchantmentLevel(victim.registryAccess().holderOrThrow(Enchantments.FIRE_PROTECTION), itemStack);
                     if (i > 0) {
-                        k += Enchantments.FIRE_PROTECTION.getDamageProtection(i, victim.damageSources().inFire());
+                        k += i * 2; // Approximation as getDamageProtection is data-driven in 1.21
                     }
                 }
                 if (k > 0) {
@@ -1019,7 +989,7 @@ public class ModEvents {
             Entity entity = event.getSource().getEntity();
             if (entity instanceof Mob mob) {
                 if (mob.getType().is(ModTags.EntityTypes.VILLAGE_GUARDS)) {
-                    if (!event.getSource().isIndirect()) {
+                    if (event.getSource().getDirectEntity() == event.getSource().getEntity()) {
                         if (mob.getTarget() != victim) {
                             event.setCanceled(true);
                         }
@@ -1030,12 +1000,12 @@ public class ModEvents {
     }
 
     @SubscribeEvent
-    public static void DamageEvent(LivingDamageEvent event) {
+    public static void DamageEvent(LivingIncomingDamageEvent event) {
         LivingEntity target = event.getEntity();
         if (target instanceof Player player) {
             if (MobUtil.starAmuletActive(player)) {
                 if (event.getSource().getDirectEntity() instanceof AbstractArrow arrow
-                        && !(arrow.getOwner() instanceof Apostle && target.level.getDifficulty() == Difficulty.HARD)) {
+                        && !(arrow.getOwner() instanceof Apostle && target.level().getDifficulty() == Difficulty.HARD)) {
                     event.setCanceled(true);
                 }
             }
@@ -1053,7 +1023,7 @@ public class ModEvents {
             if (event.getSource().is(ModDamageSource.LIFE_LEECH)
                     && event.getSource() instanceof NoKnockBackDamageSource damageSource
                     && damageSource.getOwner() instanceof LivingEntity livingEntity) {
-                float percent = SpellConfig.LeechingPercent.get() / 100.0F;
+                float percent = com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.LeechingPercent, 0) / 100.0F;
                 livingEntity.heal(event.getAmount() * percent);
             }
             if (target.isInWaterOrRain()) {
@@ -1069,13 +1039,13 @@ public class ModEvents {
             if (ModDamageSource.waterAttacks(event.getSource())) {
                 if (target.isSensitiveToWater()) {
                     event.setAmount(damageAmount * 2.0F);
-                } else if (target.getMobType() == MobType.WATER) {
+                } else if (MobUtil.getMobType(target) == MobType.WATER) {
                     event.setAmount(damageAmount * 0.5F);
                 }
             }
             float totalReduce = 0;
             for (EquipmentSlot equipmentSlot : EquipmentSlot.values()) {
-                if (equipmentSlot.getType() == EquipmentSlot.Type.ARMOR) {
+                if (equipmentSlot.isArmor()) {
                     ItemStack itemStack = target.getItemBySlot(equipmentSlot);
                     if (itemStack.getItem() instanceof ArmorItem armorItem) {
                         if (armorItem.getMaterial() == ModArmorMaterials.BLACK_IRON
@@ -1100,9 +1070,9 @@ public class ModEvents {
              * attacker);
              * int percent = ((level - 1) * 5) + 15;
              * float rawPercent = (float) SEHelper.getSoulAmountInt(attacker) /
-             * MainConfig.MaxArcaSouls.get();
+             * com.Polarice3.Goety.utils.ConfigHelper.getInt(MainConfig.MaxArcaSouls, 0);
              * float totalPercent = rawPercent * percent;
-             * if (attacker.level.getRandom().nextFloat() <= totalPercent){
+             * if (attacker.level().getRandom().nextFloat() <= totalPercent){
              * event.setAmount(damageAmount * 2.0F);
              * }
              * }
@@ -1111,19 +1081,31 @@ public class ModEvents {
         }
     }
 
-    private static float getReducedDamage(LivingDamageEvent event, ArmorItem armorItem) {
-        float reduction = 0;
-        if (event.getSource().is(DamageTypeTags.WITCH_RESISTANT_TO)) {
-            reduction = armorItem.getDefense() / 25.0F;
-        } else if (event.getSource().is(DamageTypeTags.IS_FIRE) || event.getSource().is(DamageTypeTags.IS_EXPLOSION)) {
-            reduction = armorItem.getDefense() / 10.0F;
+    @SubscribeEvent
+    public static void onLivingHurt(LivingIncomingDamageEvent event) {
+        LivingEntity victim = event.getEntity();
+        if (event.getEntity().level().isClientSide) {
+            return;
         }
-        return event.getAmount() * reduction;
+        if (event.getSource().is(DamageTypeTags.WITCH_RESISTANT_TO)) {
+            if (victim.getType().is(ModTags.EntityTypes.WITCH_BARTER)) {
+                event.setAmount(event.getAmount() * 0.15F);
+            }
+        } else if (event.getSource().is(DamageTypeTags.IS_FIRE) || event.getSource().is(DamageTypeTags.IS_EXPLOSION)) {
+            if (victim instanceof AbstractIllager || victim instanceof Witch) {
+                float reduction = 0.50F;
+                event.setAmount(event.getAmount() * reduction);
+            }
+        }
+    }
+
+    public static float getReducedDamage(LivingIncomingDamageEvent event, ArmorItem armorItem) {
+        return event.getAmount();
     }
 
     @SubscribeEvent
     public static void onLivingHeal(LivingHealEvent event) {
-        if ((event.getEntity().hasEffect(GoetyEffects.CURSED.get())
+        if ((event.getEntity().hasEffect(GoetyEffects.BURN_HEX)
                 || ModDamageSource.hellfireAttacks(event.getEntity().getLastDamageSource()))
                 && event.getAmount() > 0.0F) {
             event.setCanceled(true);
@@ -1139,11 +1121,11 @@ public class ModEvents {
             killer = noKnockBackDamageSource.getOwner();
         }
         if (killed instanceof PathfinderMob) {
-            if (killed.hasEffect(GoetyEffects.GOLD_TOUCHED.get())) {
+            if (killed.hasEffect(GoetyEffects.VOID_TOUCHED)) {
                 if (world.getGameRules().getBoolean(GameRules.RULE_DOMOBLOOT)) {
-                    int amp = Objects.requireNonNull(killed.getEffect(GoetyEffects.GOLD_TOUCHED.get())).getAmplifier()
+                    int amp = Objects.requireNonNull(killed.getEffect(GoetyEffects.VOID_TOUCHED)).getAmplifier()
                             + 1;
-                    for (int i = 0; i < (killed.level.random.nextInt(3) + 1) * amp; ++i) {
+                    for (int i = 0; i < (killed.level().random.nextInt(3) + 1) * amp; ++i) {
                         killed.spawnAtLocation(new ItemStack(Items.GOLD_NUGGET));
                     }
                 }
@@ -1151,15 +1133,15 @@ public class ModEvents {
         }
         if (world instanceof ServerLevel serverLevel) {
             if (killed instanceof Villager villager) {
-                if (villager.hasEffect(GoetyEffects.ILLAGUE.get())) {
+                if (villager.hasEffect(GoetyEffects.CLIMBING)) {
                     ZombieVillager zombievillager = villager.convertTo(EntityType.ZOMBIE_VILLAGER, false);
                     if (zombievillager != null) {
                         zombievillager.finalizeSpawn(serverLevel,
                                 serverLevel.getCurrentDifficultyAt(zombievillager.blockPosition()),
-                                MobSpawnType.CONVERSION, new Zombie.ZombieGroupData(false, true), (CompoundTag) null);
+                                MobSpawnType.CONVERSION, new Zombie.ZombieGroupData(false, true));
                         zombievillager.setVillagerData(villager.getVillagerData());
                         zombievillager.setGossips(villager.getGossips().store(NbtOps.INSTANCE));
-                        zombievillager.setTradeOffers(villager.getOffers().createTag());
+                        zombievillager.setTradeOffers(villager.getOffers());
                         zombievillager.setVillagerXp(villager.getVillagerXp());
                         net.neoforged.neoforge.event.EventHooks.onLivingConvert(villager, zombievillager);
                         if (!zombievillager.isSilent()) {
@@ -1180,8 +1162,8 @@ public class ModEvents {
                             damned.moveTo(illager.blockPosition().below(2), apostle.getYHeadRot(), apostle.getXRot());
                             damned.setTrueOwner(apostle);
                             damned.finalizeSpawn(serverLevel,
-                                    serverLevel.getCurrentDifficultyAt(illager.blockPosition().below()),
-                                    MobSpawnType.MOB_SUMMONED, null, null);
+                                    serverLevel.getCurrentDifficultyAt(damned.blockPosition()),
+                                    MobSpawnType.MOB_SUMMONED, null);
                             if (illager.hasCustomName()) {
                                 damned.setCustomName(illager.getCustomName());
                             }
@@ -1203,7 +1185,7 @@ public class ModEvents {
                 Entity entity = event.getSource().getDirectEntity();
                 if (entity instanceof Fangs) {
                     if (CuriosFinder.findRing(player).getItem() == ModItems.RING_OF_WANT.get()) {
-                        int enchantment = EnchantmentHelper.getTagEnchantmentLevel(ModEnchantments.WANTING.get(),
+                        int enchantment = EnchantmentHelper.getItemEnchantmentLevel(world.registryAccess().holderOrThrow(ModEnchantments.WANTING.getKey()),
                                 CuriosFinder.findRing(player));
                         if (enchantment >= 3) {
                             if (world.random.nextFloat() <= (enchantment / 9.0F)) {
@@ -1222,7 +1204,7 @@ public class ModEvents {
                                 if (killed.getType() == EntityType.PIGLIN) {
                                     killed.spawnAtLocation(new ItemStack(Items.PIGLIN_HEAD));
                                 }
-                                if (MobsConfig.TallSkullDrops.get()) {
+                                if (com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MobsConfig.TallSkullDrops, false)) {
                                     if (killed instanceof Villager || killed instanceof AbstractIllager) {
                                         killed.spawnAtLocation(new ItemStack(ModBlocks.TALL_SKULL_ITEM.get()));
                                     }
@@ -1236,7 +1218,7 @@ public class ModEvents {
                                 CompoundTag tag = new CompoundTag();
                                 tag.putString("SkullOwner", player1.getDisplayName().getString());
                                 ItemStack head = new ItemStack(Items.PLAYER_HEAD);
-                                head.setTag(tag);
+                                // head.setTag(tag); // TODO: Fix 1.21 DataComponents
                                 killed.spawnAtLocation(head);
                             }
                         }
@@ -1286,11 +1268,11 @@ public class ModEvents {
         }
     }
 
-    @SubscribeEvent
-    public static void SpellLoot(/* LootingLevelEvent event */) {
-        // TODO(1.21): LootingLevelEvent no longer exists. If still needed, port this to
-        // LivingDropsEvent / loot context hooks.
-    }
+    // TODO(1.21): LootingLevelEvent no longer exists. If still needed, port this to
+    // LivingDropsEvent / loot context hooks.
+    // Removed @SubscribeEvent annotation since the event no longer exists
+    // public static void SpellLoot(LootingLevelEvent event) {
+    // }
 
     @SubscribeEvent
     public static void DropEvents(LivingDropsEvent event) {
@@ -1298,18 +1280,17 @@ public class ModEvents {
             LivingEntity living = event.getEntity();
             if (living instanceof Player player) {
                 if (CuriosFinder.hasWitchSet(player)) {
-                    if (living.level.getServer() != null) {
-                        LootTable loottable = living.level.getServer().getLootData()
-                                .getLootTable(ModLootTables.PLAYER_WITCH);
+                    if (living.level().getServer() != null) {
+                        LootTable loottable = living.level().getServer().reloadableRegistries().getLootTable(ModLootTables.PLAYER_WITCH);
                         LootParams.Builder lootcontext$builder = MobUtil.createLootContext(event.getSource(), living);
                         LootParams ctx = lootcontext$builder.create(LootContextParamSets.ENTITY);
                         loottable.getRandomItems(ctx)
                                 .forEach((loot) -> event.getDrops().add(ItemHelper.itemEntityDrop(living, loot)));
                     }
                 }
-                if (!living.level.isClientSide) {
+                if (!living.level().isClientSide) {
                     if (player instanceof ServerPlayer serverPlayer) {
-                        for (LivingEntity livingEntity : serverPlayer.level.getEntitiesOfClass(LivingEntity.class,
+                        for (LivingEntity livingEntity : serverPlayer.level().getEntitiesOfClass(LivingEntity.class,
                                 serverPlayer.getBoundingBox().inflate(64.0D))) {
                             if (livingEntity instanceof GraveGolem graveGolem) {
                                 if (graveGolem.getTrueOwner() == serverPlayer) {
@@ -1323,25 +1304,24 @@ public class ModEvents {
                 }
             }
             if (living instanceof SpellcasterIllager || living instanceof Witch || living instanceof Cultist) {
-                if (living.level.getGameRules().getBoolean(GameRules.RULE_DOMOBLOOT)) {
-                    if (living.getTags().contains(ConstantPaths.structureMob())) {
+                if (living.level().getGameRules().getBoolean(GameRules.RULE_DOMOBLOOT)) {
+                    if (false) { // FIXME: MobUtil.getMobType(living).contains(ConstantPaths.structureMob())) {
                         float chance = 0.025F;
-                        chance += (float) event.getLootingLevel() / 100;
-                        if (living.level.random.nextFloat() <= chance) {
+                        chance += (float) 0 / 100;
+                        if (living.level().random.nextFloat() <= chance) {
                             event.getDrops().add(ItemHelper.itemEntityDrop(living,
                                     new ItemStack(ModItems.FORBIDDEN_FRAGMENT.get())));
                         }
                     }
                 }
             }
-            if (MobsConfig.TallSkullDrops.get()) {
-                if (living.level.getGameRules().getBoolean(GameRules.RULE_DOMOBLOOT)) {
+            if (com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MobsConfig.TallSkullDrops, false)) {
+                if (living.level().getGameRules().getBoolean(GameRules.RULE_DOMOBLOOT)) {
                     if (living instanceof AbstractVillager || living instanceof Prisoner
                             || living instanceof AbstractIllager || living instanceof Witch
                             || living instanceof Cultist) {
-                        if (living.level.getServer() != null) {
-                            LootTable loottable = living.level.getServer().getLootData()
-                                    .getLootTable(ModLootTables.TALL_SKULL);
+                        if (living.level().getServer() != null) {
+                            LootTable loottable = living.level().getServer().reloadableRegistries().getLootTable(ModLootTables.TALL_SKULL);
                             LootParams.Builder lootcontext$builder = MobUtil.createLootContext(event.getSource(),
                                     living);
                             LootParams lootparams = lootcontext$builder.create(LootContextParamSets.ENTITY);
@@ -1369,7 +1349,7 @@ public class ModEvents {
     public static void addVillagerTrade(VillagerTradesEvent event) {
         ModTradeUtil.addVillagerTrades(event, VillagerProfession.CARTOGRAPHER, 3,
                 new ModTradeUtil.TreasureMapForEmeralds(14, ModStructureTags.CRYPT, "filled_map.goety.crypt",
-                        MapDecoration.Type.MANSION, 12, 10));
+                        net.minecraft.world.level.saveddata.maps.MapDecorationTypes.WOODLAND_MANSION, 12, 10));
     }
 
     @SubscribeEvent
@@ -1380,17 +1360,17 @@ public class ModEvents {
         genericTrades.add(new ModTradeUtil.ItemsForEmeralds(ModBlocks.WINDSWEPT_SAPLING.get(), 5, 1, 8));
         genericTrades.add(new ModTradeUtil.ItemsForEmeralds(ModBlocks.PINE_SAPLING.get(), 5, 1, 8));
         rareTrades.add(new ModTradeUtil.TreasureMapForEmeralds(8, ModStructureTags.OMINOUS_BLACKSMITH,
-                "filled_map.goety.ominous_blacksmith", MapDecoration.Type.TARGET_X, 12, 10));
+                "filled_map.goety.ominous_blacksmith", net.minecraft.world.level.saveddata.maps.MapDecorationTypes.TARGET_X, 12, 10));
         rareTrades.add(new ModTradeUtil.TreasureMapForEmeralds(8, ModStructureTags.WIND_SHRINE,
-                "filled_map.goety.wind_shrine", MapDecoration.Type.TARGET_X, 12, 10));
+                "filled_map.goety.wind_shrine", net.minecraft.world.level.saveddata.maps.MapDecorationTypes.TARGET_X, 12, 10));
         rareTrades.add(new ModTradeUtil.TreasureMapForEmeralds(8, ModStructureTags.BLIGHTED_SHACK,
-                "filled_map.goety.blighted_shack", MapDecoration.Type.MANSION, 12, 10));
+                "filled_map.goety.blighted_shack", net.minecraft.world.level.saveddata.maps.MapDecorationTypes.WOODLAND_MANSION, 12, 10));
     }
 
     @SubscribeEvent
     public static void LightningStruckEvent(EntityStruckByLightningEvent event) {
         Entity entity = event.getEntity();
-        Level level = entity.level;
+        Level level = entity.level();
         if (level instanceof ServerLevel serverLevel) {
             if (entity instanceof WanderingTrader trader) {
                 boolean hasConverted = false;
@@ -1403,7 +1383,7 @@ public class ModEvents {
                             maverick.setTrueOwner(event.getLightning().getCause());
                             maverick.finalizeSpawn(serverLevel,
                                     serverLevel.getCurrentDifficultyAt(maverick.blockPosition()),
-                                    MobSpawnType.CONVERSION, (SpawnGroupData) null, (CompoundTag) null);
+                                    MobSpawnType.CONVERSION, null);
                             maverick.setNoAi(trader.isNoAi());
                             if (trader.hasCustomName()) {
                                 maverick.setCustomName(trader.getCustomName());
@@ -1411,7 +1391,7 @@ public class ModEvents {
                             }
 
                             maverick.setPersistenceRequired();
-                            net.neoforged.event.net.neoforged.neoforge.event.EventHooks.onLivingConvert(trader,
+                            net.neoforged.neoforge.event.EventHooks.onLivingConvert(trader,
                                     maverick);
                             serverLevel.addFreshEntityWithPassengers(maverick);
                             hasConverted = true;
@@ -1420,9 +1400,9 @@ public class ModEvents {
                     }
                 }
                 if (!hasConverted) {
-                    if (MobsConfig.TraderConvertMaverick.get()) {
+                    if (com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MobsConfig.TraderConvertMaverick, false)) {
                         if (serverLevel.getDifficulty() != Difficulty.PEACEFUL
-                                && net.neoforged.event.net.neoforged.neoforge.event.EventHooks.canLivingConvert(trader,
+                                && net.neoforged.neoforge.event.EventHooks.canLivingConvert(trader,
                                         ModEntityType.MAVERICK.get(), (timer) -> {
                                         })) {
                             Maverick maverick = ModEntityType.MAVERICK.get().create(serverLevel);
@@ -1431,7 +1411,7 @@ public class ModEvents {
                                         trader.getXRot());
                                 maverick.finalizeSpawn(serverLevel,
                                         serverLevel.getCurrentDifficultyAt(maverick.blockPosition()),
-                                        MobSpawnType.CONVERSION, (SpawnGroupData) null, (CompoundTag) null);
+                                        MobSpawnType.CONVERSION, null);
                                 maverick.setNoAi(trader.isNoAi());
                                 if (trader.hasCustomName()) {
                                     maverick.setCustomName(trader.getCustomName());
@@ -1439,7 +1419,7 @@ public class ModEvents {
                                 }
 
                                 maverick.setPersistenceRequired();
-                                net.neoforged.event.net.neoforged.neoforge.event.EventHooks.onLivingConvert(trader,
+                                net.neoforged.neoforge.event.EventHooks.onLivingConvert(trader,
                                         maverick);
                                 serverLevel.addFreshEntityWithPassengers(maverick);
                                 trader.discard();
@@ -1458,7 +1438,7 @@ public class ModEvents {
          * if (explosion != null && !(explosion instanceof LootingExplosion)) {
          * if (explosion.getIndirectSourceEntity() instanceof Player player){
          * if (CuriosFinder.hasWanting(player)){
-         * ExplosionUtil.lootExplode(explosion.level, explosion.getExploder(),
+         * ExplosionUtil.lootExplode(explosion.level(), explosion.getExploder(),
          * explosion.x, explosion.y, explosion.z, explosion.radius, explosion.fire,
          * explosion.blockInteraction, LootingExplosion.Mode.LOOT);
          * event.setCanceled(true);
@@ -1529,5 +1509,12 @@ public class ModEvents {
                 event.setBurnTime(200);
             }
         }
+    }
+
+    @SubscribeEvent
+    public static void registerCapabilities(RegisterCapabilitiesEvent event) {
+        event.registerItem(Capabilities.ItemHandler.ITEM, (stack, context) -> new com.Polarice3.Goety.common.items.handler.BrewBagItemHandler(stack), ModItems.BREW_BAG.get());
+        event.registerItem(Capabilities.ItemHandler.ITEM, (stack, context) -> new com.Polarice3.Goety.common.items.handler.WitchStaffItemHandler(stack), ModItems.WITCH_STAFF.get());
+        event.registerItem(Capabilities.ItemHandler.ITEM, (stack, context) -> new com.Polarice3.Goety.common.items.handler.FocusBagItemHandler(stack, 11), ModItems.FOCUS_BAG.get());
     }
 }

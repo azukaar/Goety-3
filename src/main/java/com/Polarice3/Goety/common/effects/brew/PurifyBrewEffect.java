@@ -29,16 +29,16 @@ public class PurifyBrewEffect extends BrewEffect{
     }
 
     public void applyEntityEffect(LivingEntity pTarget, @Nullable Entity pSource, @Nullable Entity pIndirectSource, int pAmplifier){
-        if (!pTarget.level.isClientSide) {
-            for (MobEffect mobEffect : NeoForgeRegistries.MOB_EFFECTS){
+        if (!pTarget.level().isClientSide) {
+            for (MobEffect mobEffect : net.minecraft.core.registries.BuiltInRegistries.MOB_EFFECT) {
                 boolean flag;
                 if (this.removeDebuff) {
                     flag = !mobEffect.isBeneficial();
                 } else {
                     flag = mobEffect.isBeneficial();
                 }
-                if (flag && !mobEffect.getCurativeItems().isEmpty()){
-                    pTarget.removeEffect(mobEffect);
+                if (flag) { // && !mobEffect.getCurativeItems().isEmpty()){
+                    pTarget.removeEffect(net.minecraft.core.registries.BuiltInRegistries.MOB_EFFECT.wrapAsHolder(mobEffect));
                 }
             }
             ModNetwork.sentToTrackingEntity(pTarget, new SPurifyEffectPacket(pTarget.getId(), this.removeDebuff));

@@ -29,12 +29,12 @@ public class EndWalkSpell extends Spell {
 
     @Override
     public int defaultSoulCost() {
-        return SpellConfig.EndWalkCost.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.EndWalkCost, 0);
     }
 
     @Override
     public int defaultCastDuration() {
-        return SpellConfig.EndWalkDuration.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.EndWalkDuration, 0);
     }
 
     @Nullable
@@ -45,7 +45,7 @@ public class EndWalkSpell extends Spell {
 
     @Override
     public int defaultSpellCooldown() {
-        return SpellConfig.EndWalkCoolDown.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.EndWalkCoolDown, 0);
     }
 
     @Override
@@ -70,15 +70,16 @@ public class EndWalkSpell extends Spell {
             duration = MathHelper.secondsToTicks(5) * WandUtil.getLevels(ModEnchantments.DURATION.get(), caster);
         }
         if (caster instanceof Player player){
-            player.addEffect(new MobEffectInstance(GoetyEffects.SHADOW_WALK.get(), SpellConfig.EndWalkEffectDuration.get() + duration, potency, false, false, true));
+            player.addEffect(new MobEffectInstance(GoetyEffects.SHADOW_WALK, com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.EndWalkEffectDuration, 0) + duration, potency, false, false, true));
             for(int i = 0; i < 16; ++i) {
                 double d0 = MathHelper.rgbToSpeed(96.0D);
                 double d1 = MathHelper.rgbToSpeed(62.0D);
                 double d2 = MathHelper.rgbToSpeed(92.0D);
                 worldIn.sendParticles(ModParticleTypes.CULT_SPELL.get(), caster.getRandomX(1.0D), caster.getRandomY(), caster.getRandomZ(1.0D), 0, d0, d1, d2, 0.5F);
             }
-            SEHelper.setEndWalk(player, player.blockPosition(), player.level.dimension());
+            SEHelper.setEndWalk(player, player.blockPosition(), player.level().dimension());
             ModNetwork.sendTo(player, new SPlayPlayerSoundPacket(ModSounds.END_WALK.get(), 1.0F, 1.0F));
         }
     }
 }
+

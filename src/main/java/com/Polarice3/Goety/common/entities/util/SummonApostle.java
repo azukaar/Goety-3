@@ -32,7 +32,7 @@ public class SummonApostle extends Entity {
 
     @Override
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
-        super.defineSynchedData(builder);
+        // super.defineSynchedData(builder);
     }
 
     @Override
@@ -48,7 +48,7 @@ public class SummonApostle extends Entity {
     public void tick() {
         super.tick();
         if (this.tickCount == 150) {
-            this.playSound(SoundEvents.AMBIENT_NETHER_WASTES_MOOD.get(), 1.0F, 1.0F);
+            this.playSound(SoundEvents.AMBIENT_NETHER_WASTES_MOOD.value(), 1.0F, 1.0F);
             for (Player player: this.level().getEntitiesOfClass(Player.class, this.getBoundingBox().inflate(32))){
                 player.displayClientMessage(Component.translatable("info.goety.apostle.summon"), true);
             }
@@ -88,7 +88,7 @@ public class SummonApostle extends Entity {
                 serverWorld.setWeatherParameters(6000, 0, false, false);
                 Apostle apostleEntity = new Apostle(ModEntityType.APOSTLE.get(), this.level());
                 apostleEntity.setPos(this.getX(), this.getY(), this.getZ());
-                apostleEntity.finalizeSpawn(serverWorld, serverWorld.getCurrentDifficultyAt(this.blockPosition()), MobSpawnType.MOB_SUMMONED, null, null);
+                apostleEntity.finalizeSpawn(serverWorld, serverWorld.getCurrentDifficultyAt(this.blockPosition()), MobSpawnType.MOB_SUMMONED, null);
                 serverWorld.addFreshEntity(apostleEntity);
                 this.discard();
             }
@@ -99,8 +99,9 @@ public class SummonApostle extends Entity {
         return PushReaction.IGNORE;
     }
 
-    @Override
-    public Packet<ClientGamePacketListener> getAddEntityPacket() {
-        return new ClientboundAddEntityPacket(this);
-    }
+    // @Override
+    // public Packet<ClientGamePacketListener> getAddEntityPacket() {
+    //     return new ClientboundAddEntityPacket(this);
+    // }
 }
+

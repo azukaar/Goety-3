@@ -1,6 +1,7 @@
 package com.Polarice3.Goety.common.blocks;
 
 import com.Polarice3.Goety.common.blocks.entities.ShriekObeliskBlockEntity;
+import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
@@ -23,6 +24,12 @@ import net.minecraft.world.level.pathfinder.PathComputationType;
 import org.jetbrains.annotations.Nullable;
 
 public class ShriekObeliskBlock extends BaseEntityBlock implements SimpleWaterloggedBlock {
+    public static final MapCodec<ShriekObeliskBlock> CODEC = simpleCodec(p -> new ShriekObeliskBlock());
+
+    @Override
+    protected MapCodec<? extends BaseEntityBlock> codec() {
+        return CODEC;
+    }
     public static final BooleanProperty POWERED = BlockStateProperties.POWERED;
     public static final BooleanProperty SHRIEKING = BlockStateProperties.SHRIEKING;
     public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;

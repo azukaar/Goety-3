@@ -1,5 +1,7 @@
 package com.Polarice3.Goety.common.entities.ally;
 
+import com.Polarice3.Goety.utils.MobType;
+
 import com.Polarice3.Goety.common.entities.neutral.Owned;
 import net.minecraft.core.BlockPos;
 import net.minecraft.sounds.SoundEvent;

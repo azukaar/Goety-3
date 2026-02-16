@@ -31,7 +31,8 @@ public class GlowLightBlock extends BaseEntityBlock implements SimpleWaterlogged
 
     public static final com.mojang.serialization.MapCodec<GlowLightBlock> CODEC = simpleCodec(GlowLightBlock::new);
 
-    public com.mojang.serialization.MapCodec<GlowLightBlock> codec() {
+    @Override
+    protected com.mojang.serialization.MapCodec<? extends GlowLightBlock> codec() {
         return CODEC;
     }
 

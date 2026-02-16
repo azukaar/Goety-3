@@ -5,13 +5,14 @@ import com.Polarice3.Goety.common.items.handler.SoulUsingItemHandler;
 import com.Polarice3.Goety.init.ModSounds;
 import com.Polarice3.Goety.utils.TotemFinder;
 import com.Polarice3.Goety.utils.WandUtil;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.protocol.game.ClientboundSoundPacket;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.network.NetworkEvent;
+import com.Polarice3.Goety.compat.legacy.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
@@ -28,7 +29,7 @@ public class CAddFocusToBagPacket {
 
     public static void consume(CAddFocusToBagPacket packet, Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
-            Player player = ctx.get().getSender();
+            Player player = com.Polarice3.Goety.common.network.NetworkContextHelper.getServerPlayer(ctx);
             if (player != null) {
                 ItemStack stack = TotemFinder.findBag(player);
                 if (stack.getCount() <= 0) {
@@ -51,9 +52,12 @@ public class CAddFocusToBagPacket {
                     }
                 }
                 if (player instanceof ServerPlayer serverPlayer){
-                    serverPlayer.connection.send(new ClientboundSoundPacket(ModSounds.FOCUS_PICK.getHolder().get(), SoundSource.PLAYERS, serverPlayer.position().x, serverPlayer.position().y, serverPlayer.position().z, 1.0F, 1.0F, serverPlayer.level().getRandom().nextLong()));
+                    serverPlayer.connection.send(new ClientboundSoundPacket(BuiltInRegistries.SOUND_EVENT.wrapAsHolder(ModSounds.FOCUS_PICK.value()), SoundSource.PLAYERS, serverPlayer.position().x, serverPlayer.position().y, serverPlayer.position().z, 1.0F, 1.0F, serverPlayer.level().getRandom().nextLong()));
                 }
             }
         });
     }
 }
+
+
+

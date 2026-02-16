@@ -8,6 +8,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BaseEntityBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -35,10 +36,11 @@ public abstract class EnchanteableBlock extends BaseEntityBlock {
                 enchantments.put(enchantment, integer);
             }
         }
-        EnchantmentHelper.setEnchantments(enchantments, itemStack);
+        // EnchantmentHelper.setEnchantments(enchantments, itemStack);
     }
 
-    public ItemStack getCloneItemStack(BlockState state, HitResult target, BlockGetter world, BlockPos pos, Player player) {
+    @Override
+    public ItemStack getCloneItemStack(LevelReader world, BlockPos pos, BlockState state) {
         ItemStack itemStack = new ItemStack(this);
         BlockEntity tileEntity = world.getBlockEntity(pos);
         if (tileEntity instanceof IEnchantedBlock) {
@@ -61,9 +63,9 @@ public abstract class EnchanteableBlock extends BaseEntityBlock {
         BlockEntity tileentity = pLevel.getBlockEntity(pPos);
         if (pPlacer instanceof Player){
             if (tileentity instanceof IEnchantedBlock blockEntity){
-                Map<Enchantment, Integer> enchantments = EnchantmentHelper.getEnchantments(pStack);
-                enchantments.keySet().removeIf(enchantment -> !this.asItem().canApplyAtEnchantingTable(pStack, enchantment));
-                blockEntity.getEnchantments().putAll(enchantments);
+                // Map<Enchantment, Integer> enchantments = EnchantmentHelper.getEnchantments(pStack);
+                // enchantments.keySet().removeIf(enchantment -> !this.asItem().canApplyAtEnchantingTable(pStack, enchantment));
+                // blockEntity.getEnchantments().putAll(enchantments);
             }
         }
     }

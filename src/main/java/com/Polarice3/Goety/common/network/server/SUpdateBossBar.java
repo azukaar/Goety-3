@@ -5,8 +5,7 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.player.Player;
-import net.neoforged.fml.LogicalSide;
-import net.neoforged.network.NetworkEvent;
+import com.Polarice3.Goety.compat.legacy.network.NetworkEvent;
 
 import java.util.UUID;
 import java.util.function.Supplier;
@@ -40,12 +39,9 @@ public class SUpdateBossBar {
 
     public static void consume(SUpdateBossBar packet, Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
-            Player player = ctx.get().getSender();
-            if (ctx.get().getDirection().getReceptionSide() == LogicalSide.CLIENT) {
-                player = Goety.PROXY.getPlayer();
-            }
+            Player player = Goety.PROXY.getPlayer();
             if (player != null) {
-                Entity entity = player.level.getEntity(packet.boss);
+                Entity entity = player.level().getEntity(packet.boss);
                 if (entity instanceof Mob mob) {
                     if (packet.remove) {
                         Goety.PROXY.removeBossBar(packet.bar, mob);
@@ -58,3 +54,5 @@ public class SUpdateBossBar {
         ctx.get().setPacketHandled(true);
     }
 }
+
+

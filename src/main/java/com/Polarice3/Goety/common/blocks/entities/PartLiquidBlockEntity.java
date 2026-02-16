@@ -2,6 +2,7 @@ package com.Polarice3.Goety.common.blocks.entities;
 
 import com.Polarice3.Goety.common.blocks.ModBlocks;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
@@ -40,8 +41,8 @@ public class PartLiquidBlockEntity extends SaveBlockEntity{
     }
 
     @Override
-    public void readNetwork(CompoundTag compoundTag) {
-        super.readNetwork(compoundTag);
+    public void readNetwork(CompoundTag compoundTag, HolderLookup.Provider pRegistries) {
+        super.readNetwork(compoundTag, pRegistries);
         if (compoundTag.contains("Life")) {
             this.life = compoundTag.getInt("Life");
         }
@@ -51,8 +52,8 @@ public class PartLiquidBlockEntity extends SaveBlockEntity{
     }
 
     @Override
-    public CompoundTag writeNetwork(CompoundTag compoundTag) {
-        super.writeNetwork(compoundTag);
+    public CompoundTag writeNetwork(CompoundTag compoundTag, HolderLookup.Provider pRegistries) {
+        super.writeNetwork(compoundTag, pRegistries);
         compoundTag.putInt("Life", this.life);
         compoundTag.putInt("Lifespan", this.lifespan);
         return compoundTag;

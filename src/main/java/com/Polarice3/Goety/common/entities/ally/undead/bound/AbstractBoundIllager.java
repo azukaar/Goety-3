@@ -1,5 +1,7 @@
 package com.Polarice3.Goety.common.entities.ally.undead.bound;
 
+import com.Polarice3.Goety.utils.MobType;
+
 import com.Polarice3.Goety.client.particles.ModParticleTypes;
 import com.Polarice3.Goety.common.entities.ally.illager.RaiderServant;
 import com.Polarice3.Goety.common.entities.neutral.Owned;
@@ -71,7 +73,7 @@ public abstract class AbstractBoundIllager extends RaiderServant {
 
     @Override
     public int getSummonLimit(LivingEntity owner) {
-        return SpellConfig.BoundIllagerLimit.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.BoundIllagerLimit, 0);
     }
 
     public boolean canBeLeader() {

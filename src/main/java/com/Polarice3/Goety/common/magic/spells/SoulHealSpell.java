@@ -30,17 +30,17 @@ public class SoulHealSpell extends Spell {
 
     @Override
     public int defaultSoulCost() {
-        return SpellConfig.SoulHealCost.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.SoulHealCost, 0);
     }
 
     @Override
     public int defaultCastDuration() {
-        return SpellConfig.SoulHealDuration.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.SoulHealDuration, 0);
     }
 
     @Override
     public int defaultSpellCooldown() {
-        return SpellConfig.SoulHealCoolDown.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.SoulHealCoolDown, 0);
     }
 
     @Override
@@ -71,7 +71,7 @@ public class SoulHealSpell extends Spell {
             potency += WandUtil.getPotencyLevel(caster);
             radius += WandUtil.getLevels(ModEnchantments.RADIUS.get(), caster);
         }
-        float heal = RandomUtil.nextInt(worldIn.getRandom(), SpellConfig.SoulHealAmount.get() * Math.max(1, potency)) + 1.0F;
+        float heal = RandomUtil.nextInt(worldIn.getRandom(), com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.SoulHealAmount, 0) * Math.max(1, potency)) + 1.0F;
         caster.heal(heal);
         if (radius > 0) {
             for (LivingEntity livingEntity : worldIn.getEntitiesOfClass(LivingEntity.class, caster.getBoundingBox().inflate(8.0D * radius))) {

@@ -20,8 +20,9 @@ public class EvilEyeEffect extends BrewMobEffect {
         super(p_19451_, p_19452_, curable);
     }
 
-    public void applyEffectTick(LivingEntity living, int amplify) {
-        if (living.level instanceof ServerLevel serverLevel){
+    @Override
+    public boolean applyEffectTick(LivingEntity living, int amplify) {
+        if (living.level() instanceof ServerLevel serverLevel){
             int i = 64 >> amplify;
             if (i == 0){
                 i = 2;
@@ -38,7 +39,7 @@ public class EvilEyeEffect extends BrewMobEffect {
                                 if (entity instanceof Mob mob) {
                                     BlockPos blockPos = BlockFinder.SummonRadius(living.blockPosition(), mob, serverLevel, 16);
                                     mob.setPos(blockPos.getX() + 0.5F, blockPos.getY(), blockPos.getZ() + 0.5F);
-                                    net.neoforged.neoforge.event.EventHooks.onFinalizeSpawn(mob, serverLevel, serverLevel.getCurrentDifficultyAt(blockPos), MobSpawnType.SPAWNER, (SpawnGroupData) null, (CompoundTag) null);
+                                    net.neoforged.neoforge.event.EventHooks.finalizeMobSpawn(mob, serverLevel, serverLevel.getCurrentDifficultyAt(blockPos), MobSpawnType.SPAWNER, (SpawnGroupData) null);
                                     if (serverLevel.addFreshEntity(mob)) {
                                         ServerParticleUtil.addParticlesAroundMiddleSelf(serverLevel, ParticleTypes.FLAME, mob);
                                     }
@@ -49,6 +50,7 @@ public class EvilEyeEffect extends BrewMobEffect {
                 }
             }
         }
+        return true;
     }
 
     public boolean isDurationEffectTick(int tick, int amplify) {

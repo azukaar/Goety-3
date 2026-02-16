@@ -22,17 +22,17 @@ public class ScattershotSpell extends EverChargeSpell {
 
     @Override
     public int defaultSoulCost() {
-        return SpellConfig.BombardmentCost.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.BombardmentCost, 0);
     }
 
     @Override
     public int defaultCastUp() {
-        return SpellConfig.BombardmentChargeUp.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.BombardmentChargeUp, 0);
     }
 
     @Override
     public int Cooldown() {
-        return SpellConfig.BombardmentDuration.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.BombardmentDuration, 0);
     }
 
     @Override
@@ -41,12 +41,12 @@ public class ScattershotSpell extends EverChargeSpell {
         if (WandUtil.enchantedFocus(caster)) {
             i += WandUtil.getLevels(ModEnchantments.DURATION.get(), caster);
         }
-        return SpellConfig.BombardmentShots.get() + (i * 3);
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.BombardmentShots, 0) + (i * 3);
     }
 
     @Override
     public int defaultSpellCooldown() {
-        return SpellConfig.BombardmentCoolDown.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.BombardmentCoolDown, 0);
     }
 
     @Override

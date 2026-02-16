@@ -544,13 +544,13 @@ public abstract class RaiderServant extends Summoned {
         boolean flag = super.shouldChunkLoad();
         if (!flag) {
             if (this.getMarked() != null) {
-                flag = MobsConfig.IllagerServantChunkLoadMark.get();
+                flag = com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MobsConfig.IllagerServantChunkLoadMark, false);
             }
             if (this.isRaiding()) {
-                flag = MobsConfig.IllagerServantChunkLoadRaid.get();
+                flag = com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MobsConfig.IllagerServantChunkLoadRaid, false);
             }
             if (this.isCelebrating()) {
-                flag = MobsConfig.IllagerServantChunkLoadMark.get() || MobsConfig.IllagerServantChunkLoadRaid.get();
+                flag = com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MobsConfig.IllagerServantChunkLoadMark, false) || com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MobsConfig.IllagerServantChunkLoadRaid, false);
             }
         }
         return flag;
@@ -708,7 +708,7 @@ public abstract class RaiderServant extends Summoned {
                     this.missionComplete = true;
                     this.setRaidPos(null);
                     if (this.getTrueOwner() instanceof ServerPlayer serverPlayer) {
-                        ModCriteriaTriggers.SERVANT_RAID_VICTORY.trigger(serverPlayer);
+                        ModCriteriaTriggers.SERVANT_RAID_VICTORY().trigger(serverPlayer);
                     }
                 }
                 ++this.raidTime;
@@ -909,10 +909,10 @@ public abstract class RaiderServant extends Summoned {
     @Override
     public boolean canRevive(DamageSource damageSource) {
         if (!damageSource.is(ModDamageSource.DISMISSED)) {
-            if (MainConfig.OminousIdolRevive.get()) {
+            if (com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MainConfig.OminousIdolRevive, false)) {
                 if (!this.hasEffect(net.minecraft.core.registries.BuiltInRegistries.MOB_EFFECT.wrapAsHolder(GoetyEffects.WOUNDED.get()))) {
                     if (this.getIdol() != null && this.level().dimension() == this.getReviveLevel()) {
-                        if (this.getIdol().getSoulEnergy() >= MainConfig.OminousIdolReviveCost.get()) {
+                        if (this.getIdol().getSoulEnergy() >= com.Polarice3.Goety.utils.ConfigHelper.getInt(MainConfig.OminousIdolReviveCost, 500)) {
                             return this.getIdol().getIllagers().contains(this);
                         }
                     }
@@ -936,7 +936,7 @@ public abstract class RaiderServant extends Summoned {
         this.addEffect(new MobEffectInstance(net.minecraft.core.registries.BuiltInRegistries.MOB_EFFECT.wrapAsHolder(GoetyEffects.WOUNDED.get()), MathHelper.minecraftDayToTicks(1)));
         this.addEffect(new MobEffectInstance(net.minecraft.core.registries.BuiltInRegistries.MOB_EFFECT.wrapAsHolder(GoetyEffects.CRIPPLED.get()), MathHelper.minutesToTicks(5)));
         if (this.getIdol() != null) {
-            this.getIdol().siphonSoulEnergy(MainConfig.OminousIdolReviveCost.get());
+            this.getIdol().siphonSoulEnergy(com.Polarice3.Goety.utils.ConfigHelper.getInt(MainConfig.OminousIdolReviveCost, 500));
         }
     }
 
@@ -962,7 +962,7 @@ public abstract class RaiderServant extends Summoned {
     }
 
     public void spawnArmor(RandomSource randomSource) {
-        if (MobsConfig.RaiderServantWearArmor.get()) {
+        if (com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MobsConfig.RaiderServantWearArmor, false)) {
             super.spawnArmor(randomSource);
         }
     }

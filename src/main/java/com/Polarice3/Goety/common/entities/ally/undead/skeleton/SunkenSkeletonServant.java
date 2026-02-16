@@ -60,10 +60,7 @@ public class SunkenSkeletonServant extends AbstractSkeletonServant implements Cr
         this.groundNavigation = new GroundPathNavigation(this, worldIn);
     }
 
-    @Override
-    public float getStepHeight() {
-        return 1.0F;
-    }
+
 
     protected void registerGoals() {
         super.registerGoals();
@@ -79,20 +76,20 @@ public class SunkenSkeletonServant extends AbstractSkeletonServant implements Cr
 
     public static AttributeSupplier.Builder setCustomAttributes() {
         return Mob.createMobAttributes()
-                .add(Attributes.MAX_HEALTH, AttributesConfig.SunkenSkeletonServantHealth.get())
-                .add(Attributes.ARMOR, AttributesConfig.SunkenSkeletonServantArmor.get())
+                .add(Attributes.MAX_HEALTH, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.SunkenSkeletonServantHealth, 20.0D))
+                .add(Attributes.ARMOR, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.SunkenSkeletonServantArmor, 20.0D))
                 .add(Attributes.MOVEMENT_SPEED, 0.25F)
-                .add(Attributes.ATTACK_DAMAGE, AttributesConfig.SunkenSkeletonServantDamage.get());
+                .add(Attributes.ATTACK_DAMAGE, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.SunkenSkeletonServantDamage, 20.0D));
     }
 
     public void setConfigurableAttributes(){
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.MAX_HEALTH), AttributesConfig.SunkenSkeletonServantHealth.get());
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ARMOR), AttributesConfig.SunkenSkeletonServantArmor.get());
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ATTACK_DAMAGE), AttributesConfig.SunkenSkeletonServantDamage.get());
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.MAX_HEALTH), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.SunkenSkeletonServantHealth, 20.0D));
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ARMOR), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.SunkenSkeletonServantArmor, 20.0D));
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ATTACK_DAMAGE), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.SunkenSkeletonServantDamage, 20.0D));
     }
 
     public double getBaseRangeDamage(){
-        return AttributesConfig.SunkenSkeletonServantRangeDamage.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.SunkenSkeletonServantRangeDamage, 20.0D);
     }
 
     public void reassessWeaponGoal() {
@@ -109,9 +106,9 @@ public class SunkenSkeletonServant extends AbstractSkeletonServant implements Cr
         }
     }
 
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.entityData.define(IS_CHARGING_CROSSBOW, false);
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(IS_CHARGING_CROSSBOW, false);
     }
 
     protected SoundEvent getAmbientSound() {
@@ -218,7 +215,7 @@ public class SunkenSkeletonServant extends AbstractSkeletonServant implements Cr
         ItemStack itemstack = shooter.getItemInHand(interactionhand);
         if (shooter.isHolding(is -> is.getItem() instanceof CrossbowItem)) {
             SoundEvent soundEvent = this.isInWater() ? ModSounds.SUNKEN_SKELETON_SHOOT.get() : SoundEvents.CROSSBOW_SHOOT;
-            CrossbowHelper.performCustomShooting(shooter.level, shooter, interactionhand, itemstack, this.getArrow(itemstack, 1.0F), soundEvent, velocity, (float)(14 - shooter.level.getDifficulty().getId() * 4));
+            CrossbowHelper.performCustomShooting(shooter.level(), shooter, interactionhand, itemstack, this.getArrow(itemstack, 1.0F), soundEvent, velocity, (float)(14 - shooter.level().getDifficulty().getId() * 4));
         }
 
         this.onCrossbowAttackPerformed();
@@ -239,28 +236,50 @@ public class SunkenSkeletonServant extends AbstractSkeletonServant implements Cr
         p_32323_.playSound(soundEvent, 1.0F, 1.0F / (p_32323_.getRandom().nextFloat() * 0.4F + 0.8F));
     }
 
+    public Vector3f getProjectileShotVector(LivingEntity shooter, Vec3 dist, float velocity) {
+        Vector3f vector3f = dist.toVector3f().normalize();
+        Vector3f vector3f1 = new Vector3f(vector3f);
+        vector3f.cross(new Vector3f(0.0F, 1.0F, 0.0F));
+        if (vector3f.lengthSquared() <= 1.0E-7F) {
+            vector3f.set(0.0F, 0.0F, 1.0F);
+        }
+
+        vector3f.normalize();
+        Vector3f vector3f2 = new Vector3f(vector3f);
+        vector3f2.cross(vector3f1);
+        vector3f2.normalize();
+        float f = (float)Math.PI / 2F;
+        vector3f.mul(Mth.sin(f));
+        vector3f2.mul(Mth.cos(f));
+        vector3f2.add(vector3f);
+        Vector3f vector3f3 = new Vector3f(vector3f1);
+        vector3f3.mul(Mth.cos(velocity));
+        vector3f3.add(vector3f2.mul(Mth.sin(velocity)));
+        return vector3f3;
+    }
+
     public AbstractArrow getArrow(ItemStack pArrowStack, float pDistanceFactor) {
-        Harpoon harpoon = new Harpoon(this.level(), this);
-        harpoon.setEffectsFromItem(pArrowStack);
+        Harpoon harpoon = new Harpoon(this.level(), this, pArrowStack);
+        // harpoon.setEffectsFromItem(pArrowStack); // Removed in 1.21? Encapsulated in Arrow?
         ItemStack weapon = this.getItemInHand(ProjectileUtil.getWeaponHoldingHand(this, item -> item instanceof CrossbowItem));
         double d0 = harpoon.getBaseDamage();
-        int p = net.minecraft.world.item.enchantment.EnchantmentHelper.getItemEnchantmentLevel(net.minecraft.world.item.enchantment.Enchantments.POWER, weapon);
+        int p = net.minecraft.world.item.enchantment.EnchantmentHelper.getItemEnchantmentLevel(this.registryAccess().holderOrThrow(net.minecraft.world.item.enchantment.Enchantments.POWER), weapon);
         if (p > 0) {
             harpoon.setBaseDamage(d0 + (double) p * 0.5D + 0.5D);
         }
-        int k = net.minecraft.world.item.enchantment.EnchantmentHelper.getItemEnchantmentLevel(net.minecraft.world.item.enchantment.Enchantments.PUNCH, weapon);
+        int k = net.minecraft.world.item.enchantment.EnchantmentHelper.getItemEnchantmentLevel(this.registryAccess().holderOrThrow(net.minecraft.world.item.enchantment.Enchantments.PUNCH), weapon);
         if (k > 0) {
-            harpoon.setKnockback(k);
+            // harpoon.setKnockback(k); // Missing method?
         }
-        if (net.minecraft.world.item.enchantment.EnchantmentHelper.getItemEnchantmentLevel(net.minecraft.world.item.enchantment.Enchantments.FLAME, weapon) > 0) {
-            harpoon.setSecondsOnFire(100);
+        if (net.minecraft.world.item.enchantment.EnchantmentHelper.getItemEnchantmentLevel(this.registryAccess().holderOrThrow(net.minecraft.world.item.enchantment.Enchantments.FLAME), weapon) > 0) {
+            harpoon.igniteForSeconds(100);
         }
         harpoon.setSoundEvent(SoundEvents.CROSSBOW_HIT);
-        harpoon.setShotFromCrossbow(true);
+        // harpoon.setShotFromCrossbow(true); // Missing method?
         harpoon.setBaseDamage(harpoon.getBaseDamage() + this.getArrowPower() + this.getBaseRangeDamage());
-        int i = EnchantmentHelper.getItemEnchantmentLevel(Enchantments.PIERCING, weapon);
+        int i = EnchantmentHelper.getItemEnchantmentLevel(this.registryAccess().holderOrThrow(Enchantments.PIERCING), weapon);
         if (i > 0) {
-            harpoon.setPierceLevel((byte) i);
+            // harpoon.setPierceLevel((byte) i);
         }
         harpoon.pickup = Harpoon.Pickup.DISALLOWED;
 

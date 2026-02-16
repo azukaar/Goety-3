@@ -39,10 +39,10 @@ import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.level.block.Blocks;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
-import net.neoforged.neoforge.registries.RegistryObject;
+import com.Polarice3.Goety.compat.legacy.neoforge.registries.RegistryObject;
 
 public class ModEntityType {
-    public static final DeferredRegister<EntityType<?>> ENTITY_TYPE = DeferredRegister.create(NeoForgeRegistries.ENTITY_TYPES, Goety.MOD_ID);
+    public static final DeferredRegister<EntityType<?>> ENTITY_TYPE = DeferredRegister.create(net.minecraft.core.registries.Registries.ENTITY_TYPE, Goety.MOD_ID);
 
     public static final RegistryObject<EntityType<NetherMeteor>> NETHER_METEOR = register("nether_meteor",
             EntityType.Builder.<NetherMeteor>of(NetherMeteor::new, MobCategory.MISC)
@@ -72,7 +72,7 @@ public class ModEntityType {
     public static final RegistryObject<EntityType<HellChant>> HELL_CHANT = register("hell_chant",
             EntityType.Builder.<HellChant>of(HellChant::new, MobCategory.MISC)
                     .sized(1.0F, 1.0F)
-                    .setCustomClientFactory(HellChant::new)
+                    // .setCustomClientFactory((spawnEntity, level) -> new HellChant(ModEntityType.HELL_CHANT.get(), level))
                     .setTrackingRange(64)
                     .setShouldReceiveVelocityUpdates(true)
                     .setUpdateInterval(3));
@@ -1628,6 +1628,6 @@ public class ModEntityType {
                     .updateInterval(Integer.MAX_VALUE));
 
     private static <T extends Entity> RegistryObject<EntityType<T>> register(String p_20635_, EntityType.Builder<T> p_20636_) {
-        return ENTITY_TYPE.register(p_20635_, () -> p_20636_.build(Goety.location(p_20635_).toString()));
+        return RegistryObject.of(ENTITY_TYPE.register(p_20635_, () -> p_20636_.build(Goety.location(p_20635_).toString())));
     }
 }

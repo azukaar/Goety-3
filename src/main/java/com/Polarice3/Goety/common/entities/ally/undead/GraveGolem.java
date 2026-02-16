@@ -1,5 +1,7 @@
 package com.Polarice3.Goety.common.entities.ally.undead;
 
+import com.Polarice3.Goety.utils.MobType;
+
 import com.Polarice3.Goety.client.particles.ModParticleTypes;
 import com.Polarice3.Goety.client.particles.ShockwaveParticleOption;
 import com.Polarice3.Goety.common.blocks.ModBlocks;
@@ -103,21 +105,21 @@ public class GraveGolem extends AbstractGolemServant {
     @SuppressWarnings("removal")
     public static AttributeSupplier.Builder setCustomAttributes() {
         return Monster.createMonsterAttributes()
-                .add(Attributes.MAX_HEALTH, AttributesConfig.GraveGolemHealth.get())
-                .add(Attributes.ARMOR, AttributesConfig.GraveGolemArmor.get())
+                .add(Attributes.MAX_HEALTH, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.GraveGolemHealth, 20.0D))
+                .add(Attributes.ARMOR, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.GraveGolemArmor, 20.0D))
                 .add(Attributes.MOVEMENT_SPEED, 0.23D)
                 .add(Attributes.KNOCKBACK_RESISTANCE, 1.0D)
                 .add(Attributes.ATTACK_KNOCKBACK, 5.0D)
                 .add(Attributes.STEP_HEIGHT, 1.0D)
-                .add(Attributes.ATTACK_DAMAGE, AttributesConfig.GraveGolemDamage.get())
-                .add(Attributes.FOLLOW_RANGE, AttributesConfig.GraveGolemFollowRange.get());
+                .add(Attributes.ATTACK_DAMAGE, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.GraveGolemDamage, 20.0D))
+                .add(Attributes.FOLLOW_RANGE, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.GraveGolemFollowRange, 20.0D));
     }
 
     public void setConfigurableAttributes(){
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.MAX_HEALTH), AttributesConfig.GraveGolemHealth.get());
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ARMOR), AttributesConfig.GraveGolemArmor.get());
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ATTACK_DAMAGE), AttributesConfig.GraveGolemDamage.get());
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.FOLLOW_RANGE), AttributesConfig.GraveGolemFollowRange.get());
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.MAX_HEALTH), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.GraveGolemHealth, 20.0D));
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ARMOR), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.GraveGolemArmor, 20.0D));
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ATTACK_DAMAGE), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.GraveGolemDamage, 20.0D));
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.FOLLOW_RANGE), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.GraveGolemFollowRange, 20.0D));
     }
 
     protected void defineSynchedData(SynchedEntityData.Builder builder) {

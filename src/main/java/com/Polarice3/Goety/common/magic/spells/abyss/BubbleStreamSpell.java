@@ -40,22 +40,22 @@ public class BubbleStreamSpell extends BreathingSpell {
 
     @Override
     public int defaultSoulCost() {
-        return SpellConfig.BubbleStreamCost.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.BubbleStreamCost, 0);
     }
 
     @Override
     public int defaultCastUp() {
-        return SpellConfig.BubbleStreamChargeUp.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.BubbleStreamChargeUp, 0);
     }
 
     @Override
     public int shotsNumber() {
-        return SpellConfig.BubbleStreamDuration.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.BubbleStreamDuration, 0);
     }
 
     @Override
     public int defaultSpellCooldown() {
-        return SpellConfig.BubbleStreamCoolDown.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.BubbleStreamCoolDown, 0);
     }
 
     @Override
@@ -97,7 +97,7 @@ public class BubbleStreamSpell extends BreathingSpell {
             potency += WandUtil.getPotencyLevel(caster);
             range += WandUtil.getRangeLevel(caster);
         }
-        float damage = SpellConfig.BubbleStreamDamage.get().floatValue() * WandUtil.damageMultiply();
+        float damage = com.Polarice3.Goety.utils.ConfigHelper.getFloat(SpellConfig.BubbleStreamDamage, 1.0F) * WandUtil.damageMultiply();
         damage += potency;
         if (!worldIn.isClientSide) {
             if (rightStaff(staff)){

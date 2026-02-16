@@ -16,7 +16,7 @@ import net.minecraft.world.level.block.state.BlockState;
 
 public class MossifyBlockEffect extends BrewEffect {
     public MossifyBlockEffect() {
-        super("mossify", BrewConfig.MossifyCost.get(), MobEffectCategory.NEUTRAL, 0x647233);
+        super("mossify", com.Polarice3.Goety.utils.ConfigHelper.getInt(BrewConfig.MossifyCost, 0), MobEffectCategory.NEUTRAL, 0x647233);
     }
 
     @Override

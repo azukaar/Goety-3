@@ -202,7 +202,7 @@ public class ModEntityTypeTagsProvider extends IntrinsicHolderTagsProvider<Entit
                 "snowy_creeper"
         );
         for (String creeper : creepers) {
-            this.tag(ModTags.EntityTypes.CREEPERS).addOptional(new ResourceLocation("creeperoverhaul", creeper));
+            this.tag(ModTags.EntityTypes.CREEPERS).addOptional(ResourceLocation.fromNamespaceAndPath("creeperoverhaul", creeper));
         }
 
         this.tag(ModTags.EntityTypes.ENDERMEN).add(EntityType.ENDERMAN);
@@ -231,7 +231,7 @@ public class ModEntityTypeTagsProvider extends IntrinsicHolderTagsProvider<Entit
                 "axolotl_pet_enderman"
         );
         for (String enderman : endermen) {
-            this.tag(ModTags.EntityTypes.ENDERMEN).addOptional(new ResourceLocation("endermanoverhaul", enderman));
+            this.tag(ModTags.EntityTypes.ENDERMEN).addOptional(ResourceLocation.fromNamespaceAndPath("endermanoverhaul", enderman));
         }
     }
 }

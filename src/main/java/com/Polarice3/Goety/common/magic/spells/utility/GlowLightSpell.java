@@ -14,17 +14,17 @@ public class GlowLightSpell extends Spell {
 
     @Override
     public int defaultSoulCost() {
-        return SpellConfig.GlowLightCost.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.GlowLightCost, 0);
     }
 
     @Override
     public int defaultCastDuration() {
-        return SpellConfig.GlowLightDuration.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.GlowLightDuration, 0);
     }
 
     @Override
     public int defaultSpellCooldown() {
-        return SpellConfig.GlowLightCoolDown.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.GlowLightCoolDown, 0);
     }
 
     @Override

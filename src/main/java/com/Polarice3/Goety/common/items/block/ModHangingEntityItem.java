@@ -66,9 +66,9 @@ public class ModHangingEntityItem extends Item {
             hangingentity = new GlowItemFrame(level, blockpos1, direction);
          }
 
-         CompoundTag compoundtag = itemstack.getTag();
-         if (compoundtag != null) {
-            EntityType.updateCustomEntityTag(level, player, hangingentity, compoundtag);
+         net.minecraft.world.item.component.CustomData customData = itemstack.get(net.minecraft.core.component.DataComponents.CUSTOM_DATA);
+         if (customData != null) {
+            EntityType.updateCustomEntityTag(level, player, hangingentity, customData);
          }
 
          if (hangingentity.survives()) {
@@ -90,21 +90,26 @@ public class ModHangingEntityItem extends Item {
       return !p_41327_.getAxis().isVertical() && p_41326_.mayUseItemAt(p_41329_, p_41327_, p_41328_);
    }
 
-   public void appendHoverText(ItemStack p_270235_, @Nullable Level p_270688_, List<Component> p_270630_, TooltipFlag p_270170_) {
-      super.appendHoverText(p_270235_, p_270688_, p_270630_, p_270170_);
+   public void appendHoverText(ItemStack p_270235_, Item.TooltipContext context, List<Component> p_270630_, TooltipFlag p_270170_) {
+      super.appendHoverText(p_270235_, context, p_270630_, p_270170_);
       if (this.type.get() == EntityType.PAINTING || this.type.get() == ModEntityType.MOD_PAINTING.get()) {
-         CompoundTag compoundtag = p_270235_.getTag();
-         if (compoundtag != null && compoundtag.contains("EntityTag", 10)) {
-            CompoundTag compoundtag1 = compoundtag.getCompound("EntityTag");
-            Painting.loadVariant(compoundtag1).ifPresentOrElse((p_270767_) -> {
-               p_270767_.unwrapKey().ifPresent((p_270217_) -> {
-                  p_270630_.add(Component.translatable(p_270217_.location().toLanguageKey("painting", "title")).withStyle(ChatFormatting.YELLOW));
-                  p_270630_.add(Component.translatable(p_270217_.location().toLanguageKey("painting", "author")).withStyle(ChatFormatting.GRAY));
-               });
-               p_270630_.add(Component.translatable("painting.dimensions", Mth.positiveCeilDiv(p_270767_.value().getWidth(), 16), Mth.positiveCeilDiv(p_270767_.value().getHeight(), 16)));
-            }, () -> {
-               p_270630_.add(TOOLTIP_RANDOM_VARIANT);
-            });
+         net.minecraft.world.item.component.CustomData customData = p_270235_.get(net.minecraft.core.component.DataComponents.CUSTOM_DATA);
+         if (customData != null) {
+             CompoundTag compoundtag = customData.copyTag();
+             if (compoundtag.contains("EntityTag", 10)) {
+                CompoundTag compoundtag1 = compoundtag.getCompound("EntityTag");
+                if (compoundtag1.contains("variant", 8)) {
+                    context.registries().lookupOrThrow(net.minecraft.core.registries.Registries.PAINTING_VARIANT).get(net.minecraft.resources.ResourceKey.create(net.minecraft.core.registries.Registries.PAINTING_VARIANT, net.minecraft.resources.ResourceLocation.parse(compoundtag1.getString("variant")))).ifPresent((p_270767_) -> {
+                       p_270767_.unwrapKey().ifPresent((p_270217_) -> {
+                          p_270630_.add(Component.translatable(p_270217_.location().toLanguageKey("painting", "title")).withStyle(ChatFormatting.YELLOW));
+                          p_270630_.add(Component.translatable(p_270217_.location().toLanguageKey("painting", "author")).withStyle(ChatFormatting.GRAY));
+                       });
+                       p_270630_.add(Component.translatable("painting.dimensions", Mth.positiveCeilDiv(p_270767_.value().width(), 16), Mth.positiveCeilDiv(p_270767_.value().height(), 16)));
+                    });
+                } else {
+                   p_270630_.add(TOOLTIP_RANDOM_VARIANT);
+                }
+             }
          } else if (p_270170_.isCreative()) {
             p_270630_.add(TOOLTIP_RANDOM_VARIANT);
          }

@@ -23,7 +23,7 @@ public class WraithBandsLayer<T extends AbstractWraith> extends RenderLayer<T, W
 
     @Override
     public void render(PoseStack matrixStackIn, MultiBufferSource bufferIn, int packedLightIn, T wraith, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch) {
-        if (MobsConfig.WraithServantTexture.get() && !wraith.isHostile()) {
+        if (com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MobsConfig.WraithServantTexture, false) && !wraith.isHostile()) {
             coloredCutoutModelCopyLayerRender(this.getParentModel(), this.layerModel, TEXTURES, matrixStackIn, bufferIn, packedLightIn, wraith, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, partialTicks, 0xFFFFFFFF);
         }
     }

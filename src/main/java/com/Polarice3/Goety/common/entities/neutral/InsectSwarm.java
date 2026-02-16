@@ -108,7 +108,7 @@ public class InsectSwarm extends Owned{
                         living.invulnerableTime = Math.min(20, (20 - speed));
                         this.hurt(this.damageSources().starve(), 2.0F);
                         if (this.getTrueOwner() != null && CuriosFinder.hasWildRobe(this.getTrueOwner())){
-                            living.addEffect(new MobEffectInstance(GoetyEffects.ACID_VENOM.get(), MathHelper.secondsToTicks(5)));
+                            living.addEffect(new MobEffectInstance(GoetyEffects.ACID_VENOM, MathHelper.secondsToTicks(5)));
                         }
                     }
                 }

@@ -37,7 +37,7 @@ public class CryologerServantRenderer<T extends CryologerServant> extends MobRen
 
     @Override
     public ResourceLocation getTextureLocation(T entity) {
-        if (entity.isHostile() || !MobsConfig.CryologerServantTexture.get()){
+        if (entity.isHostile() || !com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MobsConfig.CryologerServantTexture, false)){
             return ORIGINAL;
         } else {
             return TEXTURE;

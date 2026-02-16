@@ -7,7 +7,7 @@ import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.player.Player;
-import net.neoforged.network.NetworkEvent;
+import com.Polarice3.Goety.compat.legacy.network.NetworkEvent;
 
 import java.util.UUID;
 import java.util.function.Supplier;
@@ -34,7 +34,7 @@ public class TotemDeathPacket {
 
             if (playerEntity != null) {
                 Minecraft.getInstance().particleEngine.createTrackingEmitter(playerEntity, ParticleTypes.TOTEM_OF_UNDYING, 30);
-                playerEntity.level.playLocalSound(playerEntity.getX(), playerEntity.getY(), playerEntity.getZ(), SoundEvents.TOTEM_USE, playerEntity.getSoundSource(), 1.0F, 1.0F, false);
+                playerEntity.level().playLocalSound(playerEntity.getX(), playerEntity.getY(), playerEntity.getZ(), SoundEvents.TOTEM_USE, playerEntity.getSoundSource(), 1.0F, 1.0F, false);
                 Minecraft.getInstance().gameRenderer.displayItemActivation(TotemFinder.FindTotem(playerEntity));
             }
         });

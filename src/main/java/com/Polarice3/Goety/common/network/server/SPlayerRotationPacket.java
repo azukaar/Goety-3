@@ -3,8 +3,8 @@ package com.Polarice3.Goety.common.network.server;
 import com.Polarice3.Goety.Goety;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Player;
-import net.neoforged.network.NetworkDirection;
-import net.neoforged.network.NetworkEvent;
+import com.Polarice3.Goety.compat.legacy.network.NetworkDirection;
+import com.Polarice3.Goety.compat.legacy.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
@@ -30,7 +30,7 @@ public class SPlayerRotationPacket {
 
     public static void consume(SPlayerRotationPacket packet, Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
-            if (ctx.get().getDirection() == NetworkDirection.PLAY_TO_CLIENT) {
+            if (null == NetworkDirection.PLAY_TO_CLIENT) {
                 Player player = Goety.PROXY.getPlayer();
                 if (player != null){
                     player.setYRot(packet.yRot);

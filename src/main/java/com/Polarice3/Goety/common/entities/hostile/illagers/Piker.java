@@ -25,6 +25,7 @@ import net.minecraft.world.entity.raid.Raider;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.ServerLevelAccessor;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
@@ -58,23 +59,23 @@ public class Piker extends HuntingIllagerEntity {
 
     public static AttributeSupplier.Builder setCustomAttributes() {
         return Mob.createMobAttributes()
-                .add(Attributes.MAX_HEALTH, AttributesConfig.PikerHealth.get())
+                .add(Attributes.MAX_HEALTH, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.PikerHealth, 20.0D))
                 .add(Attributes.FOLLOW_RANGE, 32.0D)
                 .add(Attributes.MOVEMENT_SPEED, 0.35D)
-                .add(Attributes.ATTACK_DAMAGE, AttributesConfig.PikerDamage.get())
-                .add(Attributes.ARMOR, AttributesConfig.PikerArmor.get());
+                .add(Attributes.ATTACK_DAMAGE, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.PikerDamage, 20.0D))
+                .add(Attributes.ARMOR, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.PikerArmor, 20.0D));
     }
 
     public void setConfigurableAttributes() {
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.MAX_HEALTH), AttributesConfig.PikerHealth.get());
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ATTACK_DAMAGE), AttributesConfig.PikerDamage.get());
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ARMOR), AttributesConfig.PikerArmor.get());
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.MAX_HEALTH), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.PikerHealth, 20.0D));
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ATTACK_DAMAGE), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.PikerDamage, 20.0D));
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ARMOR), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.PikerArmor, 20.0D));
     }
 
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.entityData.define(DATA_FLAGS_ID, (byte) 0);
-    }
+    // protected void defineSynchedData(SynchedEntityData.Builder builder) {
+    //    super.defineSynchedData(builder);
+    //    builder.define(DATA_FLAGS_ID, (byte) 0);
+    // }
 
     @Override
     protected SoundEvent getCastingSoundEvent() {
@@ -82,7 +83,7 @@ public class Piker extends HuntingIllagerEntity {
     }
 
     @Override
-    public void applyRaidBuffs(int p_37844_, boolean p_37845_) {
+    public void applyRaidBuffs(ServerLevel p_37844_, int p_37845_, boolean p_37846_) {
     }
 
     public List<AnimationState> getAnimations() {
@@ -183,13 +184,13 @@ public class Piker extends HuntingIllagerEntity {
     @Nullable
     @Override
     public SpawnGroupData finalizeSpawn(ServerLevelAccessor accessor, DifficultyInstance instance,
-            MobSpawnType spawnType, @Nullable SpawnGroupData groupData, @Nullable CompoundTag compoundTag) {
-        SpawnGroupData spawnGroupData = super.finalizeSpawn(accessor, instance, spawnType, groupData, compoundTag);
+            MobSpawnType spawnType, @Nullable SpawnGroupData groupData) {
+        SpawnGroupData spawnGroupData = super.finalizeSpawn(accessor, instance, spawnType, groupData);
         if (spawnType == MobSpawnType.EVENT) {
             if (accessor.getLevel().random.nextFloat() <= 0.25F && !this.isPassenger()) {
                 Trampler trampler = new Trampler(ModEntityType.TRAMPLER.get(), accessor.getLevel());
                 trampler.finalizeSpawn(accessor, accessor.getLevel().getCurrentDifficultyAt(this.blockPosition()),
-                        MobSpawnType.EVENT, null, null);
+                        MobSpawnType.EVENT, null);
                 trampler.setPos(this.position());
                 accessor.getLevel().addFreshEntity(trampler);
                 this.startRiding(trampler);
@@ -202,11 +203,11 @@ public class Piker extends HuntingIllagerEntity {
         float f = (float) this.getAttributeValue(Attributes.ATTACK_DAMAGE);
         float f1 = (float) this.getAttributeValue(Attributes.ATTACK_KNOCKBACK);
         if (p_21372_ instanceof LivingEntity) {
-            f += EnchantmentHelper.getDamageBonus(this.getMainHandItem(), ((LivingEntity) p_21372_).getMobType());
-            f1 += (float) EnchantmentHelper.getKnockbackBonus(this);
+            // f += EnchantmentHelper.getDamageBonus(this.getMainHandItem(), ((LivingEntity) p_21372_).getMobType());
+            // f1 += (float) EnchantmentHelper.getKnockbackBonus(this);
         }
 
-        int i = EnchantmentHelper.getFireAspect(this);
+        int i = 0; // EnchantmentHelper.getFireAspect(this);
         if (i > 0) {
             p_21372_.igniteForSeconds(i * 4);
         }
@@ -218,7 +219,7 @@ public class Piker extends HuntingIllagerEntity {
                         (double) (-Mth.cos(this.getYRot() * ((float) Math.PI / 180F))));
             }
 
-            this.doEnchantDamageEffects(this, p_21372_);
+            // this.doEnchantDamageEffects(this, p_21372_);
             this.setLastHurtMob(p_21372_);
         }
 
@@ -301,7 +302,7 @@ public class Piker extends HuntingIllagerEntity {
                     livingentity.getBoundingBox().minY, livingentity.getZ()));
         }
 
-        @Override
+        // @Override
         protected void checkAndPerformAttack(LivingEntity enemy, double distToEnemySqr) {
             if (Piker.this.targetClose(enemy, distToEnemySqr)) {
                 if (!Piker.this.isMeleeAttacking()) {

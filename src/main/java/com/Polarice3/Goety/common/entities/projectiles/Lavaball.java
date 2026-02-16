@@ -19,6 +19,8 @@ import net.minecraft.world.entity.projectile.AbstractHurtingProjectile;
 import net.minecraft.world.entity.projectile.LargeFireball;
 import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.phys.BlockHitResult;
@@ -49,15 +51,19 @@ public class Lavaball extends LargeFireball implements ISpellEntity {
         this.reapplyPosition();
         double d0 = Math.sqrt(pAccelX * pAccelX + pAccelY * pAccelY + pAccelZ * pAccelZ);
         if (d0 != 0.0D) {
+            /*
             this.xPower = pAccelX / d0 * 0.1D;
             this.yPower = pAccelY / d0 * 0.1D;
             this.zPower = pAccelZ / d0 * 0.1D;
+            */
+            // this.assignPower(pAccelX / d0 * 0.1D, pAccelY / d0 * 0.1D, pAccelZ / d0 * 0.1D);
+            this.setDeltaMovement(this.getDeltaMovement().add(pAccelX / d0 * 0.1D, pAccelY / d0 * 0.1D, pAccelZ / d0 * 0.1D));
         }
     }
 
     public Lavaball(Level p_i1769_1_, LivingEntity p_i1769_2_, double p_i1769_3_, double p_i1769_5_,
             double p_i1769_7_) {
-        super(p_i1769_1_, p_i1769_2_, p_i1769_3_, p_i1769_5_, p_i1769_7_, 0);
+        super(ModEntityType.LAVABALL.get(), p_i1769_1_);
     }
 
     @Override
@@ -180,7 +186,7 @@ public class Lavaball extends LargeFireball implements ISpellEntity {
             Entity owner = this.getOwner();
             boolean flag = this.isDangerous();
             if (owner instanceof Player || (owner instanceof IOwned owned && owned.getTrueOwner() instanceof Player)) {
-                if (!SpellConfig.LavaballGriefing.get()) {
+                if (!com.Polarice3.Goety.utils.ConfigHelper.getBoolean(SpellConfig.LavaballGriefing, false)) {
                     flag = false;
                 }
             }
@@ -202,7 +208,7 @@ public class Lavaball extends LargeFireball implements ISpellEntity {
             float enchantment = this.getExtraDamage();
             int flaming = this.getFiery();
             if (entity1 instanceof Player) {
-                damage = SpellConfig.LavaballDamage.get().floatValue() * WandUtil.damageMultiply();
+                damage = com.Polarice3.Goety.utils.ConfigHelper.getFloat(SpellConfig.LavaballDamage, 1.0F) * WandUtil.damageMultiply();
             } else if (entity1 instanceof LivingEntity) {
                 damage = this.getDamage();
             }
@@ -223,7 +229,9 @@ public class Lavaball extends LargeFireball implements ISpellEntity {
                 entity.igniteForSeconds(5 * flaming);
             }
             if (entity1 instanceof LivingEntity) {
-                this.doEnchantDamageEffects((LivingEntity) entity1, entity);
+                if (this.level() instanceof ServerLevel serverLevel) {
+                    EnchantmentHelper.doPostAttackEffects(serverLevel, (LivingEntity) entity1, ((LivingEntity) entity1).damageSources().mobAttack((LivingEntity) entity1));
+                }
             }
         }
     }
@@ -250,19 +258,21 @@ public class Lavaball extends LargeFireball implements ISpellEntity {
         return super.canHitEntity(pEntity);
     }
 
-    @Override
-    public boolean ignoreExplosion() {
-        return this.isUpgraded();
-    }
+
 
     public boolean hurt(DamageSource p_36839_, float p_36840_) {
         if (this.isUpgraded()) {
             return false;
         } else {
-            if (!SpellConfig.LavaballGriefing.get()) {
+            if (!com.Polarice3.Goety.utils.ConfigHelper.getBoolean(SpellConfig.LavaballGriefing, false)) {
                 this.setDangerous(false);
             }
             return super.hurt(p_36839_, p_36840_);
         }
+    }
+
+    @Override
+    public net.minecraft.network.protocol.Packet<net.minecraft.network.protocol.game.ClientGamePacketListener> getAddEntityPacket(net.minecraft.server.level.ServerEntity p_345759_) {
+        return new net.minecraft.network.protocol.game.ClientboundAddEntityPacket(this, p_345759_);
     }
 }

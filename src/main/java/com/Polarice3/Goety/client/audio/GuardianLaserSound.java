@@ -44,7 +44,7 @@ public class GuardianLaserSound extends AbstractTickableSoundInstance {
             ItemStack useItem = livingEntity.getUseItem();
             int useDuration = useItem.getItem().getUseDuration(useItem, this.livingEntity);
             int CastTime = useDuration - count;
-            float f = CastTime / (float) SpellConfig.PrismaBeamDuration.get();
+            float f = CastTime / (float) com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.PrismaBeamDuration, 0);
             this.volume = 0.0F + 1.0F * f * f;
             this.pitch = 0.7F + 0.5F * f;
         } else {

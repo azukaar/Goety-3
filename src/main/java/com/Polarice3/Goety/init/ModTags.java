@@ -15,7 +15,6 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BannerPattern;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.levelgen.structure.Structure;
-import net.neoforged.neoforge.registries.NeoForgeRegistries;
 
 public class ModTags {
 
@@ -106,7 +105,7 @@ public class ModTags {
         }
 
         private static TagKey<PaintingVariant> create(ResourceLocation p_215874_) {
-            return TagKey.create(NeoForgeRegistries.PAINTING_VARIANTS.getRegistryKey(), p_215874_);
+            return TagKey.create(Registries.PAINTING_VARIANT, p_215874_);
         }
     }
 
@@ -176,13 +175,14 @@ public class ModTags {
         public static final TagKey<EntityType<?>> VOID_HEAL = tag("void_heal");
         public static final TagKey<EntityType<?>> NECRO_HEAL = tag("necro_heal");
         public static final TagKey<EntityType<?>> NECRO_NO_DEBUFF = tag("necro_no_debuff");
+        public static final TagKey<EntityType<?>> WITCH_BARTER = tag("witch_barter");
 
         private static TagKey<EntityType<?>> tag(String name) {
             return create(Goety.location(name));
         }
 
         private static TagKey<EntityType<?>> create(ResourceLocation p_215874_) {
-            return TagKey.create(NeoForgeRegistries.ENTITY_TYPES.getRegistryKey(), p_215874_);
+            return TagKey.create(Registries.ENTITY_TYPE, p_215874_);
         }
     }
 
@@ -237,7 +237,7 @@ public class ModTags {
         }
 
         private static TagKey<Biome> create(ResourceLocation p_215874_) {
-            return TagKey.create(NeoForgeRegistries.BIOMES.getRegistryKey(), p_215874_);
+            return TagKey.create(Registries.BIOME, p_215874_);
         }
     }
 

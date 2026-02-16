@@ -45,7 +45,7 @@ public class MinisterRenderer<T extends Minister> extends MobRenderer<T, Ministe
 
     @Override
     public ResourceLocation getTextureLocation(T entity) {
-        if (HolidayUtil.isChristmasMonth() && MobsConfig.HolidaySkins.get()){
+        if (HolidayUtil.isChristmasMonth() && com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MobsConfig.HolidaySkins, false)){
             return CHRISTMAS;
         }
         return entity.getResourceLocation();

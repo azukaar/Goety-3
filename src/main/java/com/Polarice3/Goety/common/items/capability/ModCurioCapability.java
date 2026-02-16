@@ -2,26 +2,20 @@ package com.Polarice3.Goety.common.items.capability;
 
 import net.minecraft.core.Direction;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.capabilities.Capability;
+import com.Polarice3.Goety.compat.legacy.neoforge.capabilities.Capability;
 import net.neoforged.neoforge.capabilities.ICapabilityProvider;
-import net.neoforged.neoforge.common.util.LazyOptional;
+import com.Polarice3.Goety.compat.legacy.neoforge.common.util.LazyOptional;
 import top.theillusivec4.curios.api.CuriosCapability;
 import top.theillusivec4.curios.api.type.capability.ICurio;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class ModCurioCapability implements ICurio, ICapabilityProvider {
+public class ModCurioCapability implements ICurio {
     private final ItemStack stack;
 
     public ModCurioCapability(ItemStack stack) {
         this.stack = stack;
-    }
-
-    @Nonnull
-    @Override
-    public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
-        return cap == CuriosCapability.ITEM ? LazyOptional.of(() -> (T)this) : LazyOptional.empty();
     }
 
     @Override

@@ -39,10 +39,7 @@ public class InitEvents {
 
     @SubscribeEvent
     public static void registerCapabilities(RegisterCapabilitiesEvent event){
-        event.register(IMisc.class);
-        event.register(ISoulEnergy.class);
-        event.register(ILichdom.class);
-        event.register(IWitchBarter.class);
+        // TODO NeoForge 1.21: restore explicit capability registration wiring.
     }
 
     @SubscribeEvent

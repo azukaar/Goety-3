@@ -23,13 +23,13 @@ public class IllagerLootFoodChestGoal<T extends AbstractIllagerServant> extends 
                 }
             }
         }
-        if (this.illager.getChestLevel() != this.illager.level.dimension()) {
+        if (this.illager.getChestLevel() != this.illager.level().dimension()) {
             return false;
         }
         if (!this.illager.wantsMoreFood()) {
             return false;
         }
-        if (!this.isChestRaidable(this.illager.level, this.illager.getChestPos())){
+        if (!this.isChestRaidable(this.illager.level(), this.illager.getChestPos())){
             return false;
         }
         return super.canUse();

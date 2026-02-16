@@ -28,7 +28,7 @@ public class MountaineerServantRenderer<T extends MountaineerServant> extends Mo
 
     @Override
     public ResourceLocation getTextureLocation(T entity) {
-        if (entity.isHostile() || !MobsConfig.MountaineerServantTexture.get()){
+        if (entity.isHostile() || !com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MobsConfig.MountaineerServantTexture, false)){
             return ORIGINAL;
         } else {
             return TEXTURE;

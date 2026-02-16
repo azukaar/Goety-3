@@ -19,7 +19,7 @@ public class GrowTreeBlockEffect extends BrewEffect {
     public TreeGrower treeGrower;
 
     public GrowTreeBlockEffect(Block block, TreeGrower treeGrower) {
-        super(block.getDescriptionId(), BrewConfig.GrowTreeCost.get(), 0, MobEffectCategory.NEUTRAL, 0x5a3f1e, true);
+        super(block.getDescriptionId(), com.Polarice3.Goety.utils.ConfigHelper.getInt(BrewConfig.GrowTreeCost, 0), 0, MobEffectCategory.NEUTRAL, 0x5a3f1e, true);
         this.block = block;
         this.treeGrower = treeGrower;
     }

@@ -16,6 +16,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import org.joml.Matrix3f;
 import org.joml.Matrix4f;
+import org.joml.Vector3f;
 
 public class RazorWindRenderer extends EntityRenderer<RazorWind> {
     private static final ResourceLocation[] TEXTURES = {
@@ -59,15 +60,16 @@ public class RazorWindRenderer extends EntityRenderer<RazorWind> {
 
         ColorUtil colorUtil = new ColorUtil(ChatFormatting.WHITE);
         float alpha = 0.5F;
-        consumer.vertex(poseMatrix, -halfWidth, -0.1F, -halfWidth).color(colorUtil.red, colorUtil.green, colorUtil.blue, alpha).uv(0.0F, 1.0F).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(light).normal(normalMatrix, 0.0F, 1.0F, 0.0F).endVertex();
-        consumer.vertex(poseMatrix, halfWidth, -0.1F, -halfWidth).color(colorUtil.red, colorUtil.green, colorUtil.blue, alpha).uv(1.0F, 1.0F).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(light).normal(normalMatrix, 0.0F, 1.0F, 0.0F).endVertex();
-        consumer.vertex(poseMatrix, halfWidth, -0.1F, halfWidth).color(colorUtil.red, colorUtil.green, colorUtil.blue, alpha).uv(1.0F, 0.0F).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(light).normal(normalMatrix, 0.0F, 1.0F, 0.0F).endVertex();
-        consumer.vertex(poseMatrix, -halfWidth, -0.1F, halfWidth).color(colorUtil.red, colorUtil.green, colorUtil.blue, alpha).uv(0.0F, 0.0F).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(light).normal(normalMatrix, 0.0F, 1.0F, 0.0F).endVertex();
+        Vector3f n = new Vector3f(0.0F, 1.0F, 0.0F).mul(normalMatrix);
+        consumer.addVertex(poseMatrix, -halfWidth, -0.1F, -halfWidth).setColor(colorUtil.red, colorUtil.green, colorUtil.blue, alpha).setUv(0.0F, 1.0F).setOverlay(OverlayTexture.NO_OVERLAY).setLight(light).setNormal(n.x, n.y, n.z);
+        consumer.addVertex(poseMatrix, halfWidth, -0.1F, -halfWidth).setColor(colorUtil.red, colorUtil.green, colorUtil.blue, alpha).setUv(1.0F, 1.0F).setOverlay(OverlayTexture.NO_OVERLAY).setLight(light).setNormal(n.x, n.y, n.z);
+        consumer.addVertex(poseMatrix, halfWidth, -0.1F, halfWidth).setColor(colorUtil.red, colorUtil.green, colorUtil.blue, alpha).setUv(1.0F, 0.0F).setOverlay(OverlayTexture.NO_OVERLAY).setLight(light).setNormal(n.x, n.y, n.z);
+        consumer.addVertex(poseMatrix, -halfWidth, -0.1F, halfWidth).setColor(colorUtil.red, colorUtil.green, colorUtil.blue, alpha).setUv(0.0F, 0.0F).setOverlay(OverlayTexture.NO_OVERLAY).setLight(light).setNormal(n.x, n.y, n.z);
 
-        consumer2.vertex(poseMatrix, -halfWidth, -0.1F, -halfWidth).color(colorUtil.red, colorUtil.green, colorUtil.blue, alpha).uv(0.0F, 1.0F).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(light).normal(normalMatrix, 0.0F, 1.0F, 0.0F).endVertex();
-        consumer2.vertex(poseMatrix, halfWidth, -0.1F, -halfWidth).color(colorUtil.red, colorUtil.green, colorUtil.blue, alpha).uv(1.0F, 1.0F).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(light).normal(normalMatrix, 0.0F, 1.0F, 0.0F).endVertex();
-        consumer2.vertex(poseMatrix, halfWidth, -0.1F, halfWidth).color(colorUtil.red, colorUtil.green, colorUtil.blue, alpha).uv(1.0F, 0.0F).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(light).normal(normalMatrix, 0.0F, 1.0F, 0.0F).endVertex();
-        consumer2.vertex(poseMatrix, -halfWidth, -0.1F, halfWidth).color(colorUtil.red, colorUtil.green, colorUtil.blue, alpha).uv(0.0F, 0.0F).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(light).normal(normalMatrix, 0.0F, 1.0F, 0.0F).endVertex();
+        consumer2.addVertex(poseMatrix, -halfWidth, -0.1F, -halfWidth).setColor(colorUtil.red, colorUtil.green, colorUtil.blue, alpha).setUv(0.0F, 1.0F).setOverlay(OverlayTexture.NO_OVERLAY).setLight(light).setNormal(n.x, n.y, n.z);
+        consumer2.addVertex(poseMatrix, halfWidth, -0.1F, -halfWidth).setColor(colorUtil.red, colorUtil.green, colorUtil.blue, alpha).setUv(1.0F, 1.0F).setOverlay(OverlayTexture.NO_OVERLAY).setLight(light).setNormal(n.x, n.y, n.z);
+        consumer2.addVertex(poseMatrix, halfWidth, -0.1F, halfWidth).setColor(colorUtil.red, colorUtil.green, colorUtil.blue, alpha).setUv(1.0F, 0.0F).setOverlay(OverlayTexture.NO_OVERLAY).setLight(light).setNormal(n.x, n.y, n.z);
+        consumer2.addVertex(poseMatrix, -halfWidth, -0.1F, halfWidth).setColor(colorUtil.red, colorUtil.green, colorUtil.blue, alpha).setUv(0.0F, 0.0F).setOverlay(OverlayTexture.NO_OVERLAY).setLight(light).setNormal(n.x, n.y, n.z);
     }
 
     @Override

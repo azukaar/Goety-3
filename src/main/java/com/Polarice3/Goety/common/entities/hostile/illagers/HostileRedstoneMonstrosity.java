@@ -29,6 +29,8 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraft.world.level.GameRules;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.util.Mth;
@@ -134,27 +136,27 @@ public class HostileRedstoneMonstrosity extends HostileGolem implements IRM {
     @SuppressWarnings("removal")
     public static AttributeSupplier.Builder setCustomAttributes() {
         return Monster.createMonsterAttributes()
-                .add(Attributes.MAX_HEALTH, AttributesConfig.RedstoneMonstrosityHealth.get())
-                .add(Attributes.ARMOR, AttributesConfig.RedstoneMonstrosityArmor.get())
+                .add(Attributes.MAX_HEALTH, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.RedstoneMonstrosityHealth, 20.0D))
+                .add(Attributes.ARMOR, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.RedstoneMonstrosityArmor, 20.0D))
                 .add(Attributes.MOVEMENT_SPEED, 0.23D)
                 .add(Attributes.KNOCKBACK_RESISTANCE, 1.0D)
                 .add(Attributes.ATTACK_KNOCKBACK, 6.0D)
-                .add(NeoForgeMod.STEP_HEIGHT_ADDITION.get(), 2.0D)
-                .add(Attributes.ATTACK_DAMAGE, AttributesConfig.RedstoneMonstrosityDamage.get())
-                .add(Attributes.FOLLOW_RANGE, AttributesConfig.RedstoneMonstrosityFollowRange.get());
+                .add(Attributes.STEP_HEIGHT, 2.0D)
+                .add(Attributes.ATTACK_DAMAGE, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.RedstoneMonstrosityDamage, 20.0D))
+                .add(Attributes.FOLLOW_RANGE, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.RedstoneMonstrosityFollowRange, 20.0D));
     }
 
     public void setConfigurableAttributes(){
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.MAX_HEALTH), AttributesConfig.RedstoneMonstrosityHealth.get());
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ARMOR), AttributesConfig.RedstoneMonstrosityArmor.get());
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ATTACK_DAMAGE), AttributesConfig.RedstoneMonstrosityDamage.get());
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.FOLLOW_RANGE), AttributesConfig.RedstoneMonstrosityFollowRange.get());
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.MAX_HEALTH), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.RedstoneMonstrosityHealth, 20.0D));
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ARMOR), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.RedstoneMonstrosityArmor, 20.0D));
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ATTACK_DAMAGE), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.RedstoneMonstrosityDamage, 20.0D));
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.FOLLOW_RANGE), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.RedstoneMonstrosityFollowRange, 20.0D));
     }
 
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.entityData.define(DATA_FLAGS_ID, (byte)0);
-        this.entityData.define(ANIM_STATE, 0);
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(DATA_FLAGS_ID, (byte)0);
+        builder.define(ANIM_STATE, 0);
     }
 
     protected Component getTypeName() {
@@ -162,7 +164,7 @@ public class HostileRedstoneMonstrosity extends HostileGolem implements IRM {
     }
 
     @Override
-    public void applyRaidBuffs(int p_37844_, boolean p_37845_) {
+    public void applyRaidBuffs(ServerLevel p_37844_, int p_37845_, boolean p_37846_) {
     }
 
     protected float nextStep() {
@@ -211,9 +213,7 @@ public class HostileRedstoneMonstrosity extends HostileGolem implements IRM {
         return MobUtil.illagerAllies(this, pEntity);
     }
 
-    public Packet<ClientGamePacketListener> getAddEntityPacket() {
-        return new ClientboundAddEntityPacket(this, this.hasPose(Pose.EMERGING) ? 1 : 0);
-    }
+
 
     public void recreateFromPacket(ClientboundAddEntityPacket p_219420_) {
         super.recreateFromPacket(p_219420_);
@@ -377,12 +377,11 @@ public class HostileRedstoneMonstrosity extends HostileGolem implements IRM {
     }
 
     @Nullable
-    @Override
-    public SpawnGroupData finalizeSpawn(ServerLevelAccessor pLevel, DifficultyInstance pDifficulty, MobSpawnType pReason, @Nullable SpawnGroupData pSpawnData, @Nullable CompoundTag pDataTag) {
+    public SpawnGroupData finalizeSpawn(ServerLevelAccessor pLevel, DifficultyInstance pDifficulty, MobSpawnType pReason, @Nullable SpawnGroupData pSpawnData) {
         if (pReason == MobSpawnType.MOB_SUMMONED){
             this.setPose(Pose.EMERGING);
         }
-        return super.finalizeSpawn(pLevel, pDifficulty, pReason, pSpawnData, pDataTag);
+        return super.finalizeSpawn(pLevel, pDifficulty, pReason, pSpawnData);
     }
 
     @Override
@@ -394,7 +393,6 @@ public class HostileRedstoneMonstrosity extends HostileGolem implements IRM {
         return super.canAnimateMove() && this.getCurrentAnimation() == this.getAnimationState(WALK);
     }
 
-    @Override
     public boolean isHostile() {
         return true;
     }
@@ -435,7 +433,6 @@ public class HostileRedstoneMonstrosity extends HostileGolem implements IRM {
         return this.getFlag(2);
     }
 
-    @Override
     protected boolean isAffectedByFluids() {
         return false;
     }
@@ -452,7 +449,7 @@ public class HostileRedstoneMonstrosity extends HostileGolem implements IRM {
     }
 
     public boolean hurt(DamageSource pSource, float pAmount) {
-        if (this.canHurtRange(pSource) > AttributesConfig.RedstoneMonstrosityHurtRange.get()
+        if (this.canHurtRange(pSource) > com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.RedstoneMonstrosityHurtRange, 20.0D)
                 && !pSource.is(DamageTypeTags.BYPASSES_INVULNERABILITY)) {
             return false;
         }
@@ -461,7 +458,7 @@ public class HostileRedstoneMonstrosity extends HostileGolem implements IRM {
 
     protected void actuallyHurt(DamageSource source, float amount) {
         if (!source.is(DamageTypeTags.BYPASSES_INVULNERABILITY)){
-            amount = Math.min(amount, AttributesConfig.RedstoneMonstrosityDamageCap.get().floatValue());
+            amount = Math.min(amount, (float)com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.RedstoneMonstrosityDamageCap, 20.0D));
         }
         super.actuallyHurt(source, amount);
     }
@@ -493,12 +490,10 @@ public class HostileRedstoneMonstrosity extends HostileGolem implements IRM {
         }
     }
 
-    @Override
     public float getBigGlow() {
         return this.bigGlow;
     }
 
-    @Override
     public float getMinorGlow() {
         return this.minorGlow;
     }
@@ -535,7 +530,7 @@ public class HostileRedstoneMonstrosity extends HostileGolem implements IRM {
         if (!this.level().isClientSide){
             if (this.isAlive() && !this.isActivating()) {
                 if (MobsConfig.RedstoneMonstrosityLeafBreak.get()) {
-                    if (this.level().getGameRules().getBoolean(GameRules.RULE_MOB_GRIEFING)) {
+                    if (this.level().getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING)) {
                         boolean flag = false;
                         AABB aabb = this.getBoundingBox().inflate(0.2D);
 
@@ -772,7 +767,6 @@ public class HostileRedstoneMonstrosity extends HostileGolem implements IRM {
             this.checkAndPerformAttack(livingentity, this.mob.distanceToSqr(livingentity.getX(), livingentity.getY(), livingentity.getZ()));
         }
 
-        @Override
         protected void checkAndPerformAttack(LivingEntity enemy, double distToEnemySqr) {
             if (this.mob.targetClose(enemy, distToEnemySqr)) {
                 this.mob.doHurtTarget(enemy);
@@ -833,16 +827,16 @@ public class HostileRedstoneMonstrosity extends HostileGolem implements IRM {
             if (this.mob.attackTick == 34) {
                 this.mob.makeBigGlow();
                 this.mob.playSound(ModSounds.REDSTONE_MONSTROSITY_SMASH.get(), this.mob.getSoundVolume() * 2.0F, 0.2F);
-                this.mob.playSound(SoundEvents.GENERIC_EXPLODE, this.mob.getSoundVolume() / 2.0F, 0.9F);
+                this.mob.playSound(SoundEvents.GENERIC_EXPLODE.value(), this.mob.getSoundVolume() / 2.0F, 0.9F);
                 Vec3 vec3 = this.mob.getHorizontalLookAngle();
                 AABB aabb = new AABB(this.mob.blockPosition());
-                for (LivingEntity target : this.mob.level.getEntitiesOfClass(LivingEntity.class, aabb.move(vec3.scale(5.0D)).inflate(MELEE_RANGE))) {
+                for (LivingEntity target : this.mob.level().getEntitiesOfClass(LivingEntity.class, aabb.move(vec3.scale(5.0D)).inflate(MELEE_RANGE))) {
                     if (!MobUtil.areAllies(this.mob, target)) {
                         this.hurtTarget(target);
                     }
                 }
-                CameraShake.cameraShake(this.mob.level, this.mob.position(), 25.0F, 0.3F, 0, 20);
-                if (this.mob.level instanceof ServerLevel serverLevel){
+                CameraShake.cameraShake(this.mob.level(), this.mob.position(), 25.0F, 0.3F, 0, 20);
+                if (this.mob.level() instanceof ServerLevel serverLevel){
                     ColorUtil colorUtil = new ColorUtil(0xff8200);
                     Vec3 vec31 = this.mob.position().add(vec3.scale(5.0D));
                     ServerParticleUtil.windShockwaveParticle(serverLevel, colorUtil, 2, 0, 20, -1, vec31.add(0.0D, 1.0D, 0.0D));
@@ -855,7 +849,7 @@ public class HostileRedstoneMonstrosity extends HostileGolem implements IRM {
             float f = (float)this.mob.getAttributeValue(Attributes.ATTACK_DAMAGE);
             float f1 = (float)this.mob.getAttributeValue(Attributes.ATTACK_KNOCKBACK);
             if (target instanceof LivingEntity livingEntity){
-                f += (livingEntity.getMaxHealth() * AttributesConfig.RedstoneMonstrosityHPPercentDamage.get().floatValue());
+                f += (livingEntity.getMaxHealth() * (float)com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.RedstoneMonstrosityHPPercentDamage, 20.0D));
             }
 
             boolean flag = target.hurt(this.mob.damageSources().mobAttack(this.mob), f);
@@ -869,11 +863,13 @@ public class HostileRedstoneMonstrosity extends HostileGolem implements IRM {
                     this.mob.setDeltaMovement(this.mob.getDeltaMovement().multiply(0.6D, 1.0D, 0.6D));
                 }
 
-                this.mob.doEnchantDamageEffects(this.mob, target);
+                if (this.mob.level() instanceof ServerLevel serverLevel) {
+                    EnchantmentHelper.doPostAttackEffects(serverLevel, this.mob, this.mob.damageSources().mobAttack(this.mob));
+                }
                 this.mob.setLastHurtMob(target);
             }
             if (target instanceof Player player && player.isBlocking()) {
-                player.disableShield(true);
+                MobUtil.disableShield(player);
             } else {
                 MobUtil.disableShield(target);
             }
@@ -954,7 +950,7 @@ public class HostileRedstoneMonstrosity extends HostileGolem implements IRM {
                     Vec3 vec3 = this.mob.position().add(this.mob.getLookAngle().scale(10));
                     for (int i = 0; i < 8; i++) {
                         ScatterBomb bomb = this.getScatterBomb(vec3);
-                        this.mob.level.addFreshEntity(bomb);
+                        this.mob.level().addFreshEntity(bomb);
                     }
                     this.mob.playSound(ModSounds.REDSTONE_MONSTROSITY_BELCH.get(), this.mob.getSoundVolume(), 0.7F);
                     this.mob.playSound(ModSounds.REDSTONE_MONSTROSITY_GROWL.get(), this.mob.getSoundVolume() - 1.5F, 0.9F);
@@ -969,7 +965,7 @@ public class HostileRedstoneMonstrosity extends HostileGolem implements IRM {
 
         @NotNull
         private ScatterBomb getScatterBomb(Vec3 vec3) {
-            ScatterBomb bomb = new ScatterBomb(this.mob, this.mob.level);
+            ScatterBomb bomb = new ScatterBomb(this.mob, this.mob.level());
             double d1 = vec3.x - this.mob.getX();
             double d2 = vec3.y - bomb.getY();
             double d3 = vec3.z - this.mob.getZ();
@@ -1012,7 +1008,7 @@ public class HostileRedstoneMonstrosity extends HostileGolem implements IRM {
         @Override
         public boolean canUse() {
             LivingEntity livingentity = this.mob.getTarget();
-            int i = this.mob.level.getEntitiesOfClass(RedstoneCube.class, this.mob.getBoundingBox().inflate(32)).size();
+            int i = this.mob.level().getEntitiesOfClass(RedstoneCube.class, this.mob.getBoundingBox().inflate(32)).size();
             if (livingentity != null && livingentity.isAlive()) {
                 return this.mob.summonCool <= 0
                         && i < 3
@@ -1168,9 +1164,9 @@ public class HostileRedstoneMonstrosity extends HostileGolem implements IRM {
                 this.mob.setYRot(this.rotlerp(this.mob.getYRot(), f9, 5 + additionalRot * 5));
                 this.mob.setSpeed(trueSpeed);
                 BlockPos blockpos = this.mob.blockPosition();
-                BlockState blockstate = this.mob.level.getBlockState(blockpos);
-                VoxelShape voxelshape = blockstate.getCollisionShape(this.mob.level, blockpos);
-                if (d2 > (double) this.mob.getStepHeight() && d0 * d0 + d1 * d1 < (double) Math.max(1.0F, this.mob.getBbWidth())
+                BlockState blockstate = this.mob.level().getBlockState(blockpos);
+                VoxelShape voxelshape = blockstate.getCollisionShape(this.mob.level(), blockpos);
+                if (d2 > (double) this.mob.getAttributeValue(Attributes.STEP_HEIGHT) && d0 * d0 + d1 * d1 < (double) Math.max(1.0F, this.mob.getBbWidth())
                         || !voxelshape.isEmpty() && this.mob.getY() < voxelshape.max(Direction.Axis.Y) + (double) blockpos.getY()
                         && !blockstate.is(BlockTags.DOORS) && !blockstate.is(BlockTags.FENCES)) {
                     this.mob.getJumpControl().jump();
@@ -1195,7 +1191,7 @@ public class HostileRedstoneMonstrosity extends HostileGolem implements IRM {
             PathNavigation pathnavigation = this.mob.getNavigation();
             if (pathnavigation != null) {
                 NodeEvaluator nodeevaluator = pathnavigation.getNodeEvaluator();
-                return nodeevaluator == null || nodeevaluator.getBlockPathType(this.mob.level, Mth.floor(this.mob.getX() + (double) p_24997_),
+                return nodeevaluator == null || nodeevaluator.getPathType(new net.minecraft.world.level.pathfinder.PathfindingContext(this.mob.level(), this.mob), Mth.floor(this.mob.getX() + (double) p_24997_),
                         this.mob.getBlockY(), Mth.floor(this.mob.getZ() + (double) p_24998_)) == PathType.WALKABLE;
             }
             return true;

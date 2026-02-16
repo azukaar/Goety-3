@@ -6,11 +6,11 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
 import net.minecraft.util.profiling.ProfilerFiller;
-import net.neoforged.neoforge.registries.NeoForgeRegistries;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -31,7 +31,7 @@ public class IllagerAssaultListener extends SimpleJsonResourceReloadListener {
             JsonObject object = objectIn.get(location).getAsJsonObject();
             // TODO (NeoForge 1.21): port conditional loading (CraftingHelper/processConditions + ICondition context).
             String name = object.getAsJsonPrimitive("entity_type").getAsString();
-            ResourceLocation resourceLocation = new ResourceLocation(name);
+            ResourceLocation resourceLocation = ResourceLocation.parse(name);
             JsonObject data = object.getAsJsonObject("registry");
             float thresholdTimes = data.getAsJsonPrimitive("threshold_times").getAsFloat();
             int max = data.getAsJsonPrimitive("max").getAsInt();
@@ -41,8 +41,8 @@ public class IllagerAssaultListener extends SimpleJsonResourceReloadListener {
             ResourceLocation resourceLocation1 = null;
             float chance2 = 0.0F;
             if (data2 != null) {
-                resourceLocation1 = new ResourceLocation(data2.getAsJsonPrimitive("mount_type").getAsString());
-                if (!NeoForgeRegistries.ENTITY_TYPES.containsKey(resourceLocation1)) {
+                resourceLocation1 = ResourceLocation.parse(data2.getAsJsonPrimitive("mount_type").getAsString());
+                if (!BuiltInRegistries.ENTITY_TYPE.containsKey(resourceLocation1)) {
                     resourceLocation1 = null;
                 }
                 chance2 = data2.getAsJsonPrimitive("ride_chance").getAsFloat();

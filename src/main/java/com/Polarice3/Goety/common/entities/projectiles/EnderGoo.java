@@ -8,6 +8,7 @@ import com.Polarice3.Goety.utils.MathHelper;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
+import net.minecraft.server.level.ServerEntity;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
@@ -19,6 +20,7 @@ import net.minecraft.world.entity.projectile.AbstractHurtingProjectile;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.phys.Vec3;
 public class EnderGoo extends SpellHurtingProjectile {
 
@@ -70,7 +72,9 @@ public class EnderGoo extends SpellHurtingProjectile {
                 flag = entity.hurt(entity.damageSources().mobProjectile(this, livingentity), baseDamage);
                 if (flag) {
                     if (entity.isAlive()) {
-                        this.doEnchantDamageEffects(livingentity, entity);
+                        if (this.level() instanceof ServerLevel serverLevel) {
+                            EnchantmentHelper.doPostAttackEffects(serverLevel, livingentity, this.damageSources().mobAttack(livingentity));
+                        }
                     }
                 }
             } else {
@@ -117,7 +121,7 @@ public class EnderGoo extends SpellHurtingProjectile {
     }
 
     @Override
-    public Packet<ClientGamePacketListener> getAddEntityPacket() {
-        return new net.minecraft.network.protocol.game.ClientboundAddEntityPacket(this);
+    public Packet<ClientGamePacketListener> getAddEntityPacket(ServerEntity p_345759_) {
+        return new net.minecraft.network.protocol.game.ClientboundAddEntityPacket(this, p_345759_);
     }
 }

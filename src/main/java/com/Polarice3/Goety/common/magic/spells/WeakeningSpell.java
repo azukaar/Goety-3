@@ -35,12 +35,12 @@ public class WeakeningSpell extends Spell {
 
     @Override
     public int defaultSoulCost() {
-        return SpellConfig.WeakeningCost.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.WeakeningCost, 0);
     }
 
     @Override
     public int defaultCastDuration() {
-        return SpellConfig.WeakeningDuration.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.WeakeningDuration, 0);
     }
 
     @Nullable
@@ -51,7 +51,7 @@ public class WeakeningSpell extends Spell {
 
     @Override
     public int defaultSpellCooldown() {
-        return SpellConfig.WeakeningCoolDown.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.WeakeningCoolDown, 0);
     }
 
     @Override
@@ -84,7 +84,7 @@ public class WeakeningSpell extends Spell {
         }
         for (LivingEntity livingEntity : worldIn.getEntitiesOfClass(LivingEntity.class, caster.getBoundingBox().inflate(radius))){
             if (!MobUtil.areAllies(caster, livingEntity)) {
-                livingEntity.addEffect(new MobEffectInstance(GoetyEffects.SAPPED.get(), MathHelper.secondsToTicks(duration), potency + 4));
+                livingEntity.addEffect(new MobEffectInstance(GoetyEffects.SAPPED, MathHelper.secondsToTicks(duration), potency + 4));
                 livingEntity.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, MathHelper.secondsToTicks(duration), potency));
                 livingEntity.playSound(ModSounds.WEAKEN_CURSE.get());
             }

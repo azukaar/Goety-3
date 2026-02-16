@@ -149,7 +149,7 @@ public class Tremor extends BlockPos {
 
         AABB box = new AABB(this.getX(), (double) this.getY() + 1.0, this.getZ(), (double) this.getX() + 1.0, (double) this.getY() + 2.0, (double) this.getZ() + 1.0);
 
-        for (LivingEntity livingEntity : source.level.getEntitiesOfClass(LivingEntity.class, box)) {
+        for (LivingEntity livingEntity : source.level().getEntitiesOfClass(LivingEntity.class, box)) {
             if (livingEntity != source && source.getVehicle() != livingEntity) {
                 float damage = 4.0F;
                 if (this.isFirst()){

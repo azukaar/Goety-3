@@ -35,14 +35,14 @@ public class SunkenSkeletonServantRenderer extends HumanoidMobRenderer<SunkenSke
    }
 
    public ResourceLocation getTextureLocation(SunkenSkeletonServant servant) {
-      if (MobsConfig.SunkenSkeletonServantTexture.get() && !servant.isHostile()) {
+      if (com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MobsConfig.SunkenSkeletonServantTexture, false) && !servant.isHostile()) {
          return TEXTURES;
       }
       return ORIGINAL;
    }
 
-   protected void setupRotations(SunkenSkeletonServant p_114109_, PoseStack p_114110_, float p_114111_, float p_114112_, float p_114113_) {
-      super.setupRotations(p_114109_, p_114110_, p_114111_, p_114112_, p_114113_);
+   protected void setupRotations(SunkenSkeletonServant p_114109_, PoseStack p_114110_, float p_114111_, float p_114112_, float p_114113_, float p_332768_) {
+      super.setupRotations(p_114109_, p_114110_, p_114111_, p_114112_, p_114113_, p_332768_);
       float f = p_114109_.getSwimAmount(p_114113_);
       if (f > 0.0F) {
          p_114110_.mulPose(Axis.XP.rotationDegrees(Mth.lerp(f, p_114109_.getXRot(), -10.0F - p_114109_.getXRot())));
@@ -66,7 +66,7 @@ public class SunkenSkeletonServantRenderer extends HumanoidMobRenderer<SunkenSke
       @Override
       public void render(PoseStack matrixStackIn, MultiBufferSource bufferIn, int packedLightIn, T entitylivingbaseIn, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch) {
          if (!entitylivingbaseIn.isHostile()) {
-            if (MobsConfig.SunkenSkeletonServantTexture.get()) {
+            if (com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MobsConfig.SunkenSkeletonServantTexture, false)) {
                 coloredCutoutModelCopyLayerRender(this.getParentModel(), this.layerModel, TEXTURES, matrixStackIn, bufferIn, packedLightIn, entitylivingbaseIn, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, partialTicks, -1);
             }
          }

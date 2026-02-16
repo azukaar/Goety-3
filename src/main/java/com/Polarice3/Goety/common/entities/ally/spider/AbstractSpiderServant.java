@@ -430,7 +430,7 @@ public abstract class AbstractSpiderServant extends Spider
     public void setTarget(@Nullable LivingEntity target) {
         if (this.isGuardingArea() && !this.isPrioritizing()) {
             if (target != null) {
-                if (target.distanceToSqr(this.vec3BoundPos()) <= Mth.square(GUARDING_RANGE)) {
+                if (target.distanceToSqr(this.vec3BoundPos()) <= Mth.square(IServant.getGuardingRange())) {
                     this.overrideSetTarget(target);
                 }
             } else {
@@ -577,7 +577,7 @@ public abstract class AbstractSpiderServant extends Spider
     }
 
     public boolean hurt(DamageSource source, float amount) {
-        if (MobsConfig.ServantsMasterImmune.get()) {
+        if (com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MobsConfig.ServantsMasterImmune, true)) {
             if (source.getEntity() instanceof Summoned summoned) {
                 if (!summoned.isHostile() && !this.isHostile()) {
                     if (this.getTrueOwner() != null && summoned.getTrueOwner() == this.getTrueOwner()) {
@@ -588,7 +588,7 @@ public abstract class AbstractSpiderServant extends Spider
         }
         boolean flag = super.hurt(source, amount);
         if (flag) {
-            this.noHealTime = MathHelper.secondsToTicks(MobsConfig.ServantHealHalt.get());
+            this.noHealTime = MathHelper.secondsToTicks(com.Polarice3.Goety.utils.ConfigHelper.getInt(MobsConfig.ServantHealHalt, 0));
         }
         return flag;
     }

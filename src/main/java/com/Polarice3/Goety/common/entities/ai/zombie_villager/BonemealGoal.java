@@ -37,11 +37,11 @@ public class BonemealGoal extends Goal {
             return false;
         } else if (this.servant.getVillagerData().getProfession() != VillagerProfession.FARMER) {
             return false;
-        } else if ((this.lastBonemealingSession == 0L || this.lastBonemealingSession + 160L <= this.servant.level.getGameTime())) {
+        } else if ((this.lastBonemealingSession == 0L || this.lastBonemealingSession + 160L <= this.servant.level().getGameTime())) {
             if (this.servant.getInventory().countItem(Items.BONE_MEAL) <= 0) {
                 return false;
             } else {
-                this.cropPos = this.pickNextTarget(this.servant.level, this.servant);
+                this.cropPos = this.pickNextTarget(this.servant.level(), this.servant);
                 return this.cropPos.isPresent();
             }
         } else {
@@ -61,7 +61,7 @@ public class BonemealGoal extends Goal {
         } else if (this.servant.getOffhandItem().isEmpty()){
             this.servant.setItemSlot(EquipmentSlot.OFFHAND, new ItemStack(Items.BONE_MEAL));
         }
-        this.nextWorkCycleTime = this.servant.level.getGameTime();
+        this.nextWorkCycleTime = this.servant.level().getGameTime();
         this.timeWorkedSoFar = 0;
     }
 
@@ -73,7 +73,7 @@ public class BonemealGoal extends Goal {
         } else if (this.servant.getOffhandItem().is(Items.BONE_MEAL)){
             this.servant.setItemSlot(EquipmentSlot.OFFHAND, ItemStack.EMPTY);
         }
-        this.lastBonemealingSession = this.servant.level.getGameTime();
+        this.lastBonemealingSession = this.servant.level().getGameTime();
     }
 
     @Override
@@ -87,7 +87,7 @@ public class BonemealGoal extends Goal {
         if (this.cropPos.isPresent()) {
             BlockPos blockpos = this.cropPos.get();
             if (blockpos.closerToCenterThan(this.servant.position(), 2.0D)){
-                if (this.servant.level.getGameTime() >= this.nextWorkCycleTime) {
+                if (this.servant.level().getGameTime() >= this.nextWorkCycleTime) {
                     ItemStack itemstack = ItemStack.EMPTY;
                     SimpleContainer simplecontainer = this.servant.getInventory();
                     int i = simplecontainer.getContainerSize();
@@ -100,17 +100,17 @@ public class BonemealGoal extends Goal {
                         }
                     }
 
-                    if (!itemstack.isEmpty() && BoneMealItem.growCrop(itemstack, this.servant.level, blockpos)) {
-                        this.servant.level.levelEvent(1505, blockpos, 0);
+                    if (!itemstack.isEmpty() && BoneMealItem.growCrop(itemstack, this.servant.level(), blockpos)) {
+                        this.servant.level().levelEvent(1505, blockpos, 0);
                         itemstack.shrink(1);
                         if (this.servant.getMainHandItem().is(Items.BONE_MEAL)) {
                             this.servant.setItemSlot(EquipmentSlot.MAINHAND, ItemStack.EMPTY);
                         } else if (this.servant.getOffhandItem().is(Items.BONE_MEAL)){
                             this.servant.setItemSlot(EquipmentSlot.OFFHAND, ItemStack.EMPTY);
                         }
-                        this.cropPos = this.pickNextTarget(this.servant.level, this.servant);
+                        this.cropPos = this.pickNextTarget(this.servant.level(), this.servant);
                         this.setCurrentCropAsTarget(this.servant);
-                        this.nextWorkCycleTime = this.servant.level.getGameTime() + 40L;
+                        this.nextWorkCycleTime = this.servant.level().getGameTime() + 40L;
                     }
 
                     ++this.timeWorkedSoFar;

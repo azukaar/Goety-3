@@ -202,7 +202,7 @@ public class Fangs extends Entity implements ISpellEntity {
 
     private void dealDamageTo(LivingEntity target) {
         LivingEntity livingentity = this.getOwner();
-        float baseDamage = SpellConfig.FangDamage.get().floatValue() * WandUtil.damageMultiply();
+        float baseDamage = com.Polarice3.Goety.utils.ConfigHelper.getFloat(SpellConfig.FangDamage, 1.0F) * WandUtil.damageMultiply();
         baseDamage += this.damage;
         if (target.isAlive() && !target.isInvulnerable()) {
             if (livingentity == null) {
@@ -223,7 +223,7 @@ public class Fangs extends Entity implements ISpellEntity {
                     } else {
                         if (target.hurt(this.damageSources().indirectMagic(this, livingentity), baseDamage)) {
                             int soulEater = Mth.clamp(this.getSoulEater(), 0, 10);
-                            SEHelper.increaseSouls(player, SpellConfig.FangGainSouls.get() * soulEater);
+                            SEHelper.increaseSouls(player, com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.FangGainSouls, 0) * soulEater);
                             if (this.burning > 0) {
                                 target.igniteForSeconds(5 * this.burning);
                             }

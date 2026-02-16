@@ -30,12 +30,12 @@ import java.util.List;
 public class KillingSpell extends Spell {
     @Override
     public int defaultSoulCost() {
-        return SpellConfig.KillingCost.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.KillingCost, 0);
     }
 
     @Override
     public int defaultCastDuration() {
-        return SpellConfig.KillingDuration.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.KillingDuration, 0);
     }
 
     @Nullable
@@ -46,7 +46,7 @@ public class KillingSpell extends Spell {
 
     @Override
     public int defaultSpellCooldown() {
-        return SpellConfig.KillingCoolDown.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.KillingCoolDown, 0);
     }
 
     @Override
@@ -84,7 +84,7 @@ public class KillingSpell extends Spell {
             Vec3 vec31 = new Vec3(target.getX(), target.getY() + target.getBbHeight() / 2, target.getZ());
             DamageSource damageSource = ModDamageSource.deathCurse(caster);
             float damage = target.getHealth();
-            float casterDamage = damage * SpellConfig.KillingFeedback.get().floatValue();
+            float casterDamage = damage * com.Polarice3.Goety.utils.ConfigHelper.getFloat(SpellConfig.KillingFeedback, 1.0F);
             if (caster.getHealth() - MobUtil.hurtCalculation(caster, damageSource, casterDamage) <= 0.0F && EntitySelector.NO_CREATIVE_OR_SPECTATOR.test(caster)){
                 damage = caster.getHealth() - 1;
                 casterDamage = caster.getHealth() - 1;

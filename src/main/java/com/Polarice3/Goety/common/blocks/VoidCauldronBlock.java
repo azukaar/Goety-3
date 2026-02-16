@@ -1,8 +1,10 @@
 package com.Polarice3.Goety.common.blocks;
 
 import com.Polarice3.Goety.init.ModCauldronInteraction;
+import com.mojang.serialization.MapCodec;
 import com.Polarice3.Goety.utils.BlockFinder;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.cauldron.CauldronInteraction;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
@@ -15,10 +17,16 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.IntegerProperty;
 
 public class VoidCauldronBlock extends AbstractCauldronBlock {
+    public static final MapCodec<VoidCauldronBlock> CODEC = simpleCodec(VoidCauldronBlock::new);
+
+    @Override
+    protected MapCodec<? extends AbstractCauldronBlock> codec() {
+        return CODEC;
+    }
     public static final IntegerProperty LEVEL = BlockStateProperties.LEVEL_CAULDRON;
 
     public VoidCauldronBlock(BlockBehaviour.Properties p_153498_) {
-        super(p_153498_, ModCauldronInteraction.VOID);
+        super(p_153498_, CauldronInteraction.EMPTY);
         this.registerDefaultState(this.stateDefinition.any().setValue(LEVEL, 1));
     }
 

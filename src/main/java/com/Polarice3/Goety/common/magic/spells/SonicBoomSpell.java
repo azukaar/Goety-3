@@ -28,16 +28,16 @@ public class SonicBoomSpell extends Spell {
     }
 
     public int defaultSoulCost() {
-        return SpellConfig.SonicBoomCost.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.SonicBoomCost, 0);
     }
 
     public int defaultCastDuration() {
-        return SpellConfig.SonicBoomDuration.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.SonicBoomDuration, 0);
     }
 
     @Override
     public int defaultSpellCooldown() {
-        return SpellConfig.SonicBoomCoolDown.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.SonicBoomCoolDown, 0);
     }
 
     public SoundEvent CastingSound() {
@@ -53,7 +53,7 @@ public class SonicBoomSpell extends Spell {
     }
 
     public void SpellResult(ServerLevel worldIn, LivingEntity caster, ItemStack staff, SpellStat spellStat){
-        float damage = SpellConfig.SonicBoomDamage.get().floatValue() * WandUtil.damageMultiply();
+        float damage = com.Polarice3.Goety.utils.ConfigHelper.getFloat(SpellConfig.SonicBoomDamage, 1.0F) * WandUtil.damageMultiply();
         int range = spellStat.getRange();
         if (WandUtil.enchantedFocus(caster)){
             damage += WandUtil.getPotencyLevel(caster);

@@ -342,13 +342,13 @@ public class Vizier extends SpellcasterIllager implements PowerableMob, ICustomA
 
     public static AttributeSupplier.Builder setCustomAttributes() {
         return Mob.createMobAttributes()
-                .add(Attributes.MAX_HEALTH, AttributesConfig.VizierHealth.get())
-                .add(Attributes.ATTACK_DAMAGE, AttributesConfig.VizierDamage.get());
+                .add(Attributes.MAX_HEALTH, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.VizierHealth, 20.0D))
+                .add(Attributes.ATTACK_DAMAGE, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.VizierDamage, 20.0D));
     }
 
     public void setConfigurableAttributes() {
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.MAX_HEALTH), AttributesConfig.VizierHealth.get());
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ATTACK_DAMAGE), AttributesConfig.VizierDamage.get());
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.MAX_HEALTH), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.VizierHealth, 20.0D));
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ATTACK_DAMAGE), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.VizierDamage, 20.0D));
     }
 
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
@@ -588,7 +588,7 @@ public class Vizier extends SpellcasterIllager implements PowerableMob, ICustomA
     protected void actuallyHurt(DamageSource source, float amount) {
         float initialAmount = amount;
         if (!source.is(DamageTypeTags.BYPASSES_INVULNERABILITY)) {
-            amount = Math.min(initialAmount, AttributesConfig.VizierDamageCap.get().floatValue());
+            amount = Math.min(initialAmount, (float)com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.VizierDamageCap, 20.0D));
         }
         if (this.moddedInvul <= 0) {
             super.actuallyHurt(source, amount);

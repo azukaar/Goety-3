@@ -19,6 +19,10 @@ public class SoulUsingItemHandler extends ItemStackHandler {
 
     public SoulUsingItemHandler(ItemStack itemStack) {
         this.itemStack = itemStack;
+        net.minecraft.world.item.component.CustomData customData = itemStack.get(net.minecraft.core.component.DataComponents.CUSTOM_DATA);
+        if (customData != null) {
+            deserializeNBT(net.minecraft.core.RegistryAccess.EMPTY, customData.copyTag());
+        }
     }
 
     public ItemStack extractItem() {
@@ -66,14 +70,11 @@ public class SoulUsingItemHandler extends ItemStackHandler {
 
     @Override
     protected void onContentsChanged(int slot) {
-        CustomData.update(DataComponents.CUSTOM_DATA, itemStack, nbt -> nbt.putBoolean("goety-dirty", !nbt.getBoolean("goety-dirty")));
+        CompoundTag nbt = serializeNBT(net.minecraft.core.RegistryAccess.EMPTY);
+        itemStack.set(net.minecraft.core.component.DataComponents.CUSTOM_DATA, net.minecraft.world.item.component.CustomData.of(nbt));
     }
 
     public static SoulUsingItemHandler get(ItemStack stack) {
-        IItemHandler handler = stack.getCapability(Capabilities.ItemHandler.ITEM);
-        if (!(handler instanceof SoulUsingItemHandler soulHandler)) {
-            throw new IllegalArgumentException("ItemStack is missing SoulUsingItemHandler item capability");
-        }
-        return soulHandler;
+        return new SoulUsingItemHandler(stack);
     }
 }

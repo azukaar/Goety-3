@@ -4,7 +4,7 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.Mob;
-import net.neoforged.network.NetworkEvent;
+import com.Polarice3.Goety.compat.legacy.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
@@ -30,10 +30,10 @@ public class CTargetPlayerPacket {
     public static void consume(CTargetPlayerPacket packet, Supplier<NetworkEvent.Context> ctx) {
         if (packet != null) {
             ctx.get().enqueueWork(() -> {
-                ServerPlayer player = ctx.get().getSender();
+                ServerPlayer player = com.Polarice3.Goety.common.network.NetworkContextHelper.getServerPlayer(ctx);
 
                 if (player != null) {
-                    Entity entity = player.level.getEntity(packet.aggressor);
+                    Entity entity = player.level().getEntity(packet.aggressor);
                     if (entity instanceof Mob mob){
                         mob.setTarget(player);
                     }
@@ -43,3 +43,6 @@ public class CTargetPlayerPacket {
         }
     }
 }
+
+
+

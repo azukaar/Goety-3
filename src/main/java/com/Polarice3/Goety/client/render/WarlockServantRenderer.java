@@ -28,7 +28,7 @@ public class WarlockServantRenderer extends MobRenderer<WarlockServant, WarlockS
    }
 
    public ResourceLocation getTextureLocation(WarlockServant p_116410_) {
-      if (p_116410_.isHostile() || !MobsConfig.WarlockServantTexture.get()) {
+      if (p_116410_.isHostile() || !com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MobsConfig.WarlockServantTexture, false)) {
          return ORIGINAL;
       }
       return WITCH_LOCATION;

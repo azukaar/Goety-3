@@ -32,6 +32,9 @@ import net.neoforged.neoforge.common.Tags;
 import java.util.List;
 
 public class RaidBossSummon extends Raider {
+    @Override
+    public void applyRaidBuffs(ServerLevel p_34574_, int p_34575_, boolean p_34576_) {
+    }
     private static final EntityDataAccessor<Boolean> NEARBY_ILLAGERS = SynchedEntityData.defineId(RaidBossSummon.class, EntityDataSerializers.BOOLEAN);
     private static final EntityDataAccessor<Boolean> ACTIVE = SynchedEntityData.defineId(RaidBossSummon.class, EntityDataSerializers.BOOLEAN);
     private int lifeTick = 0;
@@ -114,10 +117,7 @@ public class RaidBossSummon extends Raider {
         this.entityData.set(NEARBY_ILLAGERS, illagersNearby);
     }
 
-    @Override
-    public void applyRaidBuffs(int p_37844_, boolean p_37845_) {
 
-    }
 
     @Override
     public SoundEvent getCelebrateSound() {
@@ -187,7 +187,7 @@ public class RaidBossSummon extends Raider {
                                 if (redstoneMonstrosity == null) {
                                     redstoneMonstrosity = new HostileRedstoneMonstrosity(ModEntityType.HOSTILE_REDSTONE_MONSTROSITY.get(), this.level());
                                 }
-                                redstoneMonstrosity.finalizeSpawn(serverWorld, serverWorld.getCurrentDifficultyAt(this.blockPosition()), MobSpawnType.MOB_SUMMONED, null, null);
+                                redstoneMonstrosity.finalizeSpawn(serverWorld, serverWorld.getCurrentDifficultyAt(this.blockPosition()), MobSpawnType.MOB_SUMMONED, null);
                                 redstoneMonstrosity.setCanJoinRaid(true);
                                 redstoneMonstrosity.setCurrentRaid(this.getCurrentRaid());
                                 redstoneMonstrosity.setWave(this.getCurrentRaid().getGroupsSpawned());

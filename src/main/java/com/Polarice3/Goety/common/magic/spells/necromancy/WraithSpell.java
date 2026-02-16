@@ -30,15 +30,15 @@ import java.util.function.Predicate;
 public class WraithSpell extends SummonSpell {
 
     public int defaultSoulCost() {
-        return SpellConfig.WraithCost.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.WraithCost, 0);
     }
 
     public int defaultCastDuration() {
-        return SpellConfig.WraithDuration.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.WraithDuration, 0);
     }
 
     public int SummonDownDuration() {
-        return SpellConfig.WraithSummonDown.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.WraithSummonDown, 0);
     }
 
     public SoundEvent CastingSound() {
@@ -47,7 +47,7 @@ public class WraithSpell extends SummonSpell {
 
     @Override
     public int defaultSpellCooldown() {
-        return SpellConfig.WraithCoolDown.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.WraithCoolDown, 0);
     }
 
     @Override
@@ -70,7 +70,7 @@ public class WraithSpell extends SummonSpell {
 
     @Override
     public int summonLimit() {
-        return SpellConfig.WraithLimit.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.WraithLimit, 0);
     }
 
     public void SpellResult(ServerLevel worldIn, LivingEntity caster, ItemStack staff, SpellStat spellStat) {
@@ -84,7 +84,7 @@ public class WraithSpell extends SummonSpell {
         if (!isShifting(caster)) {
             int i = 1;
             if (rightStaff(staff)){
-                i = 2 + caster.level.random.nextInt(4);
+                i = 2 + caster.level().random.nextInt(4);
             }
             for (int i1 = 0; i1 < i; ++i1) {
                 AbstractWraith summonedentity = new AbstractWraith(ModEntityType.WRAITH_SERVANT.get(), worldIn);
@@ -108,7 +108,7 @@ public class WraithSpell extends SummonSpell {
                 MobUtil.moveDownToGround(summonedentity);
                 summonedentity.setPersistenceRequired();
                 summonedentity.setLimitedLife(MobUtil.getSummonLifespan(worldIn) * duration);
-                summonedentity.finalizeSpawn(worldIn, caster.level.getCurrentDifficultyAt(caster.blockPosition()), MobSpawnType.MOB_SUMMONED, null, null);
+                summonedentity.finalizeSpawn(worldIn, caster.level().getCurrentDifficultyAt(caster.blockPosition()), MobSpawnType.MOB_SUMMONED, null);
                 this.buffSummon(caster, summonedentity, potency);
                 this.SummonSap(caster, summonedentity);
                 this.setTarget(caster, summonedentity);
@@ -122,3 +122,4 @@ public class WraithSpell extends SummonSpell {
         }
     }
 }
+

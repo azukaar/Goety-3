@@ -53,7 +53,7 @@ public class ChorusTreeFeature extends ModTreeFeature<ModTreeFeatureConfig> {
 
 		// check if we're on dirt or grass
 		BlockState state = world.getBlockState(pos.below());
-		if (!state.getBlock().canSustainPlant(state, world, pos.below(), Direction.UP, ModBlocks.CHORUS_SAPLING.get())) {
+		if (state.getBlock().canSustainPlant(state, world, pos.below(), Direction.UP, ModBlocks.CHORUS_SAPLING.get().defaultBlockState()) != net.neoforged.neoforge.common.util.TriState.TRUE) {
 			return false;
 		}
 

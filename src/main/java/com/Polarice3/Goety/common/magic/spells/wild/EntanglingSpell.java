@@ -28,12 +28,12 @@ import java.util.List;
 public class EntanglingSpell extends Spell {
     @Override
     public int defaultSoulCost() {
-        return SpellConfig.EntanglingCost.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.EntanglingCost, 0);
     }
 
     @Override
     public int defaultCastDuration() {
-        return SpellConfig.EntanglingDuration.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.EntanglingDuration, 0);
     }
 
     @Override
@@ -49,7 +49,7 @@ public class EntanglingSpell extends Spell {
 
     @Override
     public int defaultSpellCooldown() {
-        return SpellConfig.EntanglingCoolDown.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.EntanglingCoolDown, 0);
     }
 
     @Override
@@ -77,7 +77,7 @@ public class EntanglingSpell extends Spell {
             List<LivingEntity> list = worldIn.getEntitiesOfClass(LivingEntity.class, (new AABB(i, j, k, i, j - 4, k)).inflate(16));
             if (!list.isEmpty()) {
                 for (LivingEntity entity : list) {
-                    if (amount < SpellConfig.EntanglingStaffAmount.get()) {
+                    if (amount < com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.EntanglingStaffAmount, 0)) {
                         if (entity != caster && !MobUtil.areAllies(entity, caster) && entity.getMaxHealth() <= 100.0F) {
                             EntangleVines entangleVines = new EntangleVines(worldIn, caster, entity);
                             entangleVines.setLifeSpan(entangleVines.getLifeSpan() + MathHelper.secondsToTicks(duration));

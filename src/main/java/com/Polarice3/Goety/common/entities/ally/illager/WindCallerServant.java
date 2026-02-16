@@ -75,16 +75,16 @@ public class WindCallerServant extends SpellcasterIllagerServant{
     public static AttributeSupplier.Builder setCustomAttributes() {
         return Monster.createMonsterAttributes()
                 .add(Attributes.MOVEMENT_SPEED, 0.35D)
-                .add(NeoForgeMod.STEP_HEIGHT_ADDITION.get(), 1.0D)
-                .add(Attributes.FOLLOW_RANGE, AttributesConfig.WindCallerServantFollowRange.get())
-                .add(Attributes.ARMOR, AttributesConfig.WindCallerServantArmor.get())
-                .add(Attributes.MAX_HEALTH, AttributesConfig.WindCallerServantHealth.get());
+                .add(Attributes.STEP_HEIGHT, 1.0D)
+                .add(Attributes.FOLLOW_RANGE, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.WindCallerServantFollowRange, 20.0D))
+                .add(Attributes.ARMOR, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.WindCallerServantArmor, 20.0D))
+                .add(Attributes.MAX_HEALTH, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.WindCallerServantHealth, 20.0D));
     }
 
     public void setConfigurableAttributes(){
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.MAX_HEALTH), AttributesConfig.WindCallerServantHealth.get());
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ARMOR), AttributesConfig.WindCallerServantArmor.get());
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.FOLLOW_RANGE), AttributesConfig.WindCallerServantFollowRange.get());
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.MAX_HEALTH), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.WindCallerServantHealth, 20.0D));
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ARMOR), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.WindCallerServantArmor, 20.0D));
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.FOLLOW_RANGE), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.WindCallerServantFollowRange, 20.0D));
     }
 
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
@@ -184,7 +184,7 @@ public class WindCallerServant extends SpellcasterIllagerServant{
                         BoundWindCaller servant = this.convertTo(ModEntityType.BOUND_WIND_CALLER.get(), true);
                         if (servant != null) {
                             servant.setTrueOwner(this.getTrueOwner());
-                            net.neoforged.event.net.neoforged.neoforge.event.EventHooks.onLivingConvert(this, servant);
+                            net.neoforged.neoforge.event.EventHooks.onLivingConvert(this, servant);
                             if (!this.isSilent()) {
                                 this.level().levelEvent((Player)null, 1026, this.blockPosition(), 0);
                             }

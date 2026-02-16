@@ -23,17 +23,17 @@ public class RazorWindSpell extends Spell {
 
     @Override
     public int defaultSoulCost() {
-        return SpellConfig.RazorWindCost.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.RazorWindCost, 0);
     }
 
     @Override
     public int defaultCastDuration() {
-        return SpellConfig.RazorWindDuration.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.RazorWindDuration, 0);
     }
 
     @Override
     public int defaultSpellCooldown() {
-        return SpellConfig.RazorWindCoolDown.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.RazorWindCoolDown, 0);
     }
 
     public SoundEvent CastingSound() {
@@ -55,7 +55,7 @@ public class RazorWindSpell extends Spell {
 
     public void SpellResult(ServerLevel worldIn, LivingEntity caster, ItemStack staff, SpellStat spellStat){
         float radius = (float) spellStat.getRadius();
-        float damage = SpellConfig.RazorWindDamage.get().floatValue() * WandUtil.damageMultiply();
+        float damage = com.Polarice3.Goety.utils.ConfigHelper.getFloat(SpellConfig.RazorWindDamage, 1.0F) * WandUtil.damageMultiply();
         if (rightStaff(staff)){
             radius += 0.5F;
         }

@@ -90,18 +90,19 @@ public class TropicalSlimeServant extends SlimeServant {
         pCompound.putInt("Animation", this.getAnimation());
     }
 
-    protected void dropCustomDeathLoot(DamageSource p_33574_, int p_33575_, boolean p_33576_) {
+    @Override
+    protected void dropCustomDeathLoot(ServerLevel p_33574_, DamageSource p_33575_, boolean p_33576_) {
         super.dropCustomDeathLoot(p_33574_, p_33575_, p_33576_);
         if (this.level().getServer() != null) {
             if (this.shouldDropLoot()) {
                 LootTable loottable = this.level().getServer().reloadableRegistries()
-                        .getLootTable(ResourceKey.create(Registries.LOOT_TABLE, ModLootTables.TROPICAL_SLIME));
+                        .getLootTable(ModLootTables.TROPICAL_SLIME);
                 LootParams.Builder lootparams$builder = (new LootParams.Builder((ServerLevel) this.level()))
                         .withParameter(LootContextParams.THIS_ENTITY, this)
                         .withParameter(LootContextParams.ORIGIN, this.position())
-                        .withParameter(LootContextParams.DAMAGE_SOURCE, p_33574_)
-                        .withOptionalParameter(LootContextParams.KILLER_ENTITY, p_33574_.getEntity())
-                        .withOptionalParameter(LootContextParams.DIRECT_KILLER_ENTITY, p_33574_.getDirectEntity());
+                        .withParameter(LootContextParams.DAMAGE_SOURCE, p_33575_)
+                        .withOptionalParameter(LootContextParams.ATTACKING_ENTITY, p_33575_.getEntity())
+                        .withOptionalParameter(LootContextParams.DIRECT_ATTACKING_ENTITY, p_33575_.getDirectEntity());
                 if (this.lastHurtByPlayerTime > 0 && this.lastHurtByPlayer != null) {
                     lootparams$builder = lootparams$builder
                             .withParameter(LootContextParams.LAST_DAMAGE_PLAYER, this.lastHurtByPlayer)
@@ -279,7 +280,7 @@ public class TropicalSlimeServant extends SlimeServant {
                 this.operation = MoveControl.Operation.WAIT;
                 if (this.mob.isInWater() && !this.mob.onGround()) {
 
-                    float f1 = (float) (this.speedModifier * this.mob.getAttributeValue(NeoForgeMod.SWIM_SPEED.get()));
+                    float f1 = (float) (this.speedModifier * this.mob.getAttributeValue(NeoForgeMod.SWIM_SPEED));
 
                     double d1 = this.wantedY - this.mob.getY();
                     boolean flag = d1 < 0.0D && this.mob.getTarget() != null;

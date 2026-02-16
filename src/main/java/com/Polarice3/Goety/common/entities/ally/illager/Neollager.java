@@ -79,13 +79,13 @@ public class Neollager extends AbstractIllagerServant {
         return Monster.createMonsterAttributes()
                 .add(Attributes.MOVEMENT_SPEED, 0.35F)
                 .add(Attributes.FOLLOW_RANGE, 12.0D)
-                .add(Attributes.MAX_HEALTH, AttributesConfig.NeollagerHealth.get())
-                .add(Attributes.ARMOR, AttributesConfig.NeollagerArmor.get());
+                .add(Attributes.MAX_HEALTH, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.NeollagerHealth, 20.0D))
+                .add(Attributes.ARMOR, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.NeollagerArmor, 20.0D));
     }
 
     public void setConfigurableAttributes(){
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.MAX_HEALTH), AttributesConfig.NeollagerHealth.get());
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ARMOR), AttributesConfig.NeollagerArmor.get());
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.MAX_HEALTH), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.NeollagerHealth, 20.0D));
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ARMOR), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.NeollagerArmor, 20.0D));
     }
 
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
@@ -222,7 +222,7 @@ public class Neollager extends AbstractIllagerServant {
     @Nullable
     // @Override
     public SpawnGroupData finalizeSpawn(ServerLevelAccessor pLevel, DifficultyInstance pDifficulty, MobSpawnType pReason, @Nullable SpawnGroupData pSpawnData, @Nullable CompoundTag pDataTag) {
-        SpawnGroupData data = super.finalizeSpawn(pLevel, pDifficulty, pReason, pSpawnData, pDataTag);
+        SpawnGroupData data = super.finalizeSpawn(pLevel, pDifficulty, pReason, pSpawnData);
         if (pLevel.getLevel().getRandom().nextFloat() <= 0.15F){
             this.setMagic(true);
         }
@@ -347,7 +347,7 @@ public class Neollager extends AbstractIllagerServant {
         public boolean canContinueToUse() {
             if (this.loom != null) {
                 if (this.path != null && this.path.canReach()) {
-                    return this.illager.level.getBlockState(this.loom).is(Blocks.LOOM) && super.canContinueToUse();
+                    return this.illager.level().getBlockState(this.loom).is(Blocks.LOOM) && super.canContinueToUse();
                 }
             }
             return false;
@@ -378,11 +378,11 @@ public class Neollager extends AbstractIllagerServant {
                 ++this.workTick;
                 if (this.workTick > 100){
                     this.illager.setItemSlot(EquipmentSlot.MAINHAND, ItemStack.EMPTY);
-                    ItemEntity itementity = new ItemEntity(this.illager.level, this.loom.getX() + 0.5F, this.loom.getY() + 1.0F, this.loom.getZ() + 0.5F, this.illager.getLeaderBannerInstance());
+                    ItemEntity itementity = new ItemEntity(this.illager.level(), this.loom.getX() + 0.5F, this.loom.getY() + 1.0F, this.loom.getZ() + 0.5F, this.illager.getLeaderBannerInstance());
                     itementity.setDefaultPickUpDelay();
                     this.illager.playSound(SoundEvents.UI_LOOM_TAKE_RESULT);
-                    this.illager.level.addFreshEntity(itementity);
-                    if (this.illager.level instanceof ServerLevel serverLevel) {
+                    this.illager.level().addFreshEntity(itementity);
+                    if (this.illager.level() instanceof ServerLevel serverLevel) {
                         ServerParticleUtil.addParticlesAroundMiddleSelf(serverLevel, ParticleTypes.HAPPY_VILLAGER, this.illager);
                     }
                 }
@@ -396,7 +396,7 @@ public class Neollager extends AbstractIllagerServant {
                 for (int j = -8; j <= 8; ++j){
                     for (int k = -8; k <= 8; ++k){
                         BlockPos blockPos1 = this.illager.blockPosition().offset(i, j, k);
-                        BlockState blockState = this.illager.level.getBlockState(blockPos1);
+                        BlockState blockState = this.illager.level().getBlockState(blockPos1);
                         if (blockState.is(Blocks.LOOM)){
                             blockPosList.add(blockPos1);
                         }

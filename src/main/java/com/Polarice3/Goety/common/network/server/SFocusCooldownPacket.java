@@ -6,7 +6,7 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
-import net.neoforged.network.NetworkEvent;
+import com.Polarice3.Goety.compat.legacy.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
@@ -20,12 +20,12 @@ public class SFocusCooldownPacket {
     }
 
     public static void encode(SFocusCooldownPacket packet, FriendlyByteBuf buffer) {
-        buffer.writeId(BuiltInRegistries.ITEM, packet.item);
+        buffer.writeResourceLocation(BuiltInRegistries.ITEM.getKey(packet.item));
         buffer.writeVarInt(packet.duration);
     }
 
     public static SFocusCooldownPacket decode(FriendlyByteBuf buffer) {
-        return new SFocusCooldownPacket(buffer.readById(BuiltInRegistries.ITEM), buffer.readVarInt());
+        return new SFocusCooldownPacket(BuiltInRegistries.ITEM.get(buffer.readResourceLocation()), buffer.readVarInt());
     }
 
     public static void consume(SFocusCooldownPacket packet, Supplier<NetworkEvent.Context> ctx) {
@@ -33,7 +33,7 @@ public class SFocusCooldownPacket {
             Player player = Goety.PROXY.getPlayer();
             if (player != null) {
                 if (packet.duration == 0) {
-                    SEHelper.getFocusCoolDown(player).removeCooldown(player, player.level, packet.item);
+                    SEHelper.getFocusCoolDown(player).removeCooldown(player, player.level(), packet.item);
                 } else {
                     SEHelper.addCooldown(player, packet.item, packet.duration);
                 }

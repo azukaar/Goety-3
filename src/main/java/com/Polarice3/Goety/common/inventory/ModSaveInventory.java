@@ -23,8 +23,8 @@ public class ModSaveInventory extends SavedData {
 
     private static ModSaveInventory INSTANCE;
 
-    public static ModSaveInventory load(CompoundTag compoundTag) {
-        ModSaveInventory.read(compoundTag);
+    public static ModSaveInventory load(CompoundTag compoundTag, net.minecraft.core.HolderLookup.Provider provider) {
+        ModSaveInventory.read(compoundTag, provider);
         return new ModSaveInventory();
     }
 
@@ -47,11 +47,11 @@ public class ModSaveInventory extends SavedData {
                         net.minecraft.util.datafix.DataFixTypes.LEVEL), NAME);
     }
 
-    public static void read(CompoundTag nbt) {
+    public static void read(CompoundTag nbt, net.minecraft.core.HolderLookup.Provider provider) {
         ListTag listBrewingStand = nbt.getList(BREWING, 10);
 
         for (int i = 0; i < listBrewingStand.size(); ++i) {
-            witchRobeInventory.add(new WitchRobeInventory(listBrewingStand.getCompound(i)));
+            witchRobeInventory.add(new WitchRobeInventory(listBrewingStand.getCompound(i), provider));
         }
 
         int BrewingStand;
@@ -70,12 +70,12 @@ public class ModSaveInventory extends SavedData {
     }
 
     @Override
-    public CompoundTag save(CompoundTag nbt) {
+    public CompoundTag save(CompoundTag nbt, net.minecraft.core.HolderLookup.Provider provider) {
         ListTag listBrewingStand = new ListTag();
         for (Container inventoryBrewingStand : witchRobeInventory) {
             WitchRobeInventory BrewingStand = (WitchRobeInventory) inventoryBrewingStand;
             CompoundTag nbt2 = new CompoundTag();
-            BrewingStand.save(nbt2);
+            BrewingStand.save(nbt2, provider);
             listBrewingStand.add(nbt2);
         }
 

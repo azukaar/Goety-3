@@ -1,11 +1,13 @@
 package com.Polarice3.Goety.common.blocks;
 
 import com.Polarice3.Goety.api.items.magic.ITotem;
+import com.mojang.serialization.MapCodec;
 import com.Polarice3.Goety.common.blocks.entities.SoulAbsorberBlockEntity;
 import com.Polarice3.Goety.common.crafting.SoulAbsorberRecipes;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.item.ItemEntity;
@@ -36,6 +38,12 @@ import java.util.Optional;
 import java.util.function.ToIntFunction;
 
 public class SoulAbsorberBlock extends BaseEntityBlock implements SimpleWaterloggedBlock {
+    public static final MapCodec<SoulAbsorberBlock> CODEC = simpleCodec(p -> new SoulAbsorberBlock());
+
+    @Override
+    protected MapCodec<? extends BaseEntityBlock> codec() {
+        return CODEC;
+    }
     protected static final VoxelShape SHAPE = Block.box(0.0D, 0.0D, 0.0D, 16.0D, 7.0D, 16.0D);
     public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
     public static final BooleanProperty LIT = BlockStateProperties.LIT;
@@ -55,28 +63,38 @@ public class SoulAbsorberBlock extends BaseEntityBlock implements SimpleWaterlog
         return (state) -> state.getValue(BlockStateProperties.LIT) ? 10 : 0;
     }
 
-    public InteractionResult use(BlockState pState, Level pLevel, BlockPos pPos, Player pPlayer, InteractionHand pHand, BlockHitResult pHit) {
+    @Override
+    protected ItemInteractionResult useItemOn(ItemStack stack, BlockState pState, Level pLevel, BlockPos pPos, Player pPlayer, InteractionHand pHand, BlockHitResult pHit) {
         BlockEntity tileentity = pLevel.getBlockEntity(pPos);
         if (tileentity instanceof SoulAbsorberBlockEntity burnerTileEntity) {
-            ItemStack itemstack = pPlayer.getItemInHand(pHand);
+            ItemStack itemstack = stack;
             Optional<SoulAbsorberRecipes> optional = burnerTileEntity.getRecipes(itemstack);
             if (optional.isPresent()) {
                 if (!pLevel.isClientSide && burnerTileEntity.placeItem(pPlayer.getAbilities().instabuild ? itemstack.copy() : itemstack, optional.get().getCookingTime())) {
-                    return InteractionResult.SUCCESS;
+                    return ItemInteractionResult.SUCCESS;
                 }
 
-                return InteractionResult.CONSUME;
+                return ItemInteractionResult.CONSUME;
             }
             if (itemstack.getItem() instanceof ITotem){
                 if (ITotem.currentSouls(itemstack) > 0){
                     if (!pLevel.isClientSide && burnerTileEntity.placeItem(pPlayer.getAbilities().instabuild ? itemstack.copy() : itemstack, 9999)) {
-                        return InteractionResult.SUCCESS;
+                        return ItemInteractionResult.SUCCESS;
                     }
                 }
 
-                return InteractionResult.CONSUME;
+                return ItemInteractionResult.CONSUME;
             }
-            if (itemstack.isEmpty() || itemstack == burnerTileEntity.getItem(0)){
+        }
+
+        return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+    }
+
+    @Override
+    protected InteractionResult useWithoutItem(BlockState pState, Level pLevel, BlockPos pPos, Player pPlayer, BlockHitResult pHit) {
+        BlockEntity tileentity = pLevel.getBlockEntity(pPos);
+        if (tileentity instanceof SoulAbsorberBlockEntity burnerTileEntity) {
+            if (pPlayer.getItemInHand(InteractionHand.MAIN_HAND).isEmpty() || pPlayer.getItemInHand(InteractionHand.MAIN_HAND) == burnerTileEntity.getItem(0)){
                 if (!burnerTileEntity.getItem(0).isEmpty()){
                     dropItemStack(pLevel, pPlayer.blockPosition(), burnerTileEntity.getItem(0));
                     burnerTileEntity.removeItem(0, 1);
@@ -85,7 +103,6 @@ public class SoulAbsorberBlock extends BaseEntityBlock implements SimpleWaterlog
                 return InteractionResult.CONSUME;
             }
         }
-
         return InteractionResult.PASS;
     }
 

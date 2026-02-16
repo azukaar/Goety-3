@@ -26,6 +26,12 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.Nullable;
 
 public class SpiderSacBlock extends BaseEntityBlock {
+    public static final com.mojang.serialization.MapCodec<SpiderSacBlock> CODEC = simpleCodec(p -> new SpiderSacBlock());
+
+    @Override
+    protected com.mojang.serialization.MapCodec<? extends BaseEntityBlock> codec() {
+        return CODEC;
+    }
     public static final DirectionProperty FACING = BlockStateProperties.FACING;
     protected static final VoxelShape UP_SHAPE = Block.box(1.0D, 0.0D, 1.0D, 15.0D, 16.0D, 15.0D);
     protected static final VoxelShape DOWN_SHAPE = Block.box(1.0D, 0.0D, 1.0D, 15.0D, 16.0D, 15.0D);

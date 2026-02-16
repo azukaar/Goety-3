@@ -31,17 +31,17 @@ public class ShockwaveSpell extends Spell {
 
     @Override
     public int defaultSoulCost() {
-        return SpellConfig.ShockwaveCost.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.ShockwaveCost, 0);
     }
 
     @Override
     public int defaultCastDuration() {
-        return SpellConfig.ShockwaveDuration.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.ShockwaveDuration, 0);
     }
 
     @Override
     public int defaultSpellCooldown() {
-        return SpellConfig.ShockwaveCoolDown.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.ShockwaveCoolDown, 0);
     }
 
     @Override
@@ -60,8 +60,8 @@ public class ShockwaveSpell extends Spell {
     public void SpellResult(ServerLevel worldIn, LivingEntity caster, ItemStack staff, SpellStat spellStat){
         int radius = (int) spellStat.getRadius();
         int potency = spellStat.getPotency();
-        float damage = SpellConfig.ShockwaveDamage.get().floatValue() * WandUtil.damageMultiply();
-        float maxDamage = SpellConfig.ShockwaveMaxDamage.get().floatValue() * WandUtil.damageMultiply();
+        float damage = com.Polarice3.Goety.utils.ConfigHelper.getFloat(SpellConfig.ShockwaveDamage, 1.0F) * WandUtil.damageMultiply();
+        float maxDamage = com.Polarice3.Goety.utils.ConfigHelper.getFloat(SpellConfig.ShockwaveMaxDamage, 1.0F) * WandUtil.damageMultiply();
         if (WandUtil.enchantedFocus(caster)){
             radius += WandUtil.getLevels(ModEnchantments.RADIUS.get(), caster);
             potency += WandUtil.getPotencyLevel(caster);

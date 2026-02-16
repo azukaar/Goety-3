@@ -1,5 +1,7 @@
 package com.Polarice3.Goety.common.entities.neutral;
 
+import com.Polarice3.Goety.utils.MobType;
+
 import com.Polarice3.Goety.api.entities.IOwned;
 import com.Polarice3.Goety.api.entities.ally.IServant;
 import com.Polarice3.Goety.client.particles.ModParticleTypes;
@@ -83,9 +85,9 @@ public class AbstractReaper extends Summoned {
 
     public static AttributeSupplier.Builder setCustomAttributes() {
         return Mob.createMobAttributes()
-                .add(Attributes.MAX_HEALTH, AttributesConfig.ReaperHealth.get())
-                .add(Attributes.ARMOR, AttributesConfig.ReaperArmor.get())
-                .add(Attributes.ATTACK_DAMAGE, AttributesConfig.ReaperDamage.get())
+                .add(Attributes.MAX_HEALTH, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.ReaperHealth, 20.0D))
+                .add(Attributes.ARMOR, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.ReaperArmor, 20.0D))
+                .add(Attributes.ATTACK_DAMAGE, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.ReaperDamage, 20.0D))
                 .add(Attributes.MOVEMENT_SPEED, 0.4D)
                 .add(Attributes.FLYING_SPEED, 0.4D)
                 .add(Attributes.KNOCKBACK_RESISTANCE, 1.0D)
@@ -93,9 +95,9 @@ public class AbstractReaper extends Summoned {
     }
 
     public void setConfigurableAttributes() {
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.MAX_HEALTH), AttributesConfig.ReaperHealth.get());
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ARMOR), AttributesConfig.ReaperArmor.get());
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ATTACK_DAMAGE), AttributesConfig.ReaperDamage.get());
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.MAX_HEALTH), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.ReaperHealth, 20.0D));
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ARMOR), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.ReaperArmor, 20.0D));
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ATTACK_DAMAGE), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.ReaperDamage, 20.0D));
     }
 
     @Override

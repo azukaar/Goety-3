@@ -22,7 +22,7 @@ public class CaveSpiderServantRenderer extends SpiderServantRenderer<CaveSpiderS
    }
 
    public ResourceLocation getTextureLocation(CaveSpiderServant p_113972_) {
-      if (p_113972_.isHostile() || !MobsConfig.CaveSpiderServantTexture.get()){
+      if (p_113972_.isHostile() || !com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MobsConfig.CaveSpiderServantTexture, false)){
          return ORIGINAL;
       } else {
          return CAVE_SPIDER_LOCATION;

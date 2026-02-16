@@ -29,13 +29,13 @@ public class CursedCageBlockEntity extends BlockEntity implements Clearable {
 
     @Override
     protected void loadAdditional(CompoundTag compound, HolderLookup.Provider provider) {
-        this.readNetwork(compound);
+        this.readNetwork(compound, provider);
         super.loadAdditional(compound, provider);
     }
 
     @Override
     protected void saveAdditional(CompoundTag compound, HolderLookup.Provider provider) {
-        this.writeNetwork(compound);
+        this.writeNetwork(compound, provider);
         super.saveAdditional(compound, provider);
     }
 
@@ -149,19 +149,15 @@ public class CursedCageBlockEntity extends BlockEntity implements Clearable {
 
     @Override
     public CompoundTag getUpdateTag(HolderLookup.Provider provider) {
-        return this.writeNetwork(super.getUpdateTag(provider));
+        return this.writeNetwork(super.getUpdateTag(provider), provider);
     }
 
-    public void readNetwork(CompoundTag tag) {
-        if (this.getLevel() != null) {
-            item = ItemStack.parseOptional(this.getLevel().registryAccess(), tag.getCompound("item"));
-        }
+    public void readNetwork(CompoundTag tag, net.minecraft.core.HolderLookup.Provider pRegistries) {
+        item = ItemStack.parseOptional(pRegistries, tag.getCompound("item"));
     }
 
-    public CompoundTag writeNetwork(CompoundTag tag) {
-        if (this.getLevel() != null) {
-            tag.put("item", item.save(this.getLevel().registryAccess(), new CompoundTag()));
-        }
+    public CompoundTag writeNetwork(CompoundTag tag, net.minecraft.core.HolderLookup.Provider pRegistries) {
+        tag.put("item", item.save(pRegistries, new CompoundTag()));
         return tag;
     }
 

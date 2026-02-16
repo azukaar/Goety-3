@@ -13,6 +13,7 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.ServerLevelAccessor;
 
 import javax.annotation.Nullable;
@@ -26,17 +27,17 @@ public class ZPiglinBruteServant extends ZPiglinServant {
 
     public static AttributeSupplier.Builder setCustomAttributes() {
         return Mob.createMobAttributes()
-                .add(Attributes.MAX_HEALTH, AttributesConfig.ZPiglinBruteServantHealth.get())
+                .add(Attributes.MAX_HEALTH, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.ZPiglinBruteServantHealth, 20.0D))
                 .add(Attributes.FOLLOW_RANGE, 35.0D)
                 .add(Attributes.MOVEMENT_SPEED, 0.23D)
-                .add(Attributes.ATTACK_DAMAGE, AttributesConfig.ZPiglinBruteServantDamage.get())
-                .add(Attributes.ARMOR, AttributesConfig.ZPiglinBruteServantArmor.get());
+                .add(Attributes.ATTACK_DAMAGE, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.ZPiglinBruteServantDamage, 20.0D))
+                .add(Attributes.ARMOR, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.ZPiglinBruteServantArmor, 20.0D));
     }
 
     public void setConfigurableAttributes(){
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.MAX_HEALTH), AttributesConfig.ZPiglinBruteServantHealth.get());
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ARMOR), AttributesConfig.ZPiglinBruteServantArmor.get());
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ATTACK_DAMAGE), AttributesConfig.ZPiglinBruteServantDamage.get());
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.MAX_HEALTH), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.ZPiglinBruteServantHealth, 20.0D));
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ARMOR), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.ZPiglinBruteServantArmor, 20.0D));
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ATTACK_DAMAGE), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.ZPiglinBruteServantDamage, 20.0D));
     }
 
     @Override
@@ -66,11 +67,11 @@ public class ZPiglinBruteServant extends ZPiglinServant {
     }
 
     @Override
-    public boolean ignoreExplosion() {
+    public boolean ignoreExplosion(Explosion pExplosion) {
         if (summonExplosion){
             return true;
         }
-        return super.ignoreExplosion();
+        return super.ignoreExplosion(pExplosion);
     }
 
     @Nullable
@@ -78,7 +79,7 @@ public class ZPiglinBruteServant extends ZPiglinServant {
         pSpawnData = super.finalizeSpawn(pLevel, pDifficulty, pReason, pSpawnData, pDataTag);
         RandomSource randomSource = pLevel.getRandom();
         this.populateDefaultEquipmentSlots(randomSource, pDifficulty);
-        this.populateDefaultEquipmentEnchantments(randomSource, pDifficulty);
+        this.populateDefaultEquipmentEnchantments(pLevel, randomSource, pDifficulty);
         if (pReason == MobSpawnType.MOB_SUMMONED){
             this.summonExplosion = true;
         }

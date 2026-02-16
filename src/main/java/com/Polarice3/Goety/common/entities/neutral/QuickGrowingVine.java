@@ -42,16 +42,16 @@ public class QuickGrowingVine extends AbstractVine{
 
     public static AttributeSupplier.Builder setCustomAttributes(){
         return Mob.createMobAttributes()
-                .add(Attributes.MAX_HEALTH, AttributesConfig.QuickGrowingVineHealth.get())
-                .add(Attributes.ARMOR, AttributesConfig.QuickGrowingVineArmor.get())
+                .add(Attributes.MAX_HEALTH, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.QuickGrowingVineHealth, 20.0D))
+                .add(Attributes.ARMOR, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.QuickGrowingVineArmor, 20.0D))
                 .add(Attributes.MOVEMENT_SPEED, 0.0D)
                 .add(Attributes.KNOCKBACK_RESISTANCE, 1.0D)
                 .add(Attributes.FOLLOW_RANGE, 16.0D);
     }
 
     public void setConfigurableAttributes(){
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.MAX_HEALTH), AttributesConfig.QuickGrowingVineHealth.get());
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ARMOR), AttributesConfig.QuickGrowingVineArmor.get());
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.MAX_HEALTH), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.QuickGrowingVineHealth, 20.0D));
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ARMOR), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.QuickGrowingVineArmor, 20.0D));
     }
 
     @Override

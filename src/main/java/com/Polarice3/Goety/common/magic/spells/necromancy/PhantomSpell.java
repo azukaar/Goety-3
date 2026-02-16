@@ -34,12 +34,12 @@ import java.util.function.Predicate;
 public class PhantomSpell extends SummonSpell {
     @Override
     public int defaultSoulCost() {
-        return SpellConfig.PhantomCost.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.PhantomCost, 0);
     }
 
     @Override
     public int defaultCastDuration() {
-        return SpellConfig.PhantomDuration.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.PhantomDuration, 0);
     }
 
     @Nullable
@@ -50,12 +50,12 @@ public class PhantomSpell extends SummonSpell {
 
     @Override
     public int defaultSpellCooldown() {
-        return SpellConfig.PhantomCoolDown.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.PhantomCoolDown, 0);
     }
 
     @Override
     public int SummonDownDuration() {
-        return SpellConfig.PhantomSummonDown.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.PhantomSummonDown, 0);
     }
 
     @Override
@@ -78,12 +78,12 @@ public class PhantomSpell extends SummonSpell {
 
     @Override
     public int summonLimit() {
-        return SpellConfig.PhantomLimit.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.PhantomLimit, 0);
     }
 
     @Override
     public void commonResultHit(ServerLevel worldIn, LivingEntity caster) {
-        for (int i = 0; i < caster.level.random.nextInt(35) + 10; ++i) {
+        for (int i = 0; i < caster.level().random.nextInt(35) + 10; ++i) {
             worldIn.sendParticles(ParticleTypes.POOF, caster.getX(), caster.getEyeY(), caster.getZ(), 1, 0.0F, 0.0F, 0.0F, 0);
         }
         this.playSound(worldIn, caster, SoundEvents.EVOKER_CAST_SPELL);
@@ -116,7 +116,7 @@ public class PhantomSpell extends SummonSpell {
                     DifficultyInstance difficultyinstance = worldIn.getCurrentDifficultyAt(blockpos$mutable);
                     phantom.setTrueOwner(caster);
                     phantom.moveTo(blockpos$mutable, 0.0F, 0.0F);
-                    spawngroupdata = phantom.finalizeSpawn(worldIn, difficultyinstance, MobSpawnType.MOB_SUMMONED, spawngroupdata, (CompoundTag)null);
+                    spawngroupdata = phantom.finalizeSpawn(worldIn, difficultyinstance, MobSpawnType.MOB_SUMMONED, spawngroupdata);
                     phantom.setLimitedLife(MobUtil.getSummonLifespan(worldIn) * duration);
                     if (potency > 0){
                         phantom.setPhantomSize(potency);
@@ -132,3 +132,4 @@ public class PhantomSpell extends SummonSpell {
         }
     }
 }
+

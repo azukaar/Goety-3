@@ -48,7 +48,7 @@ public class HauntedArmorStand extends ArmorStand {
         if (itemStack.getItem() instanceof AnimationCore){
             if (SEHelper.hasResearch(playerIn, ResearchList.HAUNTING)) {
                 if (ItemHelper.isFullEquipped(this)) {
-                    HauntedArmorServant hauntedArmorServant = new HauntedArmorServant(ModEntityType.HAUNTED_ARMOR_SERVANT.get(), playerIn.level);
+                    HauntedArmorServant hauntedArmorServant = new HauntedArmorServant(ModEntityType.HAUNTED_ARMOR_SERVANT.get(), playerIn.level());
                     for (EquipmentSlot equipmentSlot : EquipmentSlot.values()) {
                         hauntedArmorServant.setItemSlot(equipmentSlot, this.getItemBySlot(equipmentSlot));
                         hauntedArmorServant.setGuaranteedDrop(equipmentSlot);
@@ -57,7 +57,7 @@ public class HauntedArmorStand extends ArmorStand {
                     hauntedArmorServant.setTrueOwner(playerIn);
                     hauntedArmorServant.moveTo(this.blockPosition(), this.getYRot(), this.getXRot());
                     hauntedArmorServant.setLeftHanded(playerIn.getMainArm() == HumanoidArm.LEFT);
-                    if (playerIn.level.addFreshEntity(hauntedArmorServant)) {
+                    if (playerIn.level().addFreshEntity(hauntedArmorServant)) {
                         this.playSound(ModSounds.SUMMON_SPELL.get());
                         this.showBreakingParticles();
                         itemStack.shrink(1);
@@ -142,7 +142,9 @@ public class HauntedArmorStand extends ArmorStand {
 
     private void brokenByAnything(DamageSource p_31654_) {
         this.playBrokenSound();
-        this.dropAllDeathLoot(p_31654_);
+        if (this.level() instanceof ServerLevel serverLevel) {
+            this.dropAllDeathLoot(serverLevel, p_31654_);
+        }
 
         for (ItemStack itemStack : this.getHandSlots()){
             if (!itemStack.isEmpty()) {

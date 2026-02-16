@@ -26,7 +26,7 @@ public class WebSpiderServantRenderer<T extends WebSpiderServant> extends MobRen
    }
 
    public ResourceLocation getTextureLocation(WebSpiderServant p_113972_) {
-      if (p_113972_.isHostile() || !MobsConfig.WebSpiderServantTexture.get()){
+      if (p_113972_.isHostile() || !com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MobsConfig.WebSpiderServantTexture, false)){
          return ORIGINAL;
       } else {
          return SPIDER_LOCATION;

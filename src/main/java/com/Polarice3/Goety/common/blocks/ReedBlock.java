@@ -45,8 +45,9 @@ public class ReedBlock extends Block implements BonemealableBlock {
     }
 
     @Override
-    public InteractionResult use(BlockState state, Level world, BlockPos pos, Player player,
-            InteractionHand hand, BlockHitResult hit) {
+    public InteractionResult useWithoutItem(BlockState state, Level world, BlockPos pos, Player player,
+            BlockHitResult hit) {
+        InteractionHand hand = player.getUsedItemHand();
         ItemStack itemStack = player.getItemInHand(hand);
         if (state.is(ModBlocks.CHORUS_BLOSSOM_VINES.get())) {
             if (itemStack.is(Items.SHEARS)) {
@@ -64,7 +65,7 @@ public class ReedBlock extends Block implements BonemealableBlock {
                 return InteractionResult.sidedSuccess(world.isClientSide);
             }
         }
-        return super.use(state, world, pos, player, hand, hit);
+        return InteractionResult.PASS;
     }
 
     public void tick(BlockState p_222543_, ServerLevel p_222544_, BlockPos p_222545_, RandomSource p_222546_) {
@@ -96,12 +97,12 @@ public class ReedBlock extends Block implements BonemealableBlock {
 
     public void randomTick(BlockState p_221350_, ServerLevel p_221351_, BlockPos p_221352_, RandomSource p_221353_) {
         if (p_221350_.getValue(AGE) < 25
-                && net.neoforged.common.ForgeHooks.onCropsGrowPre(p_221351_, p_221352_.relative(Direction.UP),
+                && net.neoforged.neoforge.common.CommonHooks.canCropGrow(p_221351_, p_221352_.relative(Direction.UP),
                         p_221351_.getBlockState(p_221352_.relative(Direction.UP)), p_221353_.nextDouble() < 0.1D)) {
             BlockPos blockpos = p_221352_.relative(Direction.UP);
             if (this.canGrowInto(p_221351_.getBlockState(blockpos))) {
                 p_221351_.setBlockAndUpdate(blockpos, this.getGrowIntoState(p_221350_, p_221351_.random));
-                net.neoforged.common.ForgeHooks.onCropsGrowPost(p_221351_, blockpos, p_221351_.getBlockState(blockpos));
+                net.neoforged.neoforge.common.CommonHooks.fireCropGrowPost(p_221351_, blockpos, p_221351_.getBlockState(blockpos));
             }
         }
 
@@ -159,8 +160,7 @@ public class ReedBlock extends Block implements BonemealableBlock {
         p_53958_.add(AGE);
     }
 
-    public boolean isValidBonemealTarget(LevelReader p_255931_, BlockPos p_256046_, BlockState p_256550_,
-            boolean p_256181_) {
+    public boolean isValidBonemealTarget(LevelReader p_255931_, BlockPos p_256046_, BlockState p_256550_) {
         return this.canGrowInto(p_255931_.getBlockState(p_256046_.relative(Direction.UP)));
     }
 

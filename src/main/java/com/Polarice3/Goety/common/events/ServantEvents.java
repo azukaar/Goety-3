@@ -17,6 +17,7 @@ import com.Polarice3.Goety.config.MobsConfig;
 import com.Polarice3.Goety.init.ModSounds;
 import com.Polarice3.Goety.init.ModTags;
 import com.Polarice3.Goety.utils.*;
+import net.minecraft.core.Holder;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.resources.ResourceLocation;
@@ -55,7 +56,7 @@ import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.neoforge.registries.NeoForgeRegistries;
+import net.minecraft.core.registries.BuiltInRegistries;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -102,14 +103,14 @@ public class ServantEvents {
     @SubscribeEvent
     public static void TargetEvents(LivingChangeTargetEvent event) {
         LivingEntity attacker = event.getEntity();
-        LivingEntity target = event.getOriginalTarget();
-        LivingEntity newTarget = event.getNewTarget();
+        LivingEntity target = event.getOriginalAboutToBeSetTarget();
+        LivingEntity newTarget = event.getNewAboutToBeSetTarget();
         if (attacker instanceof Mob mobAttacker) {
             if (target instanceof Player) {
                 if (mobAttacker.getLastHurtByMob() instanceof IOwned owned
                         && owned.getTrueOwner() == target
                         && !(mobAttacker instanceof Apostle)) {
-                    event.setNewTarget(mobAttacker.getLastHurtByMob());
+                    event.setNewAboutToBeSetTarget(mobAttacker.getLastHurtByMob());
                 }
             }
             if (target instanceof OwnableEntity ownable) {
@@ -118,19 +119,19 @@ public class ServantEvents {
                         if (attacker.canAttack(ownable.getOwner())
                                 && EntitySelector.NO_CREATIVE_OR_SPECTATOR.test(ownable.getOwner())) {
                             attacker.setLastHurtByMob(ownable.getOwner());
-                            event.setNewTarget(ownable.getOwner());
+                            event.setNewAboutToBeSetTarget(ownable.getOwner());
                         }
                     }
                 }
             }
             if (attacker instanceof IOwned owned && owned.getMasterOwner() instanceof Player) {
-                if (attacker.level.getServer() != null) {
-                    if (!attacker.level.getServer().isPvpAllowed()) {
+                if (attacker.level().getServer() != null) {
+                    if (!attacker.level().getServer().isPvpAllowed()) {
                         if (target instanceof Player
                                 || (target instanceof IOwned owned1
                                         && owned1.getMasterOwner() instanceof Player)) {
                             if (event.getTargetType() == MOB_TARGET) {
-                                event.setNewTarget(null);
+                                event.setNewAboutToBeSetTarget(null);
                             } else {
                                 event.setCanceled(true);
                             }
@@ -146,7 +147,7 @@ public class ServantEvents {
                                     || (ownable.getOwner() instanceof Mob mob1 && mob1.getTarget() == target)))
                     && mobAttacker.getLastHurtByMob() != target) {
                 if (event.getTargetType() == MOB_TARGET) {
-                    event.setNewTarget(null);
+                    event.setNewAboutToBeSetTarget(null);
                 } else {
                     event.setCanceled(true);
                 }
@@ -174,7 +175,7 @@ public class ServantEvents {
         LivingEntity victim = event.getEntity();
         Entity attacker = event.getSource().getEntity();
         if (attacker instanceof IOwned owned) {
-            if (MobsConfig.ServantsMasterImmune.get()) {
+            if (com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MobsConfig.ServantsMasterImmune, false)) {
                 if (owned.getTrueOwner() == victim) {
                     event.setCanceled(true);
                 }
@@ -182,19 +183,19 @@ public class ServantEvents {
             if (attacker instanceof Mob mob) {
                 if (mob.getMainHandItem().getItem() instanceof AxeItem) {
                     if (victim.getType().is(ModTags.EntityTypes.BIC_SHIELDED_MOBS)) {
-                        MobEffect mobEffect = NeoForgeRegistries.MOB_EFFECTS
-                                .getValue(new ResourceLocation("born_in_chaos_v1", "block_break"));
-                        if (mobEffect != null) {
-                            victim.addEffect(new MobEffectInstance(mobEffect, 120, 0, false, false));
-                            if (!victim.level.isClientSide()) {
-                                victim.level.playSound(null, victim.getX(), victim.getY(), victim.getZ(),
+                        Holder<MobEffect> mobEffectCallback = BuiltInRegistries.MOB_EFFECT
+                                .getHolder(ResourceLocation.fromNamespaceAndPath("born_in_chaos_v1", "block_break")).orElse(null);
+                        if (mobEffectCallback != null) {
+                            victim.addEffect(new MobEffectInstance(mobEffectCallback, 120, 0, false, false));
+                            if (!victim.level().isClientSide()) {
+                                victim.level().playSound(null, victim.getX(), victim.getY(), victim.getZ(),
                                         SoundEvents.ZOMBIE_BREAK_WOODEN_DOOR, SoundSource.NEUTRAL, 0.2F, 1.0F);
                             } else {
-                                victim.level.playLocalSound(victim.getX(), victim.getY(), victim.getZ(),
+                                victim.level().playLocalSound(victim.getX(), victim.getY(), victim.getZ(),
                                         SoundEvents.ZOMBIE_BREAK_WOODEN_DOOR, SoundSource.NEUTRAL, 0.2F, 1.0F, false);
                             }
 
-                            if (victim.level instanceof ServerLevel serverLevel) {
+                            if (victim.level() instanceof ServerLevel serverLevel) {
                                 serverLevel.sendParticles(ParticleTypes.CRIT, victim.getX(), victim.getY(),
                                         victim.getZ(), 9, 0.6, 1.0, 0.6, 0.6);
                             }
@@ -210,8 +211,8 @@ public class ServantEvents {
         if ((attacker instanceof IOwned owned
                 && owned.getMasterOwner() instanceof Player)
                 || attacker instanceof Player) {
-            if (attacker.level.getServer() != null) {
-                if (!attacker.level.getServer().isPvpAllowed()) {
+            if (attacker.level().getServer() != null) {
+                if (!attacker.level().getServer().isPvpAllowed()) {
                     if (victim instanceof Player
                             || (victim instanceof IOwned owned1
                                     && owned1.getMasterOwner() instanceof Player)) {
@@ -220,7 +221,7 @@ public class ServantEvents {
                 }
             }
         }
-        if (MobsConfig.OwnerAttackCancel.get()) {
+        if (com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MobsConfig.OwnerAttackCancel, false)) {
             if (attacker != null) {
                 if (victim instanceof IOwned owned) {
                     if (owned.getTrueOwner() == attacker) {
@@ -240,7 +241,7 @@ public class ServantEvents {
             ItemStack itemStack = event.getEntity().getMainHandItem();
             if (iOwned.getTrueOwner() == event.getEntity()
                     || (iOwned.getTrueOwner() instanceof IOwned owned && owned.getTrueOwner() == event.getEntity())) {
-                if (MobsConfig.OwnerAttackCancel.get()) {
+                if (com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MobsConfig.OwnerAttackCancel, false)) {
                     itemStack.getItem().onLeftClickEntity(itemStack, event.getEntity(), event.getTarget());
                     event.setCanceled(true);
                 }
@@ -252,9 +253,9 @@ public class ServantEvents {
     public static void HurtEvent(LivingIncomingDamageEvent event) {
         LivingEntity target = event.getEntity();
         Entity attacker = event.getSource().getEntity();
-        if (MobsConfig.CompatMinionHeal.get()) {
+        if (com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MobsConfig.CompatMinionHeal, false)) {
             if (ServantUtil.notServantButOwned(target) && !target.getType().is(ModTags.EntityTypes.NO_HEAL_SERVANTS)) {
-                MiscCapHelper.setNoHealTime(target, MathHelper.secondsToTicks(MobsConfig.ServantHealHalt.get()));
+                MiscCapHelper.setNoHealTime(target, MathHelper.secondsToTicks(com.Polarice3.Goety.utils.ConfigHelper.getInt(MobsConfig.ServantHealHalt, 0)));
             }
         }
         if (attacker instanceof RaiderServant raider) {
@@ -270,14 +271,13 @@ public class ServantEvents {
         }
         if (attacker instanceof Mob mob) {
             if (mob.getType().getDescriptionId().contains("nightmare_stalker")) {
-                if (MobsConfig.CompatNightmareStalker.get()) {
+                if (com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MobsConfig.CompatNightmareStalker, false)) {
                     if (target instanceof IOwned) {
                         if (target.hasEffect(MobEffects.WITHER)) {
                             MobEffectInstance instance = target.getEffect(MobEffects.WITHER);
                             if (instance != null) {
                                 if (instance.getAmplifier() >= 2) {
-                                    if (!target.level.isClientSide) {
-                                        EffectsUtil.deamplifyEffect(target, MobEffects.WITHER, 2, 200);
+                                        EffectsUtil.deamplifyEffect(target, MobEffects.WITHER.value(), 2, 200);
                                     }
                                 }
                             }
@@ -286,28 +286,27 @@ public class ServantEvents {
                             MobEffectInstance instance = mob.getEffect(MobEffects.REGENERATION);
                             if (instance != null) {
                                 if (instance.getAmplifier() >= 2) {
-                                    if (!mob.level.isClientSide) {
-                                        EffectsUtil.deamplifyEffect(mob, MobEffects.REGENERATION, 2, 60);
+                                    if (!mob.level().isClientSide) {
+                                        EffectsUtil.deamplifyEffect(mob, MobEffects.REGENERATION.value(), 2, 60);
                                         mob.addEffect(
-                                                new MobEffectInstance(GoetyEffects.CURSED.get(), 60, 0, false, false));
+                                                new MobEffectInstance(GoetyEffects.CURSED, 60, 0, false, false));
                                     }
                                 }
                             }
                         }
                         if (mob.hasEffect(MobEffects.DAMAGE_BOOST)) {
-                            if (!mob.level.isClientSide) {
+                            if (!mob.level().isClientSide) {
                                 mob.removeEffect(MobEffects.DAMAGE_BOOST);
                             }
                             event.setAmount((float) mob.getAttributeBaseValue(Attributes.ATTACK_DAMAGE));
                         }
                     }
-                }
             }
         }
     }
 
     @SubscribeEvent
-    public static void DamageEvent(LivingDamageEvent event) {
+    public static void DamageEvent(LivingIncomingDamageEvent event) {
         LivingEntity target = event.getEntity();
         if (event.getSource().getEntity() instanceof IOwned summonedEntity) {
             if (summonedEntity.getTrueOwner() != null) {
@@ -331,7 +330,7 @@ public class ServantEvents {
             }
             if (owned != null) {
                 if (owned.getMasterOwner() instanceof ServerPlayer serverPlayer) {
-                    ModCriteriaTriggers.SERVANT_KILLED_ENTITY.trigger(serverPlayer, killed, event.getSource());
+                    ModCriteriaTriggers.SERVANT_KILLED_ENTITY().trigger(serverPlayer, killed, event.getSource());
                 }
                 owned.uncreditedKill(killed);
             }
@@ -343,7 +342,7 @@ public class ServantEvents {
             raider = servant;
         }
         if (raider != null) {
-            if (!raider.level.isClientSide) {
+            if (!raider.level().isClientSide) {
                 if (raider.isCapturing()) {
                     RaiderServant leader = null;
                     if (raider.getLeader() != null) {
@@ -358,7 +357,7 @@ public class ServantEvents {
                                 prisoner.setVillagerData(villager1.getVillagerData());
                                 prisoner.setGossips(villager1.getGossips().store(NbtOps.INSTANCE));
                             }
-                            prisoner.setTradeOffers(villager.getOffers().createTag());
+                            // FIXME: prisoner.setTradeOffers(villager.getOffers().createTag());
                             prisoner.setVillagerXp(villager.getVillagerXp());
                             prisoner.setIsTrader(villager instanceof WanderingTrader);
                             if (leader != null) {
@@ -374,14 +373,14 @@ public class ServantEvents {
                         }
                     }
                 } else if (raider instanceof AbstractIllagerServant illager) {
-                    if (illager.level.getGameRules().getBoolean(GameRules.RULE_DOMOBLOOT)) {
+                    if (illager.level().getGameRules().getBoolean(GameRules.RULE_DOMOBLOOT)) {
                         if (killed instanceof AbstractVillager villager) {
-                            int emeralds = illager.level.getRandom().nextIntBetweenInclusive(1, 3);
+                            int emeralds = illager.level().getRandom().nextIntBetweenInclusive(1, 3);
                             if (villager instanceof Villager villager1
-                                    && MobsConfig.IllagerServantLootVillagers.get()) {
+                                    && com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MobsConfig.IllagerServantLootVillagers, false)) {
                                 emeralds += villager1.getVillagerData().getLevel() - 1;
                             } else if (villager instanceof WanderingTrader
-                                    && MobsConfig.IllagerServantLootTraders.get()) {
+                                    && com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MobsConfig.IllagerServantLootTraders, false)) {
                                 emeralds *= 2;
                             } else {
                                 emeralds = 0;
@@ -422,7 +421,7 @@ public class ServantEvents {
         }
 
         if (killed instanceof IOwned owned) {
-            if (!killed.level.isClientSide) {
+            if (!killed.level().isClientSide) {
                 if (owned.canRevive(event.getSource())) {
                     killed.stopRiding();
                     owned.startRevival();
@@ -478,7 +477,7 @@ public class ServantEvents {
                                         || entity == sourceMob.getTrueOwner()));
                     }
                 }
-                if (event.getExplosion().getExploder() instanceof ThrowableFungus fungus) {
+                if (event.getExplosion().getDirectSourceEntity() instanceof ThrowableFungus fungus) {
                     event.getAffectedEntities().removeIf(
                             entity -> (MobUtil.getOwner(entity) != null && MobUtil.getOwner(entity) == fungus.getOwner()
                                     || entity instanceof AbstractHorse && fungus.getOwner() != null
@@ -494,9 +493,9 @@ public class ServantEvents {
     public static void DropEvents(LivingDropsEvent event) {
         if (event.getEntity() != null) {
             LivingEntity victim = event.getEntity();
-            if (!victim.level.isClientSide) {
+            if (!victim.level().isClientSide) {
                 if (victim instanceof Mob) {
-                    if (MobsConfig.IllagerServantCollectLoot.get()) {
+                    if (com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MobsConfig.IllagerServantCollectLoot, false)) {
                         AbstractIllagerServant servant = null;
                         if (victim.getLastHurtByMob() instanceof IOwned minion) {
                             if (minion.getTrueOwner() instanceof AbstractIllagerServant servant1) {

@@ -23,6 +23,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.ContainerOpenersCounter;
 import net.minecraft.world.level.block.entity.RandomizableContainerBlockEntity;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.world.level.block.state.BlockState;
 
 public class PithosBlockEntity extends RandomizableContainerBlockEntity {
@@ -55,19 +56,19 @@ public class PithosBlockEntity extends RandomizableContainerBlockEntity {
         super(ModBlockEntities.PITHOS.get(), blockPos, blockState);
     }
 
-    protected void saveAdditional(CompoundTag p_187459_) {
-        super.saveAdditional(p_187459_);
+    protected void saveAdditional(CompoundTag p_187459_, HolderLookup.Provider registries) {
+        super.saveAdditional(p_187459_, registries);
         if (!this.trySaveLootTable(p_187459_)) {
-            ContainerHelper.saveAllItems(p_187459_, this.items);
+            ContainerHelper.saveAllItems(p_187459_, this.items, registries);
         }
 
     }
 
-    public void load(CompoundTag p_155055_) {
-        super.load(p_155055_);
+    public void loadAdditional(CompoundTag p_155055_, HolderLookup.Provider registries) {
+        super.loadAdditional(p_155055_, registries);
         this.items = NonNullList.withSize(this.getContainerSize(), ItemStack.EMPTY);
         if (!this.tryLoadLootTable(p_155055_)) {
-            ContainerHelper.loadAllItems(p_155055_, this.items);
+            ContainerHelper.loadAllItems(p_155055_, this.items, registries);
         }
     }
 
@@ -185,5 +186,23 @@ public class PithosBlockEntity extends RandomizableContainerBlockEntity {
         double d1 = (double)this.worldPosition.getY() + 0.5D;
         double d2 = (double)this.worldPosition.getZ() + 0.5D;
         this.getLevel().playSound(null, d0, d1, d2, pSound, SoundSource.BLOCKS, 10.0F, pitch);
+    }
+    private Component name;
+
+    public void setCustomName(Component p_59639_) {
+        this.name = p_59639_;
+    }
+
+    public Component getName() {
+        return this.name != null ? this.name : this.getDefaultName();
+    }
+
+    public Component getDisplayName() {
+        return this.getName();
+    }
+
+    @javax.annotation.Nullable
+    public Component getCustomName() {
+        return this.name;
     }
 }

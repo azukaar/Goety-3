@@ -55,9 +55,9 @@ public abstract class SlashProjectile extends Projectile implements ISpellEntity
         this.setXRot(shooter.getXRot());
     }
 
-    @Override
+    // @Override
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
-        super.defineSynchedData(builder);
+        // super.defineSynchedData(builder);
         builder.define(DATA_RADIUS, 0.5F);
     }
 

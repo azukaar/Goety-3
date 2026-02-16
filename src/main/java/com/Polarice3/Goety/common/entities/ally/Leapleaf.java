@@ -1,5 +1,7 @@
 package com.Polarice3.Goety.common.entities.ally;
 
+import com.Polarice3.Goety.utils.MobType;
+
 import com.Polarice3.Goety.Goety;
 import net.minecraft.resources.ResourceLocation;
 
@@ -100,19 +102,19 @@ public class Leapleaf extends Summoned{
 
     public static AttributeSupplier.Builder setCustomAttributes(){
         return Mob.createMobAttributes()
-                .add(Attributes.MAX_HEALTH, AttributesConfig.LeapleafHealth.get())
-                .add(Attributes.ARMOR, AttributesConfig.LeapleafArmor.get())
+                .add(Attributes.MAX_HEALTH, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.LeapleafHealth, 20.0D))
+                .add(Attributes.ARMOR, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.LeapleafArmor, 20.0D))
                 .add(Attributes.MOVEMENT_SPEED, 0.275D)
-                .add(Attributes.ATTACK_DAMAGE, AttributesConfig.LeapleafDamage.get())
+                .add(Attributes.ATTACK_DAMAGE, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.LeapleafDamage, 20.0D))
                 .add(Attributes.KNOCKBACK_RESISTANCE, 1.0D)
                 .add(Attributes.ATTACK_KNOCKBACK, 1.0D)
                 .add(Attributes.FOLLOW_RANGE, 16.0D);
     }
 
     public void setConfigurableAttributes(){
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.MAX_HEALTH), AttributesConfig.LeapleafHealth.get());
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ARMOR), AttributesConfig.LeapleafArmor.get());
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ATTACK_DAMAGE), AttributesConfig.LeapleafDamage.get());
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.MAX_HEALTH), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.LeapleafHealth, 20.0D));
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ARMOR), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.LeapleafArmor, 20.0D));
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ATTACK_DAMAGE), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.LeapleafDamage, 20.0D));
     }
 
     @Override

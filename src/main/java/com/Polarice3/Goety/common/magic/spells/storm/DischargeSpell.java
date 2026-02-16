@@ -36,17 +36,17 @@ public class DischargeSpell extends Spell {
 
     @Override
     public int defaultSoulCost() {
-        return SpellConfig.DischargeCost.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.DischargeCost, 0);
     }
 
     @Override
     public int defaultCastDuration() {
-        return SpellConfig.DischargeDuration.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.DischargeDuration, 0);
     }
 
     @Override
     public int defaultSpellCooldown() {
-        return SpellConfig.DischargeCoolDown.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.DischargeCoolDown, 0);
     }
 
     @Override
@@ -70,8 +70,8 @@ public class DischargeSpell extends Spell {
     public void SpellResult(ServerLevel worldIn, LivingEntity caster, ItemStack staff, SpellStat spellStat){
         int radius = (int) spellStat.getRadius();
         float potency = spellStat.getPotency();
-        float damage = SpellConfig.DischargeDamage.get().floatValue() * WandUtil.damageMultiply();
-        float maxDamage = SpellConfig.DischargeMaxDamage.get().floatValue() * WandUtil.damageMultiply();
+        float damage = com.Polarice3.Goety.utils.ConfigHelper.getFloat(SpellConfig.DischargeDamage, 1.0F) * WandUtil.damageMultiply();
+        float maxDamage = com.Polarice3.Goety.utils.ConfigHelper.getFloat(SpellConfig.DischargeMaxDamage, 1.0F) * WandUtil.damageMultiply();
         if (WandUtil.enchantedFocus(caster)){
             radius += WandUtil.getLevels(ModEnchantments.RADIUS.get(), caster);
             potency += WandUtil.getPotencyLevel(caster) / 2.0F;
@@ -104,7 +104,7 @@ public class DischargeSpell extends Spell {
                         chainDamage = actualDamage;
                     }
                     if (worldIn.random.nextFloat() <= chance){
-                        target1.addEffect(new MobEffectInstance(GoetyEffects.SPASMS.get(), MathHelper.secondsToTicks(5)));
+                        target1.addEffect(new MobEffectInstance(GoetyEffects.SPASMS, MathHelper.secondsToTicks(5)));
                     }
                     if (rightStaff(staff)){
                         WandUtil.chainLightning(target1, caster, 6.0D, chainDamage);

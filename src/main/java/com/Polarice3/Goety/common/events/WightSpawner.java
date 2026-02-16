@@ -26,7 +26,7 @@ public class WightSpawner {
     private int nextTick;
 
     public int tick(ServerLevel pLevel) {
-        if (!MobsConfig.WightSpawn.get()) {
+        if (!com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MobsConfig.WightSpawn, false)) {
             return 0;
         } else {
             RandomSource random = pLevel.random;
@@ -34,8 +34,8 @@ public class WightSpawner {
             if (this.nextTick > 0) {
                 return 0;
             } else {
-                this.nextTick += MobsConfig.WightSpawnFreq.get();
-                if (random.nextInt(MobsConfig.WightSpawnChance.get()) != 0) {
+                this.nextTick += com.Polarice3.Goety.utils.ConfigHelper.getInt(MobsConfig.WightSpawnFreq, 0);
+                if (random.nextInt(com.Polarice3.Goety.utils.ConfigHelper.getInt(MobsConfig.WightSpawnChance, 0)) != 0) {
                     return 0;
                 } else {
                     int j = pLevel.players().size();
@@ -45,7 +45,7 @@ public class WightSpawner {
                         return 0;
                     } else {
                         ServerPlayer pPlayer = pLevel.players().get(random.nextInt(j));
-                        float rawPercent = (float) SEHelper.getSoulAmountInt(pPlayer) / MainConfig.MaxArcaSouls.get();
+                        float rawPercent = (float) SEHelper.getSoulAmountInt(pPlayer) / com.Polarice3.Goety.utils.ConfigHelper.getInt(MainConfig.MaxArcaSouls, 0);
                         int sePercent = (int) (rawPercent * 100);
                         if (pPlayer.isSpectator() || pPlayer.isCreative()) {
                             return 0;
@@ -58,7 +58,7 @@ public class WightSpawner {
                             return 0;
                         } else if (sePercent >= 9 && sePercent < 20) {
                             summonWight(pLevel, pPlayer, sePercent);
-                            this.nextTick += MobsConfig.WightSpawnFreq.get();
+                            this.nextTick += com.Polarice3.Goety.utils.ConfigHelper.getInt(MobsConfig.WightSpawnFreq, 0);
                             return 1;
                         } else if (sePercent >= 20 && sePercent < 90) {
                             summonWight(pLevel, pPlayer, sePercent);
@@ -86,7 +86,7 @@ public class WightSpawner {
             if (BlockFinder.canSeeBlock(player, blockPos) || i == 15) {
                 if (serverLevel.isLoaded(blockPos)){
                     wight.setPos(vec3);
-                    wight.finalizeSpawn(serverLevel, serverLevel.getCurrentDifficultyAt(wight.blockPosition()), MobSpawnType.MOB_SUMMONED, null, null);
+                    wight.finalizeSpawn(serverLevel, serverLevel.getCurrentDifficultyAt(wight.blockPosition()), MobSpawnType.MOB_SUMMONED, null);
                     wight.upgradePower(sePercent);
                     return serverLevel.addFreshEntity(wight);
                 }
@@ -96,7 +96,7 @@ public class WightSpawner {
     }
 
     public void forceSpawn(ServerLevel pLevel, ServerPlayer pPlayer, CommandSourceStack pSource){
-        float rawPercent = (float) SEHelper.getSoulAmountInt(pPlayer) / MainConfig.MaxArcaSouls.get();
+        float rawPercent = (float) SEHelper.getSoulAmountInt(pPlayer) / com.Polarice3.Goety.utils.ConfigHelper.getInt(MainConfig.MaxArcaSouls, 0);
         int sePercent = (int) (rawPercent * 100);
         if (summonWight(pLevel, pPlayer, sePercent)){
             pSource.sendSuccess(() -> Component.translatable("commands.goety.misc.wight.success", pPlayer.getDisplayName()), true);

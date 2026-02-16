@@ -1,6 +1,7 @@
 package com.Polarice3.Goety.common.blocks;
 
 import com.Polarice3.Goety.common.blocks.entities.PartLiquidBlockEntity;
+import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.item.ItemStack;
@@ -20,6 +21,12 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.Nullable;
 
 public class PartLiquidBlock extends BaseEntityBlock {
+    public static final MapCodec<PartLiquidBlock> CODEC = simpleCodec(p -> new PartLiquidBlock());
+
+    @Override
+    protected MapCodec<? extends BaseEntityBlock> codec() {
+        return CODEC;
+    }
     public PartLiquidBlock() {
         super(Properties.of()
                 .noCollission()
@@ -39,7 +46,7 @@ public class PartLiquidBlock extends BaseEntityBlock {
         return Shapes.empty();
     }
 
-    public boolean canSustainPlant(BlockState state, BlockGetter world, BlockPos pos, Direction facing, net.neoforged.common.IPlantable plantable) {
+    public boolean canSustainPlant(BlockState state, BlockGetter world, BlockPos pos, Direction facing, com.Polarice3.Goety.compat.legacy.common.IPlantable plantable) {
         return true;
     }
 

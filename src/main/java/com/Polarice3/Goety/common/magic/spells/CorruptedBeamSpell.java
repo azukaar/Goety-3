@@ -21,22 +21,22 @@ import java.util.List;
 public class CorruptedBeamSpell extends EverChargeSpell {
     @Override
     public int defaultSoulCost() {
-        return SpellConfig.CorruptionCost.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.CorruptionCost, 0);
     }
 
     @Override
     public int defaultCastUp() {
-        return SpellConfig.CorruptionChargeUp.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.CorruptionChargeUp, 0);
     }
 
     @Override
     public int shotsNumber() {
-        return SpellConfig.CorruptionDuration.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.CorruptionDuration, 0);
     }
 
     @Override
     public int defaultSpellCooldown() {
-        return SpellConfig.CorruptionCoolDown.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.CorruptionCoolDown, 0);
     }
 
     @Override

@@ -40,10 +40,11 @@ public abstract class BarracksBlock extends BaseEntityBlock {
         }
     }
 
-    public InteractionResult use(BlockState pState, Level pLevel, BlockPos pPos, Player pPlayer, InteractionHand pHand, BlockHitResult pHit) {
+    @Override
+    protected InteractionResult useWithoutItem(BlockState pState, Level pLevel, BlockPos pPos, Player pPlayer, BlockHitResult pHit) {
         BlockEntity tileentity = pLevel.getBlockEntity(pPos);
         if (tileentity instanceof BarracksBlockEntity blockEntity) {
-            ItemStack itemstack = pPlayer.getItemInHand(pHand);
+            ItemStack itemstack = pPlayer.getItemInHand(InteractionHand.MAIN_HAND);
             if (itemstack.isEmpty() && pPlayer.isCrouching()){
                 blockEntity.setShowArea(!blockEntity.isShowArea());
                 pLevel.playSound(null, pPos, ModSounds.CAST_SPELL.get(), SoundSource.BLOCKS, 0.25F, 2.0F);

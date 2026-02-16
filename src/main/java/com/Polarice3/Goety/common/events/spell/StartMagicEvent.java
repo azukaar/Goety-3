@@ -5,6 +5,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.entity.living.LivingEvent;
+import net.neoforged.bus.api.ICancellableEvent;
 
 /**
  * CastingMagicEvent is fired when started to use {@link com.Polarice3.Goety.common.items.magic.DarkWand} with a spell. <br>
@@ -18,7 +19,7 @@ import net.neoforged.neoforge.event.entity.living.LivingEvent;
  * <br>
  * This event is fired on the {@link NeoForge#EVENT_BUS}.
  **/
-public class StartMagicEvent extends LivingEvent {
+public class StartMagicEvent extends LivingEvent implements ICancellableEvent {
     private ISpell spell;
     private final ItemStack useItem;
 

@@ -29,8 +29,8 @@ public class HostileBlackWolf extends BlackWolf implements Enemy {
 
     @Nullable
     @Override
-    public SpawnGroupData finalizeSpawn(ServerLevelAccessor pLevel, DifficultyInstance pDifficulty, MobSpawnType pReason, @Nullable SpawnGroupData pSpawnData, @Nullable CompoundTag pDataTag) {
-        SpawnGroupData finalizeSpawn = super.finalizeSpawn(pLevel, pDifficulty, pReason, pSpawnData, pDataTag);
+    public SpawnGroupData finalizeSpawn(ServerLevelAccessor pLevel, DifficultyInstance pDifficulty, MobSpawnType pReason, @Nullable SpawnGroupData pSpawnData) {
+        SpawnGroupData finalizeSpawn = super.finalizeSpawn(pLevel, pDifficulty, pReason, pSpawnData);
         float f = pDifficulty.getSpecialMultiplier();
         if (this.random.nextFloat() < f * 0.05F) {
             this.setUpgraded(true);

@@ -89,10 +89,10 @@ public class SEImp implements ISoulEnergy{
 
     @Override
     public boolean increaseSE(int increase) {
-        if (this.soulEnergy >= MainConfig.MaxArcaSouls.get()) {
+        if (this.soulEnergy >= com.Polarice3.Goety.utils.ConfigHelper.getInt(MainConfig.MaxArcaSouls, 0)) {
             return false;
         }
-        this.soulEnergy = Math.min(this.soulEnergy + increase, MainConfig.MaxArcaSouls.get());
+        this.soulEnergy = Math.min(this.soulEnergy + increase, com.Polarice3.Goety.utils.ConfigHelper.getInt(MainConfig.MaxArcaSouls, 0));
         return true;
     }
 

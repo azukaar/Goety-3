@@ -29,12 +29,12 @@ public class FireballSpell extends Spell {
 
     @Override
     public int defaultSoulCost() {
-        return SpellConfig.FireballCost.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.FireballCost, 0);
     }
 
     @Override
     public int defaultCastDuration() {
-        return SpellConfig.FireballDuration.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.FireballDuration, 0);
     }
 
     @Override
@@ -47,7 +47,7 @@ public class FireballSpell extends Spell {
 
     @Override
     public int defaultSpellCooldown() {
-        return SpellConfig.FireballCoolDown.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.FireballCoolDown, 0);
     }
 
     @Override
@@ -65,7 +65,7 @@ public class FireballSpell extends Spell {
 
     @Override
     public void SpellResult(ServerLevel worldIn, LivingEntity caster, ItemStack staff, SpellStat spellStat) {
-        float damage = SpellConfig.FireballDamage.get().floatValue() * WandUtil.damageMultiply();
+        float damage = com.Polarice3.Goety.utils.ConfigHelper.getFloat(SpellConfig.FireballDamage, 1.0F) * WandUtil.damageMultiply();
         int potency = spellStat.getPotency();
         int burning = spellStat.getBurning();
         if (WandUtil.enchantedFocus(caster)){

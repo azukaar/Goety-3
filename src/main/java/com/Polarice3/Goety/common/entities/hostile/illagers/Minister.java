@@ -116,15 +116,15 @@ public class Minister extends HuntingIllagerEntity implements RangedAttackMob {
     public static AttributeSupplier.Builder setCustomAttributes(){
         return Mob.createMobAttributes()
                 .add(Attributes.FOLLOW_RANGE, 32.0D)
-                .add(Attributes.MAX_HEALTH, AttributesConfig.MinisterHealth.get())
+                .add(Attributes.MAX_HEALTH, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.MinisterHealth, 20.0D))
                 .add(Attributes.MOVEMENT_SPEED, 0.35D)
                 .add(Attributes.KNOCKBACK_RESISTANCE, 0.75D)
-                .add(Attributes.ATTACK_DAMAGE, AttributesConfig.MinisterDamage.get());
+                .add(Attributes.ATTACK_DAMAGE, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.MinisterDamage, 20.0D));
     }
 
     public void setConfigurableAttributes(){
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.MAX_HEALTH), AttributesConfig.MinisterHealth.get());
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ATTACK_DAMAGE), AttributesConfig.MinisterDamage.get());
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.MAX_HEALTH), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.MinisterHealth, 20.0D));
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ATTACK_DAMAGE), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.MinisterDamage, 20.0D));
     }
 
     @Override

@@ -32,12 +32,12 @@ public class EruptionSpell extends Spell {
 
     @Override
     public int defaultSoulCost() {
-        return SpellConfig.EruptionCost.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.EruptionCost, 0);
     }
 
     @Override
     public int defaultCastDuration() {
-        return SpellConfig.EruptionDuration.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.EruptionDuration, 0);
     }
 
     @Override
@@ -52,7 +52,7 @@ public class EruptionSpell extends Spell {
 
     @Override
     public int defaultSpellCooldown() {
-        return SpellConfig.EruptionCoolDown.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.EruptionCoolDown, 0);
     }
 
     @Override
@@ -92,7 +92,7 @@ public class EruptionSpell extends Spell {
         if (volcano != null){
             volcano.setTrueOwner(caster);
             volcano.setPos(blockPos.getX() + 0.5D, blockPos.getY(), blockPos.getZ() + 0.5D);
-            volcano.finalizeSpawn(worldIn, worldIn.getCurrentDifficultyAt(blockPos), MobSpawnType.MOB_SUMMONED, null, null);
+            volcano.finalizeSpawn(worldIn, worldIn.getCurrentDifficultyAt(blockPos), MobSpawnType.MOB_SUMMONED, null);
             volcano.setExplosionPower(volcano.getExplosionPower() + (radius / 2.0F));
             volcano.setLifeSpan(6 * duration);
             volcano.setPotency(potency);
@@ -106,7 +106,7 @@ public class EruptionSpell extends Spell {
                 Volcano volcano2 = new Volcano(ModEntityType.VOLCANO.get(), worldIn);
                 volcano2.setTrueOwner(caster);
                 volcano2.setPos(vec3.x(), vec3.y(), vec3.z());
-                volcano2.finalizeSpawn(worldIn, worldIn.getCurrentDifficultyAt(blockPos), MobSpawnType.MOB_SUMMONED, null, null);
+                volcano2.finalizeSpawn(worldIn, worldIn.getCurrentDifficultyAt(blockPos), MobSpawnType.MOB_SUMMONED, null);
                 volcano2.setExplosionPower(volcano2.getExplosionPower() + (radius / 2.0F));
                 volcano2.setLifeSpan(6 * duration);
                 volcano2.setPotency(potency);

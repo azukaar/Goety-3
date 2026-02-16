@@ -15,34 +15,26 @@ public class ExplosionUtil {
 
     public static LootingExplosion lootExplode(Level world, @Nullable Entity pExploder, double pX, double pY, double pZ, float pSize, boolean pCausesFire, Explosion.BlockInteraction pMode, LootingExplosion.Mode pLootMode) {
         LootingExplosion explosion = new LootingExplosion(world, pExploder, pX, pY, pZ, pSize, pCausesFire, pMode, pLootMode);
-        if (net.neoforged.event.EventFactory.onExplosionStart(world, explosion)) return explosion;
-        explosion.explode();
+        world.explode(pExploder, pX, pY, pZ, pSize, pCausesFire, Level.ExplosionInteraction.BLOCK);
         if (world instanceof ServerLevel serverLevel) {
-            explosion.finalizeExplosion(false);
             for (ServerPlayer serverplayer : serverLevel.getPlayers((p_147157_) -> {
                 return p_147157_.distanceToSqr(pX, pY, pZ) < 4096.0D;
             })) {
                 ModNetwork.sendTo(serverplayer, new SLootingExplosionPacket(pX, pY, pZ, pSize, explosion.getHitPlayers().get(serverplayer)));
             }
-        } else {
-            explosion.finalizeExplosion(true);
         }
         return explosion;
     }
 
     public static FungusExplosion fungusExplode(Level world, @Nullable Entity pExploder, double pX, double pY, double pZ, float pSize, boolean pCausesFire) {
         FungusExplosion explosion = new FungusExplosion(world, pExploder, pX, pY, pZ, pSize, pCausesFire);
-        if (net.neoforged.event.EventFactory.onExplosionStart(world, explosion)) return explosion;
-        explosion.explode();
+        world.explode(pExploder, pX, pY, pZ, pSize, pCausesFire, Level.ExplosionInteraction.BLOCK);
         if (world instanceof ServerLevel serverLevel) {
-            explosion.finalizeExplosion(false);
             for (ServerPlayer serverplayer : serverLevel.getPlayers((p_147157_) -> {
                 return p_147157_.distanceToSqr(pX, pY, pZ) < 4096.0D;
             })) {
-                ModNetwork.sendTo(serverplayer, new SFungusExplosionPacket(pX, pY, pZ, pSize, explosion.getHitPlayers().get(serverplayer)));
+                ModNetwork.sendTo(serverplayer, new SFungusExplosionPacket(pX, pY, pZ, pSize, null));
             }
-        } else {
-            explosion.finalizeExplosion(true);
         }
         return explosion;
     }

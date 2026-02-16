@@ -54,6 +54,6 @@ public class DummyTeam extends PlayerTeam {
 
     @Override
     public CollisionRule getCollisionRule() {
-        return Team.CollisionRule.ALWAYS;
+        return CollisionRule.ALWAYS;
     }
 }

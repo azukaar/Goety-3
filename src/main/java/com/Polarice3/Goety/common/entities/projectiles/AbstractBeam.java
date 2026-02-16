@@ -65,7 +65,7 @@ public abstract class AbstractBeam extends Entity implements ISpellEntity {
             this.updatePositionAndRotation();
         }
 
-        if (owner != null && owner.isAlive() && SpellConfig.CorruptionImmobile.get()){
+        if (owner != null && owner.isAlive() && com.Polarice3.Goety.utils.ConfigHelper.getBoolean(SpellConfig.CorruptionImmobile, false)){
             owner.setDeltaMovement(0, owner.getDeltaMovement().y, 0);
             owner.xxa = 0.0F;
             owner.zza = 0.0F;
@@ -151,7 +151,7 @@ public abstract class AbstractBeam extends Entity implements ISpellEntity {
         Vec3 vector3d = this.getWorldPosition(ticks);
         Vec3 vector3d1 = this.getViewVector(ticks);
         Vec3 vector3d2 = vector3d.add(vector3d1.x * distance, vector3d1.y * distance, vector3d1.z * distance);
-        return level().clip(new ClipContext(vector3d, vector3d2, ClipContext.Block.COLLIDER, passesWater ? ClipContext.Fluid.ANY : ClipContext.Fluid.NONE, this));
+        return this.level().clip(new ClipContext(vector3d, vector3d2, ClipContext.Block.COLLIDER, passesWater ? ClipContext.Fluid.ANY : ClipContext.Fluid.NONE, this));
     }
 
     public double beamTraceDistance(double distance, float ticks, boolean passesWater) {

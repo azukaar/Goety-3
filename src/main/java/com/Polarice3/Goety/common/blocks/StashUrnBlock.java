@@ -1,6 +1,7 @@
 package com.Polarice3.Goety.common.blocks;
 
 import com.Polarice3.Goety.client.particles.MagicSmokeParticle;
+import com.mojang.serialization.MapCodec;
 import com.Polarice3.Goety.common.blocks.entities.UrnBlockEntity;
 import com.Polarice3.Goety.init.ModSoundTypes;
 import net.minecraft.core.BlockPos;
@@ -33,6 +34,12 @@ import net.minecraft.world.phys.BlockHitResult;
 import org.jetbrains.annotations.Nullable;
 
 public class StashUrnBlock extends BaseEntityBlock implements SimpleWaterloggedBlock {
+    public static final MapCodec<StashUrnBlock> CODEC = simpleCodec(p -> new StashUrnBlock());
+
+    @Override
+    protected MapCodec<? extends BaseEntityBlock> codec() {
+        return CODEC;
+    }
     private static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
 
     public StashUrnBlock() {
@@ -76,7 +83,7 @@ public class StashUrnBlock extends BaseEntityBlock implements SimpleWaterloggedB
     public void setPlacedBy(Level pLevel, BlockPos pPos, BlockState pState, @javax.annotation.Nullable LivingEntity pPlacer, ItemStack pStack) {
         BlockEntity tileentity = pLevel.getBlockEntity(pPos);
         if (tileentity instanceof UrnBlockEntity urnBlock) {
-            if (pStack.hasCustomHoverName()) {
+            if (pStack.has(net.minecraft.core.component.DataComponents.CUSTOM_NAME)) {
                 urnBlock.setCustomName(pStack.getHoverName());
             }
         }

@@ -164,11 +164,11 @@ public class AbstractMossyNecromancer extends AbstractNecromancer{
                     summonedentity.setTrueOwner(AbstractMossyNecromancer.this);
                     summonedentity.moveTo(blockPos, 0.0F, 0.0F);
                     MobUtil.moveDownToGround(summonedentity);
-                    if (MobsConfig.NecromancerSummonsLife.get()) {
+                    if (com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MobsConfig.NecromancerSummonsLife, false)) {
                         summonedentity.setLimitedLife(MobUtil.getSummonLifespan(serverLevel));
                     }
                     summonedentity.setPersistenceRequired();
-                    summonedentity.finalizeSpawn(serverLevel, serverLevel.getCurrentDifficultyAt(AbstractMossyNecromancer.this.blockPosition()), MobSpawnType.MOB_SUMMONED, null, null);
+                    summonedentity.finalizeSpawn(serverLevel, serverLevel.getCurrentDifficultyAt(AbstractMossyNecromancer.this.blockPosition()), MobSpawnType.MOB_SUMMONED, null);
                     if (serverLevel.addFreshEntity(summonedentity)){
                         SoundUtil.playNecromancerSummon(summonedentity);
                         ServerParticleUtil.summonUndeadParticles(serverLevel, summonedentity, new ColorUtil(0x403b14), 0x403b14, 0x5b4e1d);

@@ -23,7 +23,7 @@ public class VanguardRenderer<T extends VanguardServant> extends MobRenderer<T, 
    }
 
    public ResourceLocation getTextureLocation(T p_116410_) {
-      if (!MobsConfig.VanguardServantTexture.get()){
+      if (!com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MobsConfig.VanguardServantTexture, false)){
          return TEXTURE_2;
       }
       return TEXTURE;

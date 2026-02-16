@@ -1,21 +1,26 @@
 package com.Polarice3.Goety.common.crafting;
 
 import com.Polarice3.Goety.Goety;
+import com.mojang.serialization.MapCodec;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
-import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
+import com.Polarice3.Goety.compat.fml.FMLJavaModLoadingContext;
 import net.neoforged.neoforge.registries.DeferredRegister;
-import net.neoforged.neoforge.registries.NeoForgeRegistries;
+
 import net.neoforged.neoforge.registries.DeferredHolder;
+
+
 
 public class ModRecipeSerializer {
 
         public static final DeferredRegister<RecipeType<?>> RECIPE_TYPES = DeferredRegister.create(
-                        NeoForgeRegistries.RECIPE_TYPES, Goety.MOD_ID);
+                        BuiltInRegistries.RECIPE_TYPE, Goety.MOD_ID);
 
         public static final DeferredRegister<RecipeSerializer<?>> RECIPE_SERIALIZERS = DeferredRegister.create(
-                        NeoForgeRegistries.RECIPE_SERIALIZERS, Goety.MOD_ID);
+                        BuiltInRegistries.RECIPE_SERIALIZER, Goety.MOD_ID);
 
         public static void init() {
                 RECIPE_TYPES.register(FMLJavaModLoadingContext.get().getModEventBus());
@@ -52,7 +57,17 @@ public class ModRecipeSerializer {
 
         public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<BrewingRecipe>> BREWING = RECIPE_SERIALIZERS
                         .register("brewing",
-                                        () -> BrewingRecipe.SERIALIZER);
+                                        () -> new RecipeSerializer<BrewingRecipe>() {
+                                                @Override
+                                                public MapCodec<BrewingRecipe> codec() {
+                                                        return BrewingRecipe.CODEC;
+                                                }
+
+                                                @Override
+                                                public StreamCodec<net.minecraft.network.RegistryFriendlyByteBuf, BrewingRecipe> streamCodec() {
+                                                        return BrewingRecipe.STREAM_CODEC;
+                                                }
+                                        });
 
         public static final DeferredHolder<RecipeType<?>, RecipeType<PulverizeRecipe>> PULVERIZE_TYPE = register(
                         "pulverize");
@@ -67,6 +82,9 @@ public class ModRecipeSerializer {
         // public static final RegistryObject<RecipeSerializer<ModShapelessRecipe>>
         // MODDED_SHAPELESS = RECIPE_SERIALIZERS.register("crafting_shapeless",
         // ModShapelessRecipe.Serializer::new);
+
+        public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<TaglockRecipe>> TAGLOCK = RECIPE_SERIALIZERS
+                        .register("taglock", () -> TaglockRecipe.SERIALIZER);
 
         static <T extends Recipe<?>> DeferredHolder<RecipeType<?>, RecipeType<T>> register(final String id) {
                 return RECIPE_TYPES.register(id, () -> new RecipeType<T>() {

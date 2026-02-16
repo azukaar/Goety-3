@@ -29,7 +29,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class FireBreathSpell extends BreathingSpell {
-    public float damage = SpellConfig.FireBreathDamage.get().floatValue() * WandUtil.damageMultiply();
+    private float damageCache = -1.0f; // Cache for lazy evaluation
+    
+    // Lazy getter to avoid accessing config before it's loaded
+    public float getDamage() {
+        if (damageCache < 0) {
+            damageCache = com.Polarice3.Goety.utils.ConfigHelper.getFloat(SpellConfig.FireBreathDamage, 1.0F) * WandUtil.damageMultiply();
+        }
+        return damageCache;
+    }
+    
+    @Deprecated // Use getDamage() instead
+    public float damage = 0; // Will be calculated lazily
 
     @Override
     public SpellStat defaultStats() {
@@ -38,22 +49,22 @@ public class FireBreathSpell extends BreathingSpell {
 
     @Override
     public int defaultSoulCost() {
-        return SpellConfig.FireBreathCost.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.FireBreathCost, 0);
     }
 
     @Override
     public int defaultCastUp() {
-        return SpellConfig.FireBreathChargeUp.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.FireBreathChargeUp, 0);
     }
 
     @Override
     public int shotsNumber() {
-        return SpellConfig.FireBreathDuration.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.FireBreathDuration, 0);
     }
 
     @Override
     public int defaultSpellCooldown() {
-        return SpellConfig.FireBreathCoolDown.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.FireBreathCoolDown, 0);
     }
 
     @Override
@@ -104,11 +115,11 @@ public class FireBreathSpell extends BreathingSpell {
             burning += WandUtil.getLevels(ModEnchantments.BURNING.get(), caster);
             range += WandUtil.getRangeLevel(caster);
         }
-        float damage = this.damage + potency;
+        float damage = getDamage() + potency;
         if (!worldIn.isClientSide) {
             if (CuriosFinder.hasCurio(caster, ModItems.RING_OF_THE_DRAGON.get())) {
                 damage *= 2.0F;
-                if (SpellConfig.DragonFireGriefing.get()) {
+                if (com.Polarice3.Goety.utils.ConfigHelper.getBoolean(SpellConfig.DragonFireGriefing, false)) {
                     float flameRange = range * ((float) Math.PI / 180.0F);
                     for (int i = 0; i < 3; i++) {
                         Vec3 cast = caster.getLookAngle().normalize()

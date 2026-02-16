@@ -1,12 +1,14 @@
 package com.Polarice3.Goety.common.blocks;
 
+import com.mojang.serialization.MapCodec;
+
 import com.Polarice3.Goety.common.blocks.entities.PedestalBlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.Containers;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
+import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
@@ -30,13 +32,14 @@ import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.neoforged.neoforge.capabilities.Capabilities;
-import net.neoforged.neoforge.common.extensions.IForgeBlock;
+import com.Polarice3.Goety.compat.legacy.neoforge.common.extensions.IForgeBlock;
 import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.ItemHandlerHelper;
 
 import javax.annotation.Nullable;
 
 public class PedestalBlock extends BaseEntityBlock implements IForgeBlock, SimpleWaterloggedBlock {
+    public static final MapCodec<PedestalBlock> CODEC = simpleCodec(PedestalBlock::new);
     public static final VoxelShape SHAPE_BASE = Block.box(2.0D, 1.0D, 2.0D,
             14.0D, 2.0D, 14.0D);
     public static final VoxelShape SHAPE_PILLAR = Block.box(5.0D, 3.0D, 5.0D,
@@ -57,12 +60,18 @@ public class PedestalBlock extends BaseEntityBlock implements IForgeBlock, Simpl
     }
 
     @Override
-    public InteractionResult use(BlockState state, Level world, BlockPos pos, Player player,
+    protected MapCodec<? extends BaseEntityBlock> codec() {
+        return CODEC;
+    }
+
+    @Override
+    protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level world, BlockPos pos, Player player,
                                  InteractionHand hand, BlockHitResult hit) {
         if (!world.isClientSide) {
-            ItemStack heldItem = player.getItemInHand(hand);
+            ItemStack heldItem = stack;
             PedestalBlockEntity pedestal = (PedestalBlockEntity) world.getBlockEntity(pos);
-            pedestal.getCapability(Capabilities.ITEM_HANDLER, hit.getDirection()).ifPresent(handler -> {
+            if (pedestal != null) {
+                IItemHandler handler = pedestal.itemStackHandler;
                 if (!player.isShiftKeyDown() && !player.isCrouching()) {
                     ItemStack itemStack = handler.getStackInSlot(0);
                     if (itemStack.isEmpty()) {
@@ -78,18 +87,16 @@ public class PedestalBlock extends BaseEntityBlock implements IForgeBlock, Simpl
                     }
                     pedestal.setChanged();
                 }
-            });
+            }
         }
-        return InteractionResult.SUCCESS;
+        return ItemInteractionResult.SUCCESS;
     }
 
     public void onRemove(BlockState pState, Level pLevel, BlockPos pPos, BlockState pNewState, boolean pIsMoving) {
         if (!pState.is(pNewState.getBlock())) {
             BlockEntity tileentity = pLevel.getBlockEntity(pPos);
-            if (tileentity instanceof PedestalBlockEntity) {
-                tileentity.getCapability(Capabilities.ITEM_HANDLER).ifPresent(handler -> {
-                    dropInventoryItems(tileentity.getLevel(), tileentity.getBlockPos(), handler);
-                });
+            if (tileentity instanceof PedestalBlockEntity pedestal) {
+                dropInventoryItems(tileentity.getLevel(), tileentity.getBlockPos(), pedestal.itemStackHandler);
             }
 
             super.onRemove(pState, pLevel, pPos, pNewState, pIsMoving);

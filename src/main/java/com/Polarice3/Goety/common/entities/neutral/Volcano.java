@@ -42,8 +42,8 @@ public class Volcano extends AbstractMonolith{
     }
 
     @Nullable
-    public SpawnGroupData finalizeSpawn(ServerLevelAccessor pLevel, DifficultyInstance pDifficulty, MobSpawnType pReason, @Nullable SpawnGroupData pSpawnData, @Nullable CompoundTag pDataTag) {
-        pSpawnData = super.finalizeSpawn(pLevel, pDifficulty, pReason, pSpawnData, pDataTag);
+    public SpawnGroupData finalizeSpawn(ServerLevelAccessor pLevel, DifficultyInstance pDifficulty, MobSpawnType pReason, @Nullable SpawnGroupData pSpawnData) {
+        pSpawnData = super.finalizeSpawn(pLevel, pDifficulty, pReason, pSpawnData);
         if (this.canSpawn(pLevel.getLevel())){
             this.playSound(ModSounds.RUMBLE.get(), 2.0F, 1.0F);
             this.playSound(ModSounds.WALL_ERUPT.get(), 1.0F, 1.0F);

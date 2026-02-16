@@ -1,5 +1,7 @@
 package com.Polarice3.Goety.common.entities.ally;
 
+import com.Polarice3.Goety.utils.MobType;
+
 import com.Polarice3.Goety.api.entities.IAutoRideable;
 import com.Polarice3.Goety.api.items.magic.IWand;
 import com.Polarice3.Goety.client.particles.ModParticleTypes;
@@ -83,22 +85,22 @@ public class HoglinServant extends AnimalSummon implements HoglinBase, PlayerRid
 
     public static AttributeSupplier.Builder setCustomAttributes() {
         return Monster.createMonsterAttributes()
-                .add(Attributes.MAX_HEALTH, AttributesConfig.HoglinServantHealth.get())
+                .add(Attributes.MAX_HEALTH, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.HoglinServantHealth, 20.0D))
                 .add(Attributes.MOVEMENT_SPEED, (double) 0.3F)
                 .add(Attributes.KNOCKBACK_RESISTANCE, (double) 0.6F)
                 .add(Attributes.ATTACK_KNOCKBACK, 1.0D)
-                .add(Attributes.ARMOR, AttributesConfig.HoglinServantArmor.get())
-                .add(Attributes.ATTACK_DAMAGE, AttributesConfig.HoglinServantDamage.get());
+                .add(Attributes.ARMOR, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.HoglinServantArmor, 20.0D))
+                .add(Attributes.ATTACK_DAMAGE, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.HoglinServantDamage, 20.0D));
     }
 
     public void setConfigurableAttributes() {
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.MAX_HEALTH), AttributesConfig.HoglinServantHealth.get());
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ARMOR), AttributesConfig.HoglinServantArmor.get());
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.MAX_HEALTH), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.HoglinServantHealth, 20.0D));
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ARMOR), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.HoglinServantArmor, 20.0D));
         if (this.isBaby()) {
             MobUtil.setBaseAttributes(this.getAttribute(Attributes.ATTACK_DAMAGE), 0.5D);
         } else {
             MobUtil.setBaseAttributes(this.getAttribute(Attributes.ATTACK_DAMAGE),
-                    AttributesConfig.HoglinServantDamage.get());
+                    com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.HoglinServantDamage, 20.0D));
         }
     }
 
@@ -195,7 +197,7 @@ public class HoglinServant extends AnimalSummon implements HoglinBase, PlayerRid
             if (this.isBaby()) {
                 attack.setBaseValue(0.5D);
             } else {
-                attack.setBaseValue(AttributesConfig.HoglinServantDamage.get());
+                attack.setBaseValue(com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.HoglinServantDamage, 20.0D));
             }
         }
 

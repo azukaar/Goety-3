@@ -44,7 +44,7 @@ public class LichKissCantrip {
         Vec3 lookVec = pSource.getViewVector(1.0F);
         Vec3 destVec = srcVec.add(lookVec.x * 16, lookVec.y * 16, lookVec.z * 16);
         AABB axisalignedbb = pSource.getBoundingBox().expandTowards(lookVec.scale(16)).inflate(1.0D);
-        return ProjectileUtil.getEntityHitResult(pSource.level, pSource, srcVec, destVec, axisalignedbb, entity -> entity instanceof LivingEntity && !entity.isSpectator() && entity.isPickable() && pSource.hasLineOfSight(entity));
+        return ProjectileUtil.getEntityHitResult(pSource.level(), pSource, srcVec, destVec, axisalignedbb, entity -> entity instanceof LivingEntity && !entity.isSpectator() && entity.isPickable() && pSource.hasLineOfSight(entity));
     }
 
     private void drawParticleBeam(LivingEntity pSource, LivingEntity pTarget) {
@@ -55,9 +55,9 @@ public class LichKissCantrip {
         d0 = d0 / d3;
         d1 = d1 / d3;
         d2 = d2 / d3;
-        double d4 = pSource.level.random.nextDouble();
-        if (!pSource.level.isClientSide) {
-            ServerLevel serverWorld = (ServerLevel) pSource.level;
+        double d4 = pSource.level().random.nextDouble();
+        if (!pSource.level().isClientSide) {
+            ServerLevel serverWorld = (ServerLevel) pSource.level();
             while (d4 < d3) {
                 d4 += 1.0D;
                 serverWorld.sendParticles(ModParticleTypes.LEECH.get(), pSource.getX() + d0 * d4, pSource.getY() + d1 * d4 + (double) pSource.getEyeHeight() * 0.5D, pSource.getZ() + d2 * d4, 1, 0.0D, 0.0D, 0.0D, 0.0D);

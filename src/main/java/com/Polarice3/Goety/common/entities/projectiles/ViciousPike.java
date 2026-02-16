@@ -110,7 +110,7 @@ public class ViciousPike extends Entity implements ISpellEntity {
 
     private void dealDamageTo(LivingEntity target) {
         LivingEntity livingentity = this.getOwner();
-        float baseDamage = SpellConfig.ViciousToothDamage.get().floatValue() * WandUtil.damageMultiply();
+        float baseDamage = com.Polarice3.Goety.utils.ConfigHelper.getFloat(SpellConfig.ViciousToothDamage, 1.0F) * WandUtil.damageMultiply();
         if (target.isAlive() && !target.isInvulnerable() && MobUtil.validEntity(target) && target != livingentity) {
             if (livingentity != null) {
                 if (MobUtil.areAllies(livingentity, target)) {

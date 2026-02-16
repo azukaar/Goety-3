@@ -26,13 +26,13 @@ public class PhilosophersMaceItem extends Item implements ISoulRepair {
     private final Multimap<Attribute, AttributeModifier> maceAttributes;
 
     public PhilosophersMaceItem() {
-        super(new Properties().rarity(Rarity.UNCOMMON).durability(ItemConfig.PhilosophersMaceDurability.get())
+        super(new Properties().rarity(Rarity.UNCOMMON).durability(getPhilosophersMaceDurability())
                 .fireResistant());
         ImmutableMultimap.Builder<Attribute, AttributeModifier> builder = ImmutableMultimap.builder();
-        builder.put(Attributes.ATTACK_DAMAGE, new AttributeModifier(Item.BASE_ATTACK_DAMAGE_ID,
-                ItemConfig.PhilosophersMaceDamage.get() - 1.0D, AttributeModifier.Operation.ADDITION));
-        builder.put(Attributes.ATTACK_SPEED,
-                new AttributeModifier(Item.BASE_ATTACK_SPEED_ID, (double) -2.4F, AttributeModifier.Operation.ADDITION));
+        builder.put(Attributes.ATTACK_DAMAGE.value(), new AttributeModifier(Item.BASE_ATTACK_DAMAGE_ID,
+                getPhilosophersMaceDamage() - 1.0D, AttributeModifier.Operation.ADD_VALUE));
+        builder.put(Attributes.ATTACK_SPEED.value(),
+                new AttributeModifier(Item.BASE_ATTACK_SPEED_ID, (double) -2.4F, AttributeModifier.Operation.ADD_VALUE));
         this.maceAttributes = builder.build();
     }
 
@@ -71,7 +71,34 @@ public class PhilosophersMaceItem extends Item implements ISoulRepair {
     }
 
     public int getEnchantmentValue(ItemStack stack) {
-        return ItemConfig.PhilosophersMaceEnchantability.get();
+        return getPhilosophersMaceEnchantability();
+    }
+    
+    private static int getPhilosophersMaceDurability() {
+        try {
+            return com.Polarice3.Goety.utils.ConfigHelper.getInt(ItemConfig.PhilosophersMaceDurability, 0);
+        } catch (IllegalStateException e) {
+            // Config not loaded yet, use default
+            return 2031; // Default durability
+        }
+    }
+    
+    private static double getPhilosophersMaceDamage() {
+        try {
+            return com.Polarice3.Goety.utils.ConfigHelper.getDouble(ItemConfig.PhilosophersMaceDamage, 20.0D);
+        } catch (IllegalStateException e) {
+            // Config not loaded yet, use default
+            return 4.0D; // Default damage
+        }
+    }
+    
+    private static int getPhilosophersMaceEnchantability() {
+        try {
+            return com.Polarice3.Goety.utils.ConfigHelper.getInt(ItemConfig.PhilosophersMaceEnchantability, 0);
+        } catch (IllegalStateException e) {
+            // Config not loaded yet, use default
+            return 15; // Default enchantability
+        }
     }
 
     public boolean canApplyAtEnchantingTable(ItemStack stack, Enchantment enchantment) {
@@ -82,8 +109,7 @@ public class PhilosophersMaceItem extends Item implements ISoulRepair {
 
     public Multimap<Attribute, AttributeModifier> getAttributeModifiers(EquipmentSlot equipmentSlot,
             ItemStack itemStack) {
-        return equipmentSlot == EquipmentSlot.MAINHAND ? this.maceAttributes
-                : super.getAttributeModifiers(equipmentSlot, itemStack);
+        return this.maceAttributes;
     }
 
     @Override

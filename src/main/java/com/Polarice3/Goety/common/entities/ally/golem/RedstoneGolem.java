@@ -120,32 +120,32 @@ public class RedstoneGolem extends RaiderGolemServant {
     @SuppressWarnings("removal")
     public static AttributeSupplier.Builder setCustomAttributes() {
         return Monster.createMonsterAttributes()
-                .add(Attributes.MAX_HEALTH, AttributesConfig.RedstoneGolemHealth.get())
-                .add(Attributes.ARMOR, AttributesConfig.RedstoneGolemArmor.get())
+                .add(Attributes.MAX_HEALTH, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.RedstoneGolemHealth, 20.0D))
+                .add(Attributes.ARMOR, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.RedstoneGolemArmor, 20.0D))
                 .add(Attributes.MOVEMENT_SPEED, (double)0.3F)
                 .add(Attributes.KNOCKBACK_RESISTANCE, 1.0D)
                 .add(Attributes.ATTACK_KNOCKBACK, 3.0D)
-                .add(NeoForgeMod.STEP_HEIGHT_ADDITION.get(), 1.0D)
-                .add(Attributes.ATTACK_DAMAGE, AttributesConfig.RedstoneGolemDamage.get())
-                .add(Attributes.FOLLOW_RANGE, AttributesConfig.RedstoneGolemFollowRange.get());
+                .add(Attributes.STEP_HEIGHT, 1.0D)
+                .add(Attributes.ATTACK_DAMAGE, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.RedstoneGolemDamage, 20.0D))
+                .add(Attributes.FOLLOW_RANGE, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.RedstoneGolemFollowRange, 20.0D));
     }
 
     public void setConfigurableAttributes(){
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.MAX_HEALTH), AttributesConfig.RedstoneGolemHealth.get());
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ARMOR), AttributesConfig.RedstoneGolemArmor.get());
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ATTACK_DAMAGE), AttributesConfig.RedstoneGolemDamage.get());
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.FOLLOW_RANGE), AttributesConfig.RedstoneGolemFollowRange.get());
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.MAX_HEALTH), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.RedstoneGolemHealth, 20.0D));
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ARMOR), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.RedstoneGolemArmor, 20.0D));
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ATTACK_DAMAGE), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.RedstoneGolemDamage, 20.0D));
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.FOLLOW_RANGE), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.RedstoneGolemFollowRange, 20.0D));
     }
 
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.entityData.define(DATA_FLAGS_ID, (byte)0);
-        this.entityData.define(ANIM_STATE, 0);
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(DATA_FLAGS_ID, (byte)0);
+        builder.define(ANIM_STATE, 0);
     }
 
-    public Packet<ClientGamePacketListener> getAddEntityPacket() {
-        return new ClientboundAddEntityPacket((LivingEntity)this, this.hasPose(Pose.EMERGING) ? 1 : 0);
-    }
+    // public Packet<ClientGamePacketListener> getAddEntityPacket() {
+    //     return new ClientboundAddEntityPacket((LivingEntity)this, this.hasPose(Pose.EMERGING) ? 1 : 0);
+    // }
 
     public void recreateFromPacket(ClientboundAddEntityPacket p_219420_) {
         super.recreateFromPacket(p_219420_);
@@ -274,11 +274,11 @@ public class RedstoneGolem extends RaiderGolemServant {
 
     @Nullable
     @Override
-    public SpawnGroupData finalizeSpawn(ServerLevelAccessor pLevel, DifficultyInstance pDifficulty, MobSpawnType pReason, @Nullable SpawnGroupData pSpawnData, @Nullable CompoundTag pDataTag) {
+    public SpawnGroupData finalizeSpawn(ServerLevelAccessor pLevel, DifficultyInstance pDifficulty, MobSpawnType pReason, @Nullable SpawnGroupData pSpawnData) {
         if (pReason == MobSpawnType.MOB_SUMMONED){
-            this.setPose(Pose.EMERGING);
+             this.setPose(Pose.EMERGING);
         }
-        return super.finalizeSpawn(pLevel, pDifficulty, pReason, pSpawnData, pDataTag);
+        return super.finalizeSpawn(pLevel, pDifficulty, pReason, pSpawnData);
     }
 
     public boolean canAnimateMove(){
@@ -409,13 +409,13 @@ public class RedstoneGolem extends RaiderGolemServant {
         super.die(p_21014_);
     }
 
-    public EntityDimensions getDimensions(Pose p_29531_) {
-        if (this.isSitting()) {
-            return super.getDimensions(p_29531_).scale(1.0F, 0.85F);
-        } else {
-            return super.getDimensions(p_29531_);
-        }
-    }
+    // public EntityDimensions getDimensions(Pose p_29531_) {
+    //     if (this.isSitting()) {
+    //         return super.getDimensions(p_29531_).scale(1.0F, 0.85F);
+    //     } else {
+    //         return super.getDimensions(p_29531_);
+    //     }
+    // }
 
     private boolean isActivating() {
         return this.hasPose(Pose.EMERGING);
@@ -498,7 +498,7 @@ public class RedstoneGolem extends RaiderGolemServant {
                         }
                         if (this.noveltyTick == 42) {
                             this.playSound(ModSounds.REDSTONE_GOLEM_GROWL.get());
-                            this.gameEvent(GameEvent.ENTITY_ROAR, this);
+                            this.gameEvent(GameEvent.ENTITY_ACTION, this);
                         }
                         if (this.noveltyTick >= 92 || this.getTarget() != null || this.hurtTime > 0) {
                             this.isNovelty = false;
@@ -719,7 +719,7 @@ public class RedstoneGolem extends RaiderGolemServant {
             this.checkAndPerformAttack(livingentity, RedstoneGolem.this.distanceToSqr(livingentity.getX(), livingentity.getY(), livingentity.getZ()));
         }
 
-        @Override
+        // @Override
         protected void checkAndPerformAttack(LivingEntity enemy, double distToEnemySqr) {
             if (RedstoneGolem.this.targetClose(enemy, distToEnemySqr) && !RedstoneGolem.this.isPostAttack) {
                 RedstoneGolem.this.doHurtTarget(enemy);
@@ -797,7 +797,7 @@ public class RedstoneGolem extends RaiderGolemServant {
                     RedstoneGolem.this.setDeltaMovement(RedstoneGolem.this.getDeltaMovement().multiply(0.6D, 1.0D, 0.6D));
                 }
 
-                RedstoneGolem.this.doEnchantDamageEffects(RedstoneGolem.this, target);
+                // RedstoneGolem.this.doEnchantDamageEffects(RedstoneGolem.this, target);
                 RedstoneGolem.this.setLastHurtMob(target);
             }
         }

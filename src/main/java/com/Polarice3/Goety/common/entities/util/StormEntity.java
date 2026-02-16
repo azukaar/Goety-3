@@ -23,7 +23,6 @@ public class StormEntity extends Entity {
 
     @Override
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
-        super.defineSynchedData(builder);
     }
 
     @Override
@@ -54,7 +53,7 @@ public class StormEntity extends Entity {
     }
 
     @Override
-    public Packet<ClientGamePacketListener> getAddEntityPacket() {
-        return new ClientboundAddEntityPacket(this);
+    public Packet<ClientGamePacketListener> getAddEntityPacket(net.minecraft.server.level.ServerEntity p_345759_) {
+        return new ClientboundAddEntityPacket(this, p_345759_);
     }
 }

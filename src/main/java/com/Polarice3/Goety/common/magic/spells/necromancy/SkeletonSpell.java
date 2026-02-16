@@ -31,15 +31,15 @@ import java.util.function.Predicate;
 public class SkeletonSpell extends SummonSpell {
 
     public int defaultSoulCost() {
-        return SpellConfig.SkeletonCost.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.SkeletonCost, 0);
     }
 
     public int defaultCastDuration() {
-        return SpellConfig.SkeletonDuration.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.SkeletonDuration, 0);
     }
 
     public int SummonDownDuration() {
-        return SpellConfig.SkeletonSummonDown.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.SkeletonSummonDown, 0);
     }
 
     public SoundEvent CastingSound() {
@@ -48,7 +48,7 @@ public class SkeletonSpell extends SummonSpell {
 
     @Override
     public int defaultSpellCooldown() {
-        return SpellConfig.SkeletonCoolDown.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.SkeletonCoolDown, 0);
     }
 
     @Override
@@ -71,7 +71,7 @@ public class SkeletonSpell extends SummonSpell {
 
     @Override
     public int summonLimit() {
-        return SpellConfig.SkeletonLimit.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.SkeletonLimit, 0);
     }
 
     public boolean specialStaffs(ItemStack stack){
@@ -94,7 +94,7 @@ public class SkeletonSpell extends SummonSpell {
         if (staff.is(ModItems.NAMELESS_STAFF.get())){
             i = 7;
         } else if (rightStaff(staff)){
-            i = 2 + caster.level.random.nextInt(4);
+            i = 2 + caster.level().random.nextInt(4);
         } else if (specialStaffs(staff)){
             i = 2;
         }
@@ -139,7 +139,7 @@ public class SkeletonSpell extends SummonSpell {
                 summonedentity.setPersistenceRequired();
                 summonedentity.setLimitedLife(MobUtil.getSummonLifespan(worldIn) * duration);
                 summonedentity.setArrowPower(potency);
-                summonedentity.finalizeSpawn(worldIn, caster.level.getCurrentDifficultyAt(caster.blockPosition()), MobSpawnType.MOB_SUMMONED, null, null);
+                summonedentity.finalizeSpawn(worldIn, caster.level().getCurrentDifficultyAt(caster.blockPosition()), MobSpawnType.MOB_SUMMONED, null);
                 this.buffSummon(caster, summonedentity, potency);
                 this.SummonSap(caster, summonedentity);
                 this.setTarget(caster, summonedentity);
@@ -153,3 +153,4 @@ public class SkeletonSpell extends SummonSpell {
         }
     }
 }
+

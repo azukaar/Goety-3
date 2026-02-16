@@ -1,6 +1,7 @@
 package com.Polarice3.Goety.common.items.handler;
 
 import com.Polarice3.Goety.common.items.brew.BrewItem;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
@@ -17,6 +18,10 @@ public class WitchStaffItemHandler extends ItemStackHandler {
 
     public WitchStaffItemHandler(ItemStack itemStack) {
         this.itemStack = itemStack;
+        net.minecraft.world.item.component.CustomData customData = itemStack.get(net.minecraft.core.component.DataComponents.CUSTOM_DATA);
+        if (customData != null) {
+            deserializeNBT(net.minecraft.core.RegistryAccess.EMPTY, customData.copyTag());
+        }
     }
 
     public ItemStack extractItem() {
@@ -37,22 +42,22 @@ public class WitchStaffItemHandler extends ItemStackHandler {
     }
 
     @Override
-    public CompoundTag serializeNBT() {
-        CompoundTag nbt = super.serializeNBT();
+    public CompoundTag serializeNBT(HolderLookup.Provider provider) {
+        CompoundTag nbt = super.serializeNBT(provider);
         nbt.putInt("slot", slot);
         return nbt;
     }
 
     @Override
-    public void deserializeNBT(CompoundTag nbt) {
-        super.deserializeNBT(nbt);
+    public void deserializeNBT(HolderLookup.Provider provider, CompoundTag nbt) {
+        super.deserializeNBT(provider, nbt);
         ListTag tagList = nbt.getList("Items", Tag.TAG_COMPOUND);
         for (int i = 0; i < tagList.size(); i++)
         {
             CompoundTag itemTags = tagList.getCompound(i);
             if (nbt.contains("slot")) {
                 slot = nbt.getInt("slot");
-                stacks.set(slot, ItemStack.of(itemTags));
+                stacks.set(slot, ItemStack.parse(provider, itemTags).orElse(ItemStack.EMPTY));
             }
         }
         onLoad();
@@ -61,13 +66,11 @@ public class WitchStaffItemHandler extends ItemStackHandler {
 
     @Override
     protected void onContentsChanged(int slot) {
-        CompoundTag nbt = itemStack.getOrCreateTag();
-        nbt.putBoolean("goety-dirty", !nbt.getBoolean("goety-dirty"));
+        CompoundTag nbt = serializeNBT(net.minecraft.core.RegistryAccess.EMPTY);
+        itemStack.set(net.minecraft.core.component.DataComponents.CUSTOM_DATA, net.minecraft.world.item.component.CustomData.of(nbt));
     }
 
     public static WitchStaffItemHandler get(ItemStack stack) {
-        IItemHandler handler = stack.getCapability(Capabilities.ITEM_HANDLER)
-                .orElseThrow(() -> new IllegalArgumentException("ItemStack is missing item capability"));
-        return (WitchStaffItemHandler) handler;
+        return new WitchStaffItemHandler(stack);
     }
 }

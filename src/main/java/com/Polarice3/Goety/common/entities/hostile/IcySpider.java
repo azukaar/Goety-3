@@ -21,13 +21,13 @@ public class IcySpider extends Spider {
 
     public static AttributeSupplier.Builder setCustomAttributes() {
         return SpiderServant.setCustomAttributes()
-                .add(Attributes.MAX_HEALTH, AttributesConfig.IcySpiderServantHealth.get())
-                .add(Attributes.ATTACK_DAMAGE, AttributesConfig.IcySpiderServantDamage.get());
+                .add(Attributes.MAX_HEALTH, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.IcySpiderServantHealth, 20.0D))
+                .add(Attributes.ATTACK_DAMAGE, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.IcySpiderServantDamage, 20.0D));
     }
 
     public void setConfigurableAttributes() {
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.MAX_HEALTH), AttributesConfig.IcySpiderServantHealth.get());
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ATTACK_DAMAGE), AttributesConfig.IcySpiderServantDamage.get());
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.MAX_HEALTH), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.IcySpiderServantHealth, 20.0D));
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ATTACK_DAMAGE), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.IcySpiderServantDamage, 20.0D));
     }
 
     public boolean doHurtTarget(Entity target) {

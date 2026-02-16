@@ -28,7 +28,7 @@ public class BroodMotherRenderer<T extends AbstractBroodMother> extends MobRende
    }
 
    public ResourceLocation getTextureLocation(T p_116009_) {
-      boolean old = MobsConfig.BroodMotherOldTexture.get();
+      boolean old = com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MobsConfig.BroodMotherOldTexture, false);
       if (p_116009_.isHostile()){
          if (old){
             return OLD_HOSTILE_LOCATION;

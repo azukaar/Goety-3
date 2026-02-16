@@ -22,6 +22,8 @@ import net.minecraft.world.level.ServerLevelAccessor;
 
 import javax.annotation.Nullable;
 import java.util.UUID;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.world.level.storage.loot.LootTable;
 
 public class ArmoredRavager extends Ravager implements IRavager {
     private static final UUID ARMOR_MODIFIER_UUID = UUID.fromString("d404309f-25d3-4837-8828-e2b7b0ea79fd");
@@ -36,7 +38,7 @@ public class ArmoredRavager extends Ravager implements IRavager {
         ItemStack itemStack = this.getItemBySlot(EquipmentSlot.CHEST);
         if(!itemStack.isEmpty()) {
             CompoundTag compoundTag = new CompoundTag();
-            itemStack.save(compoundTag);
+            itemStack.save(this.registryAccess(), compoundTag);
             p_33353_.put("ArmorItem", compoundTag);
         }
     }
@@ -45,7 +47,7 @@ public class ArmoredRavager extends Ravager implements IRavager {
         super.readAdditionalSaveData(p_33344_);
         CompoundTag armorItem = p_33344_.getCompound("ArmorItem");
         if(!armorItem.isEmpty()) {
-            this.setArmorEquipment(ItemStack.of(armorItem));
+            this.setArmorEquipment(ItemStack.parse(this.registryAccess(), armorItem).orElse(ItemStack.EMPTY));
         }
     }
 
@@ -77,11 +79,12 @@ public class ArmoredRavager extends Ravager implements IRavager {
     public void updateArmor(){
         AttributeInstance attribute = this.getAttribute(Attributes.ARMOR);
         if (attribute != null) {
-            attribute.removeModifier(ARMOR_MODIFIER_UUID);
+            ResourceLocation armorMod = ResourceLocation.parse("goety:ravager_armor");
+            attribute.removeModifier(armorMod);
             if (this.isArmor(this.getArmor())) {
                 int i = ((RavagerArmorItem) this.getArmor().getItem()).getProtection();
                 if (i != 0) {
-                    attribute.addTransientModifier(new AttributeModifier(ARMOR_MODIFIER_UUID, "Ravager armor bonus", (double) i, AttributeModifier.Operation.ADDITION));
+                    attribute.addTransientModifier(new AttributeModifier(armorMod, (double) i, AttributeModifier.Operation.ADD_VALUE));
                 }
             }
         }
@@ -104,8 +107,8 @@ public class ArmoredRavager extends Ravager implements IRavager {
     }
 
     @Nullable
-    public SpawnGroupData finalizeSpawn(ServerLevelAccessor pLevel, DifficultyInstance pDifficulty, MobSpawnType pReason, @Nullable SpawnGroupData pSpawnData, @Nullable CompoundTag pDataTag) {
-        pSpawnData = super.finalizeSpawn(pLevel, pDifficulty, pReason, pSpawnData, pDataTag);
+    public SpawnGroupData finalizeSpawn(ServerLevelAccessor pLevel, DifficultyInstance pDifficulty, MobSpawnType pReason, @Nullable SpawnGroupData pSpawnData) {
+        pSpawnData = super.finalizeSpawn(pLevel, pDifficulty, pReason, pSpawnData);
         int i = pLevel.getLevel().random.nextInt(2);
         float f = pLevel.getLevel().getDifficulty() == Difficulty.HARD ? 0.75F : 0.45F;
         if (pLevel.getLevel().random.nextFloat() < f) {
@@ -128,7 +131,7 @@ public class ArmoredRavager extends Ravager implements IRavager {
     }
 
     @Override
-    protected ResourceLocation getDefaultLootTable() {
+    protected ResourceKey<LootTable> getDefaultLootTable() {
         return EntityType.RAVAGER.getDefaultLootTable();
     }
 

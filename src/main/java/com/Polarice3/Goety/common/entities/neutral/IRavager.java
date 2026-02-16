@@ -12,7 +12,7 @@ public interface IRavager {
     }
 
     default int getRoarCoolMax(){
-        return MathHelper.secondsToTicks(MobsConfig.RavagerRoarCooldown.get());
+        return MathHelper.secondsToTicks(com.Polarice3.Goety.utils.ConfigHelper.getInt(MobsConfig.RavagerRoarCooldown, 0));
     }
 
     default void forceRoar(){

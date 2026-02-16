@@ -27,7 +27,7 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-public class ChorusVineBlock extends Block implements net.neoforged.common.IForgeShearable {
+public class ChorusVineBlock extends Block implements com.Polarice3.Goety.compat.legacy.common.IForgeShearable {
    public static final BooleanProperty UP = PipeBlock.UP;
    public static final BooleanProperty NORTH = PipeBlock.NORTH;
    public static final BooleanProperty EAST = PipeBlock.EAST;

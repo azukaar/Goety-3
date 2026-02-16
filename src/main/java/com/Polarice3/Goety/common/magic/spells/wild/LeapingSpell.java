@@ -30,15 +30,15 @@ public class LeapingSpell extends SummonSpell {
     }
 
     public int defaultSoulCost() {
-        return SpellConfig.LeapingCost.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.LeapingCost, 0);
     }
 
     public int defaultCastDuration() {
-        return SpellConfig.LeapingDuration.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.LeapingDuration, 0);
     }
 
     public int SummonDownDuration() {
-        return SpellConfig.LeapingSummonDown.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.LeapingSummonDown, 0);
     }
 
     public SoundEvent CastingSound() {
@@ -47,7 +47,7 @@ public class LeapingSpell extends SummonSpell {
 
     @Override
     public int defaultSpellCooldown() {
-        return SpellConfig.LeapingCoolDown.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.LeapingCoolDown, 0);
     }
 
     @Override
@@ -70,7 +70,7 @@ public class LeapingSpell extends SummonSpell {
 
     @Override
     public int summonLimit() {
-        return SpellConfig.LeapleafLimit.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.LeapleafLimit, 0);
     }
 
     public void SpellResult(ServerLevel worldIn, LivingEntity caster, ItemStack staff, SpellStat spellStat) {
@@ -93,7 +93,7 @@ public class LeapingSpell extends SummonSpell {
                 MobUtil.moveDownToGround(summonedentity);
                 summonedentity.setPersistenceRequired();
                 summonedentity.setLimitedLife(MobUtil.getSummonLifespan(worldIn) * duration);
-                summonedentity.finalizeSpawn(worldIn, caster.level.getCurrentDifficultyAt(caster.blockPosition()), MobSpawnType.MOB_SUMMONED, null, null);
+                summonedentity.finalizeSpawn(worldIn, caster.level().getCurrentDifficultyAt(caster.blockPosition()), MobSpawnType.MOB_SUMMONED, null);
                 this.buffSummon(caster, summonedentity, potency);
                 this.SummonSap(caster, summonedentity);
                 this.setTarget(caster, summonedentity);
@@ -105,3 +105,4 @@ public class LeapingSpell extends SummonSpell {
         }
     }
 }
+

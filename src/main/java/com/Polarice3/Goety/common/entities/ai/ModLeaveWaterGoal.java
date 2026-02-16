@@ -22,7 +22,7 @@ public class ModLeaveWaterGoal<T extends PathfinderMob & IServant> extends Goal 
     }
 
     public boolean canUse() {
-        if (this.mob.level.getFluidState(this.mob.blockPosition()).is(FluidTags.WATER) && (this.mob.getTarget() != null || this.mob.getTrueOwner() != null || this.mob.getRandom().nextInt(30) == 0) && this.shouldLeaveWater()) {
+        if (this.mob.level().getFluidState(this.mob.blockPosition()).is(FluidTags.WATER) && (this.mob.getTarget() != null || this.mob.getTrueOwner() != null || this.mob.getRandom().nextInt(30) == 0) && this.shouldLeaveWater()) {
             this.targetPos = this.generateTarget();
             return this.targetPos != null;
         } else {
@@ -35,7 +35,7 @@ public class ModLeaveWaterGoal<T extends PathfinderMob & IServant> extends Goal 
             this.mob.getNavigation().stop();
             return false;
         } else {
-            return !this.mob.getNavigation().isDone() && this.targetPos != null && !this.mob.level.getFluidState(this.targetPos).is(FluidTags.WATER);
+            return !this.mob.getNavigation().isDone() && this.targetPos != null && !this.mob.level().getFluidState(this.targetPos).is(FluidTags.WATER);
         }
     }
 
@@ -64,7 +64,7 @@ public class ModLeaveWaterGoal<T extends PathfinderMob & IServant> extends Goal 
         for(int tries = 0; vector3d != null && tries < 8; ++tries) {
             boolean waterDetected = false;
             for (BlockPos blockpos1 : BlockPos.betweenClosed(Mth.floor(vector3d.x - 2.0), Mth.floor(vector3d.y - 1.0), Mth.floor(vector3d.z - 2.0), Mth.floor(vector3d.x + 2.0), Mth.floor(vector3d.y), Mth.floor(vector3d.z + 2.0))) {
-                if (this.mob.level.getFluidState(blockpos1).is(FluidTags.WATER)) {
+                if (this.mob.level().getFluidState(blockpos1).is(FluidTags.WATER)) {
                     waterDetected = true;
                     break;
                 }

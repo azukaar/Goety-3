@@ -27,11 +27,11 @@ import java.util.List;
 public class TeethSpell extends Spell {
 
     public int defaultSoulCost() {
-        return SpellConfig.TeethCost.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.TeethCost, 0);
     }
 
     public int defaultCastDuration() {
-        return SpellConfig.TeethDuration.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.TeethDuration, 0);
     }
 
     public SoundEvent CastingSound() {
@@ -40,7 +40,7 @@ public class TeethSpell extends Spell {
 
     @Override
     public int defaultSpellCooldown() {
-        return SpellConfig.TeethCoolDown.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.TeethCoolDown, 0);
     }
 
     @Override
@@ -125,27 +125,27 @@ public class TeethSpell extends Spell {
     public void surroundTeeth(LivingEntity livingEntity, BlockPos blockPos, float damage, boolean isStaff){
         BlockPos.MutableBlockPos blockpos$mutable = new BlockPos.MutableBlockPos(blockPos.getX(), blockPos.getY(), blockPos.getZ());
 
-        while (blockpos$mutable.getY() < blockPos.getY() + 8.0D && !livingEntity.level.getBlockState(blockpos$mutable).blocksMotion()) {
+        while (blockpos$mutable.getY() < blockPos.getY() + 8.0D && !livingEntity.level().getBlockState(blockpos$mutable).blocksMotion()) {
             blockpos$mutable.move(Direction.UP);
         }
 
         if (isStaff) {
             for (int i = 0; i < 5; ++i) {
                 float f1 = (float) i * (float) Math.PI * 0.4F;
-                ViciousTooth viciousTooth = new ViciousTooth(ModEntityType.VICIOUS_TOOTH.get(), livingEntity.level);
+                ViciousTooth viciousTooth = new ViciousTooth(ModEntityType.VICIOUS_TOOTH.get(), livingEntity.level());
                 viciousTooth.setPos(blockPos.getX() + (double) Mth.cos(f1) * 1.5D, blockpos$mutable.getY(), blockPos.getZ() + (double) Mth.cos(f1) * 1.5D);
                 viciousTooth.setOwner(livingEntity);
-                if (livingEntity.level.addFreshEntity(viciousTooth)) {
+                if (livingEntity.level().addFreshEntity(viciousTooth)) {
                     viciousTooth.playSound(ModSounds.TOOTH_SPAWN.get());
                 }
             }
             for (int k = 0; k < 8; ++k) {
                 float f2 = (float) k * (float) Math.PI * 2.0F / 8.0F + 1.2566371F;
-                ViciousTooth viciousTooth = new ViciousTooth(ModEntityType.VICIOUS_TOOTH.get(), livingEntity.level);
+                ViciousTooth viciousTooth = new ViciousTooth(ModEntityType.VICIOUS_TOOTH.get(), livingEntity.level());
                 viciousTooth.setPos(blockPos.getX() + (double) Mth.cos(f2) * 2.5D, blockpos$mutable.getY(), blockPos.getZ() + (double) Mth.sin(f2) * 2.5D);
                 viciousTooth.setOwner(livingEntity);
                 viciousTooth.setExtraDamage(damage);
-                if (livingEntity.level.addFreshEntity(viciousTooth)) {
+                if (livingEntity.level().addFreshEntity(viciousTooth)) {
                     viciousTooth.playSound(ModSounds.TOOTH_SPAWN.get());
                 }
             }

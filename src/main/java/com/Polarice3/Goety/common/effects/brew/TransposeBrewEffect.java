@@ -14,7 +14,7 @@ import net.minecraft.world.phys.AABB;
 
 public class TransposeBrewEffect extends BrewEffect{
     public TransposeBrewEffect() {
-        super("transpose", BrewConfig.TransposeCost.get(), MobEffectCategory.BENEFICIAL, 0x2b0178);
+        super("transpose", com.Polarice3.Goety.utils.ConfigHelper.getInt(BrewConfig.TransposeCost, 0), MobEffectCategory.BENEFICIAL, 0x2b0178);
     }
 
     @Override
@@ -23,7 +23,7 @@ public class TransposeBrewEffect extends BrewEffect{
             for (Entity entity : pLevel.getEntitiesOfClass(Entity.class, new AABB(blockPos))){
                 if (entity instanceof ItemEntity || entity instanceof LivingEntity) {
                     if (entity instanceof LivingEntity livingEntity) {
-                        net.neoforged.event.entity.EntityTeleportEvent.EnderEntity event = new net.neoforged.event.entity.EntityTeleportEvent.EnderEntity(livingEntity, blockPos.getX(), blockPos.getY(), blockPos.getZ());
+                        net.neoforged.neoforge.event.entity.EntityTeleportEvent.EnderEntity event = new net.neoforged.neoforge.event.entity.EntityTeleportEvent.EnderEntity(livingEntity, blockPos.getX(), blockPos.getY(), blockPos.getZ());
                         net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(event);
                         if (event.isCanceled()) {
                             break;

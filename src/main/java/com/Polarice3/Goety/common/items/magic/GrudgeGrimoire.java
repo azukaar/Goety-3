@@ -29,7 +29,7 @@ public class GrudgeGrimoire extends Item {
     }
 
     public boolean hurtEnemy(ItemStack pStack, LivingEntity pTarget, LivingEntity pAttacker) {
-        if (!pTarget.level.isClientSide) {
+        if (!pTarget.level().isClientSide) {
             if (pAttacker instanceof Player attacker && !(pTarget instanceof ArmorStand || pTarget instanceof HauntedArmorStand)) {
                 if (MobUtil.isShifting(attacker)) {
                     if (SEHelper.addGrudgeEntityType(attacker, pTarget.getType())) {
@@ -58,7 +58,7 @@ public class GrudgeGrimoire extends Item {
     @Nonnull
     @Override
     public InteractionResult interactLivingEntity(ItemStack stack, Player player, LivingEntity target, InteractionHand hand){
-        if (!player.level.isClientSide) {
+        if (!player.level().isClientSide) {
             if (MobUtil.isShifting(player)) {
                 if (SEHelper.removeGrudgeEntityType(player, target.getType())) {
                     target.playSound(SoundEvents.PLAYER_LEVELUP, 1.0F, 0.25F);

@@ -3,7 +3,7 @@ package com.Polarice3.Goety.common.network.client;
 import com.Polarice3.Goety.utils.SEHelper;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
-import net.neoforged.network.NetworkEvent;
+import com.Polarice3.Goety.compat.legacy.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
@@ -21,7 +21,7 @@ public class CMultiJumpPacket {
 
     public static void consume(CMultiJumpPacket packet, Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
-            ServerPlayer playerEntity = ctx.get().getSender();
+            ServerPlayer playerEntity = com.Polarice3.Goety.common.network.NetworkContextHelper.getServerPlayer(ctx);
             if (playerEntity != null) {
                 SEHelper.doubleJump(playerEntity);
             }
@@ -30,3 +30,5 @@ public class CMultiJumpPacket {
         ctx.get().setPacketHandled(true);
     }
 }
+
+

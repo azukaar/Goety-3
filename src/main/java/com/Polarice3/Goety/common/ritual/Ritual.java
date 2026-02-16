@@ -38,11 +38,11 @@ import java.util.Optional;
  */
 public abstract class Ritual {
 
-    public static final int RANGE = MainConfig.RitualRange.get();
+    public static final int RANGE = com.Polarice3.Goety.utils.ConfigHelper.getInt(MainConfig.RitualRange, 8);
 
-    public static final int PEDESTAL_RANGE = MainConfig.RitualRange.get();
+    public static final int PEDESTAL_RANGE = com.Polarice3.Goety.utils.ConfigHelper.getInt(MainConfig.RitualRange, 8);
 
-    public static final int SACRIFICE_DETECTION_RANGE = MainConfig.RitualRange.get();
+    public static final int SACRIFICE_DETECTION_RANGE = com.Polarice3.Goety.utils.ConfigHelper.getInt(MainConfig.RitualRange, 8);
 
     public RitualRecipe recipe;
 

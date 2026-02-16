@@ -25,7 +25,7 @@ public class LoveBrewEffect extends BrewEffect {
     }
 
     public void applyEntityEffect(LivingEntity pTarget, @Nullable Entity pSource, @Nullable Entity pIndirectSource, int pAmplifier){
-        if (!pTarget.level.isClientSide) {
+        if (!pTarget.level().isClientSide) {
             if (pTarget instanceof Animal animal){
                 Player player = pIndirectSource instanceof Player player1 ? player1 : null;
                 animal.setInLove(player);

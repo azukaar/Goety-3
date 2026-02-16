@@ -1,6 +1,7 @@
 package com.Polarice3.Goety.common.blocks;
 
 import com.Polarice3.Goety.common.blocks.entities.ForbiddenGrassBlockEntity;
+import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
@@ -29,12 +30,19 @@ public class ForbiddenGrassBlock extends SnowyDirtBlock implements EntityBlock {
                 .sound(SoundType.GRASS));
     }
 
+    public static final MapCodec<ForbiddenGrassBlock> CODEC = simpleCodec(p -> new ForbiddenGrassBlock());
+
+    @Override
+    protected MapCodec<? extends ForbiddenGrassBlock> codec() {
+        return CODEC;
+    }
+
     private static boolean canBeGrass(BlockState pState, WorldGenLevel pLevelReader, BlockPos pPos) {
         BlockPos blockpos = pPos.above();
         BlockState blockstate = pLevelReader.getBlockState(blockpos);
         if (blockstate.is(Blocks.SNOW) && blockstate.getValue(SnowLayerBlock.LAYERS) == 1) {
             return true;
-        } else if (blockstate.getFluidState().getAmount() == 8 && blockstate.getFluidState().getType().getFluidType() != NeoForgeMod.WATER_TYPE.get()) {
+        } else if (blockstate.getFluidState().getAmount() == 8 && blockstate.getFluidState().getType().getFluidType() != NeoForgeMod.WATER_TYPE.value()) {
             return false;
         } else {
             int i = BlockLightEngine.getLightBlockInto(pLevelReader, pState, pPos, blockstate, blockpos, Direction.UP, blockstate.getLightBlock(pLevelReader, blockpos));

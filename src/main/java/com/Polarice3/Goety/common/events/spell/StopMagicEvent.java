@@ -18,7 +18,9 @@ import net.neoforged.neoforge.event.entity.living.LivingEvent;
  * <br>
  * This event is fired on the {@link NeoForge#EVENT_BUS}.
  **/
-public class StopMagicEvent extends LivingEvent {
+import net.neoforged.bus.api.ICancellableEvent;
+
+public class StopMagicEvent extends LivingEvent implements ICancellableEvent {
     private final ISpell spell;
     private final ItemStack useItem;
     private final int castTime;

@@ -12,7 +12,7 @@ public class MagnetCantrip {
 
     public void callItems(Player pPlayer) {
         if (pPlayer != null && !pPlayer.isSpectator()) {
-            for (Entity entity : pPlayer.level.getEntitiesOfClass(Entity.class, pPlayer.getBoundingBox().inflate(16.0D))){
+            for (Entity entity : pPlayer.level().getEntitiesOfClass(Entity.class, pPlayer.getBoundingBox().inflate(16.0D))){
                 if (entity instanceof ItemEntity || entity instanceof ExperienceOrb) {
                     Vec3 vector3d = new Vec3(pPlayer.getX(), pPlayer.getY(), pPlayer.getZ());
                     Vec3 vector3d1 = new Vec3(entity.getX(), entity.getY(), entity.getZ());
@@ -23,8 +23,8 @@ public class MagnetCantrip {
                     double speed = 0.2D;
                     Vec3 motion = new Vec3(vector3d2.x * speed, vector3d2.y * speed, vector3d2.z * speed);
                     entity.setDeltaMovement(motion);
-                    if (!pPlayer.level.isClientSide){
-                        ServerParticleUtil.smokeParticles(ParticleTypes.WITCH, entity.getX(), entity.getY(), entity.getZ(), pPlayer.level);
+                    if (!pPlayer.level().isClientSide){
+                        ServerParticleUtil.smokeParticles(ParticleTypes.WITCH, entity.getX(), entity.getY(), entity.getZ(), pPlayer.level());
                     }
                 }
             }

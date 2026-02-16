@@ -209,7 +209,7 @@ public abstract class HuntingIllagerEntity extends SpellcasterIllager implements
                 ItemStack itemstack = this.inventory.getItem(i);
                 if (itemstack != ItemStack.EMPTY){
                     if (itemstack.getItem() instanceof ITotem){
-                        ITotem.increaseSouls(itemstack, MainConfig.IllagerSouls.get());
+                        ITotem.increaseSouls(itemstack, com.Polarice3.Goety.utils.ConfigHelper.getInt(MainConfig.IllagerSouls, 0));
                     }
                     ItemEntity itemEntity = new ItemEntity(this.level(), this.getX(), this.getY(), this.getZ(), itemstack);
                     itemEntity.setDefaultPickUpDelay();

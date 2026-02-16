@@ -16,6 +16,7 @@ import net.minecraft.client.renderer.entity.RenderLayerParent;
 import net.minecraft.client.renderer.entity.layers.RenderLayer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
+import org.joml.Vector3f;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.phys.Vec3;
@@ -127,7 +128,9 @@ public class ObsidianMonolithRenderer<T extends AbstractMonolith> extends Abstra
     }
 
     private static void vertex(VertexConsumer consumer, Matrix4f matrix4f, Matrix3f matrix3f, float x, float y, float z, int red, int green, int blue, float u, float v) {
-        consumer.vertex(matrix4f, x, y, z).color(red, green, blue, 255).uv(u, v).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(15728880).normal(matrix3f, 0.0F, 1.0F, 0.0F).endVertex();
+        org.joml.Vector4f vec = new org.joml.Vector4f(x, y, z, 1.0F).mul(matrix4f);
+        Vector3f n = new Vector3f(0.0F, 1.0F, 0.0F).mul(matrix3f);
+        consumer.addVertex(vec.x, vec.y, vec.z).setColor(red, green, blue, 255).setUv(u, v).setOverlay(OverlayTexture.NO_OVERLAY).setLight(15728880).setNormal(n.x, n.y, n.z);
     }
 
     public ResourceLocation getTextureLocation(AbstractMonolith pEntity) {
@@ -166,7 +169,8 @@ public class ObsidianMonolithRenderer<T extends AbstractMonolith> extends Abstra
                     VertexConsumer vertexconsumer = bufferIn.getBuffer(renderType);
                     float f1 = Math.min(AbstractMonolith.getEmergingTime(), monolith.getAge());
                     this.model.setupAnim(monolith, f1, 0.0F, partialTicks, monolith.getYRot(), monolith.getXRot());
-                    this.model.renderToBuffer(matrixStackIn, vertexconsumer, packedLightIn, OverlayTexture.NO_OVERLAY, alpha, alpha, alpha, 1.0F);
+                    int color = net.minecraft.util.FastColor.ARGB32.color((int) (255 * 1.0F), (int) (255 * alpha), (int) (255 * alpha), (int) (255 * alpha));
+                    this.model.renderToBuffer(matrixStackIn, vertexconsumer, packedLightIn, OverlayTexture.NO_OVERLAY, color);
                     matrixStackIn.popPose();
                 }
             }

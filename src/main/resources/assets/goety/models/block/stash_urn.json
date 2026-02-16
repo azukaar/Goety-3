@@ -1,6 +1,6 @@
 {
     "parent": "goety:block/template_loot_urn",
-    "loader": "forge:composite",
+    "loader": "neoforge:composite",
     "textures": {
         "urn": "goety:block/stash_urn",
         "particle": "minecraft:block/terracotta"

@@ -27,10 +27,17 @@ import net.minecraft.world.level.pathfinder.PathComputationType;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
+import net.minecraft.world.level.block.BaseEntityBlock;
 
 import javax.annotation.Nullable;
 
 public class OminousPyreBlock extends BarracksBlock {
+    public static final com.mojang.serialization.MapCodec<OminousPyreBlock> CODEC = simpleCodec(p -> new OminousPyreBlock());
+
+    @Override
+    protected com.mojang.serialization.MapCodec<? extends BaseEntityBlock> codec() {
+        return CODEC;
+    }
     protected static final VoxelShape SHAPE_BASE = Block.box(1.0D, 0.0D, 1.0D,
             15.0D, 2.0D, 15.0D);
     protected static final VoxelShape SHAPE_PILLAR = Block.box(2.0D, 2.0D, 2.0D,
@@ -54,8 +61,8 @@ public class OminousPyreBlock extends BarracksBlock {
 
     public void entityInside(BlockState pState, Level pLevel, BlockPos pPos, Entity pEntity) {
         if (pState.getValue(POWERED)) {
-            if (!pEntity.fireImmune() && pEntity instanceof LivingEntity livingEntity && !EnchantmentHelper.hasFrostWalker(livingEntity)
-                    && livingEntity.getY() >= pPos.getY() + 0.5F && livingEntity.getMobType() != MobType.ILLAGER) {
+            if (!pEntity.fireImmune() && pEntity instanceof LivingEntity livingEntity
+                    && livingEntity.getY() >= pPos.getY() + 0.5F && !livingEntity.getType().is(net.minecraft.tags.EntityTypeTags.ILLAGER)) {
                 float damage = 1.0F;
                 pEntity.hurt(pEntity.damageSources().inFire(), damage);
             }

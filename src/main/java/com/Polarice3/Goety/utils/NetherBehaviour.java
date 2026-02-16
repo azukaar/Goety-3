@@ -156,7 +156,7 @@ public interface NetherBehaviour {
     }
 
     static void changeBiome(LevelAccessor levelAccessor, BlockPos blockPos) {
-        if (MobsConfig.ObsidianMonolithBiome.get()) {
+        if (com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MobsConfig.ObsidianMonolithBiome, false)) {
             MutableInt mutableint = new MutableInt(0);
             BoundingBox boundingbox = new BoundingBox(blockPos.getX() - 1, blockPos.getY(), blockPos.getZ() - 1, blockPos.getX() + 1, blockPos.getY() + 20, blockPos.getZ() + 1);
 

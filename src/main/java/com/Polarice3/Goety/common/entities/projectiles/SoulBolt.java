@@ -105,7 +105,7 @@ public class SoulBolt extends SpellHurtingProjectile {
     protected void onHitEntity(EntityHitResult p_37626_) {
         super.onHitEntity(p_37626_);
         if (!this.level().isClientSide) {
-            float baseDamage = SpellConfig.SoulBoltDamage.get().floatValue() * WandUtil.damageMultiply();
+            float baseDamage = com.Polarice3.Goety.utils.ConfigHelper.getFloat(SpellConfig.SoulBoltDamage, 1.0F) * WandUtil.damageMultiply();
             Entity entity = p_37626_.getEntity();
             Entity entity1 = this.getOwner();
             boolean flag;
@@ -119,7 +119,7 @@ public class SoulBolt extends SpellHurtingProjectile {
                 flag = entity.hurt(entity.damageSources().indirectMagic(this, livingentity), baseDamage);
                 if (flag) {
                     if (entity.isAlive()) {
-                        this.doEnchantDamageEffects(livingentity, entity);
+                        // this.doEnchantDamageEffects(livingentity, entity);
                     } else if (this.isNecro()) {
                         ServantUtil.convertZombies(entity, livingentity, false);
                         boolean wither = false;
@@ -228,8 +228,8 @@ public class SoulBolt extends SpellHurtingProjectile {
         return false;
     }
 
-    @Override
-    public Packet<ClientGamePacketListener> getAddEntityPacket() {
-        return new net.minecraft.network.protocol.game.ClientboundAddEntityPacket(this);
-    }
+    // @Override
+    // public Packet<ClientGamePacketListener> getAddEntityPacket() {
+    //     return new net.minecraft.network.protocol.game.ClientboundAddEntityPacket(this);
+    // }
 }

@@ -1,5 +1,6 @@
 package com.Polarice3.Goety.common.world.features;
 
+import com.Polarice3.Goety.Goety;
 import com.Polarice3.Goety.common.blocks.ModBlocks;
 import com.Polarice3.Goety.common.world.features.configs.ModTreeFeatureConfig;
 import com.Polarice3.Goety.common.world.features.trees.trunkplacers.ChorusTrunkPlacer;
@@ -28,23 +29,25 @@ import java.util.OptionalInt;
 
 public class ConfiguredFeatures {
 
-    public static final ResourceKey<ConfiguredFeature<?, ?>> SAPLING_HAUNTED_TREE = FeatureUtils.createKey("goety:haunted_tree_sapling");
-    public static final ResourceKey<ConfiguredFeature<?, ?>> SAPLING_ROTTEN_TREE = FeatureUtils.createKey("goety:rotten_tree_sapling");
-    public static final ResourceKey<ConfiguredFeature<?, ?>> SAPLING_FANCY_ROTTEN_TREE = FeatureUtils.createKey("goety:fancy_rotten_tree_sapling");
-    public static final ResourceKey<ConfiguredFeature<?, ?>> WINDSWEPT_TREE = FeatureUtils.createKey("goety:windswept_tree");
-    public static final ResourceKey<ConfiguredFeature<?, ?>> WINDSWEPT_TREE_2 = FeatureUtils.createKey("goety:second_windswept_tree");
-    public static final ResourceKey<ConfiguredFeature<?, ?>> PINE_TREE = FeatureUtils.createKey("goety:pine_tree");
-    public static final ResourceKey<ConfiguredFeature<?, ?>> MEGA_PINE_TREE = FeatureUtils.createKey("goety:mega_pine_tree");
-    public static final ResourceKey<ConfiguredFeature<?, ?>> CHORUS_TREE = FeatureUtils.createKey("goety:chorus_tree");
-    public static final ResourceKey<ConfiguredFeature<?, ?>> MEGA_CHORUS_TREE = FeatureUtils.createKey("goety:mega_chorus_tree");
-    public static final ResourceKey<ConfiguredFeature<?, ?>> CHORUS_BLOSSOM_TREE = FeatureUtils.createKey("goety:chorus_blossom_tree");
-    public static final ResourceKey<ConfiguredFeature<?, ?>> MEGA_CHORUS_BLOSSOM_TREE = FeatureUtils.createKey("goety:mega_chorus_blossom_tree");
-    public static final ResourceKey<ConfiguredFeature<?, ?>> MEGA_CHORUS_VOID_TREE = FeatureUtils.createKey("goety:mega_chorus_void_tree");
-    public static final ResourceKey<ConfiguredFeature<?, ?>> MEGA_CHORUS_BLOSSOM_VOID_TREE = FeatureUtils.createKey("goety:mega_chorus_blossom_void_tree");
-    public static final ResourceKey<ConfiguredFeature<?, ?>> CHORUS_GRASS_BLOCK_BONEMEAL = FeatureUtils.createKey("goety:chorus_grass_block_bonemeal");
-    public static final ResourceKey<ConfiguredFeature<?, ?>> END_GROWTH_BLOCK_BONEMEAL = FeatureUtils.createKey("goety:end_growth_block_bonemeal");
-    public static final ResourceKey<ConfiguredFeature<?, ?>> END_VEGETATION_BONEMEAL = FeatureUtils.createKey("goety:end_vegetation_bonemeal");
-    public static final ResourceKey<ConfiguredFeature<?, ?>> END_SOIL_BONEMEAL = FeatureUtils.createKey("goety:end_soil_bonemeal");
+    // FeatureUtils.createKey expects just the path part (without namespace: prefix)
+    // It will use the default namespace (minecraft) unless we use ResourceKey.create with explicit namespace
+    public static final ResourceKey<ConfiguredFeature<?, ?>> SAPLING_HAUNTED_TREE = ResourceKey.create(net.minecraft.core.registries.Registries.CONFIGURED_FEATURE, Goety.location("haunted_tree_sapling"));
+    public static final ResourceKey<ConfiguredFeature<?, ?>> SAPLING_ROTTEN_TREE = ResourceKey.create(net.minecraft.core.registries.Registries.CONFIGURED_FEATURE, Goety.location("rotten_tree_sapling"));
+    public static final ResourceKey<ConfiguredFeature<?, ?>> SAPLING_FANCY_ROTTEN_TREE = ResourceKey.create(net.minecraft.core.registries.Registries.CONFIGURED_FEATURE, Goety.location("fancy_rotten_tree_sapling"));
+    public static final ResourceKey<ConfiguredFeature<?, ?>> WINDSWEPT_TREE = ResourceKey.create(net.minecraft.core.registries.Registries.CONFIGURED_FEATURE, Goety.location("windswept_tree"));
+    public static final ResourceKey<ConfiguredFeature<?, ?>> WINDSWEPT_TREE_2 = ResourceKey.create(net.minecraft.core.registries.Registries.CONFIGURED_FEATURE, Goety.location("second_windswept_tree"));
+    public static final ResourceKey<ConfiguredFeature<?, ?>> PINE_TREE = ResourceKey.create(net.minecraft.core.registries.Registries.CONFIGURED_FEATURE, Goety.location("pine_tree"));
+    public static final ResourceKey<ConfiguredFeature<?, ?>> MEGA_PINE_TREE = ResourceKey.create(net.minecraft.core.registries.Registries.CONFIGURED_FEATURE, Goety.location("mega_pine_tree"));
+    public static final ResourceKey<ConfiguredFeature<?, ?>> CHORUS_TREE = ResourceKey.create(net.minecraft.core.registries.Registries.CONFIGURED_FEATURE, Goety.location("chorus_tree"));
+    public static final ResourceKey<ConfiguredFeature<?, ?>> MEGA_CHORUS_TREE = ResourceKey.create(net.minecraft.core.registries.Registries.CONFIGURED_FEATURE, Goety.location("mega_chorus_tree"));
+    public static final ResourceKey<ConfiguredFeature<?, ?>> CHORUS_BLOSSOM_TREE = ResourceKey.create(net.minecraft.core.registries.Registries.CONFIGURED_FEATURE, Goety.location("chorus_blossom_tree"));
+    public static final ResourceKey<ConfiguredFeature<?, ?>> MEGA_CHORUS_BLOSSOM_TREE = ResourceKey.create(net.minecraft.core.registries.Registries.CONFIGURED_FEATURE, Goety.location("mega_chorus_blossom_tree"));
+    public static final ResourceKey<ConfiguredFeature<?, ?>> MEGA_CHORUS_VOID_TREE = ResourceKey.create(net.minecraft.core.registries.Registries.CONFIGURED_FEATURE, Goety.location("mega_chorus_void_tree"));
+    public static final ResourceKey<ConfiguredFeature<?, ?>> MEGA_CHORUS_BLOSSOM_VOID_TREE = ResourceKey.create(net.minecraft.core.registries.Registries.CONFIGURED_FEATURE, Goety.location("mega_chorus_blossom_void_tree"));
+    public static final ResourceKey<ConfiguredFeature<?, ?>> CHORUS_GRASS_BLOCK_BONEMEAL = ResourceKey.create(net.minecraft.core.registries.Registries.CONFIGURED_FEATURE, Goety.location("chorus_grass_block_bonemeal"));
+    public static final ResourceKey<ConfiguredFeature<?, ?>> END_GROWTH_BLOCK_BONEMEAL = ResourceKey.create(net.minecraft.core.registries.Registries.CONFIGURED_FEATURE, Goety.location("end_growth_block_bonemeal"));
+    public static final ResourceKey<ConfiguredFeature<?, ?>> END_VEGETATION_BONEMEAL = ResourceKey.create(net.minecraft.core.registries.Registries.CONFIGURED_FEATURE, Goety.location("end_vegetation_bonemeal"));
+    public static final ResourceKey<ConfiguredFeature<?, ?>> END_SOIL_BONEMEAL = ResourceKey.create(net.minecraft.core.registries.Registries.CONFIGURED_FEATURE, Goety.location("end_soil_bonemeal"));
 
     public static void bootstrap(BootstrapContext<ConfiguredFeature<?, ?>> p_256171_) {
         FeatureUtils.register(p_256171_, SAPLING_HAUNTED_TREE, Feature.TREE, createHaunted().ignoreVines().build());

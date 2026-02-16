@@ -52,7 +52,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.alchemy.PotionUtils;
+import com.Polarice3.Goety.utils.PotionUtils;
 import net.minecraft.world.item.alchemy.Potions;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -541,7 +541,7 @@ public class BrewCauldronBlockEntity extends BlockEntity implements Container, R
                     effects.add(new MobEffectInstance(brewingRecipe.output, brewingRecipe.duration));
                 } else if (brewEffect != null){
                     if (brewEffect instanceof PotionBrewEffect potionBrewEffect){
-                        effects.add(new MobEffectInstance(BuiltInRegistries.MOB_EFFECT.wrapAsHolder(potionBrewEffect.mobEffect), potionBrewEffect.duration));
+                        effects.add(new MobEffectInstance(potionBrewEffect.mobEffect, potionBrewEffect.duration));
                     } else {
                         blockEffects.add(new BrewEffectInstance(brewEffect, brewEffect.duration));
                     }
@@ -894,7 +894,7 @@ public class BrewCauldronBlockEntity extends BlockEntity implements Container, R
                         chance -= 0.25F;
                     }
                     bottle += SEHelper.getBottleLevel(player);
-                    MobEffectInstance mobEffectInstance = player.getEffect(GoetyEffects.BOTTLING.getHolder());
+                    MobEffectInstance mobEffectInstance = player.getEffect(GoetyEffects.BOTTLING);
                     if (mobEffectInstance != null){
                         bottle += mobEffectInstance.getAmplifier() + 1;
                     }

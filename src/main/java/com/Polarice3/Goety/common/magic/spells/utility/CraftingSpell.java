@@ -18,12 +18,12 @@ public class CraftingSpell extends Spell {
 
     @Override
     public int defaultSoulCost() {
-        return SpellConfig.CraftingCost.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.CraftingCost, 0);
     }
 
     @Override
     public int defaultCastDuration() {
-        return SpellConfig.CraftingDuration.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.CraftingDuration, 0);
     }
 
     @Override
@@ -33,7 +33,7 @@ public class CraftingSpell extends Spell {
 
     @Override
     public int defaultSpellCooldown() {
-        return SpellConfig.CraftingCoolDown.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.CraftingCoolDown, 0);
     }
 
     @Override

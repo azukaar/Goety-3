@@ -150,16 +150,18 @@ public class SculkConverterBlockEntity extends ModBlockEntity implements IEnchan
         }
     }
 
-    public void readNetwork(CompoundTag tag) {
+    @Override
+    public void readNetwork(CompoundTag tag, net.minecraft.core.HolderLookup.Provider pRegistries) {
         this.sculkSpreader.load(tag);
-        NbtUtils.readBlockPos(tag);
+        NbtUtils.readBlockPos(tag, "NearbyRelay").ifPresent(pos -> this.nearbyRelay = pos);
         this.loadEnchants(tag);
     }
 
-    public CompoundTag writeNetwork(CompoundTag tag) {
+    @Override
+    public CompoundTag writeNetwork(CompoundTag tag, net.minecraft.core.HolderLookup.Provider pRegistries) {
         this.sculkSpreader.save(tag);
         if (this.nearbyRelay != null) {
-            NbtUtils.writeBlockPos(this.nearbyRelay);
+            tag.put("NearbyRelay", NbtUtils.writeBlockPos(this.nearbyRelay));
         }
         this.saveEnchants(tag, ModBlocks.SCULK_CONVERTER.get().asItem());
         return tag;

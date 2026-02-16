@@ -25,7 +25,7 @@ public class RotationSpell extends BlockSpell {
 
     @Override
     public int defaultSoulCost() {
-        return SpellConfig.RotationCost.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.RotationCost, 0);
     }
 
     @Override
@@ -35,7 +35,7 @@ public class RotationSpell extends BlockSpell {
 
     @Override
     public int defaultSpellCooldown() {
-        return SpellConfig.RotationCoolDown.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.RotationCoolDown, 0);
     }
 
     @Override

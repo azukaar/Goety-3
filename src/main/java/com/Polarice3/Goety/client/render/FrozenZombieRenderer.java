@@ -21,7 +21,7 @@ public class FrozenZombieRenderer extends HumanoidMobRenderer<FrozenZombieServan
    }
 
    public ResourceLocation getTextureLocation(FrozenZombieServant p_113771_) {
-      if (p_113771_.isHostile() || !MobsConfig.FrozenZombieServantTexture.get()){
+      if (p_113771_.isHostile() || !com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MobsConfig.FrozenZombieServantTexture, false)){
          return ZOMBIE_LOCATION;
       } else {
          return TEXTURE;

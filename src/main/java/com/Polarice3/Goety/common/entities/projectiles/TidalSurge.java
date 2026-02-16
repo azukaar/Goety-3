@@ -51,7 +51,7 @@ public class TidalSurge extends AbstractWave {
         DamageSource source = ModDamageSource.indirectDrench(this, this.getOwner());
         for (LivingEntity entity : this.level().getEntitiesOfClass(LivingEntity.class, this.getBoundingBox().inflate(0.5F * scale, 0.5F, 0.5F * scale))) {
             if (!MobUtil.areAllies(entity, this.getOwner() != null ? this.getOwner() : this)) {
-                float damage = scale + SpellConfig.TidalBaseDamage.get().floatValue();
+                float damage = scale + com.Polarice3.Goety.utils.ConfigHelper.getFloat(SpellConfig.TidalBaseDamage, 1.0F);
                 if (entity.isSensitiveToWater()){
                     damage += 1.0F;
                 }

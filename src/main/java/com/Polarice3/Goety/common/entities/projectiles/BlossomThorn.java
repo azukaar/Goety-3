@@ -105,7 +105,7 @@ public class BlossomThorn extends GroundProjectile {
 
     private void dealDamageTo(LivingEntity target) {
         LivingEntity livingentity = this.getOwner();
-        float baseDamage = SpellConfig.BlossomDamage.get().floatValue() * WandUtil.damageMultiply();
+        float baseDamage = com.Polarice3.Goety.utils.ConfigHelper.getFloat(SpellConfig.BlossomDamage, 1.0F) * WandUtil.damageMultiply();
         if (target.isAlive() && !target.isInvulnerable() && MobUtil.validEntity(target) && target != livingentity) {
             boolean flag;
             if (livingentity != null) {
@@ -120,7 +120,7 @@ public class BlossomThorn extends GroundProjectile {
                 net.minecraft.core.Holder<MobEffect> effect = MobEffects.POISON;
                 if (livingentity != null){
                     if (CuriosFinder.hasWildRobe(livingentity)){
-                        effect = GoetyEffects.ACID_VENOM.getHolder();
+                        effect = GoetyEffects.ACID_VENOM;
                     }
                 }
                 target.addEffect(new MobEffectInstance(effect, 140 + MathHelper.secondsToTicks(this.duration)), this);

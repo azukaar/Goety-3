@@ -36,7 +36,7 @@ public class EvokerServantRenderer<T extends EvokerServant> extends MobRenderer<
 
     @Override
     public ResourceLocation getTextureLocation(T entity) {
-        if (entity.isHostile() || !MobsConfig.EvokerServantTexture.get()){
+        if (entity.isHostile() || !com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MobsConfig.EvokerServantTexture, false)){
             return ORIGINAL;
         } else {
             return TEXTURE;

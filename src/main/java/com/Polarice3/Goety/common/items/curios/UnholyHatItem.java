@@ -20,8 +20,8 @@ public class UnholyHatItem extends MagicCrownItem {
         if (!worldIn.isClientSide) {
             if (entityIn instanceof LivingEntity livingEntity) {
                 if (CuriosFinder.hasCurio(livingEntity, this)) {
-                    if (livingEntity.hasEffect(GoetyEffects.BURN_HEX.get())){
-                        livingEntity.removeEffect(GoetyEffects.BURN_HEX.get());
+                    if (livingEntity.hasEffect(GoetyEffects.BURN_HEX)){
+                        livingEntity.removeEffect(GoetyEffects.BURN_HEX);
                     }
                 }
             }

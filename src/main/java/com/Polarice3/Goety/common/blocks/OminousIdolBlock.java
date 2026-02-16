@@ -1,6 +1,7 @@
 package com.Polarice3.Goety.common.blocks;
 
 import com.Polarice3.Goety.common.blocks.entities.OminousIdolBlockEntity;
+import com.mojang.serialization.MapCodec;
 import com.Polarice3.Goety.common.entities.ally.illager.RaiderServant;
 import com.Polarice3.Goety.common.items.block.OminousIdolBlockItem;
 import com.Polarice3.Goety.utils.BlockFinder;
@@ -36,6 +37,12 @@ import org.jetbrains.annotations.Nullable;
 import java.util.UUID;
 
 public class OminousIdolBlock extends BaseEntityBlock implements SimpleWaterloggedBlock {
+    public static final MapCodec<OminousIdolBlock> CODEC = simpleCodec(p -> new OminousIdolBlock());
+
+    @Override
+    protected MapCodec<? extends BaseEntityBlock> codec() {
+        return CODEC;
+    }
     public static final BooleanProperty POWERED = BlockStateProperties.POWERED;
     public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
     public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
@@ -123,12 +130,12 @@ public class OminousIdolBlock extends BaseEntityBlock implements SimpleWaterlogg
         }
     }
 
-    public void playerWillDestroy(Level p_52755_, BlockPos p_52756_, BlockState p_52757_, Player p_52758_) {
+    public BlockState playerWillDestroy(Level p_52755_, BlockPos p_52756_, BlockState p_52757_, Player p_52758_) {
         if (!p_52755_.isClientSide && p_52758_.isCreative()) {
             BlockFinder.preventCreativeDropFromBottomPart(p_52755_, p_52756_, p_52757_, p_52758_);
         }
 
-        super.playerWillDestroy(p_52755_, p_52756_, p_52757_, p_52758_);
+        return super.playerWillDestroy(p_52755_, p_52756_, p_52757_, p_52758_);
     }
 
     @Override
@@ -198,7 +205,8 @@ public class OminousIdolBlock extends BaseEntityBlock implements SimpleWaterlogg
         super.playerDestroy(pLevel, pPlayer, pPos, pState, pTe, pStack);
     }
 
-    public ItemStack getCloneItemStack(BlockState state, HitResult target, BlockGetter world, BlockPos pos, Player player) {
+    @Override
+    public ItemStack getCloneItemStack(LevelReader world, BlockPos pos, BlockState state) {
         ItemStack itemStack = new ItemStack(this);
         BlockEntity tileEntity = world.getBlockEntity(pos);
         if (state.getValue(HALF) == DoubleBlockHalf.UPPER) {

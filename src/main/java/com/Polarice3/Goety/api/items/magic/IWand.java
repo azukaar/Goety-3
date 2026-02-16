@@ -4,7 +4,6 @@ import com.Polarice3.Goety.api.magic.IBlockSpell;
 import com.Polarice3.Goety.api.magic.ISpell;
 import com.Polarice3.Goety.api.magic.ITouchSpell;
 import com.Polarice3.Goety.api.magic.SpellType;
-import com.Polarice3.Goety.common.items.capability.SoulUsingItemCapability;
 import com.Polarice3.Goety.common.items.handler.SoulUsingItemHandler;
 import com.Polarice3.Goety.utils.SEHelper;
 import net.minecraft.core.particles.ParticleTypes;
@@ -127,11 +126,7 @@ public interface IWand extends IItemExtension {
      * Found Creative Server Bug fix from @mraof's Minestuck Music Player Weapon code.
      */
     static IItemHandler getItemHandler(ItemStack itemStack) {
-        IItemHandler handler = itemStack.getCapability(Capabilities.ItemHandler.ITEM);
-        if (handler == null) {
-            throw new IllegalArgumentException("Expected an item handler for the Magic Focus item, but " + itemStack + " does not expose an item handler.");
-        }
-        return handler;
+        return SoulUsingItemHandler.get(itemStack);
     }
 
     @Override

@@ -41,7 +41,7 @@ public abstract class IllagerChestGoal<T extends RaiderServant & ILooter> extend
     }
 
     public IllagerChestGoal(T illager) {
-        this(illager, MobsConfig.IllagerServantChestRange.get());
+        this(illager, com.Polarice3.Goety.utils.ConfigHelper.getInt(MobsConfig.IllagerServantChestRange, 0));
     }
 
     public ItemStack getItem(){

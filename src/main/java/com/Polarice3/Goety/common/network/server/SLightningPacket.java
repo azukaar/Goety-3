@@ -4,7 +4,7 @@ import com.Polarice3.Goety.Goety;
 import com.Polarice3.Goety.utils.ColorUtil;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.network.NetworkEvent;
+import com.Polarice3.Goety.compat.legacy.network.NetworkEvent;
 
 import java.util.function.Supplier;
 

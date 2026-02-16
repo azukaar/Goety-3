@@ -29,11 +29,11 @@ import net.minecraft.world.phys.Vec3;
 
 public class IllusionSpell extends Spell {
     public int defaultSoulCost() {
-        return SpellConfig.IllusionCost.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.IllusionCost, 0);
     }
 
     public int defaultCastDuration() {
-        return SpellConfig.IllusionDuration.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.IllusionDuration, 0);
     }
 
     public SoundEvent CastingSound() {
@@ -42,7 +42,7 @@ public class IllusionSpell extends Spell {
 
     @Override
     public int defaultSpellCooldown() {
-        return SpellConfig.IllusionCoolDown.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.IllusionCoolDown, 0);
     }
 
     @Override
@@ -79,7 +79,7 @@ public class IllusionSpell extends Spell {
             summonedentity.setLimitedLife(undead ? MathHelper.secondsToTicks(2.875F) : 1200);
             summonedentity.setPersistenceRequired();
             summonedentity.setUpgraded(CuriosFinder.hasIllusionRobe(caster));
-            summonedentity.finalizeSpawn(worldIn, caster.level.getCurrentDifficultyAt(BlockFinder.SummonRadius(caster.blockPosition(), summonedentity, worldIn)), MobSpawnType.MOB_SUMMONED, null, null);
+            summonedentity.finalizeSpawn(worldIn, caster.level().getCurrentDifficultyAt(BlockFinder.SummonRadius(caster.blockPosition(), summonedentity, worldIn)), MobSpawnType.MOB_SUMMONED, null);
             LivingEntity target = this.getTarget(caster);
             if (target != null) {
                 double d2 = target.getX() - summonedentity.getX();
@@ -94,7 +94,7 @@ public class IllusionSpell extends Spell {
             }
             MobUtil.moveDownToGround(summonedentity);
             worldIn.addFreshEntity(summonedentity);
-            for (int i = 0; i < caster.level.random.nextInt(10) + 10; ++i) {
+            for (int i = 0; i < caster.level().random.nextInt(10) + 10; ++i) {
                 ServerParticleUtil.smokeParticles(particleOptions, summonedentity.getX(), summonedentity.getY(), summonedentity.getZ(), worldIn);
             }
             if (undead){
@@ -113,9 +113,10 @@ public class IllusionSpell extends Spell {
             soundEvent = ModSounds.LICH_TELEPORT_IN.get();
         }
         this.playSound(worldIn, caster, soundEvent);
-        for (int i = 0; i < caster.level.random.nextInt(35) + 10; ++i) {
+        for (int i = 0; i < caster.level().random.nextInt(35) + 10; ++i) {
             worldIn.sendParticles(particleOptions, caster.getX(), caster.getEyeY(), caster.getZ(), 0, 0.0F, 0.0F, 0.0F, 0);
         }
     }
 
 }
+

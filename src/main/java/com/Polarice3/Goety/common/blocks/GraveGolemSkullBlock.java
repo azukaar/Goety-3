@@ -3,6 +3,7 @@ package com.Polarice3.Goety.common.blocks;
 import com.Polarice3.Goety.common.blocks.entities.GraveGolemSkullBlockEntity;
 import com.Polarice3.Goety.common.entities.ModEntityType;
 import com.Polarice3.Goety.common.entities.ally.undead.GraveGolem;
+import com.mojang.serialization.MapCodec;
 import com.Polarice3.Goety.common.items.block.GraveGolemSkullItem;
 import com.Polarice3.Goety.common.magic.construct.GraveGolemMold;
 import net.minecraft.core.BlockPos;
@@ -38,6 +39,12 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import javax.annotation.Nullable;
 
 public class GraveGolemSkullBlock extends BaseEntityBlock {
+    public static final MapCodec<GraveGolemSkullBlock> CODEC = simpleCodec(p -> new GraveGolemSkullBlock());
+
+    @Override
+    protected MapCodec<? extends BaseEntityBlock> codec() {
+        return CODEC;
+    }
     public static final IntegerProperty ROTATION = BlockStateProperties.ROTATION_16;
     protected static final VoxelShape SHAPE = Block.box(0.0D, 0.0D, 0.0D, 16.0D, 16.0D, 16.0D);
     @Nullable
@@ -53,14 +60,13 @@ public class GraveGolemSkullBlock extends BaseEntityBlock {
         this.registerDefaultState(this.stateDefinition.any().setValue(ROTATION, 0));
     }
 
-    public ItemStack getCloneItemStack(BlockState state, HitResult target, BlockGetter world, BlockPos pos, Player player) {
+    @Override
+    public ItemStack getCloneItemStack(LevelReader world, BlockPos pos, BlockState state) {
         ItemStack itemStack = new ItemStack(this);
-        if (player.isCrouching()) {
-            BlockEntity tileEntity = world.getBlockEntity(pos);
-            if (tileEntity instanceof GraveGolemSkullBlockEntity) {
-                this.setOwner(itemStack, tileEntity);
-                this.setModCustomName(itemStack, tileEntity);
-            }
+        BlockEntity tileEntity = world.getBlockEntity(pos);
+        if (tileEntity instanceof GraveGolemSkullBlockEntity) {
+            this.setOwner(itemStack, tileEntity);
+            this.setModCustomName(itemStack, tileEntity);
         }
         return itemStack;
     }
@@ -168,7 +174,7 @@ public class GraveGolemSkullBlock extends BaseEntityBlock {
                 }
                 graveGolem.moveTo((double) blockpos.getX() + 0.5D, (double) blockpos.getY() + 0.05D, (double) blockpos.getZ() + 0.5D, 0.0F, 0.0F);
                 if (p_51379_ instanceof ServerLevel serverLevel) {
-                    graveGolem.finalizeSpawn(serverLevel, p_51379_.getCurrentDifficultyAt(p_51380_), MobSpawnType.MOB_SUMMONED, null, null);
+                    graveGolem.finalizeSpawn(serverLevel, p_51379_.getCurrentDifficultyAt(p_51380_), MobSpawnType.MOB_SUMMONED, null);
                 }
                 p_51379_.addFreshEntity(graveGolem);
             }

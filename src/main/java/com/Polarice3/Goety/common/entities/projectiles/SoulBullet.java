@@ -8,6 +8,10 @@ import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.server.level.ServerEntity;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -26,11 +30,11 @@ public class SoulBullet extends AbstractHurtingProjectile {
     }
 
     public SoulBullet(Level p_i1794_1_, LivingEntity p_i1794_2_, double p_i1794_3_, double p_i1794_5_, double p_i1794_7_) {
-        super(ModEntityType.SOUL_BULLET.get(), p_i1794_2_, p_i1794_3_, p_i1794_5_, p_i1794_7_, p_i1794_1_);
+        super(ModEntityType.SOUL_BULLET.get(), p_i1794_2_, new Vec3(p_i1794_3_, p_i1794_5_, p_i1794_7_), p_i1794_1_);
     }
 
     public SoulBullet(Level p_i1795_1_, double p_i1795_2_, double p_i1795_4_, double p_i1795_6_, double p_i1795_8_, double p_i1795_10_, double p_i1795_12_) {
-        super(ModEntityType.SOUL_BULLET.get(), p_i1795_2_, p_i1795_4_, p_i1795_6_, p_i1795_8_, p_i1795_10_, p_i1795_12_, p_i1795_1_);
+        super(ModEntityType.SOUL_BULLET.get(), p_i1795_2_, p_i1795_4_, p_i1795_6_, new Vec3(p_i1795_8_, p_i1795_10_, p_i1795_12_), p_i1795_1_);
     }
 
     protected void onHitEntity(EntityHitResult pResult) {
@@ -41,7 +45,9 @@ public class SoulBullet extends AbstractHurtingProjectile {
         if (livingentity != null && livingentity.getAttribute(Attributes.ATTACK_DAMAGE) != null) {
             boolean flag = entity.hurt(entity.damageSources().mobProjectile(this, livingentity), (float) livingentity.getAttributeValue(Attributes.ATTACK_DAMAGE));
             if (flag) {
-                this.doEnchantDamageEffects(livingentity, entity);
+                if (this.level() instanceof ServerLevel serverLevel) {
+                    EnchantmentHelper.doPostAttackEffects(serverLevel, livingentity, this.damageSources().mobAttack(livingentity));
+                }
             }
         } else {
             entity.hurt(entity.damageSources().mobProjectile(this, livingentity), 4.0F);
@@ -101,8 +107,8 @@ public class SoulBullet extends AbstractHurtingProjectile {
     }
 
     @Override
-    public Packet<ClientGamePacketListener> getAddEntityPacket() {
-        return new net.minecraft.network.protocol.game.ClientboundAddEntityPacket(this);
+    public Packet<ClientGamePacketListener> getAddEntityPacket(ServerEntity p_345759_) {
+        return new net.minecraft.network.protocol.game.ClientboundAddEntityPacket(this, p_345759_);
     }
 
 }

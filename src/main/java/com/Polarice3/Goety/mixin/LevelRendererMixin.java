@@ -3,6 +3,7 @@ package com.Polarice3.Goety.mixin;
 import com.Polarice3.Goety.client.particles.LightningEffect;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Camera;
+import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.LightTexture;
@@ -30,8 +31,10 @@ public class LevelRendererMixin {
                     ordinal = 0
             )
     )
-    private void renderOverlays(PoseStack ps, float partialTicks, long unknown, boolean drawBlockOutline,
-                                Camera camera, GameRenderer gameRenderer, LightTexture lightTexture, Matrix4f projMat, CallbackInfo ci) {
+    private void renderOverlays(DeltaTracker deltaTracker, boolean drawBlockOutline, Camera camera,
+                                GameRenderer gameRenderer, LightTexture lightTexture, Matrix4f projMat, Matrix4f viewMat, CallbackInfo ci) {
+        float partialTicks = deltaTracker.getGameTimeDeltaTicks();
+        PoseStack ps = new PoseStack();
         LightningEffect.onWorldRenderLast(camera, partialTicks, ps, renderBuffers);
     }
 }

@@ -3,7 +3,9 @@ package com.Polarice3.Goety.common.blocks;
 import com.Polarice3.Goety.common.blocks.entities.ArcaBlockEntity;
 import com.Polarice3.Goety.common.capabilities.soulenergy.ISoulEnergy;
 import com.Polarice3.Goety.utils.SEHelper;
+import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.LivingEntity;
@@ -21,21 +23,21 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.pathfinder.PathComputationType;
 import net.minecraft.world.phys.BlockHitResult;
-import net.neoforged.neoforge.common.extensions.IForgeBlock;
+import com.Polarice3.Goety.compat.legacy.neoforge.common.extensions.IForgeBlock;
 
 import javax.annotation.Nullable;
 
 public class ArcaBlock extends BaseEntityBlock implements IForgeBlock {
 
-    public ArcaBlock() {
-        super(Properties.of()
-                .mapColor(MapColor.COLOR_PURPLE)
-                .strength(75.0F, 2400.0F)
-                .sound(SoundType.METAL)
-                .requiresCorrectToolForDrops()
-                .forceSolidOn()
-                .noOcclusion()
-        );
+    public static final MapCodec<ArcaBlock> CODEC = simpleCodec(ArcaBlock::new);
+
+    @Override
+    protected MapCodec<? extends BaseEntityBlock> codec() {
+        return CODEC;
+    }
+
+    public ArcaBlock(Properties properties) {
+        super(properties);
     }
 
     public void setPlacedBy(Level pLevel, BlockPos pPos, BlockState pState, @Nullable LivingEntity pPlacer, ItemStack pStack) {
@@ -53,7 +55,8 @@ public class ArcaBlock extends BaseEntityBlock implements IForgeBlock {
         }
     }
 
-    public InteractionResult use(BlockState pState, Level pLevel, BlockPos pPos, Player pPlayer, InteractionHand pHand, BlockHitResult pHit) {
+    @Override
+    protected InteractionResult useWithoutItem(BlockState pState, Level pLevel, BlockPos pPos, Player pPlayer, BlockHitResult pHit) {
         if (pState.hasBlockEntity()) {
             BlockEntity tileEntity = pLevel.getBlockEntity(pPos);
             if (pPlayer.getMainHandItem().isEmpty()) {

@@ -31,17 +31,17 @@ public class FeastSpell extends ChargingSpell {
     }
 
     public int defaultSoulCost() {
-        return SpellConfig.FeastCost.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.FeastCost, 0);
     }
 
     @Override
     public int defaultCastUp() {
-        return SpellConfig.FeastChargeUp.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.FeastChargeUp, 0);
     }
 
     @Override
     public int Cooldown() {
-        return SpellConfig.FeastDuration.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.FeastDuration, 0);
     }
 
     public SoundEvent CastingSound() {
@@ -110,7 +110,7 @@ public class FeastSpell extends ChargingSpell {
                 }
             }
         }
-        for(int i1 = 0; i1 < caster.level.random.nextInt(35) + 10; ++i1) {
+        for(int i1 = 0; i1 < caster.level().random.nextInt(35) + 10; ++i1) {
             worldIn.sendParticles(ParticleTypes.POOF, caster.getX(), caster.getEyeY(), caster.getZ(), 1, 0.0F, 0.0F, 0.0F, 0);
         }
     }

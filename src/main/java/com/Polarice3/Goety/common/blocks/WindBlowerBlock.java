@@ -18,6 +18,12 @@ import net.minecraft.world.level.block.state.properties.IntegerProperty;
 import org.jetbrains.annotations.Nullable;
 
 public class WindBlowerBlock extends DirectionalBlock implements EntityBlock {
+    public static final com.mojang.serialization.MapCodec<WindBlowerBlock> CODEC = simpleCodec(WindBlowerBlock::new);
+
+    @Override
+    protected com.mojang.serialization.MapCodec<? extends DirectionalBlock> codec() {
+        return CODEC;
+    }
     public static final IntegerProperty POWER = BlockStateProperties.POWER;
     public static final BooleanProperty POWERED = BlockStateProperties.POWERED;
 

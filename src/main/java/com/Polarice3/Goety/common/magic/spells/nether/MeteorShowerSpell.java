@@ -31,17 +31,17 @@ public class MeteorShowerSpell extends EverChargeSpell {
 
     @Override
     public int defaultSoulCost() {
-        return SpellConfig.MeteorShowerCost.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.MeteorShowerCost, 0);
     }
 
     @Override
     public int defaultCastUp() {
-        return SpellConfig.MeteorShowerChargeUp.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.MeteorShowerChargeUp, 0);
     }
 
     @Override
     public int Cooldown() {
-        return SpellConfig.MeteorShowerDuration.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.MeteorShowerDuration, 0);
     }
 
     @Override
@@ -50,12 +50,12 @@ public class MeteorShowerSpell extends EverChargeSpell {
         if (WandUtil.enchantedFocus(caster)) {
             i += WandUtil.getLevels(ModEnchantments.DURATION.get(), caster);
         }
-        return SpellConfig.MeteorShowerShots.get() + (i * 2);
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.MeteorShowerShots, 0) + (i * 2);
     }
 
     @Override
     public int defaultSpellCooldown() {
-        return SpellConfig.MeteorShowerCoolDown.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.MeteorShowerCoolDown, 0);
     }
 
     @Nullable

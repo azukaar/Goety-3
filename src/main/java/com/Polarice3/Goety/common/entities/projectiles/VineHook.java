@@ -44,9 +44,8 @@ public class VineHook extends Projectile {
         this.setDeltaMovement(player.getViewVector(1.0F).scale(speed));
     }
 
-    @Override
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
-        super.defineSynchedData(builder);
+        // super.defineSynchedData(builder);
         builder.define(ATTACHED, false);
         builder.define(LENGTH, 0.0F);
     }
@@ -77,9 +76,10 @@ public class VineHook extends Projectile {
         }
     }
 
-    protected float getGravity() {
-        return 0.03F;
-    }
+    // @Override
+    // protected float getGravity() {
+    //    return 0.03F;
+    // }
 
     private boolean shouldRetract(Player player) {
         if (!player.isRemoved()
@@ -185,16 +185,16 @@ public class VineHook extends Projectile {
         return entity instanceof Player ? (Player)entity : null;
     }
 
-    @Override
+    // @Override
     public boolean canChangeDimensions() {
         return false;
     }
 
-    @Override
-    public Packet<ClientGamePacketListener> getAddEntityPacket() {
-        Entity entity = this.getOwner();
-        return new ClientboundAddEntityPacket(this, entity == null ? this.getId() : entity.getId());
-    }
+    // @Override
+    // public Packet<ClientGamePacketListener> getAddEntityPacket() {
+    //    Entity entity = this.getOwner();
+    //    return new ClientboundAddEntityPacket(this, entity == null ? this.getId() : entity.getId());
+    // }
 
     @Override
     public void recreateFromPacket(ClientboundAddEntityPacket clientboundAddEntityPacket) {

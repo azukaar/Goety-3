@@ -1,5 +1,7 @@
 package com.Polarice3.Goety.common.entities.neutral;
 
+import com.Polarice3.Goety.utils.MobType;
+
 import com.Polarice3.Goety.client.particles.ModParticleTypes;
 import com.Polarice3.Goety.common.entities.ModEntityType;
 import com.Polarice3.Goety.common.entities.ally.Summoned;
@@ -101,17 +103,17 @@ public class CarrionMaggot extends Summoned {
 
    public static AttributeSupplier.Builder setCustomAttributes() {
       return Monster.createMonsterAttributes()
-              .add(Attributes.MAX_HEALTH, AttributesConfig.CarrionMaggotHealth.get())
+              .add(Attributes.MAX_HEALTH, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.CarrionMaggotHealth, 20.0D))
               .add(Attributes.MOVEMENT_SPEED, 0.25D)
-              .add(Attributes.ARMOR, AttributesConfig.CarrionMaggotArmor.get())
-              .add(Attributes.ATTACK_DAMAGE, AttributesConfig.CarrionMaggotDamage.get());
+              .add(Attributes.ARMOR, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.CarrionMaggotArmor, 20.0D))
+              .add(Attributes.ATTACK_DAMAGE, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.CarrionMaggotDamage, 20.0D));
    }
 
    @Override
    public void setConfigurableAttributes(){
-      MobUtil.setBaseAttributes(this.getAttribute(Attributes.MAX_HEALTH), AttributesConfig.CarrionMaggotHealth.get());
-      MobUtil.setBaseAttributes(this.getAttribute(Attributes.ARMOR), AttributesConfig.CarrionMaggotArmor.get());
-      MobUtil.setBaseAttributes(this.getAttribute(Attributes.ATTACK_DAMAGE), AttributesConfig.CarrionMaggotDamage.get());
+      MobUtil.setBaseAttributes(this.getAttribute(Attributes.MAX_HEALTH), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.CarrionMaggotHealth, 20.0D));
+      MobUtil.setBaseAttributes(this.getAttribute(Attributes.ARMOR), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.CarrionMaggotArmor, 20.0D));
+      MobUtil.setBaseAttributes(this.getAttribute(Attributes.ATTACK_DAMAGE), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.CarrionMaggotDamage, 20.0D));
    }
 
     @Override
@@ -380,11 +382,11 @@ public class CarrionMaggot extends Summoned {
       AttributeInstance attack = this.getAttribute(Attributes.ATTACK_DAMAGE);
       if (health != null && attack != null) {
          if (upgraded) {
-            health.setBaseValue(AttributesConfig.CarrionMaggotHealth.get() * 1.33D);
-            attack.setBaseValue(AttributesConfig.CarrionMaggotDamage.get() * 1.1D);
+            health.setBaseValue(com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.CarrionMaggotHealth, 20.0D) * 1.33D);
+            attack.setBaseValue(com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.CarrionMaggotDamage, 20.0D) * 1.1D);
          } else {
-            health.setBaseValue(AttributesConfig.CarrionMaggotHealth.get());
-            attack.setBaseValue(AttributesConfig.CarrionMaggotDamage.get());
+            health.setBaseValue(com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.CarrionMaggotHealth, 20.0D));
+            attack.setBaseValue(com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.CarrionMaggotDamage, 20.0D));
          }
       }
       this.setHealth(this.getMaxHealth());

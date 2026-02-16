@@ -27,7 +27,7 @@ public class VoidShockBomb extends SpellThrowableProjectile {
     public int growTick = 0;
     public float size = 1.0F;
     public float alpha = 1.0F;
-    public float baseDamage = SpellConfig.VoidBombDamage.get().floatValue() * WandUtil.damageMultiply();
+    public float baseDamage = com.Polarice3.Goety.utils.ConfigHelper.getFloat(SpellConfig.VoidBombDamage, 1.0F) * WandUtil.damageMultiply();
     private Vec3[] trailPositions = new Vec3[64];
     private int trailPointer = -1;
 

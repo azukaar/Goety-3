@@ -28,7 +28,7 @@ public class GroundGrimoire extends Item {
     }
 
     public boolean onLeftClickEntity(ItemStack stack, Player player, Entity entity) {
-        if (!entity.level.isClientSide) {
+        if (!entity.level().isClientSide) {
             if (entity instanceof LivingEntity pTarget && pTarget instanceof IOwned owned && owned.getTrueOwner() == player) {
                 if (MobUtil.isShifting(player)) {
                     if (SEHelper.addGroundedEntityType(player, pTarget.getType())) {
@@ -49,7 +49,7 @@ public class GroundGrimoire extends Item {
     @Nonnull
     @Override
     public InteractionResult interactLivingEntity(ItemStack stack, Player player, LivingEntity target, InteractionHand hand){
-        if (!player.level.isClientSide) {
+        if (!player.level().isClientSide) {
             if (MobUtil.isShifting(player)) {
                 if (SEHelper.removeGroundedEntityType(player, target.getType())) {
                     target.playSound(SoundEvents.PLAYER_LEVELUP, 1.0F, 0.25F);

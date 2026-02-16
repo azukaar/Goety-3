@@ -105,15 +105,15 @@ public class BlackWolf extends AnimalSummon{
     public static AttributeSupplier.Builder setCustomAttributes() {
         return Mob.createMobAttributes()
                 .add(Attributes.MOVEMENT_SPEED, (double)0.35F)
-                .add(Attributes.MAX_HEALTH, AttributesConfig.BlackWolfHealth.get())
-                .add(Attributes.ARMOR, AttributesConfig.BlackWolfArmor.get())
-                .add(Attributes.ATTACK_DAMAGE, AttributesConfig.BlackWolfDamage.get());
+                .add(Attributes.MAX_HEALTH, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.BlackWolfHealth, 20.0D))
+                .add(Attributes.ARMOR, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.BlackWolfArmor, 20.0D))
+                .add(Attributes.ATTACK_DAMAGE, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.BlackWolfDamage, 20.0D));
     }
 
     public void setConfigurableAttributes(){
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.MAX_HEALTH), AttributesConfig.BlackWolfHealth.get());
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ARMOR), AttributesConfig.BlackWolfArmor.get());
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ATTACK_DAMAGE), AttributesConfig.BlackWolfDamage.get());
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.MAX_HEALTH), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.BlackWolfHealth, 20.0D));
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ARMOR), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.BlackWolfArmor, 20.0D));
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ATTACK_DAMAGE), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.BlackWolfDamage, 20.0D));
     }
 
     @Override
@@ -374,7 +374,7 @@ public class BlackWolf extends AnimalSummon{
             }
             if (this.isUpgraded()){
                 if (entityIn instanceof LivingEntity livingEntity) {
-                    livingEntity.addEffect(new MobEffectInstance(GoetyEffects.CURSED.getHolder(), MathHelper.secondsToTicks(5), 0), this);
+                    livingEntity.addEffect(new MobEffectInstance(GoetyEffects.CURSED, MathHelper.secondsToTicks(5), 0), this);
                 }
             }
         }
@@ -448,13 +448,13 @@ public class BlackWolf extends AnimalSummon{
         AttributeInstance attack = this.getAttribute(Attributes.ATTACK_DAMAGE);
         if (health != null && armor != null && attack != null) {
             if (upgraded) {
-                health.setBaseValue(AttributesConfig.BlackWolfHealth.get() * 1.5D);
-                armor.setBaseValue(AttributesConfig.BlackWolfArmor.get() + 1.0D);
-                attack.setBaseValue(AttributesConfig.BlackWolfDamage.get() + 1.0D);
+                health.setBaseValue(com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.BlackWolfHealth, 20.0D) * 1.5D);
+                armor.setBaseValue(com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.BlackWolfArmor, 20.0D) + 1.0D);
+                attack.setBaseValue(com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.BlackWolfDamage, 20.0D) + 1.0D);
             } else {
-                health.setBaseValue(AttributesConfig.BlackWolfHealth.get());
-                armor.setBaseValue(AttributesConfig.BlackWolfArmor.get());
-                attack.setBaseValue(AttributesConfig.BlackWolfDamage.get());
+                health.setBaseValue(com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.BlackWolfHealth, 20.0D));
+                armor.setBaseValue(com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.BlackWolfArmor, 20.0D));
+                attack.setBaseValue(com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.BlackWolfDamage, 20.0D));
             }
         }
         this.setHealth(this.getMaxHealth());

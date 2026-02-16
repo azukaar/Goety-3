@@ -29,7 +29,13 @@ import net.minecraft.world.phys.Vec3;
 import javax.annotation.Nullable;
 
 public interface IServant extends IOwned {
-    int GUARDING_RANGE = MobsConfig.ServantGuardingRange.get();
+    // Lazy evaluation to avoid accessing config before it's loaded
+    static int getGuardingRange() {
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(MobsConfig.ServantGuardingRange, 16);
+    }
+    
+    @Deprecated // Use getGuardingRange() instead
+    int GUARDING_RANGE = 16; // Will be calculated lazily
 
     boolean isWandering();
 
@@ -98,7 +104,7 @@ public interface IServant extends IOwned {
         if (this.getBoundPos() == null) {
             return true;
         } else {
-            return this.getBoundPos().distSqr(p_21445_) < Mth.square(GUARDING_RANGE);
+            return this.getBoundPos().distSqr(p_21445_) < Mth.square(getGuardingRange());
         }
     }
 
@@ -173,7 +179,7 @@ public interface IServant extends IOwned {
     default void spawnUpgraded(){
         if (this instanceof Mob mob) {
             LivingEntity owner = this.getTrueOwner();
-            if (MobsConfig.ServantOwnedServantPlayerBenefit.get()) {
+            if (com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MobsConfig.ServantOwnedServantPlayerBenefit, true)) {
                 owner = this.getMasterOwner();
             }
             if (mob.getType().is(net.minecraft.tags.EntityTypeTags.UNDEAD)) {
@@ -353,13 +359,13 @@ public interface IServant extends IOwned {
             if (this.isGuardingArea()){
                 if (!this.isPrioritizing()) {
                     if (owned.getTarget() != null){
-                        if (owned.getTarget() != this.getPriorityTarget() && owned.getTarget().distanceToSqr(this.vec3BoundPos()) > Mth.square(GUARDING_RANGE * 2)){
+                        if (owned.getTarget() != this.getPriorityTarget() && owned.getTarget().distanceToSqr(this.vec3BoundPos()) > Mth.square(getGuardingRange() * 2)){
                             owned.setTarget(null);
                             if (!this.isCommanded()){
                                 owned.getNavigation().moveTo(this.getBoundPos().getX(), this.getBoundPos().getY(), this.getBoundPos().getZ(), 1.0F);
                             }
                         }
-                    } else if (!this.isCommanded() && owned.distanceToSqr(this.vec3BoundPos()) > Mth.square(GUARDING_RANGE)){
+                    } else if (!this.isCommanded() && owned.distanceToSqr(this.vec3BoundPos()) > Mth.square(getGuardingRange())){
                         owned.getNavigation().moveTo(this.getBoundPos().getX(), this.getBoundPos().getY(), this.getBoundPos().getZ(), 1.0F);
                     }
                 } else if (!this.isCommanded() && this.getPriorityPos() != null && owned.getTarget() == null) {
@@ -399,13 +405,13 @@ public interface IServant extends IOwned {
 
     default boolean shouldChunkLoad(){
         if (this.isStaying()) {
-            return MobsConfig.StayingServantChunkLoad.get();
+            return com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MobsConfig.StayingServantChunkLoad, true);
         }
         if (this.isGuardingArea()) {
-            return MobsConfig.GuardingServantChunkLoad.get();
+            return com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MobsConfig.GuardingServantChunkLoad, true);
         }
         if (this.isFollowing()) {
-            return MobsConfig.FollowingServantChunkLoad.get();
+            return com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MobsConfig.FollowingServantChunkLoad, true);
         }
         return false;
     }
@@ -462,7 +468,7 @@ public interface IServant extends IOwned {
     default void healServant(){
         if (this instanceof LivingEntity self) {
             LivingEntity owner = this.getTrueOwner();
-            if (MobsConfig.ServantOwnedServantPlayerBenefit.get()) {
+            if (com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MobsConfig.ServantOwnedServantPlayerBenefit, true)) {
                 owner = this.getMasterOwner();
             }
             if (owner != null) {
@@ -489,11 +495,11 @@ public interface IServant extends IOwned {
     }
 
     default void burnServant(LivingEntity livingEntity){
-        boolean flag = this.servantSunBurn() && this.burnSunTick() && !livingEntity.fireImmune() && MobsConfig.UndeadServantSunlightBurn.get();
+        boolean flag = this.servantSunBurn() && this.burnSunTick() && !livingEntity.fireImmune() && com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MobsConfig.UndeadServantSunlightBurn, true);
         if (flag) {
             ItemStack itemstack = livingEntity.getItemBySlot(EquipmentSlot.HEAD);
             if (!itemstack.isEmpty()) {
-                if (itemstack.isDamageableItem() && MobsConfig.UndeadServantSunlightHelmet.get()) {
+                if (itemstack.isDamageableItem() && com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MobsConfig.UndeadServantSunlightHelmet, true)) {
                     itemstack.setDamageValue(itemstack.getDamageValue() + livingEntity.getRandom().nextInt(2));
                     if (itemstack.getDamageValue() >= itemstack.getMaxDamage()) {
                         livingEntity.setItemSlot(EquipmentSlot.HEAD, ItemStack.EMPTY);

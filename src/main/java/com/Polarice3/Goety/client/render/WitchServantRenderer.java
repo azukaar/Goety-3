@@ -23,7 +23,7 @@ import net.minecraft.world.item.PotionItem;
 
 public class WitchServantRenderer extends MobRenderer<WitchServant, ModWitchModel<WitchServant>> {
    private static final ResourceLocation WITCH_LOCATION = Goety.location("textures/entity/servants/witch.png");
-   private static final ResourceLocation ORIGINAL = new ResourceLocation("textures/entity/witch.png");
+   private static final ResourceLocation ORIGINAL = ResourceLocation.parse("textures/entity/witch.png");
 
    public WitchServantRenderer(EntityRendererProvider.Context renderManagerIn) {
       super(renderManagerIn, new ModWitchModel<>(renderManagerIn.bakeLayer(ModModelLayer.MOD_WITCH)), 0.5F);
@@ -44,7 +44,7 @@ public class WitchServantRenderer extends MobRenderer<WitchServant, ModWitchMode
    }
 
    public ResourceLocation getTextureLocation(WitchServant p_116410_) {
-      if (p_116410_.isHostile() || !MobsConfig.WitchServantTexture.get()) {
+      if (p_116410_.isHostile() || !com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MobsConfig.WitchServantTexture, false)) {
          return ORIGINAL;
       }
       return WITCH_LOCATION;

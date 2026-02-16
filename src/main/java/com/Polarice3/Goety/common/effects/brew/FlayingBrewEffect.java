@@ -18,7 +18,7 @@ import javax.annotation.Nullable;
 
 public class FlayingBrewEffect extends BrewEffect {
     public FlayingBrewEffect() {
-        super("flaying", BrewConfig.FlayingCost.get(), MobEffectCategory.BENEFICIAL, 0x9e492a);
+        super("flaying", com.Polarice3.Goety.utils.ConfigHelper.getInt(BrewConfig.FlayingCost, 0), MobEffectCategory.BENEFICIAL, 0x9e492a);
     }
 
     @Override
@@ -35,18 +35,18 @@ public class FlayingBrewEffect extends BrewEffect {
         LivingEntity livingEntity = pIndirectSource instanceof LivingEntity living ? living : null;
         DamageSource damageSource = livingEntity != null ? pTarget.damageSources().mobAttack(livingEntity) : pTarget.damageSources().sweetBerryBush();
         if (pTarget instanceof Animal animal){
-            if (animal.level.getServer() != null) {
-                LootTable loottable = animal.level.getServer().getLootData().getLootTable(animal.getLootTable());
+            if (animal.level().getServer() != null) {
+                LootTable loottable = animal.level().getServer().reloadableRegistries().getLootTable(animal.getLootTable());
                 LootParams.Builder lootcontext$builder = MobUtil.createLootContext(damageSource, animal).withLuck(pAmplifier);
                 LootParams ctx = lootcontext$builder.create(LootContextParamSets.ENTITY);
                 for (int i = 0; i < pAmplifier + 1; ++i) {
                     for (ItemStack itemStack : loottable.getRandomItems(ctx)) {
-                        if (!itemStack.getItem().isEdible() && !itemStack.isEmpty()) {
+                        if (itemStack.getFoodProperties(animal) == null && !itemStack.isEmpty()) {
                             if (animal.hurt(damageSource, animal.getMaxHealth() / 4.0F)) {
                                 itemStack.setCount(1);
                                 ItemEntity item = ItemHelper.itemEntityDrop(animal, itemStack);
                                 item.setDefaultPickUpDelay();
-                                animal.level.addFreshEntity(item);
+                                animal.level().addFreshEntity(item);
                             }
                         }
                     }

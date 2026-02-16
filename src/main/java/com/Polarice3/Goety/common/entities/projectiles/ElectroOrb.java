@@ -86,7 +86,7 @@ public class ElectroOrb extends SpellThrowableProjectile {
     protected void onHit(HitResult hitResult) {
         if (!this.level().isClientSide) {
             DamageSource damageSource = ModDamageSource.getDamageSource(this.level(), ModDamageSource.SHOCK);
-            float damage = SpellConfig.ElectroOrbDamage.get().floatValue() * WandUtil.damageMultiply();
+            float damage = com.Polarice3.Goety.utils.ConfigHelper.getFloat(SpellConfig.ElectroOrbDamage, 1.0F) * WandUtil.damageMultiply();
             if (this.getOwner() != null) {
                 damageSource = ModDamageSource.indirectShock(this, this.getOwner());
             }
@@ -100,7 +100,7 @@ public class ElectroOrb extends SpellThrowableProjectile {
                         chance += 0.25F;
                     }
                     if (entity instanceof LivingEntity livingEntity && this.level().random.nextFloat() <= chance) {
-                        livingEntity.addEffect(new MobEffectInstance(GoetyEffects.SPASMS.getHolder(), MathHelper.secondsToTicks(5)));
+                        livingEntity.addEffect(new MobEffectInstance(GoetyEffects.SPASMS, MathHelper.secondsToTicks(5)));
                     }
                 }
             }
@@ -116,7 +116,7 @@ public class ElectroOrb extends SpellThrowableProjectile {
             if (this.isStaff()) {
                 DamageSource damageSource = ModDamageSource.getDamageSource(this.level(), ModDamageSource.SHOCK);
                 int radius = 2;
-                float damage = SpellConfig.ElectroOrbDamage.get().floatValue() * WandUtil.damageMultiply();
+                float damage = com.Polarice3.Goety.utils.ConfigHelper.getFloat(SpellConfig.ElectroOrbDamage, 1.0F) * WandUtil.damageMultiply();
                 if (this.getOwner() != null) {
                     damageSource = ModDamageSource.indirectShock(this, this.getOwner());
                     if (this.getOwner() instanceof Mob mob && mob.getAttribute(Attributes.ATTACK_DAMAGE) != null) {
@@ -141,7 +141,7 @@ public class ElectroOrb extends SpellThrowableProjectile {
                                 chance += 0.25F;
                             }
                             if (serverLevel.random.nextFloat() <= chance){
-                                target1.addEffect(new MobEffectInstance(GoetyEffects.SPASMS.getHolder(), MathHelper.secondsToTicks(5)));
+                                target1.addEffect(new MobEffectInstance(GoetyEffects.SPASMS, MathHelper.secondsToTicks(5)));
                             }
                         }
                     }

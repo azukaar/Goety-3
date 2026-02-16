@@ -48,7 +48,7 @@ public abstract class Spell implements ISpell {
     }
 
     public void mobSpellResult(LivingEntity caster, ItemStack staff, SpellStat spellStat){
-        serverCheckSpellResult(caster.level, caster, staff, spellStat);
+        serverCheckSpellResult(caster.level(), caster, staff, spellStat);
     }
 
     public void serverCheckSpellResult(Level level, LivingEntity caster, ItemStack staff, SpellStat spellStat){
@@ -91,7 +91,7 @@ public abstract class Spell implements ISpell {
         if (caster instanceof Mob mob){
             return mob.getTarget();
         } else {
-            HitResult hitResult = this.rayTrace(caster.level, caster, range, 3);
+            HitResult hitResult = this.rayTrace(caster.level(), caster, range, 3);
             if (hitResult instanceof EntityHitResult entityHitResult){
                 return MobUtil.getLivingTarget(entityHitResult.getEntity());
             }

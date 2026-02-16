@@ -34,22 +34,22 @@ public class BlizzardSpell extends EverChargeSpell {
 
     @Override
     public int defaultSoulCost() {
-        return SpellConfig.BlizzardCost.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.BlizzardCost, 0);
     }
 
     @Override
     public int defaultCastUp() {
-        return SpellConfig.BlizzardChargeUp.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.BlizzardChargeUp, 0);
     }
 
     @Override
     public int shotsNumber() {
-        return SpellConfig.BlizzardDuration.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.BlizzardDuration, 0);
     }
 
     @Override
     public int defaultSpellCooldown() {
-        return SpellConfig.BlizzardCoolDown.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.BlizzardCoolDown, 0);
     }
 
     @Nullable

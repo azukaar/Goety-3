@@ -71,19 +71,19 @@ public class VanguardServant extends AbstractSkeletonServant {
 
     public static AttributeSupplier.Builder setCustomAttributes() {
         return Mob.createMobAttributes()
-                .add(Attributes.MAX_HEALTH, AttributesConfig.VanguardServantHealth.get())
+                .add(Attributes.MAX_HEALTH, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.VanguardServantHealth, 20.0D))
                 .add(Attributes.MOVEMENT_SPEED, 0.25F)
-                .add(Attributes.ATTACK_DAMAGE, AttributesConfig.VanguardServantDamage.get())
+                .add(Attributes.ATTACK_DAMAGE, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.VanguardServantDamage, 20.0D))
                 .add(Attributes.ATTACK_KNOCKBACK, 0.5F)
-                .add(Attributes.ARMOR, AttributesConfig.VanguardServantArmor.get());
+                .add(Attributes.ARMOR, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.VanguardServantArmor, 20.0D));
     }
 
     public void setConfigurableAttributes() {
         MobUtil.setBaseAttributes(this.getAttribute(Attributes.MAX_HEALTH),
-                AttributesConfig.VanguardServantHealth.get());
+                com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.VanguardServantHealth, 20.0D));
         MobUtil.setBaseAttributes(this.getAttribute(Attributes.ATTACK_DAMAGE),
-                AttributesConfig.VanguardServantDamage.get());
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ARMOR), AttributesConfig.VanguardServantArmor.get());
+                com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.VanguardServantDamage, 20.0D));
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ARMOR), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.VanguardServantArmor, 20.0D));
     }
 
     @Override

@@ -9,6 +9,8 @@ import com.Polarice3.Goety.utils.MobUtil;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.resources.ResourceLocation;
+import com.Polarice3.Goety.Goety;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.AnimationState;
 import net.minecraft.world.entity.EntityType;
@@ -32,7 +34,8 @@ import java.util.UUID;
 public class WebSpiderServant extends SpiderServant implements RangedAttackMob {
     private static final EntityDataAccessor<Boolean> WEB_SHOOTING = SynchedEntityData.defineId(WebSpiderServant.class, EntityDataSerializers.BOOLEAN);
     private static final EntityDataAccessor<Integer> ANIM_STATE = SynchedEntityData.defineId(WebSpiderServant.class, EntityDataSerializers.INT);
-    public static AttributeModifier SHOOT_SPEED_MODIFIER = new AttributeModifier(UUID.fromString("fb1bebf4-834b-49d6-9ac6-ddd64dd93332"), "Shooting speed penalty", -1.0D, AttributeModifier.Operation.ADDITION);
+    public static final ResourceLocation SHOOT_SPEED_MODIFIER_ID = Goety.location("shooting_speed_penalty");
+    public static AttributeModifier SHOOT_SPEED_MODIFIER = new AttributeModifier(SHOOT_SPEED_MODIFIER_ID, -1.0D, AttributeModifier.Operation.ADD_VALUE);
     public static String IDLE = "idle";
     public static String SHOOT = "shoot";
     public boolean isFleeing;
@@ -57,7 +60,7 @@ public class WebSpiderServant extends SpiderServant implements RangedAttackMob {
                 return super.canUse()
                         && !WebSpiderServant.this.isWebShooting()
                         && WebSpiderServant.this.getTarget() != null
-                        && WebSpiderServant.this.getTarget().hasEffect(GoetyEffects.TANGLED.get());
+                        && WebSpiderServant.this.getTarget().hasEffect(net.minecraft.core.Holder.direct(GoetyEffects.TANGLED.get()));
             }
         });
         this.goalSelector.addGoal(4, new SpiderAttackGoal(this, 1.5F){
@@ -66,26 +69,26 @@ public class WebSpiderServant extends SpiderServant implements RangedAttackMob {
                 return super.canUse()
                         && !WebSpiderServant.this.isWebShooting()
                         && WebSpiderServant.this.getTarget() != null
-                        && WebSpiderServant.this.getTarget().hasEffect(GoetyEffects.TANGLED.get());
+                        && WebSpiderServant.this.getTarget().hasEffect(net.minecraft.core.Holder.direct(GoetyEffects.TANGLED.get()));
             }
         });
     }
 
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.entityData.define(WEB_SHOOTING, false);
-        this.entityData.define(ANIM_STATE, 0);
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(WEB_SHOOTING, false);
+        builder.define(ANIM_STATE, 0);
     }
 
     public static AttributeSupplier.Builder setCustomAttributes() {
         return SpiderServant.setCustomAttributes()
-                .add(Attributes.MAX_HEALTH, AttributesConfig.WebSpiderServantHealth.get())
-                .add(Attributes.ATTACK_DAMAGE, AttributesConfig.WebSpiderServantDamage.get());
+                .add(Attributes.MAX_HEALTH, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.WebSpiderServantHealth, 20.0D))
+                .add(Attributes.ATTACK_DAMAGE, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.WebSpiderServantDamage, 20.0D));
     }
 
     public void setConfigurableAttributes() {
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.MAX_HEALTH), AttributesConfig.WebSpiderServantHealth.get());
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ATTACK_DAMAGE), AttributesConfig.WebSpiderServantDamage.get());
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.MAX_HEALTH), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.WebSpiderServantHealth, 20.0D));
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ATTACK_DAMAGE), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.WebSpiderServantDamage, 20.0D));
     }
 
     public void setAnimationState(String input) {
@@ -138,7 +141,7 @@ public class WebSpiderServant extends SpiderServant implements RangedAttackMob {
             if (this.getTarget() != null){
                 if (!this.isWebShooting()){
                     this.stopMoving = false;
-                    if (!this.getTarget().hasEffect(GoetyEffects.TANGLED.get())) {
+                    if (!this.getTarget().hasEffect(net.minecraft.core.Holder.direct(GoetyEffects.TANGLED.get()))) {
                         if (this.distanceTo(this.getTarget()) <= 5.0F) {
                             this.isFleeing = true;
                             Vec3 vec3 = DefaultRandomPos.getPosAway(this, 7, 5, this.getTarget().position());
@@ -162,13 +165,13 @@ public class WebSpiderServant extends SpiderServant implements RangedAttackMob {
             AttributeInstance modifiableattributeinstance = this.getAttribute(Attributes.MOVEMENT_SPEED);
             if (this.stopMoving) {
                 if (modifiableattributeinstance != null) {
-                    modifiableattributeinstance.removeModifier(SHOOT_SPEED_MODIFIER);
+                    modifiableattributeinstance.removeModifier(SHOOT_SPEED_MODIFIER.id());
                     modifiableattributeinstance.addTransientModifier(SHOOT_SPEED_MODIFIER);
                 }
             } else {
                 if (modifiableattributeinstance != null) {
-                    if (modifiableattributeinstance.hasModifier(SHOOT_SPEED_MODIFIER)) {
-                        modifiableattributeinstance.removeModifier(SHOOT_SPEED_MODIFIER);
+                    if (modifiableattributeinstance.hasModifier(SHOOT_SPEED_MODIFIER.id())) {
+                        modifiableattributeinstance.removeModifier(SHOOT_SPEED_MODIFIER.id());
                     }
                 }
             }
@@ -218,7 +221,7 @@ public class WebSpiderServant extends SpiderServant implements RangedAttackMob {
                     && livingentity.isAlive()
                     && !this.mob.isFleeing) {
                 this.target = livingentity;
-                return !livingentity.hasEffect(GoetyEffects.TANGLED.get())
+                return !livingentity.hasEffect(net.minecraft.core.Holder.direct(GoetyEffects.TANGLED.get()))
                         && this.mob.distanceTo(livingentity) > 4.0F;
             } else {
                 return false;

@@ -29,7 +29,7 @@ public class WitherNecromancerRenderer extends MobRenderer<AbstractWitherNecroma
    }
 
    public ResourceLocation getTextureLocation(AbstractWitherNecromancer p_115941_) {
-      if (p_115941_.isHostile() || !MobsConfig.NecromancerServantTexture.get()){
+      if (p_115941_.isHostile() || !com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MobsConfig.NecromancerServantTexture, false)){
          return SKELETON_LOCATION;
       } else {
          return SERVANT_LOCATION;

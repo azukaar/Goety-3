@@ -71,12 +71,12 @@ public class PurpurLampBlock extends Block implements SimpleWaterloggedBlock {
         pLevel.setBlock(pPos.above(), pState.setValue(HALF, DoubleBlockHalf.UPPER).setValue(WATERLOGGED, pLevel.getFluidState(pPos.above()).getType() == Fluids.WATER), 3);
     }
 
-    public void playerWillDestroy(Level p_52755_, BlockPos p_52756_, BlockState p_52757_, Player p_52758_) {
+    public BlockState playerWillDestroy(Level p_52755_, BlockPos p_52756_, BlockState p_52757_, Player p_52758_) {
         if (!p_52755_.isClientSide && p_52758_.isCreative()) {
             BlockFinder.preventCreativeDropFromBottomPart(p_52755_, p_52756_, p_52757_, p_52758_);
         }
 
-        super.playerWillDestroy(p_52755_, p_52756_, p_52757_, p_52758_);
+        return super.playerWillDestroy(p_52755_, p_52756_, p_52757_, p_52758_);
     }
 
     public static boolean canLight(BlockState p_51322_) {

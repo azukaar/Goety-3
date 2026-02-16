@@ -19,6 +19,7 @@ import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.tags.BlockTags;
+import net.minecraft.world.level.Level;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.InteractionHand;
@@ -60,15 +61,15 @@ public class MountaineerServant extends AbstractIllagerServant {
         return Monster.createMonsterAttributes()
                 .add(Attributes.MOVEMENT_SPEED, 0.35D)
                 .add(Attributes.FOLLOW_RANGE, 12.0D)
-                .add(Attributes.MAX_HEALTH, AttributesConfig.MountaineerServantHealth.get())
-                .add(Attributes.ARMOR, AttributesConfig.MountaineerServantArmor.get())
-                .add(Attributes.ATTACK_DAMAGE, AttributesConfig.MountaineerServantDamage.get());
+                .add(Attributes.MAX_HEALTH, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.MountaineerServantHealth, 20.0D))
+                .add(Attributes.ARMOR, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.MountaineerServantArmor, 20.0D))
+                .add(Attributes.ATTACK_DAMAGE, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.MountaineerServantDamage, 20.0D));
     }
 
     public void setConfigurableAttributes() {
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.MAX_HEALTH), AttributesConfig.MountaineerServantHealth.get());
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ARMOR), AttributesConfig.MountaineerServantArmor.get());
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ATTACK_DAMAGE), AttributesConfig.MountaineerServantDamage.get());
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.MAX_HEALTH), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.MountaineerServantHealth, 20.0D));
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ARMOR), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.MountaineerServantArmor, 20.0D));
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ATTACK_DAMAGE), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.MountaineerServantDamage, 20.0D));
     }
 
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
@@ -151,8 +152,8 @@ public class MountaineerServant extends AbstractIllagerServant {
     public boolean isClimbableBlock(BlockPos blockPos) {
         BlockState blockState = this.level().getBlockState(blockPos);
         return (blockState.is(BlockTags.ICE)
-                || blockState.is(BlockTags.STONE)
-                || blockState.is(BlockTags.COBBLESTONE)
+                || blockState.is(BlockTags.BASE_STONE_OVERWORLD)
+                // || blockState.is(Tags.Blocks.COBBLESTONE)
                 || blockState.is(BlockTags.DIRT)
                 || blockState.is(BlockTags.SNOW))
                 && blockState.isSolidRender(this.level(), blockPos);

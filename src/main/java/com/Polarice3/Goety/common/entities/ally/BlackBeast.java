@@ -144,15 +144,15 @@ public class BlackBeast extends Summoned{
                 .add(net.minecraft.world.entity.ai.attributes.Attributes.STEP_HEIGHT, 2.0D)
                 .add(Attributes.KNOCKBACK_RESISTANCE, 0.75D)
                 .add(Attributes.ATTACK_KNOCKBACK, 1.5D)
-                .add(Attributes.MAX_HEALTH, AttributesConfig.BlackBeastHealth.get())
-                .add(Attributes.ARMOR, AttributesConfig.BlackBeastArmor.get())
-                .add(Attributes.ATTACK_DAMAGE, AttributesConfig.BlackBeastDamage.get());
+                .add(Attributes.MAX_HEALTH, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.BlackBeastHealth, 20.0D))
+                .add(Attributes.ARMOR, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.BlackBeastArmor, 20.0D))
+                .add(Attributes.ATTACK_DAMAGE, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.BlackBeastDamage, 20.0D));
     }
 
     public void setConfigurableAttributes(){
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.MAX_HEALTH), AttributesConfig.BlackBeastHealth.get());
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ARMOR), AttributesConfig.BlackBeastArmor.get());
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ATTACK_DAMAGE), AttributesConfig.BlackBeastDamage.get());
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.MAX_HEALTH), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.BlackBeastHealth, 20.0D));
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ARMOR), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.BlackBeastArmor, 20.0D));
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ATTACK_DAMAGE), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.BlackBeastDamage, 20.0D));
     }
 
     @Override
@@ -506,7 +506,7 @@ public class BlackBeast extends Summoned{
                 this.level().broadcastEntityEvent(this, (byte) 101);
                 this.playSound(ModSounds.BLACK_BEAST_CLAW.get(), this.getSoundVolume(), this.getVoicePitch());
                 if (entityIn instanceof LivingEntity target) {
-                    if (!target.hasEffect(GoetyEffects.DOOM.getHolder()) && !MobUtil.isInSunlightNoRain(this)) {
+                    if (!target.hasEffect(GoetyEffects.DOOM) && !MobUtil.isInSunlightNoRain(this)) {
                         int debuffDuration = MathHelper.secondsToTicks(15);
                         int regenAmp = 2;
                         if (MobsConfig.BlackBeastDayStrength.get()) {
@@ -520,9 +520,9 @@ public class BlackBeast extends Summoned{
                         }
                         this.playSound(ModSounds.BLACK_BEAST_ROAR.get(), this.getSoundVolume(), 0.25F);
 
-                        target.addEffect(new MobEffectInstance(GoetyEffects.DOOM.getHolder(), debuffDuration, 0, false, false), this);
+                        target.addEffect(new MobEffectInstance(GoetyEffects.DOOM, debuffDuration, 0, false, false), this);
                         target.addEffect(new MobEffectInstance(MobEffects.WITHER, debuffDuration, 1, false, false), this);
-                        target.addEffect(new MobEffectInstance(GoetyEffects.CURSED.getHolder(), debuffDuration, 0, false, false), this);
+                        target.addEffect(new MobEffectInstance(GoetyEffects.CURSED, debuffDuration, 0, false, false), this);
                         this.addEffect(new MobEffectInstance(MobEffects.REGENERATION, MathHelper.secondsToTicks(5), regenAmp, false, false), this);
                     }
                 }

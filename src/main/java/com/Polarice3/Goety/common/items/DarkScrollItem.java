@@ -21,7 +21,6 @@ import net.minecraft.world.item.UseAnim;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.ServerLevelAccessor;
 
-import javax.annotation.Nullable;
 import java.util.List;
 
 public class DarkScrollItem extends Item {
@@ -43,8 +42,7 @@ public class DarkScrollItem extends Item {
             if (vizier != null) {
                 vizier.setPos(entityLiving.getX(), entityLiving.getEyeY(), entityLiving.getZ());
                 vizier.finalizeSpawn((ServerLevelAccessor) worldIn,
-                        worldIn.getCurrentDifficultyAt(entityLiving.blockPosition()), MobSpawnType.MOB_SUMMONED, null,
-                        null);
+                        worldIn.getCurrentDifficultyAt(entityLiving.blockPosition()), MobSpawnType.MOB_SUMMONED, null);
                 vizier.makeInvulnerable();
                 worldIn.addFreshEntity(vizier);
                 if (!(entityLiving instanceof Player && ((Player) entityLiving).isCreative())) {
@@ -85,8 +83,8 @@ public class DarkScrollItem extends Item {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
-        super.appendHoverText(stack, worldIn, tooltip, flagIn);
+    public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltip, TooltipFlag flagIn) {
+        super.appendHoverText(stack, context, tooltip, flagIn);
         tooltip.add(Component.translatable("info.goety.items.dark_scroll.desc").withStyle(ChatFormatting.DARK_PURPLE));
     }
 }

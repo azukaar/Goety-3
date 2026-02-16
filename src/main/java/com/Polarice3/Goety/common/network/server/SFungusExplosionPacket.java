@@ -5,7 +5,7 @@ import com.Polarice3.Goety.utils.FungusExplosion;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.network.NetworkEvent;
+import com.Polarice3.Goety.compat.legacy.network.NetworkEvent;
 
 import javax.annotation.Nullable;
 import java.util.function.Supplier;
@@ -53,7 +53,7 @@ public class SFungusExplosionPacket {
         ctx.get().enqueueWork(() -> {
             Player player = Goety.PROXY.getPlayer();
             if (player != null){
-                FungusExplosion explosion = new FungusExplosion(player.level, null, packet.x, packet.y, packet.z, packet.power, false);
+                FungusExplosion explosion = new FungusExplosion(player.level(), null, packet.x, packet.y, packet.z, packet.power, false);
                 explosion.finalizeExplosion(true);
                 player.setDeltaMovement(player.getDeltaMovement().add(packet.knockbackX, packet.knockbackY, packet.knockbackZ));
             }

@@ -29,17 +29,17 @@ public class SoulBoltSpell extends Spell {
 
     @Override
     public int defaultSoulCost() {
-        return SpellConfig.SoulBoltCost.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.SoulBoltCost, 0);
     }
 
     @Override
     public int defaultCastDuration() {
-        return SpellConfig.SoulBoltDuration.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.SoulBoltDuration, 0);
     }
 
     @Override
     public int defaultSpellCooldown() {
-        return SpellConfig.SoulBoltCoolDown.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.SoulBoltCoolDown, 0);
     }
 
     @Override

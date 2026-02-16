@@ -95,21 +95,21 @@ public class SpellLightningBoltRenderer extends EntityRenderer<SpellLightningBol
          int p_115277_, float p_115278_, float p_115279_, float red, float green, float blue, float p_115283_,
          float p_115284_, boolean p_115285_, boolean p_115286_, boolean p_115287_, boolean p_115288_) {
       p_115274_
-            .vertex(p_115273_, p_115275_ + (p_115285_ ? p_115284_ : -p_115284_), (float) (p_115277_ * 16),
+            .addVertex(p_115273_, p_115275_ + (p_115285_ ? p_115284_ : -p_115284_), (float) (p_115277_ * 16),
                   p_115276_ + (p_115286_ ? p_115284_ : -p_115284_))
-            .color((int) (red * 255), (int) (green * 255), (int) (blue * 255), (int) (0.3F * 255)).endVertex();
+            .setColor((int) (red * 255), (int) (green * 255), (int) (blue * 255), (int) (0.3F * 255));
       p_115274_
-            .vertex(p_115273_, p_115278_ + (p_115285_ ? p_115283_ : -p_115283_), (float) ((p_115277_ + 1) * 16),
+            .addVertex(p_115273_, p_115278_ + (p_115285_ ? p_115283_ : -p_115283_), (float) ((p_115277_ + 1) * 16),
                   p_115279_ + (p_115286_ ? p_115283_ : -p_115283_))
-            .color((int) (red * 255), (int) (green * 255), (int) (blue * 255), (int) (0.3F * 255)).endVertex();
+            .setColor((int) (red * 255), (int) (green * 255), (int) (blue * 255), (int) (0.3F * 255));
       p_115274_
-            .vertex(p_115273_, p_115278_ + (p_115287_ ? p_115283_ : -p_115283_), (float) ((p_115277_ + 1) * 16),
+            .addVertex(p_115273_, p_115278_ + (p_115287_ ? p_115283_ : -p_115283_), (float) ((p_115277_ + 1) * 16),
                   p_115279_ + (p_115288_ ? p_115283_ : -p_115283_))
-            .color((int) (red * 255), (int) (green * 255), (int) (blue * 255), (int) (0.3F * 255)).endVertex();
+            .setColor((int) (red * 255), (int) (green * 255), (int) (blue * 255), (int) (0.3F * 255));
       p_115274_
-            .vertex(p_115273_, p_115275_ + (p_115287_ ? p_115284_ : -p_115284_), (float) (p_115277_ * 16),
+            .addVertex(p_115273_, p_115275_ + (p_115287_ ? p_115284_ : -p_115284_), (float) (p_115277_ * 16),
                   p_115276_ + (p_115288_ ? p_115284_ : -p_115284_))
-            .color((int) (red * 255), (int) (green * 255), (int) (blue * 255), (int) (0.3F * 255)).endVertex();
+            .setColor((int) (red * 255), (int) (green * 255), (int) (blue * 255), (int) (0.3F * 255));
    }
 
    public ResourceLocation getTextureLocation(SpellLightningBolt p_115264_) {

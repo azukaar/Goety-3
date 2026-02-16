@@ -1,6 +1,7 @@
 package com.Polarice3.Goety.utils;
 
 import net.minecraft.core.Holder;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageType;
@@ -26,7 +27,7 @@ public class OwnedDamageSource extends DamageSource {
               : ItemStack.EMPTY;
       String s = "death.attack." + this.getMsgId();
       if (this.owner != null && this.getDirectEntity() != null) {
-         if (!itemstack.isEmpty() && itemstack.hasCustomHoverName()) {
+         if (!itemstack.isEmpty() && itemstack.has(DataComponents.CUSTOM_NAME)) {
             return Component.translatable(s + ".item", target.getDisplayName(), this.owner.getDisplayName(), this.getDirectEntity().getDisplayName(), itemstack.getDisplayName());
          } else {
             return Component.translatable(s, target.getDisplayName(), this.owner.getDisplayName(), this.getDirectEntity().getDisplayName());

@@ -27,15 +27,15 @@ import java.util.function.Predicate;
 public class SnarelingSpell extends SummonSpell {
 
     public int defaultSoulCost() {
-        return SpellConfig.SnarelingCost.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.SnarelingCost, 0);
     }
 
     public int defaultCastDuration() {
-        return SpellConfig.SnarelingDuration.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.SnarelingDuration, 0);
     }
 
     public int SummonDownDuration() {
-        return SpellConfig.SnarelingSummonDown.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.SnarelingSummonDown, 0);
     }
 
     public SoundEvent CastingSound() {
@@ -44,7 +44,7 @@ public class SnarelingSpell extends SummonSpell {
 
     @Override
     public int defaultSpellCooldown() {
-        return SpellConfig.SnarelingCoolDown.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.SnarelingCoolDown, 0);
     }
 
     @Override
@@ -67,7 +67,7 @@ public class SnarelingSpell extends SummonSpell {
 
     @Override
     public int summonLimit() {
-        return SpellConfig.SnarelingLimit.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.SnarelingLimit, 0);
     }
 
     public void SpellResult(ServerLevel worldIn, LivingEntity caster, ItemStack staff, SpellStat spellStat) {
@@ -91,7 +91,7 @@ public class SnarelingSpell extends SummonSpell {
                 MobUtil.moveDownToGround(summonedentity);
                 summonedentity.setLimitedLife(MobUtil.getSummonLifespan(worldIn) * duration);
                 summonedentity.setPersistenceRequired();
-                summonedentity.finalizeSpawn(worldIn, caster.level.getCurrentDifficultyAt(caster.blockPosition()), MobSpawnType.MOB_SUMMONED,null,null);
+                summonedentity.finalizeSpawn(worldIn, caster.level().getCurrentDifficultyAt(caster.blockPosition()), MobSpawnType.MOB_SUMMONED,null);
                 this.buffSummon(caster, summonedentity, potency);
                 this.SummonSap(caster, summonedentity);
                 this.setTarget(caster, summonedentity);
@@ -103,3 +103,4 @@ public class SnarelingSpell extends SummonSpell {
         }
     }
 }
+

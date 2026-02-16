@@ -78,24 +78,25 @@ public class Sorcerer extends HuntingIllagerEntity {
     public static AttributeSupplier.Builder setCustomAttributes(){
         return Mob.createMobAttributes()
                 .add(Attributes.FOLLOW_RANGE, 32.0D)
-                .add(Attributes.MAX_HEALTH, AttributesConfig.SorcererHealth.get())
-                .add(Attributes.ARMOR, AttributesConfig.SorcererArmor.get())
+                .add(Attributes.MAX_HEALTH, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.SorcererHealth, 20.0D))
+                .add(Attributes.ARMOR, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.SorcererArmor, 20.0D))
                 .add(Attributes.MOVEMENT_SPEED, 0.35D)
-                .add(Attributes.ATTACK_DAMAGE, AttributesConfig.SorcererDamage.get());
+                .add(Attributes.ATTACK_DAMAGE, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.SorcererDamage, 20.0D));
     }
 
     public void setConfigurableAttributes(){
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.MAX_HEALTH), AttributesConfig.SorcererHealth.get());
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ARMOR), AttributesConfig.SorcererArmor.get());
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ATTACK_DAMAGE), AttributesConfig.SorcererDamage.get());
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.MAX_HEALTH), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.SorcererHealth, 20.0D));
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ARMOR), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.SorcererArmor, 20.0D));
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ATTACK_DAMAGE), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.SorcererDamage, 20.0D));
     }
 
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.entityData.define(IS_CASTING_SPELL, (byte)0);
-        this.entityData.define(CHARGING, false);
-        this.entityData.define(SHOOT, false);
-        this.entityData.define(LEVEL, 1);
+    @Override
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(IS_CASTING_SPELL, (byte)0);
+        builder.define(CHARGING, false);
+        builder.define(SHOOT, false);
+        builder.define(LEVEL, 1);
     }
 
     public void readAdditionalSaveData(CompoundTag pCompound) {
@@ -163,8 +164,8 @@ public class Sorcerer extends HuntingIllagerEntity {
 
     @Nullable
     @Override
-    public SpawnGroupData finalizeSpawn(ServerLevelAccessor p_37856_, DifficultyInstance p_37857_, MobSpawnType p_37858_, @Nullable SpawnGroupData p_37859_, @Nullable CompoundTag p_37860_) {
-        SpawnGroupData data = super.finalizeSpawn(p_37856_, p_37857_, p_37858_, p_37859_, p_37860_);
+    public SpawnGroupData finalizeSpawn(ServerLevelAccessor p_37856_, DifficultyInstance p_37857_, MobSpawnType p_37858_, @Nullable SpawnGroupData p_37859_) {
+        SpawnGroupData data = super.finalizeSpawn(p_37856_, p_37857_, p_37858_, p_37859_);
         if (p_37858_ != MobSpawnType.STRUCTURE) {
             this.setSorcererLevel(1 + p_37856_.getRandom().nextInt(1 + (int) p_37857_.getEffectiveDifficulty()), true);
         }
@@ -220,7 +221,7 @@ public class Sorcerer extends HuntingIllagerEntity {
             AttributeInstance health = this.getAttribute(Attributes.MAX_HEALTH);
             if (health != null && i > 1) {
                 float increase = (i - 1) * 1.25F;
-                health.setBaseValue(AttributesConfig.SorcererHealth.get() * increase);
+                health.setBaseValue(com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.SorcererHealth, 20.0D) * increase);
             }
             if (heal) {
                 this.setHealth(this.getMaxHealth());
@@ -248,7 +249,7 @@ public class Sorcerer extends HuntingIllagerEntity {
     }
 
     @Override
-    public void applyRaidBuffs(int pWave, boolean p_37845_) {
+    public void applyRaidBuffs(net.minecraft.server.level.ServerLevel pLevel, int pWave, boolean p_37845_) {
         Raid raid = this.getCurrentRaid();
         if (raid != null) {
             if (pWave >= raid.getNumGroups(Difficulty.EASY)) {
@@ -258,7 +259,6 @@ public class Sorcerer extends HuntingIllagerEntity {
             } else if (pWave > raid.getNumGroups(Difficulty.HARD)) {
                 this.setSorcererLevel(5, true);
             }
-
         }
     }
 
@@ -397,7 +397,7 @@ public class Sorcerer extends HuntingIllagerEntity {
                 if (Sorcerer.this.getSorcererLevel() >= spell1.minLevel && Sorcerer.this.getSorcererLevel() <= spell1.maxLevel) {
                     if (spell1.getSpell().conditionsMet(Sorcerer.this.level(), Sorcerer.this)) {
                         if (Sorcerer.this.spellCoolDown[spell1.trueId] <= 0) {
-                            if (spell1.getSpell() instanceof SummonSpell && !Sorcerer.this.hasEffect(GoetyEffects.SUMMON_DOWN.get())) {
+                            if (spell1.getSpell() instanceof SummonSpell && !Sorcerer.this.hasEffect(net.minecraft.core.Holder.direct(GoetyEffects.SUMMON_DOWN.get()))) {
                                 spells.add(spell1);
                             } else if (!(spell1.getSpell() instanceof SummonSpell)) {
                                 spells.add(spell1);

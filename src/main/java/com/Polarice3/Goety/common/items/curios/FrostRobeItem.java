@@ -7,6 +7,7 @@ import com.Polarice3.Goety.config.MainConfig;
 import com.Polarice3.Goety.utils.CuriosFinder;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
+import net.minecraft.core.Holder;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attribute;
@@ -15,6 +16,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import top.theillusivec4.curios.api.SlotContext;
 
+import com.Polarice3.Goety.Goety;
 import java.util.UUID;
 
 public class FrostRobeItem extends SingleStackItem{
@@ -30,8 +32,8 @@ public class FrostRobeItem extends SingleStackItem{
                 livingEntity.setTicksFrozen(0);
                 livingEntity.setIsInPowderSnow(false);
                 if (!worldIn.isClientSide) {
-                    if (livingEntity.hasEffect(GoetyEffects.FREEZING.get())){
-                        livingEntity.removeEffect(GoetyEffects.FREEZING.get());
+                    if (livingEntity.hasEffect(GoetyEffects.FREEZING)){
+                        livingEntity.removeEffect(GoetyEffects.FREEZING);
                     }
                 }
             }
@@ -41,12 +43,12 @@ public class FrostRobeItem extends SingleStackItem{
     }
 
     @Override
-    public Multimap<Attribute, AttributeModifier> getAttributeModifiers(SlotContext slotContext,
+    public Multimap<Holder<Attribute>, AttributeModifier> getAttributeModifiers(SlotContext slotContext,
                                                                         UUID uuid, ItemStack stack) {
-        Multimap<Attribute, AttributeModifier> map = HashMultimap.create();
+        Multimap<Holder<Attribute>, AttributeModifier> map = HashMultimap.create();
         if (IronLoaded.IRON_SPELLBOOKS.isLoaded()){
-            if (MainConfig.RobesIronResist.get()) {
-                map.put(IronAttributes.ICE_MAGIC_RESIST, new AttributeModifier(UUID.fromString("1806707b-496c-4522-b45d-9601e37bd2b9"), "Robes Iron Spell Resist", 0.5F, AttributeModifier.Operation.ADDITION));
+            if (com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MainConfig.RobesIronResist, false)) {
+                map.put(IronAttributes.ICE_MAGIC_RESIST, new AttributeModifier(Goety.location("robes_iron_spell_resist"), 0.5F, AttributeModifier.Operation.ADD_VALUE));
             }
         }
         return map;

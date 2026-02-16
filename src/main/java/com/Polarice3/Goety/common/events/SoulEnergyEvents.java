@@ -60,7 +60,7 @@ public class SoulEnergyEvents {
     @SubscribeEvent
     public static void onPlayerTick(PlayerTickEvent.Post event){
         Player player = event.getEntity();
-        Level world = player.level;
+        Level world = player.level();
         ISoulEnergy soulEnergy = SEHelper.getCapability(player);
         SEHelper.getFocusCoolDown(player).tick(player, world);
         if (player.onGround()){
@@ -89,7 +89,7 @@ public class SoulEnergyEvents {
         }
         if (!soulEnergy.getSEActive() && soulEnergy.getSoulEnergy() > 0) {
             if (!world.isClientSide){
-                player.addEffect(new MobEffectInstance(GoetyEffects.SOUL_HUNGER.get(), 60));
+                player.addEffect(new MobEffectInstance(GoetyEffects.SOUL_HUNGER, 60));
                 if (player.tickCount % 5 == 0) {
                     SEHelper.decreaseSESouls(player, 1);
                     SEHelper.sendSEUpdatePacket(player);
@@ -147,7 +147,7 @@ public class SoulEnergyEvents {
             if (soulEnergy.getCameraUUID() != null){
                 Entity entity = EntityFinder.getEntityByUuiD(soulEnergy.getCameraUUID());
                 if (entity == null || !entity.isAlive()
-                        || entity.level.dimension() != player.level.dimension()
+                        || entity.level().dimension() != player.level().dimension()
                         || player.isShiftKeyDown() || player.hurtTime > 0
                         || !player.isAlive()){
                     SEHelper.setCamera(player, null);
@@ -216,21 +216,21 @@ public class SoulEnergyEvents {
 
     @SubscribeEvent
     public static void onPlayerEntersWorld(PlayerEvent.PlayerLoggedInEvent event){
-        if (!event.getEntity().level.isClientSide) {
+        if (!event.getEntity().level().isClientSide) {
             SEHelper.setCamera(event.getEntity(), null);
         }
     }
 
     @SubscribeEvent
     public static void onPlayerLeavesWorld(PlayerEvent.PlayerLoggedOutEvent event){
-        if (!event.getEntity().level.isClientSide) {
+        if (!event.getEntity().level().isClientSide) {
             SEHelper.setCamera(event.getEntity(), null);
         }
     }
 
     @SubscribeEvent
     public static void onPlayerChangeDimensions(PlayerEvent.PlayerChangedDimensionEvent event){
-        if (!event.getEntity().level.isClientSide) {
+        if (!event.getEntity().level().isClientSide) {
             SEHelper.setCamera(event.getEntity(), null);
         }
     }
@@ -238,7 +238,7 @@ public class SoulEnergyEvents {
     @SubscribeEvent
     public static void onPlayerStopTracking(PlayerEvent.StopTracking event){
         ISoulEnergy soulEnergy = SEHelper.getCapability(event.getEntity());
-        if (!event.getEntity().level.isClientSide) {
+        if (!event.getEntity().level().isClientSide) {
             if (soulEnergy.getCameraUUID() != null){
                 Entity entity = EntityFinder.getEntityByUuiD(soulEnergy.getCameraUUID());
                 if (entity == event.getTarget()){
@@ -286,7 +286,7 @@ public class SoulEnergyEvents {
                     player = playerEntity;
                 }
                 if (player != null) {
-                    if (CuriosFinder.hasDarkRobe(player) || CuriosFinder.hasUndeadSet(player) || ItemHelper.armorSet(owner, ModArmorMaterials.BLACK_IRON) || ItemHelper.armorSet(player, ModArmorMaterials.DARK) || killer instanceof RaiderServant) {
+                    if (CuriosFinder.hasDarkRobe(player) || CuriosFinder.hasUndeadSet(player) || ItemHelper.armorSet(owner, ModArmorMaterials.BLACK_IRON.value()) || ItemHelper.armorSet(player, ModArmorMaterials.DARK.value()) || killer instanceof RaiderServant) {
                         if (!(player instanceof FakePlayer)) {
                             SEHelper.handleKill(player, victim, event.getSource());
                         }
@@ -301,7 +301,7 @@ public class SoulEnergyEvents {
                 }
             }
 
-            if (!(victim instanceof Player) || !MainConfig.TotemUndying.get()) {
+            if (!(victim instanceof Player) || !com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MainConfig.TotemUndying, false)) {
                 if (victim.getMainHandItem().getItem() instanceof ITotem){
                     ItemStack itemStack = victim.getMainHandItem();
                     if (revive(itemStack, victim)) {
@@ -319,7 +319,7 @@ public class SoulEnergyEvents {
         if (killed instanceof Player player){
             bindArcaCompass(killer, player);
             ISoulEnergy soulEnergy = SEHelper.getCapability(player);
-            if (MainConfig.LichArcaRemove.get()) {
+            if (com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MainConfig.LichArcaRemove, false)) {
                 if (!soulEnergy.getSEActive() || soulEnergy.getArcaBlock() == null) {
                     if (LichdomHelper.isLich(player)) {
                         LichdomHelper.setLich(player, false);
@@ -327,7 +327,7 @@ public class SoulEnergyEvents {
                 }
             }
             if (killer instanceof Wight wight){
-                if (wight.level instanceof ServerLevel serverLevel) {
+                if (wight.level() instanceof ServerLevel serverLevel) {
                     SEHelper.decreaseSouls(player, 1000);
                     float healAmount = 50.0F * (Math.min(0.0F, SEHelper.getSoulAmountInt(player)) / 1000.0F);
                     wight.heal(healAmount);
@@ -335,15 +335,15 @@ public class SoulEnergyEvents {
                 }
             }
             if (killer instanceof AbstractIllager){
-                soulEnergy.setRestPeriod(soulEnergy.getRestPeriod() + MathHelper.minecraftDayToTicks(MobsConfig.IllagerAssaultRestDeath.get()));
+                soulEnergy.setRestPeriod(soulEnergy.getRestPeriod() + MathHelper.minecraftDayToTicks(com.Polarice3.Goety.utils.ConfigHelper.getInt(MobsConfig.IllagerAssaultRestDeath, 0)));
             }
             if (soulEnergy.getSEActive()){
                 if (soulEnergy.getArcaBlock() != null) {
-                    if (MainConfig.ArcaUndying.get()) {
-                        if (!player.level.isClientSide) {
+                    if (com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MainConfig.ArcaUndying, false)) {
+                        if (!player.level().isClientSide) {
                             if (LichdomHelper.isLich(player)) {
-                                if (MainConfig.LichNoSERemove.get()){
-                                    if (soulEnergy.getSoulEnergy() >= MainConfig.MaxSouls.get()){
+                                if (com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MainConfig.LichNoSERemove, false)){
+                                    if (soulEnergy.getSoulEnergy() >= com.Polarice3.Goety.utils.ConfigHelper.getInt(MainConfig.MaxSouls, 0)){
                                         SEHelper.teleportToArca(player);
                                         player.setHealth(1.0F);
                                         player.removeAllEffects();
@@ -351,15 +351,15 @@ public class SoulEnergyEvents {
                                         player.addEffect(new MobEffectInstance(MobEffects.FIRE_RESISTANCE, 800, 0));
                                         player.playSound(SoundEvents.WITHER_DEATH, 1.0F, 1.0F);
                                         ModNetwork.sendTo(player, new SPlayPlayerSoundPacket(SoundEvents.WITHER_DEATH, 1.0F, 1.0F));
-                                        SEHelper.decreaseSESouls(player, MainConfig.MaxSouls.get());
+                                        SEHelper.decreaseSESouls(player, com.Polarice3.Goety.utils.ConfigHelper.getInt(MainConfig.MaxSouls, 0));
                                         SEHelper.sendSEUpdatePacket(player);
                                         event.setCanceled(true);
                                     } else {
-                                        if (MainConfig.LichModeSounds.get()) {
+                                        if (com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MainConfig.LichModeSounds, false)) {
                                             Vec3 vec3 = player.position();
-                                            player.level.playSound(null, vec3.x, vec3.y, vec3.z, ModSounds.LICH_DEATH.get(), player.getSoundSource(), 1.0F, player.getVoicePitch());
+                                            player.level().playSound(null, vec3.x, vec3.y, vec3.z, ModSounds.LICH_DEATH.get(), player.getSoundSource(), 1.0F, player.getVoicePitch());
                                         }
-                                        if (player.level instanceof ServerLevel serverLevel){
+                                        if (player.level() instanceof ServerLevel serverLevel){
                                             ColorUtil colorUtil = new ColorUtil(0x36e416);
                                             serverLevel.sendParticles(new LichShockwaveParticleOption(colorUtil, 40, 20, 1, 100), player.getX(), player.getY() + 0.5F, player.getZ(), 0, 0, 0, 0, 0.5F);
                                         }
@@ -371,19 +371,19 @@ public class SoulEnergyEvents {
                                     SEHelper.teleportToArca(player);
                                     player.setHealth(1.0F);
                                     player.removeAllEffects();
-                                    if (soulEnergy.getSoulEnergy() >= MainConfig.MaxSouls.get()) {
+                                    if (soulEnergy.getSoulEnergy() >= com.Polarice3.Goety.utils.ConfigHelper.getInt(MainConfig.MaxSouls, 0)) {
                                         player.addEffect(new MobEffectInstance(MobEffects.ABSORPTION, 100, 1));
                                         player.addEffect(new MobEffectInstance(MobEffects.FIRE_RESISTANCE, 800, 0));
                                     } else {
-                                        player.addEffect(new MobEffectInstance(GoetyEffects.SOUL_HUNGER.get(), MathHelper.minutesToTicks(2), 4, false, false));
+                                        player.addEffect(new MobEffectInstance(GoetyEffects.SOUL_HUNGER, MathHelper.secondsToTicks(120), 4, false, false));
                                     }
                                     player.playSound(SoundEvents.WITHER_DEATH, 1.0F, 1.0F);
                                     ModNetwork.sendTo(player, new SPlayPlayerSoundPacket(SoundEvents.WITHER_DEATH, 1.0F, 1.0F));
-                                    SEHelper.decreaseSESouls(player, MainConfig.MaxSouls.get());
+                                    SEHelper.decreaseSESouls(player, com.Polarice3.Goety.utils.ConfigHelper.getInt(MainConfig.MaxSouls, 0));
                                     SEHelper.sendSEUpdatePacket(player);
                                     event.setCanceled(true);
                                 }
-                            } else if (soulEnergy.getSoulEnergy() >= MainConfig.MaxSouls.get()) {
+                            } else if (soulEnergy.getSoulEnergy() >= com.Polarice3.Goety.utils.ConfigHelper.getInt(MainConfig.MaxSouls, 0)) {
                                 SEHelper.teleportToArca(player);
                                 player.setHealth(1.0F);
                                 player.removeAllEffects();
@@ -392,7 +392,7 @@ public class SoulEnergyEvents {
                                 player.addEffect(new MobEffectInstance(MobEffects.FIRE_RESISTANCE, 800, 0));
                                 player.playSound(SoundEvents.WITHER_DEATH, 1.0F, 1.0F);
                                 ModNetwork.sendTo(player, new SPlayPlayerSoundPacket(SoundEvents.WITHER_DEATH, 1.0F, 1.0F));
-                                SEHelper.decreaseSESouls(player, MainConfig.MaxSouls.get());
+                                SEHelper.decreaseSESouls(player, com.Polarice3.Goety.utils.ConfigHelper.getInt(MainConfig.MaxSouls, 0));
                                 SEHelper.sendSEUpdatePacket(player);
                                 event.setCanceled(true);
                             }
@@ -400,7 +400,7 @@ public class SoulEnergyEvents {
                     }
                 }
             } else if (ITotem.UndyingEffect(player)){
-                if (!player.level.isClientSide) {
+                if (!player.level().isClientSide) {
                     player.setHealth(1.0F);
                     player.removeAllEffects();
                     player.addEffect(new MobEffectInstance(MobEffects.REGENERATION, 900, 1));
@@ -416,10 +416,11 @@ public class SoulEnergyEvents {
     }
 
     public static boolean revive(ItemStack itemStack, LivingEntity victim){
-        if (!itemStack.isEmpty()) {
+        // FIXME: Update for components
+        /*if (!itemStack.isEmpty()) {
             if (itemStack.getTag() != null) {
                 if (itemStack.getTag().getInt(ITotem.SOULS_AMOUNT) == ITotem.MAX_SOULS) {
-                    if (!victim.level.isClientSide) {
+                    if (!victim.level().isClientSide) {
                         victim.setHealth(1.0F);
                         victim.removeAllEffects();
                         victim.addEffect(new MobEffectInstance(MobEffects.REGENERATION, 900, 1));
@@ -428,7 +429,7 @@ public class SoulEnergyEvents {
                         if (victim instanceof Player) {
                             ModNetwork.sendTo((Player) victim, new TotemDeathPacket(victim.getUUID()));
                         } else {
-                            ServerLevel serverWorld = (ServerLevel) victim.level;
+                            ServerLevel serverWorld = (ServerLevel) victim.level();
                             serverWorld.getChunkSource().broadcast(victim, new ClientboundEntityEventPacket(victim, (byte)35));
                         }
                         ITotem.setSoulsamount(itemStack, 0);
@@ -440,12 +441,12 @@ public class SoulEnergyEvents {
                     return true;
                 }
             }
-        }
+        }*/
         return false;
     }
 
     public static void bindArcaCompass(Entity killer, Player player){
-        Player player1 = player;
+        /*Player player1 = player;
         if (killer instanceof Player playerKiller){
             player1 = playerKiller;
         }
@@ -473,6 +474,6 @@ public class SoulEnergyEvents {
                     player1.drop(itemstack1, false);
                 }
             }
-        }
+        }*/
     }
 }

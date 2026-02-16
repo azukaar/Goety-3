@@ -20,12 +20,12 @@ public class EnderChestSpell extends Spell {
 
     @Override
     public int defaultSoulCost() {
-        return SpellConfig.EnderChestCost.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.EnderChestCost, 0);
     }
 
     @Override
     public int defaultCastDuration() {
-        return SpellConfig.EnderChestDuration.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.EnderChestDuration, 0);
     }
 
     @Override
@@ -35,7 +35,7 @@ public class EnderChestSpell extends Spell {
 
     @Override
     public int defaultSpellCooldown() {
-        return SpellConfig.EnderChestCoolDown.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.EnderChestCoolDown, 0);
     }
 
     @Override

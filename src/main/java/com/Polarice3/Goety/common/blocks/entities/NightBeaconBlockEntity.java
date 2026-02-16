@@ -136,7 +136,7 @@ public class NightBeaconBlockEntity extends BlockEntity {
     }
 
     private static boolean hasPortal(Level level, BlockPos blockPos){
-        return level.getBlockState(blockPos.below().below()).is(Blocks.NETHER_PORTAL) && MainConfig.EnableNightBeacon.get();
+        return level.getBlockState(blockPos.below().below()).is(Blocks.NETHER_PORTAL) && com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MainConfig.EnableNightBeacon, false);
     }
 
     public void setDayLight(boolean daylightTrue){
@@ -146,7 +146,7 @@ public class NightBeaconBlockEntity extends BlockEntity {
     public void setRemoved() {
         if (this.getLevel() != null) {
             playSound(this.getLevel(), this.worldPosition, SoundEvents.BEACON_DEACTIVATE);
-            if (MainConfig.EnableNightBeacon.get()) {
+            if (com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MainConfig.EnableNightBeacon, false)) {
                 if (this.getLevel().getServer() != null && this.isActive && !this.beamSections.isEmpty()) {
                     for (ServerLevel serverLevel : this.getLevel().getServer().getAllLevels()) {
                         long currentDay = serverLevel.getDayTime() / 24000L;

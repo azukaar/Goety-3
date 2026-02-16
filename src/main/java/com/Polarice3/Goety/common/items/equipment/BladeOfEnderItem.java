@@ -7,6 +7,6 @@ import net.minecraft.world.item.SwordItem;
 public class BladeOfEnderItem extends SwordItem {
 
     public BladeOfEnderItem() {
-        super(ModTiers.VOID, 13, -1.8F, new Item.Properties().fireResistant());
+        super(ModTiers.VOID, new Item.Properties().fireResistant());
     }
 }

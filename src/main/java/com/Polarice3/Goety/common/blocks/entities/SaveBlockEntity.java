@@ -21,14 +21,14 @@ public abstract class SaveBlockEntity extends BlockEntity {
         super(p_155228_, p_155229_, p_155230_);
     }
 
-    public void recreateBlockEntity(CompoundTag tag) {
+    public void recreateBlockEntity(CompoundTag tag, HolderLookup.Provider pRegistries) {
         if (this.getLevel() != null) {
             if (this.oldBlockEntity != null && this.getLevel().getBlockEntity(this.getBlockPos()) != null) {
                 this.getLevel().setBlockAndUpdate(this.getBlockPos(), this.oldBlock);
                 if (this.getLevel().getBlockEntity(this.getBlockPos()) != null){
                     BlockEntity blockEntity = this.getLevel().getBlockEntity(this.getBlockPos());
                     if (blockEntity != null) {
-                        blockEntity.loadWithComponents(tag, this.getLevel().registryAccess());
+                        blockEntity.loadWithComponents(tag, pRegistries);
                     }
                 }
             }
@@ -53,11 +53,10 @@ public abstract class SaveBlockEntity extends BlockEntity {
 
     public void readNetwork(CompoundTag tag, HolderLookup.Provider pRegistries) {
         if (tag.contains("BlockState")) {
-            HolderGetter<Block> holdergetter = this.getLevel() != null ? this.getLevel().holderLookup(Registries.BLOCK) : BuiltInRegistries.BLOCK.asLookup();
-            this.oldBlock = NbtUtils.readBlockState(holdergetter, tag.getCompound("BlockState"));
+            this.oldBlock = NbtUtils.readBlockState(pRegistries.lookupOrThrow(Registries.BLOCK), tag.getCompound("BlockState"));
         }
         if (tag.contains("BlockEntity")){
-            this.recreateBlockEntity(tag.getCompound("BlockEntity"));
+            this.recreateBlockEntity(tag.getCompound("BlockEntity"), pRegistries);
         }
     }
 

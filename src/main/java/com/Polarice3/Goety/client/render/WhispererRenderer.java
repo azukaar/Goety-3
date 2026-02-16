@@ -31,7 +31,7 @@ public class WhispererRenderer<T extends Whisperer> extends MobRenderer<T, Whisp
     public ResourceLocation getTextureLocation(T pEntity) {
         if (pEntity instanceof Wavewhisperer) {
             return WAVE;
-        } else if (pEntity.isHostile() || !MobsConfig.WhispererTexture.get()) {
+        } else if (pEntity.isHostile() || !com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MobsConfig.WhispererTexture, false)) {
             return ORIGINAL;
         } else {
             return TEXTURE_LOCATION;
@@ -56,7 +56,7 @@ public class WhispererRenderer<T extends Whisperer> extends MobRenderer<T, Whisp
                 VertexConsumer vertexconsumer = p_116984_.getBuffer(this.renderType());
                 if (p_116986_ instanceof Wavewhisperer) {
                     vertexconsumer = p_116984_.getBuffer(WAVE);
-                } else if (p_116986_.isHostile() || !MobsConfig.WhispererTexture.get()) {
+                } else if (p_116986_.isHostile() || !com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MobsConfig.WhispererTexture, false)) {
                     vertexconsumer = p_116984_.getBuffer(ORIGINAL);
                 }
                 this.getParentModel().renderToBuffer(p_116983_, vertexconsumer, 15728640, OverlayTexture.NO_OVERLAY,

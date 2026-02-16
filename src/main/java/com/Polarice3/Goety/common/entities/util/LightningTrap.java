@@ -37,13 +37,13 @@ public class LightningTrap extends AbstractTrap {
             }
         }
         if (this.tickCount >= this.getDuration()) {
-            SpellLightningBolt lightning = new SpellLightningBolt(ModEntityType.SPELL_LIGHTNING_BOLT.get(), level);
+            SpellLightningBolt lightning = new SpellLightningBolt(ModEntityType.SPELL_LIGHTNING_BOLT.get(), this.level());
             lightning.setPos(this.getX(),this.getY(),this.getZ());
             lightning.setOwner(this.getOwner());
             if (this.getOwner() instanceof Apostle){
-                lightning.setDamage(AttributesConfig.ApostleMagicDamage.get().floatValue());
+                lightning.setDamage((float)com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.ApostleMagicDamage, 20.0D));
             }
-            level.addFreshEntity(lightning);
+            level().addFreshEntity(lightning);
             this.discard();
         }
     }

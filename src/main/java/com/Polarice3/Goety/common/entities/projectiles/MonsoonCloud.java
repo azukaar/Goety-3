@@ -94,7 +94,7 @@ public class MonsoonCloud extends AbstractSpellCloud{
                 }
                 if (this.random.nextFloat() <= 0.05F) {
                     Vec3 vec3 = this.position();
-                    float damage = SpellConfig.ThunderboltDamage.get().floatValue() * WandUtil.damageMultiply();
+                    float damage = com.Polarice3.Goety.utils.ConfigHelper.getFloat(SpellConfig.ThunderboltDamage, 1.0F) * WandUtil.damageMultiply();
                     damage += this.getExtraDamage();
                     BlockHitResult rayTraceResult = this.blockResult(serverLevel, this, 16);
                     Optional<BlockPos> lightningRod = BlockFinder.findLightningRod(serverLevel, BlockPos.containing(rayTraceResult.getLocation()), 16);
@@ -113,7 +113,7 @@ public class MonsoonCloud extends AbstractSpellCloud{
                                 chainDamage = damage;
                             }
                             if (serverLevel.getRandom().nextFloat() <= chance){
-                                livingEntity.addEffect(new MobEffectInstance(GoetyEffects.SPASMS.get(), MathHelper.secondsToTicks(5)));
+                                livingEntity.addEffect(new MobEffectInstance(GoetyEffects.SPASMS, MathHelper.secondsToTicks(5)));
                             }
                             if (this.staff){
                                 WandUtil.chainLightning(livingEntity, this.getOwner() != null ? this.getOwner() : null, 6.0D, chainDamage);

@@ -23,12 +23,12 @@ import java.util.List;
 public class IceChunkSpell extends Spell {
 
     public int defaultSoulCost() {
-        return SpellConfig.IceChunkCost.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.IceChunkCost, 0);
     }
 
     @Override
     public int defaultCastDuration() {
-        return SpellConfig.IceChunkDuration.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.IceChunkDuration, 0);
     }
 
     public SoundEvent CastingSound() {
@@ -37,7 +37,7 @@ public class IceChunkSpell extends Spell {
 
     @Override
     public int defaultSpellCooldown() {
-        return SpellConfig.IceChunkCoolDown.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.IceChunkCoolDown, 0);
     }
 
     @Override

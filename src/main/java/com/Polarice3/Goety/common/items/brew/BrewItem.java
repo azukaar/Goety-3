@@ -5,6 +5,7 @@ import com.Polarice3.Goety.utils.BrewUtils;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
@@ -21,7 +22,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.*;
-import net.minecraft.world.item.alchemy.PotionUtils;
+import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.item.alchemy.Potions;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
@@ -38,7 +39,9 @@ public class BrewItem extends Item {
     }
 
     public ItemStack getDefaultInstance() {
-        return PotionUtils.setPotion(super.getDefaultInstance(), Potions.WATER);
+        ItemStack stack = super.getDefaultInstance();
+        stack.set(DataComponents.POTION_CONTENTS, new PotionContents(Potions.WATER));
+        return stack;
     }
 
     public ItemStack finishUsingItem(ItemStack pStack, Level level, LivingEntity livingEntity) {
@@ -48,13 +51,16 @@ public class BrewItem extends Item {
         }
 
         if (!level.isClientSide) {
-            for (MobEffectInstance mobeffectinstance : PotionUtils.getMobEffects(pStack)) {
-                if (mobeffectinstance.getEffect().isInstantenous()) {
-                    mobeffectinstance.getEffect().applyInstantenousEffect(player, player, livingEntity,
-                            mobeffectinstance.getAmplifier(), 1.0D);
-                } else {
-                    livingEntity.addEffect(new MobEffectInstance(mobeffectinstance));
-                }
+            PotionContents potionContents = pStack.get(DataComponents.POTION_CONTENTS);
+            if (potionContents != null) {
+                potionContents.forEachEffect(mobeffectinstance -> {
+                    if (mobeffectinstance.getEffect().value().isInstantenous()) {
+                        mobeffectinstance.getEffect().value().applyInstantenousEffect(player, player, livingEntity,
+                                mobeffectinstance.getAmplifier(), 1.0D);
+                    } else {
+                        livingEntity.addEffect(new MobEffectInstance(mobeffectinstance));
+                    }
+                });
             }
             for (BrewEffectInstance brewEffectInstance : BrewUtils.getBrewEffects(pStack)) {
                 brewEffectInstance.getEffect().drinkBlockEffect(player, player, livingEntity,
@@ -89,8 +95,9 @@ public class BrewItem extends Item {
         Player player = p_220235_.getPlayer();
         ItemStack itemstack = p_220235_.getItemInHand();
         BlockState blockstate = level.getBlockState(blockpos);
+        PotionContents potionContents = itemstack.get(DataComponents.POTION_CONTENTS);
         if (p_220235_.getClickedFace() != Direction.DOWN && blockstate.is(BlockTags.CONVERTABLE_TO_MUD)
-                && PotionUtils.getPotion(itemstack) == Potions.WATER) {
+                && potionContents != null && potionContents.is(Potions.WATER)) {
             level.playSound((Player) null, blockpos, SoundEvents.GENERIC_SPLASH, SoundSource.PLAYERS, 1.0F, 1.0F);
             player.setItemInHand(p_220235_.getHand(),
                     ItemUtils.createFilledResult(itemstack, player, new ItemStack(Items.GLASS_BOTTLE)));
@@ -126,13 +133,14 @@ public class BrewItem extends Item {
         return ItemUtils.startUsingInstantly(p_42993_, p_42994_, p_42995_);
     }
 
-    public void appendHoverText(ItemStack p_42988_, @Nullable Level p_42989_, List<Component> p_42990_,
-            TooltipFlag p_42991_) {
+    @Override
+    public void appendHoverText(ItemStack p_42988_, Item.TooltipContext context, List<Component> p_42990_, TooltipFlag p_42991_) {
         BrewUtils.addBrewTooltip(p_42988_, p_42990_, 1.0F);
     }
 
     public boolean isFoil(ItemStack p_42999_) {
-        return super.isFoil(p_42999_) || PotionUtils.getPotion(p_42999_).isFoil(p_42999_)
+        PotionContents potionContents = p_42999_.get(DataComponents.POTION_CONTENTS);
+        return super.isFoil(p_42999_) || (potionContents != null && potionContents.hasEffects())
                 || BrewUtils.hasBrewEffect(p_42999_);
     }
 }

@@ -1,6 +1,7 @@
 package com.Polarice3.Goety.common.blocks;
 
 import com.Polarice3.Goety.client.particles.ModParticleTypes;
+import com.mojang.serialization.MapCodec;
 import com.Polarice3.Goety.common.blocks.entities.MagicLightBlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -26,6 +27,12 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import javax.annotation.Nullable;
 
 public class SoulLightBlock extends BaseEntityBlock implements SimpleWaterloggedBlock {
+    public static final MapCodec<SoulLightBlock> CODEC = simpleCodec(p -> new SoulLightBlock());
+
+    @Override
+    protected MapCodec<? extends BaseEntityBlock> codec() {
+        return CODEC;
+    }
     public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
     protected static final VoxelShape SHAPE = Block.box(5.0D, 5.0D, 5.0D, 11.0D, 11.0D, 11.0D);
 

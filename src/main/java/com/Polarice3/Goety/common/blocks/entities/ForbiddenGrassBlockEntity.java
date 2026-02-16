@@ -24,8 +24,9 @@ public class ForbiddenGrassBlockEntity extends BlockEntity {
         super(ModBlockEntities.FORBIDDEN_GRASS.get(), p_155301_, p_155302_);
     }
 
-    public CompoundTag getUpdateTag() {
-        return this.saveWithFullMetadata();
+    @Override
+    public CompoundTag getUpdateTag(net.minecraft.core.HolderLookup.Provider provider) {
+        return this.saveWithFullMetadata(provider);
     }
 
     public Level getOriginalLevel(){
@@ -81,7 +82,7 @@ public class ForbiddenGrassBlockEntity extends BlockEntity {
                                                 if (entity instanceof Mob mob) {
                                                     mob.setPos(above.getX() + 0.5F, above.getY(), above.getZ() + 0.5F);
                                                     if (serverLevel.noCollision(entity) && serverLevel.isUnobstructed(entity, serverLevel.getBlockState(above).getShape(serverLevel, above))) {
-                                                        net.neoforged.neoforge.event.EventHooks.onFinalizeSpawn(mob, serverLevel, serverLevel.getCurrentDifficultyAt(this.worldPosition), MobSpawnType.SPAWNER, null, null);
+                                                        net.neoforged.neoforge.event.EventHooks.finalizeMobSpawn(mob, serverLevel, serverLevel.getCurrentDifficultyAt(this.worldPosition), MobSpawnType.SPAWNER, null);
                                                         serverLevel.addFreshEntity(mob);
                                                     }
                                                 }

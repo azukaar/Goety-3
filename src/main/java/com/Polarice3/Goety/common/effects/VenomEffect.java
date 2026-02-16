@@ -8,10 +8,12 @@ public class VenomEffect extends GoetyBaseEffect {
         super(MobEffectCategory.HARMFUL, 0x44b529);
     }
 
-    public void applyEffectTick(LivingEntity p_19467_, int p_19468_) {
-        if (p_19467_.getHealth() > 1.0F) {
+    @Override
+    public boolean applyEffectTick(LivingEntity p_19467_, int p_19468_) {
+        if (p_19467_.getHealth() > p_19467_.getMaxHealth() * 0.1F) {
             p_19467_.hurt(p_19467_.damageSources().magic(), 1.0F);
         }
+        return true;
     }
 
     public boolean isDurationEffectTick(int p_19455_, int p_19456_) {

@@ -47,17 +47,17 @@ public class WitchServantBarterGoal extends Goal {
         }
         if (this.progress <= 0) {
             Vec3 vec3 = trader != null ? trader.position() : this.witch.position();
-            if (!this.witch.level.isClientSide) {
-                if (this.witch.level.getServer() != null) {
+            if (!this.witch.level().isClientSide) {
+                if (this.witch.level().getServer() != null) {
                     float luck = 0.0F;
                     if (this.witch.getMainHandItem().is(ModTags.Items.WITCH_BETTER_CURRENCY)){
                         luck = 1.0F;
                     }
-                    LootTable loottable = this.witch.level.getServer().getLootData().getLootTable(ModLootTables.WITCH_BARTER);
+                    LootTable loottable = this.witch.level().getServer().reloadableRegistries().getLootTable(ModLootTables.WITCH_BARTER);
                     if (this.witch instanceof WarlockServant){
-                        loottable = this.witch.level.getServer().getLootData().getLootTable(ModLootTables.WARLOCK_BARTER);
+                        loottable = this.witch.level().getServer().reloadableRegistries().getLootTable(ModLootTables.WARLOCK_BARTER);
                     }
-                    List<ItemStack> list = loottable.getRandomItems((new LootParams.Builder((ServerLevel) this.witch.level)).withParameter(LootContextParams.THIS_ENTITY, this.witch).withParameter(LootContextParams.ORIGIN, this.witch.position()).withLuck(luck).create(LootContextParamSets.GIFT));
+                    List<ItemStack> list = loottable.getRandomItems((new LootParams.Builder((ServerLevel) this.witch.level())).withParameter(LootContextParams.THIS_ENTITY, this.witch).withParameter(LootContextParams.ORIGIN, this.witch.position()).withLuck(luck).create(LootContextParamSets.GIFT));
                     for(ItemStack itemstack : list) {
                         BehaviorUtils.throwItem(this.witch, itemstack, vec3.add(0.0D, 1.0D, 0.0D));
                     }
@@ -76,8 +76,8 @@ public class WitchServantBarterGoal extends Goal {
     }
 
     protected void addParticlesAroundSelf(ParticleOptions p_35288_) {
-        if (!this.witch.level.isClientSide) {
-            ServerLevel serverLevel = (ServerLevel) this.witch.level;
+        if (!this.witch.level().isClientSide) {
+            ServerLevel serverLevel = (ServerLevel) this.witch.level();
             for (int i = 0; i < 5; ++i) {
                 double d0 = this.witch.getRandom().nextGaussian() * 0.02D;
                 double d1 = this.witch.getRandom().nextGaussian() * 0.02D;

@@ -29,7 +29,7 @@ public class QuickGrowingVineRenderer<T extends QuickGrowingVine> extends MobRen
     public ResourceLocation getTextureLocation(T pEntity) {
         if (pEntity instanceof QuickGrowingKelp){
             return KELP;
-        } else if (pEntity.isHostile() || !MobsConfig.QuickGrowingVineTexture.get()){
+        } else if (pEntity.isHostile() || !com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MobsConfig.QuickGrowingVineTexture, false)){
             return ORIGINAL;
         } else {
             return TEXTURE_LOCATION;
@@ -50,7 +50,7 @@ public class QuickGrowingVineRenderer<T extends QuickGrowingVine> extends MobRen
                 VertexConsumer vertexconsumer = p_116984_.getBuffer(this.renderType());
                 if (p_116986_ instanceof QuickGrowingKelp){
                     vertexconsumer = p_116984_.getBuffer(KELP);
-                } else if (p_116986_.isHostile() || !MobsConfig.QuickGrowingVineTexture.get()) {
+                } else if (p_116986_.isHostile() || !com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MobsConfig.QuickGrowingVineTexture, false)) {
                     vertexconsumer = p_116984_.getBuffer(ORIGINAL);
                 }
                 this.getParentModel().renderToBuffer(p_116983_, vertexconsumer, 15728640, OverlayTexture.NO_OVERLAY, -1);

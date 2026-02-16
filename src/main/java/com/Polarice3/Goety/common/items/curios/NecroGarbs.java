@@ -8,6 +8,7 @@ import com.Polarice3.Goety.utils.CuriosFinder;
 import com.Polarice3.Goety.utils.MobUtil;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
+import net.minecraft.core.Holder;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
@@ -41,7 +42,7 @@ public class NecroGarbs extends SingleStackItem {
         public void inventoryTick(ItemStack stack, Level worldIn, Entity entityIn, int itemSlot, boolean isSelected) {
             if (!worldIn.isClientSide) {
                 if (entityIn instanceof LivingEntity livingEntity) {
-                    if (ItemConfig.NecroCrownWeakness.get()) {
+                    if (com.Polarice3.Goety.utils.ConfigHelper.getBoolean(ItemConfig.NecroCrownWeakness, false)) {
                         if (!this.isNameless) {
                             if (CuriosFinder.hasCurio(livingEntity, this)) {
                                 if (MobUtil.isInSunlightNoRain(livingEntity)) {
@@ -66,7 +67,7 @@ public class NecroGarbs extends SingleStackItem {
         public void inventoryTick(ItemStack stack, Level worldIn, Entity entityIn, int itemSlot, boolean isSelected) {
             if (!worldIn.isClientSide) {
                 if (entityIn instanceof LivingEntity livingEntity) {
-                    if (ItemConfig.NecroCapeHunger.get()) {
+                    if (com.Polarice3.Goety.utils.ConfigHelper.getBoolean(ItemConfig.NecroCapeHunger, false)) {
                         if (!this.isNameless) {
                             if (CuriosFinder.hasCurio(livingEntity, this)) {
                                 if (MobUtil.isInSunlightNoRain(livingEntity)) {
@@ -81,13 +82,13 @@ public class NecroGarbs extends SingleStackItem {
             super.inventoryTick(stack, worldIn, entityIn, itemSlot, isSelected);
         }
 
-        @Override
-        public Multimap<Attribute, AttributeModifier> getAttributeModifiers(SlotContext slotContext,
+    @Override
+        public Multimap<Holder<Attribute>, AttributeModifier> getAttributeModifiers(SlotContext slotContext,
                                                                             UUID uuid, ItemStack stack) {
-            Multimap<Attribute, AttributeModifier> map = HashMultimap.create();
+            Multimap<Holder<Attribute>, AttributeModifier> map = HashMultimap.create();
             if (IronLoaded.IRON_SPELLBOOKS.isLoaded()){
-                if (MainConfig.RobesIronResist.get()) {
-                    map.put(IronAttributes.BLOOD_MAGIC_RESIST, new AttributeModifier(UUID.fromString("491b09e2-380d-49ce-b7e3-7512180c3eb0"), "Robes Iron Spell Resist", 0.25F, AttributeModifier.Operation.ADDITION));
+                if (com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MainConfig.RobesIronResist, false)) {
+                    map.put(IronAttributes.BLOOD_MAGIC_RESIST, new AttributeModifier(com.Polarice3.Goety.Goety.location("robes_iron_spell_resist"), 0.25F, AttributeModifier.Operation.ADD_VALUE));
                 }
             }
             return map;

@@ -1,5 +1,7 @@
 package com.Polarice3.Goety.common.entities.ally.illager;
 
+import com.Polarice3.Goety.utils.MobType;
+
 import com.Polarice3.Goety.api.entities.ITrainable;
 import com.Polarice3.Goety.api.entities.ally.illager.ILooter;
 import com.Polarice3.Goety.client.particles.ModParticleTypes;
@@ -54,7 +56,7 @@ import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.alchemy.PotionUtils;
+import com.Polarice3.Goety.utils.PotionUtils;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.ChestBlockEntity;
@@ -236,7 +238,7 @@ public abstract class AbstractIllagerServant extends RaiderServant implements IT
 
     @Override
     public int getTotalTrainTime() {
-        return MathHelper.secondsToTicks(MobsConfig.IllagerServantTrainTime.get());
+        return MathHelper.secondsToTicks(com.Polarice3.Goety.utils.ConfigHelper.getInt(MobsConfig.IllagerServantTrainTime, 0));
     }
 
     @Override
@@ -284,7 +286,7 @@ public abstract class AbstractIllagerServant extends RaiderServant implements IT
     @Override
     public boolean canTrain(Level level, BlockPos blockPos, EntityType<? extends Mob> entityType) {
         boolean flag = true;
-        if (!MobsConfig.IllagerServantAutoTrain.get()) {
+        if (!com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MobsConfig.IllagerServantAutoTrain, false)) {
             flag = this.getStoredTrainPos().isPresent()
                     && BlockFinder.samePos(this.getStoredTrainPos().get(), blockPos);
         }
@@ -296,7 +298,7 @@ public abstract class AbstractIllagerServant extends RaiderServant implements IT
     }
 
     public boolean canOpenDoors() {
-        return MobsConfig.IllagerServantAllOpenDoors.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MobsConfig.IllagerServantAllOpenDoors, false);
     }
 
     protected void customServerAiStep() {
@@ -445,7 +447,7 @@ public abstract class AbstractIllagerServant extends RaiderServant implements IT
 
     public boolean canBreed() {
         boolean flag = true;
-        if (!MobsConfig.IllagerServantAllBreed.get()) {
+        if (!com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MobsConfig.IllagerServantAllBreed, false)) {
             flag = this.getType() == ModEntityType.NEOLLAGER.get();
         }
         return flag
@@ -633,11 +635,11 @@ public abstract class AbstractIllagerServant extends RaiderServant implements IT
 
     @Override
     public boolean canPickUpLoot() {
-        return MobsConfig.IllagerServantPickUpDrops.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MobsConfig.IllagerServantPickUpDrops, false);
     }
 
     public boolean wantsToPickUp(ItemStack itemStack) {
-        return MobsConfig.IllagerServantPickUpDrops.get()
+        return com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MobsConfig.IllagerServantPickUpDrops, false)
                 && this.validFood(itemStack)
                 && this.canHaveMoreFood()
                 && this.getInventory().canAddItem(itemStack);
@@ -673,7 +675,7 @@ public abstract class AbstractIllagerServant extends RaiderServant implements IT
                                 && illager.getTrueOwner() == this.getTrueOwner()
                                 && illager.getType() == entityType),
                 this, this.getBoundingBox().inflate(8.0D));
-        i += Mth.clamp(list.size(), 0, MobsConfig.IllagerServantMaxMentors.get());
+        i += Mth.clamp(list.size(), 0, com.Polarice3.Goety.utils.ConfigHelper.getInt(MobsConfig.IllagerServantMaxMentors, 0));
         return i;
     }
 

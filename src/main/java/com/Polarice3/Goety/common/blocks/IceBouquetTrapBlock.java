@@ -1,6 +1,7 @@
 package com.Polarice3.Goety.common.blocks;
 
 import com.Polarice3.Goety.common.blocks.entities.IceBouquetTrapBlockEntity;
+import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -20,6 +21,12 @@ import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import javax.annotation.Nullable;
 
 public class IceBouquetTrapBlock extends BaseEntityBlock {
+    public static final MapCodec<IceBouquetTrapBlock> CODEC = simpleCodec(p -> new IceBouquetTrapBlock());
+
+    @Override
+    protected MapCodec<? extends BaseEntityBlock> codec() {
+        return CODEC;
+    }
     public static final BooleanProperty TRIGGERED = BlockStateProperties.TRIGGERED;
     public static final BooleanProperty POWERED = BlockStateProperties.POWERED;
 

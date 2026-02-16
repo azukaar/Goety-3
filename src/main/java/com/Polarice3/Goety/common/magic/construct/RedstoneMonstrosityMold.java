@@ -474,7 +474,7 @@ public class RedstoneMonstrosityMold implements IMold {
                 }
             }
         }
-        return count < SpellConfig.RedstoneMonstrosityPlayerLimit.get() && global < SpellConfig.RedstoneMonstrosityGlobalLimit.get();
+        return count < com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.RedstoneMonstrosityPlayerLimit, 0) && global < com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.RedstoneMonstrosityGlobalLimit, 0);
     }
 
     @Override
@@ -487,7 +487,7 @@ public class RedstoneMonstrosityMold implements IMold {
                             RedstoneMonstrosity monstrosity = ModEntityType.REDSTONE_MONSTROSITY.get().create(level);
                             if (monstrosity != null) {
                                 monstrosity.setTrueOwner(player);
-                                monstrosity.finalizeSpawn((ServerLevelAccessor) level, level.getCurrentDifficultyAt(monstrosity.blockPosition()), MobSpawnType.MOB_SUMMONED, null, null);
+                                monstrosity.finalizeSpawn((ServerLevelAccessor) level, level.getCurrentDifficultyAt(monstrosity.blockPosition()), MobSpawnType.MOB_SUMMONED, null);
                                 monstrosity.moveTo((double) blockPos.getX() + 0.5D, (double) blockPos.getY() + 0.05D, (double) blockPos.getZ() + 0.5D, 0.0F, 0.0F);
                                 if (level.addFreshEntity(monstrosity)) {
                                     removeBlocks(level, blockPos);

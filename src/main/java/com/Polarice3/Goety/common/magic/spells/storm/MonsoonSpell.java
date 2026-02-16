@@ -30,11 +30,11 @@ public class MonsoonSpell extends Spell {
     }
 
     public int defaultSoulCost() {
-        return SpellConfig.MonsoonCost.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.MonsoonCost, 0);
     }
 
     public int defaultCastDuration() {
-        return SpellConfig.MonsoonDuration.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.MonsoonDuration, 0);
     }
 
     public SoundEvent CastingSound() {
@@ -43,7 +43,7 @@ public class MonsoonSpell extends Spell {
 
     @Override
     public int defaultSpellCooldown() {
-        return SpellConfig.MonsoonCoolDown.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.MonsoonCoolDown, 0);
     }
 
     @Override

@@ -16,7 +16,7 @@ import javax.annotation.Nullable;
 
 public class SnowBlockEffect extends BrewEffect {
     public SnowBlockEffect() {
-        super("snow", BrewConfig.SnowyCost.get(), MobEffectCategory.NEUTRAL, 0xffffff);
+        super("snow", com.Polarice3.Goety.utils.ConfigHelper.getInt(BrewConfig.SnowyCost, 0), MobEffectCategory.NEUTRAL, 0xffffff);
     }
 
     @Override

@@ -1,5 +1,6 @@
 package com.Polarice3.Goety.common.blocks;
 
+import com.mojang.serialization.MapCodec;
 import com.Polarice3.Goety.common.blocks.entities.BlazingCageBlockEntity;
 import com.Polarice3.Goety.common.blocks.entities.ModBlockEntities;
 import com.Polarice3.Goety.common.blocks.entities.SpiderNestBlockEntity;
@@ -12,6 +13,7 @@ import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.BaseEntityBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.material.MapColor;
@@ -20,6 +22,12 @@ import net.minecraft.world.level.pathfinder.PathComputationType;
 import javax.annotation.Nullable;
 
 public class BlazingCageBlock extends TrainingBlock {
+    public static final MapCodec<BlazingCageBlock> CODEC = simpleCodec(p -> new BlazingCageBlock());
+
+    @Override
+    protected MapCodec<? extends BaseEntityBlock> codec() {
+        return CODEC;
+    }
 
     public BlazingCageBlock() {
         super(Properties.of()
@@ -52,7 +60,7 @@ public class BlazingCageBlock extends TrainingBlock {
     }
 
     @Nullable
-    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level p_152755_, BlockState p_152756_, BlockEntityType<T> p_152757_) {
-        return createTickerHelper(p_152757_, ModBlockEntities.BLAZING_CAGE.get(), p_152755_.isClientSide ? SpiderNestBlockEntity::clientTick : SpiderNestBlockEntity::serverTick);
+    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level pLevel, BlockState pState, BlockEntityType<T> pBlockEntityType) {
+        return createTickerHelper(pBlockEntityType, ModBlockEntities.BLAZING_CAGE.get(), (pLevel1, pPos, pState1, pBlockEntity) -> pBlockEntity.tick(pLevel1, pPos, pState1, pBlockEntity));
     }
 }

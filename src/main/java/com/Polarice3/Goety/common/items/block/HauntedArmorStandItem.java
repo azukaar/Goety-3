@@ -46,8 +46,7 @@ public class HauntedArmorStandItem extends Item {
          AABB aabb = ModEntityType.HAUNTED_ARMOR_STAND.get().getDimensions().makeBoundingBox(vec3.x(), vec3.y(), vec3.z());
          if (level.noCollision((Entity)null, aabb) && level.getEntities((Entity)null, aabb).isEmpty()) {
             if (level instanceof ServerLevel serverlevel) {
-               Consumer<HauntedArmorStand> consumer = EntityType.createDefaultStackConfig(serverlevel, itemstack, p_40510_.getPlayer());
-               HauntedArmorStand armorStand = ModEntityType.HAUNTED_ARMOR_STAND.get().create(serverlevel, itemstack.getTag(), consumer, blockpos, MobSpawnType.SPAWN_EGG, true, true);
+                HauntedArmorStand armorStand = ModEntityType.HAUNTED_ARMOR_STAND.get().spawn(serverlevel, itemstack, p_40510_.getPlayer(), blockpos, MobSpawnType.SPAWN_EGG, true, true);
                if (armorStand == null) {
                   return InteractionResult.FAIL;
                }

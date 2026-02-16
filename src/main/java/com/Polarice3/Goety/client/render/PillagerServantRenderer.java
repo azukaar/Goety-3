@@ -13,7 +13,7 @@ import net.minecraft.resources.ResourceLocation;
 
 public class PillagerServantRenderer<T extends PillagerServant> extends MobRenderer<T, IllagerServantModel<T>> {
     protected static final ResourceLocation TEXTURE = Goety.location("textures/entity/servants/illager/pillager.png");
-    protected static final ResourceLocation ORIGINAL = new ResourceLocation("textures/entity/illager/pillager.png");
+    protected static final ResourceLocation ORIGINAL = ResourceLocation.parse("textures/entity/illager/pillager.png");
 
     public PillagerServantRenderer(EntityRendererProvider.Context renderManagerIn) {
         super(renderManagerIn, new IllagerServantModel<>(renderManagerIn.bakeLayer(ModModelLayer.ILLAGER_SERVANT)), 0.5F);
@@ -28,7 +28,7 @@ public class PillagerServantRenderer<T extends PillagerServant> extends MobRende
 
     @Override
     public ResourceLocation getTextureLocation(T entity) {
-        if (entity.isHostile() || !MobsConfig.PillagerServantTexture.get()){
+        if (entity.isHostile() || !com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MobsConfig.PillagerServantTexture, false)){
             return ORIGINAL;
         } else {
             return TEXTURE;

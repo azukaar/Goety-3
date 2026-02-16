@@ -23,7 +23,7 @@ import javax.annotation.Nullable;
 
 public class CorrosionBlockEffect extends BrewEffect {
     public CorrosionBlockEffect() {
-        super("corrosion", BrewConfig.CorrosionCost.get(), MobEffectCategory.NEUTRAL, 0xbae633);
+        super("corrosion", com.Polarice3.Goety.utils.ConfigHelper.getInt(BrewConfig.CorrosionCost, 0), MobEffectCategory.NEUTRAL, 0xbae633);
     }
 
     @Override
@@ -35,7 +35,7 @@ public class CorrosionBlockEffect extends BrewEffect {
                         && !state.hasBlockEntity()
                         && state.canEntityDestroy(pLevel, blockPos, pSource)
                         && state.getDestroySpeed(serverLevel, blockPos) != -1.0F){
-                    serverLevel.destroyBlock(blockPos, state.is(Tags.Blocks.OBSIDIAN));
+                    serverLevel.destroyBlock(blockPos, state.is(BlockTags.create(net.minecraft.resources.ResourceLocation.parse("c:obsidians"))));
                 }
                 for (LivingEntity livingEntity : pLevel.getEntitiesOfClass(LivingEntity.class, new AABB(blockPos))){
                     this.applyEntityEffect(livingEntity, pSource, pSource, pAmplifier);
@@ -48,14 +48,14 @@ public class CorrosionBlockEffect extends BrewEffect {
     @Override
     public void applyEntityEffect(LivingEntity pTarget, @Nullable Entity source, @Nullable Entity pIndirectSource, int pAmplifier){
         pAmplifier += 1;
-        if(pTarget.level.random.nextInt(Mth.floor(5.0F / Mth.clamp(pAmplifier, 1, 5))) == 0) {
+        if(pTarget.level().random.nextInt(Mth.floor(5.0F / Mth.clamp(pAmplifier, 1, 5))) == 0) {
             pTarget.hurt(pTarget.damageSources().thrown(pTarget, pIndirectSource), 8.0F * pAmplifier);
         }
 
         for(EquipmentSlot equipmentSlot : EquipmentSlot.values()) {
             ItemStack stack = pTarget.getItemBySlot(equipmentSlot);
             if(stack.isDamageableItem()) {
-                ItemHelper.hurtAndBreak(stack, 50 + (pTarget.level.random.nextInt(25) * pAmplifier), pIndirectSource instanceof LivingEntity entity ? entity : null);
+                ItemHelper.hurtAndBreak(stack, 50 + (pTarget.level().random.nextInt(25) * pAmplifier), pIndirectSource instanceof LivingEntity entity ? entity : null);
             }
         }
     }

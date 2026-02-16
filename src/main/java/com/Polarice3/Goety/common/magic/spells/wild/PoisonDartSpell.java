@@ -25,12 +25,12 @@ public class PoisonDartSpell extends Spell {
     }
 
     public int defaultSoulCost() {
-        return SpellConfig.PoisonDartCost.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.PoisonDartCost, 0);
     }
 
     @Override
     public int defaultCastDuration() {
-        return SpellConfig.PoisonDartDuration.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.PoisonDartDuration, 0);
     }
 
     public SoundEvent CastingSound() {
@@ -39,7 +39,7 @@ public class PoisonDartSpell extends Spell {
 
     @Override
     public int defaultSpellCooldown() {
-        return SpellConfig.PoisonDartCoolDown.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.PoisonDartCoolDown, 0);
     }
 
     public SpellType getSpellType() {

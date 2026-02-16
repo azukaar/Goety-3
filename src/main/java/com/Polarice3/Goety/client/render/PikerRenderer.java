@@ -10,7 +10,7 @@ import net.minecraft.client.renderer.entity.layers.CustomHeadLayer;
 import net.minecraft.resources.ResourceLocation;
 
 public class PikerRenderer<T extends Piker> extends MobRenderer<T, PikerModel<T>> {
-    protected static final ResourceLocation TEXTURE = new ResourceLocation(Goety.MOD_ID, "textures/entity/illagers/piker.png");
+    protected static final ResourceLocation TEXTURE = ResourceLocation.parse(Goety.MOD_ID + ":textures/entity/illagers/piker.png");
 
     public PikerRenderer(EntityRendererProvider.Context renderManagerIn) {
         super(renderManagerIn, new PikerModel<>(renderManagerIn.bakeLayer(ModModelLayer.PIKER)), 0.5F);

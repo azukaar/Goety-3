@@ -149,12 +149,12 @@ public class VizierClone extends SpellcasterIllager {
 
     public static AttributeSupplier.Builder setCustomAttributes(){
         return Mob.createMobAttributes()
-                .add(Attributes.MAX_HEALTH, AttributesConfig.VizierHealth.get())
+                .add(Attributes.MAX_HEALTH, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.VizierHealth, 20.0D))
                 .add(Attributes.ATTACK_DAMAGE, 5.0D);
     }
 
     public void setConfigurableAttributes(){
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.MAX_HEALTH), AttributesConfig.VizierHealth.get());
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.MAX_HEALTH), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.VizierHealth, 20.0D));
     }
 
     protected void defineSynchedData(SynchedEntityData.Builder builder) {

@@ -32,12 +32,12 @@ public class SwordSpell extends Spell {
     }
 
     public int defaultSoulCost() {
-        return SpellConfig.SwordCost.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.SwordCost, 0);
     }
 
     @Override
     public int defaultCastDuration() {
-        return SpellConfig.SwordDuration.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.SwordDuration, 0);
     }
 
     public SoundEvent CastingSound() {
@@ -46,7 +46,7 @@ public class SwordSpell extends Spell {
 
     @Override
     public int defaultSpellCooldown() {
-        return SpellConfig.SwordCoolDown.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.SwordCoolDown, 0);
     }
 
     public SpellType getSpellType() {

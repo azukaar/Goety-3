@@ -30,12 +30,12 @@ public class CycloneSpell extends Spell {
 
     @Override
     public int defaultSoulCost() {
-        return SpellConfig.CycloneCost.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.CycloneCost, 0);
     }
 
     @Override
     public int defaultCastDuration() {
-        return SpellConfig.CycloneDuration.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.CycloneDuration, 0);
     }
 
     @Override
@@ -48,7 +48,7 @@ public class CycloneSpell extends Spell {
 
     @Override
     public int defaultSpellCooldown() {
-        return SpellConfig.CycloneCoolDown.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.CycloneCoolDown, 0);
     }
 
     @Override

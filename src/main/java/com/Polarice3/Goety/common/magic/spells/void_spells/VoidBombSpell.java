@@ -28,12 +28,12 @@ public class VoidBombSpell extends Spell {
 
     @Override
     public int defaultSoulCost() {
-        return SpellConfig.VoidBombCost.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.VoidBombCost, 0);
     }
 
     @Override
     public int defaultCastDuration() {
-        return SpellConfig.VoidBombDuration.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.VoidBombDuration, 0);
     }
 
     @Nullable
@@ -44,7 +44,7 @@ public class VoidBombSpell extends Spell {
 
     @Override
     public int defaultSpellCooldown() {
-        return SpellConfig.VoidBombCoolDown.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.VoidBombCoolDown, 0);
     }
 
     @Override

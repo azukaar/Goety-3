@@ -87,7 +87,7 @@ public class SteamMissile extends SpellHurtingProjectile {
     protected void onHitEntity(EntityHitResult p_37626_) {
         super.onHitEntity(p_37626_);
         if (!this.level().isClientSide) {
-            float baseDamage = SpellConfig.SteamingDamage.get().floatValue() * WandUtil.damageMultiply();
+            float baseDamage = com.Polarice3.Goety.utils.ConfigHelper.getFloat(SpellConfig.SteamingDamage, 1.0F) * WandUtil.damageMultiply();
             Entity entity = p_37626_.getEntity();
             Entity entity1 = this.getOwner();
             boolean flag;
@@ -101,7 +101,7 @@ public class SteamMissile extends SpellHurtingProjectile {
                 flag = entity.hurt(ModDamageSource.indirectDrench(this, livingentity), baseDamage);
                 if (flag) {
                     if (entity.isAlive()) {
-                        this.doEnchantDamageEffects(livingentity, entity);
+                        // this.doEnchantDamageEffects(livingentity, entity);
                     }
                 }
             } else {
@@ -157,8 +157,8 @@ public class SteamMissile extends SpellHurtingProjectile {
         return false;
     }
 
-    @Override
-    public Packet<ClientGamePacketListener> getAddEntityPacket() {
-        return new net.minecraft.network.protocol.game.ClientboundAddEntityPacket(this);
-    }
+    // @Override
+    // public Packet<ClientGamePacketListener> getAddEntityPacket() {
+    //     return new net.minecraft.network.protocol.game.ClientboundAddEntityPacket(this);
+    // }
 }

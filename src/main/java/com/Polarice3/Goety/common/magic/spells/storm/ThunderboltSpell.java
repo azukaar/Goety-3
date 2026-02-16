@@ -29,12 +29,12 @@ import java.util.Optional;
 public class ThunderboltSpell extends Spell {
     @Override
     public int defaultSoulCost() {
-        return SpellConfig.ThunderboltCost.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.ThunderboltCost, 0);
     }
 
     @Override
     public int defaultCastDuration() {
-        return SpellConfig.ThunderboltDuration.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.ThunderboltDuration, 0);
     }
 
     @Override
@@ -44,7 +44,7 @@ public class ThunderboltSpell extends Spell {
 
     @Override
     public int defaultSpellCooldown() {
-        return SpellConfig.ThunderboltCoolDown.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.ThunderboltCoolDown, 0);
     }
 
     @Override
@@ -63,7 +63,7 @@ public class ThunderboltSpell extends Spell {
     @Override
     public void SpellResult(ServerLevel worldIn, LivingEntity caster, ItemStack staff, SpellStat spellStat) {
         int range = spellStat.getRange();
-        float damage = SpellConfig.ThunderboltDamage.get().floatValue() * WandUtil.damageMultiply();
+        float damage = com.Polarice3.Goety.utils.ConfigHelper.getFloat(SpellConfig.ThunderboltDamage, 1.0F) * WandUtil.damageMultiply();
         if (WandUtil.enchantedFocus(caster)) {
             range += WandUtil.getRangeLevel(caster);
             damage += WandUtil.getPotencyLevel(caster);
@@ -94,7 +94,7 @@ public class ThunderboltSpell extends Spell {
                         chainDamage = damage;
                     }
                     if (worldIn.random.nextFloat() <= chance){
-                        livingEntity.addEffect(new MobEffectInstance(GoetyEffects.SPASMS.get(), MathHelper.secondsToTicks(5)));
+                        livingEntity.addEffect(new MobEffectInstance(GoetyEffects.SPASMS, MathHelper.secondsToTicks(5)));
                     }
                     if (rightStaff(staff)){
                         WandUtil.chainLightning(livingEntity, caster, range / 4.0D, chainDamage);

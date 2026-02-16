@@ -15,6 +15,8 @@ import com.mojang.datafixers.util.Pair;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.Holder;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.network.chat.CommonComponents;
@@ -34,8 +36,9 @@ import net.minecraft.world.entity.animal.axolotl.Axolotl;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.alchemy.Potion;
-import net.minecraft.world.item.alchemy.PotionUtils;
+import com.Polarice3.Goety.utils.PotionUtils;
 import net.minecraft.world.item.alchemy.Potions;
+import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.level.block.AbstractCandleBlock;
 import net.minecraft.world.level.block.CampfireBlock;
 import net.minecraft.world.level.block.state.BlockState;
@@ -58,8 +61,22 @@ public class BrewUtils {
     public static String FIRE_PROOF_ID = "FireProof";
     private static final Component NO_EFFECT = Component.translatable("effect.none").withStyle(ChatFormatting.GRAY);
 
+    private static CompoundTag getTag(ItemStack stack) {
+        CustomData customData = stack.get(DataComponents.CUSTOM_DATA);
+        return customData != null ? customData.copyTag() : null;
+    }
+
+    private static CompoundTag getOrCreateTag(ItemStack stack) {
+        CompoundTag tag = getTag(stack);
+        return tag != null ? tag : new CompoundTag();
+    }
+
+    private static void setTag(ItemStack stack, CompoundTag tag) {
+        stack.set(DataComponents.CUSTOM_DATA, CustomData.of(tag));
+    }
+
     public static int getAreaOfEffect(ItemStack p_43576_) {
-        CompoundTag compoundtag = p_43576_.getTag();
+        CompoundTag compoundtag = getTag(p_43576_);
         if (compoundtag != null && compoundtag.contains(AOE_ID)) {
             return compoundtag.getInt(AOE_ID);
         } else {
@@ -68,11 +85,13 @@ public class BrewUtils {
     }
 
     public static void setAreaOfEffect(ItemStack pStack, int aoe){
-        pStack.getOrCreateTag().putInt(AOE_ID, aoe);
+        CompoundTag tag = getOrCreateTag(pStack);
+        tag.putInt(AOE_ID, aoe);
+        setTag(pStack, tag);
     }
 
     public static float getLingering(ItemStack p_43576_) {
-        CompoundTag compoundtag = p_43576_.getTag();
+        CompoundTag compoundtag = getTag(p_43576_);
         if (compoundtag != null && compoundtag.contains(LINGERING_ID)) {
             return compoundtag.getFloat(LINGERING_ID);
         } else {
@@ -81,11 +100,13 @@ public class BrewUtils {
     }
 
     public static void setLingering(ItemStack pStack, float lingering){
-        pStack.getOrCreateTag().putFloat(LINGERING_ID, lingering);
+        CompoundTag tag = getOrCreateTag(pStack);
+        tag.putFloat(LINGERING_ID, lingering);
+        setTag(pStack, tag);
     }
 
     public static int getQuaff(ItemStack itemStack){
-        CompoundTag compoundtag = itemStack.getTag();
+        CompoundTag compoundtag = getTag(itemStack);
         if (compoundtag != null && compoundtag.contains(QUAFF_ID)) {
             return compoundtag.getInt(QUAFF_ID);
         } else {
@@ -106,11 +127,13 @@ public class BrewUtils {
     }
 
     public static void setQuaff(ItemStack pStack, int quaff){
-        pStack.getOrCreateTag().putInt(QUAFF_ID, quaff);
+        CompoundTag tag = getOrCreateTag(pStack);
+        tag.putInt(QUAFF_ID, quaff);
+        setTag(pStack, tag);
     }
 
     public static float getVelocity(@NotNull ItemStack itemStack){
-        CompoundTag compoundtag = itemStack.getTag();
+        CompoundTag compoundtag = getTag(itemStack);
         if (compoundtag != null && compoundtag.contains(VELOCITY_ID)) {
             return compoundtag.getFloat(VELOCITY_ID);
         } else {
@@ -131,11 +154,13 @@ public class BrewUtils {
     }
 
     public static void setVelocity(ItemStack pStack, float velocity){
-        pStack.getOrCreateTag().putFloat(VELOCITY_ID, velocity);
+        CompoundTag tag = getOrCreateTag(pStack);
+        tag.putFloat(VELOCITY_ID, velocity);
+        setTag(pStack, tag);
     }
 
     public static boolean getAquatic(ItemStack p_43576_) {
-        CompoundTag compoundtag = p_43576_.getTag();
+        CompoundTag compoundtag = getTag(p_43576_);
         if (compoundtag != null && compoundtag.contains(AQUATIC_ID)) {
             return compoundtag.getBoolean(AQUATIC_ID);
         } else {
@@ -144,11 +169,13 @@ public class BrewUtils {
     }
 
     public static void setAquatic(ItemStack pStack, boolean aquatic){
-        pStack.getOrCreateTag().putBoolean(AQUATIC_ID, aquatic);
+        CompoundTag tag = getOrCreateTag(pStack);
+        tag.putBoolean(AQUATIC_ID, aquatic);
+        setTag(pStack, tag);
     }
 
     public static boolean getFireProof(ItemStack p_43576_) {
-        CompoundTag compoundtag = p_43576_.getTag();
+        CompoundTag compoundtag = getTag(p_43576_);
         if (compoundtag != null && compoundtag.contains(FIRE_PROOF_ID)) {
             return compoundtag.getBoolean(FIRE_PROOF_ID);
         } else {
@@ -157,11 +184,13 @@ public class BrewUtils {
     }
 
     public static void setFireProof(ItemStack pStack, boolean fireProof){
-        pStack.getOrCreateTag().putBoolean(FIRE_PROOF_ID, fireProof);
+        CompoundTag tag = getOrCreateTag(pStack);
+        tag.putBoolean(FIRE_PROOF_ID, fireProof);
+        setTag(pStack, tag);
     }
 
     public static List<BrewEffectInstance> getBrewEffects(ItemStack p_43548_) {
-        return getAllEffects(p_43548_.getTag());
+        return getAllEffects(getTag(p_43548_));
     }
 
     public static List<BrewEffectInstance> getAllEffects(Collection<BrewEffectInstance> p_43563_) {
@@ -183,7 +212,7 @@ public class BrewUtils {
     }
 
     public static List<BrewEffectInstance> getCustomEffects(ItemStack p_43572_) {
-        return getCustomEffects(p_43572_.getTag());
+        return getCustomEffects(getTag(p_43572_));
     }
 
     public static List<BrewEffectInstance> getCustomEffects(@Nullable CompoundTag p_43574_) {
@@ -209,17 +238,18 @@ public class BrewUtils {
 
     public static ItemStack setCustomEffects(ItemStack stack, Collection<MobEffectInstance> instances1, Collection<BrewEffectInstance> instances) {
         if (!instances1.isEmpty()){
-            CompoundTag compoundtag = stack.getOrCreateTag();
+            CompoundTag compoundtag = getOrCreateTag(stack);
             ListTag listtag = compoundtag.getList("CustomPotionEffects", 9);
 
             for(MobEffectInstance mobeffectinstance : instances1) {
-                listtag.add(mobeffectinstance.save(new CompoundTag()));
+                listtag.add(mobeffectinstance.save());
             }
 
             compoundtag.put("CustomPotionEffects", listtag);
+            setTag(stack, compoundtag);
         }
         if (!instances.isEmpty()) {
-            CompoundTag compoundtag = stack.getOrCreateTag();
+            CompoundTag compoundtag = getOrCreateTag(stack);
             ListTag listtag = compoundtag.getList("CustomBrewEffects", 9);
 
             for (BrewEffectInstance instance : instances) {
@@ -227,13 +257,13 @@ public class BrewUtils {
             }
 
             compoundtag.put("CustomBrewEffects", listtag);
+            setTag(stack, compoundtag);
         }
         return stack;
     }
 
     public static void addBrewTooltip(ItemStack itemStack, List<Component> p_43557_, float p_43558_) {
         List<MobEffectInstance> list = PotionUtils.getMobEffects(itemStack);
-        List<Pair<Attribute, AttributeModifier>> list1 = Lists.newArrayList();
         List<BrewEffectInstance> list2 = getBrewEffects(itemStack);
         if (list.isEmpty() && list2.isEmpty()) {
             p_43557_.add(NO_EFFECT);
@@ -257,22 +287,15 @@ public class BrewUtils {
             if (!list.isEmpty()){
                 for(MobEffectInstance mobeffectinstance : list) {
                     MutableComponent mutablecomponent = Component.translatable(mobeffectinstance.getDescriptionId());
-                    MobEffect mobeffect = mobeffectinstance.getEffect();
-                    Map<Attribute, AttributeModifier> map = mobeffect.getAttributeModifiers();
-                    if (!map.isEmpty()) {
-                        for(Map.Entry<Attribute, AttributeModifier> entry : map.entrySet()) {
-                            AttributeModifier attributemodifier = entry.getValue();
-                            AttributeModifier attributemodifier1 = new AttributeModifier(attributemodifier.getName(), mobeffect.getAttributeModifierValue(mobeffectinstance.getAmplifier(), attributemodifier), attributemodifier.getOperation());
-                            list1.add(new Pair<>(entry.getKey(), attributemodifier1));
-                        }
-                    }
+                    Holder<MobEffect> mobeffectHolder = mobeffectinstance.getEffect();
+                    MobEffect mobeffect = mobeffectHolder.value();
 
                     if (mobeffectinstance.getAmplifier() > 0) {
                         mutablecomponent = Component.translatable("potion.withAmplifier", mutablecomponent, Component.translatable("potion.potency." + mobeffectinstance.getAmplifier()));
                     }
 
                     if (mobeffectinstance.getDuration() > 20) {
-                        mutablecomponent = Component.translatable("potion.withDuration", mutablecomponent, MobEffectUtil.formatDuration(mobeffectinstance, p_43558_));
+                        mutablecomponent = Component.translatable("potion.withDuration", mutablecomponent, Component.literal(Integer.toString((int)(mobeffectinstance.getDuration() * p_43558_ / 20.0F)) + "s"));
                     }
 
                     p_43557_.add(mutablecomponent.withStyle(mobeffect.getCategory().getTooltipFormatting()));
@@ -296,34 +319,12 @@ public class BrewUtils {
             if (BrewUtils.getFireProof(itemStack)){
                 p_43557_.add(Component.translatable("tooltip.goety.brew.fireProof").withStyle(ChatFormatting.BLUE));
             }
-            if (!list1.isEmpty()) {
-                p_43557_.add(CommonComponents.EMPTY);
-                p_43557_.add(Component.translatable("potion.whenDrank").withStyle(ChatFormatting.DARK_PURPLE));
-
-                for(Pair<Attribute, AttributeModifier> pair : list1) {
-                    AttributeModifier attributemodifier2 = pair.getSecond();
-                    double d0 = attributemodifier2.getAmount();
-                    double d1;
-                    if (attributemodifier2.getOperation() != AttributeModifier.Operation.MULTIPLY_BASE && attributemodifier2.getOperation() != AttributeModifier.Operation.MULTIPLY_TOTAL) {
-                        d1 = attributemodifier2.getAmount();
-                    } else {
-                        d1 = attributemodifier2.getAmount() * 100.0D;
-                    }
-
-                    if (d0 > 0.0D) {
-                        p_43557_.add(Component.translatable("attribute.modifier.plus." + attributemodifier2.getOperation().toValue(), ItemStack.ATTRIBUTE_MODIFIER_FORMAT.format(d1), Component.translatable(pair.getFirst().getDescriptionId())).withStyle(ChatFormatting.BLUE));
-                    } else if (d0 < 0.0D) {
-                        d1 *= -1.0D;
-                        p_43557_.add(Component.translatable("attribute.modifier.take." + attributemodifier2.getOperation().toValue(), ItemStack.ATTRIBUTE_MODIFIER_FORMAT.format(d1), Component.translatable(pair.getFirst().getDescriptionId())).withStyle(ChatFormatting.RED));
-                    }
-                }
-            }
         }
     }
 
     public static String formatDuration(BrewEffectInstance p_19582_, float p_19583_) {
         int i = Mth.floor((float)p_19582_.getDuration() * p_19583_);
-        return StringUtil.formatTickDuration(i);
+        return (i / 20) + "s";
     }
 
     public static boolean hasBrewEffect(ItemStack itemStack){
@@ -343,7 +344,7 @@ public class BrewUtils {
     }
 
     public static int getColor(ItemStack p_43576_) {
-        CompoundTag compoundtag = p_43576_.getTag();
+        CompoundTag compoundtag = getTag(p_43576_);
         if (compoundtag != null && compoundtag.contains("CustomPotionColor", 99)) {
             return compoundtag.getInt("CustomPotionColor");
         } else {
@@ -362,7 +363,7 @@ public class BrewUtils {
 
             for(MobEffectInstance mobeffectinstance : instance1) {
                 if (mobeffectinstance.isVisible()) {
-                    int k = mobeffectinstance.getEffect().getColor();
+                    int k = mobeffectinstance.getEffect().value().getColor();
                     int l = mobeffectinstance.getAmplifier() + 1;
                     f += (float)(l * (k >> 16 & 255)) / 255.0F;
                     f1 += (float)(l * (k >> 8 & 255)) / 255.0F;
@@ -400,8 +401,8 @@ public class BrewUtils {
     }
 
     public static void onHit(LivingEntity livingEntity, ItemStack itemStack, @Nullable Entity target, BlockPos blockPos, Direction direction) {
-        if (!livingEntity.level.isClientSide) {
-            Potion potion = PotionUtils.getPotion(itemStack);
+        if (!livingEntity.level().isClientSide) {
+            Holder<Potion> potion = PotionUtils.getPotion(itemStack);
             List<MobEffectInstance> list = PotionUtils.getMobEffects(itemStack);
             List<BrewEffectInstance> list1 = BrewUtils.getBrewEffects(itemStack);
             boolean flag = potion == Potions.WATER && list.isEmpty();
@@ -417,7 +418,7 @@ public class BrewUtils {
                 }
             }
 
-            ModNetwork.sendToALL(new SAddBrewParticlesPacket(itemStack, blockPos, potion.hasInstantEffects(), BrewUtils.getColor(itemStack)));
+            ModNetwork.sendToALL(new SAddBrewParticlesPacket(itemStack, blockPos, potion.value().hasInstantEffects(), BrewUtils.getColor(itemStack)));
             if (target != null){
                 onHitBlock(livingEntity, itemStack, target.blockPosition(), direction);
                 onHitEntity(livingEntity, itemStack, target);
@@ -426,20 +427,20 @@ public class BrewUtils {
     }
 
     public static void onHitEntity(LivingEntity livingEntity, ItemStack itemStack, Entity target) {
-        if (!livingEntity.level.isClientSide) {
+        if (!livingEntity.level().isClientSide) {
             if (!isGas(itemStack)) {
                 List<BrewEffectInstance> list = BrewUtils.getBrewEffects(itemStack);
                 for (BrewEffectInstance brewEffectInstance : list) {
-                    brewEffectInstance.getEffect().applyBlockEffect(livingEntity.level, target.blockPosition(), livingEntity, brewEffectInstance.getDuration(), brewEffectInstance.getAmplifier(), BrewUtils.getAreaOfEffect(itemStack));
+                    brewEffectInstance.getEffect().applyBlockEffect(livingEntity.level(), target.blockPosition(), livingEntity, brewEffectInstance.getDuration(), brewEffectInstance.getAmplifier(), BrewUtils.getAreaOfEffect(itemStack));
                 }
             }
         }
     }
 
     public static void onHitBlock(LivingEntity livingEntity, ItemStack itemStack, BlockPos blockPos, Direction direction) {
-        if (!livingEntity.level.isClientSide) {
+        if (!livingEntity.level().isClientSide) {
             if (!isGas(itemStack)) {
-                Potion potion = PotionUtils.getPotion(itemStack);
+                Holder<Potion> potion = PotionUtils.getPotion(itemStack);
                 List<BrewEffectInstance> list = BrewUtils.getBrewEffects(itemStack);
                 boolean flag = potion == Potions.WATER && list.isEmpty();
                 BlockPos blockpos1 = blockPos.relative(direction);
@@ -452,8 +453,8 @@ public class BrewUtils {
                     }
                 }
                 for (BrewEffectInstance brewEffectInstance : list) {
-                    brewEffectInstance.getEffect().applyDirectionalBlockEffect(livingEntity.level, blockPos, direction, livingEntity, brewEffectInstance.getAmplifier(), BrewUtils.getAreaOfEffect(itemStack));
-                    brewEffectInstance.getEffect().applyBlockEffect(livingEntity.level, blockPos, livingEntity, brewEffectInstance.getDuration(), brewEffectInstance.getAmplifier(), BrewUtils.getAreaOfEffect(itemStack));
+                    brewEffectInstance.getEffect().applyDirectionalBlockEffect(livingEntity.level(), blockPos, direction, livingEntity, brewEffectInstance.getAmplifier(), BrewUtils.getAreaOfEffect(itemStack));
+                    brewEffectInstance.getEffect().applyBlockEffect(livingEntity.level(), blockPos, livingEntity, brewEffectInstance.getDuration(), brewEffectInstance.getAmplifier(), BrewUtils.getAreaOfEffect(itemStack));
                 }
             }
         }
@@ -475,7 +476,7 @@ public class BrewUtils {
             vec3 = target.position();
         }
         AABB aabb = makeBoundingBox(vec3.x, vec3.y, vec3.z).inflate(area, area / 2.0D, area);
-        List<LivingEntity> list = livingEntity.level.getEntitiesOfClass(LivingEntity.class, aabb, WATER_SENSITIVE);
+        List<LivingEntity> list = livingEntity.level().getEntitiesOfClass(LivingEntity.class, aabb, WATER_SENSITIVE);
         if (!list.isEmpty()) {
             for(LivingEntity livingTarget : list) {
                 double d0 = vec3.distanceToSqr(livingTarget.position());
@@ -485,7 +486,7 @@ public class BrewUtils {
             }
         }
 
-        for(Axolotl axolotl : livingEntity.level.getEntitiesOfClass(Axolotl.class, aabb)) {
+        for(Axolotl axolotl : livingEntity.level().getEntitiesOfClass(Axolotl.class, aabb)) {
             axolotl.rehydrate();
         }
 
@@ -499,7 +500,7 @@ public class BrewUtils {
             vec3 = target.position();
         }
         AABB aabb = makeBoundingBox(vec3.x, vec3.y, vec3.z).inflate(area, area / 2.0D, area);
-        List<LivingEntity> list = livingEntity.level.getEntitiesOfClass(LivingEntity.class, aabb);
+        List<LivingEntity> list = livingEntity.level().getEntitiesOfClass(LivingEntity.class, aabb);
         if (!list.isEmpty()) {
             for(LivingEntity livingTarget : list) {
                 if (livingTarget.isAffectedByPotions()) {
@@ -512,13 +513,14 @@ public class BrewUtils {
 
                         if (!mobEffectInstances.isEmpty()) {
                             for (MobEffectInstance mobeffectinstance : mobEffectInstances) {
-                                MobEffect mobeffect = mobeffectinstance.getEffect();
+                                Holder<MobEffect> mobeffectHolder = mobeffectinstance.getEffect();
+                                MobEffect mobeffect = mobeffectHolder.value();
                                 if (mobeffect.isInstantenous()) {
                                     mobeffect.applyInstantenousEffect(livingEntity, livingEntity, livingTarget, mobeffectinstance.getAmplifier(), d1);
                                 } else {
                                     int i = (int) (d1 * (double) mobeffectinstance.getDuration() + 0.5D);
                                     if (i > 20) {
-                                        livingTarget.addEffect(new MobEffectInstance(mobeffect, i, mobeffectinstance.getAmplifier(), mobeffectinstance.isAmbient(), mobeffectinstance.isVisible()), livingEntity);
+                                        livingTarget.addEffect(new MobEffectInstance(mobeffectHolder, i, mobeffectinstance.getAmplifier(), mobeffectinstance.isAmbient(), mobeffectinstance.isVisible()), livingEntity);
                                     }
                                 }
                             }
@@ -545,7 +547,7 @@ public class BrewUtils {
         if (target != null){
             vec3 = target.position();
         }
-        BrewEffectCloud brewEffectCloud = new BrewEffectCloud(livingEntity.level, vec3.x(), vec3.y(), vec3.z());
+        BrewEffectCloud brewEffectCloud = new BrewEffectCloud(livingEntity.level(), vec3.x(), vec3.y(), vec3.z());
         brewEffectCloud.setOwner(livingEntity);
 
         brewEffectCloud.setRadius(3.0F + h);
@@ -565,12 +567,12 @@ public class BrewUtils {
             }
         }
 
-        CompoundTag compoundtag = itemStack.getTag();
+        CompoundTag compoundtag = getTag(itemStack);
         if (compoundtag != null && compoundtag.contains("CustomPotionColor", 99)) {
             brewEffectCloud.setFixedColor(compoundtag.getInt("CustomPotionColor"));
         }
 
-        livingEntity.level.addFreshEntity(brewEffectCloud);
+        livingEntity.level().addFreshEntity(brewEffectCloud);
     }
 
     public static void makeBrewGas(LivingEntity livingEntity, ItemStack itemStack, @Nullable Entity target, BlockPos blockPos){
@@ -579,27 +581,27 @@ public class BrewUtils {
         if (target != null){
             blockPos = target.blockPosition();
         }
-        BrewGas brewGas = new BrewGas(livingEntity.level, blockPos.getX(), blockPos.getY(), blockPos.getZ());
+        BrewGas brewGas = new BrewGas(livingEntity.level(), blockPos.getX(), blockPos.getY(), blockPos.getZ());
         brewGas.setGas(PotionUtils.getCustomEffects(itemStack), BrewUtils.getCustomEffects(itemStack),
                 120 * (i + 1), 3 * (h + 1), livingEntity);
 
-        livingEntity.level.addFreshEntity(brewGas);
+        livingEntity.level().addFreshEntity(brewGas);
 
-        if (!livingEntity.level.isClientSide){
-            ModNetwork.sendToALL(new SPlayWorldSoundPacket(blockPos, ModSounds.BREW_GAS.get(), 1.0F, livingEntity.level.random.nextFloat() * 0.1F + 0.9F));
+        if (!livingEntity.level().isClientSide){
+            ModNetwork.sendToALL(new SPlayWorldSoundPacket(blockPos, ModSounds.BREW_GAS.get(), 1.0F, livingEntity.level().random.nextFloat() * 0.1F + 0.9F));
         }
     }
 
     public static void dowseFire(LivingEntity livingEntity, BlockPos p_150193_) {
-        BlockState blockstate = livingEntity.level.getBlockState(p_150193_);
+        BlockState blockstate = livingEntity.level().getBlockState(p_150193_);
         if (blockstate.is(BlockTags.FIRE)) {
-            livingEntity.level.removeBlock(p_150193_, false);
+            livingEntity.level().removeBlock(p_150193_, false);
         } else if (AbstractCandleBlock.isLit(blockstate)) {
-            AbstractCandleBlock.extinguish((Player)null, blockstate, livingEntity.level, p_150193_);
+            AbstractCandleBlock.extinguish((Player)null, blockstate, livingEntity.level(), p_150193_);
         } else if (CampfireBlock.isLitCampfire(blockstate)) {
-            livingEntity.level.levelEvent((Player)null, 1009, p_150193_, 0);
-            CampfireBlock.dowse(livingEntity, livingEntity.level, p_150193_, blockstate);
-            livingEntity.level.setBlockAndUpdate(p_150193_, blockstate.setValue(CampfireBlock.LIT, Boolean.valueOf(false)));
+            livingEntity.level().levelEvent((Player)null, 1009, p_150193_, 0);
+            CampfireBlock.dowse(livingEntity, livingEntity.level(), p_150193_, blockstate);
+            livingEntity.level().setBlockAndUpdate(p_150193_, blockstate.setValue(CampfireBlock.LIT, Boolean.valueOf(false)));
         }
 
     }

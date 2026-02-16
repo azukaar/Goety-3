@@ -12,14 +12,14 @@
             "faces": {
                 "north": { "uv": [ 0, 0, 16, 16 ],
                     "texture": "#cross",
-                    "forge_data": {
+                    "neoforge_data": {
                         "block_light": 15,
                         "sky_light": 15
                     }
                 },
                 "south": { "uv": [ 0, 0, 16, 16 ],
                     "texture": "#cross",
-                    "forge_data": {
+                    "neoforge_data": {
                         "block_light": 15,
                         "sky_light": 15
                     }
@@ -33,14 +33,14 @@
             "faces": {
                 "west": { "uv": [ 0, 0, 16, 16 ],
                     "texture": "#cross",
-                    "forge_data": {
+                    "neoforge_data": {
                         "block_light": 15,
                         "sky_light": 15
                     }
                 },
                 "east": { "uv": [ 0, 0, 16, 16 ],
                     "texture": "#cross",
-                    "forge_data": {
+                    "neoforge_data": {
                         "block_light": 15,
                         "sky_light": 15
                     }

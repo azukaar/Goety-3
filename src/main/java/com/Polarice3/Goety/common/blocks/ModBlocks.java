@@ -28,12 +28,10 @@ import net.minecraft.world.level.block.state.properties.NoteBlockInstrument;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.material.PushReaction;
 import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
-import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
-import net.neoforged.neoforge.registries.NeoForgeRegistries;
-import net.neoforged.neoforge.registries.RegistryObject;
-
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -41,7 +39,7 @@ import java.util.function.Supplier;
 import java.util.function.ToIntFunction;
 
 public class ModBlocks {
-        public static DeferredRegister<Block> BLOCKS = DeferredRegister.create(NeoForgeRegistries.BLOCKS, Goety.MOD_ID);
+        public static DeferredRegister<Block> BLOCKS = DeferredRegister.create(net.minecraft.core.registries.Registries.BLOCK, Goety.MOD_ID);
         public static final Map<ResourceLocation, BlockLootSetting> BLOCK_LOOT = new HashMap<>();
 
         public static void init() {
@@ -49,7 +47,13 @@ public class ModBlocks {
                 // FMLJavaModLoadingContext.
         }
 
-        public static final DeferredHolder<Block, ? extends Block> ARCA_BLOCK = register("arca", ArcaBlock::new);
+        public static final DeferredHolder<Block, ? extends Block> ARCA_BLOCK = register("arca", () -> new ArcaBlock(BlockBehaviour.Properties.of()
+                .mapColor(MapColor.COLOR_PURPLE)
+                .strength(75.0F, 2400.0F)
+                .sound(SoundType.METAL)
+                .requiresCorrectToolForDrops()
+                .forceSolidOn()
+                .noOcclusion()));
         public static final DeferredHolder<Block, ? extends Block> CURSED_INFUSER = register("cursed_infuser",
                         CursedInfuserBlock::new);
         public static final DeferredHolder<Block, ? extends Block> GRIM_INFUSER = register("grim_infuser",
@@ -59,39 +63,39 @@ public class ModBlocks {
         public static final DeferredHolder<Block, ? extends Block> DARK_ALTAR = register("dark_altar",
                         DarkAltarBlock::new);
         public static final DeferredHolder<Block, ? extends Block> DARK_ALTAR_STONE = register("dark_altar_stone",
-                        () -> new DarkAltarBlock(BlockBehaviour.Properties.copy(Blocks.STONE_BRICKS).noOcclusion()));
+                        () -> new DarkAltarBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.STONE_BRICKS).noOcclusion()));
         public static final DeferredHolder<Block, ? extends Block> DARK_ALTAR_DEEPSLATE = register(
                         "dark_altar_deepslate",
                         () -> new DarkAltarBlock(
-                                        BlockBehaviour.Properties.copy(Blocks.DEEPSLATE_BRICKS).noOcclusion()));
+                                        BlockBehaviour.Properties.ofFullCopy(Blocks.DEEPSLATE_BRICKS).noOcclusion()));
         public static final DeferredHolder<Block, ? extends Block> DARK_ALTAR_NETHER_BRICK = register(
                         "dark_altar_nether_brick",
-                        () -> new DarkAltarBlock(BlockBehaviour.Properties.copy(Blocks.NETHER_BRICKS).noOcclusion()));
+                        () -> new DarkAltarBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.NETHER_BRICKS).noOcclusion()));
         public static final DeferredHolder<Block, ? extends Block> DARK_ALTAR_BLACKSTONE = register(
                         "dark_altar_blackstone",
-                        () -> new DarkAltarBlock(BlockBehaviour.Properties.copy(Blocks.POLISHED_BLACKSTONE_BRICKS)
+                        () -> new DarkAltarBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.POLISHED_BLACKSTONE_BRICKS)
                                         .noOcclusion()));
         public static final DeferredHolder<Block, ? extends Block> DARK_ALTAR_END_STONE = register(
                         "dark_altar_end_stone",
                         () -> new DarkAltarBlock(
-                                        BlockBehaviour.Properties.copy(Blocks.END_STONE_BRICKS).noOcclusion()));
+                                        BlockBehaviour.Properties.ofFullCopy(Blocks.END_STONE_BRICKS).noOcclusion()));
         public static final DeferredHolder<Block, ? extends Block> DARK_ALTAR_HIGHROCK = register("dark_altar_highrock",
                         () -> new DarkAltarBlock(HighrockProperties().noOcclusion()));
         public static final DeferredHolder<Block, ? extends Block> DARK_ALTAR_MARBLE = register("dark_altar_marble",
                         () -> new DarkAltarBlock(MarbleProperties().noOcclusion()));
         public static final DeferredHolder<Block, ? extends Block> PEDESTAL = register("pedestal", PedestalBlock::new);
         public static final DeferredHolder<Block, ? extends Block> PEDESTAL_STONE = register("pedestal_stone",
-                        () -> new PedestalBlock(BlockBehaviour.Properties.copy(Blocks.STONE_BRICKS).noOcclusion()));
+                        () -> new PedestalBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.STONE_BRICKS).noOcclusion()));
         public static final DeferredHolder<Block, ? extends Block> PEDESTAL_DEEPSLATE = register("pedestal_deepslate",
-                        () -> new PedestalBlock(BlockBehaviour.Properties.copy(Blocks.DEEPSLATE_BRICKS).noOcclusion()));
+                        () -> new PedestalBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.DEEPSLATE_BRICKS).noOcclusion()));
         public static final DeferredHolder<Block, ? extends Block> PEDESTAL_NETHER_BRICK = register(
                         "pedestal_nether_brick",
-                        () -> new PedestalBlock(BlockBehaviour.Properties.copy(Blocks.NETHER_BRICKS).noOcclusion()));
+                        () -> new PedestalBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.NETHER_BRICKS).noOcclusion()));
         public static final DeferredHolder<Block, ? extends Block> PEDESTAL_BLACKSTONE = register("pedestal_blackstone",
-                        () -> new PedestalBlock(BlockBehaviour.Properties.copy(Blocks.POLISHED_BLACKSTONE_BRICKS)
+                        () -> new PedestalBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.POLISHED_BLACKSTONE_BRICKS)
                                         .noOcclusion()));
         public static final DeferredHolder<Block, ? extends Block> PEDESTAL_END_STONE = register("pedestal_end_stone",
-                        () -> new PedestalBlock(BlockBehaviour.Properties.copy(Blocks.END_STONE_BRICKS).noOcclusion()));
+                        () -> new PedestalBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.END_STONE_BRICKS).noOcclusion()));
         public static final DeferredHolder<Block, ? extends Block> PEDESTAL_HIGHROCK = register("pedestal_highrock",
                         () -> new PedestalBlock(HighrockProperties().noOcclusion()));
         public static final DeferredHolder<Block, ? extends Block> PEDESTAL_MARBLE = register("pedestal_marble",
@@ -140,9 +144,24 @@ public class ModBlocks {
                         ShriekObeliskBlock::new);
         public static final DeferredHolder<Block, Block> NECRO_BRAZIER = register("necro_brazier",
                         NecroBrazierBlock::new);
-        public static final DeferredHolder<Block, Block> ANIMATOR = register("animator", AnimatorBlock::new);
+        public static final DeferredHolder<Block, Block> ANIMATOR = register("animator", () -> new AnimatorBlock(BlockBehaviour.Properties.of()
+                .mapColor(MapColor.STONE)
+                .strength(5.0F)
+                .sound(SoundType.METAL)
+                .requiresCorrectToolForDrops()
+                .noOcclusion()
+                .dynamicShape()));
         public static final DeferredHolder<Block, Block> BLACK_CRYSTAL = register("black_crystal",
-                        BlackCrystalBlock::new,
+                        () -> new BlackCrystalBlock(BlockBehaviour.Properties.of()
+                                .instrument(NoteBlockInstrument.HAT)
+                                .mapColor(MapColor.COLOR_PURPLE)
+                                .noOcclusion()
+                                .requiresCorrectToolForDrops()
+                                .strength(25.0F, 1200.0F)
+                                .sound(SoundType.AMETHYST_CLUSTER)
+                                .pushReaction(PushReaction.BLOCK)
+                                .isValidSpawn(ModBlocks::never)
+                                .isSuffocating(ModBlocks::never)),
                         false, LootTableType.EMPTY);
         public static final DeferredHolder<Block, Block> DARK_ANVIL = register("dark_anvil", DarkAnvilBlock::new);
         public static final DeferredHolder<Block, Block> CHIPPED_DARK_ANVIL = register("chipped_dark_anvil",
@@ -261,16 +280,14 @@ public class ModBlocks {
 
         public static final DeferredHolder<Block, Block> POTTED_CHORUS_STALK = register("potted_chorus_stalk",
                         () -> new FlowerPotBlock(
-                                        () -> (FlowerPotBlock) NeoForgeRegistries.BLOCKS
-                                                        .getDelegateOrThrow(Blocks.FLOWER_POT).get(),
+                                        () -> (FlowerPotBlock) Blocks.FLOWER_POT,
                                         ModBlocks.CHORUS_STALK, Block.Properties.of().pushReaction(PushReaction.DESTROY)
                                                         .lightLevel(l -> 4).noOcclusion().instabreak()),
                         false, LootTableType.EMPTY);
 
         public static final DeferredHolder<Block, Block> POTTED_CHORUS_FERN = register("potted_chorus_fern",
                         () -> new FlowerPotBlock(
-                                        () -> (FlowerPotBlock) NeoForgeRegistries.BLOCKS
-                                                        .getDelegateOrThrow(Blocks.FLOWER_POT).get(),
+                                        () -> (FlowerPotBlock) Blocks.FLOWER_POT,
                                         ModBlocks.CHORUS_FERN, Block.Properties.of().pushReaction(PushReaction.DESTROY)
                                                         .noOcclusion().instabreak()),
                         false, LootTableType.EMPTY);
@@ -380,11 +397,12 @@ public class ModBlocks {
         public static final DeferredHolder<Block, Block> SOUL_LIGHT_BLOCK = register("soul_light", SoulLightBlock::new,
                         false,
                         LootTableType.EMPTY);
-        public static final DeferredHolder<Block, Block> GLOW_LIGHT_BLOCK = register("glow_light", GlowLightBlock::new,
+        public static final DeferredHolder<Block, Block> GLOW_LIGHT_BLOCK = register("glow_light", 
+                        () -> new GlowLightBlock(BlockBehaviour.Properties.of().noCollission().instabreak().lightLevel(l -> 12).noLootTable()),
                         false,
                         LootTableType.EMPTY);
         public static final DeferredHolder<Block, Block> DIAMOND_MOLD_BLOCK = register("diamond_mold_block",
-                        () -> new Block(BlockBehaviour.Properties.copy(Blocks.DIAMOND_BLOCK)));
+                        () -> new Block(BlockBehaviour.Properties.ofFullCopy(Blocks.DIAMOND_BLOCK)));
         public static final DeferredHolder<Block, Block> REINFORCED_REDSTONE_BLOCK = register(
                         "reinforced_redstone_block",
                         () -> new PoweredBlock(BlockBehaviour.Properties.of()
@@ -395,20 +413,19 @@ public class ModBlocks {
                                         .isRedstoneConductor(ModBlocks::never)));
 
         public static final DeferredHolder<Block, Block> CREEPER_TOTEM = register("creeper_totem",
-                        () -> new ToweringBlock(BlockBehaviour.Properties.copy(Blocks.STONE)));
+                        () -> new ToweringBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.STONE)));
 
         public static final DeferredHolder<Block, Block> VOID_BLOCK = register("void_block", VoidBlock::new);
         public static final DeferredHolder<Block, Block> VOID_FLAME = register("void_flame", VoidFlameBlock::new, false,
                         LootTableType.EMPTY);
-        public static final DeferredHolder<Block, LiquidBlock> VOID_FLUID = register("void_fluid", VoidFluidBlock::new,
-                        false,
-                        LootTableType.EMPTY);
+        // VOID_FLUID is registered manually in Goety.registerFluidBlocks() after fluids are bound
+        public static DeferredHolder<Block, LiquidBlock> VOID_FLUID;
         public static final DeferredHolder<Block, Block> VOID_BARREL = register("void_barrel", VoidBarrelBlock::new,
                         true,
                         LootTableType.EMPTY);
         public static final DeferredHolder<Block, Block> VOID_CAULDRON = register(
                         "void_cauldron", () -> new VoidCauldronBlock(
-                                        BlockBehaviour.Properties.copy(Blocks.CAULDRON)
+                                        BlockBehaviour.Properties.ofFullCopy(Blocks.CAULDRON)
                                                         .emissiveRendering((state, world, pos) -> true)
                                                         .lightLevel((state) -> 1)),
                         false, LootTableType.EMPTY);
@@ -423,18 +440,18 @@ public class ModBlocks {
                         END_BASALT);
         public static final DeferredHolder<Block, Block> END_BASALT_SLAB = registerSlabs("end_basalt_slab", END_BASALT);
         public static final DeferredHolder<Block, Block> SOILED_END_BASALT_SLIGHT = register("soiled_end_basalt_slight",
-                        () -> new Block(BlockBehaviour.Properties.copy(END_BASALT.get())));
+                        () -> new Block(BlockBehaviour.Properties.ofFullCopy(END_BASALT.get())));
         public static final DeferredHolder<Block, Block> SOILED_END_BASALT = register("soiled_end_basalt",
-                        () -> new Block(BlockBehaviour.Properties.copy(END_BASALT.get())));
+                        () -> new Block(BlockBehaviour.Properties.ofFullCopy(END_BASALT.get())));
         public static final DeferredHolder<Block, Block> TOP_SOILED_END_BASALT = register("top_soiled_end_basalt",
-                        () -> new Block(BlockBehaviour.Properties.copy(END_BASALT.get())
+                        () -> new Block(BlockBehaviour.Properties.ofFullCopy(END_BASALT.get())
                                         .mapColor(MapColor.COLOR_GRAY)));
         public static final DeferredHolder<Block, Block> BOTTOM_SOILED_END_BASALT = register("bottom_soiled_end_basalt",
-                        () -> new Block(BlockBehaviour.Properties.copy(END_BASALT.get())));
+                        () -> new Block(BlockBehaviour.Properties.ofFullCopy(END_BASALT.get())));
         public static final DeferredHolder<Block, Block> GRASSY_END_BASALT = register("grassy_end_basalt",
-                        () -> new Block(BlockBehaviour.Properties.copy(END_BASALT.get())));
+                        () -> new Block(BlockBehaviour.Properties.ofFullCopy(END_BASALT.get())));
         public static final DeferredHolder<Block, Block> DIRTY_END_BASALT = register("dirty_end_basalt",
-                        () -> new Block(BlockBehaviour.Properties.copy(END_BASALT.get())));
+                        () -> new Block(BlockBehaviour.Properties.ofFullCopy(END_BASALT.get())));
 
         public static final DeferredHolder<Block, Block> END_BASALT_BRICKS = register("end_basalt_bricks",
                         () -> new Block(BlockBehaviour.Properties.of()
@@ -448,10 +465,10 @@ public class ModBlocks {
         public static final DeferredHolder<Block, Block> END_BASALT_BRICK_SLAB = registerSlabs("end_basalt_brick_slab",
                         END_BASALT_BRICKS);
         public static final DeferredHolder<Block, Block> SOILED_END_BASALT_BRICKS = register("soiled_end_basalt_bricks",
-                        () -> new Block(BlockBehaviour.Properties.copy(END_BASALT_BRICKS.get())));
+                        () -> new Block(BlockBehaviour.Properties.ofFullCopy(END_BASALT_BRICKS.get())));
 
         public static final DeferredHolder<Block, Block> SMOOTH_END_BASALT_BRICKS = register("smooth_end_basalt_bricks",
-                        () -> new Block(BlockBehaviour.Properties.copy(END_BASALT_BRICKS.get())));
+                        () -> new Block(BlockBehaviour.Properties.ofFullCopy(END_BASALT_BRICKS.get())));
 
         public static final DeferredHolder<Block, Block> END_ROCK = register("end_rock",
                         () -> new RotatedPillarBlock(BlockBehaviour.Properties.of()
@@ -460,16 +477,16 @@ public class ModBlocks {
                                         .sound(SoundType.STONE)));
         public static final DeferredHolder<Block, Block> END_ROCK_SLAB = registerSlabs("end_rock_slab", END_ROCK);
         public static final DeferredHolder<Block, Block> SOILED_END_ROCK = register("soiled_end_rock",
-                        () -> new Block(BlockBehaviour.Properties.copy(END_ROCK.get())));
+                        () -> new Block(BlockBehaviour.Properties.ofFullCopy(END_ROCK.get())));
         public static final DeferredHolder<Block, Block> GRASSY_END_ROCK = register("grassy_end_rock",
-                        () -> new Block(BlockBehaviour.Properties.copy(END_ROCK.get())));
+                        () -> new Block(BlockBehaviour.Properties.ofFullCopy(END_ROCK.get())));
         public static final DeferredHolder<Block, Block> GROWN_END_ROCK = register("grown_end_rock",
-                        () -> new Block(BlockBehaviour.Properties.copy(END_ROCK.get())));
+                        () -> new Block(BlockBehaviour.Properties.ofFullCopy(END_ROCK.get())));
         public static final DeferredHolder<Block, Block> DIRTY_END_ROCK = register("dirty_end_rock",
-                        () -> new Block(BlockBehaviour.Properties.copy(END_ROCK.get())));
+                        () -> new Block(BlockBehaviour.Properties.ofFullCopy(END_ROCK.get())));
 
         public static final DeferredHolder<Block, Block> END_ROCK_SLATE = register("end_rock_slate",
-                        () -> new Block(BlockBehaviour.Properties.copy(END_ROCK.get())));
+                        () -> new Block(BlockBehaviour.Properties.ofFullCopy(END_ROCK.get())));
 
         public static final DeferredHolder<Block, Block> END_ROCK_BRICKS = register("end_rock_bricks",
                         () -> new RotatedPillarBlock(BlockBehaviour.Properties.of()
@@ -482,11 +499,11 @@ public class ModBlocks {
                         "end_rock_brick_wall",
                         END_ROCK_BRICKS);
         public static final DeferredHolder<Block, Block> END_ROCK_BRICK_FENCE = register("end_rock_brick_fence",
-                        () -> new FenceBlock(Block.Properties.copy(END_ROCK_BRICKS.get())));
+                        () -> new FenceBlock(Block.Properties.ofFullCopy(END_ROCK_BRICKS.get())));
         public static final DeferredHolder<Block, Block> SOILED_END_ROCK_BRICKS = register("soiled_end_rock_bricks",
-                        () -> new RotatedPillarBlock(BlockBehaviour.Properties.copy(END_ROCK_BRICKS.get())));
+                        () -> new RotatedPillarBlock(BlockBehaviour.Properties.ofFullCopy(END_ROCK_BRICKS.get())));
         public static final DeferredHolder<Block, Block> GRASSY_END_ROCK_BRICKS = register("grassy_end_rock_bricks",
-                        () -> new RotatedPillarBlock(BlockBehaviour.Properties.copy(END_ROCK_BRICKS.get())));
+                        () -> new RotatedPillarBlock(BlockBehaviour.Properties.ofFullCopy(END_ROCK_BRICKS.get())));
 
         public static final DeferredHolder<Block, Block> END_ROCK_CHISELED = register("end_rock_chiseled",
                         () -> new Block(BlockBehaviour.Properties.of()
@@ -494,7 +511,7 @@ public class ModBlocks {
                                         .strength(3.0F, 9.0F)
                                         .sound(SoundType.STONE)));
         public static final DeferredHolder<Block, Block> SOILED_END_ROCK_CHISELED = register("soiled_end_rock_chiseled",
-                        () -> new Block(BlockBehaviour.Properties.copy(END_ROCK_CHISELED.get())));
+                        () -> new Block(BlockBehaviour.Properties.ofFullCopy(END_ROCK_CHISELED.get())));
 
         public static final DeferredHolder<Block, Block> END_GROWTH_BLOCK = register("end_growth_block",
                         EndGrowthBlock::new);
@@ -511,7 +528,7 @@ public class ModBlocks {
 
         public static final DeferredHolder<Block, Block> END_SOIL = register("end_soil", EndSoilBlock::new);
         public static final DeferredHolder<Block, Block> END_SOIL_DEBRIS = register("end_soil_debris",
-                        () -> new LayerBlock(BlockBehaviour.Properties.copy(END_SOIL.get()), true));
+                        () -> new LayerBlock(BlockBehaviour.Properties.ofFullCopy(END_SOIL.get()), true));
 
         public static final DeferredHolder<Block, Block> END_MUD = register("end_mud",
                         () -> new EndBonemealableBlock(BlockBehaviour.Properties.of()
@@ -520,12 +537,11 @@ public class ModBlocks {
                                         .sound(SoundType.MUD)));
         public static final DeferredHolder<Block, Block> END_MUD_SLAB = registerSlabs("end_mud_slab",
                         END_MUD);
-        public static final DeferredHolder<Block, LiquidBlock> END_MUD_FLUID = register("end_mud_fluid",
-                        EndMudFluidBlock::new,
-                        false, LootTableType.EMPTY);
+        // END_MUD_FLUID is registered manually in Goety.registerFluidBlocks() after fluids are bound
+        public static DeferredHolder<Block, LiquidBlock> END_MUD_FLUID;
         public static final DeferredHolder<Block, Block> END_MUD_CAULDRON = register("end_mud_cauldron",
                         () -> new EndMudCauldronBlock(
-                                        BlockBehaviour.Properties.copy(Blocks.CAULDRON)),
+                                        BlockBehaviour.Properties.ofFullCopy(Blocks.CAULDRON)),
                         false, LootTableType.EMPTY);
 
         public static final DeferredHolder<Block, Block> END_DIRT = register("end_dirt",
@@ -536,7 +552,7 @@ public class ModBlocks {
         public static final DeferredHolder<Block, Block> END_DIRT_SLAB = registerSlabs("end_dirt_slab",
                         END_DIRT);
         public static final DeferredHolder<Block, Block> SOILED_END_DIRT = register("soiled_end_dirt",
-                        () -> new Block(BlockBehaviour.Properties.copy(END_DIRT.get())));
+                        () -> new Block(BlockBehaviour.Properties.ofFullCopy(END_DIRT.get())));
 
         public static final DeferredHolder<Block, Block> JADE_ORE = register("jade_ore", StoneOreBlock::new, true,
                         LootTableType.EMPTY);
@@ -590,12 +606,11 @@ public class ModBlocks {
                         () -> new RotatedPillarBlock(Block.Properties.of().mapColor(MapColor.COLOR_GRAY)
                                         .instrument(NoteBlockInstrument.BASS).strength(2.0F).sound(SoundType.WOOD)));
         public static final DeferredHolder<Block, Block> HAUNTED_PRESSURE_PLATE = register("haunted_pressure_plate",
-                        () -> new PressurePlateBlock(PressurePlateBlock.Sensitivity.EVERYTHING,
+                        () -> new PressurePlateBlock(ModBlockSetType.HAUNTED,
                                         BlockBehaviour.Properties.of().mapColor(HAUNTED_PLANKS.get().defaultMapColor())
                                                         .forceSolidOn().instrument(NoteBlockInstrument.BASS)
                                                         .noCollission().strength(0.5F)
-                                                        .pushReaction(PushReaction.DESTROY),
-                                        ModBlockSetType.HAUNTED));
+                                                        .pushReaction(PushReaction.DESTROY)));
         public static final DeferredHolder<Block, Block> HAUNTED_TRAPDOOR = register("haunted_trapdoor",
                         () -> new TrapDoorBlock(ModBlockSetType.HAUNTED,
                                         Block.Properties.of().mapColor(MapColor.COLOR_GRAY)
@@ -609,19 +624,16 @@ public class ModBlocks {
         public static final DeferredHolder<Block, Block> HAUNTED_SLAB = registerSlabs("haunted_slab",
                         HAUNTED_PLANKS);
         public static final DeferredHolder<Block, Block> HAUNTED_FENCE_GATE = register("haunted_fence_gate",
-                        () -> new FenceGateBlock(Block.Properties.of().mapColor(HAUNTED_PLANKS.get().defaultMapColor())
+                        () -> new FenceGateBlock(ModWoodType.HAUNTED, Block.Properties.of().mapColor(HAUNTED_PLANKS.get().defaultMapColor())
                                         .instrument(NoteBlockInstrument.BASS).strength(2.0F, 3.0F)
-                                        .sound(SoundType.WOOD), ModWoodType.HAUNTED));
+                                        .sound(SoundType.WOOD)));
         public static final DeferredHolder<Block, Block> HAUNTED_FENCE = register("haunted_fence",
                         () -> new FenceBlock(Block.Properties.of().mapColor(HAUNTED_PLANKS.get().defaultMapColor())
                                         .instrument(NoteBlockInstrument.BASS).strength(2.0F, 3.0F)
                                         .sound(SoundType.WOOD)));
         public static final DeferredHolder<Block, Block> HAUNTED_DOOR = register("haunted_door",
-                        () -> new DoorBlock(ModBlockSetType.HAUNTED,
-                                        Block.Properties.of().mapColor(HAUNTED_PLANKS.get().defaultMapColor())
-                                                        .instrument(NoteBlockInstrument.BASS).strength(3.0F)
-                                                        .sound(SoundType.WOOD)
-                                                        .noOcclusion()));
+                        () -> new DoorBlock(BlockSetType.OAK, BlockBehaviour.Properties.ofFullCopy(Blocks.OAK_DOOR)
+                                        .sound(SoundType.WOOD)));
         public static final DeferredHolder<Block, Block> HAUNTED_BOOKSHELF = register("haunted_bookshelf",
                         () -> new BookshelfBlock(Block.Properties.of().mapColor(HAUNTED_PLANKS.get().defaultMapColor())
                                         .instrument(NoteBlockInstrument.BASS).strength(1.5F).sound(SoundType.WOOD)));
@@ -633,43 +645,43 @@ public class ModBlocks {
                                         .instrument(NoteBlockInstrument.BASS).strength(2.5F).sound(SoundType.WOOD)));
         public static final DeferredHolder<Block, Block> HAUNTED_SIGN = register("haunted_sign",
                         () -> new ModStandSignBlock(
+                                        ModWoodType.HAUNTED,
                                         Block.Properties.of().mapColor(HAUNTED_PLANKS.get().defaultMapColor())
                                                         .instrument(NoteBlockInstrument.BASS).noCollission()
-                                                        .strength(1.0F).sound(SoundType.WOOD),
-                                        ModWoodType.HAUNTED),
+                                                        .strength(1.0F).sound(SoundType.WOOD)),
                         false);
         public static final DeferredHolder<Block, Block> HAUNTED_WALL_SIGN = register("haunted_wall_sign",
                         () -> new ModWallSignBlock(
+                                        ModWoodType.HAUNTED,
                                         Block.Properties.of().mapColor(HAUNTED_PLANKS.get().defaultMapColor())
                                                         .instrument(NoteBlockInstrument.BASS).noCollission()
-                                                        .strength(1.0F).sound(SoundType.WOOD).lootFrom(HAUNTED_SIGN),
-                                        ModWoodType.HAUNTED),
+                                                        .strength(1.0F).sound(SoundType.WOOD).lootFrom(HAUNTED_SIGN)),
                         false);
         public static final DeferredHolder<Block, Block> HAUNTED_HANGING_SIGN = register("haunted_hanging_sign",
-                        () -> new ModHangingSignBlock(BlockBehaviour.Properties.of()
-                                        .mapColor(HAUNTED_LOG.get().defaultMapColor()).forceSolidOn()
-                                        .instrument(NoteBlockInstrument.BASS).noCollission().strength(1.0F),
-                                        ModWoodType.HAUNTED),
+                        () -> new ModHangingSignBlock(
+                                        ModWoodType.HAUNTED,
+                                        BlockBehaviour.Properties.of().mapColor(HAUNTED_LOG.get().defaultMapColor())
+                                                        .forceSolidOn().instrument(NoteBlockInstrument.BASS)
+                                                        .noCollission().strength(1.0F)),
                         false);
         public static final DeferredHolder<Block, Block> HAUNTED_WALL_HANGING_SIGN = register(
                         "haunted_wall_hanging_sign",
                         () -> new ModWallHangingSignBlock(
+                                        ModWoodType.HAUNTED,
                                         BlockBehaviour.Properties.of().mapColor(HAUNTED_LOG.get().defaultMapColor())
                                                         .forceSolidOn().instrument(NoteBlockInstrument.BASS)
-                                                        .noCollission().strength(1.0F).lootFrom(HAUNTED_HANGING_SIGN),
-                                        ModWoodType.HAUNTED),
+                                                        .noCollission().strength(1.0F).lootFrom(HAUNTED_HANGING_SIGN)),
                         false);
         public static final DeferredHolder<Block, Block> HAUNTED_SAPLING = register("haunted_sapling",
                         () -> sapling(HauntedTree.GROWER));
         public static final DeferredHolder<Block, Block> POTTED_HAUNTED_SAPLING = register("potted_haunted_sapling",
                         () -> new FlowerPotBlock(
-                                        () -> (FlowerPotBlock) NeoForgeRegistries.BLOCKS
-                                                        .getDelegateOrThrow(Blocks.FLOWER_POT).get(),
+                                        () -> (FlowerPotBlock) Blocks.FLOWER_POT,
                                         ModBlocks.HAUNTED_SAPLING, Block.Properties.of()
                                                         .pushReaction(PushReaction.DESTROY).noOcclusion().instabreak()),
                         false, LootTableType.DROP);
         public static final DeferredHolder<Block, Block> HAUNTED_LAMP = register("haunted_lamp",
-                        () -> new LampBlock(Block.Properties.copy(HAUNTED_WOOD.get())));
+                        () -> new LampBlock(Block.Properties.ofFullCopy(HAUNTED_WOOD.get())));
         public static final DeferredHolder<Block, Block> DARK_PRESSURE_PLATE = register("dark_pressure_plate",
                         () -> new DarkPressurePlateBlock(BlockBehaviour.Properties.of()
                                         .mapColor(HAUNTED_PLANKS.get().defaultMapColor()).forceSolidOn()
@@ -700,18 +712,16 @@ public class ModBlocks {
         public static final DeferredHolder<Block, Block> ROTTEN_LEAVES = register("rotten_leaves",
                         () -> leaves(SoundType.GRASS), true, LootTableType.EMPTY);
         public static final DeferredHolder<Block, Block> ROTTEN_PRESSURE_PLATE = register("rotten_pressure_plate",
-                        () -> new PressurePlateBlock(PressurePlateBlock.Sensitivity.EVERYTHING,
+                        () -> new PressurePlateBlock(ModBlockSetType.ROTTEN,
                                         BlockBehaviour.Properties.of().mapColor(ROTTEN_PLANKS.get().defaultMapColor())
                                                         .forceSolidOn().instrument(NoteBlockInstrument.BASS)
                                                         .noCollission().strength(0.5F)
-                                                        .pushReaction(PushReaction.DESTROY).ignitedByLava(),
-                                        ModBlockSetType.ROTTEN));
+                                                        .pushReaction(PushReaction.DESTROY).ignitedByLava()));
         public static final DeferredHolder<Block, Block> ROTTEN_TRAPDOOR = register("rotten_trapdoor",
-                        () -> new TrapDoorBlock(
+                        () -> new TrapDoorBlock(ModBlockSetType.ROTTEN,
                                         Block.Properties.of().mapColor(MapColor.COLOR_GREEN)
                                                         .instrument(NoteBlockInstrument.BASS).strength(3.0F)
-                                                        .sound(SoundType.NETHER_WOOD).ignitedByLava().noOcclusion(),
-                                        ModBlockSetType.ROTTEN));
+                                                        .sound(SoundType.NETHER_WOOD).ignitedByLava().noOcclusion()));
         public static final DeferredHolder<Block, Block> ROTTEN_BUTTON = register("rotten_button",
                         () -> woodenButton(ModBlockSetType.ROTTEN));
         public static final DeferredHolder<Block, Block> ROTTEN_STAIRS = registerStairs("rotten_stairs",
@@ -719,11 +729,10 @@ public class ModBlocks {
         public static final DeferredHolder<Block, Block> ROTTEN_SLAB = registerSlabs("rotten_slab",
                         ROTTEN_PLANKS);
         public static final DeferredHolder<Block, Block> ROTTEN_FENCE_GATE = register("rotten_fence_gate",
-                        () -> new FenceGateBlock(
+                        () -> new FenceGateBlock(ModWoodType.ROTTEN,
                                         Block.Properties.of().mapColor(ROTTEN_PLANKS.get().defaultMapColor())
                                                         .instrument(NoteBlockInstrument.BASS).strength(2.0F, 3.0F)
-                                                        .sound(SoundType.NETHER_WOOD).ignitedByLava(),
-                                        ModWoodType.ROTTEN));
+                                                        .sound(SoundType.NETHER_WOOD).ignitedByLava()));
         public static final DeferredHolder<Block, Block> ROTTEN_FENCE = register("rotten_fence",
                         () -> new FenceBlock(Block.Properties.of().mapColor(ROTTEN_PLANKS.get().defaultMapColor())
                                         .instrument(NoteBlockInstrument.BASS).strength(2.0F, 3.0F)
@@ -747,36 +756,37 @@ public class ModBlocks {
                                         .strength(2.5F).sound(SoundType.NETHER_WOOD).ignitedByLava()));
         public static final DeferredHolder<Block, Block> ROTTEN_SIGN = register("rotten_sign",
                         () -> new ModStandSignBlock(
+                                        ModWoodType.ROTTEN,
                                         Block.Properties.of().mapColor(ROTTEN_PLANKS.get().defaultMapColor())
                                                         .instrument(NoteBlockInstrument.BASS).noCollission()
-                                                        .strength(1.0F).sound(SoundType.NETHER_WOOD).ignitedByLava(),
-                                        ModWoodType.ROTTEN),
+                                                        .strength(1.0F).sound(SoundType.NETHER_WOOD).ignitedByLava()),
                         false);
         public static final DeferredHolder<Block, Block> ROTTEN_WALL_SIGN = register("rotten_wall_sign",
-                        () -> new ModWallSignBlock(Block.Properties.of().mapColor(ROTTEN_PLANKS.get().defaultMapColor())
-                                        .instrument(NoteBlockInstrument.BASS).noCollission().strength(1.0F)
-                                        .sound(SoundType.NETHER_WOOD).lootFrom(ROTTEN_SIGN).ignitedByLava(),
-                                        ModWoodType.ROTTEN),
+                        () -> new ModWallSignBlock(
+                                        ModWoodType.ROTTEN,
+                                        Block.Properties.of().mapColor(ROTTEN_PLANKS.get().defaultMapColor())
+                                                        .instrument(NoteBlockInstrument.BASS).noCollission().strength(1.0F)
+                                                        .sound(SoundType.NETHER_WOOD).lootFrom(ROTTEN_SIGN).ignitedByLava()),
                         false);
         public static final DeferredHolder<Block, Block> ROTTEN_HANGING_SIGN = register("rotten_hanging_sign",
                         () -> new ModHangingSignBlock(
+                                        ModWoodType.ROTTEN,
                                         BlockBehaviour.Properties.of().mapColor(ROTTEN_LOG.get().defaultMapColor())
                                                         .forceSolidOn().instrument(NoteBlockInstrument.BASS)
-                                                        .noCollission().strength(1.0F).ignitedByLava(),
-                                        ModWoodType.ROTTEN),
+                                                        .noCollission().strength(1.0F).ignitedByLava()),
                         false);
         public static final DeferredHolder<Block, Block> ROTTEN_WALL_HANGING_SIGN = register("rotten_wall_hanging_sign",
-                        () -> new ModWallHangingSignBlock(BlockBehaviour.Properties.of()
-                                        .mapColor(ROTTEN_LOG.get().defaultMapColor()).forceSolidOn()
-                                        .instrument(NoteBlockInstrument.BASS).noCollission().strength(1.0F)
-                                        .lootFrom(ROTTEN_HANGING_SIGN).ignitedByLava(), ModWoodType.ROTTEN),
+                        () -> new ModWallHangingSignBlock(
+                                        ModWoodType.ROTTEN,
+                                        BlockBehaviour.Properties.of().mapColor(ROTTEN_LOG.get().defaultMapColor())
+                                                        .forceSolidOn().instrument(NoteBlockInstrument.BASS)
+                                                        .noCollission().strength(1.0F).lootFrom(ROTTEN_HANGING_SIGN).ignitedByLava()),
                         false);
         public static final DeferredHolder<Block, Block> ROTTEN_SAPLING = register("rotten_sapling",
                         () -> sapling(RottenTree.GROWER));
         public static final DeferredHolder<Block, Block> POTTED_ROTTEN_SAPLING = register("potted_rotten_sapling",
                         () -> new FlowerPotBlock(
-                                        () -> (FlowerPotBlock) NeoForgeRegistries.BLOCKS
-                                                        .getDelegateOrThrow(Blocks.FLOWER_POT).get(),
+                                        () -> (FlowerPotBlock) Blocks.FLOWER_POT,
                                         ModBlocks.ROTTEN_SAPLING, Block.Properties.of()
                                                         .pushReaction(PushReaction.DESTROY).noOcclusion().instabreak()),
                         false, LootTableType.EMPTY);
@@ -809,19 +819,17 @@ public class ModBlocks {
         public static final DeferredHolder<Block, Block> WINDSWEPT_LEAVES = register("windswept_leaves",
                         () -> leaves(SoundType.GRASS), true, LootTableType.EMPTY);
         public static final DeferredHolder<Block, Block> WINDSWEPT_PRESSURE_PLATE = register("windswept_pressure_plate",
-                        () -> new PressurePlateBlock(PressurePlateBlock.Sensitivity.EVERYTHING,
+                        () -> new PressurePlateBlock(ModBlockSetType.WINDSWEPT,
                                         BlockBehaviour.Properties.of()
                                                         .mapColor(WINDSWEPT_PLANKS.get().defaultMapColor())
                                                         .forceSolidOn().instrument(NoteBlockInstrument.BASS)
                                                         .noCollission().strength(0.5F)
-                                                        .pushReaction(PushReaction.DESTROY).ignitedByLava(),
-                                        ModBlockSetType.WINDSWEPT));
+                                                        .pushReaction(PushReaction.DESTROY).ignitedByLava()));
         public static final DeferredHolder<Block, Block> WINDSWEPT_TRAPDOOR = register("windswept_trapdoor",
-                        () -> new TrapDoorBlock(
+                        () -> new TrapDoorBlock(ModBlockSetType.WINDSWEPT,
                                         Block.Properties.of().mapColor(MapColor.COLOR_YELLOW)
                                                         .instrument(NoteBlockInstrument.BASS).strength(3.0F)
-                                                        .sound(SoundType.WOOD).ignitedByLava().noOcclusion(),
-                                        ModBlockSetType.WINDSWEPT));
+                                                        .sound(SoundType.WOOD).ignitedByLava().noOcclusion()));
         public static final DeferredHolder<Block, Block> WINDSWEPT_BUTTON = register("windswept_button",
                         () -> woodenButton(ModBlockSetType.WINDSWEPT));
         public static final DeferredHolder<Block, Block> WINDSWEPT_STAIRS = registerStairs("windswept_stairs",
@@ -829,21 +837,19 @@ public class ModBlocks {
         public static final DeferredHolder<Block, Block> WINDSWEPT_SLAB = registerSlabs("windswept_slab",
                         WINDSWEPT_PLANKS);
         public static final DeferredHolder<Block, Block> WINDSWEPT_FENCE_GATE = register("windswept_fence_gate",
-                        () -> new FenceGateBlock(
+                        () -> new FenceGateBlock(ModWoodType.WINDSWEPT,
                                         Block.Properties.of().mapColor(WINDSWEPT_PLANKS.get().defaultMapColor())
                                                         .instrument(NoteBlockInstrument.BASS).strength(2.0F, 3.0F)
-                                                        .sound(SoundType.WOOD).ignitedByLava(),
-                                        ModWoodType.WINDSWEPT));
+                                                        .sound(SoundType.WOOD).ignitedByLava()));
         public static final DeferredHolder<Block, Block> WINDSWEPT_FENCE = register("windswept_fence",
                         () -> new FenceBlock(Block.Properties.of().mapColor(WINDSWEPT_PLANKS.get().defaultMapColor())
                                         .instrument(NoteBlockInstrument.BASS).strength(2.0F, 3.0F).sound(SoundType.WOOD)
                                         .ignitedByLava()));
         public static final DeferredHolder<Block, Block> WINDSWEPT_DOOR = register("windswept_door",
-                        () -> new DoorBlock(
+                        () -> new DoorBlock(ModBlockSetType.WINDSWEPT,
                                         Block.Properties.of().mapColor(WINDSWEPT_PLANKS.get().defaultMapColor())
                                                         .instrument(NoteBlockInstrument.BASS).strength(3.0F)
-                                                        .sound(SoundType.WOOD).ignitedByLava().noOcclusion(),
-                                        ModBlockSetType.WINDSWEPT));
+                                                        .sound(SoundType.WOOD).ignitedByLava().noOcclusion()));
         public static final DeferredHolder<Block, Block> WINDSWEPT_BOOKSHELF = register("windswept_bookshelf",
                         () -> new BookshelfBlock(
                                         Block.Properties.of().mapColor(WINDSWEPT_PLANKS.get().defaultMapColor())
@@ -859,38 +865,38 @@ public class ModBlocks {
                                         .strength(2.5F).sound(SoundType.WOOD).ignitedByLava()));
         public static final DeferredHolder<Block, Block> WINDSWEPT_SIGN = register("windswept_sign",
                         () -> new ModStandSignBlock(
+                                        ModWoodType.WINDSWEPT,
                                         Block.Properties.of().mapColor(WINDSWEPT_PLANKS.get().defaultMapColor())
                                                         .instrument(NoteBlockInstrument.BASS).noCollission()
-                                                        .strength(1.0F).sound(SoundType.WOOD).ignitedByLava(),
-                                        ModWoodType.WINDSWEPT),
+                                                        .strength(1.0F).sound(SoundType.WOOD).ignitedByLava()),
                         false);
         public static final DeferredHolder<Block, Block> WINDSWEPT_WALL_SIGN = register("windswept_wall_sign",
-                        () -> new ModWallSignBlock(Block.Properties.of()
-                                        .mapColor(WINDSWEPT_PLANKS.get().defaultMapColor())
-                                        .instrument(NoteBlockInstrument.BASS).noCollission().strength(1.0F)
-                                        .sound(SoundType.WOOD).lootFrom(WINDSWEPT_SIGN).ignitedByLava(),
-                                        ModWoodType.WINDSWEPT),
+                        () -> new ModWallSignBlock(
+                                        ModWoodType.WINDSWEPT,
+                                        Block.Properties.of().mapColor(WINDSWEPT_PLANKS.get().defaultMapColor())
+                                                        .instrument(NoteBlockInstrument.BASS).noCollission().strength(1.0F)
+                                                        .sound(SoundType.WOOD).lootFrom(WINDSWEPT_SIGN).ignitedByLava()),
                         false);
         public static final DeferredHolder<Block, Block> WINDSWEPT_HANGING_SIGN = register("windswept_hanging_sign",
                         () -> new ModHangingSignBlock(
+                                        ModWoodType.WINDSWEPT,
                                         BlockBehaviour.Properties.of().mapColor(WINDSWEPT_LOG.get().defaultMapColor())
                                                         .forceSolidOn().instrument(NoteBlockInstrument.BASS)
-                                                        .noCollission().strength(1.0F).ignitedByLava(),
-                                        ModWoodType.WINDSWEPT),
+                                                        .noCollission().strength(1.0F).ignitedByLava()),
                         false);
         public static final DeferredHolder<Block, Block> WINDSWEPT_WALL_HANGING_SIGN = register(
                         "windswept_wall_hanging_sign",
-                        () -> new ModWallHangingSignBlock(BlockBehaviour.Properties.of()
-                                        .mapColor(WINDSWEPT_LOG.get().defaultMapColor()).forceSolidOn()
-                                        .instrument(NoteBlockInstrument.BASS).noCollission().strength(1.0F)
-                                        .lootFrom(WINDSWEPT_HANGING_SIGN).ignitedByLava(), ModWoodType.WINDSWEPT),
+                        () -> new ModWallHangingSignBlock(
+                                        ModWoodType.WINDSWEPT,
+                                        BlockBehaviour.Properties.of().mapColor(WINDSWEPT_LOG.get().defaultMapColor())
+                                                        .forceSolidOn().instrument(NoteBlockInstrument.BASS)
+                                                        .noCollission().strength(1.0F).lootFrom(WINDSWEPT_HANGING_SIGN).ignitedByLava()),
                         false);
         public static final DeferredHolder<Block, Block> WINDSWEPT_SAPLING = register("windswept_sapling",
                         () -> sapling(WindsweptTree.GROWER));
         public static final DeferredHolder<Block, Block> POTTED_WINDSWEPT_SAPLING = register("potted_windswept_sapling",
                         () -> new FlowerPotBlock(
-                                        () -> (FlowerPotBlock) NeoForgeRegistries.BLOCKS
-                                                        .getDelegateOrThrow(Blocks.FLOWER_POT).get(),
+                                        () -> (FlowerPotBlock) Blocks.FLOWER_POT,
                                         ModBlocks.WINDSWEPT_SAPLING, Block.Properties.of()
                                                         .pushReaction(PushReaction.DESTROY).noOcclusion().instabreak()),
                         false, LootTableType.EMPTY);
@@ -900,7 +906,7 @@ public class ModBlocks {
         public static final DeferredHolder<Block, Block> SNOWY_WINDSWEPT_PLANK_WALL_BLOCK = registerWalls(
                         "snowy_windswept_plank_wall", WINDSWEPT_PLANKS);
         public static final DeferredHolder<Block, Block> WINDSWEPT_LAMP = register("windswept_lamp",
-                        () -> new LampBlock(Block.Properties.copy(WINDSWEPT_PLANKS.get())));
+                        () -> new LampBlock(Block.Properties.ofFullCopy(WINDSWEPT_PLANKS.get())));
 
         // Pine
         public static final DeferredHolder<Block, Block> PINE_PLANKS = register("pine_planks",
@@ -933,18 +939,16 @@ public class ModBlocks {
                         () -> leaves(SoundType.GRASS),
                         true, LootTableType.EMPTY);
         public static final DeferredHolder<Block, Block> PINE_PRESSURE_PLATE = register("pine_pressure_plate",
-                        () -> new PressurePlateBlock(PressurePlateBlock.Sensitivity.EVERYTHING,
+                        () -> new PressurePlateBlock(ModBlockSetType.PINE,
                                         BlockBehaviour.Properties.of().mapColor(PINE_PLANKS.get().defaultMapColor())
                                                         .forceSolidOn().instrument(NoteBlockInstrument.BASS)
                                                         .noCollission().strength(0.5F)
-                                                        .pushReaction(PushReaction.DESTROY).ignitedByLava(),
-                                        ModBlockSetType.PINE));
+                                                        .pushReaction(PushReaction.DESTROY).ignitedByLava()));
         public static final DeferredHolder<Block, Block> PINE_TRAPDOOR = register("pine_trapdoor",
-                        () -> new TrapDoorBlock(
+                        () -> new TrapDoorBlock(ModBlockSetType.PINE,
                                         Block.Properties.of().mapColor(MapColor.COLOR_BROWN)
                                                         .instrument(NoteBlockInstrument.BASS).strength(3.0F)
-                                                        .sound(SoundType.WOOD).noOcclusion().ignitedByLava(),
-                                        ModBlockSetType.PINE));
+                                                        .sound(SoundType.WOOD).noOcclusion().ignitedByLava()));
         public static final DeferredHolder<Block, Block> PINE_BUTTON = register("pine_button",
                         () -> woodenButton(ModBlockSetType.PINE));
         public static final DeferredHolder<Block, Block> PINE_STAIRS = registerStairs("pine_stairs",
@@ -952,19 +956,18 @@ public class ModBlocks {
         public static final DeferredHolder<Block, Block> PINE_SLAB = registerSlabs("pine_slab",
                         PINE_PLANKS);
         public static final DeferredHolder<Block, Block> PINE_FENCE_GATE = register("pine_fence_gate",
-                        () -> new FenceGateBlock(Block.Properties.of().mapColor(PINE_PLANKS.get().defaultMapColor())
+                        () -> new FenceGateBlock(ModWoodType.PINE, Block.Properties.of().mapColor(PINE_PLANKS.get().defaultMapColor())
                                         .instrument(NoteBlockInstrument.BASS).strength(2.0F, 3.0F).sound(SoundType.WOOD)
-                                        .ignitedByLava(), ModWoodType.PINE));
+                                        .ignitedByLava()));
         public static final DeferredHolder<Block, Block> PINE_FENCE = register("pine_fence",
                         () -> new FenceBlock(Block.Properties.of().mapColor(PINE_PLANKS.get().defaultMapColor())
                                         .instrument(NoteBlockInstrument.BASS).strength(2.0F, 3.0F).sound(SoundType.WOOD)
                                         .ignitedByLava()));
         public static final DeferredHolder<Block, Block> PINE_DOOR = register("pine_door",
-                        () -> new DoorBlock(
+                        () -> new DoorBlock(ModBlockSetType.PINE,
                                         Block.Properties.of().mapColor(PINE_PLANKS.get().defaultMapColor())
                                                         .instrument(NoteBlockInstrument.BASS).strength(3.0F)
-                                                        .sound(SoundType.WOOD).noOcclusion().ignitedByLava(),
-                                        ModBlockSetType.PINE));
+                                                        .sound(SoundType.WOOD).noOcclusion().ignitedByLava()));
         public static final DeferredHolder<Block, Block> PINE_BOOKSHELF = register("pine_bookshelf",
                         () -> new BookshelfBlock(Block.Properties.of().mapColor(PINE_PLANKS.get().defaultMapColor())
                                         .instrument(NoteBlockInstrument.BASS).strength(1.5F).sound(SoundType.WOOD)
@@ -979,35 +982,37 @@ public class ModBlocks {
                                         .strength(2.5F).sound(SoundType.WOOD).ignitedByLava()));
         public static final DeferredHolder<Block, Block> PINE_SIGN = register("pine_sign",
                         () -> new ModStandSignBlock(
+                                        ModWoodType.PINE,
                                         Block.Properties.of().mapColor(PINE_PLANKS.get().defaultMapColor())
                                                         .instrument(NoteBlockInstrument.BASS).noCollission()
-                                                        .strength(1.0F).sound(SoundType.WOOD).ignitedByLava(),
-                                        ModWoodType.PINE),
+                                                        .strength(1.0F).sound(SoundType.WOOD).ignitedByLava()),
                         false);
         public static final DeferredHolder<Block, Block> PINE_WALL_SIGN = register("pine_wall_sign",
-                        () -> new ModWallSignBlock(Block.Properties.of().mapColor(PINE_PLANKS.get().defaultMapColor())
-                                        .instrument(NoteBlockInstrument.BASS).noCollission().strength(1.0F)
-                                        .sound(SoundType.WOOD).ignitedByLava().lootFrom(PINE_SIGN), ModWoodType.PINE),
+                        () -> new ModWallSignBlock(
+                                        ModWoodType.PINE,
+                                        Block.Properties.of().mapColor(PINE_PLANKS.get().defaultMapColor())
+                                                        .instrument(NoteBlockInstrument.BASS).noCollission().strength(1.0F)
+                                                        .sound(SoundType.WOOD).ignitedByLava().lootFrom(PINE_SIGN)),
                         false);
         public static final DeferredHolder<Block, Block> PINE_HANGING_SIGN = register("pine_hanging_sign",
                         () -> new ModHangingSignBlock(
+                                        ModWoodType.PINE,
                                         BlockBehaviour.Properties.of().mapColor(PINE_LOG.get().defaultMapColor())
                                                         .forceSolidOn().instrument(NoteBlockInstrument.BASS)
-                                                        .noCollission().strength(1.0F).ignitedByLava(),
-                                        ModWoodType.PINE),
+                                                        .noCollission().strength(1.0F).ignitedByLava()),
                         false);
         public static final DeferredHolder<Block, Block> PINE_WALL_HANGING_SIGN = register("pine_wall_hanging_sign",
-                        () -> new ModWallHangingSignBlock(BlockBehaviour.Properties.of()
-                                        .mapColor(PINE_LOG.get().defaultMapColor()).forceSolidOn()
-                                        .instrument(NoteBlockInstrument.BASS).noCollission().strength(1.0F)
-                                        .lootFrom(PINE_HANGING_SIGN).ignitedByLava(), ModWoodType.PINE),
+                        () -> new ModWallHangingSignBlock(
+                                        ModWoodType.PINE,
+                                        BlockBehaviour.Properties.of().mapColor(PINE_LOG.get().defaultMapColor())
+                                                        .forceSolidOn().instrument(NoteBlockInstrument.BASS)
+                                                        .noCollission().strength(1.0F).lootFrom(PINE_HANGING_SIGN).ignitedByLava()),
                         false);
         public static final DeferredHolder<Block, Block> PINE_SAPLING = register("pine_sapling",
                         () -> sapling(PineTree.GROWER));
         public static final DeferredHolder<Block, Block> POTTED_PINE_SAPLING = register("potted_pine_sapling",
                         () -> new FlowerPotBlock(
-                                        () -> (FlowerPotBlock) NeoForgeRegistries.BLOCKS
-                                                        .getDelegateOrThrow(Blocks.FLOWER_POT).get(),
+                                        () -> (FlowerPotBlock) Blocks.FLOWER_POT,
                                         ModBlocks.PINE_SAPLING, Block.Properties.of().pushReaction(PushReaction.DESTROY)
                                                         .noOcclusion().instabreak().ignitedByLava()),
                         false, LootTableType.EMPTY);
@@ -1032,12 +1037,11 @@ public class ModBlocks {
                         () -> new FacingBlock(Block.Properties.of().mapColor(MapColor.TERRACOTTA_BROWN)
                                         .instrument(NoteBlockInstrument.BASS).strength(2.0F).sound(SoundType.WOOD)));
         public static final DeferredHolder<Block, Block> STEEP_PRESSURE_PLATE = register("steep_pressure_plate",
-                        () -> new PressurePlateBlock(PressurePlateBlock.Sensitivity.EVERYTHING,
+                        () -> new PressurePlateBlock(ModBlockSetType.WINDSWEPT,
                                         BlockBehaviour.Properties.of().mapColor(STEEP_PLANKS.get().defaultMapColor())
                                                         .forceSolidOn().instrument(NoteBlockInstrument.BASS)
                                                         .noCollission().strength(0.5F)
-                                                        .pushReaction(PushReaction.DESTROY),
-                                        ModBlockSetType.WINDSWEPT));
+                                                        .pushReaction(PushReaction.DESTROY)));
         public static final DeferredHolder<Block, Block> STEEP_BUTTON = register("steep_button",
                         () -> woodenButton(ModBlockSetType.WINDSWEPT));
         public static final DeferredHolder<Block, Block> STEEP_STAIRS = registerStairs("steep_stairs",
@@ -1045,8 +1049,7 @@ public class ModBlocks {
         public static final DeferredHolder<Block, Block> STEEP_SLAB = registerSlabs("steep_slab",
                         STEEP_PLANKS);
         public static final DeferredHolder<Block, Block> STEEP_FENCE_GATE = register("steep_fence_gate",
-                        () -> new FenceGateBlock(
-                                        Block.Properties.of().mapColor(STEEP_PLANKS.get().defaultMapColor())
+                        () -> new FenceGateBlock(Block.Properties.of().mapColor(STEEP_PLANKS.get().defaultMapColor())
                                                         .instrument(NoteBlockInstrument.BASS).strength(2.0F, 3.0F)
                                                         .sound(SoundType.WOOD),
                                         SoundEvents.FENCE_GATE_CLOSE, SoundEvents.FENCE_GATE_OPEN));
@@ -1062,7 +1065,7 @@ public class ModBlocks {
         public static final DeferredHolder<Block, Block> RIMMED_STEEP_WALL_BLOCK = registerWalls("rimmed_steep_wall",
                         RIMMED_STEEP_WOOD);
         public static final DeferredHolder<Block, Block> STEEP_LAMP = register("steep_lamp",
-                        () -> new LampBlock(Block.Properties.copy(STEEP_WOOD.get())));
+                        () -> new LampBlock(Block.Properties.ofFullCopy(STEEP_WOOD.get())));
 
         // Sky Wood
         public static final DeferredHolder<Block, Block> SKY_WOOD_PLANKS = register("sky_wood_planks",
@@ -1106,16 +1109,15 @@ public class ModBlocks {
                         true,
                         LootTableType.EMPTY);
         public static final DeferredHolder<Block, Block> CHORUS_PRESSURE_PLATE = register("chorus_pressure_plate",
-                        () -> new PressurePlateBlock(PressurePlateBlock.Sensitivity.EVERYTHING,
+                        () -> new PressurePlateBlock(ModBlockSetType.CHORUS,
                                         BlockBehaviour.Properties.of().mapColor(CHORUS_PLANKS.get().defaultMapColor())
                                                         .forceSolidOn().instrument(NoteBlockInstrument.BASS)
                                                         .noCollission().strength(0.5F)
-                                                        .pushReaction(PushReaction.DESTROY),
-                                        ModBlockSetType.CHORUS));
+                                                        .pushReaction(PushReaction.DESTROY)));
         public static final DeferredHolder<Block, Block> CHORUS_TRAPDOOR = register("chorus_trapdoor",
-                        () -> new TrapDoorBlock(Block.Properties.of().mapColor(MapColor.COLOR_PURPLE)
+                        () -> new TrapDoorBlock(ModBlockSetType.CHORUS, Block.Properties.of().mapColor(MapColor.COLOR_PURPLE)
                                         .instrument(NoteBlockInstrument.BASS).strength(3.0F).sound(SoundType.WOOD)
-                                        .noOcclusion(), ModBlockSetType.CHORUS));
+                                        .noOcclusion()));
         public static final DeferredHolder<Block, Block> CHORUS_BUTTON = register("chorus_button",
                         () -> woodenButton(ModBlockSetType.CHORUS));
         public static final DeferredHolder<Block, Block> CHORUS_STAIRS = registerStairs("chorus_stairs",
@@ -1123,17 +1125,17 @@ public class ModBlocks {
         public static final DeferredHolder<Block, Block> CHORUS_SLAB = registerSlabs("chorus_slab",
                         CHORUS_PLANKS);
         public static final DeferredHolder<Block, Block> CHORUS_FENCE_GATE = register("chorus_fence_gate",
-                        () -> new FenceGateBlock(Block.Properties.of().mapColor(CHORUS_PLANKS.get().defaultMapColor())
+                        () -> new FenceGateBlock(ModWoodType.CHORUS, Block.Properties.of().mapColor(CHORUS_PLANKS.get().defaultMapColor())
                                         .instrument(NoteBlockInstrument.BASS).strength(2.0F, 3.0F)
-                                        .sound(SoundType.WOOD), ModWoodType.CHORUS));
+                                        .sound(SoundType.WOOD)));
         public static final DeferredHolder<Block, Block> CHORUS_FENCE = register("chorus_fence",
                         () -> new FenceBlock(Block.Properties.of().mapColor(CHORUS_PLANKS.get().defaultMapColor())
                                         .instrument(NoteBlockInstrument.BASS).strength(2.0F, 3.0F)
                                         .sound(SoundType.WOOD)));
         public static final DeferredHolder<Block, Block> CHORUS_DOOR = register("chorus_door",
-                        () -> new DoorBlock(Block.Properties.of().mapColor(CHORUS_PLANKS.get().defaultMapColor())
+                        () -> new DoorBlock(ModBlockSetType.CHORUS, Block.Properties.of().mapColor(CHORUS_PLANKS.get().defaultMapColor())
                                         .instrument(NoteBlockInstrument.BASS).strength(3.0F).sound(SoundType.WOOD)
-                                        .noOcclusion(), ModBlockSetType.CHORUS));
+                                        .noOcclusion()));
         public static final DeferredHolder<Block, Block> CHORUS_BOOKSHELF = register("chorus_bookshelf",
                         () -> new BookshelfBlock(Block.Properties.of().mapColor(CHORUS_PLANKS.get().defaultMapColor())
                                         .instrument(NoteBlockInstrument.BASS).strength(1.5F).sound(SoundType.WOOD)),
@@ -1146,37 +1148,37 @@ public class ModBlocks {
                                         .instrument(NoteBlockInstrument.BASS).strength(2.5F).sound(SoundType.WOOD)));
         public static final DeferredHolder<Block, Block> CHORUS_SIGN = register("chorus_sign",
                         () -> new ModStandSignBlock(
+                                        ModWoodType.CHORUS,
                                         Block.Properties.of().mapColor(CHORUS_PLANKS.get().defaultMapColor())
                                                         .instrument(NoteBlockInstrument.BASS).noCollission()
-                                                        .strength(1.0F).sound(SoundType.WOOD),
-                                        ModWoodType.CHORUS),
+                                                        .strength(1.0F).sound(SoundType.WOOD)),
                         false);
         public static final DeferredHolder<Block, Block> CHORUS_WALL_SIGN = register("chorus_wall_sign",
                         () -> new ModWallSignBlock(
+                                        ModWoodType.CHORUS,
                                         Block.Properties.of().mapColor(CHORUS_PLANKS.get().defaultMapColor())
                                                         .instrument(NoteBlockInstrument.BASS).noCollission()
-                                                        .strength(1.0F).sound(SoundType.WOOD).lootFrom(CHORUS_SIGN),
-                                        ModWoodType.CHORUS),
+                                                        .strength(1.0F).sound(SoundType.WOOD).lootFrom(CHORUS_SIGN)),
                         false);
         public static final DeferredHolder<Block, Block> CHORUS_HANGING_SIGN = register("chorus_hanging_sign",
-                        () -> new ModHangingSignBlock(BlockBehaviour.Properties.of()
-                                        .mapColor(CHORUS_LOG.get().defaultMapColor()).forceSolidOn()
-                                        .instrument(NoteBlockInstrument.BASS).noCollission().strength(1.0F),
-                                        ModWoodType.CHORUS),
+                        () -> new ModHangingSignBlock(
+                                        ModWoodType.CHORUS,
+                                        BlockBehaviour.Properties.of().mapColor(CHORUS_LOG.get().defaultMapColor())
+                                                        .forceSolidOn().instrument(NoteBlockInstrument.BASS)
+                                                        .noCollission().strength(1.0F)),
                         false);
         public static final DeferredHolder<Block, Block> CHORUS_WALL_HANGING_SIGN = register("chorus_wall_hanging_sign",
                         () -> new ModWallHangingSignBlock(
+                                        ModWoodType.CHORUS,
                                         BlockBehaviour.Properties.of().mapColor(CHORUS_LOG.get().defaultMapColor())
                                                         .forceSolidOn().instrument(NoteBlockInstrument.BASS)
-                                                        .noCollission().strength(1.0F).lootFrom(CHORUS_HANGING_SIGN),
-                                        ModWoodType.CHORUS),
+                                                        .noCollission().strength(1.0F).lootFrom(CHORUS_HANGING_SIGN)),
                         false);
         public static final DeferredHolder<Block, SaplingBlock> CHORUS_SAPLING = register("chorus_sapling",
                         () -> endSapling(ChorusTree.GROWER));
         public static final DeferredHolder<Block, Block> POTTED_CHORUS_SAPLING = register("potted_chorus_sapling",
                         () -> new FlowerPotBlock(
-                                        () -> (FlowerPotBlock) NeoForgeRegistries.BLOCKS
-                                                        .getDelegateOrThrow(Blocks.FLOWER_POT).get(),
+                                        () -> (FlowerPotBlock) Blocks.FLOWER_POT,
                                         ModBlocks.CHORUS_SAPLING, Block.Properties.of()
                                                         .pushReaction(PushReaction.DESTROY).noOcclusion().instabreak()),
                         false, LootTableType.EMPTY);
@@ -1193,17 +1195,16 @@ public class ModBlocks {
                                         .instrument(NoteBlockInstrument.BASS).strength(2.0F).sound(SoundType.WOOD)));
         public static final DeferredHolder<Block, Block> CORRUPT_CHORUS_PRESSURE_PLATE = register(
                         "corrupt_chorus_pressure_plate",
-                        () -> new PressurePlateBlock(PressurePlateBlock.Sensitivity.EVERYTHING,
+                        () -> new PressurePlateBlock(ModBlockSetType.CHORUS,
                                         BlockBehaviour.Properties.of()
                                                         .mapColor(CORRUPT_CHORUS_PLANKS.get().defaultMapColor())
                                                         .forceSolidOn().instrument(NoteBlockInstrument.BASS)
                                                         .noCollission().strength(0.5F)
-                                                        .pushReaction(PushReaction.DESTROY),
-                                        ModBlockSetType.CHORUS));
+                                                        .pushReaction(PushReaction.DESTROY)));
         public static final DeferredHolder<Block, Block> CORRUPT_CHORUS_TRAPDOOR = register("corrupt_chorus_trapdoor",
-                        () -> new TrapDoorBlock(Block.Properties.of().mapColor(MapColor.COLOR_LIGHT_BLUE)
+                        () -> new TrapDoorBlock(ModBlockSetType.CHORUS, Block.Properties.of().mapColor(MapColor.COLOR_LIGHT_BLUE)
                                         .instrument(NoteBlockInstrument.BASS).strength(3.0F).sound(SoundType.WOOD)
-                                        .noOcclusion(), ModBlockSetType.CHORUS));
+                                        .noOcclusion()));
         public static final DeferredHolder<Block, Block> CORRUPT_CHORUS_BUTTON = register("corrupt_chorus_button",
                         () -> woodenButton(ModBlockSetType.CHORUS));
         public static final DeferredHolder<Block, Block> CORRUPT_CHORUS_STAIRS = registerStairs("corrupt_chorus_stairs",
@@ -1212,22 +1213,20 @@ public class ModBlocks {
                         CHORUS_PLANKS);
         public static final DeferredHolder<Block, Block> CORRUPT_CHORUS_FENCE_GATE = register(
                         "corrupt_chorus_fence_gate",
-                        () -> new FenceGateBlock(
+                        () -> new FenceGateBlock(ModWoodType.CORRUPT_CHORUS,
                                         Block.Properties.of().mapColor(CORRUPT_CHORUS_PLANKS.get().defaultMapColor())
                                                         .instrument(NoteBlockInstrument.BASS).strength(2.0F, 3.0F)
-                                                        .sound(SoundType.WOOD),
-                                        ModWoodType.CORRUPT_CHORUS));
+                                                        .sound(SoundType.WOOD)));
         public static final DeferredHolder<Block, Block> CORRUPT_CHORUS_FENCE = register("corrupt_chorus_fence",
                         () -> new FenceBlock(
                                         Block.Properties.of().mapColor(CORRUPT_CHORUS_PLANKS.get().defaultMapColor())
                                                         .instrument(NoteBlockInstrument.BASS).strength(2.0F, 3.0F)
                                                         .sound(SoundType.WOOD)));
         public static final DeferredHolder<Block, Block> CORRUPT_CHORUS_DOOR = register("corrupt_chorus_door",
-                        () -> new DoorBlock(
+                        () -> new DoorBlock(ModBlockSetType.CORRUPT_CHORUS,
                                         Block.Properties.of().mapColor(CORRUPT_CHORUS_PLANKS.get().defaultMapColor())
                                                         .instrument(NoteBlockInstrument.BASS).strength(3.0F)
-                                                        .sound(SoundType.WOOD).noOcclusion(),
-                                        ModBlockSetType.CORRUPT_CHORUS));
+                                                        .sound(SoundType.WOOD).noOcclusion()));
         public static final DeferredHolder<Block, Block> CORRUPT_CHORUS_BOOKSHELF = register("corrupt_chorus_bookshelf",
                         () -> new BookshelfBlock(Block.Properties.of()
                                         .mapColor(CORRUPT_CHORUS_PLANKS.get().defaultMapColor())
@@ -1242,31 +1241,33 @@ public class ModBlocks {
                                         .instrument(NoteBlockInstrument.BASS).strength(2.5F).sound(SoundType.WOOD)));
         public static final DeferredHolder<Block, Block> CORRUPT_CHORUS_SIGN = register("corrupt_chorus_sign",
                         () -> new ModStandSignBlock(
+                                        ModWoodType.CORRUPT_CHORUS,
                                         Block.Properties.of().mapColor(CORRUPT_CHORUS_PLANKS.get().defaultMapColor())
                                                         .instrument(NoteBlockInstrument.BASS).noCollission()
-                                                        .strength(1.0F).sound(SoundType.WOOD),
-                                        ModWoodType.CORRUPT_CHORUS),
+                                                        .strength(1.0F).sound(SoundType.WOOD)),
                         false);
         public static final DeferredHolder<Block, Block> CORRUPT_CHORUS_WALL_SIGN = register("corrupt_chorus_wall_sign",
-                        () -> new ModWallSignBlock(Block.Properties.of()
-                                        .mapColor(CORRUPT_CHORUS_PLANKS.get().defaultMapColor())
-                                        .instrument(NoteBlockInstrument.BASS).noCollission().strength(1.0F)
-                                        .sound(SoundType.WOOD).lootFrom(CORRUPT_CHORUS_SIGN),
-                                        ModWoodType.CORRUPT_CHORUS),
+                        () -> new ModWallSignBlock(
+                                        ModWoodType.CORRUPT_CHORUS,
+                                        Block.Properties.of().mapColor(CORRUPT_CHORUS_PLANKS.get().defaultMapColor())
+                                                        .instrument(NoteBlockInstrument.BASS).noCollission().strength(1.0F)
+                                                        .sound(SoundType.WOOD).lootFrom(CORRUPT_CHORUS_SIGN)),
                         false);
         public static final DeferredHolder<Block, Block> CORRUPT_CHORUS_HANGING_SIGN = register(
                         "corrupt_chorus_hanging_sign",
-                        () -> new ModHangingSignBlock(BlockBehaviour.Properties.of()
-                                        .mapColor(CORRUPT_CHORUS_LOG.get().defaultMapColor()).forceSolidOn()
-                                        .instrument(NoteBlockInstrument.BASS).noCollission().strength(1.0F),
-                                        ModWoodType.CORRUPT_CHORUS),
+                        () -> new ModHangingSignBlock(
+                                        ModWoodType.CORRUPT_CHORUS,
+                                        BlockBehaviour.Properties.of().mapColor(CORRUPT_CHORUS_LOG.get().defaultMapColor())
+                                                        .forceSolidOn().instrument(NoteBlockInstrument.BASS)
+                                                        .noCollission().strength(1.0F)),
                         false);
         public static final DeferredHolder<Block, Block> CORRUPT_CHORUS_WALL_HANGING_SIGN = register(
                         "corrupt_chorus_wall_hanging_sign",
-                        () -> new ModWallHangingSignBlock(BlockBehaviour.Properties.of()
-                                        .mapColor(CORRUPT_CHORUS_LOG.get().defaultMapColor()).forceSolidOn()
-                                        .instrument(NoteBlockInstrument.BASS).noCollission().strength(1.0F)
-                                        .lootFrom(CORRUPT_CHORUS_HANGING_SIGN), ModWoodType.CORRUPT_CHORUS),
+                        () -> new ModWallHangingSignBlock(
+                                        ModWoodType.CORRUPT_CHORUS,
+                                        BlockBehaviour.Properties.of().mapColor(CORRUPT_CHORUS_LOG.get().defaultMapColor())
+                                                        .forceSolidOn().instrument(NoteBlockInstrument.BASS)
+                                                        .noCollission().strength(1.0F).lootFrom(CORRUPT_CHORUS_HANGING_SIGN)),
                         false);
         public static final DeferredHolder<Block, Block> CHORUS_BLOSSOM_LEAVES = register("chorus_blossom_leaves",
                         () -> new ChorusLeavesBlock(BlockBehaviour.Properties.of().mapColor(MapColor.QUARTZ)
@@ -1301,7 +1302,7 @@ public class ModBlocks {
         public static final DeferredHolder<Block, Block> SHADE_PILLAR_BLOCK = register("shade_pillar",
                         () -> pillar(ShadeStoneProperties()));
         public static final DeferredHolder<Block, Block> SHADE_GLASS_BLOCK = register("shade_glass",
-                        () -> new GlassBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.GLASS)));
+                        () -> new TransparentBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.GLASS)));
 
         // Crypt
         public static final DeferredHolder<Block, Block> CRYPT_STONE_BLOCK = register("crypt_stone",
@@ -1550,13 +1551,13 @@ public class ModBlocks {
 
         // Purpur
         public static final DeferredHolder<Block, Block> SOILED_PURPUR_BLOCK = register("soiled_purpur_block",
-                        () -> new Block(Block.Properties.copy(Blocks.PURPUR_BLOCK)));
+                        () -> new Block(Block.Properties.ofFullCopy(Blocks.PURPUR_BLOCK)));
         public static final DeferredHolder<Block, Block> GRASSY_PURPUR_BLOCK = register("grassy_purpur_block",
-                        () -> new Block(Block.Properties.copy(Blocks.PURPUR_BLOCK)));
+                        () -> new Block(Block.Properties.ofFullCopy(Blocks.PURPUR_BLOCK)));
         public static final DeferredHolder<Block, Block> PURPUR_LAMP_BLOCK = register("purpur_lamp",
-                        () -> new PurpurLampBlock(Block.Properties.copy(Blocks.PURPUR_BLOCK)));
+                        () -> new PurpurLampBlock(Block.Properties.ofFullCopy(Blocks.PURPUR_BLOCK)));
         public static final DeferredHolder<Block, Block> PURPUR_END_ROD_BLOCK = register("purpur_end_rod_block",
-                        () -> new PurpurEndRodBlock(BlockBehaviour.Properties.copy(Blocks.PURPUR_BLOCK)
+                        () -> new PurpurEndRodBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.PURPUR_BLOCK)
                                         .lightLevel((state) -> 14)));
 
         // Slabs
@@ -1779,7 +1780,7 @@ public class ModBlocks {
                         SNOWY_CRAG_BRICKS_BLOCK);
 
         public static final DeferredHolder<Block, Block> CRAGROCKS_FENCE = register("cragrocks_fence",
-                        () -> new FenceBlock(Block.Properties.copy(CRAGROCKS_BLOCK.get())));
+                        () -> new FenceBlock(Block.Properties.ofFullCopy(CRAGROCKS_BLOCK.get())));
 
         public static final DeferredHolder<Block, Block> HIGHROCK_WALL_BLOCK = registerWalls("highrock_wall",
                         HIGHROCK_BLOCK);
@@ -1837,10 +1838,10 @@ public class ModBlocks {
                         COBBLED_END_STONE_BLOCK);
 
         public static final DeferredHolder<Block, Block> SMOOTH_END_STONE_FENCE = register("smooth_end_stone_fence",
-                        () -> new FenceBlock(Block.Properties.copy(SMOOTH_END_STONE_BLOCK.get())));
+                        () -> new FenceBlock(Block.Properties.ofFullCopy(SMOOTH_END_STONE_BLOCK.get())));
 
         public static final DeferredHolder<Block, Block> PURPUR_WALL = register("purpur_wall",
-                        () -> new WallBlock(BlockBehaviour.Properties.copy(Blocks.PURPUR_BLOCK)));
+                        () -> new WallBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.PURPUR_BLOCK)));
 
         public static final DeferredHolder<Block, Block> CURSED_BARS_BLOCK = register("cursed_bars",
                         () -> new IronBarsBlock(Block.Properties.of()
@@ -1850,7 +1851,7 @@ public class ModBlocks {
                                         .sound(SoundType.METAL)
                                         .noOcclusion()));
         public static final DeferredHolder<Block, Block> SHADE_GLASS_PANE = register("shade_glass_pane",
-                        () -> new IronBarsBlock(BlockBehaviour.Properties.copy(Blocks.GLASS_PANE)));
+                        () -> new IronBarsBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.GLASS_PANE)));
 
         // Custom Items
         public static final DeferredHolder<Item, ? extends Item> SNAP_WARTS_ITEM = ModItems.ITEMS.register("snap_warts",
@@ -2035,14 +2036,14 @@ public class ModBlocks {
                 return register(string, () -> new SlabBlock(Block.Properties.ofFullCopy(block.get())), true);
         }
 
-        public static <T extends Block> DeferredHolder<Block, T> registerStairs(final String name,
-                        final DeferredHolder<Block, T> block) {
+        public static DeferredHolder<Block, Block> registerStairs(final String name,
+                        final DeferredHolder<Block, ? extends Block> block) {
                 return register(name, () -> new StairBlock(block.get().defaultBlockState(),
                                 Block.Properties.ofFullCopy(block.get())));
         }
 
-        public static <T extends Block> DeferredHolder<Block, T> registerWalls(final String name,
-                        final DeferredHolder<Block, T> block) {
+        public static DeferredHolder<Block, Block> registerWalls(final String name,
+                        final DeferredHolder<Block, ? extends Block> block) {
                 return register(name, () -> new WallBlock(Block.Properties.ofFullCopy(block.get())));
         }
 

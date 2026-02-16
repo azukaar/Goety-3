@@ -24,7 +24,7 @@ public class DeathScytheItem extends DarkScytheItem implements ISoulRepair {
 
     public static void entityClick(Player player, Level world) {
         if (player.getMainHandItem().getItem() instanceof DeathScytheItem) {
-            if (!player.level.isClientSide && !player.isSpectator()) {
+            if (!player.level().isClientSide && !player.isSpectator()) {
                 strike(world, player);
             }
         }

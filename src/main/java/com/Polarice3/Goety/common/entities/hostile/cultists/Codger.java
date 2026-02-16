@@ -79,13 +79,13 @@ public class Codger extends Cultist implements RangedAttackMob {
 
     public static AttributeSupplier.Builder setCustomAttributes() {
         return Monster.createMonsterAttributes()
-                .add(Attributes.MAX_HEALTH, AttributesConfig.CroneHealth.get())
+                .add(Attributes.MAX_HEALTH, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.CroneHealth, 20.0D))
                 .add(Attributes.FOLLOW_RANGE, 32.0D)
                 .add(Attributes.MOVEMENT_SPEED, 0.25D);
     }
 
     public void setConfigurableAttributes(){
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.MAX_HEALTH), AttributesConfig.CroneHealth.get());
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.MAX_HEALTH), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.CroneHealth, 20.0D));
     }
 
     public void addAdditionalSaveData(CompoundTag pCompound) {
@@ -171,7 +171,7 @@ public class Codger extends Cultist implements RangedAttackMob {
                         this.setItemSlot(EquipmentSlot.MAINHAND, ItemStack.EMPTY);
                     }
                     if (this.getHealth() <= this.getMaxHealth() / 4 && this.tickCount % 10 == 0 && this.random.nextBoolean()){
-                        MobUtil.throwBlastFungus(this, level);
+                        MobUtil.throwBlastFungus(this, this.level());
                     }
                 } else {
                     this.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(ModItems.BERSERK_FUNGUS.get()));
@@ -186,7 +186,7 @@ public class Codger extends Cultist implements RangedAttackMob {
                         flag = true;
                     }
                     if (!this.getActiveEffects().isEmpty()) {
-                        if (this.getActiveEffects().stream().anyMatch((mobEffectInstance -> mobEffectInstance.getEffect().getCategory() == MobEffectCategory.HARMFUL))){
+                        if (this.getActiveEffects().stream().anyMatch((mobEffectInstance -> mobEffectInstance.getEffect().value().getCategory() == MobEffectCategory.HARMFUL))){
                             flag = true;
                         }
                     }
@@ -256,7 +256,7 @@ public class Codger extends Cultist implements RangedAttackMob {
         if (p_33317_.distanceTo(this) < 6.0F && this.coolDown <= 0 && this.level().getBlockState(this.blockPosition().above(2)).isAir() && !(this.getTarget() instanceof Raider)) {
             this.totalCool = Mth.nextInt(this.random, 6, 10);
             for (int i = 0; i < this.totalCool; ++i) {
-                MobUtil.throwBlastFungus(this, level);
+                MobUtil.throwBlastFungus(this, this.level());
             }
             if (this.getHealth() <= this.getMaxHealth() / 2){
                 this.coolDown = MathHelper.secondsToTicks(this.totalCool / 2);
@@ -308,11 +308,11 @@ public class Codger extends Cultist implements RangedAttackMob {
         if (this.level() instanceof ServerLevel serverLevel) {
             wartling.setTrueOwner(this);
             wartling.setLimitedLife(MathHelper.secondsToTicks(9));
-            this.getActiveEffects().stream().filter(mobEffect -> mobEffect.getEffect().getCategory() == MobEffectCategory.HARMFUL && !mobEffect.getEffect().getCurativeItems().isEmpty()).findFirst().ifPresent(effect -> {
+            this.getActiveEffects().stream().filter(mobEffect -> mobEffect.getEffect().value().getCategory() == MobEffectCategory.HARMFUL).findFirst().ifPresent(effect -> {
                 wartling.setStoredEffect(effect);
                 this.removeEffect(effect.getEffect());
             });
-            wartling.finalizeSpawn(serverLevel, serverLevel.getCurrentDifficultyAt(this.blockPosition()), MobSpawnType.MOB_SUMMONED, null, null);
+            wartling.finalizeSpawn(serverLevel, serverLevel.getCurrentDifficultyAt(this.blockPosition()), MobSpawnType.MOB_SUMMONED, null);
             wartling.setMega();
             this.level().addFreshEntity(wartling);
         }
@@ -330,7 +330,7 @@ public class Codger extends Cultist implements RangedAttackMob {
                 if (this.getHealth() <= 0.0F){
                     return false;
                 }
-                net.neoforged.event.entity.EntityTeleportEvent.EnderEntity event = new net.neoforged.event.entity.EntityTeleportEvent.EnderEntity(this, this.getX(), this.getY(), this.getZ());
+                net.neoforged.neoforge.event.entity.EntityTeleportEvent.EnderEntity event = new net.neoforged.neoforge.event.entity.EntityTeleportEvent.EnderEntity(this, this.getX(), this.getY(), this.getZ());
                 net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(event);
                 if (event.isCanceled()) {
                     return false;
@@ -385,3 +385,4 @@ public class Codger extends Cultist implements RangedAttackMob {
         }
     }
 }
+

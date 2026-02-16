@@ -29,7 +29,7 @@ public class PoisonQuillVineRenderer<T extends PoisonQuillVine> extends MobRende
     public ResourceLocation getTextureLocation(T pEntity) {
         if (pEntity instanceof PoisonAnemone){
             return ANEMONE;
-        } else if (pEntity.isHostile() || !MobsConfig.PoisonQuillVineTexture.get()){
+        } else if (pEntity.isHostile() || !com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MobsConfig.PoisonQuillVineTexture, false)){
             return ORIGINAL;
         } else {
             return TEXTURE_LOCATION;
@@ -50,7 +50,7 @@ public class PoisonQuillVineRenderer<T extends PoisonQuillVine> extends MobRende
                 VertexConsumer vertexconsumer = p_116984_.getBuffer(this.renderType());
                 if (p_116986_ instanceof PoisonAnemone){
                     vertexconsumer = p_116984_.getBuffer(ANEMONE);
-                } else if (p_116986_.isHostile() || !MobsConfig.PoisonQuillVineTexture.get()) {
+                } else if (p_116986_.isHostile() || !com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MobsConfig.PoisonQuillVineTexture, false)) {
                     vertexconsumer = p_116984_.getBuffer(ORIGINAL);
                 }
                 this.getParentModel().renderToBuffer(p_116983_, vertexconsumer, 15728640, OverlayTexture.NO_OVERLAY, -1);

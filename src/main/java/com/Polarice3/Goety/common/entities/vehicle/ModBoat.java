@@ -80,21 +80,29 @@ public class ModBoat extends Boat {
     }
 
     public enum Type implements StringRepresentable {
-        HAUNTED(ModBlocks.HAUNTED_PLANKS.get(), "haunted"),
-        ROTTEN(ModBlocks.ROTTEN_PLANKS.get(), "rotten"),
-        WINDSWEPT(ModBlocks.WINDSWEPT_PLANKS.get(), "windswept"),
-        PINE(ModBlocks.PINE_PLANKS.get(), "pine"),
-        CHORUS(ModBlocks.CHORUS_PLANKS.get(), "chorus"),
-        CORRUPT_CHORUS(ModBlocks.CORRUPT_CHORUS_PLANKS.get(), "corrupt_chorus");
+        HAUNTED(() -> ModBlocks.HAUNTED_PLANKS.get(), "haunted"),
+        ROTTEN(() -> ModBlocks.ROTTEN_PLANKS.get(), "rotten"),
+        WINDSWEPT(() -> ModBlocks.WINDSWEPT_PLANKS.get(), "windswept"),
+        PINE(() -> ModBlocks.PINE_PLANKS.get(), "pine"),
+        CHORUS(() -> ModBlocks.CHORUS_PLANKS.get(), "chorus"),
+        CORRUPT_CHORUS(() -> ModBlocks.CORRUPT_CHORUS_PLANKS.get(), "corrupt_chorus");
 
         private final String name;
-        private final Block planks;
+        private final java.util.function.Supplier<Block> planksSupplier;
+        private Block planksCache;
         public static final StringRepresentable.EnumCodec<ModBoat.Type> CODEC = StringRepresentable.fromEnum(ModBoat.Type::values);
         private static final IntFunction<ModBoat.Type> BY_ID = ByIdMap.continuous(Enum::ordinal, values(), ByIdMap.OutOfBoundsStrategy.ZERO);
 
-        private Type(Block p_i48146_3_, String p_i48146_4_) {
+        private Type(java.util.function.Supplier<Block> planksSupplier, String p_i48146_4_) {
             this.name = p_i48146_4_;
-            this.planks = p_i48146_3_;
+            this.planksSupplier = planksSupplier;
+        }
+
+        public Block getPlanks() {
+            if (planksCache == null) {
+                planksCache = planksSupplier.get();
+            }
+            return planksCache;
         }
 
         public String getSerializedName() {
@@ -103,10 +111,6 @@ public class ModBoat extends Boat {
 
         public String getName() {
             return this.name;
-        }
-
-        public Block getPlanks() {
-            return this.planks;
         }
 
         public String toString() {

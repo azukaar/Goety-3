@@ -26,15 +26,15 @@ import java.util.function.Predicate;
 public class ReaperSpell extends SummonSpell {
 
     public int defaultSoulCost() {
-        return SpellConfig.ReaperCost.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.ReaperCost, 0);
     }
 
     public int defaultCastDuration() {
-        return SpellConfig.ReaperDuration.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.ReaperDuration, 0);
     }
 
     public int SummonDownDuration() {
-        return SpellConfig.ReaperSummonDown.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.ReaperSummonDown, 0);
     }
 
     public SoundEvent CastingSound() {
@@ -43,7 +43,7 @@ public class ReaperSpell extends SummonSpell {
 
     @Override
     public int defaultSpellCooldown() {
-        return SpellConfig.ReaperCoolDown.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.ReaperCoolDown, 0);
     }
 
     @Override
@@ -66,7 +66,7 @@ public class ReaperSpell extends SummonSpell {
 
     @Override
     public int summonLimit() {
-        return SpellConfig.ReaperLimit.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.ReaperLimit, 0);
     }
 
     public void SpellResult(ServerLevel worldIn, LivingEntity caster, ItemStack staff, SpellStat spellStat) {
@@ -80,7 +80,7 @@ public class ReaperSpell extends SummonSpell {
         if (!isShifting(caster)) {
             int i = 1;
             if (rightStaff(staff)){
-                i = 2 + caster.level.random.nextInt(4);
+                i = 2 + caster.level().random.nextInt(4);
             }
             for (int i1 = 0; i1 < i; ++i1) {
                 AbstractReaper summonedentity = new AbstractReaper(ModEntityType.REAPER_SERVANT.get(), worldIn);
@@ -89,7 +89,7 @@ public class ReaperSpell extends SummonSpell {
                 MobUtil.moveDownToGround(summonedentity);
                 summonedentity.setPersistenceRequired();
                 summonedentity.setLimitedLife(MobUtil.getSummonLifespan(worldIn) * duration);
-                summonedentity.finalizeSpawn(worldIn, caster.level.getCurrentDifficultyAt(caster.blockPosition()), MobSpawnType.MOB_SUMMONED, null, null);
+                summonedentity.finalizeSpawn(worldIn, caster.level().getCurrentDifficultyAt(caster.blockPosition()), MobSpawnType.MOB_SUMMONED, null);
                 this.buffSummon(caster, summonedentity, potency);
                 this.SummonSap(caster, summonedentity);
                 this.setTarget(caster, summonedentity);
@@ -103,3 +103,4 @@ public class ReaperSpell extends SummonSpell {
         }
     }
 }
+

@@ -29,12 +29,12 @@ public class GhastServant extends Malghast {
 
     public static AttributeSupplier.Builder setCustomAttributes() {
         return Mob.createMobAttributes()
-                .add(Attributes.MAX_HEALTH, AttributesConfig.GhastServantHealth.get())
+                .add(Attributes.MAX_HEALTH, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.GhastServantHealth, 20.0D))
                 .add(Attributes.FOLLOW_RANGE, 32.0D);
     }
 
     public void setConfigurableAttributes(){
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.MAX_HEALTH), AttributesConfig.GhastServantHealth.get());
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.MAX_HEALTH), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.GhastServantHealth, 20.0D));
     }
 
     protected float getStandingEyeHeight(Pose p_32741_, EntityDimensions p_32742_) {
@@ -164,7 +164,7 @@ public class GhastServant extends Malghast {
                     }
                     Lavaball largefireball = new Lavaball(world, this.ghast, d2, d3, d4);
                     largefireball.setExplosionPower(this.ghast.getExplosionPower());
-                    largefireball.setDamage(AttributesConfig.GhastServantDamage.get().floatValue() + this.ghast.getFireBallDamage());
+                    largefireball.setDamage((float)com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.GhastServantDamage, 20.0D) + this.ghast.getFireBallDamage());
                     largefireball.setPos(this.ghast.getX() + vec3.x() * 4.0D, this.ghast.getY() + 0.25D, this.ghast.getZ() + vec3.z() * 4.0D);
                     largefireball.setDangerous(world.getGameRules().getBoolean(net.minecraft.world.level.GameRules.RULE_MOBGRIEFING));
                     world.addFreshEntity(largefireball);

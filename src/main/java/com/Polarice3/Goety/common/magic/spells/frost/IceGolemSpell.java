@@ -30,15 +30,15 @@ public class IceGolemSpell extends SummonSpell {
     }
 
     public int defaultSoulCost() {
-        return SpellConfig.FrostbornCost.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.FrostbornCost, 0);
     }
 
     public int defaultCastDuration() {
-        return SpellConfig.FrostbornDuration.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.FrostbornDuration, 0);
     }
 
     public int SummonDownDuration() {
-        return SpellConfig.FrostbornSummonDown.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.FrostbornSummonDown, 0);
     }
 
     public SoundEvent CastingSound() {
@@ -47,7 +47,7 @@ public class IceGolemSpell extends SummonSpell {
 
     @Override
     public int defaultSpellCooldown() {
-        return SpellConfig.FrostbornCoolDown.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.FrostbornCoolDown, 0);
     }
 
     @Override
@@ -70,7 +70,7 @@ public class IceGolemSpell extends SummonSpell {
 
     @Override
     public int summonLimit() {
-        return SpellConfig.IceGolemLimit.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.IceGolemLimit, 0);
     }
 
     public void SpellResult(ServerLevel worldIn, LivingEntity caster, ItemStack staff, SpellStat spellStat) {
@@ -93,7 +93,7 @@ public class IceGolemSpell extends SummonSpell {
                 MobUtil.moveDownToGround(summonedentity);
                 summonedentity.setPersistenceRequired();
                 summonedentity.setLimitedLife(MobUtil.getSummonLifespan(worldIn) * duration);
-                summonedentity.finalizeSpawn(worldIn, caster.level.getCurrentDifficultyAt(caster.blockPosition()), MobSpawnType.MOB_SUMMONED, null, null);
+                summonedentity.finalizeSpawn(worldIn, caster.level().getCurrentDifficultyAt(caster.blockPosition()), MobSpawnType.MOB_SUMMONED, null);
                 this.buffSummon(caster, summonedentity, potency);
                 this.SummonSap(caster, summonedentity);
                 this.setTarget(caster, summonedentity);
@@ -105,3 +105,4 @@ public class IceGolemSpell extends SummonSpell {
         }
     }
 }
+

@@ -32,14 +32,16 @@ public class SculkDevourerBlockEntity extends OwnedBlockEntity implements GameEv
         return this.enchantments;
     }
 
-    public void readNetwork(CompoundTag tag) {
-        super.readNetwork(tag);
+    @Override
+    public void readNetwork(CompoundTag tag, net.minecraft.core.HolderLookup.Provider pRegistries) {
+        super.readNetwork(tag, pRegistries);
         this.loadEnchants(tag);
     }
 
-    public CompoundTag writeNetwork(CompoundTag tag) {
+    @Override
+    public CompoundTag writeNetwork(CompoundTag tag, net.minecraft.core.HolderLookup.Provider pRegistries) {
         this.saveEnchants(tag, ModBlocks.SCULK_DEVOURER.get().asItem());
-        return super.writeNetwork(tag);
+        return super.writeNetwork(tag, pRegistries);
     }
 
     public PositionSource getListenerSource() {
@@ -56,13 +58,14 @@ public class SculkDevourerBlockEntity extends OwnedBlockEntity implements GameEv
         return radius;
     }
 
-    public boolean handleGameEvent(ServerLevel p_222777_, GameEvent p_282184_, GameEvent.Context p_283014_, Vec3 p_282350_) {
+    @Override
+    public boolean handleGameEvent(ServerLevel p_222777_, net.minecraft.core.Holder<GameEvent> p_282184_, GameEvent.Context p_283014_, Vec3 p_282350_) {
         if (!this.isRemoved()) {
-            if (p_282184_ == GameEvent.ENTITY_DIE) {
+            if (p_282184_.is(GameEvent.ENTITY_DIE)) {
                 Entity $ = p_283014_.sourceEntity();
                 if ($ instanceof LivingEntity livingentity) {
                     if (!livingentity.wasExperienceConsumed() && this.getPlayer() != null && SEHelper.getSoulsContainer(this.getPlayer())) {
-                        int i = livingentity.getExperienceReward();
+                        int i = livingentity.getExperienceReward(p_222777_, $);
                         if (livingentity.shouldDropExperience() && i > 0) {
                             i *= this.enchantments.getOrDefault(ModEnchantments.SOUL_EATER.get(), 0) + 1;
                             SEHelper.increaseSouls(this.getPlayer(), i);

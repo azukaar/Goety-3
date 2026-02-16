@@ -1,6 +1,8 @@
 package com.Polarice3.Goety.common.entities.projectiles;
 
 import net.minecraft.core.BlockPos;
+import com.Polarice3.Goety.common.entities.ModEntityType;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
@@ -8,6 +10,9 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ClientGamePacketListener;
+import net.minecraft.server.level.ServerEntity;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -30,12 +35,15 @@ public abstract class LightProjectile extends Arrow {
         super(p_i50147_1_, p_i50147_2_);
     }
 
-    public LightProjectile(final Level world, final double x, final double y, final double z) {
-        super(world, x, y, z);
+    public LightProjectile(EntityType<? extends LightProjectile> type, Level world, double x, double y, double z) {
+        super(type, world);
+        this.setPos(x, y, z);
     }
 
-    public LightProjectile(final Level world, final LivingEntity shooter) {
-        super(world, shooter);
+    public LightProjectile(EntityType<? extends LightProjectile> type, Level world, LivingEntity shooter) {
+        super(type, world);
+        this.setOwner(shooter);
+        this.setPos(shooter.getX(), shooter.getEyeY() - (double)0.1F, shooter.getZ());
     }
 
     @Override
@@ -76,7 +84,7 @@ public abstract class LightProjectile extends Arrow {
             }
         }
 
-        if (raytraceresult != null && raytraceresult.getType() != HitResult.Type.MISS  && !net.neoforged.event.EventFactory.onProjectileImpact(this, raytraceresult)) {
+        if (raytraceresult != null && raytraceresult.getType() != HitResult.Type.MISS  && !net.neoforged.neoforge.event.EventHooks.onProjectileImpact(this, raytraceresult)) {
             this.onHit(raytraceresult);
             this.hasImpulse = true;
         }
@@ -87,12 +95,12 @@ public abstract class LightProjectile extends Arrow {
 
         this.setPos(x,y,z);
 
-        if(level.isClientSide) {
+        if(this.level().isClientSide) {
             double d0 = this.getX() + Vec3.x;
             double d1 = this.getY() + Vec3.y;
             double d2 = this.getZ() + Vec3.z;
             this.level().addParticle(sourceParticle(), this.getX(), this.getY(), this.getZ(), 0.0F, 0.0F, 0.0F);
-            this.level().addParticle(trailParticle(), d0 + level.random.nextDouble()/2, d1 + 0.5D, d2 + level.random.nextDouble()/2, 0.0D, 0.0D, 0.0D);
+            this.level().addParticle(trailParticle(), d0 + this.level().random.nextDouble()/2, d1 + 0.5D, d2 + this.level().random.nextDouble()/2, 0.0D, 0.0D, 0.0D);
         }
     }
 
@@ -161,6 +169,11 @@ public abstract class LightProjectile extends Arrow {
 
     @Override
     public abstract EntityType<?> getType();
+
+    @Override
+    public net.minecraft.network.protocol.Packet<net.minecraft.network.protocol.game.ClientGamePacketListener> getAddEntityPacket(ServerEntity p_345759_) {
+        return new net.minecraft.network.protocol.game.ClientboundAddEntityPacket(this, p_345759_);
+    }
 
     @Override
     protected SoundEvent getDefaultHitGroundSoundEvent() {

@@ -27,7 +27,7 @@ public class LeapleafRenderer<T extends Leapleaf> extends MobRenderer<T, Leaplea
     }
 
     public ResourceLocation getTextureLocation(T pEntity) {
-        if (pEntity.isHostile() || !MobsConfig.LeapleafTexture.get()) {
+        if (pEntity.isHostile() || !com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MobsConfig.LeapleafTexture, false)) {
             return ORIGINAL;
         }
         return TEXTURE_LOCATION;
@@ -47,7 +47,7 @@ public class LeapleafRenderer<T extends Leapleaf> extends MobRenderer<T, Leaplea
                 float p_116987_, float p_116988_, float p_116989_, float p_116990_, float p_116991_, float p_116992_) {
             if (!p_116986_.isInvisible()) {
                 VertexConsumer vertexconsumer = p_116984_.getBuffer(this.renderType());
-                if (p_116986_.isHostile() || !MobsConfig.LeapleafTexture.get()) {
+                if (p_116986_.isHostile() || !com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MobsConfig.LeapleafTexture, false)) {
                     vertexconsumer = p_116984_.getBuffer(ORIGINAL);
                 }
                 this.getParentModel().renderToBuffer(p_116983_, vertexconsumer, 15728640, OverlayTexture.NO_OVERLAY,

@@ -16,9 +16,9 @@ import net.minecraft.resources.ResourceLocation;
 
 public class SkeletonServantRenderer extends HumanoidMobRenderer<AbstractSkeletonServant, SkeletonModel<AbstractSkeletonServant>> {
    private static final ResourceLocation TEXTURES = Goety.location("textures/entity/servants/skeleton/skeleton_servant.png");
-   private static final ResourceLocation SKELETON_LOCATION = new ResourceLocation("textures/entity/skeleton/skeleton.png");
+   private static final ResourceLocation SKELETON_LOCATION = ResourceLocation.parse("textures/entity/skeleton/skeleton.png");
    private static final ResourceLocation STRAY = Goety.location("textures/entity/servants/skeleton/stray_servant.png");
-   private static final ResourceLocation STRAY_ORIGINAL = new ResourceLocation("textures/entity/skeleton/stray.png");
+   private static final ResourceLocation STRAY_ORIGINAL = ResourceLocation.parse("textures/entity/skeleton/stray.png");
    private static final ResourceLocation MOSSY = Goety.location("textures/entity/servants/skeleton/mossy_skeleton_servant.png");
    private static final ResourceLocation MOSSY_ORIGINAL = Goety.location("textures/entity/servants/skeleton/mossy_skeleton.png");
 
@@ -34,16 +34,16 @@ public class SkeletonServantRenderer extends HumanoidMobRenderer<AbstractSkeleto
 
    public ResourceLocation getTextureLocation(AbstractSkeletonServant servant) {
       if (servant instanceof MossySkeletonServant){
-         if (servant.isHostile() || !MobsConfig.MossySkeletonServantTexture.get()){
+         if (servant.isHostile() || !com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MobsConfig.MossySkeletonServantTexture, false)){
             return MOSSY_ORIGINAL;
          }
          return MOSSY;
       } else if (servant instanceof StrayServant){
-         if (servant.isHostile() || !MobsConfig.StrayServantTexture.get()){
+         if (servant.isHostile() || !com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MobsConfig.StrayServantTexture, false)){
             return STRAY_ORIGINAL;
          }
          return STRAY;
-      } else if (servant.isHostile() || !MobsConfig.SkeletonServantTexture.get()){
+      } else if (servant.isHostile() || !com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MobsConfig.SkeletonServantTexture, false)){
          return SKELETON_LOCATION;
       } else {
          return TEXTURES;

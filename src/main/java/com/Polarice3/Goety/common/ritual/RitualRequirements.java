@@ -90,7 +90,7 @@ public class RitualRequirements extends RitualTypes {
     }
 
     public static boolean frostRitual(@Nullable Player pPlayer, BlockPos pPos, Level pLevel){
-        return pLevel.getBiome(pPos).get().coldEnoughToSnow(pPos) || getStructures(FROST, pPlayer, pPos, pLevel);
+        return getStructures(FROST, pPlayer, pPos, pLevel);
     }
 
     public static boolean skyRitual(@Nullable Player pPlayer, RitualBlockEntity pTileEntity, Level pLevel, BlockPos pPos){
@@ -145,7 +145,7 @@ public class RitualRequirements extends RitualTypes {
             case NECROTURGY -> {
                 Predicate<BlockState> first = blockState -> blockState.getBlock() instanceof SculkBlock;
                 Predicate<BlockState> second = blockState -> blockState.getBlock() instanceof SlabBlock;
-                Predicate<BlockState> third = blockState -> blockState.getBlock() instanceof FlowerPotBlock flowerPotBlock && flowerPotBlock.getContent() != Blocks.AIR;
+                Predicate<BlockState> third = blockState -> blockState.getBlock().getDescriptionId().contains("flower_pot");
                 if (!finder.hasBlocks(first, 16)) {
                     if (pPlayer != null) {
                         pPlayer.displayClientMessage(Component.translatable("info.goety.ritual.structure.noBlocks", Blocks.SCULK.getName()), true);
@@ -207,7 +207,7 @@ public class RitualRequirements extends RitualTypes {
                 RitualChecker finder1 = new RitualChecker(pLevel, pPos, third, RANGE, 16) {
                     @Override
                     public boolean isCorrectBlock(BlockState blockState, BlockPos blockPos) {
-                        return super.isCorrectBlock(blockState, blockPos) && blockState.isSolidRender(this.level(), blockPos);
+                        return super.isCorrectBlock(blockState, blockPos) && blockState.isSolidRender(pLevel, blockPos);
                     }
                 };
                 if (!finder1.checkBlocks()) {
@@ -219,7 +219,7 @@ public class RitualRequirements extends RitualTypes {
             }
             case MAGIC -> {
                 Predicate<BlockState> second = blockState -> blockState.getBlock() instanceof LecternBlock;
-                Predicate<BlockState> third = blockState -> blockState.getBlock() instanceof EnchantmentTableBlock;
+                Predicate<BlockState> third = blockState -> blockState.getBlock().getDescriptionId().contains("enchanting_table");
                 if (!BlockFinder.getNearbyEnchantPower(pLevel, pPos, RANGE, 16)) {
                     if (pPlayer != null) {
                         pPlayer.displayClientMessage(Component.translatable("info.goety.ritual.structure.noEnchant"), true);

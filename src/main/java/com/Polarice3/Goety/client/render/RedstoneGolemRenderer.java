@@ -105,7 +105,7 @@ public class RedstoneGolemRenderer<T extends RedstoneGolem> extends MobRenderer<
 
         public void render(PoseStack p_117148_, MultiBufferSource p_117149_, int p_117150_, T p_117151_,
                 float p_117152_, float p_117153_, float p_117154_, float p_117155_, float p_117156_, float p_117157_) {
-            if (MobsConfig.RedstoneGolemCrack.get()) {
+            if (com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MobsConfig.RedstoneGolemCrack, false)) {
                 if (!p_117151_.isInvisible()) {
                     RedstoneGolem.Crackiness irongolem$crackiness = p_117151_.getCrackiness();
                     if (irongolem$crackiness != RedstoneGolem.Crackiness.NONE) {
@@ -130,7 +130,7 @@ public class RedstoneGolemRenderer<T extends RedstoneGolem> extends MobRenderer<
         public void render(PoseStack matrixStackIn, MultiBufferSource bufferIn, int packedLightIn, T entitylivingbaseIn,
                 float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw,
                 float headPitch) {
-            if (!entitylivingbaseIn.isHostile() && MobsConfig.RedstoneGolemTexture.get()) {
+            if (!entitylivingbaseIn.isHostile() && com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MobsConfig.RedstoneGolemTexture, false)) {
                 renderColoredCutoutModel(this.getParentModel(), TEXTURES, matrixStackIn, bufferIn, packedLightIn,
                         entitylivingbaseIn, -1);
             }

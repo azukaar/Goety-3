@@ -22,12 +22,12 @@ public class PrismaBeamSpell extends Spell {
 
     @Override
     public int defaultSoulCost() {
-        return SpellConfig.PrismaBeamCost.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.PrismaBeamCost, 0);
     }
 
     @Override
     public int defaultCastDuration() {
-        return SpellConfig.PrismaBeamDuration.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.PrismaBeamDuration, 0);
     }
 
     @Nullable
@@ -38,7 +38,7 @@ public class PrismaBeamSpell extends Spell {
 
     @Override
     public int defaultSpellCooldown() {
-        return SpellConfig.PrismaBeamCoolDown.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.PrismaBeamCoolDown, 0);
     }
 
     @Override
@@ -94,7 +94,7 @@ public class PrismaBeamSpell extends Spell {
         }
         LivingEntity target = this.getTarget(caster);
         if (target != null) {
-            float damage = SpellConfig.PrismaBeamDamage.get().floatValue() * WandUtil.damageMultiply();
+            float damage = com.Polarice3.Goety.utils.ConfigHelper.getFloat(SpellConfig.PrismaBeamDamage, 1.0F) * WandUtil.damageMultiply();
             float f = 1.0F;
 
             if (this.rightStaff(staff)) {

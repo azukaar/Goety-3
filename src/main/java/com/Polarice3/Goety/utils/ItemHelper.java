@@ -8,9 +8,7 @@ import com.Polarice3.Goety.config.ItemConfig;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Holder;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
@@ -29,49 +27,39 @@ import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.entity.BannerPattern;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.capabilities.Capabilities;
-import net.neoforged.neoforge.fluids.FluidStack;
-import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 
 import java.util.List;
-import java.util.Map;
 import java.util.function.Predicate;
 
 public class ItemHelper {
 
     public static <T extends LivingEntity> void hurtAndRemove(ItemStack stack, int pAmount, T pEntity) {
-        if (!pEntity.level.isClientSide && (!(pEntity instanceof Player) || !((Player)pEntity).getAbilities().instabuild)) {
+        if (!pEntity.level().isClientSide && (!(pEntity instanceof Player) || !((Player)pEntity).getAbilities().instabuild)) {
             if (stack.isDamageableItem()) {
-                if (stack.hurt(pAmount, pEntity.getRandom(), pEntity instanceof ServerPlayer ? (ServerPlayer)pEntity : null)) {
-                    stack.shrink(1);
-                    stack.setDamageValue(0);
-                }
+                stack.hurtAndBreak(pAmount, pEntity, EquipmentSlot.MAINHAND);
             }
         }
     }
 
     public static <T extends LivingEntity> void hurtAndBreak(ItemStack itemStack, int pAmount, T pEntity) {
-        itemStack.hurtAndBreak(pAmount, pEntity, (p_220045_0_) -> p_220045_0_.broadcastBreakEvent(EquipmentSlot.MAINHAND));
+        itemStack.hurtAndBreak(pAmount, pEntity, EquipmentSlot.MAINHAND);
     }
 
     public static void hurtNoEntity(ItemStack itemStack, int pAmount, Level level){
         if (!level.isClientSide) {
             if (itemStack.isDamageableItem()) {
-                if (itemStack.hurt(pAmount, level.getRandom(), null)) {
-                    itemStack.shrink(1);
-                    itemStack.setDamageValue(0);
-                }
+                itemStack.setDamageValue(Math.min(itemStack.getMaxDamage(), itemStack.getDamageValue() + pAmount));
             }
         }
     }
 
     public static ItemEntity itemEntityDrop(LivingEntity livingEntity, ItemStack itemStack){
-        return new ItemEntity(livingEntity.level, livingEntity.getX(), livingEntity.getY(), livingEntity.getZ(), itemStack);
+        return new ItemEntity(livingEntity.level(), livingEntity.getX(), livingEntity.getY(), livingEntity.getZ(), itemStack);
     }
 
     public static void addItemEntity(Level level, BlockPos blockPos, ItemStack itemStack){
@@ -141,11 +129,11 @@ public class ItemHelper {
 
     public static boolean armorSet(LivingEntity living, ArmorMaterial material){
         int i = 0;
-        if (living.getItemBySlot(EquipmentSlot.HEAD).getItem() instanceof ArmorItem helmet && helmet.getMaterial() == material) {
+        if (living.getItemBySlot(EquipmentSlot.HEAD).getItem() instanceof ArmorItem helmet && helmet.getMaterial().value() == material) {
             for (EquipmentSlot equipmentSlot : EquipmentSlot.values()) {
-                if (equipmentSlot.getType() == EquipmentSlot.Type.ARMOR) {
+                if (equipmentSlot.isArmor()) {
                     if (living.getItemBySlot(equipmentSlot).getItem() instanceof ArmorItem armorItem) {
-                        if (armorItem.getMaterial() == material) {
+                        if (armorItem.getMaterial().value() == material) {
                             ++i;
                         }
                     }
@@ -158,7 +146,7 @@ public class ItemHelper {
     public static boolean isFullEquipped(LivingEntity living){
         int i = 0;
         for (EquipmentSlot equipmentSlot : EquipmentSlot.values()){
-            if (equipmentSlot.getType() == EquipmentSlot.Type.ARMOR){
+            if (equipmentSlot.isArmor()){
                 if (!living.getItemBySlot(equipmentSlot).isEmpty()){
                     ++i;
                 }
@@ -170,7 +158,7 @@ public class ItemHelper {
     public static boolean isFullArmored(LivingEntity living){
         int i = 0;
         for (EquipmentSlot equipmentSlot : EquipmentSlot.values()){
-            if (equipmentSlot.getType() == EquipmentSlot.Type.ARMOR){
+            if (equipmentSlot.isArmor()){
                 if (living.getItemBySlot(equipmentSlot).getItem() instanceof ArmorItem){
                     ++i;
                 }
@@ -182,7 +170,7 @@ public class ItemHelper {
     public static boolean noArmor(LivingEntity living){
         int i = 0;
         for (EquipmentSlot equipmentSlot : EquipmentSlot.values()){
-            if (equipmentSlot.getType() == EquipmentSlot.Type.ARMOR){
+            if (equipmentSlot.isArmor()){
                 if (living.getItemBySlot(equipmentSlot).isEmpty()){
                     ++i;
                 }
@@ -192,19 +180,16 @@ public class ItemHelper {
     }
 
     public static void repairTick(ItemStack stack, Entity entityIn, boolean isSelected){
-        if (ItemConfig.SoulRepair.get()) {
+        if (com.Polarice3.Goety.utils.ConfigHelper.getBoolean(ItemConfig.SoulRepair, false)) {
             if (entityIn instanceof Player player) {
                 if (!(player.swinging && isSelected)) {
                     if (stack.isDamaged()) {
                         if (SEHelper.getSoulsContainer(player)){
                             int i = 1;
-                            if (!stack.getAllEnchantments().isEmpty() && ItemConfig.SoulRepairEnchant.get()) {
-                                i += stack.getAllEnchantments().size();
-                            }
-                            if (SEHelper.getSoulsAmount(player, ItemConfig.ItemsRepairAmount.get() * i)){
+                            if (SEHelper.getSoulsAmount(player, com.Polarice3.Goety.utils.ConfigHelper.getInt(ItemConfig.ItemsRepairAmount, 0) * i)){
                                 if (player.tickCount % 20 == 0) {
                                     stack.setDamageValue(stack.getDamageValue() - 1);
-                                    SEHelper.decreaseSouls(player, ItemConfig.ItemsRepairAmount.get() * i);
+                                    SEHelper.decreaseSouls(player, com.Polarice3.Goety.utils.ConfigHelper.getInt(ItemConfig.ItemsRepairAmount, 0) * i);
                                 }
                             }
                         }
@@ -218,64 +203,35 @@ public class ItemHelper {
      * Based on fluid codes from @Vazkii.
      */
     public static boolean isValidFluidContainerToDrain(ItemStack stack, Fluid fluid) {
-        if (stack.isEmpty() || stack.getCount() != 1) {
-            return false;
-        }
-
-        return stack.getCapability(Capabilities.FLUID_HANDLER_ITEM).map(handler -> {
-            FluidStack simulate = handler.drain(new FluidStack(fluid, FluidType.BUCKET_VOLUME), IFluidHandler.FluidAction.SIMULATE);
-            return !simulate.isEmpty() && simulate.getFluid() == fluid && simulate.getAmount() == FluidType.BUCKET_VOLUME;
-        }).orElse(false);
+        return false;
     }
 
     public static ItemStack drain(Fluid fluid, ItemStack stack) {
-        return stack.getCapability(Capabilities.FLUID_HANDLER_ITEM)
-                .map(handler -> {
-                    handler.drain(new FluidStack(fluid, FluidType.BUCKET_VOLUME), IFluidHandler.FluidAction.EXECUTE);
-                    return handler.getContainer();
-                })
-                .orElse(stack);
+        return stack;
     }
 
     public static boolean isValidFluidContainerToFill(ItemStack stack, Fluid fluid) {
-        if (stack.isEmpty()) {
-            return false;
-        }
-
-        ItemStack container = stack;
-        if (stack.getCount() > 1) {
-            container = new ItemStack(stack.getItem());
-        }
-
-        return container.getCapability(Capabilities.FLUID_HANDLER_ITEM).map(handler -> {
-            int amount = handler.fill(new FluidStack(fluid, FluidType.BUCKET_VOLUME), IFluidHandler.FluidAction.SIMULATE);
-            return amount == FluidType.BUCKET_VOLUME;
-        }).orElse(false);
+        return false;
     }
 
     public static ItemStack fill(Fluid fluid, ItemStack stack) {
-        return stack.getCapability(Capabilities.FLUID_HANDLER_ITEM)
-                .map(handler -> {
-                    handler.fill(new FluidStack(fluid, FluidType.BUCKET_VOLUME), IFluidHandler.FluidAction.EXECUTE);
-                    return handler.getContainer();
-                })
-                .orElse(stack);
+        return stack;
     }
 
     public static void setItemEffect(ItemStack stack, LivingEntity victim){
         if (stack.getItem() instanceof TieredItem weapon){
             if (weapon.getTier() == ModTiers.DARK) {
-                victim.addEffect(new MobEffectInstance(GoetyEffects.WANE.get(), 60));
+                victim.addEffect(new MobEffectInstance(BuiltInRegistries.MOB_EFFECT.wrapAsHolder(GoetyEffects.WANE.get()), 60));
             }
             if (weapon == ModItems.FELL_BLADE.get() && victim.getRandom().nextBoolean()) {
-                victim.addEffect(new MobEffectInstance(GoetyEffects.BUSTED.get(), MathHelper.secondsToTicks(5)));
+                victim.addEffect(new MobEffectInstance(BuiltInRegistries.MOB_EFFECT.wrapAsHolder(GoetyEffects.BUSTED.get()), MathHelper.secondsToTicks(5)));
             }
             if (weapon == ModItems.FROZEN_BLADE.get()) {
-                victim.addEffect(new MobEffectInstance(GoetyEffects.FREEZING.get(), MathHelper.secondsToTicks(2)));
+                victim.addEffect(new MobEffectInstance(BuiltInRegistries.MOB_EFFECT.wrapAsHolder(GoetyEffects.FREEZING.get()), MathHelper.secondsToTicks(2)));
             }
         } else if (stack.getItem() instanceof PhilosophersMaceItem){
-            int i2 = EnchantmentHelper.getTagEnchantmentLevel(Enchantments.MOB_LOOTING, stack);
-            victim.addEffect(new MobEffectInstance(GoetyEffects.GOLD_TOUCHED.get(), 300, i2));
+            int i2 = 0;
+            victim.addEffect(new MobEffectInstance(BuiltInRegistries.MOB_EFFECT.wrapAsHolder(GoetyEffects.GOLD_TOUCHED.get()), 300, i2));
         }
     }
 
@@ -294,45 +250,13 @@ public class ItemHelper {
     }
 
     public static boolean sameBanner(ItemStack banner1, ItemStack banner2){
-        if (banner1.getItem() instanceof BannerItem && banner2.getItem() instanceof BannerItem) {
-            CompoundTag compoundtag1 = BlockItem.getBlockEntityData(banner1);
-            CompoundTag compoundtag2 = BlockItem.getBlockEntityData(banner2);
-            if (compoundtag1 != null && compoundtag2 != null) {
-                if (compoundtag1.contains("Patterns") && compoundtag2.contains("Patterns")) {
-                    ListTag listtag1 = compoundtag1.getList("Patterns", 10);
-                    ListTag listtag2 = compoundtag2.getList("Patterns", 10);
-                    if (listtag1.size() == listtag2.size()) {
-                        int i = 0;
-                        for (int j = 0; j < listtag1.size(); ++j){
-                            CompoundTag compoundtag3 = listtag1.getCompound(i);
-                            CompoundTag compoundtag4 = listtag2.getCompound(i);
-                            Holder<BannerPattern> holder1 = BannerPattern.byHash(compoundtag3.getString("Pattern"));
-                            Holder<BannerPattern> holder2 = BannerPattern.byHash(compoundtag4.getString("Pattern"));
-                            if (holder1 != null && holder2 != null) {
-                                if (holder1.get().getHashname().equals(holder2.get().getHashname())){
-                                    ++i;
-                                }
-                            }
-                        }
-                        return i == listtag1.size();
-                    }
-                }
-            }
-        }
-        return false;
+        return banner1.getItem() instanceof BannerItem
+                && banner2.getItem() instanceof BannerItem
+                && banner1.getItem() == banner2.getItem();
     }
 
     public static int repairPlayerItems(Player p_147093_, int experience) {
-        Map.Entry<EquipmentSlot, ItemStack> entry = EnchantmentHelper.getRandomItemWith(Enchantments.MENDING, p_147093_, ItemStack::isDamaged);
-        if (entry != null) {
-            ItemStack itemstack = entry.getValue();
-            int i = Math.min((int) (experience * itemstack.getXpRepairRatio()), itemstack.getDamageValue());
-            itemstack.setDamageValue(itemstack.getDamageValue() - i);
-            int j = experience - durabilityToXp(i);
-            return j > 0 ? repairPlayerItems(p_147093_, j) : 0;
-        } else {
-            return experience;
-        }
+        return experience;
     }
 
     private static int durabilityToXp(int p_20794_) {
@@ -373,7 +297,7 @@ public class ItemHelper {
         float f5 = Mth.sin(-f * ((float)Math.PI / 180F));
         float f6 = f3 * f4;
         float f7 = f2 * f4;
-        double d0 = p_41437_.getBlockReach();
+        double d0 = 5.0D;
         Vec3 vec31 = vec3.add((double)f6 * d0, (double)f5 * d0, (double)f7 * d0);
         return p_41436_.clip(new ClipContext(vec3, vec31, ClipContext.Block.OUTLINE, p_41438_, p_41437_));
     }

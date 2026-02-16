@@ -16,10 +16,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public class ArrowItemMixin {
 
     @Inject(method = "createArrow", at = @At("RETURN"), cancellable = true)
-    public void createArrow(Level level, ItemStack stack, LivingEntity shooter, CallbackInfoReturnable<AbstractArrow> cir) {
+    public void createArrow(Level level, ItemStack stack, LivingEntity shooter, ItemStack firedFromWeapon, CallbackInfoReturnable<AbstractArrow> cir) {
         if (CuriosFinder.hasUnholySet(shooter)){
             DeathArrow arrow = new DeathArrow(level, shooter);
-            arrow.setEffectsFromItem(stack);
             cir.setReturnValue(arrow);
         }
     }

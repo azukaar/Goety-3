@@ -1,5 +1,6 @@
 package com.Polarice3.Goety.common.items.curios;
 
+import com.Polarice3.Goety.Goety;
 import com.Polarice3.Goety.common.items.ModItems;
 import com.Polarice3.Goety.common.network.ModNetwork;
 import com.Polarice3.Goety.common.network.server.SLightningPacket;
@@ -13,6 +14,7 @@ import com.Polarice3.Goety.utils.SEHelper;
 import com.Polarice3.Goety.utils.ServerParticleUtil;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
+import net.minecraft.core.Holder;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.effect.MobEffects;
@@ -24,7 +26,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import top.theillusivec4.curios.api.SlotContext;
-
 import java.util.UUID;
 
 public class WindyRobeItem extends SingleStackItem{
@@ -33,7 +34,7 @@ public class WindyRobeItem extends SingleStackItem{
     public void inventoryTick(ItemStack stack, Level worldIn, Entity entityIn, int itemSlot, boolean isSelected) {
         if (entityIn instanceof Player player) {
             if (CuriosFinder.hasWindyRobes(player) && !player.isSpectator()){
-                if (SEHelper.getSoulsAmount(player, ItemConfig.WindRobeSouls.get())
+                if (SEHelper.getSoulsAmount(player, com.Polarice3.Goety.utils.ConfigHelper.getInt(ItemConfig.WindRobeSouls, 0))
                         || player.isCreative()) {
                     Vec3 vector3d = player.getDeltaMovement();
                     if (player.hasEffect(MobEffects.SLOW_FALLING)){
@@ -48,7 +49,7 @@ public class WindyRobeItem extends SingleStackItem{
                             && !player.isInLava()
                             && player.fallDistance >= 2.0F) {
                         if (player.tickCount % 20 == 0 && !player.isCreative() && player.fallDistance > 3.0F) {
-                            SEHelper.decreaseSouls(player, ItemConfig.WindRobeSouls.get());
+                            SEHelper.decreaseSouls(player, com.Polarice3.Goety.utils.ConfigHelper.getInt(ItemConfig.WindRobeSouls, 0));
                         }
                         if (worldIn instanceof ServerLevel serverLevel){
                             ColorUtil color = new ColorUtil(0xffffff);
@@ -76,13 +77,13 @@ public class WindyRobeItem extends SingleStackItem{
     }
 
     @Override
-    public Multimap<Attribute, AttributeModifier> getAttributeModifiers(SlotContext slotContext,
+    public Multimap<Holder<Attribute>, AttributeModifier> getAttributeModifiers(SlotContext slotContext,
                                                                         UUID uuid, ItemStack stack) {
-        Multimap<Attribute, AttributeModifier> map = HashMultimap.create();
+        Multimap<Holder<Attribute>, AttributeModifier> map = HashMultimap.create();
         if (IronLoaded.IRON_SPELLBOOKS.isLoaded()){
-            if (MainConfig.RobesIronResist.get()) {
+            if (com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MainConfig.RobesIronResist, false)) {
                 if (stack.is(ModItems.STORM_ROBE.get())){
-                    map.put(IronAttributes.LIGHTNING_MAGIC_RESIST, new AttributeModifier(UUID.fromString("ed6bb7e0-c849-4e25-849a-e288e2b76961"), "Robes Iron Spell Resist", 0.5F, AttributeModifier.Operation.ADDITION));
+                    map.put(IronAttributes.LIGHTNING_MAGIC_RESIST, new AttributeModifier(Goety.location("robes_iron_spell_resist"), 0.5F, AttributeModifier.Operation.ADD_VALUE));
                 }
             }
         }

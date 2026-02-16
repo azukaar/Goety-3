@@ -1,18 +1,20 @@
 package com.Polarice3.Goety.common.blocks;
 
 import com.Polarice3.Goety.common.blocks.entities.HauntedJugBlockEntity;
+import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ItemUtils;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.alchemy.PotionUtils;
 import net.minecraft.world.item.alchemy.Potions;
+import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
@@ -41,6 +43,12 @@ import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import org.jetbrains.annotations.Nullable;
 
 public class HauntedJugBlock extends BaseEntityBlock implements SimpleWaterloggedBlock {
+    public static final MapCodec<HauntedJugBlock> CODEC = simpleCodec(p -> new HauntedJugBlock());
+
+    @Override
+    protected MapCodec<? extends BaseEntityBlock> codec() {
+        return CODEC;
+    }
     protected static final VoxelShape SHAPE_BOTTOM = Block.box(2.0D, 0.0D, 2.0D,
             14.0D, 2.0D, 14.0D);
     protected static final VoxelShape SHAPE_BASE_1 = Block.box(2.0D, 2.0D, 2.0D,
@@ -73,16 +81,17 @@ public class HauntedJugBlock extends BaseEntityBlock implements SimpleWaterlogge
         this.registerDefaultState(this.stateDefinition.any().setValue(WATERLOGGED, Boolean.FALSE));
     }
 
-    public InteractionResult use(BlockState pState, Level pLevel, BlockPos pPos, Player pPlayer, InteractionHand pHand, BlockHitResult pHit) {
-        ItemStack itemStack = pPlayer.getItemInHand(pHand);
+    @Override
+    protected ItemInteractionResult useItemOn(ItemStack stack, BlockState pState, Level pLevel, BlockPos pPos, Player pPlayer, InteractionHand pHand, BlockHitResult pHit) {
+        ItemStack itemStack = stack;
         if (!pLevel.isClientSide){
             if (pLevel.getBlockEntity(pPos) instanceof HauntedJugBlockEntity jugBlockEntity){
-                IFluidHandler handler = jugBlockEntity.getCapability(Capabilities.FLUID_HANDLER, pHit.getDirection()).orElse(null);
+                IFluidHandler handler = pLevel.getCapability(Capabilities.FluidHandler.BLOCK, pPos, pState, jugBlockEntity, pHit.getDirection());
                 if (handler != null) {
                     if (FluidUtil.interactWithFluidHandler(pPlayer, pHand, handler)) {
                         pLevel.playSound(null, pPos, SoundEvents.BUCKET_FILL, SoundSource.BLOCKS, 1.0F, 1.0F);
                     } else if (itemStack.getItem() == Items.GLASS_BOTTLE){
-                        pPlayer.setItemInHand(pHand, ItemUtils.createFilledResult(itemStack, pPlayer, PotionUtils.setPotion(new ItemStack(Items.POTION), Potions.WATER)));
+                        pPlayer.setItemInHand(pHand, ItemUtils.createFilledResult(itemStack, pPlayer, PotionContents.createItemStack(Items.POTION, Potions.WATER)));
                         pLevel.playSound(null, pPos, SoundEvents.BOTTLE_FILL, SoundSource.BLOCKS, 1.0F, 1.0F);
                     } else if (itemStack.getItem() == Items.WATER_BUCKET){
                         pPlayer.setItemInHand(pHand, ItemUtils.createFilledResult(itemStack, pPlayer, new ItemStack(Items.BUCKET)));
@@ -92,9 +101,9 @@ public class HauntedJugBlock extends BaseEntityBlock implements SimpleWaterlogge
             }
         }
         if (FluidUtil.getFluidHandler(itemStack).isPresent()) {
-            return InteractionResult.SUCCESS;
+            return ItemInteractionResult.SUCCESS;
         }
-        return super.use(pState, pLevel, pPos, pPlayer, pHand, pHit);
+        return super.useItemOn(stack, pState, pLevel, pPos, pPlayer, pHand, pHit);
     }
 
     public RenderShape getRenderShape(BlockState p_222219_) {

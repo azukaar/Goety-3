@@ -20,12 +20,12 @@ import java.util.List;
 public class BulwarkSpell extends Spell {
     @Override
     public int defaultSoulCost() {
-        return SpellConfig.BulwarkCost.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.BulwarkCost, 0);
     }
 
     @Override
     public int defaultCastDuration() {
-        return SpellConfig.BulwarkDuration.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.BulwarkDuration, 0);
     }
 
     @Override
@@ -35,7 +35,7 @@ public class BulwarkSpell extends Spell {
 
     @Override
     public int defaultSpellCooldown() {
-        return SpellConfig.BulwarkCoolDown.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.BulwarkCoolDown, 0);
     }
 
     @Override
@@ -53,8 +53,8 @@ public class BulwarkSpell extends Spell {
 
     @Override
     public void SpellResult(ServerLevel worldIn, LivingEntity caster, ItemStack staff, SpellStat spellStat) {
-        int amount = SpellConfig.BulwarkShieldAmount.get();
-        int duration = SpellConfig.BulwarkShieldTime.get();
+        int amount = com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.BulwarkShieldAmount, 0);
+        int duration = com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.BulwarkShieldTime, 0);
         if (WandUtil.enchantedFocus(caster)) {
             amount += WandUtil.getPotencyLevel(caster);
             duration *= Math.min(4, WandUtil.getLevels(ModEnchantments.DURATION.get(), caster) + 1);

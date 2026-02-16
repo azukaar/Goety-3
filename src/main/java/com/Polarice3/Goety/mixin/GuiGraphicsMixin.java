@@ -27,7 +27,7 @@ public class GuiGraphicsMixin {
         Item item = stack.getItem();
         LocalPlayer localplayer = Minecraft.getInstance().player;
         if (localplayer != null) {
-            if (item instanceof IWand && MainConfig.ShowWandCooldown.get()) {
+            if (item instanceof IWand && com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MainConfig.ShowWandCooldown, false)) {
                 float f;
                 if (IWand.getFocus(stack) != null && SEHelper.getFocusCoolDown(localplayer).isOnCooldown(IWand.getFocus(stack).getItem())) {
                     Item focus = IWand.getFocus(stack).getItem();

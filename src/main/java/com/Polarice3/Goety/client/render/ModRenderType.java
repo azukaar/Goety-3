@@ -72,7 +72,7 @@ public class ModRenderType {
     private static final Function<ResourceLocation, RenderType> BEACON_BEAM = Util.memoize((p_173253_) -> {
         RenderStateShard.TextureStateShard renderstateshard$texturestateshard = new RenderStateShard.TextureStateShard(p_173253_, false, false);
         return RenderType.create(source("magic_beam"),
-                DefaultVertexFormat.POSITION_COLOR_TEX, VertexFormat.Mode.QUADS, 256, false, false,
+                DefaultVertexFormat.POSITION_TEX_COLOR, VertexFormat.Mode.QUADS, 256, false, false,
                 RenderType.CompositeState.builder().setTextureState(renderstateshard$texturestateshard)
                         .setLayeringState(VIEW_OFFSET_Z_LAYERING)
                         .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
@@ -163,7 +163,7 @@ public class ModRenderType {
         }
 
         public void end(Tesselator p_107458_) {
-            p_107458_.end();
+           // p_107458_.end();
         }
 
         public String toString() {

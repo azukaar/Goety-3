@@ -12,13 +12,11 @@ import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
 
 public class SoulAbsorberRecipes implements Recipe<net.minecraft.world.item.crafting.SingleRecipeInput> {
-    protected final ResourceLocation id;
-    protected final Ingredient ingredient;
-    protected final int soulIncrease;
-    protected final int cookingTime;
+    public final Ingredient ingredient;
+    public final int soulIncrease;
+    public final int cookingTime;
 
-    public SoulAbsorberRecipes(ResourceLocation pId, Ingredient pIngredient, int pSouls, int pCookingTime) {
-        this.id = pId;
+    public SoulAbsorberRecipes(Ingredient pIngredient, int pSouls, int pCookingTime) {
         this.ingredient = pIngredient;
         this.soulIncrease = pSouls;
         this.cookingTime = pCookingTime;
@@ -57,9 +55,7 @@ public class SoulAbsorberRecipes implements Recipe<net.minecraft.world.item.craf
         return ItemStack.EMPTY;
     }
 
-    public ResourceLocation getId() {
-        return this.id;
-    }
+
 
     @Override
     public RecipeSerializer<?> getSerializer() {

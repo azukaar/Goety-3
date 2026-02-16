@@ -57,7 +57,7 @@ public class NetherMeteor extends ExplosiveProjectile {
             boolean flag = this.isDangerous();
             Explosion.BlockInteraction interaction = flag ? Explosion.BlockInteraction.DESTROY : Explosion.BlockInteraction.KEEP;
             ExplosionUtil.lootExplode(this.level(), this, this.getX(), this.getY(), this.getZ(), this.getExplosionPower(), flag, interaction, LootingExplosion.Mode.LOOT);
-            if (MobsConfig.ApocalypseMode.get() && flag){
+            if (com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MobsConfig.ApocalypseMode, false) && flag){
                 if (this.getOwner() instanceof Apostle apostle){
                     apostle.netherSpreaderUtil.clear();
                     for (int i = 0; i < 5; i++) {

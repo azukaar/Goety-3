@@ -27,16 +27,16 @@ public class Rattle extends AbstractSkeleton {
 
     public static AttributeSupplier.Builder setCustomAttributes() {
         return Mob.createMobAttributes()
-                .add(Attributes.MAX_HEALTH, AttributesConfig.StrayServantHealth.get())
-                .add(Attributes.ARMOR, AttributesConfig.StrayServantArmor.get())
+                .add(Attributes.MAX_HEALTH, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.StrayServantHealth, 20.0D))
+                .add(Attributes.ARMOR, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.StrayServantArmor, 20.0D))
                 .add(Attributes.MOVEMENT_SPEED, 0.25F)
-                .add(Attributes.ATTACK_DAMAGE, AttributesConfig.StrayServantDamage.get());
+                .add(Attributes.ATTACK_DAMAGE, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.StrayServantDamage, 20.0D));
     }
 
     public void setConfigurableAttributes(){
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.MAX_HEALTH), AttributesConfig.StrayServantHealth.get());
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ARMOR), AttributesConfig.StrayServantArmor.get());
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ATTACK_DAMAGE), AttributesConfig.StrayServantDamage.get());
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.MAX_HEALTH), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.StrayServantHealth, 20.0D));
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ARMOR), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.StrayServantArmor, 20.0D));
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ATTACK_DAMAGE), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.StrayServantDamage, 20.0D));
     }
 
     public void readAdditionalSaveData(CompoundTag compound) {
@@ -45,7 +45,7 @@ public class Rattle extends AbstractSkeleton {
     }
 
     public double getBaseRangeDamage(){
-        return AttributesConfig.StrayServantRangeDamage.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.StrayServantRangeDamage, 20.0D);
     }
 
     protected SoundEvent getAmbientSound() {
@@ -65,10 +65,10 @@ public class Rattle extends AbstractSkeleton {
     }
 
     protected AbstractArrow getArrow(ItemStack pArrowStack, float pDistanceFactor) {
-        AbstractArrow abstractarrowentity = super.getArrow(pArrowStack, pDistanceFactor);
+        AbstractArrow abstractarrowentity = super.getArrow(pArrowStack, pDistanceFactor, pArrowStack);
         abstractarrowentity.setBaseDamage(abstractarrowentity.getBaseDamage() + this.getBaseRangeDamage());
         if (abstractarrowentity instanceof Arrow) {
-            ((Arrow)abstractarrowentity).addEffect(new MobEffectInstance(GoetyEffects.SPASMS.get(), 600, 0));
+            ((Arrow)abstractarrowentity).addEffect(new MobEffectInstance(GoetyEffects.SPASMS, 600, 0));
         }
 
         return abstractarrowentity;

@@ -30,7 +30,7 @@ public class MagmaCubeServantRenderer extends MobRenderer<MagmaCubeServant, Magm
    }
 
    public ResourceLocation getTextureLocation(MagmaCubeServant p_115393_) {
-      if (p_115393_.isHostile() || !MobsConfig.MagmaCubeServantTexture.get()){
+      if (p_115393_.isHostile() || !com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MobsConfig.MagmaCubeServantTexture, false)){
          return ORIGINAL;
       }
       return MAGMACUBE_LOCATION;

@@ -1,10 +1,10 @@
 package com.Polarice3.Goety.utils;
 
-import net.minecraft.world.entity.MobType;
+import com.Polarice3.Goety.utils.MobType;
 
 public class ModMobType {
-    public static final MobType NATURAL = new MobType();
-    public static final MobType NETHER = new MobType();
-    public static final MobType FROST = new MobType();
-    public static final MobType END = new MobType();
+    public static final MobType NATURAL = MobType.ARTHROPOD;
+    public static final MobType NETHER = MobType.ILLAGER;
+    public static final MobType FROST = MobType.ARTHROPOD;
+    public static final MobType END = MobType.WATER;
 }

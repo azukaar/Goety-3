@@ -9,10 +9,17 @@ import net.minecraft.world.level.block.BushBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.neoforged.neoforge.common.IForgeShearable;
-import net.neoforged.neoforge.common.IPlantable;
+import com.Polarice3.Goety.compat.legacy.neoforge.common.IForgeShearable;
+import com.Polarice3.Goety.compat.legacy.neoforge.common.IPlantable;
 
 public class EndPlantBlock extends BushBlock implements IForgeShearable {
+   public static final com.mojang.serialization.MapCodec<EndPlantBlock> CODEC = simpleCodec(EndPlantBlock::new);
+   
+   @Override
+   public com.mojang.serialization.MapCodec<? extends BushBlock> codec() {
+      return CODEC;
+   }
+   
    protected static final VoxelShape SHAPE = Block.box(2.0D, 0.0D, 2.0D, 14.0D, 16.0D, 14.0D);
 
    public EndPlantBlock(Properties properties) {

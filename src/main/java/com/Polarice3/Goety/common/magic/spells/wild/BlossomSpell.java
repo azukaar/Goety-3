@@ -27,12 +27,12 @@ public class BlossomSpell extends Spell {
 
     @Override
     public int defaultSoulCost() {
-        return SpellConfig.BlossomCost.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.BlossomCost, 0);
     }
 
     @Override
     public int defaultCastDuration() {
-        return SpellConfig.BlossomDuration.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.BlossomDuration, 0);
     }
 
     @Nullable
@@ -43,7 +43,7 @@ public class BlossomSpell extends Spell {
 
     @Override
     public int defaultSpellCooldown() {
-        return SpellConfig.BlossomCoolDown.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.BlossomCoolDown, 0);
     }
 
     @Override

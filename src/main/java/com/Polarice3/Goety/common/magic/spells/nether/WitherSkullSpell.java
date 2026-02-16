@@ -22,12 +22,12 @@ public class WitherSkullSpell extends Spell {
 
     @Override
     public int defaultSoulCost() {
-        return SpellConfig.WitherSkullCost.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.WitherSkullCost, 0);
     }
 
     @Override
     public int defaultCastDuration() {
-        return SpellConfig.WitherSkullDuration.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.WitherSkullDuration, 0);
     }
 
     @Override
@@ -37,7 +37,7 @@ public class WitherSkullSpell extends Spell {
 
     @Override
     public int defaultSpellCooldown() {
-        return SpellConfig.WitherSkullCoolDown.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.WitherSkullCoolDown, 0);
     }
 
     @Override

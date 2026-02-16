@@ -31,12 +31,12 @@ public class CushionSpell extends Spell {
 
     @Override
     public int defaultSoulCost() {
-        return SpellConfig.CushionCost.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.CushionCost, 0);
     }
 
     @Override
     public int defaultCastDuration() {
-        return SpellConfig.CushionDuration.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.CushionDuration, 0);
     }
 
     @Override
@@ -46,7 +46,7 @@ public class CushionSpell extends Spell {
 
     @Override
     public int defaultSpellCooldown() {
-        return SpellConfig.CushionCoolDown.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.CushionCoolDown, 0);
     }
 
     @Override

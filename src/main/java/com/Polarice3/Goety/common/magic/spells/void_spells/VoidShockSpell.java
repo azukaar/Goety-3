@@ -25,12 +25,12 @@ public class VoidShockSpell extends Spell {
 
     @Override
     public int defaultSoulCost() {
-        return SpellConfig.VoidShockCost.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.VoidShockCost, 0);
     }
 
     @Override
     public int defaultCastDuration() {
-        return SpellConfig.VoidShockDuration.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.VoidShockDuration, 0);
     }
 
     @Override
@@ -39,7 +39,7 @@ public class VoidShockSpell extends Spell {
         if (WandUtil.enchantedFocus(caster)) {
             i += WandUtil.getLevels(ModEnchantments.DURATION.get(), caster);
         }
-        return SpellConfig.VoidShockDuration.get() * (i + 1);
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.VoidShockDuration, 0) * (i + 1);
     }
 
     @Nullable
@@ -50,7 +50,7 @@ public class VoidShockSpell extends Spell {
 
     @Override
     public int defaultSpellCooldown() {
-        return SpellConfig.VoidShockCoolDown.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.VoidShockCoolDown, 0);
     }
 
     @Override

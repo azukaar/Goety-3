@@ -3,7 +3,7 @@ package com.Polarice3.Goety.common.network.client;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
-import net.neoforged.network.NetworkEvent;
+import com.Polarice3.Goety.compat.legacy.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
@@ -33,10 +33,10 @@ public class CSetDeltaMovement {
 
     public static void consume(CSetDeltaMovement packet, Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
-            ServerPlayer playerEntity = ctx.get().getSender();
+            ServerPlayer playerEntity = com.Polarice3.Goety.common.network.NetworkContextHelper.getServerPlayer(ctx);
 
             if (playerEntity != null) {
-                Entity entity = playerEntity.level.getEntity(packet.mob);
+                Entity entity = playerEntity.level().getEntity(packet.mob);
                 if (entity != null) {
                     entity.setDeltaMovement(packet.x, packet.y, packet.z);
                     entity.hasImpulse = true;
@@ -46,3 +46,5 @@ public class CSetDeltaMovement {
         ctx.get().setPacketHandled(true);
     }
 }
+
+

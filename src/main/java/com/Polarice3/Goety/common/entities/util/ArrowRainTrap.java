@@ -38,7 +38,7 @@ public class ArrowRainTrap extends AbstractTrap {
         if (this.getOwner() != null) {
             if (this.getOwner() instanceof Apostle apostle){
                 ItemStack itemstack = apostle.getProjectile(apostle.getItemInHand(ProjectileUtil.getWeaponHoldingHand(apostle, item -> item instanceof BowItem)));
-                AbstractArrow abstractarrowentity = apostle.getArrow(itemstack, Math.max(AttributesConfig.ApostleBowDamage.get() / 2.0F, 1.0F));
+                AbstractArrow abstractarrowentity = apostle.getArrow(itemstack, Math.max(com.Polarice3.Goety.utils.ConfigHelper.getInt(AttributesConfig.ApostleBowDamage, 2) / 2.0F, 1.0F));
                 abstractarrowentity.addTag(ConstantPaths.rainArrow());
                 abstractarrowentity.setPos(this.getX() + this.random.nextIntBetweenInclusive(-3, 3), blockpos$mutable.getY(), this.getZ() + this.random.nextIntBetweenInclusive(-3, 3));
                 abstractarrowentity.shoot(0, -900, 0, 2, 10);
@@ -48,7 +48,7 @@ public class ArrowRainTrap extends AbstractTrap {
                 ItemStack itemStack = new ItemStack(Items.ARROW);
                 ArrowItem arrowitem = (ArrowItem)(itemStack.getItem() instanceof ArrowItem ? itemStack.getItem() : Items.ARROW);
                 for(int i = 0; i < 3; ++i) {
-                    AbstractArrow abstractArrowEntity = arrowitem.createArrow(this.level(), itemStack, this.getOwner());
+                    AbstractArrow abstractArrowEntity = arrowitem.createArrow(this.level(), itemStack, this.getOwner(), new ItemStack(net.minecraft.world.item.Items.BOW));
                     abstractArrowEntity.addTag(ConstantPaths.rainArrow());
                     abstractArrowEntity.setPos(this.getX() + this.random.nextIntBetweenInclusive(-3, 3), blockpos$mutable.getY(), this.getZ() + this.random.nextIntBetweenInclusive(-3, 3));
                     abstractArrowEntity.shoot(0, -900, 0, 2, 0);

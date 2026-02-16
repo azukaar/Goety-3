@@ -43,7 +43,7 @@ public class SpiderMotherDenBlockEntity extends ModBlockEntity{
                             double d0 = (double) this.worldPosition.getX() + (serverLevel.getRandom().nextDouble() - serverLevel.getRandom().nextDouble()) * 4.0D + 0.5D;
                             double d1 = this.worldPosition.getY() + serverLevel.getRandom().nextInt(3) - 1;
                             double d2 = (double) this.worldPosition.getZ() + (serverLevel.getRandom().nextDouble() - serverLevel.getRandom().nextDouble()) * 4.0D + 0.5D;
-                            if (serverLevel.noCollision(EntityType.SPIDER.getAABB(d0, d1, d2))) {
+                            if (serverLevel.noCollision(EntityType.SPIDER.getSpawnAABB(d0, d1, d2))) {
                                 BlockPos blockpos = BlockPos.containing(d0, d1, d2);
                                 if (SpawnPlacements.checkSpawnRules(EntityType.SPIDER, serverLevel, MobSpawnType.SPAWNER, blockpos, serverLevel.getRandom())) {
                                     Entity entity = EntityType.SPIDER.create(serverLevel);
@@ -61,7 +61,7 @@ public class SpiderMotherDenBlockEntity extends ModBlockEntity{
                                     }
                                     entity.moveTo(blockpos.getX(), blockpos.getY(), blockpos.getZ(), serverLevel.getRandom().nextFloat() * 360.0F, 0.0F);
                                     if (entity instanceof Mob mob) {
-                                        net.neoforged.neoforge.event.EventHooks.onFinalizeSpawn(mob, serverLevel, serverLevel.getCurrentDifficultyAt(this.worldPosition), MobSpawnType.SPAWNER, null, null);
+                                        net.neoforged.neoforge.event.EventHooks.finalizeMobSpawn(mob, serverLevel, serverLevel.getCurrentDifficultyAt(this.worldPosition), MobSpawnType.SPAWNER, null);
                                         mob.spawnAnim();
                                     }
                                     if (!serverLevel.tryAddFreshEntityWithPassengers(entity)) {
@@ -95,7 +95,7 @@ public class SpiderMotherDenBlockEntity extends ModBlockEntity{
     }
 
     @Override
-    public void readNetwork(CompoundTag compoundNBT) {
+    public void readNetwork(CompoundTag compoundNBT, net.minecraft.core.HolderLookup.Provider pRegistries) {
         this.spawnDelay = compoundNBT.getShort("Delay");
         if (compoundNBT.contains("MinSpawnDelay")) {
             this.minSpawnDelay = compoundNBT.getShort("MinSpawnDelay");
@@ -106,7 +106,7 @@ public class SpiderMotherDenBlockEntity extends ModBlockEntity{
     }
 
     @Override
-    public CompoundTag writeNetwork(CompoundTag pCompound) {
+    public CompoundTag writeNetwork(CompoundTag pCompound, net.minecraft.core.HolderLookup.Provider pRegistries) {
         pCompound.putShort("Delay", (short)this.spawnDelay);
         pCompound.putShort("MinSpawnDelay", (short)this.minSpawnDelay);
         pCompound.putShort("MaxSpawnDelay", (short)this.maxSpawnDelay);

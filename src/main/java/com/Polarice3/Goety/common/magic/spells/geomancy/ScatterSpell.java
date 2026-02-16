@@ -33,12 +33,12 @@ public class ScatterSpell extends Spell {
 
     @Override
     public int defaultSoulCost() {
-        return SpellConfig.ScatterCost.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.ScatterCost, 0);
     }
 
     @Override
     public int defaultCastDuration() {
-        return SpellConfig.ScatterDuration.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.ScatterDuration, 0);
     }
 
     @Override
@@ -61,7 +61,7 @@ public class ScatterSpell extends Spell {
 
     @Override
     public int defaultSpellCooldown() {
-        return SpellConfig.ScatterCoolDown.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.ScatterCoolDown, 0);
     }
 
     public List<Enchantment> acceptedEnchantments() {

@@ -1,32 +1,14 @@
 package com.Polarice3.Goety.common.capabilities.soulenergy;
 
-import com.Polarice3.Goety.utils.SEHelper;
-import net.minecraft.core.Direction;
-import net.minecraft.nbt.CompoundTag;
-import net.neoforged.neoforge.capabilities.*;
-import net.neoforged.neoforge.common.util.LazyOptional;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
-public class SEProvider implements ICapabilityProvider, ICapabilitySerializable<CompoundTag> {
-    public static Capability<ISoulEnergy> CAPABILITY = CapabilityManager.get(new CapabilityToken<>() {});
-
-    ISoulEnergy instance = new SEImp();
-
-    @Nonnull
-    @Override
-    public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
-        return cap == CAPABILITY ? LazyOptional.of(() -> (T) instance) : LazyOptional.empty();
-    }
-
-    @Override
-    public CompoundTag serializeNBT() {
-        return SEHelper.save(new CompoundTag(), instance);
-    }
-
-    @Override
-    public void deserializeNBT(CompoundTag nbt) {
-        SEHelper.load(nbt, instance);
-    }
+/**
+ * SEProvider is no longer needed in NeoForge 1.21+.
+ * Capabilities have been replaced with the AttachmentType system.
+ * See ModAttachments.SOUL_ENERGY for the new registration.
+ * 
+ * This file is kept for reference only and may be deleted.
+ * @deprecated Use ModAttachments.SOUL_ENERGY with entity.getData() instead
+ */
+@Deprecated(forRemoval = true)
+public class SEProvider {
+    // No longer needed - use ModAttachments.SOUL_ENERGY with entity.getData()
 }

@@ -1,5 +1,6 @@
 package com.Polarice3.Goety.common.blocks;
 
+import com.mojang.serialization.MapCodec;
 import com.Polarice3.Goety.common.blocks.entities.DarkAltarBlockEntity;
 import com.Polarice3.Goety.init.ModSounds;
 import net.minecraft.core.BlockPos;
@@ -8,6 +9,7 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.Containers;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
@@ -32,13 +34,13 @@ import net.minecraft.world.level.pathfinder.PathComputationType;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.neoforged.neoforge.capabilities.Capabilities;
-import net.neoforged.neoforge.common.extensions.IForgeBlock;
+import com.Polarice3.Goety.compat.legacy.neoforge.common.extensions.IForgeBlock;
 import net.neoforged.neoforge.items.IItemHandler;
 
 import javax.annotation.Nullable;
 
 public class DarkAltarBlock extends BaseEntityBlock implements IForgeBlock, SimpleWaterloggedBlock {
+    public static final MapCodec<DarkAltarBlock> CODEC = simpleCodec(DarkAltarBlock::new);
     public static final VoxelShape SHAPE = Block.box(1.0D, 0.0D, 1.0D, 15.0D, 13.0D, 15.0D);
     public static final BooleanProperty LIT = BlockStateProperties.LIT;
     public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
@@ -54,6 +56,11 @@ public class DarkAltarBlock extends BaseEntityBlock implements IForgeBlock, Simp
     }
 
     @Override
+    protected MapCodec<? extends BaseEntityBlock> codec() {
+        return CODEC;
+    }
+
+    @Override
     public void neighborChanged(BlockState state, Level world, BlockPos pos, Block blockIn, BlockPos fromPos,
                                 boolean isMoving) {
         super.neighborChanged(state, world, pos, blockIn, fromPos, isMoving);
@@ -61,37 +68,33 @@ public class DarkAltarBlock extends BaseEntityBlock implements IForgeBlock, Simp
     }
 
     @Override
-    public InteractionResult use(BlockState state, Level world, BlockPos pos, Player player,
+    protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level world, BlockPos pos, Player player,
                                  InteractionHand hand, BlockHitResult hit) {
         BlockEntity tileEntity = world.getBlockEntity(pos);
         if (tileEntity instanceof DarkAltarBlockEntity darkAltarTile) {
-            if (darkAltarTile.itemStackHandler.isPresent()){
-                IItemHandler handler = darkAltarTile.itemStackHandler.orElseThrow(RuntimeException::new);
-                ItemStack itemStack = handler.getStackInSlot(0);
-                if (!itemStack.isEmpty()){
-                    darkAltarTile.removeItem(player);
-                    return InteractionResult.SUCCESS;
-                } else if (!player.getItemInHand(hand).isEmpty()){
-                    return darkAltarTile.activate(world, pos, player, hand,
-                            hit.getDirection()) ? InteractionResult.SUCCESS : InteractionResult.PASS;
-                } else if (player.isCrouching()) {
-                    darkAltarTile.setShowArea(!darkAltarTile.isShowArea());
-                    world.playSound(null, pos, ModSounds.CAST_SPELL.get(), SoundSource.BLOCKS, 0.25F, 2.0F);
-                    return InteractionResult.SUCCESS;
-                }
+            IItemHandler handler = darkAltarTile.itemStackHandler;
+            ItemStack itemStack = handler.getStackInSlot(0);
+            if (!itemStack.isEmpty()){
+                darkAltarTile.removeItem(player);
+                return ItemInteractionResult.SUCCESS;
+            } else if (!stack.isEmpty()){
+                return darkAltarTile.activate(world, pos, player, hand,
+                        hit.getDirection()) ? ItemInteractionResult.SUCCESS : ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+            } else if (player.isCrouching()) {
+                darkAltarTile.setShowArea(!darkAltarTile.isShowArea());
+                world.playSound(null, pos, ModSounds.CAST_SPELL.get(), SoundSource.BLOCKS, 0.25F, 2.0F);
+                return ItemInteractionResult.SUCCESS;
             }
         }
-        return super.use(state, world, pos, player, hand, hit);
+        return super.useItemOn(stack, state, world, pos, player, hand, hit);
     }
 
     public void onRemove(BlockState pState, Level pLevel, BlockPos pPos, BlockState pNewState, boolean pIsMoving) {
         if (!pState.is(pNewState.getBlock())) {
             BlockEntity tileentity = pLevel.getBlockEntity(pPos);
-            if (tileentity instanceof DarkAltarBlockEntity) {
-                ((DarkAltarBlockEntity) tileentity).stopRitual(false);
-                tileentity.getCapability(Capabilities.ITEM_HANDLER).ifPresent(handler -> {
-                    dropInventoryItems(tileentity.getLevel(), tileentity.getBlockPos(), handler);
-                });
+            if (tileentity instanceof DarkAltarBlockEntity darkAltarTile) {
+                darkAltarTile.stopRitual(false);
+                dropInventoryItems(tileentity.getLevel(), tileentity.getBlockPos(), darkAltarTile.itemStackHandler);
             }
 
             super.onRemove(pState, pLevel, pPos, pNewState, pIsMoving);

@@ -3,7 +3,7 @@ package com.Polarice3.Goety.common.network.client;
 import com.Polarice3.Goety.utils.LichdomHelper;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
-import net.neoforged.network.NetworkEvent;
+import com.Polarice3.Goety.compat.legacy.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
@@ -18,7 +18,7 @@ public class CSetLichMode {
 
     public static void consume(CSetLichMode packet, Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
-            ServerPlayer playerEntity = ctx.get().getSender();
+            ServerPlayer playerEntity = com.Polarice3.Goety.common.network.NetworkContextHelper.getServerPlayer(ctx);
             if (playerEntity != null && LichdomHelper.isLich(playerEntity)) {
                 LichdomHelper.setLichMode(playerEntity, !LichdomHelper.isInLichMode(playerEntity));
             }
@@ -26,3 +26,5 @@ public class CSetLichMode {
         ctx.get().setPacketHandled(true);
     }
 }
+
+

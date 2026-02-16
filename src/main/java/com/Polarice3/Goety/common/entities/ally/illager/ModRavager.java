@@ -57,6 +57,9 @@ import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.pathfinder.PathType;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.GameRules;
+import net.minecraft.tags.ItemTags;
 import net.neoforged.neoforge.common.NeoForgeMod;
 import org.jetbrains.annotations.NotNull;
 
@@ -100,7 +103,7 @@ public class ModRavager extends RaiderServant implements PlayerRideable, IAutoRi
         this.goalSelector.addGoal(0, new FloatGoal(this){
             @Override
             public boolean canUse() {
-                return super.canUse() && ModRavager.this.getMobType() != MobType.UNDEAD;
+                return super.canUse() && !ModRavager.this.getType().is(net.minecraft.tags.EntityTypeTags.UNDEAD);
             }
         });
         this.goalSelector.addGoal(8, new RaiderWanderGoal<>(this, 0.4D));
@@ -132,15 +135,15 @@ public class ModRavager extends RaiderServant implements PlayerRideable, IAutoRi
                 .add(Attributes.MAX_HEALTH, 75.0D)
                 .add(Attributes.MOVEMENT_SPEED, 0.3D)
                 .add(Attributes.KNOCKBACK_RESISTANCE, 0.75D)
-                .add(Attributes.ATTACK_DAMAGE, AttributesConfig.RavagerDamage.get())
+                .add(Attributes.ATTACK_DAMAGE, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.RavagerDamage, 20.0D))
                 .add(Attributes.ATTACK_KNOCKBACK, 1.5D)
-                .add(Attributes.ARMOR, AttributesConfig.RavagerArmor.get())
+                .add(Attributes.ARMOR, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.RavagerArmor, 20.0D))
                 .add(Attributes.FOLLOW_RANGE, 32.0D);
     }
 
     public void setConfigurableAttributes(){
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ARMOR), AttributesConfig.RavagerArmor.get());
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ATTACK_DAMAGE), AttributesConfig.RavagerDamage.get());
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ARMOR), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.RavagerArmor, 20.0D));
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ATTACK_DAMAGE), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.RavagerDamage, 20.0D));
     }
 
     public void addAdditionalSaveData(CompoundTag p_33353_) {
@@ -155,7 +158,7 @@ public class ModRavager extends RaiderServant implements PlayerRideable, IAutoRi
         ItemStack itemStack = this.getItemBySlot(EquipmentSlot.CHEST);
         if(!itemStack.isEmpty()) {
             CompoundTag compoundTag = new CompoundTag();
-            itemStack.save(compoundTag);
+            itemStack.save(this.registryAccess(), compoundTag);
             p_33353_.put("ArmorItem", compoundTag);
         }
     }
@@ -175,7 +178,7 @@ public class ModRavager extends RaiderServant implements PlayerRideable, IAutoRi
         if (p_33344_.contains("ArmorItem")) {
             CompoundTag armorItem = p_33344_.getCompound("ArmorItem");
             if (!armorItem.isEmpty()) {
-                this.setArmorEquipment(ItemStack.of(armorItem), false);
+                this.setArmorEquipment(ItemStack.parse(this.registryAccess(), armorItem).orElse(ItemStack.EMPTY), false);
             }
         }
     }
@@ -256,11 +259,12 @@ public class ModRavager extends RaiderServant implements PlayerRideable, IAutoRi
     public void updateArmor(){
         AttributeInstance attribute = this.getAttribute(Attributes.ARMOR);
         if (attribute != null) {
-            attribute.removeModifier(ARMOR_MODIFIER_UUID);
+            ResourceLocation armorMod = ResourceLocation.parse("goety:ravager_armor");
+            attribute.removeModifier(armorMod);
             if (this.isArmor(this.getArmor())) {
                 int i = ((RavagerArmorItem) this.getArmor().getItem()).getProtection();
                 if (i != 0) {
-                    attribute.addTransientModifier(new AttributeModifier(ARMOR_MODIFIER_UUID, "Ravager armor bonus", (double) i, AttributeModifier.Operation.ADDITION));
+                    attribute.addTransientModifier(new AttributeModifier(armorMod, (double) i, AttributeModifier.Operation.ADD_VALUE));
                 }
             }
         }
@@ -280,7 +284,7 @@ public class ModRavager extends RaiderServant implements PlayerRideable, IAutoRi
 
     public void aiStep() {
         super.aiStep();
-        if (this.isHostile() && this.getMobType() != MobType.UNDEAD) {
+        if (this.isHostile() && !this.getType().is(net.minecraft.tags.EntityTypeTags.UNDEAD)) {
             if (this.tickCount % 20 == 0) {
                 if (this.hasSaddle()) {
                     if (!this.getArmor().isEmpty()) {
@@ -306,7 +310,7 @@ public class ModRavager extends RaiderServant implements PlayerRideable, IAutoRi
                 }
             }
             if (!this.level().isClientSide) {
-                if (this.level().getGameRules().getBoolean(GameRules.RULE_MOB_GRIEFING)) {
+                if (this.level().getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING)) {
                     boolean flag = false;
                     AABB aabb = this.getBoundingBox().inflate(0.2D);
 
@@ -363,7 +367,7 @@ public class ModRavager extends RaiderServant implements PlayerRideable, IAutoRi
             double d0 = this.getX() - (double)this.getBbWidth() * Math.sin((double)(this.yBodyRot * ((float)Math.PI / 180F))) + (this.random.nextDouble() * 0.6D - 0.3D);
             double d1 = this.getY() + (double)this.getBbHeight() - 0.3D;
             double d2 = this.getZ() + (double)this.getBbWidth() * Math.cos((double)(this.yBodyRot * ((float)Math.PI / 180F))) + (this.random.nextDouble() * 0.6D - 0.3D);
-            this.level().addParticle(ParticleTypes.ENTITY_EFFECT, d0, d1, d2, 0.4980392156862745D, 0.5137254901960784D, 0.5725490196078431D);
+            this.level().addParticle(net.minecraft.core.particles.ColorParticleOption.create(ParticleTypes.ENTITY_EFFECT, 0.4980392156862745F, 0.5137254901960784F, 0.5725490196078431F), d0, d1, d2, 0.0D, 0.0D, 0.0D);
         }
 
     }
@@ -420,7 +424,7 @@ public class ModRavager extends RaiderServant implements PlayerRideable, IAutoRi
                 this.level().addParticle(ParticleTypes.POOF, vec3.x, vec3.y, vec3.z, d0, d1, d2);
             }
 
-            this.gameEvent(GameEvent.ENTITY_ROAR);
+            // this.gameEvent(GameEvent.ENTITY_ROAR);
         }
 
     }
@@ -539,7 +543,7 @@ public class ModRavager extends RaiderServant implements PlayerRideable, IAutoRi
                 this.yBodyRot = this.getYRot();
                 this.yHeadRot = this.yBodyRot;
                 float speed = 0.35F;
-                if (this.getMobType() == MobType.UNDEAD) {
+                if (this.getType().is(net.minecraft.tags.EntityTypeTags.UNDEAD)) {
                     speed = 0.325F;
                 }
                 float f = rider.xxa * speed;
@@ -548,8 +552,8 @@ public class ModRavager extends RaiderServant implements PlayerRideable, IAutoRi
                     f1 *= 0.25F;
                 }
 
-                if (this.getMobType() != MobType.UNDEAD) {
-                    if (this.isInWater() && this.getFluidTypeHeight(NeoForgeMod.WATER_TYPE.get()) > this.getFluidJumpThreshold() || this.isInLava() || this.isInFluidType((fluidType, height) -> this.canSwimInFluidType(fluidType) && height > this.getFluidJumpThreshold())) {
+                if (!this.getType().is(net.minecraft.tags.EntityTypeTags.UNDEAD)) {
+                    if (this.isInWater() && this.getFluidTypeHeight(NeoForgeMod.WATER_TYPE.value()) > this.getFluidJumpThreshold() || this.isInLava() || this.isInFluidType((fluidType, height) -> this.canSwimInFluidType(fluidType) && height > this.getFluidJumpThreshold())) {
                         Vec3 vector3d = this.getDeltaMovement();
                         this.setDeltaMovement(vector3d.x, 0.04F, vector3d.z);
                         this.hasImpulse = true;
@@ -581,7 +585,7 @@ public class ModRavager extends RaiderServant implements PlayerRideable, IAutoRi
     public void die(DamageSource pCause) {
         if (!this.level().isClientSide) {
             if (this.getIdol() == null) {
-                if (this.getTrueOwner() != null && this.getMobType() != MobType.UNDEAD) {
+                if (this.getTrueOwner() != null && !this.getType().is(net.minecraft.tags.EntityTypeTags.UNDEAD)) {
                     if (CuriosFinder.hasNamelessSet(this.getTrueOwner())) {
                         ZombieRavager servant = this.convertTo(ModEntityType.ZOMBIE_RAVAGER.get(), true);
                         if (servant != null) {
@@ -590,7 +594,7 @@ public class ModRavager extends RaiderServant implements PlayerRideable, IAutoRi
                                 servant.equipSaddle(false);
                             }
                             servant.updateArmor();
-                            net.neoforged.event.net.neoforged.neoforge.event.EventHooks.onLivingConvert(this, servant);
+                            net.neoforged.neoforge.event.EventHooks.onLivingConvert(this, servant);
                             if (!this.isSilent()) {
                                 this.level().levelEvent((Player) null, 1026, this.blockPosition(), 0);
                             }
@@ -612,7 +616,7 @@ public class ModRavager extends RaiderServant implements PlayerRideable, IAutoRi
     }
 
     public InteractionResult mobInteract(Player pPlayer, InteractionHand pHand) {
-        if (!pPlayer.level.isClientSide) {
+        if (!pPlayer.level().isClientSide) {
             if (pPlayer == this.getTrueOwner()) {
                 if (this.hasSaddle() && !pPlayer.isCrouching()) {
                     if (this.getFirstPassenger() != null && this.getFirstPassenger() != pPlayer){
@@ -647,7 +651,7 @@ public class ModRavager extends RaiderServant implements PlayerRideable, IAutoRi
                 } else if (this.isFood(pPlayer.getItemInHand(pHand)) && this.getHealth() < this.getMaxHealth()) {
                     FoodProperties foodProperties = pPlayer.getMainHandItem().getFoodProperties(this);
                     if (foodProperties != null) {
-                        this.heal((float) foodProperties.getNutrition());
+                        this.heal((float) foodProperties.nutrition());
                         if (!pPlayer.getAbilities().instabuild) {
                             pPlayer.getMainHandItem().shrink(1);
                         }
@@ -671,7 +675,7 @@ public class ModRavager extends RaiderServant implements PlayerRideable, IAutoRi
     public boolean isFood(ItemStack p_30440_) {
         Item item = p_30440_.getItem();
         FoodProperties foodProperties = p_30440_.getFoodProperties(this);
-        return item.isEdible() && foodProperties != null && foodProperties.isMeat();
+        return foodProperties != null && p_30440_.is(ItemTags.MEAT);
     }
 
     public void equipSaddle(boolean playSound) {
@@ -680,7 +684,7 @@ public class ModRavager extends RaiderServant implements PlayerRideable, IAutoRi
         }
         AttributeInstance attributeInstance = this.getAttribute(Attributes.MAX_HEALTH);
         if (attributeInstance != null) {
-            attributeInstance.setBaseValue(AttributesConfig.RavagerSaddleHealth.get());
+            attributeInstance.setBaseValue(com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.RavagerSaddleHealth, 20.0D));
         }
         this.setSaddle(true);
     }

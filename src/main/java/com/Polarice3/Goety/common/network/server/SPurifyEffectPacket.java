@@ -2,13 +2,13 @@ package com.Polarice3.Goety.common.network.server;
 
 import com.Polarice3.Goety.Goety;
 import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
-import net.neoforged.network.NetworkEvent;
-import net.neoforged.neoforge.registries.NeoForgeRegistries;
+import com.Polarice3.Goety.compat.legacy.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
@@ -36,15 +36,15 @@ public class SPurifyEffectPacket {
             if (level instanceof ClientLevel clientWorld) {
                 Entity entity = clientWorld.getEntity(packet.mob);
                 if (entity instanceof LivingEntity livingEntity) {
-                    for (MobEffect mobEffect : NeoForgeRegistries.MOB_EFFECTS){
+                    for (MobEffect mobEffect : BuiltInRegistries.MOB_EFFECT){
                         boolean flag;
                         if (packet.removeDebuff) {
                             flag = !mobEffect.isBeneficial();
                         } else {
                             flag = mobEffect.isBeneficial();
                         }
-                        if (flag && !mobEffect.getCurativeItems().isEmpty()){
-                            livingEntity.removeEffect(mobEffect);
+                        if (flag){
+                            livingEntity.removeEffect(BuiltInRegistries.MOB_EFFECT.wrapAsHolder(mobEffect));
                         }
                     }
                 }

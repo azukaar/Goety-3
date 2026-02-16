@@ -1,6 +1,7 @@
 package com.Polarice3.Goety.common.blocks;
 
 import com.Polarice3.Goety.common.blocks.entities.ModBlockEntities;
+import com.mojang.serialization.MapCodec;
 import com.Polarice3.Goety.common.blocks.entities.NightBeaconBlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.LivingEntity;
@@ -19,6 +20,12 @@ import net.minecraft.world.level.material.MapColor;
 import org.jetbrains.annotations.Nullable;
 
 public class NightBeaconBlock extends BaseEntityBlock implements BeaconBeamBlock{
+    public static final MapCodec<NightBeaconBlock> CODEC = simpleCodec(p -> new NightBeaconBlock());
+
+    @Override
+    protected MapCodec<? extends BaseEntityBlock> codec() {
+        return CODEC;
+    }
     public NightBeaconBlock() {
         super(Properties.of()
                 .mapColor(MapColor.COLOR_BLACK)

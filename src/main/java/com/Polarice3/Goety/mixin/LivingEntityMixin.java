@@ -9,10 +9,10 @@ import com.Polarice3.Goety.init.ModTags;
 import com.Polarice3.Goety.utils.LichdomHelper;
 import com.Polarice3.Goety.utils.MobUtil;
 import com.Polarice3.Goety.utils.NoKnockBackDamageSource;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.*;
@@ -31,7 +31,7 @@ import javax.annotation.Nullable;
 
 @Mixin(LivingEntity.class)
 public abstract class LivingEntityMixin extends Entity {
-    @Shadow public abstract boolean hasEffect(MobEffect p_21024_);
+    @Shadow public abstract boolean hasEffect(net.minecraft.core.Holder<net.minecraft.world.effect.MobEffect> p_21024_);
 
     @Shadow public abstract float getMaxHealth();
 
@@ -39,7 +39,7 @@ public abstract class LivingEntityMixin extends Entity {
 
     @Shadow @Nullable private LivingEntity lastHurtByMob;
 
-    @Shadow public abstract int getExperienceReward();
+    @Shadow public abstract int getExperienceReward(ServerLevel serverLevel, @Nullable Entity attacker);
 
     @Shadow protected int lastHurtByPlayerTime;
 
@@ -54,8 +54,8 @@ public abstract class LivingEntityMixin extends Entity {
         if (this.level() instanceof ServerLevel serverLevel) {
             if (this.lastHurtByPlayerTime <= 0 && !this.isAlwaysExperienceDropper()) {
                 if (this.lastHurtByMob instanceof IOwned owned && !this.wasExperienceConsumed() && this.level().getGameRules().getBoolean(GameRules.RULE_DOMOBLOOT)) {
-                    if (owned.getMasterOwner() instanceof Player player) {
-                        int reward = this.getExperienceReward();
+                    if (owned.getMasterOwner() instanceof Player) {
+                        int reward = this.getExperienceReward(serverLevel, this.lastHurtByMob);
                         ExperienceOrb.award(serverLevel, this.position(), reward);
                     }
                 }
@@ -65,11 +65,11 @@ public abstract class LivingEntityMixin extends Entity {
 
     @Inject(method = "canAttack(Lnet/minecraft/world/entity/LivingEntity;)Z", at = @At("HEAD"), cancellable = true)
     public void canAttack(LivingEntity target, CallbackInfoReturnable<Boolean> callbackInfoReturnable) {
-        if (MainConfig.LichUndeadFriends.get()) {
+        if (com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MainConfig.LichUndeadFriends, false)) {
             if (this.getType().is(ModTags.EntityTypes.LICH_NEUTRAL)) {
                 if (LichdomHelper.isLich(target)) {
-                    if (MainConfig.LichPowerfulFoes.get()) {
-                        if (this.getMaxHealth() <= MainConfig.LichPowerfulFoesHealth.get()){
+                    if (com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MainConfig.LichPowerfulFoes, false)) {
+                        if (this.getMaxHealth() <= com.Polarice3.Goety.utils.ConfigHelper.getDouble(MainConfig.LichPowerfulFoesHealth, 1.0D)){
                             callbackInfoReturnable.setReturnValue(false);
                         }
                     } else {
@@ -82,21 +82,21 @@ public abstract class LivingEntityMixin extends Entity {
 
     @Inject(method = "isSensitiveToWater", at = @At("HEAD"), cancellable = true)
     public void isSensitiveToWater(CallbackInfoReturnable<Boolean> callbackInfoReturnable) {
-        if (this.hasEffect(GoetyEffects.SNOW_SKIN.get())) {
+        if (this.hasEffect(BuiltInRegistries.MOB_EFFECT.wrapAsHolder(GoetyEffects.SNOW_SKIN.get()))) {
             callbackInfoReturnable.setReturnValue(true);
         }
     }
 
     @Inject(method = "randomTeleport", at = @At("HEAD"), cancellable = true)
     public void randomTeleport(CallbackInfoReturnable<Boolean> callbackInfoReturnable) {
-        if (this.hasEffect(GoetyEffects.ENDER_GROUND.get())) {
+        if (this.hasEffect(BuiltInRegistries.MOB_EFFECT.wrapAsHolder(GoetyEffects.ENDER_GROUND.get()))) {
             callbackInfoReturnable.setReturnValue(false);
         }
     }
 
     @Inject(method = "jumpFromGround", at = @At("HEAD"), cancellable = true)
     public void jumpFromGround(CallbackInfo callbackInfo) {
-        if (this.hasEffect(GoetyEffects.STUNNED.get()) || this.hasEffect(GoetyEffects.TANGLED.get())) {
+        if (this.hasEffect(BuiltInRegistries.MOB_EFFECT.wrapAsHolder(GoetyEffects.STUNNED.get())) || this.hasEffect(BuiltInRegistries.MOB_EFFECT.wrapAsHolder(GoetyEffects.TANGLED.get()))) {
             callbackInfo.cancel();
         }
     }
@@ -110,7 +110,7 @@ public abstract class LivingEntityMixin extends Entity {
 
     @Inject(method = "updateInvisibilityStatus", at = @At(value = "TAIL"))
     public void updateInvisibilityStatus(CallbackInfo callbackInfo) {
-        if (this.hasEffect(GoetyEffects.SHADOW_WALK.get())) {
+        if (this.hasEffect(BuiltInRegistries.MOB_EFFECT.wrapAsHolder(GoetyEffects.SHADOW_WALK.get()))) {
             this.setInvisible(true);
         }
     }
@@ -137,8 +137,8 @@ public abstract class LivingEntityMixin extends Entity {
     public void addEffect(MobEffectInstance instance, Entity entity, CallbackInfoReturnable<Boolean> cir) {
         if (entity != null) {
             if (entity instanceof IOwned) {
-                if (!MobsConfig.ServantsHarmEffectApply.get()) {
-                    if (instance.getEffect().getCategory() == MobEffectCategory.HARMFUL) {
+                if (!com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MobsConfig.ServantsHarmEffectApply, false)) {
+                    if (instance.getEffect().value().getCategory() == MobEffectCategory.HARMFUL) {
                         if (MobUtil.areAllies(this, entity)) {
                             cir.setReturnValue(false);
                         }

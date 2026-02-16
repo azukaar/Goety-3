@@ -10,6 +10,7 @@ import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
+import net.minecraft.server.level.ServerEntity;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -30,8 +31,11 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.SwordItem;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.Level;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec3;
 
@@ -39,22 +43,27 @@ public class SwordProjectile extends AbstractArrow implements ItemSupplier {
     private static final EntityDataAccessor<ItemStack> DATA_ITEM_STACK = SynchedEntityData
             .defineId(SwordProjectile.class, EntityDataSerializers.ITEM_STACK);
 
-    public SwordProjectile(EntityType<? extends AbstractArrow> p_i48546_1_, Level p_i48546_2_) {
-        super(p_i48546_1_, p_i48546_2_);
+    @Override
+    protected ItemStack getDefaultPickupItem() {
+        return new ItemStack(Items.ARROW);
+    }
+
+    public SwordProjectile(EntityType<? extends AbstractArrow> p_36858_, Level p_36859_) {
+        super(p_36858_, p_36859_);
     }
 
     public SwordProjectile(double p_i48547_2_, double p_i48547_4_, double p_i48547_6_, Level p_i48547_8_) {
-        super(ModEntityType.SWORD.get(), p_i48547_2_, p_i48547_4_, p_i48547_6_, p_i48547_8_);
+        super(ModEntityType.SWORD.get(), p_i48547_2_, p_i48547_4_, p_i48547_6_, p_i48547_8_, new ItemStack(Items.IRON_SWORD), ItemStack.EMPTY);
     }
 
     public SwordProjectile(LivingEntity p_i48548_2_, Level p_i48548_3_, ItemStack p_i48790_3_) {
-        super(ModEntityType.SWORD.get(), p_i48548_2_.getX(), p_i48548_2_.getY(0.5F), p_i48548_2_.getZ(), p_i48548_3_);
+        super(ModEntityType.SWORD.get(), p_i48548_2_, p_i48548_3_, p_i48790_3_.isEmpty() ? new ItemStack(Items.IRON_SWORD) : p_i48790_3_, ItemStack.EMPTY);
         this.setOwner(p_i48548_2_);
         this.setItem(p_i48790_3_.copy());
     }
 
     public void setItem(ItemStack pStack) {
-        if (pStack.getItem() != this.getDefaultItem() || pStack.hasTag()) {
+        if (pStack.getItem() != this.getDefaultItem() || pStack.isFramed()) {
             this.getEntityData().set(DATA_ITEM_STACK, Util.make(pStack.copy(), (p_213883_0_) -> {
                 p_213883_0_.setCount(1);
             }));
@@ -83,16 +92,18 @@ public class SwordProjectile extends AbstractArrow implements ItemSupplier {
     public void addAdditionalSaveData(CompoundTag pCompound) {
         super.addAdditionalSaveData(pCompound);
         ItemStack itemstack = this.getItemRaw();
-        if (!itemstack.isEmpty()) {
-            pCompound.put("Item", itemstack.save(new CompoundTag()));
+        if (!itemstack.isEmpty() && this.level() instanceof ServerLevel serverLevel) {
+            pCompound.put("Item", itemstack.save(serverLevel.registryAccess(), new CompoundTag()));
         }
 
     }
 
     public void readAdditionalSaveData(CompoundTag pCompound) {
         super.readAdditionalSaveData(pCompound);
-        ItemStack itemstack = ItemStack.of(pCompound.getCompound("Item"));
-        this.setItem(itemstack);
+        if (this.level() instanceof ServerLevel serverLevel) {
+            ItemStack itemstack = ItemStack.parseOptional(serverLevel.registryAccess(), pCompound.getCompound("Item"));
+            this.setItem(itemstack);
+        }
     }
 
     @Override
@@ -122,14 +133,16 @@ public class SwordProjectile extends AbstractArrow implements ItemSupplier {
         int i = 0;
         Entity owner = this.getOwner();
         if (this.getItem().getItem() instanceof SwordItem swordItem) {
-            f = swordItem.getDamage();
+            f = swordItem.getDamage(this.getItem());
         }
         if (!this.getItem().isEmpty()) {
-            f1 += this.getItem().getEnchantmentLevel(Enchantments.KNOCKBACK);
-            i = this.getItem().getEnchantmentLevel(Enchantments.FIRE_ASPECT);
+            if (this.level() instanceof ServerLevel serverLevel) {
+                f1 += this.getItem().getEnchantmentLevel(serverLevel.registryAccess().lookupOrThrow(net.minecraft.core.registries.Registries.ENCHANTMENT).getOrThrow(Enchantments.KNOCKBACK));
+                i = this.getItem().getEnchantmentLevel(serverLevel.registryAccess().lookupOrThrow(net.minecraft.core.registries.Registries.ENCHANTMENT).getOrThrow(Enchantments.FIRE_ASPECT));
+            }
         }
         if (target instanceof LivingEntity livingentity) {
-            f += EnchantmentHelper.getDamageBonus(this.getItem(), livingentity.getMobType());
+            // f += EnchantmentHelper.getDamageBonus(this.getItem(), livingentity.getMobType());
         }
         DamageSource damagesource = ModDamageSource.sword(this, owner == null ? this : owner);
         if (owner instanceof Player player) {
@@ -141,8 +154,9 @@ public class SwordProjectile extends AbstractArrow implements ItemSupplier {
         if (target.hurt(damagesource, f)) {
             if (target instanceof LivingEntity livingTarget) {
                 if (owner instanceof LivingEntity) {
-                    EnchantmentHelper.doPostHurtEffects(livingTarget, owner);
-                    EnchantmentHelper.doPostDamageEffects((LivingEntity) owner, livingTarget);
+                    if (this.level() instanceof ServerLevel serverLevel) {
+                        EnchantmentHelper.doPostAttackEffects(serverLevel, owner, this.damageSources().mobAttack((LivingEntity) owner));
+                    }
                     ItemHelper.setItemEffect(this.getItem(), livingTarget);
                 }
                 if (f1 > 0) {
@@ -197,8 +211,8 @@ public class SwordProjectile extends AbstractArrow implements ItemSupplier {
     }
 
     @Override
-    public Packet<ClientGamePacketListener> getAddEntityPacket() {
-        return new net.minecraft.network.protocol.game.ClientboundAddEntityPacket(this);
+    public Packet<ClientGamePacketListener> getAddEntityPacket(ServerEntity p_345759_) {
+        return new net.minecraft.network.protocol.game.ClientboundAddEntityPacket(this, p_345759_);
     }
 
 }

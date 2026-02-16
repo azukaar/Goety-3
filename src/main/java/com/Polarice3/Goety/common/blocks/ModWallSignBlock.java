@@ -8,8 +8,8 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.WoodType;
 
 public class ModWallSignBlock extends WallSignBlock {
-    public ModWallSignBlock(Properties properties, WoodType type) {
-        super(properties, type);
+    public ModWallSignBlock(WoodType type, Properties properties) {
+        super(type, properties);
     }
 
     public BlockEntity newBlockEntity(BlockPos p_154556_, BlockState p_154557_) {

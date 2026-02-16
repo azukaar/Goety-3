@@ -1,7 +1,7 @@
 package com.Polarice3.Goety.common.items.magic;
 
 import com.Polarice3.Goety.client.inventory.container.FocusPackContainer;
-import com.Polarice3.Goety.common.items.capability.FocusBagItemCapability;
+import com.Polarice3.Goety.client.inventory.container.FocusBagContainer;
 import com.Polarice3.Goety.common.items.handler.FocusBagItemHandler;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
@@ -26,42 +26,8 @@ public class FocusPack extends FocusBag {
         if (!worldIn.isClientSide) {
             SimpleMenuProvider provider = new SimpleMenuProvider(
                     (id, inventory, player) -> new FocusPackContainer(id, inventory, FocusBagItemHandler.get(itemstack), itemstack), getName(itemstack));
-            NetworkHooks.openScreen((ServerPlayer) playerIn, provider, (buffer) -> {});
+            playerIn.openMenu(provider);
         }
         return InteractionResultHolder.success(itemstack);
-    }
-
-    /**
-     * Found Creative Server Bug fix from @mraof's Minestuck Music Player Weapon code.
-     */
-    private static IItemHandler getItemHandler(ItemStack itemStack) {
-        return itemStack.getCapability(Capabilities.ITEM_HANDLER).orElseThrow(() ->
-                new IllegalArgumentException("Expected an item handler for the Magic Focus item, but " + itemStack + " does not expose an item handler."));
-    }
-
-    public CompoundTag getShareTag(ItemStack stack) {
-        IItemHandler iitemHandler = getItemHandler(stack);
-        CompoundTag nbt = stack.getTag() != null ? stack.getTag() : new CompoundTag();
-        if(iitemHandler instanceof ItemStackHandler itemHandler) {
-            nbt.put("cap", itemHandler.serializeNBT());
-        }
-        return nbt;
-    }
-
-    public void readShareTag(ItemStack stack, @Nullable CompoundTag nbt) {
-        if(nbt == null) {
-            stack.setTag(null);
-        } else {
-            IItemHandler iitemHandler = getItemHandler(stack);
-            if(iitemHandler instanceof ItemStackHandler itemHandler)
-                itemHandler.deserializeNBT(nbt.getCompound("cap"));
-            stack.setTag(nbt);
-        }
-    }
-
-    @Override
-    @Nullable
-    public ICapabilityProvider initCapabilities(@Nonnull ItemStack stack, @Nullable CompoundTag nbt) {
-        return new FocusBagItemCapability(stack, 21);
     }
 }

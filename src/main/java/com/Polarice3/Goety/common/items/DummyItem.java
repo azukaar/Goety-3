@@ -14,8 +14,8 @@ public class DummyItem extends Item {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
-        super.appendHoverText(stack, worldIn, tooltip, flagIn);
+    public void appendHoverText(ItemStack stack, net.minecraft.world.item.Item.TooltipContext context, List<Component> tooltip, TooltipFlag flagIn) { Level worldIn = context.level();
+        super.appendHoverText(stack, context, tooltip, flagIn);
         tooltip.add(Component.translatable(stack.getDescriptionId() + ".tooltip"));
     }
 }
@@ -40,3 +40,4 @@ public class DummyItem extends Item {
  * OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
  * OTHER DEALINGS IN THE SOFTWARE.
  */
+

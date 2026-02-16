@@ -26,7 +26,7 @@ public class SnarelingRenderer<T extends AbstractSnareling> extends MobRenderer<
     }
 
     public ResourceLocation getTextureLocation(T pEntity) {
-        if (pEntity.isHostile() || !MobsConfig.SnarelingServantTexture.get()) {
+        if (pEntity.isHostile() || !com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MobsConfig.SnarelingServantTexture, false)) {
             return TEXTURE_LOCATION;
         }
         return SERVANT_LOCATION;
@@ -52,7 +52,7 @@ public class SnarelingRenderer<T extends AbstractSnareling> extends MobRenderer<
         }
 
         public RenderType getRenderType(T pEntity) {
-            if (pEntity.isHostile() || !MobsConfig.SnarelingServantTexture.get()) {
+            if (pEntity.isHostile() || !com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MobsConfig.SnarelingServantTexture, false)) {
                 return this.renderType();
             }
             return SERVANT_TYPE;

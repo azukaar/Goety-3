@@ -1,5 +1,7 @@
 package com.Polarice3.Goety.common.entities.hostile;
 
+import com.Polarice3.Goety.utils.MobType;
+
 import com.Polarice3.Goety.common.effects.GoetyEffects;
 import com.Polarice3.Goety.utils.ModLootTables;
 import net.minecraft.core.BlockPos;
@@ -137,7 +139,7 @@ public class CryptSlime extends Slime {
                         (this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 1.0F);
                 // doEnchantDamageEffects is no longer available in 1.21
                 // this.doEnchantDamageEffects(this, livingEntity);
-                livingEntity.addEffect(new MobEffectInstance(GoetyEffects.SAPPED.getHolder(), 60, this.getSize()));
+                livingEntity.addEffect(new MobEffectInstance(GoetyEffects.SAPPED, 60, this.getSize()));
             }
         }
     }

@@ -8,6 +8,7 @@ import com.Polarice3.Goety.utils.CuriosFinder;
 import com.Polarice3.Goety.utils.MobUtil;
 import com.Polarice3.Goety.utils.SEHelper;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
@@ -59,7 +60,7 @@ public abstract class EntityMixin {
             player = player1;
         }
         if (player != null && entity1 instanceof LivingEntity livingEntity) {
-            if (MainConfig.GoodwillFullAlly.get()) {
+            if (com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MainConfig.GoodwillFullAlly, false)) {
                 if (SEHelper.getAllyEntities(player).contains(livingEntity) || SEHelper.getAllyEntityTypes(player).contains(livingEntity.getType())) {
                     cir.setReturnValue(true);
                 }
@@ -77,7 +78,7 @@ public abstract class EntityMixin {
         if(other instanceof AbstractVine vine && vine.passableEntities((Entity)(Object)this)){
             cir.setReturnValue(false);
         }
-        if ((Entity) (Object) this instanceof LivingEntity livingEntity && livingEntity.hasEffect(GoetyEffects.TANGLED.get())) {
+        if ((Entity) (Object) this instanceof LivingEntity livingEntity && livingEntity.hasEffect(BuiltInRegistries.MOB_EFFECT.wrapAsHolder(GoetyEffects.TANGLED.get()))) {
             cir.setReturnValue(false);
         }
     }
@@ -87,14 +88,14 @@ public abstract class EntityMixin {
             at = @At(value = "HEAD"),
             cancellable = true)
     public void push(double p_20286_, double p_20287_, double p_20288_, CallbackInfo callbackInfo) {
-        if ((Entity) (Object) this instanceof LivingEntity livingEntity && livingEntity.hasEffect(GoetyEffects.TANGLED.get())) {
+        if ((Entity) (Object) this instanceof LivingEntity livingEntity && livingEntity.hasEffect(BuiltInRegistries.MOB_EFFECT.wrapAsHolder(GoetyEffects.TANGLED.get()))) {
             callbackInfo.cancel();
         }
     }
 
     @Inject(method = "isSwimming", at = @At("HEAD"), cancellable = true)
     public void isSwimming(CallbackInfoReturnable<Boolean> callbackInfoReturnable) {
-        if ((Entity) (Object) this instanceof LivingEntity livingEntity && livingEntity.hasEffect(GoetyEffects.PLUNGE.get())) {
+        if ((Entity) (Object) this instanceof LivingEntity livingEntity && livingEntity.hasEffect(BuiltInRegistries.MOB_EFFECT.wrapAsHolder(GoetyEffects.PLUNGE.get()))) {
             callbackInfoReturnable.setReturnValue(false);
         }
     }
@@ -102,10 +103,10 @@ public abstract class EntityMixin {
     @Inject(method = "playStepSound(Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;)V", at = @At(value = "TAIL"))
     protected void playStepSound(BlockPos blockPos, BlockState blockState, CallbackInfo callbackInfo) {
         Entity entity = (Entity) (Object) this;
-        SoundType soundtype = blockState.getSoundType(entity.level, blockPos, entity);
+        SoundType soundtype = blockState.getSoundType(entity.level(), blockPos, entity);
         if (soundtype == ModSoundTypes.MOD_METAL){
-            entity.playSound(SoundEvents.STONE_STEP, (soundtype.getVolume() * 0.15F) * Mth.randomBetween(entity.level.getRandom(), 0.8F, 1.0F), Mth.randomBetween(entity.level.getRandom(), 0.8F, 1.0F));
-            entity.playSound(SoundEvents.ZOMBIE_ATTACK_IRON_DOOR, (soundtype.getVolume() * 0.15F) * Mth.randomBetween(entity.level.getRandom(), 0.8F, 1.0F), Mth.randomBetween(entity.level.getRandom(), 0.8F, 1.0F));
+            entity.playSound(SoundEvents.STONE_STEP, (soundtype.getVolume() * 0.15F) * Mth.randomBetween(entity.level().getRandom(), 0.8F, 1.0F), Mth.randomBetween(entity.level().getRandom(), 0.8F, 1.0F));
+            entity.playSound(SoundEvents.ZOMBIE_ATTACK_IRON_DOOR, (soundtype.getVolume() * 0.15F) * Mth.randomBetween(entity.level().getRandom(), 0.8F, 1.0F), Mth.randomBetween(entity.level().getRandom(), 0.8F, 1.0F));
         }
     }
 
@@ -114,7 +115,7 @@ public abstract class EntityMixin {
         Entity entity = (Entity) (Object) this;
         if (entity instanceof LivingEntity livingEntity){
             if (blockState.getBlock() instanceof WebBlock) {
-                if (livingEntity.hasEffect(GoetyEffects.CLIMBING.get())) {
+                if (livingEntity.hasEffect(BuiltInRegistries.MOB_EFFECT.wrapAsHolder(GoetyEffects.CLIMBING.get()))) {
                     callbackInfo.cancel();
                 }
             }

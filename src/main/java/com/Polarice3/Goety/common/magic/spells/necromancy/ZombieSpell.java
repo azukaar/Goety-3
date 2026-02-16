@@ -33,15 +33,15 @@ import java.util.function.Predicate;
 public class ZombieSpell extends SummonSpell {
 
     public int defaultSoulCost() {
-        return SpellConfig.ZombieCost.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.ZombieCost, 0);
     }
 
     public int defaultCastDuration() {
-        return SpellConfig.ZombieDuration.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.ZombieDuration, 0);
     }
 
     public int SummonDownDuration() {
-        return SpellConfig.ZombieSummonDown.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.ZombieSummonDown, 0);
     }
 
     public SoundEvent CastingSound() {
@@ -50,7 +50,7 @@ public class ZombieSpell extends SummonSpell {
 
     @Override
     public int defaultSpellCooldown() {
-        return SpellConfig.ZombieCoolDown.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.ZombieCoolDown, 0);
     }
 
     @Override
@@ -73,7 +73,7 @@ public class ZombieSpell extends SummonSpell {
 
     @Override
     public int summonLimit() {
-        return SpellConfig.ZombieLimit.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.ZombieLimit, 0);
     }
 
     public boolean specialStaffs(ItemStack stack){
@@ -97,7 +97,7 @@ public class ZombieSpell extends SummonSpell {
             if (staff.is(ModItems.NAMELESS_STAFF.get())){
                 i = 7;
             } else if (rightStaff(staff)){
-                i = 2 + caster.level.random.nextInt(4);
+                i = 2 + caster.level().random.nextInt(4);
             } else if (specialStaffs(staff)){
                 i = 2;
             }
@@ -140,7 +140,7 @@ public class ZombieSpell extends SummonSpell {
                 }
                 summonedentity.setLimitedLife(MobUtil.getSummonLifespan(worldIn) * duration);
                 summonedentity.setPersistenceRequired();
-                summonedentity.finalizeSpawn(worldIn, caster.level.getCurrentDifficultyAt(caster.blockPosition()), MobSpawnType.MOB_SUMMONED,null,null);
+                summonedentity.finalizeSpawn(worldIn, caster.level().getCurrentDifficultyAt(caster.blockPosition()), MobSpawnType.MOB_SUMMONED,null);
                 this.buffSummon(caster, summonedentity, potency);
                 this.SummonSap(caster, summonedentity);
                 this.setTarget(caster, summonedentity);
@@ -154,3 +154,4 @@ public class ZombieSpell extends SummonSpell {
         }
     }
 }
+

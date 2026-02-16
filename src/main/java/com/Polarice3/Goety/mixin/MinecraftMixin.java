@@ -5,12 +5,12 @@ import com.Polarice3.Goety.common.effects.GoetyEffects;
 import com.Polarice3.Goety.common.entities.ally.illager.RaiderServant;
 import com.Polarice3.Goety.common.items.ModItems;
 import com.Polarice3.Goety.common.items.magic.CommandFocus;
-import com.Polarice3.Goety.common.items.magic.CommandHorn;
 import com.Polarice3.Goety.common.items.magic.OrderFocus;
 import com.Polarice3.Goety.common.items.magic.TransferScroll;
 import com.Polarice3.Goety.utils.WandUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -37,11 +37,11 @@ public class MinecraftMixin {
         Minecraft minecraft = Minecraft.getInstance();
         LocalPlayer player = minecraft.player;
         if (player != null) {
-            if (player.hasEffect(GoetyEffects.TREMOR_SENSE.get())
+            if (player.hasEffect(BuiltInRegistries.MOB_EFFECT.wrapAsHolder(GoetyEffects.TREMOR_SENSE.get()))
                     && pEntity instanceof LivingEntity livingEntity
                     && player.onGround()
                     && livingEntity.onGround()) {
-                MobEffectInstance instance = player.getEffect(GoetyEffects.TREMOR_SENSE.get());
+                MobEffectInstance instance = player.getEffect(BuiltInRegistries.MOB_EFFECT.wrapAsHolder(GoetyEffects.TREMOR_SENSE.get()));
                 if (instance != null) {
                     float amp = (instance.getAmplifier() + 1.0F) / 2.0F;
                     if (player.distanceTo(livingEntity) <= 32.0F * amp) {
@@ -51,12 +51,12 @@ public class MinecraftMixin {
             }
             if (pEntity instanceof LivingEntity livingEntity) {
                 if (WandUtil.findFocus(player).getItem() instanceof CommandFocus) {
-                    LivingEntity servant = CommandFocus.getServantClient(player.level, WandUtil.findFocus(player));
+                    LivingEntity servant = CommandFocus.getServantClient(player.level(), WandUtil.findFocus(player));
                     if (servant != null && servant == livingEntity){
                         cir.setReturnValue(true);
                     }
                 } else if (WandUtil.findFocus(player).getItem() instanceof OrderFocus) {
-                    List<LivingEntity> list = OrderFocus.getServantsClient(player.level, WandUtil.findFocus(player));
+                    List<LivingEntity> list = OrderFocus.getServantsClient(player.level(), WandUtil.findFocus(player));
                     if (!list.isEmpty()) {
                         if (list.contains(livingEntity)) {
                             cir.setReturnValue(true);
@@ -73,9 +73,7 @@ public class MinecraftMixin {
                     }
                 }
                 if (player.isHolding(ModItems.COMMAND_HORN.get())) {
-                    if (CommandHorn.getEntities(player.level, player).contains(livingEntity)) {
-                        cir.setReturnValue(true);
-                    }
+                    // Command horn selection list is disabled in compatibility mode.
                 }
                 if (pEntity instanceof RaiderServant servant) {
                     if (servant.canLinkToIdol()) {

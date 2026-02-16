@@ -45,7 +45,7 @@ public class MagicLightningTrap extends AbstractTrap {
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
         super.defineSynchedData(builder);
         builder.define(DATA_RADIUS, 1.5F);
-        builder.define(DATA_DAMAGE, SpellConfig.ThunderboltDamage.get().floatValue() * WandUtil.damageMultiply());
+        builder.define(DATA_DAMAGE, com.Polarice3.Goety.utils.ConfigHelper.getFloat(SpellConfig.ThunderboltDamage, 1.0F) * WandUtil.damageMultiply());
         builder.define(DATA_COLOR, 0xb1ebdc);
     }
 
@@ -149,7 +149,7 @@ public class MagicLightningTrap extends AbstractTrap {
             chance += 0.25F;
         }
         if (this.level().getRandom().nextFloat() <= chance){
-            livingEntity.addEffect(new MobEffectInstance(GoetyEffects.SPASMS.get(), MathHelper.secondsToTicks(5)));
+            livingEntity.addEffect(new MobEffectInstance(GoetyEffects.SPASMS, MathHelper.secondsToTicks(5)));
         }
     }
 

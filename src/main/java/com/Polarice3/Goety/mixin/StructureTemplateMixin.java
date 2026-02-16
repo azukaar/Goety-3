@@ -1,10 +1,10 @@
 package com.Polarice3.Goety.mixin;
 
-import com.Polarice3.Goety.common.world.processors.ModProcessors;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructureProcessorType;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -25,8 +25,8 @@ public class StructureTemplateMixin {
                                                               RandomSource random, int flag, CallbackInfoReturnable<Boolean> cir) {
 
         if(structurePlaceSettings.getProcessors().stream().anyMatch(processor ->
-                ((StructureProcessorAccessor)processor).callGetType() == ModProcessors.WATERLOGGING_STOP_PROCESSOR.get())) {
-            structurePlaceSettings.setKeepLiquids(false);
+                ((StructureProcessorAccessor)processor).callGetType() == StructureProcessorType.BLOCK_IGNORE)) {
+            // keep-liquids toggle removed in 1.21; this hook is retained as no-op.
         }
     }
 }

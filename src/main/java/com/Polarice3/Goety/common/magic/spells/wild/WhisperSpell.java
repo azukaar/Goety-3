@@ -29,12 +29,12 @@ import java.util.function.Predicate;
 public class WhisperSpell extends SummonSpell {
     @Override
     public int defaultSoulCost() {
-        return SpellConfig.WhisperCost.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.WhisperCost, 0);
     }
 
     @Override
     public int defaultCastDuration() {
-        return SpellConfig.WhisperDuration.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.WhisperDuration, 0);
     }
 
     @Nullable
@@ -45,12 +45,12 @@ public class WhisperSpell extends SummonSpell {
 
     @Override
     public int defaultSpellCooldown() {
-        return SpellConfig.WhisperCoolDown.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.WhisperCoolDown, 0);
     }
 
     @Override
     public int SummonDownDuration() {
-        return SpellConfig.WhisperSummonDown.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.WhisperSummonDown, 0);
     }
 
     @Override
@@ -73,7 +73,7 @@ public class WhisperSpell extends SummonSpell {
 
     @Override
     public int summonLimit() {
-        return SpellConfig.WhisperLimit.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.WhisperLimit, 0);
     }
 
     @Override
@@ -106,7 +106,7 @@ public class WhisperSpell extends SummonSpell {
                 }
                 summonedentity.setLimitedLife(MobUtil.getSummonLifespan(worldIn) * duration);
                 summonedentity.setPersistenceRequired();
-                summonedentity.finalizeSpawn(worldIn, caster.level.getCurrentDifficultyAt(caster.blockPosition()), MobSpawnType.MOB_SUMMONED,null,null);
+                summonedentity.finalizeSpawn(worldIn, caster.level().getCurrentDifficultyAt(caster.blockPosition()), MobSpawnType.MOB_SUMMONED,null);
                 this.buffSummon(caster, summonedentity, potency);
                 this.SummonSap(caster, summonedentity);
                 this.setTarget(caster, summonedentity);
@@ -118,3 +118,4 @@ public class WhisperSpell extends SummonSpell {
         }
     }
 }
+

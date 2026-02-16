@@ -30,7 +30,7 @@ public class GravestoneBlockEntity extends TrainingBlockEntity {
         if (blockEntity.isTraining()){
             if (blockEntity.trainTime != blockEntity.getMaxTrainTime()){
                 if (blockEntity.trainTime % 20 == 0){
-                    level.playSound(null, blockPos, SoundEvents.SOUL_ESCAPE, SoundSource.BLOCKS, 1.0F, 1.0F);
+                    level.playSound(null, blockPos, SoundEvents.SOUL_ESCAPE.value(), SoundSource.BLOCKS, 1.0F, 1.0F);
                 }
             }
             if (level instanceof ServerLevel serverLevel) {
@@ -93,7 +93,7 @@ public class GravestoneBlockEntity extends TrainingBlockEntity {
                 }
             }
         }
-        return count >= SpellConfig.ZombieLimit.get();
+        return count >= com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.ZombieLimit, 0);
     }
 
     @Override

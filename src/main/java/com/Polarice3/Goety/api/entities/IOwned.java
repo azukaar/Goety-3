@@ -180,7 +180,7 @@ public interface IOwned {
     default void ownedTick(){
         if (this instanceof Mob mob) {
             if (!mob.level().isClientSide) {
-                if (!mob.hasEffect(GoetyEffects.WILD_RAGE.getHolder())) {
+                if (!mob.hasEffect(GoetyEffects.WILD_RAGE)) {
                     if (mob.getTarget() instanceof IOwned ownedEntity) {
                         if (this.getTrueOwner() != null && (ownedEntity.getTrueOwner() == this.getTrueOwner())) {
                             mob.setTarget(null);
@@ -279,7 +279,7 @@ public interface IOwned {
 
     default void mobSense(){
         if (this instanceof Mob owned) {
-            if (MobsConfig.MobSense.get()) {
+            if (com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MobsConfig.MobSense, true)) {
                 if (owned.isAlive()) {
                     if (owned.getTarget() != null) {
                         if (owned.getTarget() instanceof Mob mob && !(mob instanceof Guardian)) {

@@ -65,6 +65,6 @@ public class VizierCapeLayer extends RenderLayer<Vizier, VizierModel> {
     }
 
     public ResourceLocation getCapeTexture() {
-        return HolidayUtil.isChristmasMonth() && MobsConfig.HolidaySkins.get() ? CHRISTMAS : TEXTURE;
+        return HolidayUtil.isChristmasMonth() && com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MobsConfig.HolidaySkins, false) ? CHRISTMAS : TEXTURE;
     }
 }

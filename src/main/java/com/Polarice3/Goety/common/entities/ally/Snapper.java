@@ -74,16 +74,16 @@ public class Snapper extends AnimalSummon{
     public static AttributeSupplier.Builder setCustomAttributes() {
         return Mob.createMobAttributes()
                 .add(Attributes.MOVEMENT_SPEED, 0.5D)
-                .add(NeoForgeMod.SWIM_SPEED.get(), 0.7D)
-                .add(Attributes.MAX_HEALTH, AttributesConfig.SnapperHealth.get())
-                .add(Attributes.ARMOR, AttributesConfig.SnapperArmor.get())
-                .add(Attributes.ATTACK_DAMAGE, AttributesConfig.SnapperDamage.get());
+                .add(NeoForgeMod.SWIM_SPEED, 0.7D)
+                .add(Attributes.MAX_HEALTH, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.SnapperHealth, 20.0D))
+                .add(Attributes.ARMOR, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.SnapperArmor, 20.0D))
+                .add(Attributes.ATTACK_DAMAGE, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.SnapperDamage, 20.0D));
     }
 
     public void setConfigurableAttributes(){
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.MAX_HEALTH), AttributesConfig.SnapperHealth.get());
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ARMOR), AttributesConfig.SnapperArmor.get());
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ATTACK_DAMAGE), AttributesConfig.SnapperDamage.get());
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.MAX_HEALTH), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.SnapperHealth, 20.0D));
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ARMOR), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.SnapperArmor, 20.0D));
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ATTACK_DAMAGE), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.SnapperDamage, 20.0D));
     }
 
     @Override
@@ -100,8 +100,8 @@ public class Snapper extends AnimalSummon{
     }
 
     @Nullable
-    public SpawnGroupData finalizeSpawn(ServerLevelAccessor pLevel, DifficultyInstance pDifficulty, MobSpawnType pReason, @Nullable SpawnGroupData pSpawnData, @Nullable CompoundTag pDataTag) {
-        pSpawnData = super.finalizeSpawn(pLevel, pDifficulty, pReason, pSpawnData, pDataTag);
+    public SpawnGroupData finalizeSpawn(ServerLevelAccessor pLevel, DifficultyInstance pDifficulty, MobSpawnType pReason, @Nullable SpawnGroupData pSpawnData) {
+        pSpawnData = super.finalizeSpawn(pLevel, pDifficulty, pReason, pSpawnData);
         if (pReason == MobSpawnType.MOB_SUMMONED && this.getTrueOwner() != null){
             ServerParticleUtil.addParticlesAroundMiddleSelf(pLevel.getLevel(), ParticleTypes.LARGE_SMOKE, this);
             ColorUtil color = new ColorUtil(0);
@@ -168,7 +168,7 @@ public class Snapper extends AnimalSummon{
 
     public boolean isFood(ItemStack p_30440_) {
         Item item = p_30440_.getItem();
-        return item.isEdible() && p_30440_.getFoodProperties(this).isMeat();
+        return item.components().has(net.minecraft.core.component.DataComponents.FOOD);
     }
 
     public InteractionResult mobInteract(Player pPlayer, InteractionHand pHand) {
@@ -177,7 +177,7 @@ public class Snapper extends AnimalSummon{
             if (this.isFood(itemstack) && this.getHealth() < this.getMaxHealth()) {
                 FoodProperties foodProperties = itemstack.getFoodProperties(this);
                 if (foodProperties != null){
-                    this.heal((float)foodProperties.getNutrition());
+                    this.heal((float)foodProperties.nutrition());
                     if (!pPlayer.getAbilities().instabuild) {
                         itemstack.shrink(1);
                     }
@@ -218,13 +218,13 @@ public class Snapper extends AnimalSummon{
         AttributeInstance attack = this.getAttribute(Attributes.ATTACK_DAMAGE);
         if (health != null && armor != null && attack != null) {
             if (upgraded) {
-                health.setBaseValue(AttributesConfig.SnapperHealth.get() * 1.5D);
-                armor.setBaseValue(AttributesConfig.SnapperArmor.get() + 1.0D);
-                attack.setBaseValue(AttributesConfig.SnapperDamage.get() + 1.0D);
+                health.setBaseValue(com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.SnapperHealth, 20.0D) * 1.5D);
+                armor.setBaseValue(com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.SnapperArmor, 20.0D) + 1.0D);
+                attack.setBaseValue(com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.SnapperDamage, 20.0D) + 1.0D);
             } else {
-                health.setBaseValue(AttributesConfig.SnapperHealth.get());
-                armor.setBaseValue(AttributesConfig.SnapperArmor.get());
-                attack.setBaseValue(AttributesConfig.SnapperDamage.get());
+                health.setBaseValue(com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.SnapperHealth, 20.0D));
+                armor.setBaseValue(com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.SnapperArmor, 20.0D));
+                attack.setBaseValue(com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.SnapperDamage, 20.0D));
             }
         }
         this.setHealth(this.getMaxHealth());
@@ -232,16 +232,16 @@ public class Snapper extends AnimalSummon{
 
     public void travel(Vec3 vec3) {
         if (this.isControlledByLocalInstance()) {
-            double d0 = this.getAttributeValue(NeoForgeMod.ENTITY_GRAVITY.get());
+            double d0 = this.getAttributeValue(net.minecraft.world.entity.ai.attributes.Attributes.GRAVITY);
             boolean flag = this.getDeltaMovement().y <= 0.0D;
 
             FluidState fluidstate = this.level().getFluidState(this.blockPosition());
-            if ((this.isInWater() || (this.isInFluidType(fluidstate) && fluidstate.getFluidType() != NeoForgeMod.LAVA_TYPE.get())) && this.isAffectedByFluids() && !this.canStandOnFluid(fluidstate)) {
+            if ((this.isInWater() || (this.isInFluidType(fluidstate) && fluidstate.getFluidType() != NeoForgeMod.LAVA_TYPE.value())) && this.isAffectedByFluids() && !this.canStandOnFluid(fluidstate)) {
                 if (this.isInWater() || (this.isInFluidType(fluidstate) && !this.moveInFluid(fluidstate, vec3, d0))) {
                     double d9 = this.getY();
                     float f4 = 0.96F;
                     float f5 = 0.02F;
-                    float f6 = (float) EnchantmentHelper.getDepthStrider(this);
+                    float f6 = (float) EnchantmentHelper.getEnchantmentLevel(this.registryAccess().holderOrThrow(net.minecraft.world.item.enchantment.Enchantments.DEPTH_STRIDER), this);
                     if (f6 > 3.0F) {
                         f6 = 3.0F;
                     }
@@ -254,7 +254,7 @@ public class Snapper extends AnimalSummon{
                         f5 += (this.getSpeed() - f5) * f6 / 3.0F;
                     }
 
-                    f5 *= (float)this.getAttributeValue(NeoForgeMod.SWIM_SPEED.get());
+                    f5 *= (float)this.getAttributeValue(NeoForgeMod.SWIM_SPEED);
                     this.moveRelative(f5, vec3);
                     this.move(MoverType.SELF, this.getDeltaMovement());
                     Vec3 vec36 = this.getDeltaMovement();

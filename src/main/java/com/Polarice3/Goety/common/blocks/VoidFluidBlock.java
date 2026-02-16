@@ -8,13 +8,14 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.LiquidBlock;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.material.FlowingFluid;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.material.PushReaction;
 
 public class VoidFluidBlock extends LiquidBlock {
 
-    public VoidFluidBlock() {
-        super(ModFluids.VOID_FLUID_SOURCE, Properties.of().mapColor(MapColor.COLOR_PURPLE)
+    public VoidFluidBlock(FlowingFluid fluid) {
+        super(fluid, Properties.of().mapColor(MapColor.COLOR_PURPLE)
                 .noCollission()
                 .strength(100.0F)
                 .emissiveRendering((state, world, pos) -> true)

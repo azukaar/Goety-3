@@ -29,11 +29,11 @@ public class HailSpell extends Spell {
     }
 
     public int defaultSoulCost() {
-        return SpellConfig.HailCost.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.HailCost, 0);
     }
 
     public int defaultCastDuration() {
-        return SpellConfig.HailDuration.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.HailDuration, 0);
     }
 
     public SoundEvent CastingSound() {
@@ -42,7 +42,7 @@ public class HailSpell extends Spell {
 
     @Override
     public int defaultSpellCooldown() {
-        return SpellConfig.HailCoolDown.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.HailCoolDown, 0);
     }
 
     @Override

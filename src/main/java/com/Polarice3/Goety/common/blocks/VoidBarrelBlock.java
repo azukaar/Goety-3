@@ -1,6 +1,7 @@
 package com.Polarice3.Goety.common.blocks;
 
 import com.Polarice3.Goety.client.particles.AoEParticleOption;
+import com.mojang.serialization.MapCodec;
 import com.Polarice3.Goety.common.blocks.entities.VoidBarrelBlockEntity;
 import com.Polarice3.Goety.init.ModSounds;
 import com.Polarice3.Goety.utils.BlockFinder;
@@ -40,6 +41,12 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.Nullable;
 
 public class VoidBarrelBlock extends BaseEntityBlock {
+    public static final MapCodec<VoidBarrelBlock> CODEC = simpleCodec(p -> new VoidBarrelBlock());
+
+    @Override
+    protected MapCodec<? extends BaseEntityBlock> codec() {
+        return CODEC;
+    }
     protected static final VoxelShape TOP_SHAPE = Block.box(0.0D, 0.0D, 0.0D,
             16.0D, 11.0D, 16.0D);
     protected static final VoxelShape POST_SHAPE = Block.box(0.0D, 0.0D, 0.0D,
@@ -65,7 +72,8 @@ public class VoidBarrelBlock extends BaseEntityBlock {
         this.onHit(p_49708_, p_49709_, p_49710_.getBlockPos());
     }
 
-    public InteractionResult use(BlockState pState, Level pLevel, BlockPos pPos, Player pPlayer, InteractionHand pHand, BlockHitResult pHit) {
+    @Override
+    protected InteractionResult useWithoutItem(BlockState pState, Level pLevel, BlockPos pPos, Player pPlayer, BlockHitResult pHit) {
         if (this.onHit(pLevel, pState, pPos)) {
             return InteractionResult.SUCCESS;
         }
@@ -76,12 +84,12 @@ public class VoidBarrelBlock extends BaseEntityBlock {
         pLevel.setBlock(pPos.above(), pState.setValue(HALF, DoubleBlockHalf.UPPER), 3);
     }
 
-    public void playerWillDestroy(Level p_52755_, BlockPos p_52756_, BlockState p_52757_, Player p_52758_) {
+    public BlockState playerWillDestroy(Level p_52755_, BlockPos p_52756_, BlockState p_52757_, Player p_52758_) {
         if (!p_52755_.isClientSide && p_52758_.isCreative()) {
             BlockFinder.preventCreativeDropFromBottomPart(p_52755_, p_52756_, p_52757_, p_52758_);
         }
 
-        super.playerWillDestroy(p_52755_, p_52756_, p_52757_, p_52758_);
+        return super.playerWillDestroy(p_52755_, p_52756_, p_52757_, p_52758_);
     }
 
     public boolean onHit(Level p_49702_, BlockState p_49703_, BlockPos p_49704_) {

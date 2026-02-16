@@ -22,7 +22,7 @@ public class DrownedServantRenderer extends AbstractZombieServantRenderer<Drowne
    }
 
    public ResourceLocation getTextureLocation(DrownedServant p_114115_) {
-      if (p_114115_.isHostile() || !MobsConfig.DrownedServantTexture.get()){
+      if (p_114115_.isHostile() || !com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MobsConfig.DrownedServantTexture, false)){
          return DROWNED_LOCATION;
       } else {
          return TEXTURE;

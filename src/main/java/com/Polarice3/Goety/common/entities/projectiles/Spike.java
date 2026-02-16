@@ -146,18 +146,18 @@ public class Spike extends GroundProjectile {
             boolean flag;
             if (livingEntity == null) {
                 flag = target.hurt(ModDamageSource.spike(this, this),
-                        SpellConfig.SpikeDamage.get().floatValue() + this.getExtraDamage());
+                        com.Polarice3.Goety.utils.ConfigHelper.getFloat(SpellConfig.SpikeDamage, 1.0F) + this.getExtraDamage());
             } else {
                 if (MobUtil.areAllies(livingEntity, target)) {
                     return;
                 }
                 flag = target.hurt(ModDamageSource.spike(this, livingEntity),
-                        SpellConfig.SpikeDamage.get().floatValue() + this.getExtraDamage());
+                        com.Polarice3.Goety.utils.ConfigHelper.getFloat(SpellConfig.SpikeDamage, 1.0F) + this.getExtraDamage());
             }
             if (flag) {
                 if (livingEntity instanceof Player player) {
                     int soulEater = Mth.clamp(this.getSoulEater(), 0, 10);
-                    SEHelper.increaseSouls(player, SpellConfig.SpikeGainSouls.get() * soulEater);
+                    SEHelper.increaseSouls(player, com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.SpikeGainSouls, 0) * soulEater);
                     if (this.getBurning() > 0) {
                         target.igniteForSeconds(5 * this.getBurning());
                     }
@@ -174,8 +174,8 @@ public class Spike extends GroundProjectile {
         }
     }
 
-    @Override
-    public Packet<ClientGamePacketListener> getAddEntityPacket() {
-        return new net.minecraft.network.protocol.game.ClientboundAddEntityPacket(this);
-    }
+    // @Override
+    // public Packet<ClientGamePacketListener> getAddEntityPacket() {
+    //     return new net.minecraft.network.protocol.game.ClientboundAddEntityPacket(this);
+    // }
 }

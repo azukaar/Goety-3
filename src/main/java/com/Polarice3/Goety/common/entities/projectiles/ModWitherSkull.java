@@ -156,7 +156,7 @@ public class ModWitherSkull extends WitherSkull {
          float damage;
          if (entity1 instanceof LivingEntity livingentity) {
             if (entity1 instanceof Player){
-               damage = SpellConfig.WitherSkullDamage.get().floatValue() * WandUtil.damageMultiply();
+               damage = com.Polarice3.Goety.utils.ConfigHelper.getFloat(SpellConfig.WitherSkullDamage, 1.0F) * WandUtil.damageMultiply();
             } else {
                damage = this.getDamage();
             }
@@ -181,31 +181,15 @@ public class ModWitherSkull extends WitherSkull {
             livingEntity.addEffect(new MobEffectInstance(MobEffects.WITHER, 200 * duration, 1), this.getEffectSource());
          }
 
-      }
-   }
-
-   protected void onHit(HitResult pResult) {
-      HitResult.Type hitresult$type = pResult.getType();
-      if (hitresult$type == HitResult.Type.ENTITY) {
-         this.onHitEntity((EntityHitResult)pResult);
-         this.level().gameEvent(GameEvent.PROJECTILE_LAND, pResult.getLocation(), GameEvent.Context.of(this, (BlockState)null));
-      } else if (hitresult$type == HitResult.Type.BLOCK) {
-         BlockHitResult blockhitresult = (BlockHitResult)pResult;
-         this.onHitBlock(blockhitresult);
-         BlockPos blockpos = blockhitresult.getBlockPos();
-         this.level().gameEvent(GameEvent.PROJECTILE_LAND, blockpos, GameEvent.Context.of(this, this.level().getBlockState(blockpos)));
-      }
-      if (!this.level().isClientSide) {
-         Entity owner = this.getOwner();
-         boolean flaming = this.getFiery() > 0;
-         boolean loot = CuriosFinder.hasWanting(owner);
-         Explosion.BlockInteraction explodeMode = this.level().getGameRules().getBoolean(GameRules.RULE_MOB_GRIEFING) ? Explosion.BlockInteraction.DESTROY : Explosion.BlockInteraction.KEEP;
-         if (this.getOwner() instanceof Player) {
-            explodeMode = SpellConfig.WitherSkullGriefing.get() ? Explosion.BlockInteraction.DESTROY : Explosion.BlockInteraction.KEEP;
-         }
-         LootingExplosion.Mode lootMode = loot ? LootingExplosion.Mode.LOOT : LootingExplosion.Mode.REGULAR;
-         ExplosionUtil.lootExplode(this.level(), this, this.getX(), this.getY(), this.getZ(), this.getExplosionPower(), flaming, explodeMode, lootMode);
-         this.discard();
+          boolean loot = this.isUpgraded();
+          boolean flaming = this.getFiery() > 0;
+          Explosion.BlockInteraction explodeMode = Explosion.BlockInteraction.KEEP;
+          if (this.getOwner() instanceof Player) {
+             explodeMode = com.Polarice3.Goety.utils.ConfigHelper.getBoolean(SpellConfig.WitherSkullGriefing, false) ? Explosion.BlockInteraction.DESTROY : Explosion.BlockInteraction.KEEP;
+          }
+          LootingExplosion.Mode lootMode = loot ? LootingExplosion.Mode.LOOT : LootingExplosion.Mode.REGULAR;
+          ExplosionUtil.lootExplode(this.level(), this, this.getX(), this.getY(), this.getZ(), this.getExplosionPower(), flaming, explodeMode, lootMode);
+          this.discard();
       }
    }
 

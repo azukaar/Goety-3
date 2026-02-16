@@ -16,8 +16,7 @@ public class BlackCrystalItem extends BlockItemBase {
         super(ModBlocks.BLACK_CRYSTAL.get());
     }
 
-    @Override
-    public boolean canApplyAtEnchantingTable(ItemStack stack, Enchantment enchantment) {
+    public boolean canApplyAtEnchantingTable(ItemStack stack, net.minecraft.world.item.enchantment.Enchantment enchantment) {
         return stack.getCount() == 1
                 && (enchantment == ModEnchantments.SOUL_EATER.get()
                 || enchantment == ModEnchantments.RADIUS.get());

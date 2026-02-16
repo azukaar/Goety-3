@@ -39,19 +39,19 @@ public class SkeletonServantClothingLayer<T extends AbstractSkeletonServant, M e
             float headPitch) {
         ResourceLocation resourceLocation = null;
         if (skeleton instanceof StrayServant) {
-            if (skeleton.isHostile() || !MobsConfig.StrayServantTexture.get()) {
+            if (skeleton.isHostile() || !com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MobsConfig.StrayServantTexture, false)) {
                 resourceLocation = STRAY_ORIGINAL;
             } else {
                 resourceLocation = STRAY;
             }
         } else if (skeleton instanceof MossySkeletonServant && !skeleton.isHostile()
-                && MobsConfig.MossySkeletonServantTexture.get()) {
+                && com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MobsConfig.MossySkeletonServantTexture, false)) {
             resourceLocation = MOSSY;
         } else if (skeleton instanceof WitherSkeletonServant && !skeleton.isHostile()
-                && MobsConfig.WitherSkeletonServantTexture.get()) {
+                && com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MobsConfig.WitherSkeletonServantTexture, false)) {
             resourceLocation = WITHER;
         } else if (skeleton instanceof SkeletonServant && !skeleton.isHostile()
-                && MobsConfig.SkeletonServantTexture.get()) {
+                && com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MobsConfig.SkeletonServantTexture, false)) {
             resourceLocation = TEXTURES;
         }
         if (resourceLocation != null) {

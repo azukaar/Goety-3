@@ -63,7 +63,7 @@ public class PreBossLoopMusic extends AbstractTickableSoundInstance {
     }
 
     public void tick() {
-        if (!MainConfig.BossMusic.get()){
+        if (!com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MainConfig.BossMusic, false)){
             ClientEvents.PRE_BOSS_MUSIC = null;
             this.stop();
         }

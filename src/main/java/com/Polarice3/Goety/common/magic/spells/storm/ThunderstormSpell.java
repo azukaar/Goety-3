@@ -25,12 +25,12 @@ public class ThunderstormSpell extends Spell {
 
     @Override
     public int defaultSoulCost() {
-        return SpellConfig.ThunderstormCost.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.ThunderstormCost, 0);
     }
 
     @Override
     public int defaultCastDuration() {
-        return SpellConfig.ThunderstormDuration.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.ThunderstormDuration, 0);
     }
 
     @Override
@@ -39,12 +39,12 @@ public class ThunderstormSpell extends Spell {
         if (WandUtil.enchantedFocus(caster)) {
             i += WandUtil.getLevels(ModEnchantments.DURATION.get(), caster);
         }
-        return SpellConfig.ThunderstormDuration.get() * (i + 1);
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.ThunderstormDuration, 0) * (i + 1);
     }
 
     @Override
     public int defaultSpellCooldown() {
-        return SpellConfig.ThunderstormCoolDown.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.ThunderstormCoolDown, 0);
     }
 
     @Override

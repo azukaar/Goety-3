@@ -1,57 +1,48 @@
 package com.Polarice3.Goety.common.capabilities.witchbarter;
 
 import com.Polarice3.Goety.Goety;
+import com.Polarice3.Goety.init.ModAttachments;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
-import net.neoforged.network.NetworkDirection;
-import net.neoforged.network.NetworkEvent;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 
-import java.util.function.Supplier;
+public record WBUpdatePacket(int witchId, CompoundTag tag) implements CustomPacketPayload {
+    public static final CustomPacketPayload.Type<WBUpdatePacket> TYPE = 
+            new CustomPacketPayload.Type<>(ResourceLocation.fromNamespaceAndPath(Goety.MOD_ID, "wb_update"));
 
-public class WBUpdatePacket {
-    private final int witchId;
-    private CompoundTag tag;
-
-    public WBUpdatePacket(int witchId, CompoundTag tag) {
-        this.witchId = witchId;
-        this.tag = tag;
-    }
+    public static final StreamCodec<FriendlyByteBuf, WBUpdatePacket> STREAM_CODEC = StreamCodec.composite(
+            ByteBufCodecs.INT, WBUpdatePacket::witchId,
+            ByteBufCodecs.COMPOUND_TAG, WBUpdatePacket::tag,
+            WBUpdatePacket::new
+    );
 
     public WBUpdatePacket(LivingEntity livingEntity) {
-        this.witchId = livingEntity.getId();
-        livingEntity.getCapability(WitchBarterProvider.CAPABILITY, null).ifPresent((barter) -> {
-            this.tag = WitchBarterProvider.save(new CompoundTag(), barter);
-        });
+        this(livingEntity.getId(), WitchBarterProvider.save(new CompoundTag(), livingEntity.getData(ModAttachments.WITCH_BARTER)));
     }
 
-    public static void encode(WBUpdatePacket packet, FriendlyByteBuf buffer) {
-        buffer.writeInt(packet.witchId);
-        buffer.writeNbt(packet.tag);
-    }
-
-    public static WBUpdatePacket decode(FriendlyByteBuf buffer) {
-        return new WBUpdatePacket(buffer.readInt(), buffer.readNbt());
-    }
-
-    public static void consume(WBUpdatePacket packet, Supplier<NetworkEvent.Context> ctx) {
-        ctx.get().enqueueWork(() -> {
-            if (ctx.get().getDirection() == NetworkDirection.PLAY_TO_CLIENT) {
-                Level level = Goety.PROXY.getLevel();
-                if (level instanceof ClientLevel clientLevel) {
-                    Entity entity = clientLevel.getEntity(packet.witchId);
-                    if (entity != null) {
-                        entity.getCapability(WitchBarterProvider.CAPABILITY).ifPresent((barter) -> {
-                            WitchBarterProvider.load(packet.tag, barter);
-                        });
-                    }
+    public static void handle(WBUpdatePacket packet, IPayloadContext ctx) {
+        ctx.enqueueWork(() -> {
+            Level level = Goety.PROXY.getLevel();
+            if (level instanceof ClientLevel clientLevel) {
+                Entity entity = clientLevel.getEntity(packet.witchId);
+                if (entity instanceof LivingEntity livingEntity) {
+                    IWitchBarter barter = livingEntity.getData(ModAttachments.WITCH_BARTER);
+                    WitchBarterProvider.load(packet.tag, barter);
                 }
             }
-
         });
-        ctx.get().setPacketHandled(true);
+    }
+
+    @Override
+    public Type<? extends CustomPacketPayload> type() {
+        return TYPE;
     }
 }

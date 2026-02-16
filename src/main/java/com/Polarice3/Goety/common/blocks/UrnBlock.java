@@ -1,6 +1,7 @@
 package com.Polarice3.Goety.common.blocks;
 
 import com.Polarice3.Goety.common.blocks.entities.UrnBlockEntity;
+import com.mojang.serialization.MapCodec;
 import com.Polarice3.Goety.init.ModSoundTypes;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -34,6 +35,12 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.Nullable;
 
 public class UrnBlock extends BaseEntityBlock implements SimpleWaterloggedBlock {
+    public static final MapCodec<UrnBlock> CODEC = simpleCodec(p -> new UrnBlock());
+
+    @Override
+    protected MapCodec<? extends BaseEntityBlock> codec() {
+        return CODEC;
+    }
     public static final VoxelShape SHAPE_BASE = Block.box(2.0D, 0.0D, 2.0D,
             14.0D, 2.0D, 14.0D);
     public static final VoxelShape SHAPE_URN = Block.box(1.0D, 2.0D, 1.0D,
@@ -93,7 +100,7 @@ public class UrnBlock extends BaseEntityBlock implements SimpleWaterloggedBlock 
     }
 
     public void setPlacedBy(Level pLevel, BlockPos pPos, BlockState pState, @javax.annotation.Nullable LivingEntity pPlacer, ItemStack pStack) {
-        if (pStack.hasCustomHoverName()) {
+        if (pStack.has(net.minecraft.core.component.DataComponents.CUSTOM_NAME)) {
             BlockEntity tileentity = pLevel.getBlockEntity(pPos);
             if (tileentity instanceof UrnBlockEntity urnBlock) {
                 urnBlock.setCustomName(pStack.getHoverName());

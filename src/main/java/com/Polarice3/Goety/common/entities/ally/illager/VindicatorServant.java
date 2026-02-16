@@ -67,17 +67,17 @@ public class VindicatorServant extends AbstractIllagerServant {
         return Monster.createMonsterAttributes()
                 .add(Attributes.MOVEMENT_SPEED, (double) 0.35F)
                 .add(Attributes.FOLLOW_RANGE, 12.0D)
-                .add(Attributes.MAX_HEALTH, AttributesConfig.VindicatorServantHealth.get())
-                .add(Attributes.ARMOR, AttributesConfig.VindicatorServantArmor.get())
-                .add(Attributes.ATTACK_DAMAGE, AttributesConfig.VindicatorServantDamage.get());
+                .add(Attributes.MAX_HEALTH, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.VindicatorServantHealth, 20.0D))
+                .add(Attributes.ARMOR, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.VindicatorServantArmor, 20.0D))
+                .add(Attributes.ATTACK_DAMAGE, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.VindicatorServantDamage, 20.0D));
     }
 
     public void setConfigurableAttributes() {
         MobUtil.setBaseAttributes(this.getAttribute(Attributes.MAX_HEALTH),
-                AttributesConfig.VindicatorServantHealth.get());
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ARMOR), AttributesConfig.VindicatorServantArmor.get());
+                com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.VindicatorServantHealth, 20.0D));
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ARMOR), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.VindicatorServantArmor, 20.0D));
         MobUtil.setBaseAttributes(this.getAttribute(Attributes.ATTACK_DAMAGE),
-                AttributesConfig.VindicatorServantDamage.get());
+                com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.VindicatorServantDamage, 20.0D));
     }
 
     @Override
@@ -115,10 +115,10 @@ public class VindicatorServant extends AbstractIllagerServant {
     @Nullable
     public SpawnGroupData finalizeSpawn(ServerLevelAccessor p_34088_, DifficultyInstance p_34089_,
             MobSpawnType p_34090_, @Nullable SpawnGroupData p_34091_, @Nullable CompoundTag p_34092_) {
-        SpawnGroupData spawngroupdata = super.finalizeSpawn(p_34088_, p_34089_, p_34090_, p_34091_, p_34092_);
+        SpawnGroupData spawngroupdata = super.finalizeSpawn(p_34088_, p_34089_, p_34090_, p_34091_);
         RandomSource randomsource = p_34088_.getRandom();
         this.populateDefaultEquipmentSlots(randomsource, p_34089_);
-        this.populateDefaultEquipmentEnchantments(randomsource, p_34089_);
+        this.populateDefaultEquipmentEnchantments(p_34088_, randomsource, p_34089_);
         return spawngroupdata;
     }
 
@@ -186,7 +186,7 @@ public class VindicatorServant extends AbstractIllagerServant {
             if (!(pPlayer.getOffhandItem().getItem() instanceof IWand)) {
                 if (item instanceof AxeItem || itemstack.is(ItemTags.AXES)
                         || itemstack.is(ModTags.Items.VINDICATOR_WEAPONS)) {
-                    this.playSound(SoundEvents.ARMOR_EQUIP_GENERIC, 1.0F, 1.0F);
+                    this.playSound(SoundEvents.ARMOR_EQUIP_GENERIC.value(), 1.0F, 1.0F);
                     this.setItemSlot(EquipmentSlot.MAINHAND, itemstack.copy());
                     this.dropEquipment(EquipmentSlot.MAINHAND, itemstack2);
                     this.setGuaranteedDrop(EquipmentSlot.MAINHAND);

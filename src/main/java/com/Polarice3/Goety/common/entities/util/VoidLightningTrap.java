@@ -42,7 +42,7 @@ public class VoidLightningTrap extends MagicLightningTrap {
 
     @Override
     public void hurtEffect(LivingEntity livingEntity) {
-        livingEntity.addEffect(new MobEffectInstance(GoetyEffects.VOID_TOUCHED.get(), MathHelper.secondsToTicks(3), 1, false, true));
+        livingEntity.addEffect(new MobEffectInstance(GoetyEffects.VOID_TOUCHED, MathHelper.secondsToTicks(3), 1, false, true));
     }
 
     public void finalizeAttack(){

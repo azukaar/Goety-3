@@ -114,19 +114,19 @@ public class DrownedNecromancer extends AbstractNecromancer {
 
     public static AttributeSupplier.Builder setCustomAttributes() {
         return Mob.createMobAttributes()
-                .add(Attributes.MAX_HEALTH, AttributesConfig.DrownedNecromancerHealth.get())
-                .add(Attributes.ARMOR, AttributesConfig.DrownedNecromancerArmor.get())
-                .add(Attributes.FOLLOW_RANGE, AttributesConfig.DrownedNecromancerFollowRange.get())
+                .add(Attributes.MAX_HEALTH, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.DrownedNecromancerHealth, 20.0D))
+                .add(Attributes.ARMOR, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.DrownedNecromancerArmor, 20.0D))
+                .add(Attributes.FOLLOW_RANGE, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.DrownedNecromancerFollowRange, 20.0D))
                 .add(Attributes.MOVEMENT_SPEED, 0.25F)
                 .add(Attributes.KNOCKBACK_RESISTANCE, 0.6D)
-                .add(Attributes.ATTACK_DAMAGE, AttributesConfig.DrownedNecromancerDamage.get());
+                .add(Attributes.ATTACK_DAMAGE, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.DrownedNecromancerDamage, 20.0D));
     }
 
     public void setConfigurableAttributes(){
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.MAX_HEALTH), AttributesConfig.DrownedNecromancerHealth.get());
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ARMOR), AttributesConfig.DrownedNecromancerArmor.get());
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.FOLLOW_RANGE), AttributesConfig.DrownedNecromancerFollowRange.get());
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ATTACK_DAMAGE), AttributesConfig.DrownedNecromancerDamage.get());
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.MAX_HEALTH), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.DrownedNecromancerHealth, 20.0D));
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ARMOR), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.DrownedNecromancerArmor, 20.0D));
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.FOLLOW_RANGE), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.DrownedNecromancerFollowRange, 20.0D));
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ATTACK_DAMAGE), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.DrownedNecromancerDamage, 20.0D));
     }
 
     public void readAdditionalSaveData(CompoundTag pCompound) {
@@ -241,7 +241,7 @@ public class DrownedNecromancer extends AbstractNecromancer {
         this.entityData.set(LEVEL, i);
         AttributeInstance attributeInstance = this.getAttribute(Attributes.MAX_HEALTH);
         if (attributeInstance != null){
-            attributeInstance.setBaseValue(AttributesConfig.DrownedNecromancerHealth.get() * Math.max(i * 1.25F, 1));
+            attributeInstance.setBaseValue(com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.DrownedNecromancerHealth, 20.0D) * Math.max(i * 1.25F, 1));
         }
         this.reapplyPosition();
         this.refreshDimensions();
@@ -437,7 +437,7 @@ public class DrownedNecromancer extends AbstractNecromancer {
                     if (this.getNecroLevel() < 2) {
                         this.setNecroLevel(this.getNecroLevel() + 1);
                     }
-                    this.heal(AttributesConfig.DrownedNecromancerHealth.get().floatValue());
+                    this.heal((float)com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.DrownedNecromancerHealth, 20.0D));
                     if (this.level() instanceof ServerLevel serverLevel) {
                         for (int i = 0; i < 7; ++i) {
                             double d0 = this.random.nextGaussian() * 0.02D;

@@ -34,7 +34,7 @@ import net.minecraft.world.phys.Vec3;
 public class HauntedSkullProjectile extends ExplosiveProjectile {
     private static final EntityDataAccessor<Integer> DATA_TYPE_ID = SynchedEntityData
             .defineId(HauntedSkullProjectile.class, EntityDataSerializers.INT);
-    public float damage = SpellConfig.HauntedSkullDamage.get().floatValue() * WandUtil.damageMultiply();
+    public float damage = com.Polarice3.Goety.utils.ConfigHelper.getFloat(SpellConfig.HauntedSkullDamage, 1.0F) * WandUtil.damageMultiply();
     public boolean isPowered;
 
     public HauntedSkullProjectile(EntityType<? extends ExplosiveProjectile> p_i50166_1_, Level p_i50166_2_) {
@@ -183,7 +183,7 @@ public class HauntedSkullProjectile extends ExplosiveProjectile {
             Explosion.BlockInteraction explodeMode = Explosion.BlockInteraction.KEEP;
             boolean damaging;
             if (this.getOwner() instanceof Player) {
-                damaging = SpellConfig.HauntedSkullGriefing.get();
+                damaging = com.Polarice3.Goety.utils.ConfigHelper.getBoolean(SpellConfig.HauntedSkullGriefing, false);
             } else {
                 damaging = this.level().getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING);
             }

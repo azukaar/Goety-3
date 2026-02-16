@@ -73,19 +73,19 @@ public class ScatterBomb extends SpellThrowableProjectile {
             BlockPos blockpos = ((BlockHitResult)hitresult).getBlockPos();
             BlockState blockstate = this.level().getBlockState(blockpos);
             if (blockstate.is(Blocks.NETHER_PORTAL)) {
-                this.handleInsidePortal(blockpos);
+                // this.handleInsidePortal(blockpos);
                 flag = true;
             } else if (blockstate.is(Blocks.END_GATEWAY)) {
-                BlockEntity blockentity = this.level().getBlockEntity(blockpos);
-                if (blockentity instanceof TheEndGatewayBlockEntity && TheEndGatewayBlockEntity.canEntityTeleport(this)) {
-                    TheEndGatewayBlockEntity.teleportEntity(this.level(), blockpos, blockstate, this, (TheEndGatewayBlockEntity)blockentity);
-                }
+                // BlockEntity blockentity = this.level().getBlockEntity(blockpos);
+                // if (blockentity instanceof TheEndGatewayBlockEntity && TheEndGatewayBlockEntity.canEntityTeleport(this)) {
+                //     TheEndGatewayBlockEntity.teleportEntity(this.level(), blockpos, blockstate, this, (TheEndGatewayBlockEntity)blockentity);
+                // }
 
                 flag = true;
             }
         }
 
-        if (hitresult.getType() != HitResult.Type.MISS && !flag && !net.neoforged.event.EventFactory.onProjectileImpact(this, hitresult)) {
+        if (hitresult.getType() != HitResult.Type.MISS && !flag && !net.neoforged.neoforge.event.EventHooks.onProjectileImpact(this, hitresult)) {
             this.onHit(hitresult);
         }
 
@@ -108,7 +108,7 @@ public class ScatterBomb extends SpellThrowableProjectile {
     protected void onHit(HitResult p_37406_) {
         super.onHit(p_37406_);
         if (!this.level().isClientSide) {
-            this.playSound(SoundEvents.GENERIC_EXPLODE, 4.0F, (1.0F + (this.level().random.nextFloat() - this.level().random.nextFloat()) * 0.2F) * 0.7F);
+            this.playSound(SoundEvents.GENERIC_EXPLODE.value(), 4.0F, (1.0F + (this.level().random.nextFloat() - this.level().random.nextFloat()) * 0.2F) * 0.7F);
             float damage = 12.5F;
             if (this.getOwner() instanceof Mob mob && mob.getAttribute(Attributes.ATTACK_DAMAGE) != null){
                 damage = (float) mob.getAttributeValue(Attributes.ATTACK_DAMAGE) / 2.0F;

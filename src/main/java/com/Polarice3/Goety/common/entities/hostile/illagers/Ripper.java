@@ -91,9 +91,9 @@ public class Ripper extends Raider {
         return Mob.createMobAttributes()
                 .add(Attributes.MOVEMENT_SPEED, 0.35D)
                 .add(Attributes.FOLLOW_RANGE, 32.0D)
-                .add(Attributes.MAX_HEALTH, AttributesConfig.RipperHealth.get())
-                .add(Attributes.ARMOR, AttributesConfig.RipperArmor.get())
-                .add(Attributes.ATTACK_DAMAGE, AttributesConfig.RipperDamage.get())
+                .add(Attributes.MAX_HEALTH, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.RipperHealth, 20.0D))
+                .add(Attributes.ARMOR, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.RipperArmor, 20.0D))
+                .add(Attributes.ATTACK_DAMAGE, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.RipperDamage, 20.0D))
                 .add(Attributes.KNOCKBACK_RESISTANCE, 0.0D)
                 .add(Attributes.SPAWN_REINFORCEMENTS_CHANCE);
     }
@@ -173,15 +173,15 @@ public class Ripper extends Raider {
             if (this.getRipperSize() < -1) {
                 attack.setBaseValue(0.5F);
             } else {
-                attack.setBaseValue(AttributesConfig.RipperDamage.get() + this.getRipperSize());
+                attack.setBaseValue(com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.RipperDamage, 20.0D) + this.getRipperSize());
             }
         }
         AttributeInstance health = this.getAttribute(Attributes.MAX_HEALTH);
         if (health != null) {
             if (this.getRipperSize() < 0) {
-                health.setBaseValue(AttributesConfig.RipperHealth.get() + (this.getRipperSize() * 4));
+                health.setBaseValue(com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.RipperHealth, 20.0D) + (this.getRipperSize() * 4));
             } else {
-                health.setBaseValue(AttributesConfig.RipperHealth.get() + (this.getRipperSize() * 2));
+                health.setBaseValue(com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.RipperHealth, 20.0D) + (this.getRipperSize() * 2));
             }
         }
     }

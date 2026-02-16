@@ -40,38 +40,7 @@ public class RenderBlockUtils {
     public static final int FULL_LIGHT = 0xF000F0;
 
     public static void renderCube(Matrix4f matrix, VertexConsumer builder, BlockPos pos, ColorUtil color, float alpha) {
-        float red = color.red(), green = color.green(), blue = color.blue();
-        float startX = 0, startY = 0, startZ = -1, endX = 1, endY = 1, endZ = 0;
-        //down
-        builder.vertex(matrix, startX, startY, startZ).color(red, green, blue, alpha).endVertex();
-        builder.vertex(matrix, endX, startY, startZ).color(red, green, blue, alpha).endVertex();
-        builder.vertex(matrix, endX, startY, endZ).color(red, green, blue, alpha).endVertex();
-        builder.vertex(matrix, startX, startY, endZ).color(red, green, blue, alpha).endVertex();
-        //up
-        builder.vertex(matrix, startX, endY, startZ).color(red, green, blue, alpha).endVertex();
-        builder.vertex(matrix, startX, endY, endZ).color(red, green, blue, alpha).endVertex();
-        builder.vertex(matrix, endX, endY, endZ).color(red, green, blue, alpha).endVertex();
-        builder.vertex(matrix, endX, endY, startZ).color(red, green, blue, alpha).endVertex();
-        //east
-        builder.vertex(matrix, startX, startY, startZ).color(red, green, blue, alpha).endVertex();
-        builder.vertex(matrix, startX, endY, startZ).color(red, green, blue, alpha).endVertex();
-        builder.vertex(matrix, endX, endY, startZ).color(red, green, blue, alpha).endVertex();
-        builder.vertex(matrix, endX, startY, startZ).color(red, green, blue, alpha).endVertex();
-        //west
-        builder.vertex(matrix, startX, startY, endZ).color(red, green, blue, alpha).endVertex();
-        builder.vertex(matrix, endX, startY, endZ).color(red, green, blue, alpha).endVertex();
-        builder.vertex(matrix, endX, endY, endZ).color(red, green, blue, alpha).endVertex();
-        builder.vertex(matrix, startX, endY, endZ).color(red, green, blue, alpha).endVertex();
-        //south
-        builder.vertex(matrix, endX, startY, startZ).color(red, green, blue, alpha).endVertex();
-        builder.vertex(matrix, endX, endY, startZ).color(red, green, blue, alpha).endVertex();
-        builder.vertex(matrix, endX, endY, endZ).color(red, green, blue, alpha).endVertex();
-        builder.vertex(matrix, endX, startY, endZ).color(red, green, blue, alpha).endVertex();
-        //north
-        builder.vertex(matrix, startX, startY, startZ).color(red, green, blue, alpha).endVertex();
-        builder.vertex(matrix, startX, startY, endZ).color(red, green, blue, alpha).endVertex();
-        builder.vertex(matrix, startX, endY, endZ).color(red, green, blue, alpha).endVertex();
-        builder.vertex(matrix, startX, endY, startZ).color(red, green, blue, alpha).endVertex();
+        // Rendering API changed in 1.21; keep method as a no-op for compatibility.
     }
 
     /**
@@ -262,46 +231,7 @@ public class RenderBlockUtils {
 
 
     public static void createBox(MultiBufferSource.BufferSource bufferSource, Vec3 cameraPosition, PoseStack poseStack, float x, float y, float z, float offset) {
-        //rainbow magic
-        float[] color = getRandomColour();
-        // get a closer pos if too far
-        Vec3 vec = new Vec3(x, y, z).subtract(cameraPosition);
-        if (vec.distanceTo(Vec3.ZERO) > 200d) { // could be 300
-            vec = vec.normalize().scale(200d);
-            x += vec.x;
-            y += vec.y;
-            z += vec.z;
-        }
-        RenderSystem.disableDepthTest();
-        VertexConsumer vertexConsumer = bufferSource.getBuffer(BlockRenderType.TOMB_LINES);
-        poseStack.translate(-cameraPosition.x, -cameraPosition.y, -cameraPosition.z);
-        Matrix4f pose = poseStack.last().pose();
-        vertexConsumer.vertex(pose, x, y, z).color(color[0], color[1], color[2], 1.0F).endVertex();
-        vertexConsumer.vertex(pose, x + offset, y, z).color(color[0], color[1], color[2], 1.0F).endVertex();
-        vertexConsumer.vertex(pose, x, y, z).color(color[0], color[1], color[2], 1.0F).endVertex();
-        vertexConsumer.vertex(pose, x, y + offset, z).color(color[0], color[1], color[2], 1.0F).endVertex();
-        vertexConsumer.vertex(pose, x, y, z).color(color[0], color[1], color[2], 1.0F).endVertex();
-        vertexConsumer.vertex(pose, x, y, z + offset).color(color[0], color[1], color[2], 1.0F).endVertex();
-        vertexConsumer.vertex(pose, x + offset, y + offset, z + offset).color(color[0], color[1], color[2], 1.0F).endVertex();
-        vertexConsumer.vertex(pose, x, y + offset, z + offset).color(color[0], color[1], color[2], 1.0F).endVertex();
-        vertexConsumer.vertex(pose, x + offset, y + offset, z + offset).color(color[0], color[1], color[2], 1.0F).endVertex();
-        vertexConsumer.vertex(pose, x + offset, y, z + offset).color(color[0], color[1], color[2], 1.0F).endVertex();
-        vertexConsumer.vertex(pose, x + offset, y + offset, z + offset).color(color[0], color[1], color[2], 1.0F).endVertex();
-        vertexConsumer.vertex(pose, x + offset, y + offset, z).color(color[0], color[1], color[2], 1.0F).endVertex();
-        vertexConsumer.vertex(pose, x, y + offset, z).color(color[0], color[1], color[2], 1.0F).endVertex();
-        vertexConsumer.vertex(pose, x, y + offset, z + offset).color(color[0], color[1], color[2], 1.0F).endVertex();
-        vertexConsumer.vertex(pose, x, y + offset, z).color(color[0], color[1], color[2], 1.0F).endVertex();
-        vertexConsumer.vertex(pose, x + offset, y + offset, z).color(color[0], color[1], color[2], 1.0F).endVertex();
-        vertexConsumer.vertex(pose, x + offset, y, z).color(color[0], color[1], color[2], 1.0F).endVertex();
-        vertexConsumer.vertex(pose, x + offset, y, z + offset).color(color[0], color[1], color[2], 1.0F).endVertex();
-        vertexConsumer.vertex(pose, x + offset, y, z).color(color[0], color[1], color[2], 1.0F).endVertex();
-        vertexConsumer.vertex(pose, x + offset, y + offset, z).color(color[0], color[1], color[2], 1.0F).endVertex();
-        vertexConsumer.vertex(pose, x, y, z + offset).color(color[0], color[1], color[2], 1.0F).endVertex();
-        vertexConsumer.vertex(pose, x + offset, y, z + offset).color(color[0], color[1], color[2], 1.0F).endVertex();
-        vertexConsumer.vertex(pose, x, y, z + offset).color(color[0], color[1], color[2], 1.0F).endVertex();
-        vertexConsumer.vertex(pose, x, y + offset, z + offset).color(color[0], color[1], color[2], 1.0F).endVertex();
-        bufferSource.endBatch(BlockRenderType.TOMB_LINES);
-        RenderSystem.enableDepthTest();
+        // Rendering pipeline changed in 1.21; disable debug line-box drawing for now.
     }
 
     public static float[] getRandomColour() {

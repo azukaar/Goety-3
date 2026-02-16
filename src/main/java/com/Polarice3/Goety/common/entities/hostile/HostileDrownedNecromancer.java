@@ -41,7 +41,7 @@ public class HostileDrownedNecromancer extends DrownedNecromancer implements Ene
 
     public void startSeenByPlayer(ServerPlayer pPlayer) {
         super.startSeenByPlayer(pPlayer);
-        if (MainConfig.SpecialBossBar.get()) {
+        if (com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MainConfig.SpecialBossBar, false)) {
             this.bossInfo.addPlayer(pPlayer);
         }
     }

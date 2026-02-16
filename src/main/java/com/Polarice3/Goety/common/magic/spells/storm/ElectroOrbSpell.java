@@ -28,12 +28,12 @@ public class ElectroOrbSpell extends Spell {
 
     @Override
     public int defaultSoulCost() {
-        return SpellConfig.ElectroOrbCost.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.ElectroOrbCost, 0);
     }
 
     @Override
     public int defaultCastDuration() {
-        return SpellConfig.ElectroOrbDuration.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.ElectroOrbDuration, 0);
     }
 
     @Nullable
@@ -44,7 +44,7 @@ public class ElectroOrbSpell extends Spell {
 
     @Override
     public int defaultSpellCooldown() {
-        return SpellConfig.ElectroOrbCoolDown.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.ElectroOrbCoolDown, 0);
     }
 
     @Override

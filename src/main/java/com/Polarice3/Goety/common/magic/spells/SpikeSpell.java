@@ -23,11 +23,11 @@ import java.util.List;
 public class SpikeSpell extends Spell {
 
     public int defaultSoulCost() {
-        return SpellConfig.SpikeCost.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.SpikeCost, 0);
     }
 
     public int defaultCastDuration() {
-        return SpellConfig.SpikeDuration.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.SpikeDuration, 0);
     }
 
     public SoundEvent CastingSound() {
@@ -41,7 +41,7 @@ public class SpikeSpell extends Spell {
 
     @Override
     public int defaultSpellCooldown() {
-        return SpellConfig.SpikeCoolDown.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.SpikeCoolDown, 0);
     }
 
     @Override
@@ -55,7 +55,7 @@ public class SpikeSpell extends Spell {
         list.add(ModEnchantments.POTENCY.get());
         list.add(ModEnchantments.RANGE.get());
         list.add(ModEnchantments.BURNING.get());
-        if (SpellConfig.SpikeGainSouls.get() > 0){
+        if (com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.SpikeGainSouls, 0) > 0){
             list.add(ModEnchantments.SOUL_EATER.get());
         }
         return list;

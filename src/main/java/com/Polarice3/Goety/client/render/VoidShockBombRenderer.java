@@ -110,15 +110,15 @@ public class VoidShockBombRenderer extends EntityRenderer<VoidShockBomb> {
 
     private void addVertex(VertexConsumer consumer, Matrix4f matrix, Matrix3f matrix3, Vec3 pos, Vec3 offset, float r,
             float g, float b, float u, float v, int light) {
-        consumer.vertex(matrix,
+        consumer.addVertex(matrix,
                 (float) (pos.x + offset.x),
                 (float) (pos.y + offset.y),
                 (float) (pos.z + offset.z))
-                .color(r, g, b, 1.0F)
-                .uv(u, v)
-                .overlayCoords(OverlayTexture.NO_OVERLAY)
-                .uv2(light)
-                .normal(matrix3, 0.0F, 1.0F, 0.0F).endVertex();
+                .setColor(r, g, b, 1.0F)
+                .setUv(u, v)
+                .setOverlay(OverlayTexture.NO_OVERLAY)
+                .setLight(light)
+                .setNormal(0.0F, 1.0F, 0.0F);
     }
 
     protected int getBlockLightLevel(VoidShockBomb entityIn, BlockPos pos) {

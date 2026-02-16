@@ -38,16 +38,16 @@ public class BlazingHornItem extends Item {
                     .getStructureWithPieceAt(entityLiving.blockPosition(), ModTags.Structures.WITHER_NECROMANCER_SPAWNS)
                     .isValid();
             if (flag) {
-                entityLiving.playSound(SoundEvents.GOAT_HORN_SOUND_VARIANTS.get(6).get(), 16.0F, 1.0F);
+                entityLiving.playSound(SoundEvents.GOAT_HORN_PLAY, 16.0F, 1.0F);
                 serverWorld.playSound(null, entityLiving.blockPosition(),
-                        SoundEvents.GOAT_HORN_SOUND_VARIANTS.get(6).get(), SoundSource.NEUTRAL, 16.0F, 1.0F);
+                        SoundEvents.GOAT_HORN_PLAY, SoundSource.NEUTRAL, 16.0F, 1.0F);
                 WitherNecromancer necromancer = ModEntityType.WITHER_NECROMANCER.get().create(worldIn);
                 if (necromancer != null) {
                     BlockPos blockPos = entityLiving.blockPosition().relative(entityLiving.getDirection());
                     necromancer.setPos(blockPos.getX(), blockPos.getY(), blockPos.getZ());
                     necromancer.finalizeSpawn(serverWorld,
                             serverWorld.getCurrentDifficultyAt(entityLiving.blockPosition()), MobSpawnType.MOB_SUMMONED,
-                            null, null);
+                            null);
                     SummonCircleBoss summonCircle = new SummonCircleBoss(worldIn, blockPos, necromancer);
                     serverWorld.addFreshEntity(summonCircle);
                     if (!(entityLiving instanceof Player && ((Player) entityLiving).isCreative())) {
@@ -88,8 +88,8 @@ public class BlazingHornItem extends Item {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
-        super.appendHoverText(stack, worldIn, tooltip, flagIn);
+    public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltip, TooltipFlag flagIn) {
+        super.appendHoverText(stack, context, tooltip, flagIn);
         tooltip.add(Component.translatable("info.goety.items.blaze_horn.desc").withStyle(ChatFormatting.DARK_PURPLE));
     }
 }

@@ -31,17 +31,17 @@ public class FireBlastSpell extends Spell {
 
     @Override
     public int defaultSoulCost() {
-        return SpellConfig.FireBlastCost.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.FireBlastCost, 0);
     }
 
     @Override
     public int defaultCastDuration() {
-        return SpellConfig.FireBlastDuration.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.FireBlastDuration, 0);
     }
 
     @Override
     public int defaultSpellCooldown() {
-        return SpellConfig.FireBlastCoolDown.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.FireBlastCoolDown, 0);
     }
 
     @Override
@@ -65,8 +65,8 @@ public class FireBlastSpell extends Spell {
 
     public void SpellResult(ServerLevel worldIn, LivingEntity caster, ItemStack staff, SpellStat spellStat) {
         int radius = (int) spellStat.getRadius();
-        float damage = SpellConfig.FireBlastDamage.get().floatValue() * WandUtil.damageMultiply();
-        float maxDamage = SpellConfig.FireBlastMaxDamage.get().floatValue() * WandUtil.damageMultiply();
+        float damage = com.Polarice3.Goety.utils.ConfigHelper.getFloat(SpellConfig.FireBlastDamage, 1.0F) * WandUtil.damageMultiply();
+        float maxDamage = com.Polarice3.Goety.utils.ConfigHelper.getFloat(SpellConfig.FireBlastMaxDamage, 1.0F) * WandUtil.damageMultiply();
         int burning = spellStat.getBurning();
         if (WandUtil.enchantedFocus(caster)) {
             radius += WandUtil.getLevels(ModEnchantments.RADIUS.get(), caster);
@@ -115,7 +115,7 @@ public class FireBlastSpell extends Spell {
                 }
             }
         };
-        this.playSound(worldIn, caster, SoundEvents.GENERIC_EXPLODE, 2.0F, 1.0F);
+        this.playSound(worldIn, caster, SoundEvents.GENERIC_EXPLODE.value(), 2.0F, 1.0F);
         this.playSound(worldIn, caster, ModSounds.HELL_BLAST_IMPACT.get(), 2.0F, 1.0F);
     }
 }

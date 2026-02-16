@@ -56,7 +56,7 @@ public class SingleStackItem extends Item implements ICurioItem {
     public boolean canApplyAtEnchantingTable(ItemStack stack, Enchantment enchantment)
     {
         if (stack.getItem() == ModItems.SPITEFUL_BELT.get()) {
-            return enchantment == Enchantments.THORNS;
+            return false;
         }
         return false;
     }
@@ -67,8 +67,8 @@ public class SingleStackItem extends Item implements ICurioItem {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
-        super.appendHoverText(stack, worldIn, tooltip, flagIn);
+    public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltip, TooltipFlag flagIn) {
+        super.appendHoverText(stack, context, tooltip, flagIn);
         ChatFormatting main = ChatFormatting.DARK_PURPLE;
         ChatFormatting secondary = ChatFormatting.BLUE;
 
@@ -88,7 +88,7 @@ public class SingleStackItem extends Item implements ICurioItem {
                 tooltip.add(Component.translatable("info.goety.necro_crown").withStyle(main));
                 if (!crownItem.isNameless) {
                     tooltip.add(Component.translatable("info.goety.necro_crown_cast").withStyle(secondary));
-                    if (ItemConfig.NecroCrownWeakness.get()){
+                    if (com.Polarice3.Goety.utils.ConfigHelper.getBoolean(ItemConfig.NecroCrownWeakness, false)){
                         tooltip.add(Component.translatable("info.goety.necro_crown_weakness").withStyle(secondary));
                     }
                 } else {
@@ -129,7 +129,7 @@ public class SingleStackItem extends Item implements ICurioItem {
                 tooltip.add(Component.translatable("info.goety.necro_cape").withStyle(main));
                 tooltip.add(Component.translatable("info.goety.necro_cape_power").withStyle(secondary));
                 if (!capeItem.isNameless) {
-                    if (ItemConfig.NecroCapeHunger.get()){
+                    if (com.Polarice3.Goety.utils.ConfigHelper.getBoolean(ItemConfig.NecroCapeHunger, false)){
                         tooltip.add(Component.translatable("info.goety.necro_cape_hunger").withStyle(secondary));
                     }
                 }
@@ -144,8 +144,8 @@ public class SingleStackItem extends Item implements ICurioItem {
                 tooltip.add(Component.translatable("info.goety.illusion_robe").withStyle(secondary));
             }
             if (stack.getItem() instanceof FrostRobeItem) {
-                if (ItemConfig.FrostRobeResistance.get() > 0) {
-                    tooltip.add(Component.translatable("info.goety.frost_robe", ItemConfig.FrostRobeResistance.get()).withStyle(main));
+                if (com.Polarice3.Goety.utils.ConfigHelper.getInt(ItemConfig.FrostRobeResistance, 0) > 0) {
+                    tooltip.add(Component.translatable("info.goety.frost_robe", com.Polarice3.Goety.utils.ConfigHelper.getInt(ItemConfig.FrostRobeResistance, 0)).withStyle(main));
                 }
                 tooltip.add(Component.translatable("info.goety.frost_robe_discount").withStyle(secondary));
             }
@@ -155,8 +155,8 @@ public class SingleStackItem extends Item implements ICurioItem {
                     tooltip.add(Component.translatable("info.goety.wind_robe_discount").withStyle(secondary));
                 }
                 if (stack.is(ModItems.STORM_ROBE.get())) {
-                    if (ItemConfig.StormRobeResistance.get() > 0) {
-                        tooltip.add(Component.translatable("info.goety.storm_robe", ItemConfig.StormRobeResistance.get()).withStyle(main));
+                    if (com.Polarice3.Goety.utils.ConfigHelper.getInt(ItemConfig.StormRobeResistance, 0) > 0) {
+                        tooltip.add(Component.translatable("info.goety.storm_robe", com.Polarice3.Goety.utils.ConfigHelper.getInt(ItemConfig.StormRobeResistance, 0)).withStyle(main));
                     }
                     tooltip.add(Component.translatable("info.goety.storm_robe_discount").withStyle(secondary));
                 }
@@ -170,24 +170,24 @@ public class SingleStackItem extends Item implements ICurioItem {
                 tooltip.add(Component.translatable("info.goety.abyss_robe_discount").withStyle(secondary));
             }
             if (stack.getItem() instanceof VoidRobeItem) {
-                tooltip.add(Component.translatable("info.goety.void_robe", ItemConfig.VoidRobeTeleportChance.get()).withStyle(main));
+                tooltip.add(Component.translatable("info.goety.void_robe", com.Polarice3.Goety.utils.ConfigHelper.getInt(ItemConfig.VoidRobeTeleportChance, 0)).withStyle(main));
                 tooltip.add(Component.translatable("info.goety.void_robe_discount").withStyle(secondary));
             }
             if (stack.getItem() instanceof WitchRobeItem) {
                 tooltip.add(Component.translatable("info.goety.witch_robe_brew", ModKeybindings.keyBindings[3].getTranslatedKeyMessage().getString()).withStyle(main));
-                if (ItemConfig.WitchRobeResistance.get() > 0) {
-                    tooltip.add(Component.translatable("info.goety.witch_robe", ItemConfig.WitchRobeResistance.get()).withStyle(secondary));
+                if (com.Polarice3.Goety.utils.ConfigHelper.getInt(ItemConfig.WitchRobeResistance, 0) > 0) {
+                    tooltip.add(Component.translatable("info.goety.witch_robe", com.Polarice3.Goety.utils.ConfigHelper.getInt(ItemConfig.WitchRobeResistance, 0)).withStyle(secondary));
                 }
             }
             if (stack.getItem() instanceof WarlockGarmentItem) {
                 tooltip.add(Component.translatable("info.goety.warlock_garment").withStyle(main));
-                if (stack.getItem() instanceof WarlockRobeItem && ItemConfig.WarlockRobeResistance.get() > 0) {
-                    tooltip.add(Component.translatable("info.goety.warlock_robe", ItemConfig.WarlockRobeResistance.get()).withStyle(secondary));
+                if (stack.getItem() instanceof WarlockRobeItem && com.Polarice3.Goety.utils.ConfigHelper.getInt(ItemConfig.WarlockRobeResistance, 0) > 0) {
+                    tooltip.add(Component.translatable("info.goety.warlock_robe", com.Polarice3.Goety.utils.ConfigHelper.getInt(ItemConfig.WarlockRobeResistance, 0)).withStyle(secondary));
                 }
             }
             if (stack.getItem() instanceof NetherRobeItem) {
-                if (ItemConfig.NetherRobeResistance.get() > 0) {
-                    tooltip.add(Component.translatable("info.goety.nether_robe", ItemConfig.NetherRobeResistance.get()).withStyle(main));
+                if (com.Polarice3.Goety.utils.ConfigHelper.getInt(ItemConfig.NetherRobeResistance, 0) > 0) {
+                    tooltip.add(Component.translatable("info.goety.nether_robe", com.Polarice3.Goety.utils.ConfigHelper.getInt(ItemConfig.NetherRobeResistance, 0)).withStyle(main));
                 }
                 tooltip.add(Component.translatable("info.goety.nether_robe_discount").withStyle(secondary));
             }
@@ -227,7 +227,7 @@ public class SingleStackItem extends Item implements ICurioItem {
             }
             if (stack.is(ModItems.OMINOUS_CHARM.get())) {
                 tooltip.add(Component.translatable("info.goety.ominous_charm", ModKeybindings.keyBindings[14].getTranslatedKeyMessage().getString()).withStyle(secondary));
-                tooltip.add(Component.translatable("info.goety.ominous_charm.level").withStyle(ChatFormatting.DARK_AQUA).append(Component.literal(" " + OminousCharmItem.getOmenAmount(stack))));
+                tooltip.add(Component.translatable("info.goety.ominous_charm.level()").withStyle(ChatFormatting.DARK_AQUA).append(Component.literal(" " + OminousCharmItem.getOmenAmount(stack))));
             }
         }
     }

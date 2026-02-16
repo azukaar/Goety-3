@@ -77,15 +77,15 @@ public class Conquillager extends HuntingIllagerEntity implements CrossbowAttack
     public static AttributeSupplier.Builder setCustomAttributes(){
         return Mob.createMobAttributes()
                 .add(Attributes.FOLLOW_RANGE, 32.0D)
-                .add(Attributes.MAX_HEALTH, AttributesConfig.ConquillagerHealth.get())
-                .add(Attributes.ARMOR, AttributesConfig.ConquillagerArmor.get())
+                .add(Attributes.MAX_HEALTH, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.ConquillagerHealth, 20.0D))
+                .add(Attributes.ARMOR, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.ConquillagerArmor, 20.0D))
                 .add(Attributes.MOVEMENT_SPEED, 0.35D)
                 .add(Attributes.ATTACK_DAMAGE, 5.0D);
     }
 
     public void setConfigurableAttributes(){
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.MAX_HEALTH), AttributesConfig.ConquillagerHealth.get());
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ARMOR), AttributesConfig.ConquillagerArmor.get());
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.MAX_HEALTH), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.ConquillagerHealth, 20.0D));
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ARMOR), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.ConquillagerArmor, 20.0D));
     }
 
     public void tick() {
@@ -93,7 +93,7 @@ public class Conquillager extends HuntingIllagerEntity implements CrossbowAttack
         for (LivingEntity entity : this.level().getEntitiesOfClass(LivingEntity.class, this.getBoundingBox().inflate(8.0D), EntitySelector.NO_CREATIVE_OR_SPECTATOR)) {
             if (entity.isAlive() && !(entity instanceof PatrollingMonster) && !(entity instanceof RaiderServant) && !entity.getType().is(net.minecraft.tags.EntityTypeTags.UNDEAD)) {
                 if (this.tickCount % 100 == 0 && this.getRandom().nextInt(20) == 0) {
-                    entity.addEffect(new MobEffectInstance(GoetyEffects.ILLAGUE.getHolder(), 2000, 0, false, false));
+                    entity.addEffect(new MobEffectInstance(GoetyEffects.ILLAGUE, 2000, 0, false, false));
                 }
             }
         }

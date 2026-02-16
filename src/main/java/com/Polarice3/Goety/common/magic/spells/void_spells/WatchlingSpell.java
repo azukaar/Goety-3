@@ -27,15 +27,15 @@ import java.util.function.Predicate;
 public class WatchlingSpell extends SummonSpell {
 
     public int defaultSoulCost() {
-        return SpellConfig.WatchlingCost.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.WatchlingCost, 0);
     }
 
     public int defaultCastDuration() {
-        return SpellConfig.WatchlingDuration.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.WatchlingDuration, 0);
     }
 
     public int SummonDownDuration() {
-        return SpellConfig.WatchlingSummonDown.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.WatchlingSummonDown, 0);
     }
 
     public SoundEvent CastingSound() {
@@ -44,7 +44,7 @@ public class WatchlingSpell extends SummonSpell {
 
     @Override
     public int defaultSpellCooldown() {
-        return SpellConfig.WatchlingCoolDown.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.WatchlingCoolDown, 0);
     }
 
     @Override
@@ -67,7 +67,7 @@ public class WatchlingSpell extends SummonSpell {
 
     @Override
     public int summonLimit() {
-        return SpellConfig.WatchlingLimit.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.WatchlingLimit, 0);
     }
 
     public void SpellResult(ServerLevel worldIn, LivingEntity caster, ItemStack staff, SpellStat spellStat) {
@@ -91,7 +91,7 @@ public class WatchlingSpell extends SummonSpell {
                 MobUtil.moveDownToGround(summonedentity);
                 summonedentity.setLimitedLife(MobUtil.getSummonLifespan(worldIn) * duration);
                 summonedentity.setPersistenceRequired();
-                summonedentity.finalizeSpawn(worldIn, caster.level.getCurrentDifficultyAt(caster.blockPosition()), MobSpawnType.MOB_SUMMONED,null,null);
+                summonedentity.finalizeSpawn(worldIn, caster.level().getCurrentDifficultyAt(caster.blockPosition()), MobSpawnType.MOB_SUMMONED,null);
                 this.buffSummon(caster, summonedentity, potency);
                 this.SummonSap(caster, summonedentity);
                 this.setTarget(caster, summonedentity);
@@ -103,3 +103,4 @@ public class WatchlingSpell extends SummonSpell {
         }
     }
 }
+

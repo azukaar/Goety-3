@@ -78,7 +78,7 @@ public class BlossomBall extends SpellThrowableProjectile{
         double d0 = this.getX() + vector3d.x;
         double d1 = this.getY() + vector3d.y;
         double d2 = this.getZ() + vector3d.z;
-        this.level().addParticle(ParticleTypes.DRAGON_BREATH, d0 + level().random.nextDouble()/2, d1 + 0.5D, d2 + level().random.nextDouble()/2, 0.0D, 0.0D, 0.0D);
+        this.level().addParticle(ParticleTypes.DRAGON_BREATH, d0 + this.level().random.nextDouble()/2, d1 + 0.5D, d2 + this.level().random.nextDouble()/2, 0.0D, 0.0D, 0.0D);
     }
 
     public void explode(HitResult pResult){
@@ -128,11 +128,11 @@ public class BlossomBall extends SpellThrowableProjectile{
         super.onHitEntity(pResult);
         if (pResult.getEntity() instanceof LivingEntity target) {
             if (this.getOwner() != null) {
-                float baseDamage = SpellConfig.BlossomDamage.get().floatValue() * WandUtil.damageMultiply();
+                float baseDamage = com.Polarice3.Goety.utils.ConfigHelper.getFloat(SpellConfig.BlossomDamage, 1.0F) * WandUtil.damageMultiply();
                 if (target.hurt(this.damageSources().thorns(this.getOwner()), baseDamage + this.getExtraDamage())) {
                     net.minecraft.core.Holder<MobEffect> effect = MobEffects.POISON;
                     if (CuriosFinder.hasWildRobe(this.getOwner())) {
-                        effect = GoetyEffects.ACID_VENOM.getHolder();
+                        effect = GoetyEffects.ACID_VENOM;
                     }
                     target.addEffect(new MobEffectInstance(effect, 140 + MathHelper.secondsToTicks(this.duration)), this);
                 }

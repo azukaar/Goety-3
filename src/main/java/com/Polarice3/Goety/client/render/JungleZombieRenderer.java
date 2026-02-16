@@ -21,7 +21,7 @@ public class JungleZombieRenderer extends HumanoidMobRenderer<JungleZombieServan
    }
 
    public ResourceLocation getTextureLocation(JungleZombieServant p_113771_) {
-      if (p_113771_.isHostile() || !MobsConfig.JungleZombieServantTexture.get()){
+      if (p_113771_.isHostile() || !com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MobsConfig.JungleZombieServantTexture, false)){
          return ZOMBIE_LOCATION;
       } else {
          return TEXTURE;

@@ -70,7 +70,7 @@ public class IceGolemMold implements IMold {
                 }
             }
         }
-        return count < SpellConfig.IceGolemLimit.get();
+        return count < com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.IceGolemLimit, 0);
     }
 
     public static boolean canSpawn(Level level, BlockPos blockPos){
@@ -106,7 +106,7 @@ public class IceGolemMold implements IMold {
                         IceGolem iceGolem = ModEntityType.ICE_GOLEM.get().create(level);
                         if (iceGolem != null) {
                             iceGolem.setTrueOwner(player);
-                            iceGolem.finalizeSpawn((ServerLevelAccessor) level, level.getCurrentDifficultyAt(iceGolem.blockPosition()), MobSpawnType.MOB_SUMMONED, null, null);
+                            iceGolem.finalizeSpawn((ServerLevelAccessor) level, level.getCurrentDifficultyAt(iceGolem.blockPosition()), MobSpawnType.MOB_SUMMONED, null);
                             iceGolem.moveTo((double) blockPos.getX() + 0.5D, (double) blockPos.below().getY() + 0.05D, (double) blockPos.getZ() + 0.5D, 0.0F, 0.0F);
                             if (level.addFreshEntity(iceGolem)) {
                                 removeBlocks(level, blockPos);

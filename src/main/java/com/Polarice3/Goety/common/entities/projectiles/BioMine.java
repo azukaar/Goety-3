@@ -117,18 +117,18 @@ public class BioMine extends SpellEntity {
     public void detonate() {
         if (!this.level().isClientSide) {
             double bbSize = 3.0D + this.getExtraRadius();
-            float damage = SpellConfig.BiomineAcidDamage.get().floatValue() * WandUtil.damageMultiply();
+            float damage = com.Polarice3.Goety.utils.ConfigHelper.getFloat(SpellConfig.BiomineAcidDamage, 1.0F) * WandUtil.damageMultiply();
             damage += this.getExtraDamage();
             for (LivingEntity livingentity : this.level().getEntitiesOfClass(LivingEntity.class, this.getBoundingBox().inflate(bbSize, bbSize / 2.0D, bbSize))) {
                 if (livingentity.isAlive() && !livingentity.isInvulnerable()) {
                     if (this.getOwner() != null) {
                         if (!MobUtil.areAllies(this.getOwner(), livingentity) && livingentity != this.getOwner()) {
                             livingentity.hurt(ModDamageSource.acid(this, this.getOwner()), 0.0F);
-                            livingentity.addEffect(new MobEffectInstance(GoetyEffects.ACID_VENOM.getHolder(), 100, 1), this);
+                            livingentity.addEffect(new MobEffectInstance(GoetyEffects.ACID_VENOM, 100, 1), this);
                         }
                     } else {
                         livingentity.hurt(ModDamageSource.acid(this, this.getOwner()), 0.0F);
-                        livingentity.addEffect(new MobEffectInstance(GoetyEffects.ACID_VENOM.getHolder(), 100, 1), this);
+                        livingentity.addEffect(new MobEffectInstance(GoetyEffects.ACID_VENOM, 100, 1), this);
                     }
                 }
             }
@@ -157,7 +157,7 @@ public class BioMine extends SpellEntity {
 
     public void explodeDamage(LivingEntity livingEntity) {
         if (!this.level().isClientSide) {
-            float damage = SpellConfig.BiomineDamage.get().floatValue() * WandUtil.damageMultiply();
+            float damage = com.Polarice3.Goety.utils.ConfigHelper.getFloat(SpellConfig.BiomineDamage, 1.0F) * WandUtil.damageMultiply();
             damage += this.getExtraDamage();
             if (this.getOwner() != null){
                 livingEntity.hurt(ModDamageSource.acid(this, this.getOwner()), damage);

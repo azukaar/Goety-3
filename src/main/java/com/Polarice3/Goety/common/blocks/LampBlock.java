@@ -69,7 +69,8 @@ public class LampBlock extends Block implements SimpleWaterloggedBlock {
         return (state) -> state.getValue(BlockStateProperties.LIT) ? 14 : 0;
     }
 
-    public InteractionResult use(BlockState pState, Level pLevel, BlockPos pPos, Player pPlayer, InteractionHand pHand, BlockHitResult pHit) {
+    @Override
+    protected InteractionResult useWithoutItem(BlockState pState, Level pLevel, BlockPos pPos, Player pPlayer, BlockHitResult pHit) {
         if (canLight(pState)){
             pLevel.playSound((Player)null, pPos, SoundEvents.LEVER_CLICK, SoundSource.BLOCKS, 0.5F, 0.6F);
             pLevel.setBlockAndUpdate(pPos, pState.setValue(BlockStateProperties.LIT, Boolean.TRUE));
@@ -84,12 +85,12 @@ public class LampBlock extends Block implements SimpleWaterloggedBlock {
         pLevel.setBlock(pPos.above(), pState.setValue(HALF, DoubleBlockHalf.UPPER).setValue(WATERLOGGED, pLevel.getFluidState(pPos.above()).getType() == Fluids.WATER), 3);
     }
 
-    public void playerWillDestroy(Level p_52755_, BlockPos p_52756_, BlockState p_52757_, Player p_52758_) {
+    public BlockState playerWillDestroy(Level p_52755_, BlockPos p_52756_, BlockState p_52757_, Player p_52758_) {
         if (!p_52755_.isClientSide && p_52758_.isCreative()) {
             BlockFinder.preventCreativeDropFromBottomPart(p_52755_, p_52756_, p_52757_, p_52758_);
         }
 
-        super.playerWillDestroy(p_52755_, p_52756_, p_52757_, p_52758_);
+        return super.playerWillDestroy(p_52755_, p_52756_, p_52757_, p_52758_);
     }
 
     public static boolean canLight(BlockState p_51322_) {

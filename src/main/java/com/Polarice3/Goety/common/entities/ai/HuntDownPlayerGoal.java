@@ -27,9 +27,9 @@ public class HuntDownPlayerGoal<T extends PathfinderMob> extends Goal {
     public boolean canUse() {
         LivingEntity livingEntity = this.mob.getTarget();
         if (livingEntity == null) {
-            List<Player> list = this.mob.level.getNearbyEntities(Player.class, this.target, this.mob, this.mob.getBoundingBox().inflate(64.0D, 32.0D, 64.0D));
+            List<Player> list = this.mob.level().getNearbyEntities(Player.class, this.target, this.mob, this.mob.getBoundingBox().inflate(64.0D, 32.0D, 64.0D));
             for (Player player : list) {
-                if (SEHelper.getSoulsAmount(player, MobsConfig.IllagerAssaultSEThreshold.get())) {
+                if (SEHelper.getSoulsAmount(player, com.Polarice3.Goety.utils.ConfigHelper.getInt(MobsConfig.IllagerAssaultSEThreshold, 0))) {
                     this.mob.setTarget(player);
                 }
             }

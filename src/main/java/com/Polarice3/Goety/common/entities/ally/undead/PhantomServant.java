@@ -1,7 +1,10 @@
 package com.Polarice3.Goety.common.entities.ally.undead;
 
+import com.Polarice3.Goety.utils.MobType;
+
 import com.Polarice3.Goety.common.entities.ai.SummonTargetGoal;
 import com.Polarice3.Goety.common.entities.neutral.SummonedFlying;
+import com.Polarice3.Goety.api.entities.ally.IServant;
 import com.Polarice3.Goety.config.AttributesConfig;
 import com.Polarice3.Goety.config.MobsConfig;
 import com.Polarice3.Goety.utils.MobUtil;
@@ -77,15 +80,15 @@ public class PhantomServant extends SummonedFlying {
 
     public static AttributeSupplier.Builder setCustomAttributes() {
         return Monster.createMonsterAttributes()
-                .add(Attributes.MAX_HEALTH, AttributesConfig.PhantomServantHealth.get())
-                .add(Attributes.ARMOR, AttributesConfig.PhantomServantArmor.get())
-                .add(Attributes.ATTACK_DAMAGE, AttributesConfig.PhantomServantInitialDamage.get());
+                .add(Attributes.MAX_HEALTH, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.PhantomServantHealth, 20.0D))
+                .add(Attributes.ARMOR, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.PhantomServantArmor, 20.0D))
+                .add(Attributes.ATTACK_DAMAGE, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.PhantomServantInitialDamage, 20.0D));
     }
 
     public void setConfigurableAttributes(){
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.MAX_HEALTH), AttributesConfig.PhantomServantHealth.get());
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ARMOR), AttributesConfig.PhantomServantArmor.get());
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ATTACK_DAMAGE), AttributesConfig.PhantomServantInitialDamage.get());
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.MAX_HEALTH), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.PhantomServantHealth, 20.0D));
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ARMOR), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.PhantomServantArmor, 20.0D));
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ATTACK_DAMAGE), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.PhantomServantInitialDamage, 20.0D));
     }
 
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
@@ -101,7 +104,7 @@ public class PhantomServant extends SummonedFlying {
         this.refreshDimensions();
         AttributeInstance instance = this.getAttribute(Attributes.ATTACK_DAMAGE);
         if (instance != null){
-            double attack = AttributesConfig.PhantomServantSizeDamage.get();
+            double attack = com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.PhantomServantSizeDamage, 20.0D);
             instance.setBaseValue(attack + this.getPhantomSize());
         }
     }
@@ -310,7 +313,7 @@ public class PhantomServant extends SummonedFlying {
             if (PhantomServant.this.getTarget() != null) {
                 boolean flag = true;
                 if (PhantomServant.this.isGuardingArea() && PhantomServant.this.getBoundPos() != null){
-                    if (PhantomServant.this.getTarget().distanceToSqr(PhantomServant.this.vec3BoundPos()) > Mth.square(GUARDING_RANGE)){
+                    if (PhantomServant.this.getTarget().distanceToSqr(PhantomServant.this.vec3BoundPos()) > Mth.square(IServant.getGuardingRange())){
                         PhantomServant.this.anchorPoint = PhantomServant.this.getBoundPos();
                         flag = false;
                     }

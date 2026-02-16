@@ -15,13 +15,13 @@ public class RitualBlockEntity extends BlockEntity {
 
     @Override
     protected void loadAdditional(CompoundTag compound, HolderLookup.Provider provider) {
-        this.readNetwork(compound);
+        this.readNetwork(compound, provider);
         super.loadAdditional(compound, provider);
     }
 
     @Override
     protected void saveAdditional(CompoundTag compound, HolderLookup.Provider provider) {
-        this.writeNetwork(compound);
+        this.writeNetwork(compound, provider);
         super.saveAdditional(compound, provider);
     }
 
@@ -32,13 +32,13 @@ public class RitualBlockEntity extends BlockEntity {
 
     @Override
     public CompoundTag getUpdateTag(HolderLookup.Provider provider) {
-        return this.writeNetwork(super.getUpdateTag(provider));
+        return this.writeNetwork(super.getUpdateTag(provider), provider);
     }
 
-    public void readNetwork(CompoundTag compound) {
+    public void readNetwork(CompoundTag compound, HolderLookup.Provider provider) {
     }
 
-    public CompoundTag writeNetwork(CompoundTag compound) {
+    public CompoundTag writeNetwork(CompoundTag compound, HolderLookup.Provider provider) {
         return compound;
     }
 

@@ -34,7 +34,6 @@ import net.minecraft.world.entity.monster.CrossbowAttackMob;
 import net.minecraft.world.entity.monster.RangedAttackMob;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.AbstractArrow;
-import net.minecraft.world.entity.projectile.Arrow;
 import net.minecraft.world.entity.projectile.ProjectileUtil;
 import net.minecraft.world.item.*;
 import net.minecraft.world.level.Level;
@@ -90,22 +89,22 @@ public abstract class AbstractSkeletonServant extends Summoned implements Ranged
 
     public static AttributeSupplier.Builder setCustomAttributes() {
         return Mob.createMobAttributes()
-                .add(Attributes.MAX_HEALTH, AttributesConfig.SkeletonServantHealth.get())
-                .add(Attributes.ARMOR, AttributesConfig.SkeletonServantArmor.get())
+                .add(Attributes.MAX_HEALTH, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.SkeletonServantHealth, 20.0D))
+                .add(Attributes.ARMOR, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.SkeletonServantArmor, 20.0D))
                 .add(Attributes.MOVEMENT_SPEED, 0.25F)
-                .add(Attributes.ATTACK_DAMAGE, AttributesConfig.SkeletonServantDamage.get());
+                .add(Attributes.ATTACK_DAMAGE, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.SkeletonServantDamage, 20.0D));
     }
 
     public void setConfigurableAttributes() {
         MobUtil.setBaseAttributes(this.getAttribute(Attributes.MAX_HEALTH),
-                AttributesConfig.SkeletonServantHealth.get());
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ARMOR), AttributesConfig.SkeletonServantArmor.get());
+                com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.SkeletonServantHealth, 20.0D));
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ARMOR), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.SkeletonServantArmor, 20.0D));
         MobUtil.setBaseAttributes(this.getAttribute(Attributes.ATTACK_DAMAGE),
-                AttributesConfig.SkeletonServantDamage.get());
+                com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.SkeletonServantDamage, 20.0D));
     }
 
     public double getBaseRangeDamage() {
-        return AttributesConfig.SkeletonServantRangeDamage.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.SkeletonServantRangeDamage, 20.0D);
     }
 
     public void reassessWeaponGoal() {
@@ -271,7 +270,7 @@ public abstract class AbstractSkeletonServant extends Summoned implements Ranged
     }
 
     public static AbstractArrow getGhostArrow(LivingEntity living, ItemStack stack, float distanceFactor) {
-        Arrow arrow = new GhostArrow(living.level(), living);
+        AbstractArrow arrow = new GhostArrow(living.level(), living);
         double d0 = arrow.getBaseDamage();
         var registryAccess = living.level().registryAccess();
         var enchantmentRegistry = registryAccess.registryOrThrow(net.minecraft.core.registries.Registries.ENCHANTMENT);
@@ -306,7 +305,7 @@ public abstract class AbstractSkeletonServant extends Summoned implements Ranged
     }
 
     public AbstractArrow customArrow(AbstractArrow abstractarrow, ItemStack itemstack) {
-        if (abstractarrow instanceof Arrow arrow && this.isUpgraded()) {
+        if (abstractarrow instanceof AbstractArrow arrow && this.isUpgraded()) {
             arrow = new GhostArrow(this.level(), this);
             arrow.pickup = AbstractArrow.Pickup.CREATIVE_ONLY;
             return arrow;

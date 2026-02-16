@@ -59,7 +59,7 @@ public class CreatureCrossbowAttackGoal<T extends Mob & RangedAttackMob & Crossb
       if (this.mob.isUsingItem()) {
          this.mob.stopUsingItem();
          this.mob.setChargingCrossbow(false);
-         CrossbowItem.setCharged(this.mob.getUseItem(), false);
+         // CrossbowItem.setCharged(this.mob.getUseItem(), false);
       }
 
    }
@@ -110,7 +110,7 @@ public class CreatureCrossbowAttackGoal<T extends Mob & RangedAttackMob & Crossb
 
             int i = this.mob.getTicksUsingItem();
             ItemStack itemstack = this.mob.getUseItem();
-            if (i >= CrossbowItem.getChargeDuration(itemstack)) {
+            if (i >= CrossbowItem.getChargeDuration(itemstack, this.mob)) {
                this.mob.releaseUsingItem();
                this.crossbowState = CrossbowState.CHARGED;
                this.attackDelay = 20 + this.mob.getRandom().nextInt(20);
@@ -124,7 +124,7 @@ public class CreatureCrossbowAttackGoal<T extends Mob & RangedAttackMob & Crossb
          } else if (this.crossbowState == CrossbowState.READY_TO_ATTACK && flag) {
             this.mob.performRangedAttack(livingentity, 1.0F);
             ItemStack itemstack1 = this.mob.getItemInHand(ProjectileUtil.getWeaponHoldingHand(this.mob, item -> item instanceof CrossbowItem));
-            CrossbowItem.setCharged(itemstack1, false);
+            // CrossbowItem.setCharged(itemstack1, false);
             this.crossbowState = CrossbowState.UNCHARGED;
          }
 

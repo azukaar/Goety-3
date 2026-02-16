@@ -83,16 +83,16 @@ public class Cryologer extends HuntingIllagerEntity implements IBreathing {
     public static AttributeSupplier.Builder setCustomAttributes() {
         return Mob.createMobAttributes()
                 .add(Attributes.FOLLOW_RANGE, 16.0D)
-                .add(Attributes.MAX_HEALTH, AttributesConfig.CryologerHealth.get())
-                .add(Attributes.ARMOR, AttributesConfig.CryologerArmor.get())
+                .add(Attributes.MAX_HEALTH, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.CryologerHealth, 20.0D))
+                .add(Attributes.ARMOR, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.CryologerArmor, 20.0D))
                 .add(Attributes.MOVEMENT_SPEED, 0.5D)
-                .add(Attributes.ATTACK_DAMAGE, AttributesConfig.CryologerDamage.get());
+                .add(Attributes.ATTACK_DAMAGE, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.CryologerDamage, 20.0D));
     }
 
     public void setConfigurableAttributes() {
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.MAX_HEALTH), AttributesConfig.CryologerHealth.get());
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ARMOR), AttributesConfig.CryologerArmor.get());
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ATTACK_DAMAGE), AttributesConfig.CryologerDamage.get());
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.MAX_HEALTH), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.CryologerHealth, 20.0D));
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ARMOR), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.CryologerArmor, 20.0D));
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ATTACK_DAMAGE), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.CryologerDamage, 20.0D));
     }
 
     @Override
@@ -315,7 +315,7 @@ public class Cryologer extends HuntingIllagerEntity implements IBreathing {
         float damage = 1.0F;
         if (target.hurt(ModDamageSource.frostBreath(this, this), damage)) {
             if (target instanceof LivingEntity living) {
-                living.addEffect(new MobEffectInstance(GoetyEffects.FREEZING.getHolder(), MathHelper.secondsToTicks(1)));
+                living.addEffect(new MobEffectInstance(GoetyEffects.FREEZING, MathHelper.secondsToTicks(1)));
             }
         }
     }

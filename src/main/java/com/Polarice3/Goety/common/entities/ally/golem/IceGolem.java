@@ -1,5 +1,7 @@
 package com.Polarice3.Goety.common.entities.ally.golem;
 
+import com.Polarice3.Goety.utils.MobType;
+
 import com.Polarice3.Goety.client.particles.ModParticleTypes;
 import com.Polarice3.Goety.common.effects.GoetyEffects;
 import com.Polarice3.Goety.common.entities.ai.SummonTargetGoal;
@@ -71,21 +73,21 @@ public class IceGolem extends AbstractGolemServant{
     @SuppressWarnings("removal")
     public static AttributeSupplier.Builder setCustomAttributes(){
         return Mob.createMobAttributes()
-                .add(Attributes.MAX_HEALTH, AttributesConfig.IceGolemHealth.get())
-                .add(Attributes.ARMOR, AttributesConfig.IceGolemArmor.get())
+                .add(Attributes.MAX_HEALTH, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.IceGolemHealth, 20.0D))
+                .add(Attributes.ARMOR, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.IceGolemArmor, 20.0D))
                 .add(Attributes.MOVEMENT_SPEED, 0.22D)
-                .add(Attributes.ATTACK_DAMAGE, AttributesConfig.IceGolemDamage.get())
+                .add(Attributes.ATTACK_DAMAGE, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.IceGolemDamage, 20.0D))
                 .add(Attributes.KNOCKBACK_RESISTANCE, 1.0D)
                 .add(Attributes.ATTACK_KNOCKBACK, 1.0D)
                 // .add(NeoForgeMod.STEP_HEIGHT.get(), 1.0D)
-                .add(Attributes.FOLLOW_RANGE, AttributesConfig.IceGolemFollowRange.get());
+                .add(Attributes.FOLLOW_RANGE, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.IceGolemFollowRange, 20.0D));
     }
 
     public void setConfigurableAttributes(){
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.MAX_HEALTH), AttributesConfig.IceGolemHealth.get());
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ARMOR), AttributesConfig.IceGolemArmor.get());
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ATTACK_DAMAGE), AttributesConfig.IceGolemDamage.get());
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.FOLLOW_RANGE), AttributesConfig.IceGolemFollowRange.get());
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.MAX_HEALTH), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.IceGolemHealth, 20.0D));
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ARMOR), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.IceGolemArmor, 20.0D));
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ATTACK_DAMAGE), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.IceGolemDamage, 20.0D));
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.FOLLOW_RANGE), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.IceGolemFollowRange, 20.0D));
     }
 
     @Override
@@ -317,7 +319,7 @@ public class IceGolem extends AbstractGolemServant{
                     for (LivingEntity living : serverLevel.getEntitiesOfClass(LivingEntity.class, this.getBoundingBox().inflate(1.0F))) {
                         if (!living.isFreezing() && living.canFreeze() && MobUtil.validEntity(living) && !MobUtil.areAllies(this, living)) {
                             ServerParticleUtil.addParticlesAroundSelf(serverLevel, ParticleTypes.SNOWFLAKE, living);
-                            living.addEffect(new MobEffectInstance(GoetyEffects.FREEZING.getHolder(), 100, 0));
+                            living.addEffect(new MobEffectInstance(GoetyEffects.FREEZING, 100, 0));
                         }
                     }
                 }

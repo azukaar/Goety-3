@@ -142,14 +142,14 @@ public class AbstractCairnNecromancer extends AbstractNecromancer{
                     summonedentity.setTrueOwner(AbstractCairnNecromancer.this);
                     summonedentity.moveTo(blockPos, 0.0F, 0.0F);
                     MobUtil.moveDownToGround(summonedentity);
-                    if (MobsConfig.NecromancerSummonsLife.get()) {
+                    if (com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MobsConfig.NecromancerSummonsLife, false)) {
                         summonedentity.setLimitedLife(MobUtil.getSummonLifespan(serverLevel));
                     }
                     summonedentity.setPersistenceRequired();
-                    summonedentity.finalizeSpawn(serverLevel, serverLevel.getCurrentDifficultyAt(AbstractCairnNecromancer.this.blockPosition()), MobSpawnType.MOB_SUMMONED, null, null);
+                    summonedentity.finalizeSpawn(serverLevel, serverLevel.getCurrentDifficultyAt(AbstractCairnNecromancer.this.blockPosition()), MobSpawnType.MOB_SUMMONED, null);
                     if (BlockFinder.findStructure(serverLevel, AbstractCairnNecromancer.this, ModTags.Structures.CRYPT)) {
                         for(EquipmentSlot equipmentslottype : EquipmentSlot.values()) {
-                            if (equipmentslottype.getType() == EquipmentSlot.Type.ARMOR) {
+                            if (equipmentslottype.getType() == EquipmentSlot.Type.HUMANOID_ARMOR) {
                                 ItemStack itemstack = summonedentity.getItemBySlot(equipmentslottype);
                                 if (itemstack.isEmpty()) {
                                     Item item = cursedKnightArmor(equipmentslottype);

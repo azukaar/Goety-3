@@ -13,8 +13,7 @@ import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
 
 public class ViciousPikeRenderer extends EntityRenderer<ViciousPike> {
-    private static final ResourceLocation TEXTURE = new ResourceLocation(Goety.MOD_ID,
-            "textures/entity/projectiles/vicious_pike.png");
+    private static final ResourceLocation TEXTURE = Goety.location("textures/entity/projectiles/vicious_pike.png");
     private final ViciousPikeModel<ViciousPike> model;
 
     public ViciousPikeRenderer(EntityRendererProvider.Context renderManagerIn) {

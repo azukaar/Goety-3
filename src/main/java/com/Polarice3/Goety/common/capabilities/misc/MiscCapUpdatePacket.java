@@ -1,57 +1,49 @@
 package com.Polarice3.Goety.common.capabilities.misc;
 
 import com.Polarice3.Goety.Goety;
+import com.Polarice3.Goety.init.ModAttachments;
 import com.Polarice3.Goety.utils.MiscCapHelper;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
-import net.neoforged.network.NetworkDirection;
-import net.neoforged.network.NetworkEvent;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 
-import java.util.function.Supplier;
+public record MiscCapUpdatePacket(int entityID, CompoundTag tag) implements CustomPacketPayload {
+    public static final CustomPacketPayload.Type<MiscCapUpdatePacket> TYPE = 
+            new CustomPacketPayload.Type<>(ResourceLocation.fromNamespaceAndPath(Goety.MOD_ID, "misc_update"));
 
-public class MiscCapUpdatePacket {
-    private final int entityID;
-    private CompoundTag tag;
-
-    public MiscCapUpdatePacket(int id, CompoundTag tag) {
-        this.entityID = id;
-        this.tag = tag;
-    }
+    public static final StreamCodec<FriendlyByteBuf, MiscCapUpdatePacket> STREAM_CODEC = StreamCodec.composite(
+            ByteBufCodecs.INT, MiscCapUpdatePacket::entityID,
+            ByteBufCodecs.COMPOUND_TAG, MiscCapUpdatePacket::tag,
+            MiscCapUpdatePacket::new
+    );
 
     public MiscCapUpdatePacket(LivingEntity living) {
-        this.entityID = living.getId();
-        living.getCapability(MiscProvider.CAPABILITY, null).ifPresent((misc) -> {
-            this.tag = MiscCapHelper.save(new CompoundTag(), misc);
-        });
+        this(living.getId(), MiscCapHelper.save(living.getData(ModAttachments.MISC)));
     }
 
-    public static void encode(MiscCapUpdatePacket packet, FriendlyByteBuf buffer) {
-        buffer.writeInt(packet.entityID);
-        buffer.writeNbt(packet.tag);
-    }
-
-    public static MiscCapUpdatePacket decode(FriendlyByteBuf buffer) {
-        return new MiscCapUpdatePacket(buffer.readInt(), buffer.readNbt());
-    }
-
-    public static void consume(MiscCapUpdatePacket packet, Supplier<NetworkEvent.Context> ctx) {
-        ctx.get().enqueueWork(() -> {
-            if (ctx.get().getDirection() == NetworkDirection.PLAY_TO_CLIENT) {
-                Level level = Goety.PROXY.getLevel();
-                if (level instanceof ClientLevel clientLevel) {
-                    Entity entity = clientLevel.getEntity(packet.entityID);
-                    if (entity != null) {
-                        entity.getCapability(MiscProvider.CAPABILITY).ifPresent((misc) -> {
-                            MiscCapHelper.load(packet.tag, misc);
-                        });
-                    }
+    public static void handle(MiscCapUpdatePacket packet, IPayloadContext ctx) {
+        ctx.enqueueWork(() -> {
+            Level level = Goety.PROXY.getLevel();
+            if (level instanceof ClientLevel clientLevel) {
+                Entity entity = clientLevel.getEntity(packet.entityID);
+                if (entity instanceof LivingEntity livingEntity) {
+                    IMisc misc = livingEntity.getData(ModAttachments.MISC);
+                    MiscCapHelper.load(packet.tag, misc);
                 }
             }
         });
-        ctx.get().setPacketHandled(true);
+    }
+
+    @Override
+    public Type<? extends CustomPacketPayload> type() {
+        return TYPE;
     }
 }

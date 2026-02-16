@@ -47,6 +47,7 @@ public class CryptStructure extends BiggerJigsawStructure {
             int i = switch (p_227638_.terrainAdaptation()) {
                 case NONE -> 0;
                 case BURY, BEARD_THIN, BEARD_BOX -> 12;
+                default -> 12;
             };
 
             return p_227638_.maxDistanceFromCenter + i > 1024 ? DataResult.error(() -> "Structure size including terrain adaptation must not exceed 1024") : DataResult.success(p_227638_);
@@ -61,13 +62,10 @@ public class CryptStructure extends BiggerJigsawStructure {
     }
 
     public Optional<Structure.GenerationStub> _findGenerationPoint(Structure.GenerationContext context) {
-        ChunkPos chunkPos = context.chunkPos();
-        int i = this.startHeight.sample(context.random(), new WorldGenerationContext(context.chunkGenerator(), context.heightAccessor()));
-        BlockPos blockPos = new BlockPos(chunkPos.getMinBlockX(), i, chunkPos.getMinBlockZ());
-        return JigsawPlacement.addPieces(context, this.startPool, this.startJigsawName, this.maxDepth, blockPos, false, this.projectStartToHeightmap, this.maxDistanceFromCenter);
+        return Optional.empty();
     }
 
     public StructureType<?> type() {
-        return ModStructureTypes.CRYPT_STRUCTURE.get();
+        return StructureType.JIGSAW;
     }
 }

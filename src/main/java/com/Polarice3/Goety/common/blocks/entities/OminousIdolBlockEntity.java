@@ -119,7 +119,7 @@ public class OminousIdolBlockEntity extends OwnedBlockEntity {
     }
 
     public boolean hasSpace() {
-        return this.getIllagers().size() < MainConfig.OminousIdolLimit.get();
+        return this.getIllagers().size() < com.Polarice3.Goety.utils.ConfigHelper.getInt(MainConfig.OminousIdolLimit, 0);
     }
 
     public List<UUID> getUuids(){

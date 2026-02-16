@@ -19,6 +19,7 @@ import net.minecraft.network.protocol.game.ClientboundAddEntityPacket;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.server.level.ServerEntity;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -63,11 +64,10 @@ public class BrewEffectCloud extends Entity {
     }
 
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
-        super.defineSynchedData(builder);
         builder.define(DATA_COLOR, 0);
         builder.define(DATA_RADIUS, 0.5F);
         builder.define(DATA_WAITING, false);
-        builder.define(DATA_PARTICLE, ParticleTypes.ENTITY_EFFECT);
+        builder.define(DATA_PARTICLE, (ParticleOptions) ParticleTypes.ENTITY_EFFECT);
     }
 
     public void setRadius(float p_19713_) {
@@ -233,8 +233,8 @@ public class BrewEffectCloud extends Entity {
                                     this.victims.put(livingentity, this.tickCount + this.reapplicationDelay);
 
                                     for(MobEffectInstance mobeffectinstance1 : this.effects) {
-                                        if (mobeffectinstance1.getEffect().isInstantenous()) {
-                                            mobeffectinstance1.getEffect().applyInstantenousEffect(this, this.getOwner(), livingentity, mobeffectinstance1.getAmplifier(), 0.5D);
+                                        if (mobeffectinstance1.getEffect().value().isInstantenous()) {
+                                            mobeffectinstance1.getEffect().value().applyInstantenousEffect(this, this.getOwner(), livingentity, mobeffectinstance1.getAmplifier(), 0.5D);
                                         } else {
                                             livingentity.addEffect(new MobEffectInstance(mobeffectinstance1.getEffect(), mobeffectinstance1.mapDuration((p_267926_) -> {
                                                 return p_267926_ / 4;
@@ -339,7 +339,7 @@ public class BrewEffectCloud extends Entity {
 
         if (p_19727_.contains("Particle", 8)) {
             try {
-                this.setParticle(ParticleArgument.readParticle(new StringReader(p_19727_.getString("Particle")), BuiltInRegistries.PARTICLE_TYPE.asLookup()));
+                this.setParticle(ParticleArgument.readParticle(new StringReader(p_19727_.getString("Particle")), this.level().registryAccess()));
             } catch (CommandSyntaxException ignored) {
             }
         }
@@ -383,7 +383,7 @@ public class BrewEffectCloud extends Entity {
         p_19737_.putFloat("RadiusOnUse", this.radiusOnUse);
         p_19737_.putFloat("RadiusPerTick", this.radiusPerTick);
         p_19737_.putFloat("Radius", this.getRadius());
-        p_19737_.putString("Particle", this.getParticle().writeToString());
+        p_19737_.putString("Particle", net.minecraft.core.registries.BuiltInRegistries.PARTICLE_TYPE.getKey(this.getParticle().getType()).toString());
         if (this.ownerUUID != null) {
             p_19737_.putUUID("Owner", this.ownerUUID);
         }
@@ -396,7 +396,7 @@ public class BrewEffectCloud extends Entity {
             ListTag listtag = new ListTag();
 
             for(MobEffectInstance mobeffectinstance : this.effects) {
-                listtag.add(mobeffectinstance.save(new CompoundTag()));
+                listtag.add(mobeffectinstance.save());
             }
 
             p_19737_.put("Effects", listtag);
@@ -426,8 +426,9 @@ public class BrewEffectCloud extends Entity {
         return PushReaction.IGNORE;
     }
 
-    public Packet<ClientGamePacketListener> getAddEntityPacket() {
-        return new ClientboundAddEntityPacket(this);
+    @Override
+    public Packet<ClientGamePacketListener> getAddEntityPacket(ServerEntity p_345759_) {
+        return new ClientboundAddEntityPacket(this, p_345759_);
     }
 
     public EntityDimensions getDimensions(Pose p_19721_) {

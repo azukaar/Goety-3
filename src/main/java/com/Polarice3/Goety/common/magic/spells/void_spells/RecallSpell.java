@@ -23,17 +23,17 @@ import net.minecraft.world.level.Level;
 public class RecallSpell extends Spell implements ITouchSpell {
     @Override
     public int defaultSoulCost() {
-        return SpellConfig.RecallCost.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.RecallCost, 0);
     }
 
     @Override
     public int defaultCastDuration() {
-        return SpellConfig.RecallDuration.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.RecallDuration, 0);
     }
 
     @Override
     public int defaultSpellCooldown() {
-        return SpellConfig.RecallCoolDown.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.RecallCoolDown, 0);
     }
 
     @Override

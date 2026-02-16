@@ -29,12 +29,12 @@ public class TidalSpell extends Spell {
 
     @Override
     public int defaultSoulCost() {
-        return SpellConfig.TidalCost.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.TidalCost, 0);
     }
 
     @Override
     public int defaultCastDuration() {
-        return SpellConfig.TidalDuration.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.TidalDuration, 0);
     }
 
     @Nullable
@@ -45,7 +45,7 @@ public class TidalSpell extends Spell {
 
     @Override
     public int defaultSpellCooldown() {
-        return SpellConfig.TidalCoolDown.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.TidalCoolDown, 0);
     }
 
     @Override

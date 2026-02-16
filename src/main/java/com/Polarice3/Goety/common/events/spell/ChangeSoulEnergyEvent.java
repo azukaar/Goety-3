@@ -16,7 +16,9 @@ import net.neoforged.neoforge.event.entity.player.PlayerEvent;
  * <br>
  * This event is fired on the {@link NeoForge#EVENT_BUS}.
  **/
-public class ChangeSoulEnergyEvent extends PlayerEvent {
+import net.neoforged.bus.api.ICancellableEvent;
+
+public class ChangeSoulEnergyEvent extends PlayerEvent implements ICancellableEvent {
     private int soulChange;
 
     public ChangeSoulEnergyEvent(Player entity, int soulChange) {

@@ -49,7 +49,7 @@ public class IllagerSpawner {
     private int nextTick;
 
     public int tick(ServerLevel pLevel) {
-        if (!MobsConfig.IllagerAssault.get()) {
+        if (!com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MobsConfig.IllagerAssault, false)) {
             return 0;
         } else {
             RandomSource random = pLevel.random;
@@ -57,8 +57,8 @@ public class IllagerSpawner {
             if (this.nextTick > 0) {
                 return 0;
             } else {
-                this.nextTick += MobsConfig.IllagerAssaultSpawnFreq.get();
-                if (random.nextInt(MobsConfig.IllagerAssaultSpawnChance.get()) != 0) {
+                this.nextTick += com.Polarice3.Goety.utils.ConfigHelper.getInt(MobsConfig.IllagerAssaultSpawnFreq, 0);
+                if (random.nextInt(com.Polarice3.Goety.utils.ConfigHelper.getInt(MobsConfig.IllagerAssaultSpawnChance, 0)) != 0) {
                     return 0;
                 } else {
                     int j = pLevel.players().size();
@@ -66,14 +66,14 @@ public class IllagerSpawner {
                         return 0;
                     } else {
                         ServerPlayer pPlayer = pLevel.players().get(random.nextInt(j));
-                        int soulEnergy = Mth.clamp(SEHelper.getSoulAmountInt(pPlayer), 0, MobsConfig.IllagerAssaultSELimit.get());
+                        int soulEnergy = Mth.clamp(SEHelper.getSoulAmountInt(pPlayer), 0, com.Polarice3.Goety.utils.ConfigHelper.getInt(MobsConfig.IllagerAssaultSELimit, 0));
                         if (pPlayer.isSpectator() || pPlayer.isCreative()) {
                             return 0;
                         } else if (SEHelper.getRestPeriod(pPlayer) > 0){
                             return 0;
-                        } else if (pLevel.isCloseToVillage(pPlayer.blockPosition(), 2) && soulEnergy < MobsConfig.IllagerAssaultSELimit.get()) {
+                        } else if (pLevel.isCloseToVillage(pPlayer.blockPosition(), 2) && soulEnergy < com.Polarice3.Goety.utils.ConfigHelper.getInt(MobsConfig.IllagerAssaultSELimit, 0)) {
                             return 0;
-                        } else if (soulEnergy >= MobsConfig.IllagerAssaultSEThreshold.get()) {
+                        } else if (soulEnergy >= com.Polarice3.Goety.utils.ConfigHelper.getInt(MobsConfig.IllagerAssaultSEThreshold, 0)) {
                             int k = (24 + random.nextInt(24)) * (random.nextBoolean() ? -1 : 1);
                             int l = (24 + random.nextInt(24)) * (random.nextBoolean() ? -1 : 1);
                             BlockPos.MutableBlockPos blockpos$mutable = pPlayer.blockPosition().mutable().move(k, 0, l);
@@ -98,12 +98,12 @@ public class IllagerSpawner {
                                     int i1 = 0;
                                     for (IllagerDataType data : IllagerAssaultListener.ILLAGER_LIST.values()){
                                         if (data != null){
-                                            EntityType<?> entityType = NeoForgeRegistries.ENTITY_TYPES.getValue(data.raider);
+                                            EntityType<?> entityType = net.minecraft.core.registries.BuiltInRegistries.ENTITY_TYPE.get(data.raider);
                                             if (entityType != null && entityType != EntityType.PIG) {
-                                                if (soulEnergy >= MobsConfig.IllagerAssaultSEThreshold.get() * data.thresholdTimes && pLevel.random.nextFloat() <= data.chance) {
+                                                if (soulEnergy >= com.Polarice3.Goety.utils.ConfigHelper.getInt(MobsConfig.IllagerAssaultSEThreshold, 0) * data.thresholdTimes && pLevel.random.nextFloat() <= data.chance) {
                                                     ++i1;
                                                     int cost = (int) (soulEnergy / data.thresholdTimes);
-                                                    int total = Mth.clamp(cost / MobsConfig.IllagerAssaultSEThreshold.get(), 1, data.maxExtraAmount) + 1;
+                                                    int total = Mth.clamp(cost / com.Polarice3.Goety.utils.ConfigHelper.getInt(MobsConfig.IllagerAssaultSEThreshold, 0), 1, data.maxExtraAmount) + 1;
                                                     int randomTotal = pLevel.random.nextInt(total) + data.initExtraAmount;
                                                     for (int k1 = 0; k1 < randomTotal; ++k1) {
                                                         blockpos$mutable.setY(pLevel.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, blockpos$mutable).getY());
@@ -122,7 +122,7 @@ public class IllagerSpawner {
                                             }
                                         }
                                     }
-                                    if (soulEnergy >= MobsConfig.IllagerAssaultSELimit.get() && MobsConfig.SoulEnergyBadOmen.get()) {
+                                    if (soulEnergy >= com.Polarice3.Goety.utils.ConfigHelper.getInt(MobsConfig.IllagerAssaultSELimit, 0) && com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MobsConfig.SoulEnergyBadOmen, false)) {
                                         ItemStack itemStack = CuriosFinder.findCurioInAll(pPlayer, ModItems.OMINOUS_CHARM.get());
                                         if (itemStack.is(ModItems.OMINOUS_CHARM.get())) {
                                             OminousCharmItem.increaseOmenLevel(itemStack, 1);
@@ -131,7 +131,7 @@ public class IllagerSpawner {
                                         }
                                     }
                                     if (CuriosFinder.hasCurio(pPlayer, ModItems.ALARMING_CHARM.get())){
-                                        ModNetwork.sendToClient(pPlayer, new SPlayPlayerSoundPacket(SoundEvents.RAID_HORN.get(), 64.0F, 1.0F));
+                                        ModNetwork.sendToClient(pPlayer, new SPlayPlayerSoundPacket(SoundEvents.RAID_HORN.value(), 64.0F, 1.0F));
                                     }
                                     return i1;
                                 } else {
@@ -161,10 +161,10 @@ public class IllagerSpawner {
                 return false;
             } else {
                 illager.setPos(pos.getX(), pos.getY(), pos.getZ());
-                net.neoforged.neoforge.event.EventHooks.onFinalizeSpawn(illager, worldIn, worldIn.getCurrentDifficultyAt(pos), MobSpawnType.PATROL, null, null);
+                illager.finalizeSpawn(worldIn, worldIn.getCurrentDifficultyAt(pos), MobSpawnType.PATROL, null);
                 illager.goalSelector.addGoal(0, new HuntDownPlayerGoal<>(illager));
                 if (illager instanceof HuntingIllagerEntity huntingIllager){
-                    float rawPercent = (float) SEHelper.getSoulAmountInt(player) / MainConfig.MaxArcaSouls.get();
+                    float rawPercent = (float) SEHelper.getSoulAmountInt(player) / com.Polarice3.Goety.utils.ConfigHelper.getInt(MainConfig.MaxArcaSouls, 0);
                     int sePercent = (int) (rawPercent * 100);
                     huntingIllager.upgradeAssault(sePercent);
                     if (random.nextInt(4) == 0) {
@@ -177,12 +177,12 @@ public class IllagerSpawner {
                 this.upgradeIllagers(illager, soulAmount);
                 if (dataType.riding != null){
                     if (worldIn.random.nextFloat() <= dataType.rideChance){
-                        EntityType<?> entityType1 = NeoForgeRegistries.ENTITY_TYPES.getValue(dataType.riding);
+                        EntityType<?> entityType1 = net.minecraft.core.registries.BuiltInRegistries.ENTITY_TYPE.get(dataType.riding);
                         if (entityType1 != null){
                             Entity entity1 = entityType1.create(worldIn);
                             if (entity1 instanceof PathfinderMob mount) {
                                 mount.setPos(pos.getX(), pos.getY(), pos.getZ());
-                                net.neoforged.neoforge.event.EventHooks.onFinalizeSpawn(mount, worldIn, worldIn.getCurrentDifficultyAt(pos), MobSpawnType.PATROL, null, null);
+                                mount.finalizeSpawn(worldIn, worldIn.getCurrentDifficultyAt(pos), MobSpawnType.PATROL, null);
                                 illager.startRiding(mount);
                                 if (CuriosFinder.hasCurio(player, ModItems.ALARMING_CHARM.get())){
                                     mount.addEffect(new MobEffectInstance(MobEffects.GLOWING, 60));
@@ -202,44 +202,38 @@ public class IllagerSpawner {
     }
 
     public void upgradeIllagers(LivingEntity raider, int soulAmount){
-        Level world = raider.level;
-        if (soulAmount >= MobsConfig.IllagerAssaultSEThreshold.get() * 5) {
+        Level world = raider.level();
+        if (soulAmount >= com.Polarice3.Goety.utils.ConfigHelper.getInt(MobsConfig.IllagerAssaultSEThreshold, 0) * 5) {
             ItemStack itemstack = raider.getMainHandItem().copy();
             if (itemstack.getItem() instanceof CrossbowItem){
-                Map<Enchantment, Integer> map = Maps.newHashMap();
                 if (world.getDifficulty() == Difficulty.HARD) {
-                    map.put(Enchantments.QUICK_CHARGE, 2);
+                    itemstack.enchant(world.registryAccess().lookupOrThrow(net.minecraft.core.registries.Registries.ENCHANTMENT).getOrThrow(net.minecraft.world.item.enchantment.Enchantments.QUICK_CHARGE), 2);
                 } else {
-                    map.put(Enchantments.QUICK_CHARGE, 1);
+                    itemstack.enchant(world.registryAccess().lookupOrThrow(net.minecraft.core.registries.Registries.ENCHANTMENT).getOrThrow(net.minecraft.world.item.enchantment.Enchantments.QUICK_CHARGE), 1);
                 }
 
-                map.put(Enchantments.MULTISHOT, 1);
-                EnchantmentHelper.setEnchantments(map, itemstack);
+                itemstack.enchant(world.registryAccess().lookupOrThrow(net.minecraft.core.registries.Registries.ENCHANTMENT).getOrThrow(net.minecraft.world.item.enchantment.Enchantments.MULTISHOT), 1);
                 raider.setItemSlot(EquipmentSlot.MAINHAND, itemstack);
             }
             if (itemstack.getItem() instanceof AxeItem){
-                Map<Enchantment, Integer> map = Maps.newHashMap();
                 int i = 1;
                 if (world.getDifficulty() == Difficulty.HARD) {
                     i = 2;
                 }
-                map.put(Enchantments.SHARPNESS, i);
-                EnchantmentHelper.setEnchantments(map, itemstack);
+                itemstack.enchant(world.registryAccess().lookupOrThrow(net.minecraft.core.registries.Registries.ENCHANTMENT).getOrThrow(net.minecraft.world.item.enchantment.Enchantments.SHARPNESS), i);
                 raider.setItemSlot(EquipmentSlot.MAINHAND, itemstack);
             }
             if (itemstack.getItem() instanceof SwordItem){
                 if (world.random.nextFloat() <= 0.25F && (!itemstack.is(Items.DIAMOND_SWORD)
-                        || itemstack.getItem() instanceof SwordItem swordItem && swordItem.getDamage() < 7.0F)){
+                        || itemstack.getItem() instanceof SwordItem swordItem && swordItem.getDamage(itemstack) < 7.0F)){
                     itemstack = new ItemStack(Items.DIAMOND_SWORD);
                 }
-                Map<Enchantment, Integer> map = Maps.newHashMap();
                 int i = 2;
                 if (world.getDifficulty() == Difficulty.HARD) {
                     i = 4;
                 }
-                map.put(Enchantments.SHARPNESS, i);
-                map.put(Enchantments.FIRE_ASPECT, 2);
-                EnchantmentHelper.setEnchantments(map, itemstack);
+                itemstack.enchant(world.registryAccess().lookupOrThrow(net.minecraft.core.registries.Registries.ENCHANTMENT).getOrThrow(net.minecraft.world.item.enchantment.Enchantments.SHARPNESS), i);
+                itemstack.enchant(world.registryAccess().lookupOrThrow(net.minecraft.core.registries.Registries.ENCHANTMENT).getOrThrow(net.minecraft.world.item.enchantment.Enchantments.FIRE_ASPECT), 2);
                 raider.setItemSlot(EquipmentSlot.MAINHAND, itemstack);
             }
         }
@@ -248,7 +242,7 @@ public class IllagerSpawner {
     public void forceSpawn(ServerLevel pLevel, ServerPlayer pPlayer, CommandSourceStack pSource){
         RandomSource random = pLevel.random;
         int soulEnergy = SEHelper.getSoulAmountInt(pPlayer);
-        if (soulEnergy > MobsConfig.IllagerAssaultSEThreshold.get()) {
+        if (soulEnergy > com.Polarice3.Goety.utils.ConfigHelper.getInt(MobsConfig.IllagerAssaultSEThreshold, 0)) {
             int k = (24 + random.nextInt(24)) * (random.nextBoolean() ? -1 : 1);
             int l = (24 + random.nextInt(24)) * (random.nextBoolean() ? -1 : 1);
             BlockPos.MutableBlockPos blockpos$mutable = pPlayer.blockPosition().mutable().move(k, 0, l);
@@ -262,11 +256,11 @@ public class IllagerSpawner {
                 } else if (!IllagerAssaultListener.ILLAGER_LIST.isEmpty()){
                     for (IllagerDataType data : IllagerAssaultListener.ILLAGER_LIST.values()){
                         if (data != null){
-                            EntityType<?> entityType = NeoForgeRegistries.ENTITY_TYPES.getValue(data.raider);
+                            EntityType<?> entityType = net.minecraft.core.registries.BuiltInRegistries.ENTITY_TYPE.get(data.raider);
                             if (entityType != null && entityType != EntityType.PIG) {
-                                if (soulEnergy >= MobsConfig.IllagerAssaultSEThreshold.get() * data.thresholdTimes && pLevel.random.nextFloat() <= data.chance) {
+                                if (soulEnergy >= com.Polarice3.Goety.utils.ConfigHelper.getInt(MobsConfig.IllagerAssaultSEThreshold, 0) * data.thresholdTimes && pLevel.random.nextFloat() <= data.chance) {
                                     int cost = (int) (soulEnergy / data.thresholdTimes);
-                                    int total = Mth.clamp(cost / MobsConfig.IllagerAssaultSEThreshold.get(), 1, data.maxExtraAmount) + 1;
+                                    int total = Mth.clamp(cost / com.Polarice3.Goety.utils.ConfigHelper.getInt(MobsConfig.IllagerAssaultSEThreshold, 0), 1, data.maxExtraAmount) + 1;
                                     int randomTotal = pLevel.random.nextInt(total) + data.initExtraAmount;
                                     for (int k1 = 0; k1 < randomTotal; ++k1) {
                                         blockpos$mutable.setY(pLevel.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, blockpos$mutable).getY());
@@ -286,9 +280,9 @@ public class IllagerSpawner {
                         }
                     }
                     if (CuriosFinder.hasCurio(pPlayer, ModItems.ALARMING_CHARM.get())){
-                        ModNetwork.sendToClient(pPlayer, new SPlayPlayerSoundPacket(SoundEvents.RAID_HORN.get(), 64.0F, 1.0F));
+                        ModNetwork.sendToClient(pPlayer, new SPlayPlayerSoundPacket(SoundEvents.RAID_HORN.value(), 64.0F, 1.0F));
                     }
-                    this.nextTick += MobsConfig.IllagerAssaultSpawnFreq.get();
+                    this.nextTick += com.Polarice3.Goety.utils.ConfigHelper.getInt(MobsConfig.IllagerAssaultSpawnFreq, 0);
                     pSource.sendSuccess(() -> Component.translatable("commands.goety.illager.spawn.success", pPlayer.getDisplayName()), false);
                 } else {
                     ModNetwork.sendToClient(pPlayer, new SPlayPlayerSoundPacket(SoundEvents.FIRE_EXTINGUISH, 1.0F, 1.0F));

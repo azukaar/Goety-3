@@ -20,7 +20,7 @@ public class IllagerPutFoodChestGoal<T extends AbstractIllagerServant> extends I
         if (this.illager.getChestPos() == null) {
             return false;
         }
-        if (this.illager.getChestLevel() != this.illager.level.dimension()) {
+        if (this.illager.getChestLevel() != this.illager.level().dimension()) {
             return false;
         }
         if (this.illager.getBoundPos() != null){
@@ -36,9 +36,9 @@ public class IllagerPutFoodChestGoal<T extends AbstractIllagerServant> extends I
         if (!this.illager.hasExcessFood()) {
             return false;
         }
-        if (this.getChest(this.illager.level, this.illager.getChestPos()) == null) {
+        if (this.getChest(this.illager.level(), this.illager.getChestPos()) == null) {
             return false;
-        } else if (this.isFull(this.getItem(), this.illager.level, this.illager.getChestPos())) {
+        } else if (this.isFull(this.getItem(), this.illager.level(), this.illager.getChestPos())) {
             return false;
         }
         return super.canUse();

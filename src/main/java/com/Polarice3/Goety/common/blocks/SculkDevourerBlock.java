@@ -21,10 +21,17 @@ import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.gameevent.GameEventListener;
+import net.minecraft.world.level.block.BaseEntityBlock;
 
 import javax.annotation.Nullable;
 
 public class SculkDevourerBlock extends EnchanteableBlock {
+    public static final com.mojang.serialization.MapCodec<SculkDevourerBlock> CODEC = simpleCodec(p -> new SculkDevourerBlock());
+
+    @Override
+    protected com.mojang.serialization.MapCodec<? extends BaseEntityBlock> codec() {
+        return CODEC;
+    }
     public static final BooleanProperty PULSE = BlockStateProperties.BLOOM;
 
     public SculkDevourerBlock() {

@@ -61,25 +61,23 @@ public class ServantUtil {
                 if (owner != null) {
                     zombieServant.setTrueOwner(owner);
                 }
-                if (target.level instanceof ServerLevel serverLevel) {
+                if (target.level() instanceof ServerLevel serverLevel) {
                     zombieServant.finalizeSpawn(serverLevel,
-                            target.level.getCurrentDifficultyAt(zombieServant.blockPosition()), MobSpawnType.CONVERSION,
-                            null, null);
+                            target.level().getCurrentDifficultyAt(zombieServant.blockPosition()), MobSpawnType.CONVERSION,
+                            null);
                 }
                 if (zombieEntity instanceof ZombieVillager villager
                         && zombieServant instanceof ZombieVillagerServant servant) {
                     servant.setVillagerData(villager.getVillagerData());
-                    servant.setGossips(villager.gossips);
-                    servant.setTradeOffers(villager.tradeOffers);
                     servant.setVillagerXp(villager.getVillagerXp());
                 }
                 if (!permanent) {
-                    zombieServant.setLimitedLife(10 * (15 + target.level.random.nextInt(45)));
+                    zombieServant.setLimitedLife(10 * (15 + target.level().random.nextInt(45)));
                 }
                 net.neoforged.neoforge.event.EventHooks.onLivingConvert(zombieEntity,
                         zombieServant);
                 if (!zombieServant.isSilent()) {
-                    zombieServant.level.levelEvent(null, 1026, zombieServant.blockPosition(), 0);
+                    zombieServant.level().levelEvent(null, 1026, zombieServant.blockPosition(), 0);
                 }
             }
         }
@@ -100,17 +98,17 @@ public class ServantUtil {
                 if (owner != null) {
                     skeletonServant.setTrueOwner(owner);
                 }
-                if (target.level instanceof ServerLevel serverLevel) {
+                if (target.level() instanceof ServerLevel serverLevel) {
                     skeletonServant.finalizeSpawn(serverLevel,
-                            target.level.getCurrentDifficultyAt(skeletonServant.blockPosition()),
-                            MobSpawnType.CONVERSION, null, null);
+                            target.level().getCurrentDifficultyAt(skeletonServant.blockPosition()),
+                            MobSpawnType.CONVERSION, null);
                 }
                 if (!permanent) {
-                    skeletonServant.setLimitedLife(10 * (15 + target.level.random.nextInt(45)));
+                    skeletonServant.setLimitedLife(10 * (15 + target.level().random.nextInt(45)));
                 }
                 net.neoforged.neoforge.event.EventHooks.onLivingConvert(skeleton, skeletonServant);
                 if (!skeletonServant.isSilent()) {
-                    skeletonServant.level.levelEvent(null, 1026, skeletonServant.blockPosition(), 0);
+                    skeletonServant.level().levelEvent(null, 1026, skeletonServant.blockPosition(), 0);
                 }
             }
         }
@@ -142,12 +140,12 @@ public class ServantUtil {
             if (net.neoforged.neoforge.event.EventHooks.canLivingConvert(target, entityType,
                     (timer) -> {
                     })) {
-                if (target.level instanceof ServerLevel serverLevel) {
-                    summoned.finalizeSpawn(serverLevel, target.level.getCurrentDifficultyAt(summoned.blockPosition()),
-                            MobSpawnType.CONVERSION, null, null);
+                if (target.level() instanceof ServerLevel serverLevel) {
+                    summoned.finalizeSpawn(serverLevel, target.level().getCurrentDifficultyAt(summoned.blockPosition()),
+                            MobSpawnType.CONVERSION, null);
                 }
                 if (!permanent) {
-                    summoned.setLimitedLife(10 * (15 + target.level.random.nextInt(45)));
+                    summoned.setLimitedLife(10 * (15 + target.level().random.nextInt(45)));
                 }
                 if (owner != null) {
                     summoned.setTrueOwner(owner);
@@ -156,7 +154,6 @@ public class ServantUtil {
                     if (target instanceof Villager villager) {
                         servant.setVillagerData(villager.getVillagerData());
                         servant.setGossips(villager.getGossips().store(NbtOps.INSTANCE));
-                        servant.setTradeOffers(villager.getOffers().createTag());
                         servant.setVillagerXp(villager.getVillagerXp());
                     } else if (target instanceof Prisoner prisoner) {
                         servant.setVillagerData(prisoner.getVillagerData());
@@ -171,7 +168,7 @@ public class ServantUtil {
                 }
                 net.neoforged.neoforge.event.EventHooks.onLivingConvert(target, summoned);
                 if (!summoned.isSilent()) {
-                    summoned.level.levelEvent(null, 1026, summoned.blockPosition(), 0);
+                    summoned.level().levelEvent(null, 1026, summoned.blockPosition(), 0);
                 }
             }
         }
@@ -184,7 +181,7 @@ public class ServantUtil {
 
     public static boolean isWildHeal(LivingEntity servant) {
         EntityType<?> entityType = servant.getType();
-        return servant.getMobType() == MobType.ARTHROPOD || entityType.is(ModTags.EntityTypes.WILD_HEAL);
+        return entityType.is(ModTags.EntityTypes.WILD_HEAL);
     }
 
     public static boolean isNetherHeal(LivingEntity servant) {
@@ -199,7 +196,7 @@ public class ServantUtil {
 
     public static boolean isAbyssHeal(LivingEntity servant) {
         EntityType<?> entityType = servant.getType();
-        return servant.getMobType() == MobType.WATER || entityType.is(ModTags.EntityTypes.ABYSS_HEAL);
+        return entityType.is(ModTags.EntityTypes.ABYSS_HEAL);
     }
 
     public static boolean isVoidHeal(LivingEntity servant) {
@@ -224,7 +221,7 @@ public class ServantUtil {
     }
 
     public static void healServant(Player owner, LivingEntity servant) {
-        if (!servant.level.isClientSide) {
+        if (!servant.level().isClientSide) {
             if (!servant.getType().is(ModTags.EntityTypes.NO_HEAL_SERVANTS)) {
                 if (!servant.isOnFire() && !servant.isDeadOrDying()) {
                     if (servant.getHealth() < servant.getMaxHealth()) {
@@ -234,7 +231,7 @@ public class ServantUtil {
                                 if (servant.tickCount % (MathHelper.secondsToTicks(config.healRate) + 1) == 0) {
                                     servant.heal(config.healAmount);
                                     Vec3 vector3d = servant.getDeltaMovement();
-                                    if (servant.level instanceof ServerLevel serverWorld) {
+                                    if (servant.level() instanceof ServerLevel serverWorld) {
                                         SEHelper.decreaseSouls(owner, config.soulCost);
                                         serverWorld.sendParticles(ParticleTypes.SCULK_SOUL, servant.getRandomX(0.5D),
                                                 servant.getRandomY(), servant.getRandomZ(0.5D), 0, vector3d.x * -0.2D,
@@ -252,12 +249,12 @@ public class ServantUtil {
     @Nullable
     public static Entity teleportToRevive(IOwned owned) {
         if (owned instanceof LivingEntity livingOwned) {
-            if (livingOwned.level instanceof ServerLevel serverLevel) {
+            if (livingOwned.level() instanceof ServerLevel serverLevel) {
                 BlockPos blockPos = owned.getRevivePos();
                 if (blockPos != null) {
                     if (owned.getReviveLevel() != null) {
                         Optional<Vec3> optional = RespawnAnchorBlock.findStandUpPosition(livingOwned.getType(),
-                                livingOwned.level, blockPos);
+                                livingOwned.level(), blockPos);
                         Vec3 vec3 = blockPos.getCenter();
                         if (optional.isPresent()) {
                             vec3 = optional.get();
@@ -307,8 +304,8 @@ public class ServantUtil {
         ItemStack legging = summoned.getItemBySlot(EquipmentSlot.LEGS);
         ItemStack boots = summoned.getItemBySlot(EquipmentSlot.FEET);
         if (itemStack.getItem() instanceof ArmorItem armor) {
-            if (MobsConfig.RaiderServantWearArmor.get() || !(summoned instanceof RaiderServant)) {
-                summoned.playSound(SoundEvents.ARMOR_EQUIP_GENERIC, 1.0F, 1.0F);
+            if (com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MobsConfig.RaiderServantWearArmor, false) || !(summoned instanceof RaiderServant)) {
+                summoned.playSound(SoundEvents.ARMOR_EQUIP_GENERIC.value(), 1.0F, 1.0F);
                 if (armor.getType() == ArmorItem.Type.HELMET) {
                     summoned.setItemSlot(EquipmentSlot.HEAD, itemStack.copyWithCount(1));
                     summoned.dropEquipment(EquipmentSlot.HEAD, helmet);
@@ -333,7 +330,7 @@ public class ServantUtil {
                     double d0 = summoned.getRandom().nextGaussian() * 0.02D;
                     double d1 = summoned.getRandom().nextGaussian() * 0.02D;
                     double d2 = summoned.getRandom().nextGaussian() * 0.02D;
-                    summoned.level.addParticle(ParticleTypes.HAPPY_VILLAGER, summoned.getRandomX(1.0D),
+                    summoned.level().addParticle(ParticleTypes.HAPPY_VILLAGER, summoned.getRandomX(1.0D),
                             summoned.getRandomY() + 0.5D, summoned.getRandomZ(1.0D), d0, d1, d2);
                 }
                 if (!player.getAbilities().instabuild) {
@@ -341,8 +338,8 @@ public class ServantUtil {
                 }
                 return InteractionResult.SUCCESS;
             }
-        } else if (itemStack.is(Items.CARVED_PUMPKIN) && MobsConfig.ServantsCanWearPumpkin.get()) {
-            summoned.playSound(SoundEvents.ARMOR_EQUIP_GENERIC, 1.0F, 1.0F);
+        } else if (itemStack.is(Items.CARVED_PUMPKIN) && com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MobsConfig.ServantsCanWearPumpkin, false)) {
+            summoned.playSound(SoundEvents.ARMOR_EQUIP_GENERIC.value(), 1.0F, 1.0F);
             summoned.setItemSlot(EquipmentSlot.HEAD, itemStack.copyWithCount(1));
             summoned.dropEquipment(EquipmentSlot.HEAD, helmet);
             summoned.setGuaranteedDrop(EquipmentSlot.HEAD);
@@ -379,45 +376,45 @@ public class ServantUtil {
         ABYSS(
                 ServantUtil::isAbyssHeal,
                 CuriosFinder::hasAbyssRobes,
-                MobsConfig.WaterMinionHeal.get(),
-                MobsConfig.WaterMinionHealCost.get(),
-                MobsConfig.WaterMinionHealTime.get(),
-                MobsConfig.WaterMinionHealAmount.get()),
+                com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MobsConfig.WaterMinionHeal, false),
+                com.Polarice3.Goety.utils.ConfigHelper.getInt(MobsConfig.WaterMinionHealCost, 1),
+                com.Polarice3.Goety.utils.ConfigHelper.getInt(MobsConfig.WaterMinionHealTime, 1),
+                com.Polarice3.Goety.utils.ConfigHelper.getDouble(MobsConfig.WaterMinionHealAmount, 1.0D)),
         WILD(
                 ServantUtil::isWildHeal,
                 CuriosFinder::hasWildRobe,
-                MobsConfig.NaturalMinionHeal.get(),
-                MobsConfig.NaturalMinionHealCost.get(),
-                MobsConfig.NaturalMinionHealTime.get(),
-                MobsConfig.NaturalMinionHealAmount.get()),
+                com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MobsConfig.NaturalMinionHeal, false),
+                com.Polarice3.Goety.utils.ConfigHelper.getInt(MobsConfig.NaturalMinionHealCost, 0),
+                com.Polarice3.Goety.utils.ConfigHelper.getInt(MobsConfig.NaturalMinionHealTime, 0),
+                com.Polarice3.Goety.utils.ConfigHelper.getDouble(MobsConfig.NaturalMinionHealAmount, 1.0D)),
         FROST(
                 ServantUtil::isFrostHeal,
                 CuriosFinder::hasFrostRobes,
-                MobsConfig.FrostMinionHeal.get(),
-                MobsConfig.FrostMinionHealCost.get(),
-                MobsConfig.FrostMinionHealTime.get(),
-                MobsConfig.FrostMinionHealAmount.get()),
+                com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MobsConfig.FrostMinionHeal, false),
+                com.Polarice3.Goety.utils.ConfigHelper.getInt(MobsConfig.FrostMinionHealCost, 1),
+                com.Polarice3.Goety.utils.ConfigHelper.getInt(MobsConfig.FrostMinionHealTime, 1),
+                com.Polarice3.Goety.utils.ConfigHelper.getDouble(MobsConfig.FrostMinionHealAmount, 1.0D)),
         NETHER(
                 ServantUtil::isNetherHeal,
                 CuriosFinder::hasNetherRobe,
-                MobsConfig.NetherMinionHeal.get(),
-                MobsConfig.NetherMinionHealCost.get(),
-                MobsConfig.NetherMinionHealTime.get(),
-                MobsConfig.NetherMinionHealAmount.get()),
+                com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MobsConfig.NetherMinionHeal, false),
+                com.Polarice3.Goety.utils.ConfigHelper.getInt(MobsConfig.NetherMinionHealCost, 0),
+                com.Polarice3.Goety.utils.ConfigHelper.getInt(MobsConfig.NetherMinionHealTime, 1),
+                com.Polarice3.Goety.utils.ConfigHelper.getDouble(MobsConfig.NetherMinionHealAmount, 1.0D)),
         VOID(
                 ServantUtil::isVoidHeal,
                 CuriosFinder::hasVoidRobe,
-                MobsConfig.VoidMinionHeal.get(),
-                MobsConfig.VoidMinionHealCost.get(),
-                MobsConfig.VoidMinionHealTime.get(),
-                MobsConfig.VoidMinionHealAmount.get()),
+                com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MobsConfig.VoidMinionHeal, false),
+                com.Polarice3.Goety.utils.ConfigHelper.getInt(MobsConfig.VoidMinionHealCost, 0),
+                com.Polarice3.Goety.utils.ConfigHelper.getInt(MobsConfig.VoidMinionHealTime, 1),
+                com.Polarice3.Goety.utils.ConfigHelper.getDouble(MobsConfig.VoidMinionHealAmount, 1.0D)),
         NECRO(
                 ServantUtil::isNecroHeal,
                 CuriosFinder::hasUndeadCape,
-                MobsConfig.UndeadMinionHeal.get(),
-                MobsConfig.UndeadMinionHealCost.get(),
-                MobsConfig.UndeadMinionHealTime.get(),
-                MobsConfig.UndeadMinionHealAmount.get());
+                com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MobsConfig.UndeadMinionHeal, false),
+                com.Polarice3.Goety.utils.ConfigHelper.getInt(MobsConfig.UndeadMinionHealCost, 0),
+                com.Polarice3.Goety.utils.ConfigHelper.getInt(MobsConfig.UndeadMinionHealTime, 1),
+                com.Polarice3.Goety.utils.ConfigHelper.getDouble(MobsConfig.UndeadMinionHealAmount, 20.0D));
 
         private final Predicate<LivingEntity> healCheck;
         private final Predicate<LivingEntity> curioCheck;

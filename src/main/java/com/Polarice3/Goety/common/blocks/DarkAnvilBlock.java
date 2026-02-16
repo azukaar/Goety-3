@@ -1,5 +1,6 @@
 package com.Polarice3.Goety.common.blocks;
 
+import com.mojang.serialization.MapCodec;
 import com.Polarice3.Goety.client.inventory.container.DarkAnvilMenu;
 import com.Polarice3.Goety.common.blocks.entities.CursedCageBlockEntity;
 import com.Polarice3.Goety.common.network.ModNetwork;
@@ -40,6 +41,12 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import javax.annotation.Nullable;
 
 public class DarkAnvilBlock extends FallingBlock {
+   public static final MapCodec<DarkAnvilBlock> CODEC = simpleCodec(p -> new DarkAnvilBlock());
+
+   @Override
+   protected MapCodec<? extends FallingBlock> codec() {
+      return CODEC;
+   }
    public static final DirectionProperty FACING = HorizontalDirectionalBlock.FACING;
    private static final VoxelShape BASE = Block.box(2.0D, 0.0D, 2.0D, 14.0D, 4.0D, 14.0D);
    private static final VoxelShape X_LEG1 = Block.box(3.0D, 4.0D, 4.0D, 13.0D, 5.0D, 12.0D);
@@ -70,8 +77,8 @@ public class DarkAnvilBlock extends FallingBlock {
    public void randomTick(BlockState p_221000_, ServerLevel p_221001_, BlockPos p_221002_, RandomSource p_221003_) {
       if (!p_221000_.is(ModBlocks.DARK_ANVIL.get())) {
          if (p_221001_.getBlockEntity(p_221002_.below()) instanceof CursedCageBlockEntity cageBlockEntity) {
-            if (cageBlockEntity.getSouls() >= MainConfig.DarkAnvilSoulCost.get()) {
-               cageBlockEntity.decreaseSouls(MainConfig.DarkAnvilSoulCost.get());
+            if (cageBlockEntity.getSouls() >= com.Polarice3.Goety.utils.ConfigHelper.getInt(MainConfig.DarkAnvilSoulCost, 0)) {
+               cageBlockEntity.decreaseSouls(com.Polarice3.Goety.utils.ConfigHelper.getInt(MainConfig.DarkAnvilSoulCost, 0));
                ModNetwork.sendToALL(new SPlayWorldSoundPacket(p_221002_, SoundEvents.FIRE_AMBIENT, 1.0F + p_221001_.random.nextFloat(), p_221001_.random.nextFloat() * 0.7F + 0.3F));
                DarkAnvilBlock.generateManyParticles(p_221001_, p_221002_);
                BlockState repaired = DarkAnvilBlock.repair(p_221000_);
@@ -85,15 +92,16 @@ public class DarkAnvilBlock extends FallingBlock {
       return this.defaultBlockState().setValue(FACING, p_48781_.getHorizontalDirection().getClockWise());
    }
 
-   public InteractionResult use(BlockState p_48804_, Level p_48805_, BlockPos p_48806_, Player p_48807_, InteractionHand p_48808_, BlockHitResult p_48809_) {
-      if (p_48805_.isClientSide) {
-         return InteractionResult.SUCCESS;
-      } else {
-         p_48807_.openMenu(p_48804_.getMenuProvider(p_48805_, p_48806_));
-         p_48807_.awardStat(Stats.INTERACT_WITH_ANVIL);
-         return InteractionResult.CONSUME;
-      }
-   }
+    @Override
+    protected InteractionResult useWithoutItem(BlockState pState, Level pLevel, BlockPos pPos, Player pPlayer, BlockHitResult pHit) {
+       if (pLevel.isClientSide) {
+          return InteractionResult.SUCCESS;
+       } else {
+          pPlayer.openMenu(pState.getMenuProvider(pLevel, pPos));
+          pPlayer.awardStat(Stats.INTERACT_WITH_ANVIL);
+          return InteractionResult.CONSUME;
+       }
+    }
 
    @Nullable
    public MenuProvider getMenuProvider(BlockState p_48821_, Level p_48822_, BlockPos p_48823_) {

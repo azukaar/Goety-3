@@ -183,7 +183,7 @@ public abstract class TangleEntity extends Entity {
                 && this.getTarget().isAlive()
                 && !this.getTarget().getType().is(ModTags.EntityTypes.UNTANGLEABLE)
                 && this.getTarget().getMaxHealth() <= 100.0F
-                && this.getTarget().canBeAffected(new MobEffectInstance(GoetyEffects.TANGLED.getHolder(), 100))){
+                && this.getTarget().canBeAffected(new MobEffectInstance(GoetyEffects.TANGLED, 100))){
             this.getTarget().setPos(this.position());
             this.getTarget().setDeltaMovement(Vec3.ZERO);
             this.getTarget().move(MoverType.SELF, Vec3.ZERO);
@@ -195,7 +195,7 @@ public abstract class TangleEntity extends Entity {
                     ModNetwork.sentToTrackingEntityAndPlayer(this.getTarget(), new SRepositionPacket(this.getTarget().getId(), this.position().x, this.position().y, this.position().z));
                 }
             }
-            this.getTarget().addEffect(new MobEffectInstance(GoetyEffects.TANGLED.getHolder(), 2, 0, false, false, false));
+            this.getTarget().addEffect(new MobEffectInstance(GoetyEffects.TANGLED, 2, 0, false, false, false));
         }
     }
 

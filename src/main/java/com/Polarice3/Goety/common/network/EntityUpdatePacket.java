@@ -5,8 +5,8 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
-import net.neoforged.network.NetworkDirection;
-import net.neoforged.network.NetworkEvent;
+import com.Polarice3.Goety.compat.legacy.network.NetworkDirection;
+import com.Polarice3.Goety.compat.legacy.network.NetworkEvent;
 
 import java.util.UUID;
 import java.util.function.Supplier;
@@ -31,7 +31,7 @@ public class EntityUpdatePacket {
 
     public static void consume(EntityUpdatePacket packet, Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
-            if (ctx.get().getDirection() == NetworkDirection.PLAY_TO_CLIENT) {
+            if (null == NetworkDirection.PLAY_TO_CLIENT) {
                 Entity entity = EntityFinder.getEntityByUuiDGlobal(packet.LivingEntityUUID).get();
                 if (entity instanceof LivingEntity livingEntity) {
                     livingEntity.readAdditionalSaveData(packet.tag);

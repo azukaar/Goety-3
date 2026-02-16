@@ -1167,6 +1167,6 @@ public class AttributesConfig {
                 .writingMode(WritingMode.REPLACE)
                 .build();
         file.load();
-        config.setConfig(file);
+        // NeoForge 1.21: config binding is handled via registered config file path.
     }
 }

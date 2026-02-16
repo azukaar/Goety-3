@@ -103,7 +103,7 @@ public class ModRandomSpread extends RandomSpreadStructurePlacement {
     }
 
     public StructurePlacementType<?> type() {
-        return ModPlacementType.MOD_RANDOM_SPREAD.get();
+        return ModPlacementType.RANDOM_SPREAD.get();
     }
 
     public record SuperExclusionZone(HolderSet<StructureSet> otherSet, int chunkCount) {

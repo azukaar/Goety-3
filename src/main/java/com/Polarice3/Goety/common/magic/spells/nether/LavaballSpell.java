@@ -27,11 +27,11 @@ public class LavaballSpell extends Spell {
 
     @Override
     public int defaultSoulCost() {
-        return SpellConfig.LavaballCost.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.LavaballCost, 0);
     }
 
     public int defaultCastDuration() {
-        return SpellConfig.LavaballDuration.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.LavaballDuration, 0);
     }
 
     @Override
@@ -44,7 +44,7 @@ public class LavaballSpell extends Spell {
 
     @Override
     public int defaultSpellCooldown() {
-        return SpellConfig.LavaballCoolDown.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.LavaballCoolDown, 0);
     }
 
     @Override

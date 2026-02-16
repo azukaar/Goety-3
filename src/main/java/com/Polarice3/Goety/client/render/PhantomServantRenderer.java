@@ -16,7 +16,7 @@ import net.minecraft.resources.ResourceLocation;
 
 public class PhantomServantRenderer extends MobRenderer<PhantomServant, PhantomServantModel<PhantomServant>> {
     protected static final ResourceLocation TEXTURE = Goety.location("textures/entity/servants/phantom_servant.png");
-    protected static final ResourceLocation PHANTOM_LOCATION = new ResourceLocation("textures/entity/phantom.png");
+    protected static final ResourceLocation PHANTOM_LOCATION = ResourceLocation.parse("textures/entity/phantom.png");
 
     public PhantomServantRenderer(EntityRendererProvider.Context p_174338_) {
         super(p_174338_, new PhantomServantModel<>(p_174338_.bakeLayer(ModelLayers.PHANTOM)), 0.75F);
@@ -25,7 +25,7 @@ public class PhantomServantRenderer extends MobRenderer<PhantomServant, PhantomS
 
     @Override
     public ResourceLocation getTextureLocation(PhantomServant p_114482_) {
-        if (p_114482_.isHostile() || !MobsConfig.PhantomServantTexture.get()){
+        if (p_114482_.isHostile() || !com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MobsConfig.PhantomServantTexture, false)){
             return PHANTOM_LOCATION;
         } else {
             return TEXTURE;
@@ -39,13 +39,13 @@ public class PhantomServantRenderer extends MobRenderer<PhantomServant, PhantomS
         p_115682_.translate(0.0F, 1.3125F, 0.1875F);
     }
 
-    protected void setupRotations(PhantomServant p_115685_, PoseStack p_115686_, float p_115687_, float p_115688_, float p_115689_) {
-        super.setupRotations(p_115685_, p_115686_, p_115687_, p_115688_, p_115689_);
+    protected void setupRotations(PhantomServant p_115685_, PoseStack p_115686_, float p_115687_, float p_115688_, float p_115689_, float p_115690_) {
+        super.setupRotations(p_115685_, p_115686_, p_115687_, p_115688_, p_115689_, p_115690_);
         p_115686_.mulPose(Axis.XP.rotationDegrees(p_115685_.getXRot()));
     }
 
     public static class PhantomEyesLayer<T extends PhantomServant> extends EyesLayer<T, PhantomServantModel<T>> {
-        private static final RenderType PHANTOM_EYES = RenderType.eyes(new ResourceLocation("textures/entity/phantom_eyes.png"));
+        private static final RenderType PHANTOM_EYES = RenderType.eyes(ResourceLocation.parse("textures/entity/phantom_eyes.png"));
 
         public PhantomEyesLayer(RenderLayerParent<T, PhantomServantModel<T>> p_117342_) {
             super(p_117342_);

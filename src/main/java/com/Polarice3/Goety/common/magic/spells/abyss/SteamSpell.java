@@ -22,12 +22,12 @@ import java.util.List;
 public class SteamSpell extends ChargingSpell {
 
     public int defaultSoulCost() {
-        return SpellConfig.SteamingCost.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.SteamingCost, 0);
     }
 
     @Override
     public int defaultCastUp() {
-        return SpellConfig.SteamingDuration.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.SteamingDuration, 0);
     }
 
     @Override
@@ -46,7 +46,7 @@ public class SteamSpell extends ChargingSpell {
 
     @Override
     public int defaultSpellCooldown() {
-        return SpellConfig.SteamingCoolDown.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.SteamingCoolDown, 0);
     }
 
     public SoundEvent CastingSound() {

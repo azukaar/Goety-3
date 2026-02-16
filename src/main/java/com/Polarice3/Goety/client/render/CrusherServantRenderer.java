@@ -28,7 +28,7 @@ public class CrusherServantRenderer<T extends CrusherServant> extends MobRendere
 
     @Override
     public ResourceLocation getTextureLocation(T entity) {
-        if (entity.isHostile() || !MobsConfig.CrusherServantTexture.get()){
+        if (entity.isHostile() || !com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MobsConfig.CrusherServantTexture, false)){
             if (entity.isStorm()){
                 return ORIGINAL_STORM;
             }

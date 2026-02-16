@@ -20,6 +20,7 @@ import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.entity.projectile.Arrow;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraft.core.Holder;
 
 public class MossySkeletonServant extends AbstractSkeletonServant {
     public MossySkeletonServant(EntityType<? extends AbstractSkeletonServant> type, Level worldIn) {
@@ -28,20 +29,20 @@ public class MossySkeletonServant extends AbstractSkeletonServant {
 
     public static AttributeSupplier.Builder setCustomAttributes() {
         return Mob.createMobAttributes()
-                .add(Attributes.MAX_HEALTH, AttributesConfig.MossySkeletonServantHealth.get())
-                .add(Attributes.ARMOR, AttributesConfig.MossySkeletonServantArmor.get())
+                .add(Attributes.MAX_HEALTH, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.MossySkeletonServantHealth, 20.0D))
+                .add(Attributes.ARMOR, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.MossySkeletonServantArmor, 20.0D))
                 .add(Attributes.MOVEMENT_SPEED, 0.25F)
-                .add(Attributes.ATTACK_DAMAGE, AttributesConfig.MossySkeletonServantDamage.get());
+                .add(Attributes.ATTACK_DAMAGE, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.MossySkeletonServantDamage, 20.0D));
     }
 
     public void setConfigurableAttributes(){
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.MAX_HEALTH), AttributesConfig.MossySkeletonServantHealth.get());
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ARMOR), AttributesConfig.MossySkeletonServantArmor.get());
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ATTACK_DAMAGE), AttributesConfig.MossySkeletonServantDamage.get());
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.MAX_HEALTH), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.MossySkeletonServantHealth, 20.0D));
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ARMOR), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.MossySkeletonServantArmor, 20.0D));
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ATTACK_DAMAGE), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.MossySkeletonServantDamage, 20.0D));
     }
 
     public double getBaseRangeDamage(){
-        return AttributesConfig.MossySkeletonServantRangeDamage.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.MossySkeletonServantRangeDamage, 20.0D);
     }
 
     protected SoundEvent getAmbientSound() {
@@ -83,9 +84,9 @@ public class MossySkeletonServant extends AbstractSkeletonServant {
         AbstractArrow abstractarrowentity = super.getMobArrow(pArrowStack, pDistanceFactor);
         if (abstractarrowentity instanceof Arrow arrow) {
             int amplifier = this.isUpgraded() ? 1 : 0;
-            MobEffect mobEffect = MobEffects.POISON;
+            Holder<MobEffect> mobEffect = MobEffects.POISON;
             if (CuriosFinder.hasWildRobe(this.getTrueOwner())){
-                mobEffect = GoetyEffects.ACID_VENOM.get();
+                mobEffect = GoetyEffects.ACID_VENOM;
             }
             arrow.addEffect(new MobEffectInstance(mobEffect, MathHelper.secondsToTicks(3), amplifier));
         }

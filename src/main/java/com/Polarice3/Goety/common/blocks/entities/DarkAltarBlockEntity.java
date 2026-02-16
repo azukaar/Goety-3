@@ -118,6 +118,7 @@ public class DarkAltarBlockEntity extends PedestalBlockEntity implements GameEve
 
     @Override
     protected void loadAdditional(CompoundTag compound, HolderLookup.Provider provider) {
+        this.readNetwork(compound, provider);
         super.loadAdditional(compound, provider);
 
         this.consumedIngredients.clear();
@@ -138,6 +139,7 @@ public class DarkAltarBlockEntity extends PedestalBlockEntity implements GameEve
 
     @Override
     protected void saveAdditional(CompoundTag compound, HolderLookup.Provider provider) {
+        this.writeNetwork(compound, provider);
         if (this.getCurrentRitualRecipe() != null) {
             if (this.consumedIngredients.size() > 0) {
                 ListTag list = new ListTag();
@@ -151,11 +153,8 @@ public class DarkAltarBlockEntity extends PedestalBlockEntity implements GameEve
         super.saveAdditional(compound, provider);
     }
 
-    @Override
-    public void readNetwork(CompoundTag compound) {
-        if (this.getLevel() != null) {
-            this.itemStackHandler.deserializeNBT(this.getLevel().registryAccess(), compound.getCompound("inventory"));
-        }
+    public void readNetwork(CompoundTag compound, HolderLookup.Provider pRegistries) {
+        this.itemStackHandler.deserializeNBT(pRegistries, compound.getCompound("inventory"));
         this.lastChangeTime = compound.getLong("lastChangeTime");
         if (compound.contains("currentRitual")) {
             this.currentRitualRecipeId = ResourceLocation.parse(compound.getString("currentRitual"));
@@ -176,11 +175,8 @@ public class DarkAltarBlockEntity extends PedestalBlockEntity implements GameEve
         }
     }
 
-    @Override
-    public CompoundTag writeNetwork(CompoundTag compound) {
-        if (this.getLevel() != null) {
-            compound.put("inventory", this.itemStackHandler.serializeNBT(this.getLevel().registryAccess()));
-        }
+    public CompoundTag writeNetwork(CompoundTag compound, HolderLookup.Provider pRegistries) {
+        compound.put("inventory", this.itemStackHandler.serializeNBT(pRegistries));
         compound.putLong("lastChangeTime", this.lastChangeTime);
         RitualRecipe recipe = this.getCurrentRitualRecipe();
         if (recipe != null) {
@@ -395,7 +391,7 @@ public class DarkAltarBlockEntity extends PedestalBlockEntity implements GameEve
                             .orElse(null);
 
                     if (ritualRecipe != null) {
-                        if (ritualRecipe.getRitual() instanceof EnchantItemRitual && !MainConfig.RitualEnchants.get()){
+                        if (ritualRecipe.getRitual() instanceof EnchantItemRitual && !com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MainConfig.RitualEnchants, true)){
                             player.displayClientMessage(Component.translatable("info.goety.ritual.disable.fail"), true);
                             return false;
                         } else if (ritualRecipe.getRitual().isValid(world, pos, this, player, activationItem, ritualRecipe.getIngredients())) {
@@ -403,7 +399,7 @@ public class DarkAltarBlockEntity extends PedestalBlockEntity implements GameEve
 //                                player.displayClientMessage(Component.translatable("info.goety.ritual.structure.fail"), true);
                                 return false;
                             } else if (ritualRecipe.getResearch().contains(ResearchList.FORBIDDEN.getId())){
-                                if (MainConfig.LichScrollRequirement.get()) {
+                                if (com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MainConfig.LichScrollRequirement, true)) {
                                     if (SEHelper.hasResearch(player, ResearchList.FORBIDDEN)) {
                                         this.startRitual(player, activationItem, ritualRecipe);
                                     } else {

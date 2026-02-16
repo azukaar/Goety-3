@@ -25,13 +25,13 @@ public class VampireBatRenderer extends MobRenderer<Bat, BatModel> {
       p_113879_.scale(0.35F, 0.35F, 0.35F);
    }
 
-   protected void setupRotations(Bat p_113882_, PoseStack p_113883_, float p_113884_, float p_113885_, float p_113886_) {
+   protected void setupRotations(Bat p_113882_, PoseStack p_113883_, float p_113884_, float p_113885_, float p_113886_, float p_332675_) {
       if (p_113882_.isResting()) {
          p_113883_.translate(0.0D, (double)-0.1F, 0.0D);
       } else {
          p_113883_.translate(0.0D, (double)(Mth.cos(p_113884_ * 0.3F) * 0.1F), 0.0D);
       }
 
-      super.setupRotations(p_113882_, p_113883_, p_113884_, p_113885_, p_113886_);
+      super.setupRotations(p_113882_, p_113883_, p_113884_, p_113885_, p_113886_, p_332675_);
    }
 }

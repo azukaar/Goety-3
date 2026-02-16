@@ -26,7 +26,7 @@ public class BoneSpiderServantRenderer<T extends BoneSpiderServant> extends MobR
    }
 
    public ResourceLocation getTextureLocation(BoneSpiderServant p_113972_) {
-      if (p_113972_.isHostile() || !MobsConfig.BoneSpiderServantTexture.get()){
+      if (p_113972_.isHostile() || !com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MobsConfig.BoneSpiderServantTexture, false)){
          return ORIGINAL;
       } else {
          return BONE_SPIDER_LOCATION;

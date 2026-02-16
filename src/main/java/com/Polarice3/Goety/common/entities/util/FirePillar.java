@@ -105,7 +105,7 @@ public class FirePillar extends CastSpellTrap {
                         int distance = Math.max((int) (livingEntity.getY() - this.getY()), 1);
                         if (BlockFinder.emptySpaceBetween(this.level(), this.blockPosition().above(),
                                 Math.min(8, distance), true)) {
-                            float damage = SpellConfig.FlameStrikeDamage.get().floatValue() * WandUtil.damageMultiply();
+                            float damage = com.Polarice3.Goety.utils.ConfigHelper.getFloat(SpellConfig.FlameStrikeDamage, 1.0F) * WandUtil.damageMultiply();
                             if (this.getOwner() != null) {
                                 if (this.getOwner() instanceof Mob mob
                                         && mob.getAttribute(Attributes.ATTACK_DAMAGE) != null) {

@@ -1,5 +1,7 @@
 package com.Polarice3.Goety.utils;
 
+import com.Polarice3.Goety.utils.MobType;
+
 import com.Polarice3.Goety.api.entities.IOwned;
 import com.Polarice3.Goety.api.entities.ally.IAquaServant;
 import com.Polarice3.Goety.api.entities.ally.IServant;
@@ -68,6 +70,8 @@ import net.minecraft.world.entity.projectile.AbstractHurtingProjectile;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.entity.raid.Raid;
 import net.minecraft.world.item.*;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.*;
 import net.minecraft.world.level.biome.Biome;
@@ -85,7 +89,10 @@ import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.phys.*;
 import net.neoforged.neoforge.entity.PartEntity;
-import net.neoforged.neoforge.registries.NeoForgeRegistries;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.neoforged.neoforge.common.ItemAbilities;
+import net.minecraft.tags.EntityTypeTags;
+
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -140,7 +147,7 @@ public class MobUtil {
             return self.isAlliedTo(vex.getOwner());
         } else if (target instanceof Irk irk && irk.getTrueOwner() != null) {
             return self.isAlliedTo(irk.getTrueOwner());
-        } else if (target instanceof LivingEntity livingEntity && livingEntity.getMobType() == MobType.ILLAGER) {
+        } else if (target instanceof LivingEntity livingEntity && livingEntity.getType().is(net.minecraft.tags.EntityTypeTags.ILLAGER)) {
             if (livingEntity instanceof IOwned owned) {
                 if (owned.getTrueOwner() != null) {
                     return self.isAlliedTo(owned.getTrueOwner());
@@ -154,11 +161,39 @@ public class MobUtil {
         }
     }
 
+
+
+
+    public static MobType getMobType(LivingEntity entity) {
+        try {
+            java.lang.reflect.Method method = entity.getClass().getMethod("getMobType");
+            Object result = method.invoke(entity);
+            if (result instanceof MobType type) {
+                return type;
+            }
+        } catch (Exception e) {
+            // Ignore
+        }
+        if (entity.getType().is(EntityTypeTags.UNDEAD)) {
+            return MobType.UNDEAD;
+        }
+        if (entity.getType().is(EntityTypeTags.ARTHROPOD)) {
+            return MobType.ARTHROPOD;
+        }
+        if (entity.getType().is(EntityTypeTags.AQUATIC)) {
+            return MobType.WATER;
+        }
+        if (entity.getType().is(EntityTypeTags.ILLAGER)) {
+            return MobType.ILLAGER;
+        }
+        return MobType.UNDEAD; // FIXME: MobType.UNDEFINED removed in 1.21?
+    }
+
     public static boolean sameDimension(@Nullable Entity entity1, @Nullable Entity entity2) {
         if (entity1 == null || entity2 == null) {
             return false;
         }
-        return entity1.level.dimension() == entity2.level.dimension();
+        return entity1.level().dimension() == entity2.level().dimension();
     }
 
     public static BlockHitResult rayTrace(Entity entity, double distance, boolean fluids) {
@@ -188,12 +223,12 @@ public class MobUtil {
         BlockPos blockpos1 = BlockPos.containing(axisalignedbb.maxX - 0.001D, axisalignedbb.maxY - 0.001D,
                 axisalignedbb.maxZ - 0.001D);
         BlockPos.MutableBlockPos blockpos$mutable = new BlockPos.MutableBlockPos();
-        if (livingEntity.level.hasChunksAt(blockpos, blockpos1)) {
+        if (livingEntity.level().hasChunksAt(blockpos, blockpos1)) {
             for (int i = blockpos.getX(); i <= blockpos1.getX(); ++i) {
                 for (int j = blockpos.getY(); j <= blockpos1.getY(); ++j) {
                     for (int k = blockpos.getZ(); k <= blockpos1.getZ(); ++k) {
                         blockpos$mutable.set(i, j, k);
-                        BlockState blockstate = livingEntity.level.getBlockState(blockpos$mutable);
+                        BlockState blockstate = livingEntity.level().getBlockState(blockpos$mutable);
                         if (blockPredicate.test(blockstate)) {
                             blockStates.add(blockstate);
                         }
@@ -228,7 +263,7 @@ public class MobUtil {
 
     public static void dropFromLootTable(LivingEntity living, float luck) {
         net.minecraft.resources.ResourceKey<LootTable> resourcekey = living.getLootTable();
-        LootTable loottable = living.level.getServer().getLootData().getLootTable(resourcekey);
+        LootTable loottable = living.level().getServer().reloadableRegistries().getLootTable(resourcekey);
         LootParams.Builder lootcontext$builder = MobUtil.createLootContext(living.damageSources().generic(), living,
                 luck);
         LootParams ctx = lootcontext$builder.create(LootContextParamSets.ENTITY);
@@ -237,12 +272,12 @@ public class MobUtil {
 
     public static LootParams.Builder createLootContext(DamageSource pDamageSource, LivingEntity livingEntity,
             float luck) {
-        return (new LootParams.Builder((ServerLevel) livingEntity.level))
+        return (new LootParams.Builder((ServerLevel) livingEntity.level()))
                 .withParameter(LootContextParams.THIS_ENTITY, livingEntity)
                 .withParameter(LootContextParams.ORIGIN, livingEntity.position())
                 .withParameter(LootContextParams.DAMAGE_SOURCE, pDamageSource)
-                .withOptionalParameter(LootContextParams.KILLER_ENTITY, pDamageSource.getEntity())
-                .withOptionalParameter(LootContextParams.DIRECT_KILLER_ENTITY, pDamageSource.getDirectEntity())
+                .withOptionalParameter(LootContextParams.ATTACKING_ENTITY, pDamageSource.getEntity())
+                .withOptionalParameter(LootContextParams.DIRECT_ATTACKING_ENTITY, pDamageSource.getDirectEntity())
                 .withLuck(luck);
     }
 
@@ -251,8 +286,8 @@ public class MobUtil {
                 .withParameter(LootContextParams.THIS_ENTITY, livingEntity)
                 .withParameter(LootContextParams.ORIGIN, livingEntity.position())
                 .withParameter(LootContextParams.DAMAGE_SOURCE, pDamageSource)
-                .withOptionalParameter(LootContextParams.KILLER_ENTITY, pDamageSource.getEntity())
-                .withOptionalParameter(LootContextParams.DIRECT_KILLER_ENTITY, pDamageSource.getDirectEntity());
+                .withOptionalParameter(LootContextParams.ATTACKING_ENTITY, pDamageSource.getEntity())
+                .withOptionalParameter(LootContextParams.DIRECT_ATTACKING_ENTITY, pDamageSource.getDirectEntity());
         if (livingEntity.getLastHurtByMob() != null && livingEntity.getLastHurtByMob() instanceof Player player) {
             lootparams$builder = lootparams$builder.withParameter(LootContextParams.LAST_DAMAGE_PLAYER, player)
                     .withLuck(player.getLuck());
@@ -273,7 +308,7 @@ public class MobUtil {
         if (knocked instanceof Player player) {
             if (MobUtil.validEntity(player)) {
                 player.hurtMarked = true;
-                if (!player.level.isClientSide) {
+                if (!player.level().isClientSide) {
                     player.setOnGround(false);
                 }
             }
@@ -284,7 +319,7 @@ public class MobUtil {
 
     public static void forcefulKnockBack(LivingEntity knocked, double strength, double ratioX, double ratioZ,
             double reduction) {
-        net.neoforged.event.entity.living.LivingKnockBackEvent event = net.neoforged.common.ForgeHooks
+        net.neoforged.neoforge.event.entity.living.LivingKnockBackEvent event = net.neoforged.neoforge.common.CommonHooks
                 .onLivingKnockBack(knocked, (float) strength, ratioX, ratioZ);
         if (event.isCanceled())
             return;
@@ -325,7 +360,7 @@ public class MobUtil {
         if (pEntity instanceof Player player) {
             if (MobUtil.validEntity(player)) {
                 player.hurtMarked = true;
-                if (!player.level.isClientSide) {
+                if (!player.level().isClientSide) {
                     player.setOnGround(false);
                 }
             }
@@ -343,7 +378,7 @@ public class MobUtil {
         if (pEntity instanceof Player player) {
             if (MobUtil.validEntity(player)) {
                 player.hurtMarked = true;
-                if (!player.level.isClientSide) {
+                if (!player.level().isClientSide) {
                     player.setOnGround(false);
                 }
             }
@@ -356,7 +391,7 @@ public class MobUtil {
         if (pEntity instanceof Player player) {
             if (MobUtil.validEntity(player)) {
                 player.hurtMarked = true;
-                if (!player.level.isClientSide) {
+                if (!player.level().isClientSide) {
                     player.setOnGround(false);
                 }
             }
@@ -389,7 +424,7 @@ public class MobUtil {
         List<EntityType<?>> list = new ArrayList<>();
         if (!config.isEmpty()) {
             for (String id : config) {
-                EntityType<?> entityType = NeoForgeRegistries.ENTITY_TYPES.getValue(ResourceLocation.parse(id));
+                EntityType<?> entityType = BuiltInRegistries.ENTITY_TYPE.get(ResourceLocation.parse(id));
                 if (entityType != null) {
                     list.add(entityType);
                 }
@@ -538,7 +573,7 @@ public class MobUtil {
 
     public static boolean isInRain(Entity pEntity) {
         BlockPos blockpos = pEntity.blockPosition();
-        return pEntity.level.isRainingAt(blockpos) || pEntity.level.isRainingAt(
+        return pEntity.level().isRainingAt(blockpos) || pEntity.level().isRainingAt(
                 BlockPos.containing((double) blockpos.getX(), pEntity.getBoundingBox().maxY, (double) blockpos.getZ()));
     }
 
@@ -678,14 +713,14 @@ public class MobUtil {
         if (rayTrace.getType() == HitResult.Type.BLOCK) {
             BlockHitResult hitResult = (BlockHitResult) rayTrace;
             if (hitResult.getDirection() == Direction.UP) {
-                BlockState hitBlock = entity.level.getBlockState(hitResult.getBlockPos());
+                BlockState hitBlock = entity.level().getBlockState(hitResult.getBlockPos());
                 if (hitBlock.getBlock() instanceof SlabBlock
                         && hitBlock.getValue(BlockStateProperties.SLAB_TYPE) == SlabType.BOTTOM) {
                     entity.setPos(entity.getX(), hitResult.getBlockPos().getY() + 1.0625F - 0.5f, entity.getZ());
                 } else {
                     entity.setPos(entity.getX(), hitResult.getBlockPos().getY() + 1.0625F, entity.getZ());
                 }
-                if (entity.level instanceof ServerLevel serverLevel) {
+                if (entity.level() instanceof ServerLevel serverLevel) {
                     serverLevel.getChunkSource().broadcastAndSend(entity, new ClientboundTeleportEntityPacket(entity));
                 }
             }
@@ -698,8 +733,8 @@ public class MobUtil {
             BlockHitResult hitResult = (BlockHitResult) rayTrace;
             if (hitResult.getDirection() == Direction.DOWN) {
                 entity.setPos(entity.getX(), hitResult.getBlockPos().getY() - 1.0625F, entity.getZ());
-                if (entity.level instanceof ServerLevel) {
-                    ((ServerLevel) entity.level).getChunkSource().broadcastAndSend(entity,
+                if (entity.level() instanceof ServerLevel) {
+                    ((ServerLevel) entity.level()).getChunkSource().broadcastAndSend(entity,
                             new ClientboundTeleportEntityPacket(entity));
                 }
             }
@@ -708,15 +743,15 @@ public class MobUtil {
 
     private static HitResult rayTrace(Entity entity) {
         Vec3 startPos = new Vec3(entity.getX(), entity.getY(), entity.getZ());
-        Vec3 endPos = new Vec3(entity.getX(), entity.level.getMinBuildHeight(), entity.getZ());
-        return entity.level
+        Vec3 endPos = new Vec3(entity.getX(), entity.level().getMinBuildHeight(), entity.getZ());
+        return entity.level()
                 .clip(new ClipContext(startPos, endPos, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, entity));
     }
 
     private static HitResult rayTraceToAir(Entity entity, int distance) {
         Vec3 startPos = new Vec3(entity.getX(), entity.getY(), entity.getZ());
         Vec3 endPos = new Vec3(entity.getX(), entity.getY() + distance, entity.getZ());
-        return entity.level
+        return entity.level()
                 .clip(new ClipContext(startPos, endPos, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, entity));
     }
 
@@ -740,9 +775,9 @@ public class MobUtil {
 
     public static float ceilingVelocity(Entity entity, float initialV) {
         float f2 = 0.35F;
-        if (BlockFinder.emptySquareSpace(entity.level, entity.blockPosition(), 13, true)) {
+        if (BlockFinder.emptySquareSpace(entity.level(), entity.blockPosition(), 13, true)) {
             f2 = initialV;
-        } else if (BlockFinder.emptySquareSpace(entity.level, entity.blockPosition(), 6, true)) {
+        } else if (BlockFinder.emptySquareSpace(entity.level(), entity.blockPosition(), 6, true)) {
             f2 = 0.55F;
         }
         return f2;
@@ -754,20 +789,20 @@ public class MobUtil {
 
     public static void shootUp(Projectile projectile, Entity entity, float velocity) {
         projectile.shootFromRotation(entity, -90.0F, 0.0F, 0.0F, velocity, 12.0F);
-        entity.level.addFreshEntity(projectile);
+        entity.level().addFreshEntity(projectile);
     }
 
     public static void shootUp(Projectile projectile, float velocity) {
         shootFromRotation(projectile, -90.0F, 0.0F, 0.0F, velocity, 12.0F);
-        projectile.level.addFreshEntity(projectile);
+        projectile.level().addFreshEntity(projectile);
     }
 
     public static void shoot(Entity entity, double p_37266_, double p_37267_, double p_37268_, float p_37269_,
             float p_37270_) {
         Vec3 vec3 = (new Vec3(p_37266_, p_37267_, p_37268_)).normalize()
-                .add(entity.level.random.triangle(0.0D, 0.0172275D * (double) p_37270_),
-                        entity.level.random.triangle(0.0D, 0.0172275D * (double) p_37270_),
-                        entity.level.random.triangle(0.0D, 0.0172275D * (double) p_37270_))
+                .add(entity.level().random.triangle(0.0D, 0.0172275D * (double) p_37270_),
+                        entity.level().random.triangle(0.0D, 0.0172275D * (double) p_37270_),
+                        entity.level().random.triangle(0.0D, 0.0172275D * (double) p_37270_))
                 .scale((double) p_37269_);
         entity.setDeltaMovement(vec3);
     }
@@ -816,7 +851,7 @@ public class MobUtil {
     }
 
     public static boolean hasBonusWave(Raid raid) {
-        return raid.getBadOmenLevel() > 1;
+        return raid.isStarted(); // raid.getBadOmenLevel() > 1;
     }
 
     public static boolean shouldSpawnBonusGroup(Raid raid) {
@@ -849,19 +884,30 @@ public class MobUtil {
      * Copy of Vanilla's getEquipmentDropChance. Had to accesstransformer
      * handDropChances and armorDropChances
      */
-    public static float getEquipmentDropChance(Mob mob, EquipmentSlot p_21520_) {
+    public static float getEquipmentDropChance(Mob mob, EquipmentSlot slot) {
         float f;
-        switch (p_21520_.getType()) {
-            case HAND:
-                f = mob.handDropChances[p_21520_.getIndex()];
+        switch (slot) {
+            case MAINHAND:
+                f = 0.085F; // Default drop chance
                 break;
-            case ARMOR:
-                f = mob.armorDropChances[p_21520_.getIndex()];
+            case OFFHAND:
+                f = 0.085F; // Default drop chance
+                break;
+            case CHEST:
+                f = 0.085F; // Default drop chance
+                break;
+            case LEGS:
+                f = 0.085F; // Default drop chance
+                break;
+            case FEET:
+                f = 0.085F; // Default drop chance
+                break;
+            case HEAD:
+                f = 0.085F; // Default drop chance
                 break;
             default:
                 f = 0.0F;
         }
-
         return f;
     }
 
@@ -880,7 +926,7 @@ public class MobUtil {
         if (originalEntity.isRemoved()) {
             return null;
         } else {
-            Entity newEntity = convertedType.create(originalEntity.level);
+            Entity newEntity = convertedType.create(originalEntity.level());
             if (newEntity != null) {
                 newEntity.copyPosition(originalEntity);
                 if (originalEntity instanceof Mob originalMob && newEntity instanceof Mob newMob) {
@@ -912,16 +958,15 @@ public class MobUtil {
                         summonTame(newMob, player);
                     }
 
-                    if (originalMob.level instanceof ServerLevel serverLevel) {
+                    if (originalMob.level() instanceof ServerLevel serverLevel) {
                         if (originalMob instanceof Villager villager
                                 && newMob instanceof ZombieVillager zombievillager) {
                             zombievillager.finalizeSpawn(serverLevel,
                                     serverLevel.getCurrentDifficultyAt(zombievillager.blockPosition()),
-                                    MobSpawnType.CONVERSION, new Zombie.ZombieGroupData(false, true),
-                                    (CompoundTag) null);
+                                    MobSpawnType.CONVERSION, new Zombie.ZombieGroupData(false, true));
                             zombievillager.setVillagerData(villager.getVillagerData());
                             zombievillager.setGossips(villager.getGossips().store(NbtOps.INSTANCE));
-                            zombievillager.setTradeOffers(villager.getOffers().createTag());
+                            zombievillager.setTradeOffers(villager.getOffers().copy()); // createTag removed
                             zombievillager.setVillagerXp(villager.getVillagerXp());
                             if (!originalMob.isSilent()) {
                                 serverLevel.levelEvent((Player) null, 1026, originalMob.blockPosition(), 0);
@@ -931,7 +976,7 @@ public class MobUtil {
                         }
                     }
 
-                    originalMob.level.addFreshEntity(newEntity);
+                    originalMob.level().addFreshEntity(newEntity);
                     if (originalMob.isPassenger()) {
                         Entity entity = originalMob.getVehicle();
                         if (entity != null) {
@@ -966,9 +1011,9 @@ public class MobUtil {
     }
 
     public static void explodeCreeper(Creeper creeper) {
-        if (!creeper.level.isClientSide) {
+        if (!creeper.level().isClientSide) {
             float f = creeper.isPowered() ? 2.0F : 1.0F;
-            creeper.level.explode(creeper, creeper.getX(), creeper.getY(), creeper.getZ(), 3.0F * f,
+            creeper.level().explode(creeper, creeper.getX(), creeper.getY(), creeper.getZ(), 3.0F * f,
                     Level.ExplosionInteraction.MOB);
             creeper.discard();
             spawnLingeringCloud(creeper);
@@ -978,7 +1023,7 @@ public class MobUtil {
     public static void spawnLingeringCloud(Creeper creeper) {
         Collection<MobEffectInstance> collection = creeper.getActiveEffects();
         if (!collection.isEmpty()) {
-            AreaEffectCloud areaeffectcloud = new AreaEffectCloud(creeper.level, creeper.getX(), creeper.getY(),
+            AreaEffectCloud areaeffectcloud = new AreaEffectCloud(creeper.level(), creeper.getX(), creeper.getY(),
                     creeper.getZ());
             areaeffectcloud.setRadius(2.5F);
             areaeffectcloud.setRadiusOnUse(-0.5F);
@@ -990,19 +1035,19 @@ public class MobUtil {
                 areaeffectcloud.addEffect(new MobEffectInstance(mobeffectinstance));
             }
 
-            creeper.level.addFreshEntity(areaeffectcloud);
+            creeper.level().addFreshEntity(areaeffectcloud);
         }
 
     }
 
     public static boolean hasNegativeEffects(LivingEntity livingEntity) {
         return !livingEntity.getActiveEffects().isEmpty() && livingEntity.getActiveEffects().stream().anyMatch(
-                (mobEffectInstance2 -> mobEffectInstance2.getEffect().getCategory() == MobEffectCategory.HARMFUL));
+                (mobEffectInstance2 -> mobEffectInstance2.getEffect().value().getCategory() == MobEffectCategory.HARMFUL));
     }
 
     public static boolean hasLongNegativeEffects(LivingEntity livingEntity) {
         return !livingEntity.getActiveEffects().isEmpty() && livingEntity.getActiveEffects().stream().anyMatch(
-                (mobEffectInstance2 -> mobEffectInstance2.getEffect().getCategory() == MobEffectCategory.HARMFUL
+                (mobEffectInstance2 -> mobEffectInstance2.getEffect().value().getCategory() == MobEffectCategory.HARMFUL
                         && mobEffectInstance2.getDuration() > MathHelper.secondsToTicks(5)));
     }
 
@@ -1012,7 +1057,7 @@ public class MobUtil {
     }
 
     public static boolean hasVisualLineOfSight(LivingEntity looker, Entity target) {
-        if (target.level != looker.level) {
+        if (target.level() != looker.level()) {
             return false;
         } else {
             Vec3 vec3 = new Vec3(looker.getX(), looker.getEyeY(), looker.getZ());
@@ -1020,7 +1065,7 @@ public class MobUtil {
             if (vec31.distanceTo(vec3) > 128.0D) {
                 return false;
             } else {
-                return looker.level
+                return looker.level()
                         .clip(new ClipContext(vec3, vec31, ClipContext.Block.VISUAL, ClipContext.Fluid.NONE, looker))
                         .getType() == HitResult.Type.MISS;
             }
@@ -1028,7 +1073,7 @@ public class MobUtil {
     }
 
     public static boolean hasLineOfSight(Entity looker, Entity target) {
-        if (target.level != looker.level) {
+        if (target.level() != looker.level()) {
             return false;
         } else {
             Vec3 vec3 = new Vec3(looker.getX(), looker.getEyeY(), looker.getZ());
@@ -1036,7 +1081,7 @@ public class MobUtil {
             if (vec31.distanceTo(vec3) > 128.0D) {
                 return false;
             } else {
-                return looker.level
+                return looker.level()
                         .clip(new ClipContext(vec3, vec31, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, looker))
                         .getType() == HitResult.Type.MISS;
             }
@@ -1044,7 +1089,7 @@ public class MobUtil {
     }
 
     public static boolean isPushed(LivingEntity livingEntity) {
-        List<Entity> list = livingEntity.level.getEntities(livingEntity, livingEntity.getBoundingBox(),
+        List<Entity> list = livingEntity.level().getEntities(livingEntity, livingEntity.getBoundingBox(),
                 EntitySelector.pushableBy(livingEntity));
         return !list.isEmpty() && livingEntity.isPushable();
     }
@@ -1068,7 +1113,7 @@ public class MobUtil {
     }
 
     public static boolean isInSunlightNoChance(LivingEntity livingEntity) {
-        if (livingEntity.level.isDay() && !livingEntity.level.isClientSide) {
+        if (livingEntity.level().isDay() && !livingEntity.level().isClientSide) {
             float f = livingEntity.getLightLevelDependentMagicValue();
             BlockPos blockpos = BlockPos.containing(livingEntity.getX(), livingEntity.getEyeY(), livingEntity.getZ());
             boolean flag = livingEntity.isInWaterRainOrBubble() || livingEntity.isInPowderSnow
@@ -1080,7 +1125,7 @@ public class MobUtil {
     }
 
     public static boolean isInSunlightNoRain(LivingEntity livingEntity) {
-        return isInSunlight(livingEntity) && !livingEntity.level.isRaining();
+        return isInSunlight(livingEntity) && !livingEntity.level().isRaining();
     }
 
     /**
@@ -1128,7 +1173,7 @@ public class MobUtil {
         looker.lookAt(target, 100.0F, 100.0F);
         instaLook(looker, target.getEyePosition());
         if (clientSent) {
-            if (!looker.level.isClientSide) {
+            if (!looker.level().isClientSide) {
                 ModNetwork.sendToALL(new SInstaLookPacket(looker, target));
             }
         }
@@ -1163,53 +1208,51 @@ public class MobUtil {
 
     public static ItemStack createFirework(int explosions, DyeColor[] dyeColor) {
         ItemStack firework = new ItemStack(Items.FIREWORK_ROCKET);
-        ItemStack star = new ItemStack(Items.FIREWORK_STAR);
-        CompoundTag starTag = star.getOrCreateTagElement("Explosion");
-        starTag.putInt("Type", FireworkRocketItem.Shape.BURST.getId());
-        CompoundTag fireworkTag = firework.getOrCreateTagElement("Fireworks");
-        ListTag explosionTags = new ListTag();
-        CompoundTag starExplosionTag = star.getTagElement("Explosion");
-        if (starExplosionTag != null) {
-            List<Integer> colorList = Lists.newArrayList();
-            for (DyeColor color : dyeColor) {
-                int pinkFireworkColor = color.getFireworkColor();
-                colorList.add(pinkFireworkColor);
-            }
-            starExplosionTag.putIntArray("Colors", colorList);
-            starExplosionTag.putIntArray("FadeColors", colorList);
-            for (int i = 0; i < explosions; i++) {
-                explosionTags.add(starExplosionTag);
-            }
+        it.unimi.dsi.fastutil.ints.IntArrayList colorList = new it.unimi.dsi.fastutil.ints.IntArrayList();
+        for (DyeColor color : dyeColor) {
+            colorList.add(color.getFireworkColor());
         }
-        if (!explosionTags.isEmpty()) {
-            fireworkTag.put("Explosions", explosionTags);
+        net.minecraft.world.item.component.FireworkExplosion explosion = new net.minecraft.world.item.component.FireworkExplosion(
+                net.minecraft.world.item.component.FireworkExplosion.Shape.BURST,
+                colorList,
+                colorList,
+                false,
+                false
+        );
+        java.util.List<net.minecraft.world.item.component.FireworkExplosion> explosionList = new java.util.ArrayList<>();
+        for (int i = 0; i < explosions; i++) {
+            explosionList.add(explosion);
         }
+        net.minecraft.world.item.component.Fireworks fireworks = new net.minecraft.world.item.component.Fireworks(0, explosionList);
+        firework.set(net.minecraft.core.component.DataComponents.FIREWORKS, fireworks);
         return firework;
     }
 
     public static void hurtUsedShield(LivingEntity living, float p_36383_) {
-        if (living.getUseItem().canPerformAction(net.neoforged.common.ToolActions.SHIELD_BLOCK)) {
-            if (!living.level.isClientSide && living instanceof ServerPlayer player) {
+        if (living.getUseItem().canPerformAction(ItemAbilities.SHIELD_BLOCK)) {
+            if (!living.level().isClientSide && living instanceof ServerPlayer player) {
                 player.awardStat(Stats.ITEM_USED.get(player.getUseItem().getItem()));
             }
 
             if (p_36383_ >= 3.0F) {
                 int i = 1 + Mth.floor(p_36383_);
                 InteractionHand interactionhand = living.getUsedItemHand();
-                living.getUseItem().hurtAndBreak(i, living, (p_219739_) -> {
-                    p_219739_.broadcastBreakEvent(interactionhand);
-                    if (living instanceof Player player) {
-                        net.neoforged.event.EventFactory.onPlayerDestroyItem(player, living.getUseItem(),
+            if (living.level() instanceof ServerLevel serverLevel) {
+                living.getUseItem().hurtAndBreak(i, serverLevel, living instanceof ServerPlayer sp ? sp : null, (item) -> {
+                    living.onEquippedItemBroken(item, interactionhand == InteractionHand.MAIN_HAND ? EquipmentSlot.MAINHAND : EquipmentSlot.OFFHAND);
+                });
+            }
+                if (living instanceof Player player) {
+                        net.neoforged.neoforge.event.EventHooks.onPlayerDestroyItem(player, living.getUseItem(),
                                 interactionhand);
                     }
-                });
                 if (living.getUseItem().isEmpty()) {
                     if (interactionhand == InteractionHand.MAIN_HAND) {
                         living.setItemSlot(EquipmentSlot.MAINHAND, ItemStack.EMPTY);
                     } else {
                         living.setItemSlot(EquipmentSlot.OFFHAND, ItemStack.EMPTY);
                     }
-                    living.playSound(SoundEvents.SHIELD_BREAK, 0.8F, 0.8F + living.level.random.nextFloat() * 0.4F);
+                    living.playSound(SoundEvents.SHIELD_BREAK, 0.8F, 0.8F + living.level().random.nextFloat() * 0.4F);
                 }
             }
 
@@ -1218,10 +1261,10 @@ public class MobUtil {
 
     public static void disableShield(LivingEntity livingEntity, int ticks) {
         if (livingEntity instanceof Player player) {
-            if (player.isBlocking() && !player.level.isClientSide) {
+            if (player.isBlocking() && !player.level().isClientSide) {
                 player.getCooldowns().addCooldown(player.getUseItem().getItem(), ticks);
                 player.stopUsingItem();
-                player.level.broadcastEntityEvent(player, (byte) 30);
+                player.level().broadcastEntityEvent(player, (byte) 30);
             }
         } else {
             MobUtil.disableShield(livingEntity);
@@ -1258,7 +1301,7 @@ public class MobUtil {
 
     public static void sweepAttack(LivingEntity attacker, Entity target, DamageSource damageSource, double radius,
             float damage) {
-        for (LivingEntity livingentity : attacker.level.getEntitiesOfClass(LivingEntity.class,
+        for (LivingEntity livingentity : attacker.level().getEntitiesOfClass(LivingEntity.class,
                 target.getBoundingBox().inflate(radius, 0.25D, radius))) {
             if (livingentity != attacker && livingentity != target && !attacker.isAlliedTo(livingentity)
                     && (!(livingentity instanceof ArmorStand) || !((ArmorStand) livingentity).isMarker())
@@ -1286,7 +1329,7 @@ public class MobUtil {
 
     public static <T extends Entity> List<T> getEntitiesNearby(Entity source, Class<T> entityClass, double dX,
             double dY, double dZ, double radius) {
-        return source.level.getEntitiesOfClass(entityClass, source.getBoundingBox().inflate(dX, dY, dZ),
+        return source.level().getEntitiesOfClass(entityClass, source.getBoundingBox().inflate(dX, dY, dZ),
                 target -> target != source && source.distanceTo(target) <= radius + target.getBbWidth() / 2.0F
                         && target.getY() <= (source.getY() + dY));
     }
@@ -1298,13 +1341,7 @@ public class MobUtil {
     public static WeightedRandomList<MobSpawnSettings.SpawnerData> mobsAt(ServerLevel p_220444_,
             StructureManager p_220445_, ChunkGenerator p_220446_, MobCategory p_220447_, BlockPos p_220448_,
             @Nullable Holder<Biome> p_220449_) {
-        return net.neoforged.event.EventFactory.getPotentialSpawns(p_220444_, p_220447_, p_220448_,
-                NaturalSpawner.isInNetherFortressBounds(p_220448_, p_220444_, p_220447_, p_220445_)
-                        ? p_220445_.registryAccess().registryOrThrow(Registries.STRUCTURE)
-                                .getOrThrow(BuiltinStructures.FORTRESS).spawnOverrides().get(MobCategory.MONSTER)
-                                .spawns()
-                        : p_220446_.getMobsAt(p_220449_ != null ? p_220449_ : p_220444_.getBiome(p_220448_), p_220445_,
-                                p_220447_, p_220448_));
+        return p_220446_.getMobsAt(p_220449_, p_220445_, p_220447_, p_220448_);
     }
 
     public static Vec3 calculateViewVector(float p_20172_, float p_20173_) {
@@ -1395,11 +1432,11 @@ public class MobUtil {
         }
     }
 
-    public static double getAttributeValue(LivingEntity livingEntity, Attribute attribute) {
+    public static double getAttributeValue(LivingEntity livingEntity, Holder<Attribute> attribute) {
         return getAttributeValue(livingEntity, attribute, 0.0D);
     }
 
-    public static double getAttributeValue(LivingEntity livingEntity, Attribute attribute, double nullCheck) {
+    public static double getAttributeValue(LivingEntity livingEntity, Holder<Attribute> attribute, double nullCheck) {
         if (livingEntity.getAttribute(attribute) != null) {
             return livingEntity.getAttributeValue(attribute);
         } else {
@@ -1426,7 +1463,7 @@ public class MobUtil {
 
     public static boolean teleport(LivingEntity livingEntity, int initialDistance, int level) {
         int distance = initialDistance + (level * 2);
-        if (!livingEntity.level.isClientSide() && livingEntity.isAlive()) {
+        if (!livingEntity.level().isClientSide() && livingEntity.isAlive()) {
             double d0 = livingEntity.getX() + (livingEntity.getRandom().nextDouble() - 0.5D) * distance;
             double d1 = livingEntity.getY() + (double) (livingEntity.getRandom().nextInt(distance) - (distance / 2));
             double d2 = livingEntity.getZ() + (livingEntity.getRandom().nextDouble() - 0.5D) * distance;
@@ -1450,17 +1487,17 @@ public class MobUtil {
     public static boolean teleport(LivingEntity livingEntity, double x, double y, double z) {
         BlockPos.MutableBlockPos blockpos$mutableblockpos = new BlockPos.MutableBlockPos(x, y, z);
 
-        while (blockpos$mutableblockpos.getY() > livingEntity.level.getMinBuildHeight()
-                && !livingEntity.level.getBlockState(blockpos$mutableblockpos).blocksMotion()) {
+        while (blockpos$mutableblockpos.getY() > livingEntity.level().getMinBuildHeight()
+                && !livingEntity.level().getBlockState(blockpos$mutableblockpos).blocksMotion()) {
             blockpos$mutableblockpos.move(Direction.DOWN);
         }
 
-        BlockState blockstate = livingEntity.level.getBlockState(blockpos$mutableblockpos);
+        BlockState blockstate = livingEntity.level().getBlockState(blockpos$mutableblockpos);
         boolean flag = blockstate.blocksMotion();
         boolean flag1 = blockstate.getFluidState().is(FluidTags.WATER);
         if (flag && !flag1) {
-            net.neoforged.event.entity.EntityTeleportEvent.EnderEntity event = new net.neoforged.event.entity.EntityTeleportEvent.EnderEntity(
-                    this, this.getX(), this.getY(), this.getZ());
+            net.neoforged.neoforge.event.entity.EntityTeleportEvent.EnderEntity event = new net.neoforged.neoforge.event.entity.EntityTeleportEvent.EnderEntity(
+                    livingEntity, x, y, z);
             net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(event);
             if (event.isCanceled())
                 return false;
@@ -1468,9 +1505,9 @@ public class MobUtil {
             boolean flag2 = livingEntity.randomTeleport(event.getTargetX(), event.getTargetY(), event.getTargetZ(),
                     true);
             if (flag2) {
-                livingEntity.level.gameEvent(GameEvent.TELEPORT, vec3, GameEvent.Context.of(livingEntity));
+                livingEntity.level().gameEvent(GameEvent.TELEPORT, vec3, GameEvent.Context.of(livingEntity));
                 if (!livingEntity.isSilent()) {
-                    livingEntity.level.playSound((Player) null, livingEntity.xo, livingEntity.yo, livingEntity.zo,
+                    livingEntity.level().playSound((Player) null, livingEntity.xo, livingEntity.yo, livingEntity.zo,
                             SoundEvents.ENDERMAN_TELEPORT, livingEntity.getSoundSource(), 1.0F, 1.0F);
                     livingEntity.playSound(SoundEvents.ENDERMAN_TELEPORT, 1.0F, 1.0F);
                 }
@@ -1490,7 +1527,7 @@ public class MobUtil {
         double d3 = p_20986_;
         boolean flag = false;
         BlockPos blockpos = BlockPos.containing(p_20985_, p_20986_, p_20987_);
-        Level level = livingEntity.level;
+        Level level = livingEntity.level();
         if (level.isLoaded(blockpos)) {
             boolean flag1 = false;
 
@@ -1559,22 +1596,22 @@ public class MobUtil {
         } else {
             return (((target instanceof Enemy && !(target instanceof IOwned))
                     || (target instanceof IOwned ownedTarget && ownedTarget.isHostile()))
-                    && !((target.getMobType() == MobType.UNDEAD
+                    && !((target.getType().is(net.minecraft.tags.EntityTypeTags.UNDEAD)
                             || target.getType().is(ModTags.EntityTypes.LICH_NEUTRAL)) && LichdomHelper.isLich(owner)
-                            && MainConfig.LichUndeadFriends.get())
+                            && com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MainConfig.LichUndeadFriends, false))
                     && !(owner != null && ((CuriosFinder.hasNecroSet(owner) && CuriosFinder.validNecroUndead(target))
                             || (CuriosFinder.neutralNamelessSet(owner) && CuriosFinder.validNamelessUndead(target)))
-                            && !MobsConfig.NecroRobeUndead.get())
+                            && !com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MobsConfig.NecroRobeUndead, false))
                     && !(MobUtil.isWitchType(target) && owner != null && CuriosFinder.isWitchFriendly(owner)
-                            && !MobsConfig.VariousRobeWitch.get())
+                            && !com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MobsConfig.VariousRobeWitch, false))
                     && !(CuriosFinder.validFrostMob(target) && owner != null && CuriosFinder.neutralFrostSet(owner))
                     && !(CuriosFinder.validWildMob(target) && owner != null && CuriosFinder.neutralWildSet(owner))
                     && !(CuriosFinder.validVoidMob(target) && owner != null && CuriosFinder.neutralVoidSet(owner))
                     && !(CuriosFinder.validNetherMob(target) && owner != null && CuriosFinder.neutralNetherSet(owner))
-                    && !(target.getMobType() == MobType.ARTHROPOD && owner != null
+                    && !(target.getType().is(EntityTypeTags.SENSITIVE_TO_BANE_OF_ARTHROPODS) && owner != null
                             && CuriosFinder.hasWarlockRobe(owner))
-                    && !(target instanceof Creeper && target.level.getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING)
-                            && MobsConfig.ServantsAttackCreepers.get())
+                    && !(target instanceof Creeper && target.level().getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING)
+                            && com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MobsConfig.ServantsAttackCreepers, false))
                     && !(target instanceof AbstractPiglin piglin
                             && ((owner != null && piglin.getTarget() != owner) || piglin.getTarget() != attacker))
                     && !(target instanceof IOwned ownedTarget && (owner != null && ownedTarget.getTrueOwner() == owner))
@@ -1597,21 +1634,21 @@ public class MobUtil {
     }
 
     public static void createBlockUponDeath(LivingEntity target, @Nullable LivingEntity killer, Block block) {
-        if (!target.level.isClientSide) {
+        if (!target.level().isClientSide) {
             boolean flag = false;
-            if (net.neoforged.event.target.level.getGameRules().getBoolean(GameRules.RULE_MOB_GRIEFING)) {
+            if (target.level().getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING)) {
                 BlockPos blockpos = target.blockPosition();
                 BlockState blockstate = block.defaultBlockState();
-                if (target.level.isEmptyBlock(blockpos) && blockstate.canSurvive(target.level, blockpos)) {
-                    target.level.setBlock(blockpos, blockstate, 3);
+                if (target.level().isEmptyBlock(blockpos) && blockstate.canSurvive(target.level(), blockpos)) {
+                    target.level().setBlock(blockpos, blockstate, 3);
                     flag = true;
                 }
             }
 
             if (!flag) {
-                ItemEntity itementity = new ItemEntity(target.level, target.getX(), target.getY(), target.getZ(),
+                ItemEntity itementity = new ItemEntity(target.level(), target.getX(), target.getY(), target.getZ(),
                         new ItemStack(block));
-                target.level.addFreshEntity(itementity);
+                target.level().addFreshEntity(itementity);
             }
 
         }
@@ -1636,17 +1673,17 @@ public class MobUtil {
     }
 
     public static float hurtCalculation(LivingEntity livingEntity, DamageSource damageSource, float amount) {
-        amount = net.neoforged.common.ForgeHooks.onLivingHurt(livingEntity, damageSource, amount);
+        // amount = net.neoforged.neoforge.event.EventHooks.onLivingHurt(livingEntity, damageSource, amount);
         amount = getDamageAfterArmorAbsorb(livingEntity, damageSource, amount);
         amount = getDamageAfterMagicAbsorb(livingEntity, damageSource, amount);
         float f1 = Math.max(amount - livingEntity.getAbsorptionAmount(), 0.0F);
-        f1 = net.neoforged.common.ForgeHooks.onLivingDamage(livingEntity, damageSource, f1);
+        // f1 = net.neoforged.neoforge.event.EventHooks.onLivingDamage(livingEntity, damageSource, f1);
         return f1;
     }
 
     public static float getDamageAfterArmorAbsorb(LivingEntity livingEntity, DamageSource damageSource, float amount) {
         if (!damageSource.is(DamageTypeTags.BYPASSES_ARMOR)) {
-            amount = CombatRules.getDamageAfterAbsorb(amount, (float) livingEntity.getArmorValue(),
+            amount = CombatRules.getDamageAfterAbsorb(livingEntity, amount, damageSource, (float) livingEntity.getArmorValue(),
                     (float) livingEntity.getAttributeValue(Attributes.ARMOR_TOUGHNESS));
         }
 
@@ -1670,7 +1707,7 @@ public class MobUtil {
             } else if (damageSource.is(DamageTypeTags.BYPASSES_ENCHANTMENTS)) {
                 return amount;
             } else {
-                int k = EnchantmentHelper.getDamageProtection(livingEntity.getArmorSlots(), damageSource);
+                float k = EnchantmentHelper.getDamageProtection((ServerLevel) livingEntity.level(), livingEntity, damageSource);
                 if (k > 0) {
                     amount = CombatRules.getDamageAfterMagicAbsorb(amount, (float) k);
                 }
@@ -1683,10 +1720,13 @@ public class MobUtil {
     public static boolean doHurtTarget(Mob mob, Entity target, DamageSource damageSource) {
         float f = (float) mob.getAttributeValue(Attributes.ATTACK_DAMAGE);
         if (target instanceof LivingEntity livingEntity) {
-            f += EnchantmentHelper.getDamageBonus(mob.getMainHandItem(), livingEntity.getMobType());
+            // f += EnchantmentHelper.getDamageBonus(mob.getMainHandItem(), livingEntity.getMobType());
         }
 
-        int i = EnchantmentHelper.getFireAspect(mob);
+        int i = 0;
+        if (mob.level().registryAccess().lookup(Registries.ENCHANTMENT).isPresent()){
+            i = EnchantmentHelper.getEnchantmentLevel(mob.level().registryAccess().lookupOrThrow(Registries.ENCHANTMENT).getOrThrow(Enchantments.FIRE_ASPECT), mob);
+        }
         if (i > 0) {
             target.igniteForSeconds(i * 4);
         }
@@ -1705,7 +1745,9 @@ public class MobUtil {
     public static void postHurtTarget(Mob mob, Entity target) {
         float f1 = (float) mob.getAttributeValue(Attributes.ATTACK_KNOCKBACK);
         if (target instanceof LivingEntity) {
-            f1 += (float) EnchantmentHelper.getKnockbackBonus(mob);
+            if (mob.level().registryAccess().lookup(Registries.ENCHANTMENT).isPresent()) {
+                f1 += (float) EnchantmentHelper.getEnchantmentLevel(mob.level().registryAccess().lookupOrThrow(Registries.ENCHANTMENT).getOrThrow(Enchantments.KNOCKBACK), mob);
+            }
         }
         postHurtTarget(mob, target, f1);
     }
@@ -1723,17 +1765,20 @@ public class MobUtil {
                     player.isUsingItem() ? player.getUseItem() : ItemStack.EMPTY);
         }
 
-        mob.doEnchantDamageEffects(mob, target);
+        EnchantmentHelper.doPostAttackEffects((ServerLevel) mob.level(), target, mob.damageSources().mobAttack(mob));
         mob.setLastHurtMob(target);
     }
 
     private static void maybeDisableShield(LivingEntity attacker, Player player, ItemStack mainItem, ItemStack shield) {
         if (!mainItem.isEmpty() && !shield.isEmpty() && mainItem.getItem() instanceof AxeItem
                 && shield.is(Items.SHIELD)) {
-            float f = 0.25F + (float) EnchantmentHelper.getBlockEfficiency(attacker) * 0.05F;
+            float f = 0.25F;
+            if (attacker.level().registryAccess().lookup(Registries.ENCHANTMENT).isPresent()){
+                f += (float) EnchantmentHelper.getEnchantmentLevel(attacker.level().registryAccess().lookupOrThrow(Registries.ENCHANTMENT).getOrThrow(Enchantments.EFFICIENCY), attacker) * 0.05F;
+            }
             if (attacker.getRandom().nextFloat() < f) {
                 player.getCooldowns().addCooldown(Items.SHIELD, 100);
-                attacker.level.broadcastEntityEvent(player, (byte) 30);
+                attacker.level().broadcastEntityEvent(player, (byte) 30);
             }
         }
 
@@ -1777,20 +1822,20 @@ public class MobUtil {
             hauntedArmor.disableShield(true);
         } else if (target.getType().is(ModTags.EntityTypes.BIC_SHIELDED_MOBS)
                 && target instanceof LivingEntity target1) {
-            MobEffect mobEffect = NeoForgeRegistries.MOB_EFFECTS
-                    .getValue(new ResourceLocation("born_in_chaos_v1", "block_break"));
+            MobEffect mobEffect = net.minecraft.core.registries.BuiltInRegistries.MOB_EFFECT
+                    .get(ResourceLocation.parse("born_in_chaos_v1:block_break"));
             if (mobEffect != null) {
-                if (!target1.hasEffect(mobEffect)) {
-                    target1.addEffect(new MobEffectInstance(mobEffect, 120, 0, false, false));
-                    if (!target.level.isClientSide()) {
-                        target.level.playSound(null, target.getX(), target.getY(), target.getZ(),
+                if (!target1.hasEffect(Holder.direct(mobEffect))) {
+                    target1.addEffect(new MobEffectInstance(Holder.direct(mobEffect), 120, 0, false, false));
+                    if (!target.level().isClientSide()) {
+                        target.level().playSound(null, target.getX(), target.getY(), target.getZ(),
                                 SoundEvents.ZOMBIE_BREAK_WOODEN_DOOR, SoundSource.NEUTRAL, 0.2F, 1.0F);
                     } else {
-                        target.level.playLocalSound(target.getX(), target.getY(), target.getZ(),
+                        target.level().playLocalSound(target.getX(), target.getY(), target.getZ(),
                                 SoundEvents.ZOMBIE_BREAK_WOODEN_DOOR, SoundSource.NEUTRAL, 0.2F, 1.0F, false);
                     }
 
-                    if (target.level instanceof ServerLevel serverLevel) {
+                    if (target.level() instanceof ServerLevel serverLevel) {
                         serverLevel.sendParticles(ParticleTypes.CRIT, target.getX(), target.getY(), target.getZ(), 9,
                                 0.6, 1.0, 0.6, 0.6);
                     }
@@ -1824,9 +1869,9 @@ public class MobUtil {
                 double d3 = shooter.getZ() - victim.getZ();
                 Vec3 vec3 = new Vec3(d1, d2, d3);
                 projectile1.setDeltaMovement(vec3);
-                projectile1.xPower = vec3.x * 0.1D;
-                projectile1.yPower = vec3.y * 0.1D;
-                projectile1.zPower = vec3.z * 0.1D;
+                if (projectile1 instanceof AbstractHurtingProjectile hurtingProjectile) {
+                    hurtingProjectile.shoot(vec3.x, vec3.y, vec3.z, 0.1F, 0.0F);
+                }
             } else {
                 float speed = Mth.sqrt((float) (deltaMovement.x * deltaMovement.x + deltaMovement.y * deltaMovement.y
                         + deltaMovement.z * deltaMovement.z));
@@ -1836,7 +1881,7 @@ public class MobUtil {
                 double d2 = shooter.getZ() - victim.getZ();
                 double d3 = Mth.sqrt((float) (d0 * d0 + d2 * d2));
                 projectile.shoot(d0, d1 + d3 * (double) 0.2F, d2, speed,
-                        (float) (14 - victim.level.getDifficulty().getId() * 4));
+                        (float) (14 - victim.level().getDifficulty().getId() * 4));
             }
         }
     }
@@ -1881,7 +1926,7 @@ public class MobUtil {
 
     public static <T extends Entity> List<T> getEntitiesNearby(LivingEntity livingEntity, Class<T> entityClass,
             double dX, double dY, double dZ, double r) {
-        return livingEntity.level.getEntitiesOfClass(entityClass, livingEntity.getBoundingBox().inflate(dX, dY, dZ),
+        return livingEntity.level().getEntitiesOfClass(entityClass, livingEntity.getBoundingBox().inflate(dX, dY, dZ),
                 e -> e != livingEntity && livingEntity.distanceTo(e) <= r + e.getBbWidth() / 2.0F
                         && e.getY() <= livingEntity.getY() + dY);
     }
@@ -1895,7 +1940,7 @@ public class MobUtil {
             float hpDamage, int shieldBreak, DamageSource damageSource, boolean knockback,
             @Nullable Consumer<Entity> attackEffect) {
         List<LivingEntity> entitiesHit = getEntityLivingBaseNearby(attacker, range, height, range, range);
-        if (!attacker.level.isClientSide) {
+        if (!attacker.level().isClientSide) {
             for (LivingEntity entityHit : entitiesHit) {
                 float entityRelativeAngle = getRelativeAngle(attacker, entityHit);
                 float entityHitDistance = (float) Math

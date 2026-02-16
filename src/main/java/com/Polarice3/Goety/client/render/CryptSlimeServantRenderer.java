@@ -46,7 +46,7 @@ public class CryptSlimeServantRenderer extends MobRenderer<CryptSlimeServant, Sl
    }
 
    public ResourceLocation getTextureLocation(CryptSlimeServant p_115974_) {
-      if (p_115974_.isHostile() || !MobsConfig.CryptSlimeServantTexture.get()){
+      if (p_115974_.isHostile() || !com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MobsConfig.CryptSlimeServantTexture, false)){
          return ORIGINAL;
       }
       return SLIME_LOCATION;

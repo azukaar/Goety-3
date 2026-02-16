@@ -24,8 +24,8 @@ public class FangedDaggerItem extends TieredItem {
         super(tier, (new Properties()).rarity(Rarity.UNCOMMON));
         this.attackDamage = tier.getAttackDamageBonus();
         ImmutableMultimap.Builder<Attribute, AttributeModifier> builder = ImmutableMultimap.builder();
-        builder.put(Attributes.ATTACK_DAMAGE, new AttributeModifier(BASE_ATTACK_DAMAGE_UUID, "Weapon modifier", this.attackDamage, AttributeModifier.Operation.ADDITION));
-        builder.put(Attributes.ATTACK_SPEED, new AttributeModifier(BASE_ATTACK_SPEED_UUID, "Weapon modifier", -1.6F, AttributeModifier.Operation.ADDITION));
+        builder.put(Attributes.ATTACK_DAMAGE.value(), new AttributeModifier(Item.BASE_ATTACK_DAMAGE_ID, this.attackDamage, AttributeModifier.Operation.ADD_VALUE));
+        builder.put(Attributes.ATTACK_SPEED.value(), new AttributeModifier(Item.BASE_ATTACK_SPEED_ID, -1.6F, AttributeModifier.Operation.ADD_VALUE));
         this.defaultModifiers = builder.build();
     }
 
@@ -42,17 +42,13 @@ public class FangedDaggerItem extends TieredItem {
     }
 
     public boolean hurtEnemy(ItemStack p_43278_, LivingEntity p_43279_, LivingEntity p_43280_) {
-        p_43278_.hurtAndBreak(1, p_43280_, (p_43296_) -> {
-            p_43296_.broadcastBreakEvent(EquipmentSlot.MAINHAND);
-        });
+        p_43278_.hurtAndBreak(1, p_43280_, EquipmentSlot.MAINHAND);
         return true;
     }
 
     public boolean mineBlock(ItemStack p_43282_, Level p_43283_, BlockState p_43284_, BlockPos p_43285_, LivingEntity p_43286_) {
         if (p_43284_.getDestroySpeed(p_43283_, p_43285_) != 0.0F) {
-            p_43282_.hurtAndBreak(2, p_43286_, (p_43276_) -> {
-                p_43276_.broadcastBreakEvent(EquipmentSlot.MAINHAND);
-            });
+            p_43282_.hurtAndBreak(2, p_43286_, EquipmentSlot.MAINHAND);
         }
 
         return true;
@@ -64,6 +60,6 @@ public class FangedDaggerItem extends TieredItem {
     }
 
     public Multimap<Attribute, AttributeModifier> getAttributeModifiers(EquipmentSlot p_41639_, ItemStack stack) {
-        return p_41639_ == EquipmentSlot.MAINHAND ? this.defaultModifiers : super.getAttributeModifiers(p_41639_, stack);
+        return this.defaultModifiers;
     }
 }

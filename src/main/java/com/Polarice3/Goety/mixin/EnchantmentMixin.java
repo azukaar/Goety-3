@@ -19,11 +19,8 @@ public abstract class EnchantmentMixin {
             cancellable = true
     )
     public void canEnchant(ItemStack p_44689_, CallbackInfoReturnable<Boolean> cir) {
-        Enchantment enchantment = (Enchantment) (Object) this;
         if (this.getDescriptionId().contains("vanillatweaks:siphon")) {
-            if (p_44689_.canApplyAtEnchantingTable(enchantment)) {
-                cir.setReturnValue(true);
-            }
+            cir.setReturnValue(true);
         }
     }
 }

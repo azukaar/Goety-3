@@ -2,20 +2,25 @@ package com.Polarice3.Goety.common.blocks.entities;
 
 import com.Polarice3.Goety.Goety;
 import com.Polarice3.Goety.common.blocks.ModBlocks;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.neoforged.neoforge.registries.DeferredRegister;
-import net.neoforged.neoforge.registries.NeoForgeRegistries;
+import net.minecraft.core.registries.Registries;
 import net.neoforged.neoforge.registries.DeferredHolder;
 
 public class ModBlockEntities {
         public static DeferredRegister<BlockEntityType<?>> BLOCK_ENTITY = DeferredRegister
-                        .create(NeoForgeRegistries.BLOCK_ENTITY_TYPES, Goety.MOD_ID);
+                        .create(Registries.BLOCK_ENTITY_TYPE, Goety.MOD_ID);
 
         public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<ArcaBlockEntity>> ARCA = BLOCK_ENTITY
                         .register("arca",
-                                        () -> BlockEntityType.Builder
-                                                        .of(ArcaBlockEntity::new, ModBlocks.ARCA_BLOCK.get())
-                                                        .build(null));
+                                        () -> {
+                                                // Use supplier to access block lazily, after it's registered
+                                                Block block = ModBlocks.ARCA_BLOCK.get();
+                                                return BlockEntityType.Builder
+                                                                .of(ArcaBlockEntity::new, block)
+                                                                .build(null);
+                                        });
 
         public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<CursedInfuserBlockEntity>> CURSED_INFUSER = BLOCK_ENTITY
                         .register("cursed_infuser",
@@ -248,9 +253,13 @@ public class ModBlockEntities {
 
         public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<VoidBarrelBlockEntity>> VOID_BARREL = BLOCK_ENTITY
                         .register("void_barrel",
-                                        () -> BlockEntityType.Builder
-                                                        .of(VoidBarrelBlockEntity::new, ModBlocks.VOID_BARREL.get())
-                                                        .build(null));
+                                        () -> {
+                                                // Access block lazily after it's registered
+                                                Block block = ModBlocks.VOID_BARREL.get();
+                                                return BlockEntityType.Builder
+                                                                .of(VoidBarrelBlockEntity::new, block)
+                                                                .build(null);
+                                        });
 
         public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<MagicLightBlockEntity>> MAGIC_LIGHT = BLOCK_ENTITY
                         .register("magic_light",
@@ -290,12 +299,15 @@ public class ModBlockEntities {
 
         public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<ModChestBlockEntity>> MOD_CHEST = BLOCK_ENTITY
                         .register("chest",
-                                        () -> BlockEntityType.Builder.of(ModChestBlockEntity::new,
-                                                        ModBlocks.HAUNTED_CHEST.get(), ModBlocks.ROTTEN_CHEST.get(),
-                                                        ModBlocks.WINDSWEPT_CHEST.get(), ModBlocks.PINE_CHEST.get(),
-                                                        ModBlocks.CHORUS_CHEST.get(),
-                                                        ModBlocks.CORRUPT_CHORUS_CHEST.get(),
-                                                        ModBlocks.RAIDING_CHEST.get()).build(null));
+                                        () -> {
+                                                // Access blocks lazily after they're registered
+                                                return BlockEntityType.Builder.of(ModChestBlockEntity::new,
+                                                                ModBlocks.HAUNTED_CHEST.get(), ModBlocks.ROTTEN_CHEST.get(),
+                                                                ModBlocks.WINDSWEPT_CHEST.get(), ModBlocks.PINE_CHEST.get(),
+                                                                ModBlocks.CHORUS_CHEST.get(),
+                                                                ModBlocks.CORRUPT_CHORUS_CHEST.get(),
+                                                                ModBlocks.RAIDING_CHEST.get()).build(null);
+                                        });
 
         public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<ModTrappedChestBlockEntity>> MOD_TRAPPED_CHEST = BLOCK_ENTITY
                         .register("trapped_chest",

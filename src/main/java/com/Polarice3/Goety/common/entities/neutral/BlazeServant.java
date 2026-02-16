@@ -69,18 +69,18 @@ public class BlazeServant extends Summoned {
 
     public static AttributeSupplier.Builder setCustomAttributes(){
         return Mob.createMobAttributes()
-                .add(Attributes.MAX_HEALTH, AttributesConfig.BlazeServantHealth.get())
-                .add(Attributes.ATTACK_DAMAGE, AttributesConfig.BlazeServantMeleeDamage.get())
-                .add(Attributes.ARMOR, AttributesConfig.BlazeServantArmor.get())
+                .add(Attributes.MAX_HEALTH, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.BlazeServantHealth, 20.0D))
+                .add(Attributes.ATTACK_DAMAGE, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.BlazeServantMeleeDamage, 20.0D))
+                .add(Attributes.ARMOR, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.BlazeServantArmor, 20.0D))
                 .add(Attributes.MOVEMENT_SPEED, 0.23D)
                 .add(Attributes.FOLLOW_RANGE, 48.0D);
     }
 
     @Override
     public void setConfigurableAttributes() {
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.MAX_HEALTH), AttributesConfig.BlazeServantHealth.get());
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ATTACK_DAMAGE), AttributesConfig.BlazeServantMeleeDamage.get());
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ARMOR), AttributesConfig.BlazeServantArmor.get());
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.MAX_HEALTH), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.BlazeServantHealth, 20.0D));
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ATTACK_DAMAGE), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.BlazeServantMeleeDamage, 20.0D));
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ARMOR), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.BlazeServantArmor, 20.0D));
     }
 
     @Override
@@ -314,7 +314,7 @@ public class BlazeServant extends Summoned {
                                 this.blaze.level().levelEvent((Player)null, 1018, this.blaze.blockPosition(), 0);
                             }
 
-                            float damage = AttributesConfig.BlazeServantRangeDamage.get().floatValue() + this.blaze.getFireBallDamage();
+                            float damage = (float)com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.BlazeServantRangeDamage, 20.0D) + this.blaze.getFireBallDamage();
 
                             for(int i = 0; i < 1; ++i) {
                                 ModFireball smallfireball = new ModFireball(this.blaze.level(), this.blaze, this.blaze.getRandom().triangle(d1, 2.297D * d4), d2, this.blaze.getRandom().triangle(d3, 2.297D * d4));

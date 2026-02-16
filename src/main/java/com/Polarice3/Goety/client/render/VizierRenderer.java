@@ -40,6 +40,6 @@ public class VizierRenderer extends MobRenderer<Vizier, VizierModel> {
 
     @Override
     public ResourceLocation getTextureLocation(Vizier entity) {
-        return HolidayUtil.isChristmasMonth() && MobsConfig.HolidaySkins.get() ? CHRISTMAS : TEXTURE;
+        return HolidayUtil.isChristmasMonth() && com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MobsConfig.HolidaySkins, false) ? CHRISTMAS : TEXTURE;
     }
 }

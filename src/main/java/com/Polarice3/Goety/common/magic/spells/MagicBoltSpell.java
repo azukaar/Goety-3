@@ -21,17 +21,17 @@ public class MagicBoltSpell extends Spell {
 
     @Override
     public int defaultSoulCost() {
-        return SpellConfig.MagicBoltCost.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.MagicBoltCost, 0);
     }
 
     @Override
     public int defaultCastDuration() {
-        return SpellConfig.MagicBoltDuration.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.MagicBoltDuration, 0);
     }
 
     @Override
     public int defaultSpellCooldown() {
-        return SpellConfig.MagicBoltCoolDown.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.MagicBoltCoolDown, 0);
     }
 
     @Override

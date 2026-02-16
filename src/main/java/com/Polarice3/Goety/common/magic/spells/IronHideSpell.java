@@ -28,17 +28,17 @@ public class IronHideSpell extends Spell {
 
     @Override
     public int defaultSoulCost() {
-        return SpellConfig.IronHideCost.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.IronHideCost, 0);
     }
 
     @Override
     public int defaultCastDuration() {
-        return SpellConfig.IronHideDuration.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.IronHideDuration, 0);
     }
 
     @Override
     public int defaultSpellCooldown() {
-        return SpellConfig.IronHideCoolDown.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.IronHideCoolDown, 0);
     }
 
     @Override
@@ -57,7 +57,7 @@ public class IronHideSpell extends Spell {
     @Override
     public boolean conditionsMet(ServerLevel worldIn, LivingEntity caster) {
         if (caster instanceof Mob mob){
-            return !mob.hasEffect(GoetyEffects.IRON_HIDE.get());
+            return !mob.hasEffect(GoetyEffects.IRON_HIDE);
         }
         return super.conditionsMet(worldIn, caster);
     }
@@ -69,7 +69,7 @@ public class IronHideSpell extends Spell {
             potency = WandUtil.getPotencyLevel(caster);
             duration += WandUtil.getLevels(ModEnchantments.DURATION.get(), caster);
         }
-        caster.addEffect(new MobEffectInstance(GoetyEffects.IRON_HIDE.get(), MathHelper.minutesToTicks(duration), potency, false, false, true));
+        caster.addEffect(new MobEffectInstance(GoetyEffects.IRON_HIDE, MathHelper.minutesToTicks(duration), potency, false, false, true));
         this.playSound(worldIn, caster, ModSounds.IRON_HIDE.get());
     }
 }

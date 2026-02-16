@@ -2,6 +2,7 @@ package com.Polarice3.Goety.common.blocks;
 
 import com.Polarice3.Goety.client.particles.ModParticleTypes;
 import com.Polarice3.Goety.common.blocks.entities.HauntedMirrorBlockEntity;
+import com.mojang.serialization.MapCodec;
 import com.Polarice3.Goety.common.network.ModNetwork;
 import com.Polarice3.Goety.common.network.server.SPlayerRotationPacket;
 import com.Polarice3.Goety.init.ModSounds;
@@ -42,6 +43,12 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import javax.annotation.Nullable;
 
 public class HauntedMirrorBlock extends BaseEntityBlock implements SimpleWaterloggedBlock{
+    public static final MapCodec<HauntedMirrorBlock> CODEC = simpleCodec(p -> new HauntedMirrorBlock());
+
+    @Override
+    protected MapCodec<? extends BaseEntityBlock> codec() {
+        return CODEC;
+    }
     public static final DirectionProperty FACING = BlockStateProperties.FACING;
     public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
     public static final EnumProperty<DoubleBlockHalf> HALF = BlockStateProperties.DOUBLE_BLOCK_HALF;
@@ -70,12 +77,12 @@ public class HauntedMirrorBlock extends BaseEntityBlock implements SimpleWaterlo
         pLevel.setBlock(pPos.above(), pState.setValue(HALF, DoubleBlockHalf.UPPER).setValue(WATERLOGGED, pLevel.getFluidState(pPos.above()).getType() == Fluids.WATER), 3);
     }
 
-    public void playerWillDestroy(Level p_52755_, BlockPos p_52756_, BlockState p_52757_, Player p_52758_) {
+    public BlockState playerWillDestroy(Level p_52755_, BlockPos p_52756_, BlockState p_52757_, Player p_52758_) {
         if (!p_52755_.isClientSide && p_52758_.isCreative()) {
             BlockFinder.preventCreativeDropFromBottomPart(p_52755_, p_52756_, p_52757_, p_52758_);
         }
 
-        super.playerWillDestroy(p_52755_, p_52756_, p_52757_, p_52758_);
+        return super.playerWillDestroy(p_52755_, p_52756_, p_52757_, p_52758_);
     }
 
     public boolean canSurvive(BlockState blockState, LevelReader level, BlockPos blockPos) {

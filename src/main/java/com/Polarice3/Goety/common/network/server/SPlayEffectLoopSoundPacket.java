@@ -3,14 +3,14 @@ package com.Polarice3.Goety.common.network.server;
 import com.Polarice3.Goety.Goety;
 import com.Polarice3.Goety.client.audio.LoopSoundPlayer;
 import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
-import net.neoforged.network.NetworkDirection;
-import net.neoforged.network.NetworkEvent;
+import com.Polarice3.Goety.compat.legacy.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
@@ -40,7 +40,7 @@ public class SPlayEffectLoopSoundPacket {
     public static void encode(SPlayEffectLoopSoundPacket packet, FriendlyByteBuf buffer) {
         buffer.writeInt(packet.entity);
         buffer.writeResourceLocation(packet.soundEvent.getLocation());
-        buffer.writeInt(MobEffect.getId(packet.effect));
+        buffer.writeInt(BuiltInRegistries.MOB_EFFECT.getId(packet.effect));
         buffer.writeFloat(packet.volume);
         buffer.writeFloat(packet.pitch);
     }
@@ -49,21 +49,19 @@ public class SPlayEffectLoopSoundPacket {
         return new SPlayEffectLoopSoundPacket(
                 buffer.readInt(),
                 SoundEvent.createVariableRangeEvent(buffer.readResourceLocation()),
-                MobEffect.byId(buffer.readInt()),
+                BuiltInRegistries.MOB_EFFECT.byId(buffer.readInt()),
                 buffer.readFloat(),
                 buffer.readFloat());
     }
 
     public static void consume(SPlayEffectLoopSoundPacket packet, Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
-            if (ctx.get().getDirection() == NetworkDirection.PLAY_TO_CLIENT) {
-                Level level = Goety.PROXY.getLevel();
-                if (level instanceof ClientLevel clientWorld) {
-                    if (packet.entity >= 0) {
-                        Entity entity = clientWorld.getEntity(packet.entity);
-                        if (entity instanceof LivingEntity livingEntity) {
-                            LoopSoundPlayer.playEffectSound(livingEntity, packet.soundEvent, packet.effect, packet.volume, packet.pitch);
-                        }
+            Level level = Goety.PROXY.getLevel();
+            if (level instanceof ClientLevel clientWorld) {
+                if (packet.entity >= 0) {
+                    Entity entity = clientWorld.getEntity(packet.entity);
+                    if (entity instanceof LivingEntity livingEntity) {
+                        LoopSoundPlayer.playEffectSound(livingEntity, packet.soundEvent, BuiltInRegistries.MOB_EFFECT.wrapAsHolder(packet.effect), packet.volume, packet.pitch);
                     }
                 }
             }
@@ -71,3 +69,4 @@ public class SPlayEffectLoopSoundPacket {
         ctx.get().setPacketHandled(true);
     }
 }
+

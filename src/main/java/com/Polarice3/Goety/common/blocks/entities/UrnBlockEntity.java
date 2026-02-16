@@ -1,6 +1,7 @@
 package com.Polarice3.Goety.common.blocks.entities;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -19,18 +20,18 @@ public class UrnBlockEntity extends RandomizableContainerBlockEntity {
         super(ModBlockEntities.URN.get(), p_155630_, p_155631_);
     }
 
-    protected void saveAdditional(CompoundTag p_187459_) {
-        super.saveAdditional(p_187459_);
+    protected void saveAdditional(CompoundTag p_187459_, HolderLookup.Provider p_323635_) {
+        super.saveAdditional(p_187459_, p_323635_);
         if (!this.trySaveLootTable(p_187459_)) {
-            ContainerHelper.saveAllItems(p_187459_, this.items);
+            ContainerHelper.saveAllItems(p_187459_, this.items, p_323635_);
         }
     }
 
-    public void load(CompoundTag p_155055_) {
-        super.load(p_155055_);
+    public void loadAdditional(CompoundTag p_155055_, HolderLookup.Provider p_324471_) {
+        super.loadAdditional(p_155055_, p_324471_);
         this.items = NonNullList.withSize(this.getContainerSize(), ItemStack.EMPTY);
         if (!this.tryLoadLootTable(p_155055_)) {
-            ContainerHelper.loadAllItems(p_155055_, this.items);
+            ContainerHelper.loadAllItems(p_155055_, this.items, p_324471_);
         }
     }
 
@@ -58,5 +59,24 @@ public class UrnBlockEntity extends RandomizableContainerBlockEntity {
     @Override
     protected AbstractContainerMenu createMenu(int p_58627_, Inventory p_58628_) {
         return null;
+    }
+
+    private Component name;
+
+    public void setCustomName(Component p_59639_) {
+        this.name = p_59639_;
+    }
+
+    public Component getName() {
+        return this.name != null ? this.name : this.getDefaultName();
+    }
+
+    public Component getDisplayName() {
+        return this.getName();
+    }
+
+    @javax.annotation.Nullable
+    public Component getCustomName() {
+        return this.name;
     }
 }

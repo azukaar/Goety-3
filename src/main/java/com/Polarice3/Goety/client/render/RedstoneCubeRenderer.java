@@ -39,7 +39,7 @@ public class RedstoneCubeRenderer extends MobRenderer<RedstoneCube, RedstoneCube
             pMatrixStack.translate(0.0F, 1.1F, 0.0F);
             pMatrixStack.scale(1.0F, 1.0F, 1.0F);
             pMatrixStack.mulPose(Axis.YP.rotationDegrees(3 * (minecraft.level.getGameTime() % 360 + pPartialTicks)));
-            minecraft.getItemRenderer().renderStatic(pEntity.getMainHandItem(), ItemDisplayContext.GROUND, pPackedLight, OverlayTexture.NO_OVERLAY, pMatrixStack, pBuffer, pEntity.level, 0);
+            minecraft.getItemRenderer().renderStatic(pEntity.getMainHandItem(), ItemDisplayContext.GROUND, pPackedLight, OverlayTexture.NO_OVERLAY, pMatrixStack, pBuffer, pEntity.level(), 0);
             pMatrixStack.popPose();
         }
         super.render(pEntity, pEntityYaw, pPartialTicks, pMatrixStack, pBuffer, pPackedLight);

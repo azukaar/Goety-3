@@ -55,7 +55,7 @@ import javax.annotation.Nullable;
 import java.util.UUID;
 
 public class Trampler extends Raider implements ICharger, ICustomAttributes {
-    private static final UUID ARMOR_MODIFIER_UUID = ModUUIDUtil.createUUID("entity.goety.trampler.armor");
+    private static final net.minecraft.resources.ResourceLocation ARMOR_MODIFIER_ID = net.minecraft.resources.ResourceLocation.withDefaultNamespace("entity.goety.trampler.armor");
     private static final EntityDataAccessor<Boolean> DATA_STANDING_ID = SynchedEntityData.defineId(Trampler.class,
             EntityDataSerializers.BOOLEAN);
     private static final EntityDataAccessor<Boolean> DATA_CHARGING = SynchedEntityData.defineId(Trampler.class,
@@ -103,24 +103,24 @@ public class Trampler extends Raider implements ICharger, ICustomAttributes {
     @SuppressWarnings("removal")
     public static AttributeSupplier.Builder setCustomAttributes() {
         return Mob.createMobAttributes()
-                .add(Attributes.MAX_HEALTH, AttributesConfig.TramplerHealth.get())
-                .add(Attributes.ARMOR, AttributesConfig.TramplerArmor.get())
-                .add(NeoForgeMod.STEP_HEIGHT_ADDITION.get(), 1.0D)
+                .add(Attributes.MAX_HEALTH, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.TramplerHealth, 20.0D))
+                .add(Attributes.ARMOR, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.TramplerArmor, 20.0D))
+                .add(Attributes.STEP_HEIGHT, 1.0D)
                 .add(Attributes.FOLLOW_RANGE, 32.0D)
                 .add(Attributes.MOVEMENT_SPEED, 0.35D)
-                .add(Attributes.ATTACK_DAMAGE, AttributesConfig.TramplerDamage.get());
+                .add(Attributes.ATTACK_DAMAGE, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.TramplerDamage, 20.0D));
     }
 
     public void setConfigurableAttributes() {
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.MAX_HEALTH), AttributesConfig.TramplerHealth.get());
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ARMOR), AttributesConfig.TramplerArmor.get());
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ATTACK_DAMAGE), AttributesConfig.TramplerDamage.get());
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.MAX_HEALTH), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.TramplerHealth, 20.0D));
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ARMOR), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.TramplerArmor, 20.0D));
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ATTACK_DAMAGE), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.TramplerDamage, 20.0D));
     }
 
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.entityData.define(DATA_STANDING_ID, false);
-        this.entityData.define(DATA_CHARGING, false);
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(DATA_STANDING_ID, false);
+        builder.define(DATA_CHARGING, false);
     }
 
     public void addAdditionalSaveData(CompoundTag pCompound) {
@@ -128,7 +128,7 @@ public class Trampler extends Raider implements ICharger, ICustomAttributes {
         ItemStack itemStack = this.getItemBySlot(EquipmentSlot.CHEST);
         if (!itemStack.isEmpty()) {
             CompoundTag compoundTag = new CompoundTag();
-            itemStack.save(compoundTag);
+            itemStack.save(this.registryAccess(), compoundTag);
             pCompound.put("ArmorItem", compoundTag);
         }
     }
@@ -137,7 +137,7 @@ public class Trampler extends Raider implements ICharger, ICustomAttributes {
         super.readAdditionalSaveData(pCompound);
         CompoundTag armorItem = pCompound.getCompound("ArmorItem");
         if (!armorItem.isEmpty()) {
-            this.setArmorEquipment(ItemStack.of(armorItem));
+            net.minecraft.world.item.ItemStack.parse(this.registryAccess(), armorItem).ifPresent(this::setArmorEquipment);
         }
         this.setConfigurableAttributes();
     }
@@ -150,7 +150,7 @@ public class Trampler extends Raider implements ICharger, ICustomAttributes {
         return 45;
     }
 
-    @Override
+    // @Override
     public double getPassengersRidingOffset() {
         return 1.6D * 0.75D;
     }
@@ -163,7 +163,7 @@ public class Trampler extends Raider implements ICharger, ICustomAttributes {
             float f1 = 0.7F * this.standAnimO;
             float f2 = 0.15F * this.standAnimO;
             rider.setPos(this.getX() + (double) (f1 * f3),
-                    this.getY() + this.getPassengersRidingOffset() + rider.getMyRidingOffset() + (double) f2,
+                    this.getY() + this.getPassengersRidingOffset() + /* rider.getPassengerRidingOffset(this) + */ (double) f2,
                     this.getZ() - (double) (f1 * f));
         }
         if (rider instanceof LivingEntity living) {
@@ -252,12 +252,11 @@ public class Trampler extends Raider implements ICharger, ICustomAttributes {
     public void updateArmor() {
         AttributeInstance attribute = this.getAttribute(Attributes.ARMOR);
         if (attribute != null) {
-            attribute.removeModifier(ARMOR_MODIFIER_UUID);
+            attribute.removeModifier(ARMOR_MODIFIER_ID);
             if (this.isArmor(this.getArmor())) {
                 int i = ((TramplerArmorItem) this.getArmor().getItem()).getProtection();
                 if (i != 0) {
-                    attribute.addTransientModifier(new AttributeModifier(ARMOR_MODIFIER_UUID, "Ravager armor bonus",
-                            (double) i, AttributeModifier.Operation.ADDITION));
+                    attribute.addTransientModifier(new AttributeModifier(ARMOR_MODIFIER_ID,                            (double) i, AttributeModifier.Operation.ADD_VALUE));
                 }
             }
         }
@@ -267,10 +266,10 @@ public class Trampler extends Raider implements ICharger, ICustomAttributes {
         return p_30731_.getItem() instanceof TramplerArmorItem;
     }
 
-    @Nullable
+    @Override
     public SpawnGroupData finalizeSpawn(ServerLevelAccessor pLevel, DifficultyInstance pDifficulty,
-            MobSpawnType pReason, @Nullable SpawnGroupData pSpawnData, @Nullable CompoundTag pDataTag) {
-        pSpawnData = super.finalizeSpawn(pLevel, pDifficulty, pReason, pSpawnData, pDataTag);
+            MobSpawnType pReason, @Nullable SpawnGroupData pSpawnData) {
+        pSpawnData = super.finalizeSpawn(pLevel, pDifficulty, pReason, pSpawnData);
         if (MobsConfig.ArmoredTramplerRaid.get() && this.getCurrentRaid() != null) {
             int i = pLevel.getLevel().random.nextInt(2);
             float f = pLevel.getLevel().getDifficulty() == Difficulty.HARD ? 0.75F : 0.45F;
@@ -355,7 +354,7 @@ public class Trampler extends Raider implements ICharger, ICustomAttributes {
                 this.walkAnimation.setSpeed(this.walkAnimation.speed() + 0.8F);
             }
 
-            if (this.horizontalCollision && this.level().getGameRules().getBoolean(GameRules.RULE_MOB_GRIEFING)) {
+            if (this.horizontalCollision && this.level().getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING)) {
                 boolean flag = false;
                 AABB aabb = this.getBoundingBox().inflate(0.2D);
 
@@ -376,15 +375,16 @@ public class Trampler extends Raider implements ICharger, ICustomAttributes {
         }
     }
 
-    public EntityDimensions getDimensions(Pose p_29531_) {
-        if (this.clientSideStandAnimation > 0.0F) {
-            float f = this.clientSideStandAnimation / 6.0F;
-            float f1 = 1.0F + f;
-            return super.getDimensions(p_29531_).scale(1.0F, f1);
-        } else {
-            return super.getDimensions(p_29531_);
-        }
-    }
+    // @Override
+    // public EntityDimensions getDimensions(Pose p_29531_) {
+        // if (this.clientSideStandAnimation > 0.0F) {
+            // float f = this.clientSideStandAnimation / 6.0F;
+            // float f1 = 1.0F + f;
+            // return super.getDimensions(p_29531_).scale(1.0F, f1);
+        // } else {
+            // return super.getDimensions(p_29531_);
+        // }
+    // }
 
     public boolean isStanding() {
         return this.entityData.get(DATA_STANDING_ID);
@@ -403,7 +403,7 @@ public class Trampler extends Raider implements ICharger, ICustomAttributes {
     }
 
     @Override
-    public void applyRaidBuffs(int p_37844_, boolean p_37845_) {
+    public void applyRaidBuffs(net.minecraft.server.level.ServerLevel pLevel, int p_37844_, boolean p_37845_) {
     }
 
     @Override
@@ -440,7 +440,7 @@ public class Trampler extends Raider implements ICharger, ICustomAttributes {
 
     protected void blockedByShield(LivingEntity p_33361_) {
         if (this.isCharging()) {
-            this.addEffect(new MobEffectInstance(GoetyEffects.STUNNED.get(), 100, 0, false, false));
+            this.addEffect(new MobEffectInstance(net.minecraft.core.Holder.direct(GoetyEffects.STUNNED.get()), 100, 0, false, false));
             p_33361_.hurtMarked = true;
         }
     }

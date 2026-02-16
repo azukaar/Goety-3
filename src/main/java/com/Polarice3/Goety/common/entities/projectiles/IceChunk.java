@@ -127,11 +127,11 @@ public class IceChunk extends SpellEntity {
     }
 
     public void damageTargets(LivingEntity livingEntity){
-        float damage = SpellConfig.IceChunkDamage.get().floatValue() * WandUtil.damageMultiply();
+        float damage = com.Polarice3.Goety.utils.ConfigHelper.getFloat(SpellConfig.IceChunkDamage, 1.0F) * WandUtil.damageMultiply();
         damage += this.getExtraDamage();
         if (livingEntity != null) {
             if (livingEntity.hurt(ModDamageSource.indirectFreeze(this, this.getOwner()), damage)) {
-                livingEntity.addEffect(new MobEffectInstance(GoetyEffects.STUNNED.getHolder(), MathHelper.secondsToTicks(2)));
+                livingEntity.addEffect(new MobEffectInstance(GoetyEffects.STUNNED, MathHelper.secondsToTicks(2)));
             }
         }
     }

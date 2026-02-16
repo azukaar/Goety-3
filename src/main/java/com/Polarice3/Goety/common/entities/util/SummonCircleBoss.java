@@ -46,7 +46,7 @@ public class SummonCircleBoss extends Entity {
 
     @Override
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
-        super.defineSynchedData(builder);
+        // super.defineSynchedData(builder);
     }
 
     @Override
@@ -133,8 +133,8 @@ public class SummonCircleBoss extends Entity {
         return Mth.lerp(p_32321_, (float)this.oldTick, (float)this.tickCount) / (float)(this.getLifeSpan() - 2);
     }
 
-    @Override
-    public Packet<ClientGamePacketListener> getAddEntityPacket() {
-        return new net.minecraft.network.protocol.game.ClientboundAddEntityPacket(this);
-    }
+    // @Override
+    // public Packet<ClientGamePacketListener> getAddEntityPacket() {
+    //     return new net.minecraft.network.protocol.game.ClientboundAddEntityPacket(this);
+    // }
 }

@@ -27,12 +27,12 @@ import java.util.function.Predicate;
 public class CarrionSpell extends SummonSpell {
     @Override
     public int defaultSoulCost() {
-        return SpellConfig.CarrionCost.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.CarrionCost, 0);
     }
 
     @Override
     public int defaultCastDuration() {
-        return SpellConfig.CarrionDuration.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.CarrionDuration, 0);
     }
 
     @Nullable
@@ -43,12 +43,12 @@ public class CarrionSpell extends SummonSpell {
 
     @Override
     public int defaultSpellCooldown() {
-        return SpellConfig.CarrionCoolDown.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.CarrionCoolDown, 0);
     }
 
     @Override
     public int SummonDownDuration() {
-        return SpellConfig.CarrionSummonDown.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.CarrionSummonDown, 0);
     }
 
     @Override
@@ -71,7 +71,7 @@ public class CarrionSpell extends SummonSpell {
 
     @Override
     public int summonLimit() {
-        return SpellConfig.CarrionLimit.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.CarrionLimit, 0);
     }
 
     public void SpellResult(ServerLevel worldIn, LivingEntity caster, ItemStack staff, SpellStat spellStat) {
@@ -94,7 +94,7 @@ public class CarrionSpell extends SummonSpell {
                 summonedentity.moveTo(blockpos, 0.0F, 0.0F);
                 summonedentity.setPersistenceRequired();
                 summonedentity.setLimitedLife(MobUtil.getSummonLifespan(worldIn) * duration);
-                summonedentity.finalizeSpawn(worldIn, caster.level.getCurrentDifficultyAt(caster.blockPosition()), MobSpawnType.MOB_SUMMONED, null, null);
+                summonedentity.finalizeSpawn(worldIn, caster.level().getCurrentDifficultyAt(caster.blockPosition()), MobSpawnType.MOB_SUMMONED, null);
                 this.buffSummon(caster, summonedentity, potency);
                 this.SummonSap(caster, summonedentity);
                 this.setTarget(caster, summonedentity);
@@ -106,3 +106,4 @@ public class CarrionSpell extends SummonSpell {
         }
     }
 }
+

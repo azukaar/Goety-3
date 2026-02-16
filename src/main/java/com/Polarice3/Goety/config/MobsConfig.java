@@ -213,6 +213,7 @@ public class MobsConfig {
     public static final ModConfigSpec.ConfigValue<Boolean> IllagueSpread;
     public static final ModConfigSpec.ConfigValue<Boolean> IllagerSteal;
     public static final ModConfigSpec.ConfigValue<Boolean> IllagerRaid;
+    public static final ModConfigSpec.ConfigValue<Boolean> RaidAugmentDebug;
     public static final ModConfigSpec.ConfigValue<Boolean> PikerRaid;
     public static final ModConfigSpec.ConfigValue<Boolean> RipperRaid;
     public static final ModConfigSpec.ConfigValue<Boolean> CrusherRaid;
@@ -679,6 +680,8 @@ public class MobsConfig {
             BUILDER.push("Raid");
             IllagerRaid = BUILDER.comment("Whether Modded Illagers appears in Raids, Default: true")
                     .define("specialIllagerRaid", true);
+            RaidAugmentDebug = BUILDER.comment("Logs Goety raid augmentation counts per wave to the console for debugging, Default: false")
+                    .define("raidAugmentDebug", false);
             ArmoredRavagerRaid = BUILDER.comment("Whether Armored Ravagers spawn in Raids, Default: true")
                     .define("armoredRavagerRaid", true);
             ArmoredTramplerRaid = BUILDER.comment("Whether Armored Tramplers spawn in Raids, Default: true")
@@ -980,6 +983,6 @@ public class MobsConfig {
                 .writingMode(WritingMode.REPLACE)
                 .build();
         file.load();
-        config.setConfig(file);
+        // NeoForge 1.21: config binding is handled via registered config file path.
     }
 }

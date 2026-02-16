@@ -1,5 +1,6 @@
 package com.Polarice3.Goety.common.items.curios;
 
+import com.Polarice3.Goety.Goety;
 import com.Polarice3.Goety.common.effects.GoetyEffects;
 import com.Polarice3.Goety.compat.iron.IronAttributes;
 import com.Polarice3.Goety.compat.iron.IronLoaded;
@@ -7,6 +8,7 @@ import com.Polarice3.Goety.config.MainConfig;
 import com.Polarice3.Goety.utils.CuriosFinder;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
+import net.minecraft.core.Holder;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attribute;
@@ -31,8 +33,8 @@ public class UnholyRobeItem extends SingleStackItem{
                     livingEntity.clearFire();
                 }
                 if (!worldIn.isClientSide) {
-                    if (livingEntity.hasEffect(GoetyEffects.BURN_HEX.get())){
-                        livingEntity.removeEffect(GoetyEffects.BURN_HEX.get());
+                    if (livingEntity.hasEffect(GoetyEffects.BURN_HEX)){
+                        livingEntity.removeEffect(GoetyEffects.BURN_HEX);
                     }
                 }
             }
@@ -47,15 +49,15 @@ public class UnholyRobeItem extends SingleStackItem{
     }
 
     @Override
-    public Multimap<Attribute, AttributeModifier> getAttributeModifiers(SlotContext slotContext,
+    public Multimap<Holder<Attribute>, AttributeModifier> getAttributeModifiers(SlotContext slotContext,
                                                                         UUID uuid, ItemStack stack) {
-        Multimap<Attribute, AttributeModifier> map = HashMultimap.create();
+        Multimap<Holder<Attribute>, AttributeModifier> map = HashMultimap.create();
         if (IronLoaded.IRON_SPELLBOOKS.isLoaded()){
-            if (MainConfig.RobesIronResist.get()) {
-                map.put(IronAttributes.FIRE_MAGIC_RESIST, new AttributeModifier(UUID.fromString("bd88096f-189e-4b29-adc2-e65255f73a9f"), "Robes Iron Fire Spell Resist", 1.0F, AttributeModifier.Operation.ADDITION));
-                map.put(IronAttributes.NATURE_MAGIC_RESIST, new AttributeModifier(UUID.fromString("3987801f-f418-475d-b662-4544eb267e88"), "Robes Iron Nature Spell Resist", 0.5F, AttributeModifier.Operation.ADDITION));
-                map.put(IronAttributes.BLOOD_MAGIC_RESIST, new AttributeModifier(UUID.fromString("f81a0876-dcb9-4eee-b382-e5bc6170a54f"), "Robes Iron Blood Spell Resist", 0.75F, AttributeModifier.Operation.ADDITION));
-                map.put(IronAttributes.HOLY_MAGIC_RESIST, new AttributeModifier(UUID.fromString("d29ed6a0-f38d-4c77-89b2-850743ec96b8"), "Robes Iron Holy Spell Resist", -0.25F, AttributeModifier.Operation.ADDITION));
+            if (com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MainConfig.RobesIronResist, false)) {
+                map.put(IronAttributes.FIRE_MAGIC_RESIST, new AttributeModifier(Goety.location("robes_iron_fire_resist"), 1.0F, AttributeModifier.Operation.ADD_VALUE));
+                map.put(IronAttributes.NATURE_MAGIC_RESIST, new AttributeModifier(Goety.location("robes_iron_nature_resist"), 0.5F, AttributeModifier.Operation.ADD_VALUE));
+                map.put(IronAttributes.BLOOD_MAGIC_RESIST, new AttributeModifier(Goety.location("robes_iron_blood_resist"), 0.75F, AttributeModifier.Operation.ADD_VALUE));
+                map.put(IronAttributes.HOLY_MAGIC_RESIST, new AttributeModifier(Goety.location("robes_iron_holy_resist"), -0.25F, AttributeModifier.Operation.ADD_VALUE));
             }
         }
         return map;

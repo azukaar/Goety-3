@@ -76,8 +76,8 @@ public class VoidSlash extends SlashProjectile{
             damageSource = entity.damageSources().mobAttack(livingEntity);
         }
         if (entity.hurt(damageSource, this.getDamage())) {
-            if (entity instanceof LivingEntity livingEntity && !livingEntity.hasEffect(GoetyEffects.VOID_TOUCHED.get())) {
-                livingEntity.addEffect(new MobEffectInstance(GoetyEffects.VOID_TOUCHED.get(), MathHelper.secondsToTicks(3), this.getVoidLevel() - 1, false, true));
+            if (entity instanceof LivingEntity livingEntity && !livingEntity.hasEffect(net.minecraft.core.Holder.direct(GoetyEffects.VOID_TOUCHED.get()))) {
+                livingEntity.addEffect(new MobEffectInstance(net.minecraft.core.Holder.direct(GoetyEffects.VOID_TOUCHED.get()), MathHelper.secondsToTicks(3), this.getVoidLevel() - 1, false, true));
             }
         }
     }

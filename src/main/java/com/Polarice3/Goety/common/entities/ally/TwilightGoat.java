@@ -1,5 +1,7 @@
 package com.Polarice3.Goety.common.entities.ally;
 
+import com.Polarice3.Goety.utils.MobType;
+
 import com.Polarice3.Goety.api.entities.ICharger;
 import com.Polarice3.Goety.api.entities.IOwned;
 import com.Polarice3.Goety.client.particles.ModParticleTypes;
@@ -100,17 +102,17 @@ public class TwilightGoat extends AnimalSummon implements ICharger {
 
     public static AttributeSupplier.Builder setCustomAttributes() {
         return Mob.createMobAttributes()
-                .add(Attributes.MAX_HEALTH, AttributesConfig.TwilightGoatHealth.get())
+                .add(Attributes.MAX_HEALTH, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.TwilightGoatHealth, 20.0D))
                 .add(Attributes.MOVEMENT_SPEED, 0.2F)
-                .add(Attributes.ARMOR, AttributesConfig.TwilightGoatArmor.get())
-                .add(Attributes.ATTACK_DAMAGE, AttributesConfig.TwilightGoatDamage.get());
+                .add(Attributes.ARMOR, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.TwilightGoatArmor, 20.0D))
+                .add(Attributes.ATTACK_DAMAGE, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.TwilightGoatDamage, 20.0D));
     }
 
     public void setConfigurableAttributes() {
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.MAX_HEALTH), AttributesConfig.TwilightGoatHealth.get());
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ARMOR), AttributesConfig.TwilightGoatArmor.get());
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.MAX_HEALTH), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.TwilightGoatHealth, 20.0D));
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ARMOR), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.TwilightGoatArmor, 20.0D));
         MobUtil.setBaseAttributes(this.getAttribute(Attributes.ATTACK_DAMAGE),
-                AttributesConfig.TwilightGoatDamage.get());
+                com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.TwilightGoatDamage, 20.0D));
     }
 
     @Override
@@ -175,10 +177,10 @@ public class TwilightGoat extends AnimalSummon implements ICharger {
         AttributeInstance instance = this.getAttribute(Attributes.ATTACK_DAMAGE);
         if (instance != null) {
             if (this.isBaby()) {
-                instance.setBaseValue(AttributesConfig.TwilightGoatDamage.get() / 2.0D);
+                instance.setBaseValue(com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.TwilightGoatDamage, 20.0D) / 2.0D);
                 this.removeHorns();
             } else {
-                instance.setBaseValue(AttributesConfig.TwilightGoatDamage.get());
+                instance.setBaseValue(com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.TwilightGoatDamage, 20.0D));
                 this.addHorns();
             }
         }
@@ -306,13 +308,13 @@ public class TwilightGoat extends AnimalSummon implements ICharger {
         AttributeInstance attack = this.getAttribute(Attributes.ATTACK_DAMAGE);
         if (health != null && armor != null && attack != null) {
             if (upgraded) {
-                health.setBaseValue(AttributesConfig.TwilightGoatHealth.get() * 1.5D);
-                armor.setBaseValue(AttributesConfig.TwilightGoatArmor.get() + 1.0D);
-                attack.setBaseValue(AttributesConfig.TwilightGoatDamage.get() + 1.0D);
+                health.setBaseValue(com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.TwilightGoatHealth, 20.0D) * 1.5D);
+                armor.setBaseValue(com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.TwilightGoatArmor, 20.0D) + 1.0D);
+                attack.setBaseValue(com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.TwilightGoatDamage, 20.0D) + 1.0D);
             } else {
-                health.setBaseValue(AttributesConfig.TwilightGoatHealth.get());
-                armor.setBaseValue(AttributesConfig.TwilightGoatArmor.get());
-                attack.setBaseValue(AttributesConfig.TwilightGoatDamage.get());
+                health.setBaseValue(com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.TwilightGoatHealth, 20.0D));
+                armor.setBaseValue(com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.TwilightGoatArmor, 20.0D));
+                attack.setBaseValue(com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.TwilightGoatDamage, 20.0D));
             }
         }
         this.setHealth(this.getMaxHealth());

@@ -46,7 +46,7 @@ public class SkeletonWolfRenderer extends MobRenderer<SkeletonWolf, SkeletonWolf
     }
 
     public static class WolfCollarLayer extends RenderLayer<SkeletonWolf, SkeletonWolfModel<SkeletonWolf>> {
-        private static final ResourceLocation WOLF_COLLAR_LOCATION = new ResourceLocation("textures/entity/wolf/wolf_collar.png");
+        private static final ResourceLocation WOLF_COLLAR_LOCATION = ResourceLocation.parse("textures/entity/wolf/wolf_collar.png");
 
         public WolfCollarLayer(RenderLayerParent<SkeletonWolf, SkeletonWolfModel<SkeletonWolf>> p_117707_) {
             super(p_117707_);
@@ -54,8 +54,8 @@ public class SkeletonWolfRenderer extends MobRenderer<SkeletonWolf, SkeletonWolf
 
         public void render(PoseStack p_117720_, MultiBufferSource p_117721_, int p_117722_, SkeletonWolf p_117723_, float p_117724_, float p_117725_, float p_117726_, float p_117727_, float p_117728_, float p_117729_) {
             if (!p_117723_.isHostile() && !p_117723_.isInvisible() && p_117723_.getTrueOwner() != null) {
-                float[] afloat = p_117723_.getCollarColor().getTextureDiffuseColors();
-                renderColoredCutoutModel(this.getParentModel(), WOLF_COLLAR_LOCATION, p_117720_, p_117721_, p_117722_, p_117723_, afloat[0], afloat[1], afloat[2]);
+                int color = p_117723_.getCollarColor().getTextureDiffuseColor();
+                renderColoredCutoutModel(this.getParentModel(), WOLF_COLLAR_LOCATION, p_117720_, p_117721_, p_117722_, p_117723_, color);
             }
         }
     }

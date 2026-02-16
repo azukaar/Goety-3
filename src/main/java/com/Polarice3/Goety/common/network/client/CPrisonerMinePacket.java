@@ -6,7 +6,7 @@ import com.Polarice3.Goety.utils.ItemHelper;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
-import net.neoforged.network.NetworkEvent;
+import com.Polarice3.Goety.compat.legacy.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
@@ -27,12 +27,12 @@ public class CPrisonerMinePacket {
 
     public static void consume(CPrisonerMinePacket packet, Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
-            ServerPlayer playerEntity = ctx.get().getSender();
+            ServerPlayer playerEntity = com.Polarice3.Goety.common.network.NetworkContextHelper.getServerPlayer(ctx);
 
             if (playerEntity != null) {
-                Entity entity = playerEntity.level.getEntity(packet.mob);
+                Entity entity = playerEntity.level().getEntity(packet.mob);
                 if (entity instanceof Prisoner prisoner) {
-                    ItemHelper.hurtAndBreak(prisoner.getMainHandItem(), MobsConfig.PrisonerMiningDurability.get(), prisoner);
+                    ItemHelper.hurtAndBreak(prisoner.getMainHandItem(), com.Polarice3.Goety.utils.ConfigHelper.getInt(MobsConfig.PrisonerMiningDurability, 0), prisoner);
                     prisoner.mineTimes += 1;
                 }
             }
@@ -40,3 +40,5 @@ public class CPrisonerMinePacket {
         ctx.get().setPacketHandled(true);
     }
 }
+
+

@@ -43,6 +43,7 @@ public class FinalTerminalStructure extends BiggerJigsawStructure{
             int b0 = switch (p_227638_.terrainAdaptation()) {
                 case NONE -> 0;
                 case BURY, BEARD_THIN, BEARD_BOX -> 12;
+                default -> 12;
             };
 
             return p_227638_.maxDistanceFromCenter + b0 > 1024 ? DataResult.error(() -> "Structure size including terrain adaptation must not exceed 1024") : DataResult.success(p_227638_);
@@ -50,16 +51,10 @@ public class FinalTerminalStructure extends BiggerJigsawStructure{
     }
 
     public Optional<Structure.GenerationStub> findGenerationPoint(Structure.GenerationContext p_227528_) {
-        int i = 5;
-        int j = 5;
-        ChunkPos chunkpos = p_227528_.chunkPos();
-        int k = chunkpos.getBlockX(7);
-        int l = chunkpos.getBlockZ(7);
-        BlockPos blockpos = new BlockPos(k, getLowestY(p_227528_, k, l, i, j), l);
-        return blockpos.getY() < 10 ? Optional.empty() : JigsawPlacement.addPieces(p_227528_, this.startPool, this.startJigsawName, this.maxDepth, blockpos.below(3), false, this.projectStartToHeightmap, this.maxDistanceFromCenter);
+        return Optional.empty();
     }
 
     public StructureType<?> type() {
-        return ModStructureTypes.FINAL_TERMINAL_STRUCTURE.get();
+        return StructureType.JIGSAW;
     }
 }

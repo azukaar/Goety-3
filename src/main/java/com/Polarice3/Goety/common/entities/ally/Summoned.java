@@ -1,5 +1,7 @@
 package com.Polarice3.Goety.common.entities.ally;
 
+import com.Polarice3.Goety.utils.MobType;
+
 import com.Polarice3.Goety.api.entities.ally.IServant;
 import com.Polarice3.Goety.client.particles.ModParticleTypes;
 import com.Polarice3.Goety.common.entities.ai.SummonTargetGoal;
@@ -155,7 +157,7 @@ public class Summoned extends Owned implements IServant {
     public void setTarget(@Nullable LivingEntity target) {
         if (this.isGuardingArea() && !this.isPrioritizing()){
             if (target != null) {
-                if (target.distanceToSqr(this.vec3BoundPos()) <= Mth.square(GUARDING_RANGE)) {
+                if (target.distanceToSqr(this.vec3BoundPos()) <= Mth.square(IServant.getGuardingRange())) {
                     this.overrideSetTarget(target);
                 }
             } else {
@@ -298,7 +300,7 @@ public class Summoned extends Owned implements IServant {
     }
 
     public boolean hurt(DamageSource source, float amount) {
-        if (MobsConfig.ServantsMasterImmune.get()) {
+        if (com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MobsConfig.ServantsMasterImmune, false)) {
             if (source.getEntity() instanceof Summoned summoned) {
                 if (!summoned.isHostile() && !this.isHostile()) {
                     if (this.getTrueOwner() != null && summoned.getTrueOwner() == this.getTrueOwner()) {
@@ -309,7 +311,7 @@ public class Summoned extends Owned implements IServant {
         }
         boolean flag = super.hurt(source, amount);
         if (flag){
-            this.setNoHealTime(MathHelper.secondsToTicks(MobsConfig.ServantHealHalt.get()));
+            this.setNoHealTime(MathHelper.secondsToTicks(com.Polarice3.Goety.utils.ConfigHelper.getInt(MobsConfig.ServantHealHalt, 5)));
         }
         return flag;
     }
@@ -644,7 +646,7 @@ public class Summoned extends Owned implements IServant {
         }
 
         protected boolean canTeleport() {
-            return MobsConfig.ServantTeleport.get();
+            return com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MobsConfig.ServantTeleport, false);
         }
 
         protected void tryToTeleportNearEntity() {
@@ -778,7 +780,7 @@ public class Summoned extends Owned implements IServant {
                 if (this.owner instanceof Mob){
                     flag |= !this.summonedEntity.hasLineOfSight(this.owner) && d0 >= Mth.square(8.0D);
                 } else {
-                    flag &= MobsConfig.ServantTeleport.get();
+                    flag &= com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MobsConfig.ServantTeleport, false);
                 }
                 if (flag){
                     this.tryToTeleportNearEntity();
@@ -909,7 +911,7 @@ public class Summoned extends Owned implements IServant {
 
         public Vec3 randomBoundPos(){
             Vec3 vec3 = null;
-            int range = GUARDING_RANGE / 2;
+            int range = IServant.getGuardingRange() / 2;
 
             for (int i = 0; i < 10; ++i){
                 BlockPos blockPos = this.summonedEntity.getBoundPos()
@@ -953,7 +955,7 @@ public class Summoned extends Owned implements IServant {
 
         public Vec3 randomBoundPos(){
             Vec3 vec3 = null;
-            int range = GUARDING_RANGE / 2;
+            int range = IServant.getGuardingRange() / 2;
 
             for (int i = 0; i < 10; ++i){
                 BlockPos blockPos = this.summonedEntity.getBoundPos()

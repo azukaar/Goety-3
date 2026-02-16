@@ -3,7 +3,6 @@ package com.Polarice3.Goety.common.ritual;
 import com.Polarice3.Goety.Goety;
 import net.minecraft.core.Registry;
 import net.neoforged.neoforge.registries.DeferredRegister;
-import net.neoforged.neoforge.registries.RegistryBuilder;
 import net.neoforged.neoforge.registries.DeferredHolder;
 
 public class ModRituals {
@@ -11,7 +10,8 @@ public class ModRituals {
     public static final DeferredRegister<ModRitualFactory> RITUALS = DeferredRegister.create(Goety.location("ritual_factory"), Goety.MOD_ID);
 
     public static final Registry<ModRitualFactory> REGISTRY =
-            RITUALS.makeRegistry(builder -> builder.disableSaving().setMaxID(Integer.MAX_VALUE - 1));
+            RITUALS.makeRegistry(builder -> {
+            });
 
     public static final DeferredHolder<ModRitualFactory, ModRitualFactory> CRAFT_RITUAL =
             RITUALS.register("craft",

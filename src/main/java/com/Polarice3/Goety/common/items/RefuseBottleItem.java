@@ -16,7 +16,7 @@ import net.minecraft.world.level.Level;
 public class RefuseBottleItem extends Item {
 
    public RefuseBottleItem() {
-      super(new Properties().craftRemainder(Items.GLASS_BOTTLE).food(new FoodProperties.Builder().alwaysEat().build())
+      super(new Properties().craftRemainder(Items.GLASS_BOTTLE).food(new FoodProperties.Builder().alwaysEdible().build())
             .stacksTo(16));
    }
 

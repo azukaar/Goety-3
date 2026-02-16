@@ -23,8 +23,8 @@ public class StealTotemGoal<T extends HuntingIllagerEntity> extends Goal {
     }
 
     public boolean canUse() {
-        List<ItemEntity> list = this.mob.level.getEntitiesOfClass(ItemEntity.class, this.mob.getBoundingBox().inflate(16.0D, 8.0D, 16.0D), ALLOWED_ITEMS);
-        if (!list.isEmpty() && this.mob.inventory.canAddItem(list.get(0).getItem()) && MobsConfig.IllagerSteal.get()) {
+        List<ItemEntity> list = this.mob.level().getEntitiesOfClass(ItemEntity.class, this.mob.getBoundingBox().inflate(16.0D, 8.0D, 16.0D), ALLOWED_ITEMS);
+        if (!list.isEmpty() && this.mob.inventory.canAddItem(list.get(0).getItem()) && com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MobsConfig.IllagerSteal, false)) {
             return this.mob.getNavigation().moveTo(list.get(0), 1.15F);
         } else {
             return false;
@@ -33,7 +33,7 @@ public class StealTotemGoal<T extends HuntingIllagerEntity> extends Goal {
 
     public void tick() {
         if (this.mob.getNavigation().getTargetPos().closerToCenterThan(this.mob.position(), 1.414D)) {
-            List<ItemEntity> list = this.mob.level.getEntitiesOfClass(ItemEntity.class, this.mob.getBoundingBox().inflate(4.0D, 4.0D, 4.0D), ALLOWED_ITEMS);
+            List<ItemEntity> list = this.mob.level().getEntitiesOfClass(ItemEntity.class, this.mob.getBoundingBox().inflate(4.0D, 4.0D, 4.0D), ALLOWED_ITEMS);
             if (!list.isEmpty()) {
                 this.mob.pickUpItem(list.get(0));
             }

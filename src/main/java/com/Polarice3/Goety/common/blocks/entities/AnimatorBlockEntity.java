@@ -53,7 +53,7 @@ public class AnimatorBlockEntity extends BlockEntity implements IWaystoneBlock, 
     public int getSoulCost(){
         if (this.getPosition() != null){
             double distance = this.getBlockPos().distToCenterSqr(this.getPosition().pos().getCenter());
-            return (int) (MainConfig.AnimatorCost.get() * distance);
+            return (int) (com.Polarice3.Goety.utils.ConfigHelper.getInt(MainConfig.AnimatorCost, 0) * distance);
         }
         return 0;
     }
@@ -142,6 +142,16 @@ public class AnimatorBlockEntity extends BlockEntity implements IWaystoneBlock, 
             }
         }
         return null;
+    }
+
+    public void setPosition(BlockPos blockPos){
+        if (!this.getItem().isEmpty() && this.getLevel() != null) {
+            ItemStack stack = this.getItem();
+            CompoundTag tag = stack.getOrDefault(DataComponents.CUSTOM_DATA, net.minecraft.world.item.component.CustomData.EMPTY).copyTag();
+            tag.putLong("targetPos", blockPos.asLong());
+            stack.set(DataComponents.CUSTOM_DATA, net.minecraft.world.item.component.CustomData.of(tag));
+            this.setItem(stack);
+        }
     }
 
     public int getSpinning(){

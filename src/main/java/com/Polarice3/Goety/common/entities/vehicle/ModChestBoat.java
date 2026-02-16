@@ -5,6 +5,7 @@ import com.Polarice3.Goety.common.items.ModItems;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.Containers;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -29,7 +30,7 @@ import javax.annotation.Nullable;
 public class ModChestBoat extends ModBoat implements HasCustomInventoryScreen, ContainerEntity {
     private NonNullList<ItemStack> itemStacks = NonNullList.withSize(27, ItemStack.EMPTY);
     @Nullable
-    private ResourceLocation lootTable;
+    private ResourceKey<net.minecraft.world.level.storage.loot.LootTable> lootTable;
     private long lootTableSeed;
 
     public ModChestBoat(EntityType<? extends Boat> p_219869_, Level p_219870_) {
@@ -54,12 +55,12 @@ public class ModChestBoat extends ModBoat implements HasCustomInventoryScreen, C
 
     protected void addAdditionalSaveData(CompoundTag p_219908_) {
         super.addAdditionalSaveData(p_219908_);
-        this.addChestVehicleSaveData(p_219908_);
+        this.addChestVehicleSaveData(p_219908_, this.registryAccess());
     }
 
     protected void readAdditionalSaveData(CompoundTag p_219901_) {
         super.readAdditionalSaveData(p_219901_);
-        this.readChestVehicleSaveData(p_219901_);
+        this.readChestVehicleSaveData(p_219901_, this.registryAccess());
     }
 
     public void destroy(DamageSource p_219892_) {
@@ -91,7 +92,7 @@ public class ModChestBoat extends ModBoat implements HasCustomInventoryScreen, C
 
     public void openCustomInventoryScreen(Player p_219906_) {
         p_219906_.openMenu(this);
-        if (!p_219906_.level.isClientSide) {
+        if (!p_219906_.level().isClientSide) {
             this.gameEvent(GameEvent.CONTAINER_OPEN, p_219906_);
             PiglinAi.angerNearbyPiglins(p_219906_, true);
         }
@@ -159,11 +160,11 @@ public class ModChestBoat extends ModBoat implements HasCustomInventoryScreen, C
     }
 
     @Nullable
-    public ResourceLocation getLootTable() {
+    public ResourceKey<net.minecraft.world.level.storage.loot.LootTable> getLootTable() {
         return this.lootTable;
     }
 
-    public void setLootTable(@Nullable ResourceLocation p_219890_) {
+    public void setLootTable(@Nullable ResourceKey<net.minecraft.world.level.storage.loot.LootTable> p_219890_) {
         this.lootTable = p_219890_;
     }
 

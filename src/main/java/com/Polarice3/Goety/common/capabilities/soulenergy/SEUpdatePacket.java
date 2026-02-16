@@ -1,52 +1,45 @@
 package com.Polarice3.Goety.common.capabilities.soulenergy;
 
 import com.Polarice3.Goety.Goety;
+import com.Polarice3.Goety.init.ModAttachments;
 import com.Polarice3.Goety.utils.SEHelper;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
-import net.neoforged.network.NetworkDirection;
-import net.neoforged.network.NetworkEvent;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 import java.util.UUID;
-import java.util.function.Supplier;
 
-public class SEUpdatePacket {
-    private final UUID PlayerUUID;
-    private CompoundTag tag;
+public record SEUpdatePacket(UUID playerUUID, CompoundTag tag) implements CustomPacketPayload {
+    public static final CustomPacketPayload.Type<SEUpdatePacket> TYPE = 
+            new CustomPacketPayload.Type<>(ResourceLocation.fromNamespaceAndPath(Goety.MOD_ID, "se_update"));
 
-    public SEUpdatePacket(UUID uuid, CompoundTag tag) {
-        this.PlayerUUID = uuid;
-        this.tag = tag;
-    }
+    public static final StreamCodec<FriendlyByteBuf, SEUpdatePacket> STREAM_CODEC = StreamCodec.composite(
+            ByteBufCodecs.STRING_UTF8.map(UUID::fromString, UUID::toString), SEUpdatePacket::playerUUID,
+            ByteBufCodecs.COMPOUND_TAG, SEUpdatePacket::tag,
+            SEUpdatePacket::new
+    );
 
     public SEUpdatePacket(Player player) {
-        this.PlayerUUID = player.getUUID();
-        player.getCapability(SEProvider.CAPABILITY, null).ifPresent((soulEnergy) -> {
-            this.tag = (CompoundTag) SEHelper.save(new CompoundTag(), soulEnergy);
-        });
+        this(player.getUUID(), SEHelper.save(new CompoundTag(), player.getData(ModAttachments.SOUL_ENERGY)));
     }
 
-    public static void encode(SEUpdatePacket packet, FriendlyByteBuf buffer) {
-        buffer.writeUUID(packet.PlayerUUID);
-        buffer.writeNbt(packet.tag);
-    }
-
-    public static SEUpdatePacket decode(FriendlyByteBuf buffer) {
-        return new SEUpdatePacket(buffer.readUUID(), buffer.readNbt());
-    }
-
-    public static void consume(SEUpdatePacket packet, Supplier<NetworkEvent.Context> ctx) {
-        ctx.get().enqueueWork(() -> {
-            if (ctx.get().getDirection() == NetworkDirection.PLAY_TO_CLIENT) {
-                Player player = Goety.PROXY.getPlayer();
-                if (player != null) {
-                    player.getCapability(SEProvider.CAPABILITY).ifPresent((soulEnergy) -> {
-                        SEHelper.load(packet.tag, soulEnergy);
-                    });
-                }
+    public static void handle(SEUpdatePacket packet, IPayloadContext ctx) {
+        ctx.enqueueWork(() -> {
+            Player player = Goety.PROXY.getPlayer();
+            if (player != null) {
+                ISoulEnergy soulEnergy = player.getData(ModAttachments.SOUL_ENERGY);
+                SEHelper.load(packet.tag, soulEnergy);
             }
         });
-        ctx.get().setPacketHandled(true);
+    }
+
+    @Override
+    public Type<? extends CustomPacketPayload> type() {
+        return TYPE;
     }
 }

@@ -3,7 +3,7 @@ package com.Polarice3.Goety.common.network.client;
 import com.Polarice3.Goety.common.entities.neutral.IRavager;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
-import net.neoforged.network.NetworkEvent;
+import com.Polarice3.Goety.compat.legacy.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
@@ -17,7 +17,7 @@ public class CRavagerRoarPacket {
 
     public static void consume(CRavagerRoarPacket packet, Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
-            ServerPlayer playerEntity = ctx.get().getSender();
+            ServerPlayer playerEntity = com.Polarice3.Goety.common.network.NetworkContextHelper.getServerPlayer(ctx);
 
             if (playerEntity != null) {
                 if (playerEntity.getVehicle() instanceof IRavager ravager){
@@ -28,3 +28,5 @@ public class CRavagerRoarPacket {
         ctx.get().setPacketHandled(true);
     }
 }
+
+

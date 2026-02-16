@@ -14,7 +14,7 @@ import net.minecraft.world.level.block.state.BlockState;
 
 public class PartWaterBlockEffect extends BrewEffect {
     public PartWaterBlockEffect() {
-        super("part_water", BrewConfig.PartWaterCost.get(), MobEffectCategory.NEUTRAL, 0x405ce2);
+        super("part_water", com.Polarice3.Goety.utils.ConfigHelper.getInt(BrewConfig.PartWaterCost, 0), MobEffectCategory.NEUTRAL, 0x405ce2);
         this.duration = MathHelper.secondsToTicks(30);
     }
 

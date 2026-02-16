@@ -139,7 +139,7 @@ public class GuardianServantRenderer extends MobRenderer<GuardianServant, Guardi
    }
 
    public ResourceLocation getTextureLocation(GuardianServant p_114827_) {
-      if (p_114827_.isHostile() || !MobsConfig.GuardianServantTexture.get()){
+      if (p_114827_.isHostile() || !com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MobsConfig.GuardianServantTexture, false)){
          return GUARDIAN_LOCATION;
       } else {
          return SERVANT_LOCATION;

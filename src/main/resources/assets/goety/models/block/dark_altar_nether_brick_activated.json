@@ -1,6 +1,6 @@
 {
 	"parent": "goety:block/template_altar",
-	"loader": "forge:composite",
+	"loader": "neoforge:composite",
 	"textures": {
 		"particle": "goety:block/dark_altar_nether_brick"
 	},

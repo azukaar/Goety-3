@@ -80,7 +80,7 @@ public class ShriekObeliskBlockEntity extends BlockEntity {
     public boolean shriek(ServerLevel serverLevel, @Nullable Player player, int soulEnergy) {
         BlockPos blockpos = this.getBlockPos();
         BlockState blockstate = this.getBlockState();
-        int cost = (soulEnergy / MobsConfig.IllagerAssaultSEThreshold.get()) * MainConfig.ShriekObeliskCost.get();
+        int cost = (soulEnergy / com.Polarice3.Goety.utils.ConfigHelper.getInt(MobsConfig.IllagerAssaultSEThreshold, 0)) * com.Polarice3.Goety.utils.ConfigHelper.getInt(MainConfig.ShriekObeliskCost, 0);
         if (blockstate.getValue(ShriekObeliskBlock.POWERED)) {
             if (this.cursedCageTile != null) {
                 if (this.cursedCageTile.getSouls() >= cost) {

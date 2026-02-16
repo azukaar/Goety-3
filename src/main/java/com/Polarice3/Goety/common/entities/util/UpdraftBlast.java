@@ -11,6 +11,8 @@ import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundAddEntityPacket;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.network.protocol.game.ClientGamePacketListener;
+import net.minecraft.server.level.ServerEntity;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -29,7 +31,7 @@ import net.minecraft.network.syncher.SynchedEntityData;
 public class UpdraftBlast extends Entity implements ISpellEntity {
     public LivingEntity owner;
     private UUID ownerUniqueId;
-    private float damage = SpellConfig.UpdraftBlastDamage.get().floatValue() * WandUtil.damageMultiply();
+    private float damage = com.Polarice3.Goety.utils.ConfigHelper.getFloat(SpellConfig.UpdraftBlastDamage, 1.0F) * WandUtil.damageMultiply();
     private float areaOfEffect = 0.0F;
 
     public UpdraftBlast(EntityType<?> entityTypeIn, Level worldIn) {
@@ -44,7 +46,6 @@ public class UpdraftBlast extends Entity implements ISpellEntity {
 
     @Override
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
-        super.defineSynchedData(builder);
     }
 
     @Override
@@ -151,7 +152,7 @@ public class UpdraftBlast extends Entity implements ISpellEntity {
     }
 
     @Override
-    public Packet<ClientGamePacketListener> getAddEntityPacket() {
-        return new ClientboundAddEntityPacket(this);
+    public Packet<ClientGamePacketListener> getAddEntityPacket(ServerEntity p_345759_) {
+        return new ClientboundAddEntityPacket(this, p_345759_);
     }
 }

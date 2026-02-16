@@ -74,17 +74,17 @@ public class AbstractSnareling extends AbstractEnderling implements RangedAttack
 
     public static AttributeSupplier.Builder setCustomAttributes() {
         return Mob.createMobAttributes()
-                .add(Attributes.MAX_HEALTH, AttributesConfig.SnarelingHealth.get())
-                .add(Attributes.ARMOR, AttributesConfig.SnarelingArmor.get())
+                .add(Attributes.MAX_HEALTH, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.SnarelingHealth, 20.0D))
+                .add(Attributes.ARMOR, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.SnarelingArmor, 20.0D))
                 .add(Attributes.FOLLOW_RANGE, 16.0D)
-                .add(Attributes.ATTACK_DAMAGE, AttributesConfig.SnarelingDamage.get())
+                .add(Attributes.ATTACK_DAMAGE, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.SnarelingDamage, 20.0D))
                 .add(Attributes.MOVEMENT_SPEED, 0.25D);
     }
 
     public void setConfigurableAttributes() {
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.MAX_HEALTH), AttributesConfig.SnarelingHealth.get());
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ARMOR), AttributesConfig.SnarelingArmor.get());
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ATTACK_DAMAGE), AttributesConfig.SnarelingDamage.get());
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.MAX_HEALTH), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.SnarelingHealth, 20.0D));
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ARMOR), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.SnarelingArmor, 20.0D));
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ATTACK_DAMAGE), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.SnarelingDamage, 20.0D));
     }
 
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
@@ -324,7 +324,7 @@ public class AbstractSnareling extends AbstractEnderling implements RangedAttack
                     && livingentity.isAlive()
                     && !this.mob.isFleeing) {
                 this.target = livingentity;
-                return !livingentity.hasEffect(GoetyEffects.TANGLED.getHolder())
+                return !livingentity.hasEffect(GoetyEffects.TANGLED)
                         && this.mob.distanceTo(livingentity) > 3.0F;
             } else {
                 return false;
@@ -397,12 +397,12 @@ public class AbstractSnareling extends AbstractEnderling implements RangedAttack
         public boolean canUse() {
             return AbstractSnareling.this.getTarget() != null
                     && AbstractSnareling.this.getTarget().isAlive()
-                    && AbstractSnareling.this.getTarget().hasEffect(GoetyEffects.TANGLED.getHolder());
+                    && AbstractSnareling.this.getTarget().hasEffect(GoetyEffects.TANGLED);
         }
 
         @Override
         public boolean canContinueToUse() {
-            if (AbstractSnareling.this.getTarget() == null || AbstractSnareling.this.getTarget().isDeadOrDying() || !AbstractSnareling.this.getTarget().hasEffect(GoetyEffects.TANGLED.getHolder())) {
+            if (AbstractSnareling.this.getTarget() == null || AbstractSnareling.this.getTarget().isDeadOrDying() || !AbstractSnareling.this.getTarget().hasEffect(GoetyEffects.TANGLED)) {
                 return false;
             }
             return super.canContinueToUse();

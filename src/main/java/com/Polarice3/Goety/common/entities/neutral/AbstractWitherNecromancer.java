@@ -69,19 +69,19 @@ public class AbstractWitherNecromancer extends AbstractNecromancer {
 
     public static AttributeSupplier.Builder setCustomAttributes() {
         return Mob.createMobAttributes()
-                .add(Attributes.MAX_HEALTH, AttributesConfig.WitherNecromancerHealth.get())
-                .add(Attributes.ARMOR, AttributesConfig.WitherNecromancerArmor.get())
-                .add(Attributes.FOLLOW_RANGE, AttributesConfig.WitherNecromancerFollowRange.get())
+                .add(Attributes.MAX_HEALTH, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.WitherNecromancerHealth, 20.0D))
+                .add(Attributes.ARMOR, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.WitherNecromancerArmor, 20.0D))
+                .add(Attributes.FOLLOW_RANGE, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.WitherNecromancerFollowRange, 20.0D))
                 .add(Attributes.MOVEMENT_SPEED, 0.25F)
                 .add(Attributes.KNOCKBACK_RESISTANCE, 1.0D)
-                .add(Attributes.ATTACK_DAMAGE, AttributesConfig.WitherNecromancerDamage.get());
+                .add(Attributes.ATTACK_DAMAGE, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.WitherNecromancerDamage, 20.0D));
     }
 
     public void setConfigurableAttributes(){
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.MAX_HEALTH), AttributesConfig.WitherNecromancerHealth.get());
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ARMOR), AttributesConfig.WitherNecromancerArmor.get());
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.FOLLOW_RANGE), AttributesConfig.WitherNecromancerFollowRange.get());
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ATTACK_DAMAGE), AttributesConfig.NecromancerDamage.get());
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.MAX_HEALTH), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.WitherNecromancerHealth, 20.0D));
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ARMOR), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.WitherNecromancerArmor, 20.0D));
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.FOLLOW_RANGE), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.WitherNecromancerFollowRange, 20.0D));
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ATTACK_DAMAGE), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.NecromancerDamage, 20.0D));
     }
 
     @Override
@@ -208,7 +208,7 @@ public class AbstractWitherNecromancer extends AbstractNecromancer {
         this.entityData.set(LEVEL, i);
         AttributeInstance attributeInstance = this.getAttribute(Attributes.MAX_HEALTH);
         if (attributeInstance != null){
-            attributeInstance.setBaseValue(AttributesConfig.WitherNecromancerHealth.get() * Math.max(i * 1.25F, 1));
+            attributeInstance.setBaseValue(com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.WitherNecromancerHealth, 20.0D) * Math.max(i * 1.25F, 1));
         }
         this.reapplyPosition();
         this.refreshDimensions();
@@ -225,7 +225,7 @@ public class AbstractWitherNecromancer extends AbstractNecromancer {
                     if (this.getNecroLevel() < 2) {
                         this.setNecroLevel(this.getNecroLevel() + 1);
                     }
-                    this.heal(AttributesConfig.WitherNecromancerHealth.get().floatValue());
+                    this.heal((float)com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.WitherNecromancerHealth, 20.0D));
                     if (this.level() instanceof ServerLevel serverLevel) {
                         for (int i = 0; i < 7; ++i) {
                             double d0 = this.random.nextGaussian() * 0.02D;
@@ -394,7 +394,7 @@ public class AbstractWitherNecromancer extends AbstractNecromancer {
         public void tick() {
             --this.spellTime;
             if (this.spellTime == 0) {
-                AbstractWitherNecromancer.this.addEffect(new MobEffectInstance(GoetyEffects.TANGLED.getHolder(), 180, 0, false, false));
+                AbstractWitherNecromancer.this.addEffect(new MobEffectInstance(GoetyEffects.TANGLED, 180, 0, false, false));
                 AbstractWitherNecromancer.this.setNecromancerSpellType(NecromancerSpellType.NONE);
                 AbstractWitherNecromancer.this.idleSpellCool = MathHelper.secondsToTicks(10);
             }

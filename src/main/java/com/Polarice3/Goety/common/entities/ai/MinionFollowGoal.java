@@ -32,7 +32,7 @@ public class MinionFollowGoal extends Goal {
 
     public MinionFollowGoal(Minion summonedEntity, double speed, float minDist, float maxDist, boolean teleportToLeaves) {
         this.summonedEntity = summonedEntity;
-        this.level() = summonedEntity.level;
+        this.level = summonedEntity.level();
         this.followSpeed = speed;
         this.navigation = summonedEntity.getNavigation();
         this.minDist = minDist;
@@ -106,7 +106,7 @@ public class MinionFollowGoal extends Goal {
                     }
                 }
             }
-            if (this.summonedEntity.distanceToSqr(this.owner) > 144.0 && MobsConfig.VexTeleport.get()){
+            if (this.summonedEntity.distanceToSqr(this.owner) > 144.0 && com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MobsConfig.VexTeleport, false)){
                 this.tryToTeleportNearEntity();
             }
         }
@@ -140,23 +140,23 @@ public class MinionFollowGoal extends Goal {
     }
 
     private boolean isTeleportFriendlyBlock(BlockPos pos) {
-        PathType pathnodetype = WalkNodeEvaluator.getPathTypetatic(this.level(), pos.mutable());
+        PathType pathnodetype = WalkNodeEvaluator.getPathTypeStatic(this.summonedEntity, pos.mutable());
         if (pathnodetype != PathType.WALKABLE) {
             return false;
         } else {
-            BlockState blockstate = this.level().getBlockState(pos.below());
+            BlockState blockstate = this.level.getBlockState(pos.below());
             if (!this.teleportToLeaves && blockstate.getBlock() instanceof LeavesBlock) {
                 return false;
             } else {
                 BlockPos blockpos = pos.subtract(this.summonedEntity.blockPosition());
-                return this.level().noCollision(this.summonedEntity, this.summonedEntity.getBoundingBox().move(blockpos));
+                return this.level.noCollision(this.summonedEntity, this.summonedEntity.getBoundingBox().move(blockpos));
             }
         }
     }
 
     protected boolean ValidPosition(BlockPos pos) {
-        BlockState blockstate = this.level().getBlockState(pos);
-        return (blockstate.canSurvive(this.level(), pos) && this.level().isEmptyBlock(pos.above()) && this.level().isEmptyBlock(pos.above(2)));
+        BlockState blockstate = this.level.getBlockState(pos);
+        return (blockstate.canSurvive(this.level, pos) && this.level.isEmptyBlock(pos.above()) && this.level.isEmptyBlock(pos.above(2)));
     }
 
     private int getRandomNumber(int min, int max) {

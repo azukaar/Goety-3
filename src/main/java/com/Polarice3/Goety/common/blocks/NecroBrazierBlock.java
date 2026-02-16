@@ -1,6 +1,7 @@
 package com.Polarice3.Goety.common.blocks;
 
 import com.Polarice3.Goety.common.blocks.entities.NecroBrazierBlockEntity;
+import com.mojang.serialization.MapCodec;
 import com.Polarice3.Goety.utils.ConstantPaths;
 import com.Polarice3.Goety.utils.LichdomHelper;
 import com.Polarice3.Goety.utils.MobUtil;
@@ -10,7 +11,9 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.Containers;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
@@ -44,6 +47,12 @@ import javax.annotation.Nullable;
 import java.util.function.ToIntFunction;
 
 public class NecroBrazierBlock extends BaseEntityBlock implements SimpleWaterloggedBlock {
+    public static final MapCodec<NecroBrazierBlock> CODEC = simpleCodec(p -> new NecroBrazierBlock());
+
+    @Override
+    protected MapCodec<? extends BaseEntityBlock> codec() {
+        return CODEC;
+    }
     protected static final VoxelShape SHAPE_BASE = Block.box(1.0D, 0.0D, 1.0D,
             15.0D, 1.0D, 15.0D);
     protected static final VoxelShape SHAPE_2 = Block.box(2.0D, 1.0D, 2.0D,
@@ -67,22 +76,23 @@ public class NecroBrazierBlock extends BaseEntityBlock implements SimpleWaterlog
         return (state) -> state.getValue(BlockStateProperties.LIT) ? 10 : 0;
     }
 
-    public InteractionResult use(BlockState pState, Level pLevel, BlockPos pPos, Player pPlayer, InteractionHand pHand,
+    @Override
+    protected ItemInteractionResult useItemOn(ItemStack stack, BlockState pState, Level pLevel, BlockPos pPos, Player pPlayer, InteractionHand pHand,
             BlockHitResult pHit) {
         BlockEntity tileentity = pLevel.getBlockEntity(pPos);
         if (tileentity instanceof NecroBrazierBlockEntity burnerTileEntity) {
-            ItemStack itemstack = pPlayer.getItemInHand(pHand);
+            ItemStack itemstack = stack;
             if (itemstack.isEmpty() || MobUtil.isShifting(pPlayer)) {
                 burnerTileEntity.removeItem(pPlayer);
-                return InteractionResult.SUCCESS;
+                return ItemInteractionResult.SUCCESS;
             } else if (!pLevel.isClientSide && pState.getValue(LIT) && burnerTileEntity.addItem(pPlayer, itemstack)) {
-                return InteractionResult.SUCCESS;
+                return ItemInteractionResult.SUCCESS;
             }
 
-            return InteractionResult.CONSUME;
+            return ItemInteractionResult.CONSUME;
         }
 
-        return InteractionResult.PASS;
+        return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
     }
 
     public void onRemove(BlockState pState, Level pLevel, BlockPos pPos, BlockState pNewState, boolean pIsMoving) {
@@ -104,10 +114,8 @@ public class NecroBrazierBlock extends BaseEntityBlock implements SimpleWaterlog
         if (pState.getValue(LIT)) {
             if (!pEntity.fireImmune()
                     && pEntity instanceof LivingEntity livingEntity
-                    && ((net.minecraft.world.entity.LivingEntity) livingEntity)
-                            .getMobType() != net.minecraft.world.entity.MobType.UNDEAD
+                    && !livingEntity.getType().is(net.minecraft.tags.EntityTypeTags.UNDEAD)
                     && !LichdomHelper.isInLichMode(livingEntity)
-                    && !EnchantmentHelper.hasFrostWalker((LivingEntity) pEntity)
                     && pEntity.getY() >= pPos.getY() + 0.5F) {
                 pEntity.hurt(pEntity.damageSources().inFire(), 1.0F);
             }

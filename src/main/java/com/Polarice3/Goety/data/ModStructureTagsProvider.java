@@ -24,11 +24,11 @@ public class ModStructureTagsProvider extends TagsProvider<Structure> {
     protected void addTags(HolderLookup.Provider p_255894_) {
         this.tag(ModTags.Structures.WITHER_NECROMANCER_SPAWNS)
                 .add(BuiltinStructures.FORTRESS)
-                .addOptional(new ResourceLocation("betterfortresses", "better_fortresses"))
-                .addOptionalTag(new ResourceLocation("morevillagers", "on_fortress_explorer_maps"));
+                .addOptional(ResourceLocation.fromNamespaceAndPath("betterfortresses", "better_fortresses"))
+                .addOptionalTag(ResourceLocation.fromNamespaceAndPath("morevillagers", "on_fortress_explorer_maps"));
         this.tag(ModTags.Structures.VIZIER_SPAWNS)
                 .addTag(StructureTags.ON_WOODLAND_EXPLORER_MAPS)
-                .addOptionalTag(new ResourceLocation("repurposed_structures", "collections/mansions"));
+                .addOptionalTag(ResourceLocation.fromNamespaceAndPath("repurposed_structures", "collections/mansions"));
         this.tag(ModTags.Structures.CRONE_SPAWNS).add(ModStructures.BLIGHTED_SHACK_KEY);
         this.tag(ModTags.Structures.SKULL_LORD_SPAWNS).add(ModStructures.CRYPT_KEY);
         this.tag(ModTags.Structures.CRYPT).add(ModStructures.CRYPT_KEY);
@@ -36,7 +36,7 @@ public class ModStructureTagsProvider extends TagsProvider<Structure> {
         this.tag(ModTags.Structures.CAN_SUMMON_BRUTES).add(BuiltinStructures.BASTION_REMNANT);
         this.tag(ModTags.Structures.CAN_SUMMON_WITHER_SKELETONS)
                 .add(BuiltinStructures.FORTRESS)
-                .addOptional(new ResourceLocation("betterfortresses", "better_fortresses"))
-                .addOptionalTag(new ResourceLocation("morevillagers", "on_fortress_explorer_maps"));
+                .addOptional(ResourceLocation.fromNamespaceAndPath("betterfortresses", "better_fortresses"))
+                .addOptionalTag(ResourceLocation.fromNamespaceAndPath("morevillagers", "on_fortress_explorer_maps"));
     }
 }

@@ -29,7 +29,7 @@ public class RavagerRoarGui {
         if (minecraft.player == null){
             return;
         }
-        int i = (screenWidth/2) + (MainConfig.SoulGuiHorizontal.get());
+        int i = (screenWidth/2) + (com.Polarice3.Goety.utils.ConfigHelper.getInt(MainConfig.SoulGuiHorizontal, 0));
         int RoarCool = 0;
         int RoarCoolTotal = 1;
         if (minecraft.player.getVehicle() instanceof IRavager ravager){
@@ -38,7 +38,7 @@ public class RavagerRoarGui {
         }
         int roarLength = 80;
         roarLength *= (RoarCool / (double)RoarCoolTotal);
-        int height = screenHeight + (MainConfig.SoulGuiVertical.get() - 20);
+        int height = screenHeight + (com.Polarice3.Goety.utils.ConfigHelper.getInt(MainConfig.SoulGuiVertical, 0) - 20);
         guiGraphics.blit(Goety.location("textures/gui/ravager_roar_bar.png"), i, height - 9, 0, 0, 96,16, 96, 32);
         guiGraphics.blit(Goety.location("textures/gui/ravager_roar_bar.png"), i + 16, height - 9, 16, 16, roarLength,16, 96, 32);
     }

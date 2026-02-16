@@ -1,5 +1,7 @@
 package com.Polarice3.Goety.common.entities.neutral;
 
+import com.Polarice3.Goety.utils.MobType;
+
 import com.Polarice3.Goety.client.particles.CircleExplodeParticleOption;
 import com.Polarice3.Goety.client.particles.ModParticleTypes;
 import com.Polarice3.Goety.common.entities.ModEntityType;
@@ -122,9 +124,9 @@ public class Wildfire extends Summoned {
 
     public static AttributeSupplier.Builder setCustomAttributes(){
         return Mob.createMobAttributes()
-                .add(Attributes.MAX_HEALTH, AttributesConfig.WildfireHealth.get())
-                .add(Attributes.ATTACK_DAMAGE, AttributesConfig.WildfireMeleeDamage.get())
-                .add(Attributes.ARMOR, AttributesConfig.WildfireArmor.get())
+                .add(Attributes.MAX_HEALTH, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.WildfireHealth, 20.0D))
+                .add(Attributes.ATTACK_DAMAGE, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.WildfireMeleeDamage, 20.0D))
+                .add(Attributes.ARMOR, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.WildfireArmor, 20.0D))
                 .add(Attributes.MOVEMENT_SPEED, 0.28D)
                 .add(Attributes.KNOCKBACK_RESISTANCE, 0.5D)
                 .add(Attributes.FOLLOW_RANGE, 48.0D);
@@ -132,9 +134,9 @@ public class Wildfire extends Summoned {
 
     @Override
     public void setConfigurableAttributes() {
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.MAX_HEALTH), AttributesConfig.WildfireHealth.get());
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ATTACK_DAMAGE), AttributesConfig.WildfireMeleeDamage.get());
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ARMOR), AttributesConfig.WildfireArmor.get());
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.MAX_HEALTH), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.WildfireHealth, 20.0D));
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ATTACK_DAMAGE), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.WildfireMeleeDamage, 20.0D));
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ARMOR), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.WildfireArmor, 20.0D));
     }
 
     @Override
@@ -142,7 +144,7 @@ public class Wildfire extends Summoned {
         super.defineSynchedData(builder);
         builder.define(ANIM_STATE, 0);
         builder.define(SHIELDS, 4);
-        builder.define(SHIELD_HEALTH, AttributesConfig.WildfireShieldHealth.get().floatValue());
+        builder.define(SHIELD_HEALTH, (float)com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.WildfireShieldHealth, 20.0D));
     }
 
     public void onSyncedDataUpdated(EntityDataAccessor<?> accessor) {
@@ -319,7 +321,7 @@ public class Wildfire extends Summoned {
     }
 
     public void setShieldHealth(float shieldHealth) {
-        this.entityData.set(SHIELD_HEALTH, Mth.clamp(shieldHealth, 0.0F, AttributesConfig.WildfireShieldHealth.get().floatValue()));
+        this.entityData.set(SHIELD_HEALTH, Mth.clamp(shieldHealth, 0.0F, (float)com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.WildfireShieldHealth, 20.0D)));
     }
 
     public void healShield(float amount){
@@ -331,7 +333,7 @@ public class Wildfire extends Summoned {
     public void breakShield(){
         if (this.getShields() > 0){
             this.setShields(this.getShields() - 1);
-            this.setShieldHealth(AttributesConfig.WildfireShieldHealth.get().floatValue());
+            this.setShieldHealth((float)com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.WildfireShieldHealth, 20.0D));
             this.invulnerableTime = 20;
             this.setRegenShieldTick(MathHelper.secondsToTicks(7));
             this.playSound(ModSounds.WILDFIRE_SHIELD_BREAK.get(), 1.2F, 1.0F);
@@ -348,7 +350,7 @@ public class Wildfire extends Summoned {
     public void addShield(){
         if (this.getShields() < 4){
             this.setShields(this.getShields() + 1);
-            this.setShieldHealth(AttributesConfig.WildfireShieldHealth.get().floatValue());
+            this.setShieldHealth((float)com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.WildfireShieldHealth, 20.0D));
             this.setRegenShieldTick(MathHelper.secondsToTicks(7));
             this.playSound(ModSounds.WILDFIRE_SHIELD_REGEN.get(), 2.0F, 1.0F);
         }
@@ -799,7 +801,7 @@ public class Wildfire extends Summoned {
                     this.mob.setAnimationState(SHOOT);
                 }
                 if (this.attackTime == 5) {
-                    float damage = AttributesConfig.WildfireRangeDamage.get().floatValue() + this.mob.getFireBallDamage();
+                    float damage = (float)com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.WildfireRangeDamage, 20.0D) + this.mob.getFireBallDamage();
 
                     Vec3 vector3d = this.mob.getViewVector(1.0F);
                     ShieldDebris fireball = new ShieldDebris(this.mob.level(), this.mob, vector3d.x, vector3d.y, vector3d.z);

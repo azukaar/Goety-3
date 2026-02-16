@@ -9,8 +9,13 @@ import com.google.common.collect.Maps;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.protocol.game.ClientboundAddEntityPacket;
+import net.minecraft.network.syncher.EntityDataAccessor;
+import net.minecraft.network.syncher.EntityDataSerializers;
+import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
@@ -58,20 +63,20 @@ public class Envioker extends HuntingIllagerEntity {
     public static AttributeSupplier.Builder setCustomAttributes(){
         return Mob.createMobAttributes()
                 .add(Attributes.FOLLOW_RANGE, 32.0D)
-                .add(Attributes.MAX_HEALTH, AttributesConfig.EnviokerHealth.get())
-                .add(Attributes.ARMOR, AttributesConfig.EnviokerArmor.get())
+                .add(Attributes.MAX_HEALTH, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.EnviokerHealth, 20.0D))
+                .add(Attributes.ARMOR, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.EnviokerArmor, 20.0D))
                 .add(Attributes.MOVEMENT_SPEED, 0.35D)
-                .add(Attributes.ATTACK_DAMAGE, AttributesConfig.EnviokerDamage.get());
+                .add(Attributes.ATTACK_DAMAGE, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.EnviokerDamage, 20.0D));
     }
 
     public void setConfigurableAttributes(){
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.MAX_HEALTH), AttributesConfig.EnviokerHealth.get());
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ARMOR), AttributesConfig.EnviokerArmor.get());
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ATTACK_DAMAGE), AttributesConfig.EnviokerDamage.get());
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.MAX_HEALTH), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.EnviokerHealth, 20.0D));
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ARMOR), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.EnviokerArmor, 20.0D));
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ATTACK_DAMAGE), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.EnviokerDamage, 20.0D));
     }
 
-    protected void defineSynchedData() {
-        super.defineSynchedData();
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
     }
 
     public void readAdditionalSaveData(CompoundTag pCompound) {
@@ -95,12 +100,12 @@ public class Envioker extends HuntingIllagerEntity {
     }
 
     @Nullable
-    public SpawnGroupData finalizeSpawn(ServerLevelAccessor pLevel, DifficultyInstance pDifficulty, MobSpawnType pReason, @Nullable SpawnGroupData pSpawnData, @Nullable CompoundTag pDataTag) {
-        SpawnGroupData ilivingentitydata = super.finalizeSpawn(pLevel, pDifficulty, pReason, pSpawnData, pDataTag);
+    public SpawnGroupData finalizeSpawn(ServerLevelAccessor pLevel, DifficultyInstance pDifficulty, MobSpawnType pReason, @Nullable SpawnGroupData pSpawnData) {
+        SpawnGroupData ilivingentitydata = super.finalizeSpawn(pLevel, pDifficulty, pReason, pSpawnData);
         ((GroundPathNavigation)this.getNavigation()).setCanOpenDoors(true);
         RandomSource randomSource = pLevel.getRandom();
         this.populateDefaultEquipmentSlots(randomSource, pDifficulty);
-        this.populateDefaultEquipmentEnchantments(randomSource, pDifficulty);
+        this.populateDefaultEquipmentEnchantments(pLevel, randomSource, pDifficulty);
         return ilivingentitydata;
     }
 
@@ -138,7 +143,7 @@ public class Envioker extends HuntingIllagerEntity {
         return SoundEvents.EVOKER_CAST_SPELL;
     }
 
-    public void applyRaidBuffs(int pWave, boolean p_213660_2_) {
+    public void applyRaidBuffs(ServerLevel pLevel, int pWave, boolean p_213660_2_) {
         ItemStack itemstack = new ItemStack(Items.IRON_SWORD);
         Raid raid = this.getCurrentRaid();
         int i = 1;
@@ -148,10 +153,10 @@ public class Envioker extends HuntingIllagerEntity {
 
         boolean flag = this.random.nextFloat() <= raid.getEnchantOdds();
         if (flag) {
-            Map<Enchantment, Integer> map = Maps.newHashMap();
-            map.put(Enchantments.SHARPNESS, i);
-            map.put(Enchantments.KNOCKBACK, i);
-            EnchantmentHelper.setEnchantments(map, itemstack);
+            if (this.level() instanceof ServerLevel serverLevel) {
+                 itemstack.enchant(serverLevel.registryAccess().lookupOrThrow(Registries.ENCHANTMENT).getOrThrow(Enchantments.SHARPNESS), i);
+                 itemstack.enchant(serverLevel.registryAccess().lookupOrThrow(Registries.ENCHANTMENT).getOrThrow(Enchantments.KNOCKBACK), i);
+            }
         }
 
         this.setItemSlot(EquipmentSlot.MAINHAND, itemstack);

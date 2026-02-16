@@ -15,7 +15,7 @@ import net.minecraft.resources.ResourceLocation;
 
 public class WitherSkeletonServantRenderer extends HumanoidMobRenderer<AbstractSkeletonServant, SkeletonModel<AbstractSkeletonServant>> {
    private static final ResourceLocation TEXTURES = Goety.location("textures/entity/servants/skeleton/wither_skeleton_servant.png");
-   private static final ResourceLocation SKELETON_LOCATION = new ResourceLocation("textures/entity/skeleton/wither_skeleton.png");
+   private static final ResourceLocation SKELETON_LOCATION = ResourceLocation.parse("textures/entity/skeleton/wither_skeleton.png");
 
    public WitherSkeletonServantRenderer(EntityRendererProvider.Context p_174380_) {
       this(p_174380_, ModelLayers.WITHER_SKELETON, ModelLayers.WITHER_SKELETON_INNER_ARMOR, ModelLayers.WITHER_SKELETON_OUTER_ARMOR);
@@ -28,7 +28,7 @@ public class WitherSkeletonServantRenderer extends HumanoidMobRenderer<AbstractS
    }
 
    public ResourceLocation getTextureLocation(AbstractSkeletonServant servant) {
-      if (servant.isHostile() || !MobsConfig.WitherSkeletonServantTexture.get()){
+      if (servant.isHostile() || !com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MobsConfig.WitherSkeletonServantTexture, false)){
          return SKELETON_LOCATION;
       } else {
          return TEXTURES;

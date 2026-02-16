@@ -25,7 +25,7 @@ public class SaturationBrewEffect extends BrewEffect {
 
     public void applyEntityEffect(LivingEntity pTarget, @Nullable Entity pSource, @Nullable Entity pIndirectSource, int pAmplifier){
         if (pTarget instanceof Player player && !pTarget.hasEffect(MobEffects.SATURATION)){
-            if (!player.level.isClientSide){
+            if (!player.level().isClientSide){
                 player.getFoodData().eat((pAmplifier * 2) + 1, 1.0F);
             }
         }

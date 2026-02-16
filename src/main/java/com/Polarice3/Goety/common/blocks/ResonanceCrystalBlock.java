@@ -14,6 +14,7 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -47,10 +48,14 @@ public class ResonanceCrystalBlock extends BaseEntityBlock {
         return CODEC;
     }
 
-    public ResonanceCrystalBlock() {
-        super(ModBlocks.JadeStoneProperties());
+    public ResonanceCrystalBlock(Properties properties) {
+        super(properties);
         this.registerDefaultState(
                 this.stateDefinition.any().setValue(POWERED, Boolean.FALSE).setValue(UNSTABLE, Boolean.FALSE));
+    }
+
+    public ResonanceCrystalBlock() {
+        this(ModBlocks.JadeStoneProperties());
     }
 
     public RenderShape getRenderShape(BlockState state) {
@@ -58,16 +63,14 @@ public class ResonanceCrystalBlock extends BaseEntityBlock {
     }
 
     @Override
-    protected InteractionResult useWithoutItem(BlockState pState, Level pLevel, BlockPos pPos, Player pPlayer,
-            BlockHitResult pHit) {
-        InteractionHand pHand = InteractionHand.MAIN_HAND;
+    protected ItemInteractionResult useItemOn(ItemStack stack, BlockState pState, Level pLevel, BlockPos pPos, Player pPlayer, InteractionHand pHand, BlockHitResult pHit) {
         if (pHand == InteractionHand.MAIN_HAND) {
             BlockEntity tileEntity = pLevel.getBlockEntity(pPos);
             if (tileEntity instanceof ResonanceCrystalBlockEntity crystalBlock) {
-                if (pPlayer.getMainHandItem().getItem() instanceof WaystoneItem) {
-                    if (WaystoneItem.hasBlock(pPlayer.getMainHandItem())
-                            && WaystoneItem.isSameDimension(crystalBlock, pPlayer.getMainHandItem())) {
-                        GlobalPos globalPos = WaystoneItem.getPosition(pPlayer.getMainHandItem());
+                if (stack.getItem() instanceof WaystoneItem) {
+                    if (WaystoneItem.hasBlock(stack)
+                            && WaystoneItem.isSameDimension(crystalBlock, stack)) {
+                        GlobalPos globalPos = WaystoneItem.getPosition(stack);
                         if (globalPos != null) {
                             if (globalPos.pos() != pPos
                                     && globalPos.pos().distToCenterSqr(pPos.getCenter()) <= Mth.square(64)) {
@@ -77,20 +80,28 @@ public class ResonanceCrystalBlock extends BaseEntityBlock {
                                         SoundEvents.ARROW_HIT_PLAYER, SoundSource.PLAYERS, 1.0F, 0.45F, false);
                             }
                         }
-                        return InteractionResult.sidedSuccess(pLevel.isClientSide);
+                        return ItemInteractionResult.sidedSuccess(pLevel.isClientSide);
                     }
-                } else if (pPlayer.getMainHandItem().isEmpty()) {
-                    if (!crystalBlock.getBlockPosList().isEmpty()) {
-                        if (pPlayer.isCrouching() || pPlayer.isShiftKeyDown()) {
-                            crystalBlock.clearBlocks();
-                            pLevel.playSound(null, pPos, ModSounds.SPELL_FAIL.get(), SoundSource.BLOCKS, 0.25F, 2.0F);
-                        } else {
-                            crystalBlock.setShowBlock(!crystalBlock.isShowBlock());
-                            pLevel.playSound(null, pPos, ModSounds.CAST_SPELL.get(), SoundSource.BLOCKS, 0.25F, 2.0F);
-                        }
-                    }
-                    return InteractionResult.sidedSuccess(pLevel.isClientSide);
                 }
+            }
+        }
+        return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+    }
+
+    @Override
+    protected InteractionResult useWithoutItem(BlockState pState, Level pLevel, BlockPos pPos, Player pPlayer,
+            BlockHitResult pHit) {
+        BlockEntity tileEntity = pLevel.getBlockEntity(pPos);
+        if (tileEntity instanceof ResonanceCrystalBlockEntity crystalBlock) {
+            if (!crystalBlock.getBlockPosList().isEmpty()) {
+                if (pPlayer.isCrouching() || pPlayer.isShiftKeyDown()) {
+                    crystalBlock.clearBlocks();
+                    pLevel.playSound(null, pPos, ModSounds.SPELL_FAIL.get(), SoundSource.BLOCKS, 0.25F, 2.0F);
+                } else {
+                    crystalBlock.setShowBlock(!crystalBlock.isShowBlock());
+                    pLevel.playSound(null, pPos, ModSounds.CAST_SPELL.get(), SoundSource.BLOCKS, 0.25F, 2.0F);
+                }
+                return InteractionResult.sidedSuccess(pLevel.isClientSide);
             }
         }
         return super.useWithoutItem(pState, pLevel, pPos, pPlayer, pHit);

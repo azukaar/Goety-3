@@ -537,16 +537,16 @@ public class EnderKeeper extends AbstractEnderling implements Enemy {
         return Monster.createMonsterAttributes()
                 .add(Attributes.FOLLOW_RANGE, 48.0D)
                 .add(Attributes.MOVEMENT_SPEED, 0.35F)
-                .add(Attributes.ATTACK_DAMAGE, AttributesConfig.EnderKeeperDamage.get())
-                .add(Attributes.MAX_HEALTH, AttributesConfig.EnderKeeperHealth.get())
-                .add(Attributes.ARMOR, AttributesConfig.EnderKeeperArmor.get())
+                .add(Attributes.ATTACK_DAMAGE, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.EnderKeeperDamage, 20.0D))
+                .add(Attributes.MAX_HEALTH, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.EnderKeeperHealth, 20.0D))
+                .add(Attributes.ARMOR, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.EnderKeeperArmor, 20.0D))
                 .add(Attributes.KNOCKBACK_RESISTANCE, 1.0D);
     }
 
     public void setConfigurableAttributes(){
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.MAX_HEALTH), AttributesConfig.EnderKeeperHealth.get());
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ARMOR), AttributesConfig.EnderKeeperArmor.get());
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ATTACK_DAMAGE), AttributesConfig.EnderKeeperDamage.get());
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.MAX_HEALTH), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.EnderKeeperHealth, 20.0D));
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ARMOR), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.EnderKeeperArmor, 20.0D));
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ATTACK_DAMAGE), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.EnderKeeperDamage, 20.0D));
     }
 
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
@@ -626,7 +626,7 @@ public class EnderKeeper extends AbstractEnderling implements Enemy {
     @Override
     public boolean hurt(DamageSource source, float damage) {
         double range = MobUtil.calculateRange(this, source);
-        if (range > Mth.square(AttributesConfig.EnderKeeperHurtRange.get()) && !source.is(DamageTypeTags.BYPASSES_INVULNERABILITY)) {
+        if (range > Mth.square(com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.EnderKeeperHurtRange, 20.0D)) && !source.is(DamageTypeTags.BYPASSES_INVULNERABILITY)) {
             if (source.getEntity() != null && !MobUtil.areAllies(this, source.getEntity())) {
                 if (!this.isAttacking() && !this.isHiding()) {
                     this.teleportTowards(source.getEntity(), 4.0D);
@@ -648,7 +648,7 @@ public class EnderKeeper extends AbstractEnderling implements Enemy {
     protected void actuallyHurt(DamageSource source, float amount) {
         float initialAmount = amount;
         if (!source.is(DamageTypeTags.BYPASSES_INVULNERABILITY)){
-            amount = Math.min(initialAmount, AttributesConfig.EnderKeeperDamageCap.get().floatValue());
+            amount = Math.min(initialAmount, (float)com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.EnderKeeperDamageCap, 20.0D));
         }
         if (this.moddedInvul <= 0){
             super.actuallyHurt(source, amount);
@@ -1197,7 +1197,7 @@ public class EnderKeeper extends AbstractEnderling implements Enemy {
                     }
                     for (LivingEntity entityHit : this.level().getEntitiesOfClass(LivingEntity.class, this.getBoundingBox().inflate(1.2D))) {
                         if (!MobUtil.areAllies(this, entityHit)) {
-                            boolean flag = entityHit.hurt(this.damageSources().mobAttack(this), damage + (entityHit.getMaxHealth() * AttributesConfig.EnderKeeperHPPercentDamage.get().floatValue()));
+                            boolean flag = entityHit.hurt(this.damageSources().mobAttack(this), damage + (entityHit.getMaxHealth() * (float)com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.EnderKeeperHPPercentDamage, 20.0D)));
                             if (entityHit.isDamageSourceBlocked(this.damageSources().mobAttack(this))) {
                                 MobUtil.disableShield(entityHit, 100);
                             }
@@ -1362,8 +1362,8 @@ public class EnderKeeper extends AbstractEnderling implements Enemy {
                             public void explodeHurt(Entity target, DamageSource damageSource, double x, double y, double z, double seen, float actualDamage) {
                                 super.explodeHurt(target, damageSource, x, y, z, seen, actualDamage);
                                 if (EntitySelector.NO_CREATIVE_OR_SPECTATOR.test(target)) {
-                                    if (target instanceof LivingEntity livingEntity && !livingEntity.hasEffect(GoetyEffects.VOID_TOUCHED.getHolder())) {
-                                        livingEntity.addEffect(new MobEffectInstance(GoetyEffects.VOID_TOUCHED.getHolder(), MathHelper.secondsToTicks(3), 2, false, true));
+                                    if (target instanceof LivingEntity livingEntity && !livingEntity.hasEffect(GoetyEffects.VOID_TOUCHED)) {
+                                        livingEntity.addEffect(new MobEffectInstance(GoetyEffects.VOID_TOUCHED, MathHelper.secondsToTicks(3), 2, false, true));
                                     }
                                 }
                             }
@@ -1415,7 +1415,7 @@ public class EnderKeeper extends AbstractEnderling implements Enemy {
                         }
                         for (LivingEntity entityHit : this.level().getEntitiesOfClass(LivingEntity.class, this.getBoundingBox().inflate(6.0D, 0.0D, 6.0D))) {
                             if (!MobUtil.areAllies(this, entityHit)) {
-                                boolean flag = entityHit.hurt(this.damageSources().mobAttack(this), damage + (entityHit.getMaxHealth() * AttributesConfig.EnderKeeperHPPercentDamage.get().floatValue()));
+                                boolean flag = entityHit.hurt(this.damageSources().mobAttack(this), damage + (entityHit.getMaxHealth() * (float)com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.EnderKeeperHPPercentDamage, 20.0D)));
                                 if (entityHit.isDamageSourceBlocked(this.damageSources().mobAttack(this))) {
                                     MobUtil.disableShield(entityHit, 100);
                                 }
@@ -1475,7 +1475,7 @@ public class EnderKeeper extends AbstractEnderling implements Enemy {
             }
         }
         if (this.getTarget() != null) {
-            this.getTarget().addEffect(new MobEffectInstance(GoetyEffects.PLUNGE.getHolder(), 5, 0, false, false));
+            this.getTarget().addEffect(new MobEffectInstance(GoetyEffects.PLUNGE, 5, 0, false, false));
             if (this.getTarget() instanceof Player player) {
                 player.getAbilities().flying &= player.isCreative();
             }
@@ -1500,12 +1500,12 @@ public class EnderKeeper extends AbstractEnderling implements Enemy {
     }
 
     public void areaAttack(float range, float height, float arc, float damage, int shieldBreak, boolean knockback) {
-        MobUtil.areaAttack(this, range, height, arc, damage, AttributesConfig.EnderKeeperHPPercentDamage.get().floatValue(), shieldBreak, this.damageSources().mobAttack(this), knockback, this::applyVoidTouched);
+        MobUtil.areaAttack(this, range, height, arc, damage, (float)com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.EnderKeeperHPPercentDamage, 20.0D), shieldBreak, this.damageSources().mobAttack(this), knockback, this::applyVoidTouched);
     }
 
     public void applyVoidTouched(Entity entity) {
-        if (entity instanceof LivingEntity livingEntity && !livingEntity.hasEffect(GoetyEffects.VOID_TOUCHED.getHolder())) {
-            livingEntity.addEffect(new MobEffectInstance(GoetyEffects.VOID_TOUCHED.getHolder(), MathHelper.secondsToTicks(5), 1, false, true));
+        if (entity instanceof LivingEntity livingEntity && !livingEntity.hasEffect(GoetyEffects.VOID_TOUCHED)) {
+            livingEntity.addEffect(new MobEffectInstance(GoetyEffects.VOID_TOUCHED, MathHelper.secondsToTicks(5), 1, false, true));
         }
     }
 
@@ -1526,14 +1526,14 @@ public class EnderKeeper extends AbstractEnderling implements Enemy {
             int hitZ = Mth.floor(pz);
             BlockPos blockPos = new BlockPos(hitX, hitY, hitZ);
 
-            BlockState blockState = level().getBlockState(blockPos);
+            BlockState blockState = this.level().getBlockState(blockPos);
             int maxDepth = 30;
             for (int depthCount = 0; depthCount < maxDepth; depthCount++) {
                 if (blockState.getRenderShape() == RenderShape.MODEL) {
                     break;
                 }
                 blockPos = blockPos.below();
-                blockState = level().getBlockState(blockPos);
+                blockState = this.level().getBlockState(blockPos);
             }
 
             if (blockState.getRenderShape() != RenderShape.MODEL) {
@@ -1550,7 +1550,7 @@ public class EnderKeeper extends AbstractEnderling implements Enemy {
             List<LivingEntity> entities = this.level().getEntitiesOfClass(LivingEntity.class, selection);
             for (LivingEntity target : entities) {
                 if (!MobUtil.areAllies(target, this) && target != this) {
-                    boolean flag = target.hurt(this.damageSources().mobAttack(this), damage + (target.getMaxHealth() * AttributesConfig.EnderKeeperHPPercentDamage.get().floatValue()));
+                    boolean flag = target.hurt(this.damageSources().mobAttack(this), damage + (target.getMaxHealth() * (float)com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.EnderKeeperHPPercentDamage, 20.0D)));
                     if (flag) {
                         this.applyVoidTouched(target);
                         double d0 = target.getX() - this.getX();
@@ -1578,7 +1578,7 @@ public class EnderKeeper extends AbstractEnderling implements Enemy {
         int hitX = Mth.floor(px);
         int hitZ = Mth.floor(pz);
         BlockPos pos = new BlockPos(hitX, hitY, hitZ);
-        BlockState block = level().getBlockState(pos);
+        BlockState block = this.level().getBlockState(pos);
 
         int maxDepth = 30;
         for (int depthCount = 0; depthCount < maxDepth; depthCount++) {
@@ -1586,7 +1586,7 @@ public class EnderKeeper extends AbstractEnderling implements Enemy {
                 break;
             }
             pos = pos.below();
-            block = level().getBlockState(pos);
+            block = this.level().getBlockState(pos);
         }
 
         if (block.getRenderShape() != RenderShape.MODEL) {
@@ -1595,12 +1595,12 @@ public class EnderKeeper extends AbstractEnderling implements Enemy {
         if (!this.level().isClientSide) {
             ModFallingBlock fallingBlockEntity = new ModFallingBlock(level(), hitX + 0.5D, hitY + 1.0D, hitZ + 0.5D, block, 10);
             fallingBlockEntity.push(0, 0.2D + getRandom().nextGaussian() * 0.15D, 0);
-            level().addFreshEntity(fallingBlockEntity);
+            this.level().addFreshEntity(fallingBlockEntity);
             AABB selection = new AABB(px - 0.5, minY, pz - 0.5, px + 0.5, maxY, pz + 0.5);
-            List<LivingEntity> hit = level().getEntitiesOfClass(LivingEntity.class, selection);
+            List<LivingEntity> hit = this.level().getEntitiesOfClass(LivingEntity.class, selection);
             for (LivingEntity target : hit) {
                 if (!MobUtil.areAllies(target, this) && target != this) {
-                    boolean flag = target.hurt(this.damageSources().mobAttack(this), damage + (target.getMaxHealth() * AttributesConfig.EnderKeeperHPPercentDamage.get().floatValue()));
+                    boolean flag = target.hurt(this.damageSources().mobAttack(this), damage + (target.getMaxHealth() * (float)com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.EnderKeeperHPPercentDamage, 20.0D)));
                     if (flag) {
                         this.applyVoidTouched(target);
                         double d0 = target.getX() - this.getX();

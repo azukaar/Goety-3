@@ -29,17 +29,17 @@ public class JungleZombieServant extends ZombieServant{
 
     public static AttributeSupplier.Builder setCustomAttributes() {
         return Mob.createMobAttributes()
-                .add(Attributes.MAX_HEALTH, AttributesConfig.JungleZombieServantHealth.get())
+                .add(Attributes.MAX_HEALTH, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.JungleZombieServantHealth, 20.0D))
                 .add(Attributes.FOLLOW_RANGE, 35.0D)
                 .add(Attributes.MOVEMENT_SPEED, 0.23D)
-                .add(Attributes.ATTACK_DAMAGE, AttributesConfig.JungleZombieServantDamage.get())
-                .add(Attributes.ARMOR, AttributesConfig.JungleZombieServantArmor.get());
+                .add(Attributes.ATTACK_DAMAGE, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.JungleZombieServantDamage, 20.0D))
+                .add(Attributes.ARMOR, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.JungleZombieServantArmor, 20.0D));
     }
 
     public void setConfigurableAttributes(){
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.MAX_HEALTH), AttributesConfig.JungleZombieServantHealth.get());
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ARMOR), AttributesConfig.JungleZombieServantArmor.get());
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ATTACK_DAMAGE), AttributesConfig.JungleZombieServantDamage.get());
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.MAX_HEALTH), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.JungleZombieServantHealth, 20.0D));
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ARMOR), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.JungleZombieServantArmor, 20.0D));
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ATTACK_DAMAGE), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.JungleZombieServantDamage, 20.0D));
     }
 
     protected SoundEvent getAmbientSound() {
@@ -77,7 +77,7 @@ public class JungleZombieServant extends ZombieServant{
         if (flag && pEntity instanceof LivingEntity livingEntity) {
             Holder<MobEffect> mobEffect = MobEffects.POISON;
             if (CuriosFinder.hasWildRobe(this.getTrueOwner())){
-                mobEffect = GoetyEffects.ACID_VENOM.getHolder();
+                mobEffect = GoetyEffects.ACID_VENOM;
             }
             livingEntity.addEffect(new MobEffectInstance(mobEffect, MathHelper.secondsToTicks(5)), this);
         }

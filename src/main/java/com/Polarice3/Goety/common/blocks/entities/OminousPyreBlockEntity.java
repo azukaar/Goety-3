@@ -33,7 +33,7 @@ public class OminousPyreBlockEntity extends BarracksBlockEntity {
 
     @Override
     public boolean autoMode() {
-        return MobsConfig.IllagerServantAutoTrain.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MobsConfig.IllagerServantAutoTrain, false);
     }
 
     @Override
@@ -50,5 +50,9 @@ public class OminousPyreBlockEntity extends BarracksBlockEntity {
             }
             this.setEntityType(entityType);
         }
+    }
+    @Override
+    public boolean handleGameEvent(net.minecraft.server.level.ServerLevel level, net.minecraft.core.Holder<net.minecraft.world.level.gameevent.GameEvent> event, net.minecraft.world.level.gameevent.GameEvent.Context context, net.minecraft.world.phys.Vec3 pos) {
+        return false;
     }
 }

@@ -25,6 +25,9 @@ import net.minecraft.world.phys.AABB;
 public abstract class AbstractSpellCloud extends SpellEntity {
     private static final EntityDataAccessor<Float> DATA_RADIUS = SynchedEntityData.defineId(AbstractSpellCloud.class, EntityDataSerializers.FLOAT);
     private static final EntityDataAccessor<ParticleOptions> DATA_PARTICLE = SynchedEntityData.defineId(AbstractSpellCloud.class, EntityDataSerializers.PARTICLE);
+    private static final EntityDataAccessor<Integer> DATA_COLOR = SynchedEntityData.defineId(AbstractSpellCloud.class, EntityDataSerializers.INT);
+    private static final EntityDataAccessor<Integer> DATA_WAIT_TIME = SynchedEntityData.defineId(AbstractSpellCloud.class, EntityDataSerializers.INT);
+    private static final EntityDataAccessor<java.util.Optional<java.util.UUID>> DATA_OWNER_UUID = SynchedEntityData.defineId(AbstractSpellCloud.class, EntityDataSerializers.OPTIONAL_UUID);
     public boolean activated;
     public int activateTime = 20;
     public int lifeSpan = 100;
@@ -49,10 +52,12 @@ public abstract class AbstractSpellCloud extends SpellEntity {
     }
 
     @Override
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.getEntityData().define(DATA_PARTICLE, ParticleTypes.RAIN);
-        this.getEntityData().define(DATA_RADIUS, 2.0F);
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        builder.define(DATA_PARTICLE, (ParticleOptions) ParticleTypes.RAIN);
+        builder.define(DATA_RADIUS, 2.0F);
+        builder.define(DATA_COLOR, 0);
+        builder.define(DATA_WAIT_TIME, 0);
+        builder.define(DATA_OWNER_UUID, java.util.Optional.empty());
     }
 
     public void onSyncedDataUpdated(EntityDataAccessor<?> p_19729_) {
@@ -68,7 +73,7 @@ public abstract class AbstractSpellCloud extends SpellEntity {
         super.readAdditionalSaveData(p_20052_);
         if (p_20052_.contains("Particle", 8)) {
             try {
-                this.setRainParticle(ParticleArgument.readParticle(new StringReader(p_20052_.getString("Particle")), BuiltInRegistries.PARTICLE_TYPE.asLookup()));
+                this.setRainParticle(ParticleArgument.readParticle(new StringReader(p_20052_.getString("Particle")), this.level().registryAccess()));
             } catch (CommandSyntaxException ignored) {
             }
         }
@@ -86,7 +91,7 @@ public abstract class AbstractSpellCloud extends SpellEntity {
     @Override
     public void addAdditionalSaveData(CompoundTag p_20139_) {
         super.addAdditionalSaveData(p_20139_);
-        p_20139_.putString("Particle", this.getRainParticle().writeToString());
+        p_20139_.putString("Particle", net.minecraft.core.registries.BuiltInRegistries.PARTICLE_TYPE.getKey(this.getRainParticle().getType()).toString());
         p_20139_.putBoolean("Activated", this.activated);
         p_20139_.putInt("ActivateTime", this.activateTime);
         p_20139_.putInt("LifeSpan", this.lifeSpan);

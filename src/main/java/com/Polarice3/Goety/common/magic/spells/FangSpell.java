@@ -23,11 +23,11 @@ import java.util.List;
 public class FangSpell extends Spell {
 
     public int defaultSoulCost() {
-        return SpellConfig.FangCost.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.FangCost, 0);
     }
 
     public int defaultCastDuration() {
-        return SpellConfig.FangDuration.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.FangDuration, 0);
     }
 
     public SoundEvent CastingSound() {
@@ -36,7 +36,7 @@ public class FangSpell extends Spell {
 
     @Override
     public int defaultSpellCooldown() {
-        return SpellConfig.FangCoolDown.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.FangCoolDown, 0);
     }
 
     @Override
@@ -51,7 +51,7 @@ public class FangSpell extends Spell {
         list.add(ModEnchantments.RANGE.get());
         list.add(ModEnchantments.BURNING.get());
         list.add(ModEnchantments.ABSORB.get());
-        if (SpellConfig.FangGainSouls.get() > 0){
+        if (com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.FangGainSouls, 0) > 0){
             list.add(ModEnchantments.SOUL_EATER.get());
         }
         return list;

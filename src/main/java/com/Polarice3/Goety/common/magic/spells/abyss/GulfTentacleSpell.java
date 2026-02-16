@@ -36,17 +36,17 @@ public class GulfTentacleSpell extends Spell {
 
     @Override
     public int defaultSoulCost() {
-        return SpellConfig.WaterWhipCost.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.WaterWhipCost, 0);
     }
 
     @Override
     public int defaultCastDuration() {
-        return SpellConfig.WaterWhipDuration.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.WaterWhipDuration, 0);
     }
 
     @Override
     public int defaultSpellCooldown() {
-        return SpellConfig.WaterWhipCoolDown.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.WaterWhipCoolDown, 0);
     }
 
     @Nullable
@@ -106,7 +106,7 @@ public class GulfTentacleSpell extends Spell {
         gulfTentacle.setStaff(this.rightStaff(staff));
         if (potency > 0){
             int boost = Mth.clamp(potency - 1, 0, 10);
-            gulfTentacle.addEffect(new MobEffectInstance(GoetyEffects.BUFF.get(), EffectsUtil.infiniteEffect(), boost, false, false));
+            gulfTentacle.addEffect(new MobEffectInstance(GoetyEffects.BUFF, EffectsUtil.infiniteEffect(), boost, false, false));
         }
         worldIn.addFreshEntity(gulfTentacle);
         this.playSound(worldIn, caster, ModSounds.WHIP_SWING.get());

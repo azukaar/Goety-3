@@ -90,7 +90,7 @@ public abstract class SummonSpell extends Spell implements ISummonSpell {
     }
 
     public void commonResultHit(ServerLevel worldIn, LivingEntity caster){
-        for (int i = 0; i < caster.level.random.nextInt(35) + 10; ++i) {
+        for (int i = 0; i < caster.level().random.nextInt(35) + 10; ++i) {
             worldIn.sendParticles(ParticleTypes.POOF, caster.getX(), caster.getEyeY(), caster.getZ(), 1, 0.0F, 0.0F, 0.0F, 0);
         }
         this.playSound(worldIn, caster, ModSounds.SUMMON_SPELL.get());
@@ -105,12 +105,12 @@ public abstract class SummonSpell extends Spell implements ISummonSpell {
     public void buffSummon(LivingEntity caster, LivingEntity summoned, int potency){
         if (potency > 0 && !this.hasSummonDown(caster)){
             int boost = Mth.clamp(potency - 1, 0, 10);
-            summoned.addEffect(new MobEffectInstance(GoetyEffects.BUFF.get(), EffectsUtil.infiniteEffect(), boost, false, false));
+            summoned.addEffect(new MobEffectInstance(GoetyEffects.BUFF, EffectsUtil.infiniteEffect(), boost, false, false));
         }
     }
 
     public void SummonDown(LivingEntity entityLiving){
-        if (SpellConfig.SummonDown.get()){
+        if (com.Polarice3.Goety.utils.ConfigHelper.getBoolean(SpellConfig.SummonDown, false)){
             ISummonSpell.super.SummonDown(entityLiving);
         }
     }
@@ -143,3 +143,4 @@ public abstract class SummonSpell extends Spell implements ISummonSpell {
         ServerParticleUtil.summonUndeadParticles(worldIn, summoned, colorUtil, colorFrom, colorTo);
     }
 }
+

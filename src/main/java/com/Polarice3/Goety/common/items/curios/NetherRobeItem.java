@@ -6,6 +6,7 @@ import com.Polarice3.Goety.config.MainConfig;
 import com.Polarice3.Goety.utils.CuriosFinder;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
+import net.minecraft.core.Holder;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attribute;
@@ -41,12 +42,12 @@ public class NetherRobeItem extends SingleStackItem{
     }
 
     @Override
-    public Multimap<Attribute, AttributeModifier> getAttributeModifiers(SlotContext slotContext,
+    public Multimap<Holder<Attribute>, AttributeModifier> getAttributeModifiers(SlotContext slotContext,
                                                                         UUID uuid, ItemStack stack) {
-        Multimap<Attribute, AttributeModifier> map = HashMultimap.create();
+        Multimap<Holder<Attribute>, AttributeModifier> map = HashMultimap.create();
         if (IronLoaded.IRON_SPELLBOOKS.isLoaded()){
-            if (MainConfig.RobesIronResist.get()) {
-                map.put(IronAttributes.FIRE_MAGIC_RESIST, new AttributeModifier(UUID.fromString("c4bc990e-a8b4-4e6e-8055-e8ba88d90e55"), "Robes Iron Spell Resist", 0.5F, AttributeModifier.Operation.ADDITION));
+            if (com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MainConfig.RobesIronResist, false)) {
+                map.put(IronAttributes.FIRE_MAGIC_RESIST, new AttributeModifier(com.Polarice3.Goety.Goety.location("robes_iron_spell_resist"), 0.5F, AttributeModifier.Operation.ADD_VALUE));
             }
         }
         return map;

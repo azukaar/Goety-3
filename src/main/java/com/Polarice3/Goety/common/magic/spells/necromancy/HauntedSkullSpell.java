@@ -27,15 +27,15 @@ import java.util.function.Predicate;
 public class HauntedSkullSpell extends SummonSpell {
 
     public int defaultSoulCost() {
-        return SpellConfig.HauntedSkullCost.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.HauntedSkullCost, 0);
     }
 
     public int defaultCastDuration() {
-        return SpellConfig.HauntedSkullDuration.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.HauntedSkullDuration, 0);
     }
 
     public int SummonDownDuration() {
-        return SpellConfig.HauntedSkullSummonDown.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.HauntedSkullSummonDown, 0);
     }
 
     public SoundEvent CastingSound() {
@@ -44,7 +44,7 @@ public class HauntedSkullSpell extends SummonSpell {
 
     @Override
     public int defaultSpellCooldown() {
-        return SpellConfig.HauntedSkullCoolDown.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.HauntedSkullCoolDown, 0);
     }
 
     @Override
@@ -69,12 +69,12 @@ public class HauntedSkullSpell extends SummonSpell {
 
     @Override
     public int summonLimit() {
-        return SpellConfig.SkullLimit.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.SkullLimit, 0);
     }
 
     @Override
     public void commonResultHit(ServerLevel worldIn, LivingEntity caster) {
-        for (int i = 0; i < caster.level.random.nextInt(35) + 10; ++i) {
+        for (int i = 0; i < caster.level().random.nextInt(35) + 10; ++i) {
             worldIn.sendParticles(ParticleTypes.POOF, caster.getX(), caster.getEyeY(), caster.getZ(), 1, 0.0F, 0.0F, 0.0F, 0);
         }
         this.playSound(worldIn, caster, SoundEvents.EVOKER_CAST_SPELL);
@@ -102,7 +102,7 @@ public class HauntedSkullSpell extends SummonSpell {
                 HauntedSkull summonedentity = new HauntedSkull(ModEntityType.HAUNTED_SKULL.get(), worldIn);
                 summonedentity.setTrueOwner(caster);
                 summonedentity.moveTo(blockpos, 0.0F, 0.0F);
-                summonedentity.finalizeSpawn(worldIn, caster.level.getCurrentDifficultyAt(blockpos), MobSpawnType.MOB_SUMMONED, null, null);
+                summonedentity.finalizeSpawn(worldIn, caster.level().getCurrentDifficultyAt(blockpos), MobSpawnType.MOB_SUMMONED, null);
                 summonedentity.setBoundOrigin(blockpos);
                 summonedentity.setLimitedLife(MathHelper.minutesToTicks(1) * duration);
                 this.buffSummon(caster, summonedentity, potency);
@@ -121,3 +121,4 @@ public class HauntedSkullSpell extends SummonSpell {
         }
     }
 }
+

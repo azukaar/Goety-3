@@ -36,7 +36,7 @@ public class FreePrisonerGoal extends Goal {
                 range = this.liberator.getAttributeValue(Attributes.FOLLOW_RANGE);
             }
             AABB aabb = this.liberator.getBoundingBox().inflate(range, range / 2.0D, range);
-            List<Prisoner> list = this.liberator.level.getEntitiesOfClass(Prisoner.class, aabb, this.liberator::hasLineOfSight);
+            List<Prisoner> list = this.liberator.level().getEntitiesOfClass(Prisoner.class, aabb, this.liberator::hasLineOfSight);
             if (!list.isEmpty()) {
                 list.sort(Comparator.comparingDouble(this.liberator::distanceTo));
                 if (list.stream().findFirst().isPresent()) {

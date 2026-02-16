@@ -36,22 +36,22 @@ public class ShockingSpell extends EverChargeSpell {
 
     @Override
     public int defaultSoulCost() {
-        return SpellConfig.ShockingCost.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.ShockingCost, 0);
     }
 
     @Override
     public int defaultCastUp() {
-        return SpellConfig.ShockingChargeUp.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.ShockingChargeUp, 0);
     }
 
     @Override
     public int shotsNumber() {
-        return SpellConfig.ShockingDuration.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.ShockingDuration, 0);
     }
 
     @Override
     public int defaultSpellCooldown() {
-        return SpellConfig.ShockingCoolDown.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.ShockingCoolDown, 0);
     }
 
     @Override
@@ -89,7 +89,7 @@ public class ShockingSpell extends EverChargeSpell {
 
     @Override
     public void SpellResult(ServerLevel worldIn, LivingEntity caster, ItemStack staff, SpellStat spellStat) {
-        float damage = SpellConfig.ShockingDamage.get().floatValue() * WandUtil.damageMultiply();
+        float damage = com.Polarice3.Goety.utils.ConfigHelper.getFloat(SpellConfig.ShockingDamage, 1.0F) * WandUtil.damageMultiply();
         int range = spellStat.getRange();
         int burning = spellStat.getBurning();
         if (WandUtil.enchantedFocus(caster)) {
@@ -128,7 +128,7 @@ public class ShockingSpell extends EverChargeSpell {
                     }
                     if (worldIn.random.nextFloat() <= chance) {
                         livingEntity.addEffect(
-                                new MobEffectInstance(GoetyEffects.SPASMS.get(), MathHelper.secondsToTicks(5)));
+                                new MobEffectInstance(GoetyEffects.SPASMS, MathHelper.secondsToTicks(5)));
                     }
                     if (burning > 0) {
                         if (worldIn.random.nextFloat() < 0.05F) {

@@ -26,12 +26,12 @@ public class IceBouquetSpell extends Spell {
 
     @Override
     public int defaultSoulCost() {
-        return SpellConfig.GhostFireCost.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.GhostFireCost, 0);
     }
 
     @Override
     public int defaultCastDuration() {
-        return SpellConfig.GhostFireDuration.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.GhostFireDuration, 0);
     }
 
     @Nullable
@@ -42,7 +42,7 @@ public class IceBouquetSpell extends Spell {
 
     @Override
     public int defaultSpellCooldown() {
-        return SpellConfig.GhostFireCoolDown.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.GhostFireCoolDown, 0);
     }
 
     @Override

@@ -86,7 +86,8 @@ public class CorpseBlossomBlock extends Block implements SimpleWaterloggedBlock,
         p_54663_.add(VERTICAL_FACING, WATERLOGGED);
     }
 
-    public boolean isValidBonemealTarget(LevelReader p_256234_, BlockPos p_57304_, BlockState p_57305_, boolean p_57306_) {
+    @Override
+    public boolean isValidBonemealTarget(LevelReader level, BlockPos pos, BlockState state) {
         return true;
     }
 

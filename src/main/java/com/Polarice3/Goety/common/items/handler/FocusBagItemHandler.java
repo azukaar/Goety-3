@@ -22,6 +22,10 @@ public class FocusBagItemHandler extends ItemStackHandler {
         super(size);
         this.size = size;
         this.itemStack = itemStack;
+        net.minecraft.world.item.component.CustomData customData = itemStack.get(net.minecraft.core.component.DataComponents.CUSTOM_DATA);
+        if (customData != null) {
+            deserializeNBT(net.minecraft.core.RegistryAccess.EMPTY, customData.copyTag());
+        }
     }
 
     public ItemStack extractItem() {
@@ -74,16 +78,11 @@ public class FocusBagItemHandler extends ItemStackHandler {
 
     @Override
     protected void onContentsChanged(int slot) {
-        // Force a state change to mark the item as dirty
-        // In 1.21, we need to use Data Components instead of NBT directly
-        // Setting tag to force sync
-        itemStack.setDamageValue(itemStack.getDamageValue());
+        CompoundTag nbt = serializeNBT(net.minecraft.core.RegistryAccess.EMPTY);
+        itemStack.set(net.minecraft.core.component.DataComponents.CUSTOM_DATA, net.minecraft.world.item.component.CustomData.of(nbt));
     }
 
     public static FocusBagItemHandler get(ItemStack stack) {
-        IItemHandler handler = stack.getCapability(Capabilities.ItemHandler.ITEM);
-        if (handler == null)
-            throw new IllegalArgumentException("ItemStack is missing item capability");
-        return (FocusBagItemHandler) handler;
+        return new FocusBagItemHandler(stack, 11); // Assuming size 11 from FocusBag.java usage
     }
 }

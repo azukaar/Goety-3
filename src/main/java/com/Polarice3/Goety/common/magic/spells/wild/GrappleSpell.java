@@ -23,11 +23,26 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class GrappleSpell extends Spell {
-    public int trueCooldown = this.defaultSpellCooldown();
+    // Lazy evaluation to avoid accessing config before it's loaded
+    private int trueCooldownCache = -1;
+    
+    public int getTrueCooldown() {
+        if (trueCooldownCache < 0) {
+            trueCooldownCache = this.defaultSpellCooldown();
+        }
+        return trueCooldownCache;
+    }
+    
+    public void setTrueCooldown(int cooldown) {
+        this.trueCooldownCache = cooldown;
+    }
+    
+    @Deprecated // Use getTrueCooldown() instead
+    public int trueCooldown = 0; // Will be calculated lazily
 
     @Override
     public int defaultSoulCost() {
-        return SpellConfig.GrappleCost.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.GrappleCost, 0);
     }
 
     @Override
@@ -43,7 +58,7 @@ public class GrappleSpell extends Spell {
 
     @Override
     public int defaultCastDuration() {
-        return SpellConfig.GrappleDuration.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.GrappleDuration, 0);
     }
 
     @Nullable
@@ -54,11 +69,11 @@ public class GrappleSpell extends Spell {
 
     @Override
     public int defaultSpellCooldown() {
-        return SpellConfig.GrappleCoolDown.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.GrappleCoolDown, 0);
     }
 
     public int spellCooldown(LivingEntity caster){
-        return this.trueCooldown;
+        return getTrueCooldown();
     }
 
     @Override
@@ -86,13 +101,13 @@ public class GrappleSpell extends Spell {
                 SEHelper.setGrappling(player, null);
                 this.playSound(worldIn, player, SoundEvents.FISHING_BOBBER_RETRIEVE, 1.0F, 0.4F / (worldIn.getRandom().nextFloat() * 0.4F + 0.8F));
                 worldIn.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.FISHING_BOBBER_RETRIEVE, this.getSoundSource(), 1.0F, 0.4F / (worldIn.getRandom().nextFloat() * 0.4F + 0.8F));
-                this.trueCooldown = this.defaultSpellCooldown();
+                setTrueCooldown(this.defaultSpellCooldown());
             } else {
                 VineHook vineHook = new VineHook(worldIn, player, 2.5F + velocity);
                 vineHook.setStaff(rightStaff(staff));
                 worldIn.addFreshEntity(vineHook);
                 this.playSound(worldIn, player, SoundEvents.FISHING_BOBBER_THROW, 0.5F, 0.4F / (worldIn.getRandom().nextFloat() * 0.4F + 0.8F));
-                this.trueCooldown = 0;
+                setTrueCooldown(0);
             }
         }
     }

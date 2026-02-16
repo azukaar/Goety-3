@@ -1,7 +1,6 @@
 package com.Polarice3.Goety.common.items.brew;
 
 import com.Polarice3.Goety.common.entities.projectiles.ThrownBrew;
-import com.Polarice3.Goety.common.items.capability.WitchStaffItemCapability;
 import com.Polarice3.Goety.common.items.handler.WitchStaffItemHandler;
 import com.Polarice3.Goety.utils.BrewUtils;
 import com.Polarice3.Goety.utils.MathHelper;
@@ -94,34 +93,7 @@ public class WitchStaff extends Item {
     }
 
     public static IItemHandler getItemHandler(ItemStack itemStack) {
-        return itemStack.getCapability(Capabilities.ITEM_HANDLER).orElseThrow(() -> new IllegalArgumentException(
-                "Expected an item handler for the Brew item, but " + itemStack + " does not expose an item handler."));
-    }
-
-    public CompoundTag getShareTag(ItemStack stack) {
-        IItemHandler iitemHandler = getItemHandler(stack);
-        CompoundTag nbt = stack.getTag() != null ? stack.getTag() : new CompoundTag();
-        if (iitemHandler instanceof ItemStackHandler itemHandler) {
-            nbt.put("cap", itemHandler.serializeNBT());
-        }
-        return nbt;
-    }
-
-    public void readShareTag(ItemStack stack, @Nullable CompoundTag nbt) {
-        if (nbt == null) {
-            stack.setTag(null);
-        } else {
-            IItemHandler iitemHandler = getItemHandler(stack);
-            if (iitemHandler instanceof ItemStackHandler itemHandler)
-                itemHandler.deserializeNBT(nbt.getCompound("cap"));
-            stack.setTag(nbt);
-        }
-    }
-
-    @Override
-    @Nullable
-    public ICapabilityProvider initCapabilities(@Nonnull ItemStack stack, @Nullable CompoundTag nbt) {
-        return new WitchStaffItemCapability(stack);
+        return new WitchStaffItemHandler(itemStack);
     }
 
     @Override

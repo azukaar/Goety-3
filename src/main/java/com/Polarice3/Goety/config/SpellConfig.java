@@ -631,6 +631,7 @@ public class SpellConfig {
     public static final ModConfigSpec.ConfigValue<Integer> MaxDurationLevel;
     public static final ModConfigSpec.ConfigValue<Integer> MaxBurningLevel;
     public static final ModConfigSpec.ConfigValue<Integer> MaxVelocityLevel;
+    public static final ModConfigSpec.ConfigValue<Integer> MaxMagnetLevel = null;
     public static final ModConfigSpec.ConfigValue<Integer> PotencyPower;
     public static final ModConfigSpec.ConfigValue<Boolean> FocusEnchantsTrades;
 
@@ -1924,6 +1925,6 @@ public class SpellConfig {
                 .writingMode(WritingMode.REPLACE)
                 .build();
         file.load();
-        config.setConfig(file);
+        // NeoForge 1.21: config binding is handled via registered config file path.
     }
 }

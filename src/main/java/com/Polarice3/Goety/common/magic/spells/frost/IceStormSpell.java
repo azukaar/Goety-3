@@ -26,12 +26,12 @@ public class IceStormSpell extends Spell {
     }
 
     public int defaultSoulCost() {
-        return SpellConfig.IceStormCost.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.IceStormCost, 0);
     }
 
     @Override
     public int defaultCastDuration() {
-        return SpellConfig.IceStormDuration.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.IceStormDuration, 0);
     }
 
     public SoundEvent CastingSound() {
@@ -40,7 +40,7 @@ public class IceStormSpell extends Spell {
 
     @Override
     public int defaultSpellCooldown() {
-        return SpellConfig.IceStormCoolDown.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.IceStormCoolDown, 0);
     }
 
     public SpellType getSpellType() {

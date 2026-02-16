@@ -12,7 +12,7 @@ import net.minecraft.data.PackOutput;
 import net.minecraft.network.chat.Component;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import net.neoforged.neoforge.common.data.ForgeAdvancementProvider;
-import net.neoforged.neoforge.registries.RegistryObject;
+import com.Polarice3.Goety.compat.legacy.neoforge.registries.RegistryObject;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;

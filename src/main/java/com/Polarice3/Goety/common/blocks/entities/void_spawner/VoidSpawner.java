@@ -161,7 +161,7 @@ public class VoidSpawner {
                                 if (mob instanceof IServant servant) {
                                     servant.setBoundPos(blockPos);
                                 }
-                                mob.restrictTo(blockPos, MobsConfig.ServantGuardingRange.get());
+                                mob.restrictTo(blockPos, com.Polarice3.Goety.utils.ConfigHelper.getInt(MobsConfig.ServantGuardingRange, 0));
                             }
                         }
 

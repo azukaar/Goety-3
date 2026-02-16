@@ -92,29 +92,25 @@ public class SnarelingShotRenderer<T extends SnarelingShot> extends EntityRender
             float f2 = entityIn.tickCount % 8 / 8.0F;
             float f3 = f2 + 0.5F;
             vertexconsumer
-                    .vertex(matrix4f, (float) draw1.x + (float) bottomAngleVec.x,
+                    .addVertex(matrix4f, (float) draw1.x + (float) bottomAngleVec.x,
                             (float) draw1.y + (float) bottomAngleVec.y, (float) draw1.z + (float) bottomAngleVec.z)
-                    .color((int) (red * 255), (int) (green * 255), (int) (blue * 255), (int) (alpha * 255)).uv(f2, 1.0F)
-                    .overlayCoords(OverlayTexture.NO_OVERLAY).uv2(packedLightIn).normal(matrix3f, 0.0F, 1.0F, 0.0F)
-                    .endVertex();
+                    .setColor((int) (red * 255), (int) (green * 255), (int) (blue * 255), (int) (alpha * 255)).setUv(f2, 1.0F)
+                    .setOverlay(OverlayTexture.NO_OVERLAY).setLight(packedLightIn).setNormal(posestack$pose, 0.0F, 1.0F, 0.0F);
             vertexconsumer
-                    .vertex(matrix4f, (float) sample.x + (float) bottomAngleVec.x,
+                    .addVertex(matrix4f, (float) sample.x + (float) bottomAngleVec.x,
                             (float) sample.y + (float) bottomAngleVec.y, (float) sample.z + (float) bottomAngleVec.z)
-                    .color((int) (red * 255), (int) (green * 255), (int) (blue * 255), (int) (alpha * 255)).uv(f3, 1.0F)
-                    .overlayCoords(OverlayTexture.NO_OVERLAY).uv2(packedLightIn).normal(matrix3f, 0.0F, 1.0F, 0.0F)
-                    .endVertex();
+                    .setColor((int) (red * 255), (int) (green * 255), (int) (blue * 255), (int) (alpha * 255)).setUv(f3, 1.0F)
+                    .setOverlay(OverlayTexture.NO_OVERLAY).setLight(packedLightIn).setNormal(posestack$pose, 0.0F, 1.0F, 0.0F);
             vertexconsumer
-                    .vertex(matrix4f, (float) sample.x + (float) topAngleVec.x,
+                    .addVertex(matrix4f, (float) sample.x + (float) topAngleVec.x,
                             (float) sample.y + (float) topAngleVec.y, (float) sample.z + (float) topAngleVec.z)
-                    .color((int) (red * 255), (int) (green * 255), (int) (blue * 255), (int) (alpha * 255)).uv(f3, 0.0F)
-                    .overlayCoords(OverlayTexture.NO_OVERLAY).uv2(packedLightIn).normal(matrix3f, 0.0F, 1.0F, 0.0F)
-                    .endVertex();
+                    .setColor((int) (red * 255), (int) (green * 255), (int) (blue * 255), (int) (alpha * 255)).setUv(f3, 0.0F)
+                    .setOverlay(OverlayTexture.NO_OVERLAY).setLight(packedLightIn).setNormal(posestack$pose, 0.0F, 1.0F, 0.0F);
             vertexconsumer
-                    .vertex(matrix4f, (float) draw1.x + (float) topAngleVec.x, (float) draw1.y + (float) topAngleVec.y,
+                    .addVertex(matrix4f, (float) draw1.x + (float) topAngleVec.x, (float) draw1.y + (float) topAngleVec.y,
                             (float) draw1.z + (float) topAngleVec.z)
-                    .color((int) (red * 255), (int) (green * 255), (int) (blue * 255), (int) (alpha * 255)).uv(f2, 0.0F)
-                    .overlayCoords(OverlayTexture.NO_OVERLAY).uv2(packedLightIn).normal(matrix3f, 0.0F, 1.0F, 0.0F)
-                    .endVertex();
+                    .setColor((int) (red * 255), (int) (green * 255), (int) (blue * 255), (int) (alpha * 255)).setUv(f2, 0.0F)
+                    .setOverlay(OverlayTexture.NO_OVERLAY).setLight(packedLightIn).setNormal(posestack$pose, 0.0F, 1.0F, 0.0F);
             samples++;
             drawFrom = sample;
         }

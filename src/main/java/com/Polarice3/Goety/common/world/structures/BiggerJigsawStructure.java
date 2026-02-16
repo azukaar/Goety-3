@@ -73,13 +73,10 @@ public class BiggerJigsawStructure extends Structure {
     }
 
     public Optional<GenerationStub> findGenerationPoint(GenerationContext p_227636_) {
-        ChunkPos chunkpos = p_227636_.chunkPos();
-        int i = this.startHeight.sample(p_227636_.random(), new WorldGenerationContext(p_227636_.chunkGenerator(), p_227636_.heightAccessor()));
-        BlockPos blockpos = new BlockPos(chunkpos.getMinBlockX(), i, chunkpos.getMinBlockZ());
-        return JigsawPlacement.addPieces(p_227636_, this.startPool, this.startJigsawName, this.maxDepth, blockpos, false, this.projectStartToHeightmap, this.maxDistanceFromCenter);
+        return Optional.empty();
     }
 
     public StructureType<?> type() {
-        return ModStructureTypes.BIGGER_JIGSAW_STRUCTURE.get();
+        return StructureType.JIGSAW;
     }
 }

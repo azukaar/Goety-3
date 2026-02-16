@@ -50,17 +50,17 @@ public class PikerServant extends AbstractIllagerServant {
 
     public static AttributeSupplier.Builder setCustomAttributes() {
         return Mob.createMobAttributes()
-                .add(Attributes.MAX_HEALTH, AttributesConfig.PikerHealth.get())
+                .add(Attributes.MAX_HEALTH, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.PikerHealth, 20.0D))
                 .add(Attributes.FOLLOW_RANGE, 32.0D)
                 .add(Attributes.MOVEMENT_SPEED, 0.35D)
-                .add(Attributes.ATTACK_DAMAGE, AttributesConfig.PikerDamage.get())
-                .add(Attributes.ARMOR, AttributesConfig.PikerArmor.get());
+                .add(Attributes.ATTACK_DAMAGE, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.PikerDamage, 20.0D))
+                .add(Attributes.ARMOR, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.PikerArmor, 20.0D));
     }
 
     public void setConfigurableAttributes() {
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.MAX_HEALTH), AttributesConfig.PikerHealth.get());
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ATTACK_DAMAGE), AttributesConfig.PikerDamage.get());
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ARMOR), AttributesConfig.PikerArmor.get());
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.MAX_HEALTH), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.PikerHealth, 20.0D));
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ATTACK_DAMAGE), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.PikerDamage, 20.0D));
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ARMOR), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.PikerArmor, 20.0D));
     }
 
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
@@ -167,11 +167,11 @@ public class PikerServant extends AbstractIllagerServant {
         float f = (float) this.getAttributeValue(Attributes.ATTACK_DAMAGE);
         float f1 = (float) this.getAttributeValue(Attributes.ATTACK_KNOCKBACK);
         if (p_21372_ instanceof LivingEntity) {
-            f += EnchantmentHelper.getDamageBonus(this.getMainHandItem(), ((LivingEntity) p_21372_).getMobType());
-            f1 += (float) EnchantmentHelper.getKnockbackBonus(this);
+            // f += EnchantmentHelper.getDamageBonus(this.getMainHandItem(), ((LivingEntity) p_21372_).getMobType());
+            // f1 += (float) EnchantmentHelper.getKnockbackBonus(this);
         }
 
-        int i = EnchantmentHelper.getFireAspect(this);
+        int i = 0; // EnchantmentHelper.getFireAspect(this);
         if (i > 0) {
             p_21372_.igniteForSeconds(i * 4);
         }
@@ -183,7 +183,7 @@ public class PikerServant extends AbstractIllagerServant {
                         (double) (-Mth.cos(this.getYRot() * ((float) Math.PI / 180F))));
             }
 
-            this.doEnchantDamageEffects(this, p_21372_);
+            // this.doEnchantDamageEffects(this, p_21372_);
             this.setLastHurtMob(p_21372_);
         }
 
@@ -272,7 +272,7 @@ public class PikerServant extends AbstractIllagerServant {
                     livingentity.getBoundingBox().minY, livingentity.getZ()));
         }
 
-        @Override
+        // @Override
         protected void checkAndPerformAttack(LivingEntity enemy, double distToEnemySqr) {
             if (PikerServant.this.targetClose(enemy, distToEnemySqr)) {
                 if (!PikerServant.this.isMeleeAttacking()) {

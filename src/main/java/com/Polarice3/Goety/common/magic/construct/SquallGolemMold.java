@@ -131,7 +131,7 @@ public class SquallGolemMold implements IMold {
                         SquallGolem squallGolem = ModEntityType.SQUALL_GOLEM.get().create(level);
                         if (squallGolem != null) {
                             squallGolem.setTrueOwner(player);
-                            squallGolem.finalizeSpawn((ServerLevelAccessor) level, level.getCurrentDifficultyAt(squallGolem.blockPosition()), MobSpawnType.MOB_SUMMONED, null, null);
+                            squallGolem.finalizeSpawn((ServerLevelAccessor) level, level.getCurrentDifficultyAt(squallGolem.blockPosition()), MobSpawnType.MOB_SUMMONED, null);
                             squallGolem.moveTo((double) blockPos.getX() + 0.5D, (double) blockPos.getY() + 0.05D, (double) blockPos.getZ() + 0.5D, 0.0F, 0.0F);
                             if (level.addFreshEntity(squallGolem)) {
                                 removeBlocks(level, blockPos);

@@ -7,7 +7,7 @@ import com.Polarice3.Goety.utils.CuriosFinder;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.network.NetworkEvent;
+import com.Polarice3.Goety.compat.legacy.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
@@ -22,13 +22,17 @@ public class CWitchRobePacket {
 
     public static void consume(CWitchRobePacket packet, Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
-            ServerPlayer playerEntity = ctx.get().getSender();
+            ServerPlayer playerEntity = com.Polarice3.Goety.common.network.NetworkContextHelper.getServerPlayer(ctx);
 
             if (playerEntity != null) {
                 ItemStack stack = CuriosFinder.findCurio(playerEntity, itemStack -> itemStack.getItem() instanceof WitchRobeItem);
 
                 if (stack != null && !stack.isEmpty()){
-                    WitchRobeInventory inventory = ModSaveInventory.getInstance().getWitchRobeInventory(stack.getOrCreateTag().getInt(WitchRobeItem.INVENTORY), playerEntity);
+                    int inventoryId = WitchRobeItem.getOrCreateInventoryId(stack);
+                    if (inventoryId < 0) {
+                        return;
+                    }
+                    WitchRobeInventory inventory = ModSaveInventory.getInstance().getWitchRobeInventory(inventoryId, playerEntity);
                     playerEntity.openMenu(inventory);
                 }
             }
@@ -36,3 +40,5 @@ public class CWitchRobePacket {
         ctx.get().setPacketHandled(true);
     }
 }
+
+

@@ -1,5 +1,7 @@
 package com.Polarice3.Goety.common.entities.neutral;
 
+import com.Polarice3.Goety.utils.MobType;
+
 import com.Polarice3.Goety.client.particles.ModParticleTypes;
 import com.Polarice3.Goety.common.entities.ModEntityType;
 import com.Polarice3.Goety.common.entities.ally.Summoned;
@@ -79,18 +81,18 @@ public class CarrionFly extends Summoned {
 
     public static AttributeSupplier.Builder setCustomAttributes() {
         return Monster.createMonsterAttributes()
-                .add(Attributes.MAX_HEALTH, AttributesConfig.CarrionFlyHealth.get())
+                .add(Attributes.MAX_HEALTH, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.CarrionFlyHealth, 20.0D))
                 .add(Attributes.MOVEMENT_SPEED, 0.3D)
                 .add(Attributes.FLYING_SPEED, 0.6D)
-                .add(Attributes.ARMOR, AttributesConfig.CarrionFlyArmor.get())
-                .add(Attributes.ATTACK_DAMAGE, AttributesConfig.CarrionFlyDamage.get());
+                .add(Attributes.ARMOR, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.CarrionFlyArmor, 20.0D))
+                .add(Attributes.ATTACK_DAMAGE, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.CarrionFlyDamage, 20.0D));
     }
 
     @Override
     public void setConfigurableAttributes(){
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.MAX_HEALTH), AttributesConfig.CarrionFlyHealth.get());
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ARMOR), AttributesConfig.CarrionFlyArmor.get());
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ATTACK_DAMAGE), AttributesConfig.CarrionFlyDamage.get());
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.MAX_HEALTH), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.CarrionFlyHealth, 20.0D));
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ARMOR), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.CarrionFlyArmor, 20.0D));
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ATTACK_DAMAGE), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.CarrionFlyDamage, 20.0D));
     }
 
     public float getWalkTargetValue(@NotNull BlockPos p_27788_, LevelReader p_27789_) {
@@ -214,11 +216,11 @@ public class CarrionFly extends Summoned {
         AttributeInstance attack = this.getAttribute(Attributes.ATTACK_DAMAGE);
         if (health != null && attack != null) {
             if (upgraded) {
-                health.setBaseValue(AttributesConfig.CarrionFlyHealth.get() * 1.33D);
-                attack.setBaseValue(AttributesConfig.CarrionFlyDamage.get() * 1.1D);
+                health.setBaseValue(com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.CarrionFlyHealth, 20.0D) * 1.33D);
+                attack.setBaseValue(com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.CarrionFlyDamage, 20.0D) * 1.1D);
             } else {
-                health.setBaseValue(AttributesConfig.CarrionFlyHealth.get());
-                attack.setBaseValue(AttributesConfig.CarrionFlyDamage.get());
+                health.setBaseValue(com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.CarrionFlyHealth, 20.0D));
+                attack.setBaseValue(com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.CarrionFlyDamage, 20.0D));
             }
         }
         this.setHealth(this.getMaxHealth());

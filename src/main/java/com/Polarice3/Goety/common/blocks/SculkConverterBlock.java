@@ -23,10 +23,18 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.level.block.BaseEntityBlock;
+import net.minecraft.world.item.ItemStack;
 
 import javax.annotation.Nullable;
 
 public class SculkConverterBlock extends EnchanteableBlock {
+    public static final com.mojang.serialization.MapCodec<SculkConverterBlock> CODEC = simpleCodec(p -> new SculkConverterBlock());
+
+    @Override
+    protected com.mojang.serialization.MapCodec<? extends BaseEntityBlock> codec() {
+        return CODEC;
+    }
     public static final BooleanProperty LIT = BlockStateProperties.LIT;
     public static final BooleanProperty POWERED = BlockStateProperties.POWERED;
 
@@ -39,18 +47,30 @@ public class SculkConverterBlock extends EnchanteableBlock {
         this.registerDefaultState(this.stateDefinition.any().setValue(LIT, Boolean.valueOf(false)).setValue(POWERED, Boolean.valueOf(false)));
     }
 
-    public InteractionResult use(BlockState pState, Level pLevel, BlockPos pPos, Player pPlayer, InteractionHand pHand, BlockHitResult pResult) {
-        if (pPlayer.getItemInHand(pHand).isEmpty()) {
+    @Override
+    protected net.minecraft.world.ItemInteractionResult useItemOn(ItemStack stack, BlockState pState, Level pLevel, BlockPos pPos, Player pPlayer, InteractionHand pHand, BlockHitResult pResult) {
+        if (stack.isEmpty()) {
             if (!pLevel.isClientSide) {
                 BlockEntity tileentity = pLevel.getBlockEntity(pPos);
                 if (tileentity instanceof SculkConverterBlockEntity converterBlockEntity) {
                     converterBlockEntity.findRelay();
                 }
             }
-            return InteractionResult.sidedSuccess(pLevel.isClientSide);
+            return net.minecraft.world.ItemInteractionResult.sidedSuccess(pLevel.isClientSide);
         } else {
-            return InteractionResult.PASS;
+            return net.minecraft.world.ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
         }
+    }
+
+    @Override
+    protected net.minecraft.world.InteractionResult useWithoutItem(BlockState pState, Level pLevel, BlockPos pPos, Player pPlayer, BlockHitResult pResult) {
+        if (!pLevel.isClientSide) {
+            BlockEntity tileentity = pLevel.getBlockEntity(pPos);
+            if (tileentity instanceof SculkConverterBlockEntity converterBlockEntity) {
+                converterBlockEntity.findRelay();
+            }
+        }
+        return net.minecraft.world.InteractionResult.sidedSuccess(pLevel.isClientSide);
     }
 
     public void neighborChanged(BlockState pState, Level pLevel, BlockPos pPos, Block pBlock, BlockPos pFromPos, boolean pIsMoving) {

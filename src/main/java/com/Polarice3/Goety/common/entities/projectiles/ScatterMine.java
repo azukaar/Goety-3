@@ -63,7 +63,7 @@ public class ScatterMine extends Entity implements ISpellEntity {
 
     @Override
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
-        super.defineSynchedData(builder);
+        // super.defineSynchedData(builder);
         builder.define(DATA_SPELL, false);
         builder.define(DATA_EXTRA_DAMAGE, 0.0F);
     }
@@ -273,7 +273,7 @@ public class ScatterMine extends Entity implements ISpellEntity {
     public void explodeDamage(LivingEntity livingEntity) {
         if (!this.level().isClientSide) {
             Entity owner = this.getOwner() != null ? this.getOwner() : this;
-            float damage = SpellConfig.ScatterMineDamage.get().floatValue();
+            float damage = com.Polarice3.Goety.utils.ConfigHelper.getFloat(SpellConfig.ScatterMineDamage, 1.0F);
             if (!this.isSpell()) {
                 if (this.getOwner() instanceof Mob) {
                     if (this.getOwner().getAttribute(Attributes.ATTACK_DAMAGE) != null && this.getOwner().getAttributeValue(Attributes.ATTACK_DAMAGE) > 0.0F) {
@@ -316,8 +316,8 @@ public class ScatterMine extends Entity implements ISpellEntity {
         this.level().addParticle(ModParticleTypes.BIG_ELECTRIC.get(), this.getX(), this.getY(), this.getZ(), 1.0D, 0.0D, 0.0D);
     }
 
-    @Override
-    public Packet<ClientGamePacketListener> getAddEntityPacket() {
-        return new net.minecraft.network.protocol.game.ClientboundAddEntityPacket(this);
-    }
+    // @Override
+    // public Packet<ClientGamePacketListener> getAddEntityPacket() {
+    //     return new net.minecraft.network.protocol.game.ClientboundAddEntityPacket(this);
+    // }
 }

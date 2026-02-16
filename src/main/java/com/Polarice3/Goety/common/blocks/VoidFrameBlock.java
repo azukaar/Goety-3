@@ -1,6 +1,7 @@
 package com.Polarice3.Goety.common.blocks;
 
 import com.Polarice3.Goety.common.blocks.entities.VoidFrameBlockEntity;
+import com.mojang.serialization.MapCodec;
 import com.Polarice3.Goety.common.blocks.properties.ModStateProperties;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -23,6 +24,12 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.Nullable;
 
 public class VoidFrameBlock extends BaseEntityBlock {
+    public static final MapCodec<VoidFrameBlock> CODEC = simpleCodec(p -> new VoidFrameBlock());
+
+    @Override
+    protected MapCodec<? extends BaseEntityBlock> codec() {
+        return CODEC;
+    }
     public static final DirectionProperty FACING = HorizontalDirectionalBlock.FACING;
     public static final IntegerProperty TYPE = ModStateProperties.TYPE;
     public static final BooleanProperty LOCKED = BlockStateProperties.LOCKED;

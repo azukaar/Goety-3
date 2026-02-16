@@ -40,13 +40,14 @@ public class AcidPool extends AbstractTrap {
         this.setDuration(50);
     }
 
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.getEntityData().define(DATA_COLOR, 0x44b529);
-        this.getEntityData().define(DATA_WARMUP_COLOR, 0x44b529);
-        this.getEntityData().define(DATA_RADIUS, 2.0F);
-        this.getEntityData().define(DATA_DAMAGE, 2.0F);
-        this.getEntityData().define(DATA_SOUND_EVENT, "");
+    @Override
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(DATA_COLOR, 0x44b529);
+        builder.define(DATA_WARMUP_COLOR, 0x44b529);
+        builder.define(DATA_RADIUS, 2.0F);
+        builder.define(DATA_DAMAGE, 2.0F);
+        builder.define(DATA_SOUND_EVENT, "");
     }
 
     public void onSyncedDataUpdated(EntityDataAccessor<?> p_19729_) {
@@ -168,7 +169,7 @@ public class AcidPool extends AbstractTrap {
             if (this.getWarmupDelayTicks() <= 0) {
                 if (!this.sentSpikeEvent) {
                     this.sentSpikeEvent = true;
-                    SoundEvent soundEvent = SoundEvent.createVariableRangeEvent(new ResourceLocation(this.getSoundEvent()));
+                    SoundEvent soundEvent = SoundEvent.createVariableRangeEvent(ResourceLocation.parse(this.getSoundEvent()));
                     this.playSound(soundEvent, 1.0F, 1.0F);
                     ColorUtil colorUtil = new ColorUtil(this.getColor());
                     ServerParticleUtil.circularParticles(serverLevel, ModParticleTypes.BIG_CULT_SPELL.get(), this.getX(), this.getY() + 1.0F, this.getZ(), colorUtil.red(), colorUtil.green(), colorUtil.blue(), this.radius());
@@ -220,7 +221,7 @@ public class AcidPool extends AbstractTrap {
     }
 
     @Override
-    public Packet<ClientGamePacketListener> getAddEntityPacket() {
-        return new net.minecraft.network.protocol.game.ClientboundAddEntityPacket(this);
+    public Packet<ClientGamePacketListener> getAddEntityPacket(net.minecraft.server.level.ServerEntity p_345759_) {
+        return new net.minecraft.network.protocol.game.ClientboundAddEntityPacket(this, p_345759_);
     }
 }

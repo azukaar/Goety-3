@@ -86,14 +86,14 @@ public class WarlockServant extends CultistServant implements RangedAttackMob {
 
     public static AttributeSupplier.Builder setCustomAttributes() {
         return Monster.createMonsterAttributes()
-                .add(Attributes.MAX_HEALTH, AttributesConfig.WarlockHealth.get())
-                .add(Attributes.ARMOR, AttributesConfig.WarlockArmor.get())
+                .add(Attributes.MAX_HEALTH, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.WarlockHealth, 20.0D))
+                .add(Attributes.ARMOR, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.WarlockArmor, 20.0D))
                 .add(Attributes.MOVEMENT_SPEED, 0.25D);
     }
 
     public void setConfigurableAttributes(){
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.MAX_HEALTH), AttributesConfig.WarlockHealth.get());
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ARMOR), AttributesConfig.WarlockArmor.get());
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.MAX_HEALTH), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.WarlockHealth, 20.0D));
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ARMOR), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.WarlockArmor, 20.0D));
     }
 
     public void addAdditionalSaveData(CompoundTag p_33353_) {
@@ -298,7 +298,7 @@ public class WarlockServant extends CultistServant implements RangedAttackMob {
                     wartling.setStoredEffect(effect);
                     this.removeEffect(effect.getEffect());
                 });
-            wartling.finalizeSpawn(serverLevel, serverLevel.getCurrentDifficultyAt(this.blockPosition()), MobSpawnType.MOB_SUMMONED, null, null);
+            wartling.finalizeSpawn(serverLevel, serverLevel.getCurrentDifficultyAt(this.blockPosition()), MobSpawnType.MOB_SUMMONED, null);
             this.level().addFreshEntity(wartling);
         }
     }
@@ -330,3 +330,4 @@ public class WarlockServant extends CultistServant implements RangedAttackMob {
         return super.mobInteract(pPlayer, pHand);
     }
 }
+

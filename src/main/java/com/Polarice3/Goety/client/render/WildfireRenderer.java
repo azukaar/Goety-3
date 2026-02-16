@@ -46,8 +46,8 @@ public class WildfireRenderer extends MobRenderer<Wildfire, WildfireModel<Wildfi
 
       @Override
       public void render(PoseStack pMatrixStack, MultiBufferSource pBuffer, int pPackedLight, Wildfire pLivingEntity, float pLimbSwing, float pLimbSwingAmount, float pPartialTicks, float pAgeInTicks, float pNetHeadYaw, float pHeadPitch) {
-         if (MobsConfig.WildfireTexture.get() && !pLivingEntity.isHostile()) {
-            coloredCutoutModelCopyLayerRender(this.getParentModel(), this.layerModel, TEXTURES, pMatrixStack, pBuffer, pPackedLight, pLivingEntity, pLimbSwing, pLimbSwingAmount, pAgeInTicks, pNetHeadYaw, pHeadPitch, pPartialTicks, 1.0F, 1.0F, 1.0F);
+         if (com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MobsConfig.WildfireTexture, false) && !pLivingEntity.isHostile()) {
+            coloredCutoutModelCopyLayerRender(this.getParentModel(), this.layerModel, TEXTURES, pMatrixStack, pBuffer, pPackedLight, pLivingEntity, pLimbSwing, pLimbSwingAmount, pAgeInTicks, pNetHeadYaw, pHeadPitch, pPartialTicks, 0xFFFFFFFF);
          }
       }
    }

@@ -4,6 +4,8 @@ import com.Polarice3.Goety.client.particles.ModParticleTypes;
 import com.Polarice3.Goety.common.effects.GoetyEffects;
 import com.Polarice3.Goety.common.entities.ally.illager.RaiderServant;
 import com.Polarice3.Goety.config.MobsConfig;
+import net.minecraft.core.Holder;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.EntityTypeTags;
 import net.minecraft.util.Mth;
@@ -14,6 +16,7 @@ import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntitySelector;
 import net.minecraft.world.entity.LivingEntity;
+import com.Polarice3.Goety.utils.MobType;
 import net.minecraft.world.entity.monster.PatrollingMonster;
 import net.minecraft.world.entity.monster.Zombie;
 import net.minecraft.world.level.Level;
@@ -25,6 +28,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class EffectsUtil {
+    private static Holder<MobEffect> asHolder(MobEffect effect) {
+        return BuiltInRegistries.MOB_EFFECT.wrapAsHolder(effect);
+    }
 
     public static void amplifyEffect(LivingEntity infected, MobEffect effect, int duration) {
         amplifyEffect(infected, effect, duration, 4, false, true);
@@ -32,17 +38,17 @@ public class EffectsUtil {
 
     public static void amplifyEffect(LivingEntity infected, MobEffect effect, int duration, int maxAmp,
             boolean pAmbient, boolean pVisible) {
-        MobEffectInstance MobEffectInstance1 = infected.getEffect(effect);
+        MobEffectInstance MobEffectInstance1 = infected.getEffect(asHolder(effect));
         int i = 1;
         if (MobEffectInstance1 != null) {
             i += MobEffectInstance1.getAmplifier();
-            infected.removeEffect(effect);
+            infected.removeEffect(asHolder(effect));
         } else {
             --i;
         }
 
         i = Mth.clamp(i, 0, maxAmp);
-        MobEffectInstance MobEffectInstance = new MobEffectInstance(effect, duration, i, pAmbient, pVisible);
+        MobEffectInstance MobEffectInstance = new MobEffectInstance(asHolder(effect), duration, i, pAmbient, pVisible);
         infected.addEffect(MobEffectInstance);
     }
 
@@ -52,40 +58,40 @@ public class EffectsUtil {
 
     public static void resetDuration(LivingEntity infected, MobEffect effect, int duration, boolean pAmbient,
             boolean pVisible) {
-        MobEffectInstance MobEffectInstance1 = infected.getEffect(effect);
+        MobEffectInstance MobEffectInstance1 = infected.getEffect(asHolder(effect));
         int a = 0;
         if (MobEffectInstance1 != null) {
             a = MobEffectInstance1.getAmplifier();
-            infected.removeEffect(effect);
+            infected.removeEffect(asHolder(effect));
         }
-        MobEffectInstance MobEffectInstance = new MobEffectInstance(effect, duration, a, pAmbient, pVisible);
+        MobEffectInstance MobEffectInstance = new MobEffectInstance(asHolder(effect), duration, a, pAmbient, pVisible);
         infected.addEffect(MobEffectInstance);
     }
 
     public static void increaseDuration(LivingEntity infected, MobEffect effect, int duration) {
-        MobEffectInstance MobEffectInstance1 = infected.getEffect(effect);
+        MobEffectInstance MobEffectInstance1 = infected.getEffect(asHolder(effect));
         int i = duration;
         int a = 0;
         if (MobEffectInstance1 != null) {
             a = MobEffectInstance1.getAmplifier();
             i = MobEffectInstance1.getDuration() + duration;
-            infected.removeEffect(effect);
+            infected.removeEffect(asHolder(effect));
         }
-        MobEffectInstance MobEffectInstance = new MobEffectInstance(effect, i, a);
+        MobEffectInstance MobEffectInstance = new MobEffectInstance(asHolder(effect), i, a);
         infected.addEffect(MobEffectInstance);
     }
 
     public static void decreaseDuration(LivingEntity infected, MobEffect effect, float duration, boolean pAmbient,
             boolean pVisible) {
-        MobEffectInstance MobEffectInstance1 = infected.getEffect(effect);
+        MobEffectInstance MobEffectInstance1 = infected.getEffect(asHolder(effect));
         float i = duration;
         int a = 0;
         if (MobEffectInstance1 != null) {
             a = MobEffectInstance1.getAmplifier();
             i = MobEffectInstance1.getDuration() - duration;
-            infected.removeEffect(effect);
+            infected.removeEffect(asHolder(effect));
         }
-        MobEffectInstance MobEffectInstance = new MobEffectInstance(effect, (int) i, a, pAmbient, pVisible);
+        MobEffectInstance MobEffectInstance = new MobEffectInstance(asHolder(effect), (int) i, a, pAmbient, pVisible);
         infected.addEffect(MobEffectInstance);
     }
 
@@ -99,16 +105,16 @@ public class EffectsUtil {
 
     public static void deamplifyEffect(LivingEntity infected, MobEffect effect, int deamp, int duration,
             boolean pAmbient, boolean pVisible) {
-        MobEffectInstance MobEffectInstance1 = infected.getEffect(effect);
+        MobEffectInstance MobEffectInstance1 = infected.getEffect(asHolder(effect));
         int i = 0;
         if (MobEffectInstance1 != null) {
             int amp = MobEffectInstance1.getAmplifier();
             i = amp - 1;
-            infected.removeEffect(effect);
+            infected.removeEffect(asHolder(effect));
         }
 
         i = Math.max(0, i);
-        MobEffectInstance MobEffectInstance = new MobEffectInstance(effect, duration, i, pAmbient, pVisible);
+        MobEffectInstance MobEffectInstance = new MobEffectInstance(asHolder(effect), duration, i, pAmbient, pVisible);
         infected.addEffect(MobEffectInstance);
     }
 
@@ -118,18 +124,18 @@ public class EffectsUtil {
 
     public static void halveDuration(LivingEntity infected, MobEffect effect, int duration, boolean pAmbient,
             boolean pVisible) {
-        MobEffectInstance MobEffectInstance1 = infected.getEffect(effect);
+        MobEffectInstance MobEffectInstance1 = infected.getEffect(asHolder(effect));
         int a = 0;
         if (MobEffectInstance1 != null) {
             a = MobEffectInstance1.getAmplifier();
-            infected.removeEffect(effect);
+            infected.removeEffect(asHolder(effect));
         }
-        MobEffectInstance MobEffectInstance = new MobEffectInstance(effect, duration / 2, a, pAmbient, pVisible);
+        MobEffectInstance MobEffectInstance = new MobEffectInstance(asHolder(effect), duration / 2, a, pAmbient, pVisible);
         infected.addEffect(MobEffectInstance);
     }
 
     public static int getAmplifier(LivingEntity infected, MobEffect effect) {
-        MobEffectInstance MobEffectInstance1 = infected.getEffect(effect);
+        MobEffectInstance MobEffectInstance1 = infected.getEffect(asHolder(effect));
         if (MobEffectInstance1 != null) {
             return MobEffectInstance1.getAmplifier();
         }
@@ -137,7 +143,7 @@ public class EffectsUtil {
     }
 
     public static int getAmplifierPlus(LivingEntity infected, MobEffect effect) {
-        MobEffectInstance MobEffectInstance1 = infected.getEffect(effect);
+        MobEffectInstance MobEffectInstance1 = infected.getEffect(asHolder(effect));
         if (MobEffectInstance1 != null) {
             return MobEffectInstance1.getAmplifier() + 1;
         }
@@ -145,17 +151,17 @@ public class EffectsUtil {
     }
 
     public static boolean canAffectLich(MobEffectInstance effectInstance, Level world) {
-        return effectInstance.getEffect() != MobEffects.BLINDNESS
-                && effectInstance.getEffect() != MobEffects.CONFUSION
-                && effectInstance.getEffect() != MobEffects.HUNGER
-                && effectInstance.getEffect() != MobEffects.SATURATION
+        return !effectInstance.getEffect().is(MobEffects.BLINDNESS)
+                && !effectInstance.getEffect().is(MobEffects.CONFUSION)
+                && !effectInstance.getEffect().is(MobEffects.HUNGER)
+                && !effectInstance.getEffect().is(MobEffects.SATURATION)
                 && new Zombie(world).canBeAffected(effectInstance);
     }
 
     public static int getFortuneEffectLevel(LootContext lootContext) {
         Entity entity = lootContext.getParamOrNull(LootContextParams.THIS_ENTITY);
         if (entity instanceof LivingEntity livingEntity) {
-            MobEffectInstance mobEffectInstance = livingEntity.getEffect(GoetyEffects.FORTUNATE.get());
+            MobEffectInstance mobEffectInstance = livingEntity.getEffect(asHolder(GoetyEffects.FORTUNATE.get()));
             if (mobEffectInstance != null) {
                 int level = mobEffectInstance.getAmplifier();
                 return level + 1;
@@ -171,7 +177,7 @@ public class EffectsUtil {
     public static List<LivingEntity> addEffectToAllAround(ServerLevel p_216947_,
             @org.jetbrains.annotations.Nullable Entity p_216948_, Vec3 p_216949_, double p_216950_,
             MobEffectInstance p_216951_, int p_216952_) {
-        MobEffect mobeffect = p_216951_.getEffect();
+        Holder<MobEffect> mobeffect = p_216951_.getEffect();
         List<LivingEntity> list = new ArrayList<>();
         for (Entity entity : p_216947_.getAllEntities()) {
             if (entity instanceof LivingEntity livingEntity) {
@@ -192,20 +198,20 @@ public class EffectsUtil {
     }
 
     public static void Illague(ServerLevel level, LivingEntity infected) {
-        MobEffectInstance illague = infected.getEffect(GoetyEffects.ILLAGUE.get());
+        MobEffectInstance illague = infected.getEffect(asHolder(GoetyEffects.ILLAGUE.get()));
         if (illague != null) {
             int duration = illague.getDuration() + 1;
             int amplifier = illague.getAmplifier();
-            if (MobsConfig.IllagueSpread.get()) {
+            if (com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MobsConfig.IllagueSpread, false)) {
                 for (LivingEntity livingEntity : level.getEntitiesOfClass(LivingEntity.class,
                         infected.getBoundingBox().inflate(8.0D), EntitySelector.NO_CREATIVE_OR_SPECTATOR)) {
                     if (livingEntity.isAlive() && !(livingEntity instanceof PatrollingMonster)
                             && !(livingEntity instanceof RaiderServant)
                             && !(livingEntity instanceof net.minecraft.world.entity.Mob mob
-                                    && mob.getMobType() == MobType.UNDEAD)
-                            && !livingEntity.hasEffect(GoetyEffects.ILLAGUE.get())) {
+                                    && mob.isInvertedHealAndHarm())
+                            && !livingEntity.hasEffect(asHolder(GoetyEffects.ILLAGUE.get()))) {
                         if (livingEntity.tickCount % 100 == 0 && livingEntity.getRandom().nextInt(20) == 0) {
-                            livingEntity.addEffect(new MobEffectInstance(GoetyEffects.ILLAGUE.get(), duration / 2,
+                            livingEntity.addEffect(new MobEffectInstance(asHolder(GoetyEffects.ILLAGUE.get()), duration / 2,
                                     amplifier, false, false));
                         }
                     }
@@ -251,16 +257,16 @@ public class EffectsUtil {
                                         new MobEffectInstance(MobEffects.POISON, 400 * r4, r3, false, false));
                             case 6 ->
                                 infected.addEffect(
-                                        new MobEffectInstance(GoetyEffects.SAPPED.get(), 400 * r4, r3, false, false));
+                                        new MobEffectInstance(asHolder(GoetyEffects.SAPPED.get()), 400 * r4, r3, false, false));
                             case 7 ->
                                 infected.addEffect(
-                                        new MobEffectInstance(GoetyEffects.FREEZING.get(), 400 * r4, r3, false, false));
+                                        new MobEffectInstance(asHolder(GoetyEffects.FREEZING.get()), 400 * r4, r3, false, false));
                             case 8 ->
-                                infected.addEffect(new MobEffectInstance(GoetyEffects.FLAMMABLE.get(), 400 * r4, r3,
+                                infected.addEffect(new MobEffectInstance(asHolder(GoetyEffects.FLAMMABLE.get()), 400 * r4, r3,
                                         false, false));
                             case 9 ->
                                 infected.addEffect(
-                                        new MobEffectInstance(GoetyEffects.FLIMSY.get(), 400 * r4, r3, false, false));
+                                        new MobEffectInstance(asHolder(GoetyEffects.FLIMSY.get()), 400 * r4, r3, false, false));
                         }
                     }
                 }
@@ -270,7 +276,7 @@ public class EffectsUtil {
 
     public static void increaseEffect(LivingEntity infected, MobEffect effect, int maxAmp, boolean pAmbient,
             boolean pVisible) {
-        MobEffectInstance instance = infected.getEffect(effect);
+        MobEffectInstance instance = infected.getEffect(asHolder(effect));
         int i = 1;
         int d = MathHelper.secondsToTicks(1);
         if (instance != null) {
@@ -282,7 +288,7 @@ public class EffectsUtil {
         }
 
         i = Mth.clamp(i, 0, maxAmp);
-        MobEffectInstance MobEffectInstance = new MobEffectInstance(effect, d, i, pAmbient, pVisible);
+        MobEffectInstance MobEffectInstance = new MobEffectInstance(asHolder(effect), d, i, pAmbient, pVisible);
         infected.addEffect(MobEffectInstance);
     }
 }

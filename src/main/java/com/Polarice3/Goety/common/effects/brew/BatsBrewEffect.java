@@ -30,16 +30,16 @@ public class BatsBrewEffect extends BrewEffect {
 
     public void applyEntityEffect(LivingEntity pTarget, @Nullable Entity pSource, @Nullable Entity pIndirectSource, int pAmplifier){
         if (!(pTarget instanceof Bee) && !(pTarget instanceof Bat) && pTarget != null && pTarget != pIndirectSource && EntitySelector.NO_CREATIVE_OR_SPECTATOR.test(pTarget)) {
-            int amount = pTarget.level.random.nextInt(pAmplifier + 2) + 3;
+            int amount = pTarget.level().random.nextInt(pAmplifier + 2) + 3;
             for (int i = 0; i < amount; ++i) {
-                VampireBat bat = new VampireBat(ModEntityType.VAMPIRE_BAT.get(), pTarget.level);
-                bat.moveTo(BlockFinder.SummonRadius(pTarget.blockPosition(), bat, pTarget.level), 0.0F, 0.0F);
+                VampireBat bat = new VampireBat(ModEntityType.VAMPIRE_BAT.get(), pTarget.level());
+                bat.moveTo(BlockFinder.SummonRadius(pTarget.blockPosition(), bat, pTarget.level()), 0.0F, 0.0F);
                 if (pIndirectSource instanceof LivingEntity livingEntity){
                     bat.setTrueOwner(livingEntity);
                 }
                 bat.setTarget(pTarget);
                 bat.addTag(ConstantPaths.conjuredBat());
-                pTarget.level.addFreshEntity(bat);
+                pTarget.level().addFreshEntity(bat);
             }
         }
     }

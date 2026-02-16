@@ -36,9 +36,9 @@ public class GoetyBaseEffect extends MobEffect {
         super(p_19451_, p_19452_);
     }
 
-    @SuppressWarnings("deprecation")
-    public void applyEffectTick(LivingEntity livingEntity, int amplify) {
-        Level world = livingEntity.level;
+    @Override
+    public boolean applyEffectTick(LivingEntity livingEntity, int amplify) {
+        Level world = livingEntity.level();
         if (this == GoetyEffects.PRESSURE.get()) {
             int count = 0;
             for (LivingEntity other : world.getEntitiesOfClass(LivingEntity.class,
@@ -48,13 +48,13 @@ public class GoetyBaseEffect extends MobEffect {
                 }
             }
             if (count >= 3) {
-                livingEntity.hurt(ModDamageSource.getDamageSource(livingEntity.level, ModDamageSource.PHOBIA), 1.0F);
+                livingEntity.hurt(ModDamageSource.getDamageSource(livingEntity.level(), ModDamageSource.PHOBIA), 1.0F);
             }
         }
         if (this == GoetyEffects.NYCTOPHOBIA.get()) {
             if (world.getLightLevelDependentMagicValue(livingEntity.blockPosition()) < 0.1
                     || livingEntity.hasEffect(MobEffects.DARKNESS)) {
-                livingEntity.hurt(ModDamageSource.getDamageSource(livingEntity.level, ModDamageSource.PHOBIA), 1.0F);
+                livingEntity.hurt(ModDamageSource.getDamageSource(livingEntity.level(), ModDamageSource.PHOBIA), 1.0F);
             }
         }
         if (this == GoetyEffects.SUN_ALLERGY.get()) {
@@ -67,7 +67,7 @@ public class GoetyBaseEffect extends MobEffect {
                         if (helmet.isDamageableItem()) {
                             helmet.setDamageValue(helmet.getDamageValue() + world.random.nextInt(2));
                             if (helmet.getDamageValue() >= helmet.getMaxDamage()) {
-                                livingEntity.broadcastBreakEvent(EquipmentSlot.HEAD);
+                                // broadcastBreakEvent removed in 1.21, just set to empty
                                 livingEntity.setItemSlot(EquipmentSlot.HEAD, ItemStack.EMPTY);
                             }
                         }
@@ -82,17 +82,17 @@ public class GoetyBaseEffect extends MobEffect {
         if (this == GoetyEffects.STORMS_WRATH.get()) {
             float chance = 0.1F;
             chance += amplify / 10.0F;
-            if (livingEntity.level.isRainingAt(livingEntity.blockPosition())) {
+            if (livingEntity.level().isRainingAt(livingEntity.blockPosition())) {
                 chance += 0.1F;
-                if (livingEntity.level.isThundering()) {
+                if (livingEntity.level().isThundering()) {
                     chance += 0.25F;
                 }
             }
-            if (livingEntity.level.canSeeSky(livingEntity.blockPosition())) {
+            if (livingEntity.level().canSeeSky(livingEntity.blockPosition())) {
                 if (livingEntity.getRandom().nextFloat() <= chance) {
-                    LightningBolt lightningBolt = new LightningBolt(EntityType.LIGHTNING_BOLT, livingEntity.level);
+                    LightningBolt lightningBolt = new LightningBolt(EntityType.LIGHTNING_BOLT, livingEntity.level());
                     lightningBolt.moveTo(Vec3.atBottomCenterOf(livingEntity.blockPosition()));
-                    livingEntity.level.addFreshEntity(lightningBolt);
+                    livingEntity.level().addFreshEntity(lightningBolt);
                 }
             }
         }
@@ -151,7 +151,7 @@ public class GoetyBaseEffect extends MobEffect {
                         ServerParticleUtil.addParticlesAroundSelf(serverLevel, ParticleTypes.SNOWFLAKE, living);
                         ModNetwork.sendToALL(new SPlayWorldSoundPacket(livingEntity.blockPosition(),
                                 SoundEvents.PLAYER_HURT_FREEZE, 1.0F, 0.75F));
-                        living.addEffect(new MobEffectInstance(GoetyEffects.FREEZING.get(), 100, amplify));
+                        living.addEffect(new MobEffectInstance(GoetyEffects.FREEZING, 100, amplify));
                     }
                 }
             }
@@ -196,14 +196,14 @@ public class GoetyBaseEffect extends MobEffect {
                             new ShockwaveParticleOption(colorUtil.red(), colorUtil.green(), colorUtil.blue(),
                                     (float) area, 1, true),
                             livingEntity.getX(), livingEntity.getY() + 0.25F, livingEntity.getZ(), 0, 0, 0, 0, 0.5F);
-                    for (LivingEntity target : livingEntity.level.getEntitiesOfClass(LivingEntity.class,
+                    for (LivingEntity target : livingEntity.level().getEntitiesOfClass(LivingEntity.class,
                             livingEntity.getBoundingBox().inflate(area))) {
                         if (target != livingEntity && !MobUtil.areAllies(livingEntity, target)
                                 && EntitySelector.NO_CREATIVE_OR_SPECTATOR.test(target)
                                 && target != livingEntity.getVehicle()) {
                             Vec3 vec3 = target.position().subtract(livingEntity.position());
                             vec3 = vec3.scale(2.0D).normalize();
-                            target.level.playSound(null, target.getX(), target.getY(), target.getZ(),
+                            target.level().playSound(null, target.getX(), target.getY(), target.getZ(),
                                     ModSounds.GRAVITY.get(), livingEntity.getSoundSource(), 0.65F,
                                     0.9F + (livingEntity.getRandom().nextFloat() * 0.4F));
                             MobUtil.pull(target, vec3.x, vec3.y, vec3.z);
@@ -238,11 +238,11 @@ public class GoetyBaseEffect extends MobEffect {
         }
         if (this == GoetyEffects.CRIPPLED.get()) {
             if (livingEntity.getHealth() >= livingEntity.getMaxHealth() * 0.75F) {
-                livingEntity.removeEffect(GoetyEffects.CRIPPLED.get());
+                livingEntity.removeEffect(GoetyEffects.CRIPPLED);
             }
         }
         if (this == GoetyEffects.STUNNED.get()) {
-            if (livingEntity.level instanceof ServerLevel serverLevel) {
+            if (livingEntity.level() instanceof ServerLevel serverLevel) {
                 if (livingEntity.tickCount % 15 == 0) {
                     serverLevel.sendParticles(ModParticleTypes.STUN.get(), livingEntity.getX(),
                             livingEntity.getY() + livingEntity.getBbHeight() + 0.5F, livingEntity.getZ(), 1, 0, 0, 0,
@@ -251,7 +251,7 @@ public class GoetyBaseEffect extends MobEffect {
             }
         }
         if (this == GoetyEffects.WILD_RAGE.get()) {
-            if (!livingEntity.level.isClientSide) {
+            if (!livingEntity.level().isClientSide) {
                 if (livingEntity instanceof Mob mob
                         && (mob.getAttribute(Attributes.ATTACK_DAMAGE) != null || mob instanceof RangedAttackMob)
                         && mob.getAttribute(Attributes.FOLLOW_RANGE) != null) {
@@ -275,9 +275,11 @@ public class GoetyBaseEffect extends MobEffect {
                 }
             }
         }
+        return true;
     }
 
-    public boolean isDurationEffectTick(int tick, int amplify) {
+    @Override
+    public boolean shouldApplyEffectTickThisTick(int tick, int amplify) {
         if (this == GoetyEffects.NYCTOPHOBIA.get()
                 || this == GoetyEffects.PRESSURE.get()) {
             int j = 40 >> amplify;

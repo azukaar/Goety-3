@@ -23,12 +23,12 @@ public class BouncyBubbleSpell extends Spell {
 
     @Override
     public int defaultSoulCost() {
-        return SpellConfig.BouncyBubbleCost.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.BouncyBubbleCost, 0);
     }
 
     @Override
     public int defaultCastDuration() {
-        return SpellConfig.BouncyBubbleDuration.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.BouncyBubbleDuration, 0);
     }
 
     @Nullable
@@ -39,7 +39,7 @@ public class BouncyBubbleSpell extends Spell {
 
     @Override
     public int defaultSpellCooldown() {
-        return SpellConfig.BouncyBubbleCoolDown.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.BouncyBubbleCoolDown, 0);
     }
 
     @Override

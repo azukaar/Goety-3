@@ -22,23 +22,29 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.entity.ConduitBlockEntity;
 
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.world.item.component.CustomData;
+import net.minecraft.world.item.Item;
+
 import javax.annotation.Nullable;
 import java.util.List;
 
 public class SeaAmuletItem extends SingleStackItem{
     private static final String CONDUIT_CHARGES = "Conduit Charges";
-    private static final int MAX_POWER = ItemConfig.SeaAmuletMax.get();
+    // Lazy evaluation to avoid accessing config before it's loaded
+    private static int getMaxPower() {
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(ItemConfig.SeaAmuletMax, 0);
+    }
 
     @Override
     public void inventoryTick(ItemStack stack, Level worldIn, Entity entityIn, int itemSlot, boolean isSelected) {
         if (entityIn instanceof Player player) {
             boolean flag = true;
-            if (!stack.hasTag()) {
-                stack.setTag(new CompoundTag());
-                stack.getOrCreateTag().putInt(CONDUIT_CHARGES, 0);
+            if (!stack.has(DataComponents.CUSTOM_DATA)) {
+                CustomData.update(DataComponents.CUSTOM_DATA, stack, tag -> tag.putInt(CONDUIT_CHARGES, 0));
             } else {
-                if (this.getConduitChargesAmount(stack) > MAX_POWER){
-                    this.setConduitCharges(stack, MAX_POWER);
+                if (this.getConduitChargesAmount(stack) > getMaxPower()){
+                    this.setConduitCharges(stack, getMaxPower());
                 } else if (this.getConduitChargesAmount(stack) < 0){
                     this.setConduitCharges(stack, 0);
                 }
@@ -47,7 +53,7 @@ public class SeaAmuletItem extends SingleStackItem{
                         BlockEntity blockEntity = BlockFinder.findBlockEntity(BlockEntityType.CONDUIT, worldIn, player.blockPosition(), 8);
                         if (blockEntity instanceof ConduitBlockEntity blockEntity1) {
                             if (blockEntity1.isActive()) {
-                                if (this.getConduitChargesAmount(stack) < MAX_POWER) {
+                                if (this.getConduitChargesAmount(stack) < getMaxPower()) {
                                     if (worldIn instanceof ServerLevel serverLevel) {
                                         ServerParticleUtil.gatheringParticles(ParticleTypes.NAUTILUS, player, serverLevel);
                                     }
@@ -79,34 +85,24 @@ public class SeaAmuletItem extends SingleStackItem{
 
     @Override
     public void onCraftedBy(ItemStack pStack, Level pLevel, Player pPlayer) {
-        CompoundTag compound = pStack.getOrCreateTag();
-        compound.putInt(CONDUIT_CHARGES, 0);
+        CustomData.update(DataComponents.CUSTOM_DATA, pStack, tag -> tag.putInt(CONDUIT_CHARGES, 0));
     }
 
     public void increaseConduitCharges(ItemStack stack){
-        if (stack.getTag() != null && getConduitChargesAmount(stack) < MAX_POWER) {
-            stack.getTag().putInt(CONDUIT_CHARGES, Math.min(MAX_POWER, getConduitChargesAmount(stack) + ItemConfig.SeaAmuletChargeConsume.get()));
-        }
+        setConduitCharges(stack, Math.min(getMaxPower(), getConduitChargesAmount(stack) + com.Polarice3.Goety.utils.ConfigHelper.getInt(ItemConfig.SeaAmuletChargeConsume, 0)));
     }
 
     public void decreaseConduitCharges(ItemStack stack){
-        if (stack.getTag() != null && getConduitChargesAmount(stack) > 0) {
-            stack.getTag().putInt(CONDUIT_CHARGES, Math.max(0, getConduitChargesAmount(stack) - ItemConfig.SeaAmuletChargeConsume.get()));
-        }
+        setConduitCharges(stack, Math.max(0, getConduitChargesAmount(stack) - com.Polarice3.Goety.utils.ConfigHelper.getInt(ItemConfig.SeaAmuletChargeConsume, 0)));
     }
 
     public void setConduitCharges(ItemStack stack, int charges){
-        if (stack.getTag() != null) {
-            stack.getTag().putInt(CONDUIT_CHARGES, charges);
-        }
+        CustomData.update(DataComponents.CUSTOM_DATA, stack, tag -> tag.putInt(CONDUIT_CHARGES, charges));
     }
 
     public int getConduitChargesAmount(ItemStack stack) {
-        if (stack.getTag() != null) {
-            return stack.getTag().getInt(CONDUIT_CHARGES);
-        } else {
-            return 0;
-        }
+        CompoundTag tag = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();
+        return tag.getInt(CONDUIT_CHARGES);
     }
 
     public int getBarColor(ItemStack stack) {
@@ -115,27 +111,19 @@ public class SeaAmuletItem extends SingleStackItem{
     }
 
     public double amountColor(ItemStack stack){
-        if (stack.getTag() != null) {
-            int i = stack.getTag().getInt(CONDUIT_CHARGES);
-            return 1.0D - (i / (double) MAX_POWER);
-        } else {
-            return 1.0D;
-        }
+        int i = getConduitChargesAmount(stack);
+        return 1.0D - (i / (double) getMaxPower());
     }
 
     @Override
     public boolean isBarVisible(ItemStack stack) {
-        return stack.getTag() != null;
+        return getConduitChargesAmount(stack) > 0;
     }
 
     @Override
     public int getBarWidth(ItemStack stack){
-        if (stack.getTag() != null) {
-            int power = stack.getTag().getInt(CONDUIT_CHARGES);
-            return Math.round((power * 13.0F / MAX_POWER));
-        } else {
-            return 0;
-        }
+        int power = getConduitChargesAmount(stack);
+        return Math.round((power * 13.0F / getMaxPower()));
     }
 
     @Override
@@ -144,13 +132,9 @@ public class SeaAmuletItem extends SingleStackItem{
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
-        super.appendHoverText(stack, worldIn, tooltip, flagIn);
-        if (stack.getTag() != null) {
-            int conduit = stack.getTag().getInt(CONDUIT_CHARGES);
-            tooltip.add(Component.translatable("info.goety.sea_amulet.amount", conduit));
-        } else {
-            tooltip.add(Component.translatable("info.goety.sea_amulet.amount", 0));
-        }
+    public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltip, TooltipFlag flagIn) {
+        super.appendHoverText(stack, context, tooltip, flagIn);
+        int conduit = getConduitChargesAmount(stack);
+        tooltip.add(Component.translatable("info.goety.sea_amulet.amount", conduit));
     }
 }

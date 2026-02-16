@@ -11,6 +11,7 @@ import net.minecraft.network.protocol.game.ClientboundAddEntityPacket;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.server.level.ServerEntity;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -38,8 +39,7 @@ public abstract class AbstractTrap extends Entity implements ISpellEntity {
 
     @Override
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
-        super.defineSynchedData(builder);
-        builder.define(DATA_PARTICLE, ParticleTypes.ENTITY_EFFECT);
+        builder.define(DATA_PARTICLE, (net.minecraft.core.particles.ParticleOptions) ParticleTypes.ENTITY_EFFECT);
     }
 
     @Override
@@ -137,7 +137,7 @@ public abstract class AbstractTrap extends Entity implements ISpellEntity {
     }
 
     @Override
-    public Packet<ClientGamePacketListener> getAddEntityPacket() {
-        return new ClientboundAddEntityPacket(this);
+    public Packet<ClientGamePacketListener> getAddEntityPacket(ServerEntity p_345759_) {
+        return new ClientboundAddEntityPacket(this, p_345759_);
     }
 }

@@ -29,7 +29,7 @@ public class OminousCharmItem extends SingleStackItem implements IActivatable {
             } else if (hasOmen(itemStack)) {
                 MobEffectInstance mobeffectinstance = new MobEffectInstance(MobEffects.BAD_OMEN, 120000, getOmenAmount(itemStack) - 1, false, false, true);
                 player.addEffect(mobeffectinstance);
-                level.playSound(null, player, SoundEvents.RESPAWN_ANCHOR_DEPLETE.get(), SoundSource.PLAYERS, 1.0F, 1.0F);
+                level.playSound(null, player, SoundEvents.RESPAWN_ANCHOR_DEPLETE.value(), SoundSource.PLAYERS, 1.0F, 1.0F);
                 setOmenLevel(itemStack, 0);
             }
         }
@@ -50,7 +50,7 @@ public class OminousCharmItem extends SingleStackItem implements IActivatable {
             } else if (hasOmen(itemstack)) {
                 MobEffectInstance mobeffectinstance = new MobEffectInstance(MobEffects.BAD_OMEN, 120000, getOmenAmount(itemstack) - 1, false, false, true);
                 player.addEffect(mobeffectinstance);
-                level.playSound(null, player, SoundEvents.RESPAWN_ANCHOR_DEPLETE.get(), SoundSource.PLAYERS, 1.0F, 1.0F);
+                level.playSound(null, player, SoundEvents.RESPAWN_ANCHOR_DEPLETE.value(), SoundSource.PLAYERS, 1.0F, 1.0F);
                 setOmenLevel(itemstack, 0);
                 return InteractionResultHolder.sidedSuccess(itemstack, level.isClientSide());
             }
@@ -63,20 +63,12 @@ public class OminousCharmItem extends SingleStackItem implements IActivatable {
     }
 
     public static void setOmenLevel(ItemStack stack, int amount){
-        if (stack.getTag() != null) {
-            stack.getTag().putInt(OMEN_LEVEL, Math.min(5, amount));
-        } else {
-            CompoundTag compound = stack.getOrCreateTag();
-            compound.putInt(OMEN_LEVEL, Math.min(5, amount));
-        }
+        net.minecraft.world.item.component.CustomData.update(net.minecraft.core.component.DataComponents.CUSTOM_DATA, stack, (tag) -> tag.putInt(OMEN_LEVEL, Math.min(5, amount)));
     }
 
     public static int getOmenAmount(ItemStack stack) {
-        if (stack.getTag() != null) {
-            return stack.getTag().getInt(OMEN_LEVEL);
-        } else {
-            return 0;
-        }
+        net.minecraft.nbt.CompoundTag tag = stack.getOrDefault(net.minecraft.core.component.DataComponents.CUSTOM_DATA, net.minecraft.world.item.component.CustomData.EMPTY).copyTag();
+        return tag.getInt(OMEN_LEVEL);
     }
 
     public static boolean hasOmen(ItemStack stack) {
@@ -85,8 +77,7 @@ public class OminousCharmItem extends SingleStackItem implements IActivatable {
 
     @Override
     public void onCraftedBy(ItemStack pStack, Level pLevel, Player pPlayer) {
-        CompoundTag compound = pStack.getOrCreateTag();
-        compound.putInt(OMEN_LEVEL, 0);
+        setOmenLevel(pStack, 0);
     }
 
     @Override

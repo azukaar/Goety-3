@@ -28,12 +28,12 @@ public class BioMineSpell extends Spell {
 
     @Override
     public int defaultSoulCost() {
-        return SpellConfig.BiomineCost.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.BiomineCost, 0);
     }
 
     @Override
     public int defaultCastDuration() {
-        return SpellConfig.BiomineDuration.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.BiomineDuration, 0);
     }
 
     @Nullable
@@ -44,7 +44,7 @@ public class BioMineSpell extends Spell {
 
     @Override
     public int defaultSpellCooldown() {
-        return SpellConfig.BiomineCoolDown.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.BiomineCoolDown, 0);
     }
 
     @Override

@@ -9,7 +9,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
-import net.neoforged.network.NetworkEvent;
+import com.Polarice3.Goety.compat.legacy.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
@@ -23,10 +23,10 @@ public class CDismissServantsPacket {
 
     public static void consume(CDismissServantsPacket packet, Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
-            ServerPlayer playerEntity = ctx.get().getSender();
+            ServerPlayer playerEntity = com.Polarice3.Goety.common.network.NetworkContextHelper.getServerPlayer(ctx);
 
             if (playerEntity != null) {
-                if (playerEntity.level instanceof ServerLevel serverLevel){
+                if (playerEntity.level() instanceof ServerLevel serverLevel){
                     for (Entity entity : serverLevel.getAllEntities()){
                         if (entity instanceof IOwned owned && owned instanceof LivingEntity livingEntity && owned.getTrueOwner() == playerEntity){
                             if (owned.isLimitedLife() && !SEHelper.getGroundedEntities(playerEntity).contains(livingEntity) && !SEHelper.getGroundedEntityTypes(playerEntity).contains(entity.getType())) {
@@ -41,3 +41,5 @@ public class CDismissServantsPacket {
         ctx.get().setPacketHandled(true);
     }
 }
+
+

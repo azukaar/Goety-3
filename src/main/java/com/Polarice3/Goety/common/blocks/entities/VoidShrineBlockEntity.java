@@ -73,7 +73,7 @@ public class VoidShrineBlockEntity extends PedestalBlockEntity {
                     }
                     if (this.coolTick < 20) {
                         for (Player player : serverLevel.getEntitiesOfClass(Player.class, new AABB(this.getBlockPos()).inflate(64.0F), EntitySelector.NO_CREATIVE_OR_SPECTATOR)) {
-                            player.addEffect(new MobEffectInstance(GoetyEffects.IMPAIRED.getHolder(), 5, 0, false, false));
+                            player.addEffect(new MobEffectInstance(GoetyEffects.IMPAIRED, 5, 0, false, false));
                         }
                     }
                     ItemStack itemStack = ItemStack.EMPTY;
@@ -116,14 +116,16 @@ public class VoidShrineBlockEntity extends PedestalBlockEntity {
         this.coolTick = coolTick;
     }
 
-    public void readNetwork(CompoundTag compound) {
-        super.readNetwork(compound);
+    @Override
+    public void readNetwork(CompoundTag compound, net.minecraft.core.HolderLookup.Provider pRegistries) {
+        super.readNetwork(compound, pRegistries);
         this.tick = compound.getInt("Tick");
         this.coolTick = compound.getInt("CoolTick");
     }
 
-    public CompoundTag writeNetwork(CompoundTag compound) {
-        CompoundTag compoundTag = super.writeNetwork(compound);
+    @Override
+    public CompoundTag writeNetwork(CompoundTag compound, net.minecraft.core.HolderLookup.Provider pRegistries) {
+        CompoundTag compoundTag = super.writeNetwork(compound, pRegistries);
         compoundTag.putInt("Tick", this.tick);
         compoundTag.putInt("CoolTick", this.coolTick);
         return compoundTag;

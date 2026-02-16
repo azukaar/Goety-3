@@ -11,7 +11,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.NeutralMob;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
-import net.neoforged.network.NetworkEvent;
+import com.Polarice3.Goety.compat.legacy.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
@@ -25,10 +25,10 @@ public class CStopAttackPacket {
 
     public static void consume(CStopAttackPacket packet, Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
-            ServerPlayer playerEntity = ctx.get().getSender();
+            ServerPlayer playerEntity = com.Polarice3.Goety.common.network.NetworkContextHelper.getServerPlayer(ctx);
 
             if (playerEntity != null) {
-                if (playerEntity.level instanceof ServerLevel serverLevel){
+                if (playerEntity.level() instanceof ServerLevel serverLevel){
                     for (Entity entity : serverLevel.getAllEntities()){
                         if (entity instanceof IOwned owned && entity instanceof Mob mob && owned.getTrueOwner() == playerEntity){
                             Entity pick = MobUtil.getSingleTarget(serverLevel, playerEntity, 16, 3);
@@ -75,3 +75,5 @@ public class CStopAttackPacket {
         ctx.get().setPacketHandled(true);
     }
 }
+
+

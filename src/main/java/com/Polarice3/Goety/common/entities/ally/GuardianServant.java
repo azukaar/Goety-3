@@ -113,7 +113,7 @@ public class GuardianServant extends Summoned{
     }
 
     public int getSummonLimit(LivingEntity owner) {
-        return SpellConfig.GuardianLimit.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.GuardianLimit, 0);
     }
 
     @Override

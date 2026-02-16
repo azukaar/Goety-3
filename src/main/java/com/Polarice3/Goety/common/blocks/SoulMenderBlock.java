@@ -1,12 +1,14 @@
 package com.Polarice3.Goety.common.blocks;
 
 import com.Polarice3.Goety.api.items.magic.ITotem;
+import com.mojang.serialization.MapCodec;
 import com.Polarice3.Goety.common.blocks.entities.SoulMenderBlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.item.ItemEntity;
@@ -36,6 +38,12 @@ import javax.annotation.Nullable;
 import java.util.function.ToIntFunction;
 
 public class SoulMenderBlock extends BaseEntityBlock implements SimpleWaterloggedBlock {
+    public static final MapCodec<SoulMenderBlock> CODEC = simpleCodec(p -> new SoulMenderBlock());
+
+    @Override
+    protected MapCodec<? extends BaseEntityBlock> codec() {
+        return CODEC;
+    }
     protected static final VoxelShape SHAPE = Block.box(0.0D, 0.0D, 0.0D, 16.0D, 16.0D, 16.0D);
     public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
     public static final BooleanProperty LIT = BlockStateProperties.LIT;
@@ -55,23 +63,33 @@ public class SoulMenderBlock extends BaseEntityBlock implements SimpleWaterlogge
         return (state) -> state.getValue(BlockStateProperties.LIT) ? 10 : 0;
     }
 
-    public InteractionResult use(BlockState pState, Level pLevel, BlockPos pPos, Player pPlayer, InteractionHand pHand, BlockHitResult pHit) {
+    @Override
+    protected ItemInteractionResult useItemOn(ItemStack stack, BlockState pState, Level pLevel, BlockPos pPos, Player pPlayer, InteractionHand pHand, BlockHitResult pHit) {
         BlockEntity tileentity = pLevel.getBlockEntity(pPos);
         if (tileentity instanceof SoulMenderBlockEntity blockEntity) {
-            ItemStack itemstack = pPlayer.getItemInHand(pHand);
+            ItemStack itemstack = stack;
             if ((itemstack.isDamaged() && itemstack.isRepairable()) || itemstack.getItem() instanceof ITotem){
                 if (!pLevel.isClientSide && blockEntity.placeItem(pPlayer.getAbilities().instabuild ? itemstack.copy() : itemstack)) {
-                    return InteractionResult.SUCCESS;
+                    return ItemInteractionResult.SUCCESS;
                 }
 
-                return InteractionResult.CONSUME;
+                return ItemInteractionResult.CONSUME;
             }
-            if (itemstack.isEmpty() || itemstack == blockEntity.getItem(0)){
+        }
+
+        return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+    }
+
+    @Override
+    protected InteractionResult useWithoutItem(BlockState pState, Level pLevel, BlockPos pPos, Player pPlayer, BlockHitResult pHit) {
+        BlockEntity tileentity = pLevel.getBlockEntity(pPos);
+        if (tileentity instanceof SoulMenderBlockEntity blockEntity) {
+            if (pPlayer.getItemInHand(InteractionHand.MAIN_HAND).isEmpty() || pPlayer.getItemInHand(InteractionHand.MAIN_HAND) == blockEntity.getItem(0)){
                 if (!pLevel.isClientSide) {
                     ItemStack repaired = blockEntity.getItem(0).copyAndClear();
                     if (!repaired.isEmpty()) {
-                        if (itemstack.isEmpty()) {
-                            pPlayer.setItemInHand(pHand, repaired);
+                        if (pPlayer.getItemInHand(InteractionHand.MAIN_HAND).isEmpty()) {
+                            pPlayer.setItemInHand(InteractionHand.MAIN_HAND, repaired);
                             pLevel.playSound(null, pPos, SoundEvents.ITEM_PICKUP, SoundSource.BLOCKS, 1.0F, 1.0F);
                         } else if (!pPlayer.addItem(repaired)) {
                             dropItemStack(pLevel, pPlayer.blockPosition(), repaired);
@@ -83,7 +101,6 @@ public class SoulMenderBlock extends BaseEntityBlock implements SimpleWaterlogge
                 return InteractionResult.CONSUME;
             }
         }
-
         return InteractionResult.PASS;
     }
 

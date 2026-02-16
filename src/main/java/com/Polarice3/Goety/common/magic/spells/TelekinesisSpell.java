@@ -33,12 +33,12 @@ public class TelekinesisSpell extends EverChargeSpell {
 
     @Override
     public int defaultSoulCost() {
-        return SpellConfig.TelekinesisCost.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.TelekinesisCost, 0);
     }
 
     @Override
     public int defaultCastUp() {
-        return SpellConfig.TelekinesisChargeUp.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.TelekinesisChargeUp, 0);
     }
 
     @Override
@@ -104,7 +104,7 @@ public class TelekinesisSpell extends EverChargeSpell {
             boolean flag = true;
             if ((caster.getBoundingBox().inflate(0.5D).getSize() * potency) >= target.getBoundingBox().getSize()) {
                 if (this.victim instanceof LivingEntity livingTarget){
-                    if (livingTarget.getMaxHealth() >= SpellConfig.TelekinesisMaxHealth.get()
+                    if (livingTarget.getMaxHealth() >= com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.TelekinesisMaxHealth, 0)
                             || MobUtil.hasEntityTypesConfig(SpellConfig.TelekinesisBlackList.get(), livingTarget.getType())){
                         flag = false;
                     }

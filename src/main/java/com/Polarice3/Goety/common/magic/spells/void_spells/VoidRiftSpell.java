@@ -28,12 +28,12 @@ public class VoidRiftSpell extends Spell {
 
     @Override
     public int defaultSoulCost() {
-        return SpellConfig.RuptureCost.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.RuptureCost, 0);
     }
 
     @Override
     public int defaultCastDuration() {
-        return SpellConfig.RuptureDuration.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.RuptureDuration, 0);
     }
 
     @Nullable
@@ -44,7 +44,7 @@ public class VoidRiftSpell extends Spell {
 
     @Override
     public int defaultSpellCooldown() {
-        return SpellConfig.RuptureCoolDown.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.RuptureCoolDown, 0);
     }
 
     @Override

@@ -58,10 +58,10 @@ public class ExtraScroll extends ResearchScroll{
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
-        super.appendHoverText(stack, worldIn, tooltip, flagIn);
+    public void appendHoverText(ItemStack stack, net.minecraft.world.item.Item.TooltipContext context, List<Component> tooltip, TooltipFlag flagIn) {
+        super.appendHoverText(stack, context, tooltip, flagIn);
         tooltip.add(Component.translatable("info.goety.items." + research.getId()).withStyle(ChatFormatting.GOLD));
-        if (worldIn != null && worldIn.isClientSide){
+        if (context.level() != null && context.level().isClientSide){
             if (SEHelper.hasResearch(Goety.PROXY.getPlayer(), this.research)){
                 tooltip.add(Component.translatable("info.goety.research.learned").withStyle(ChatFormatting.BLUE));
             } else if (SEHelper.hasResearch(Goety.PROXY.getPlayer(), this.requirement)) {

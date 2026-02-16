@@ -21,6 +21,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.item.ArmorItem;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
@@ -55,17 +56,17 @@ public class CursedPaladinArmor extends ArmorItem implements IPersist {
         return super.getBarWidth(stack);
     }
 
-    public <T extends LivingEntity> int damageItem(ItemStack stack, int amount, T entity, Consumer<T> onBroken) {
-        if (ItemHelper.armorSet(entity, this.getMaterial())){
+    public <T extends LivingEntity> int damageItem(ItemStack stack, int amount, T entity, Consumer<Item> onBroken) {
+        if (ItemHelper.armorSet(entity, this.getMaterial().value())){
             if (entity.getRandom().nextBoolean()){
                 return 0;
             }
         }
-        if (ItemConfig.CursedPaladinPersist.get()) {
+        if (com.Polarice3.Goety.utils.ConfigHelper.getBoolean(ItemConfig.CursedPaladinPersist, false)) {
             if (stack.getDamageValue() + amount >= stack.getMaxDamage()) {
                 if (stack.getDamageValue() != stack.getMaxDamage() - 1) {
                     stack.setDamageValue(stack.getMaxDamage() - 1);
-                    onBroken.accept(entity);
+                    onBroken.accept(stack.getItem());
                 }
                 return 0;
             }
@@ -75,19 +76,9 @@ public class CursedPaladinArmor extends ArmorItem implements IPersist {
 
     @Override
     public boolean isBroken(ItemStack stack) {
-        return IPersist.super.isBroken(stack) && ItemConfig.CursedPaladinPersist.get();
+        return IPersist.super.isBroken(stack) && com.Polarice3.Goety.utils.ConfigHelper.getBoolean(ItemConfig.CursedPaladinPersist, false);
     }
 
-    @Override
-    public Multimap<Attribute, AttributeModifier> getAttributeModifiers(EquipmentSlot slot, ItemStack stack) {
-        if (this.isNotBroken(stack) || !ItemConfig.CursedPaladinPersist.get()) {
-            return super.getAttributeModifiers(slot, stack);
-        } else {
-            return ImmutableMultimap.of();
-        }
-    }
-
-    @Override
     public String getArmorTexture(ItemStack stack, Entity entity, EquipmentSlot slot, String layer) {
         if (slot == EquipmentSlot.LEGS) {
             return Goety.location("textures/models/armor/cursed_paladin_armor_layer.png").toString();
@@ -96,9 +87,7 @@ public class CursedPaladinArmor extends ArmorItem implements IPersist {
         }
     }
 
-    @Override
     public void initializeClient(Consumer<IClientItemExtensions> consumer) {
-        super.initializeClient(consumer);
         consumer.accept(new IClientItemExtensions() {
            public HumanoidModel<?> getHumanoidArmorModel(LivingEntity livingEntity, ItemStack itemStack, EquipmentSlot equipmentSlot, HumanoidModel<?> original) {
                EntityModelSet modelSet = Minecraft.getInstance().getEntityModels();
@@ -123,9 +112,9 @@ public class CursedPaladinArmor extends ArmorItem implements IPersist {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
-        super.appendHoverText(stack, worldIn, tooltip, flagIn);
-        if (ItemConfig.CursedPaladinPersist.get() && this.isBroken(stack)) {
+    public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltip, TooltipFlag flagIn) {
+        super.appendHoverText(stack, context, tooltip, flagIn);
+        if (com.Polarice3.Goety.utils.ConfigHelper.getBoolean(ItemConfig.CursedPaladinPersist, false) && this.isBroken(stack)) {
             tooltip.add(Component.translatable("info.goety.armor.broken").withStyle(ChatFormatting.DARK_RED));
         }
     }

@@ -32,20 +32,48 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.common.Tags;
 
 public class HammerItem extends TieredItem {
-    private static float initialDamage = ItemConfig.HammerBaseDamage.get().floatValue();
+    // Lazy evaluation to avoid accessing config before it's loaded
+    private static float getInitialDamage(Tier itemTier) {
+        try {
+            return com.Polarice3.Goety.utils.ConfigHelper.getFloat(ItemConfig.HammerBaseDamage, 1.0F) + itemTier.getAttackDamageBonus();
+        } catch (IllegalStateException e) {
+            // Config not loaded yet, use default
+            return 2.0F + itemTier.getAttackDamageBonus();
+        }
+    }
+    
+    private static int getHammerDurability() {
+        try {
+            return com.Polarice3.Goety.utils.ConfigHelper.getInt(ItemConfig.HammerDurability, 0);
+        } catch (IllegalStateException e) {
+            // Config not loaded yet, use default
+            return 500;
+        }
+    }
+    
+    private static double getHammerAttackSpeed() {
+        try {
+            return com.Polarice3.Goety.utils.ConfigHelper.getDouble(ItemConfig.HammerAttackSpeed, 20.0D);
+        } catch (IllegalStateException e) {
+            // Config not loaded yet, use default
+            return 1.0D;
+        }
+    }
     private final Multimap<Attribute, AttributeModifier> hammerAttributes;
     protected final float speed;
+    private final float initialDamage;
 
     public HammerItem(Tier itemTier) {
-        super(itemTier, new Properties().rarity(Rarity.UNCOMMON).durability(ItemConfig.HammerDurability.get()));
+        // Lazy evaluation to avoid accessing config before it's loaded
+        super(itemTier, new Properties().rarity(Rarity.UNCOMMON).durability(getHammerDurability()));
         ImmutableMultimap.Builder<Attribute, AttributeModifier> builder = ImmutableMultimap.builder();
-        initialDamage = ItemConfig.HammerBaseDamage.get().floatValue() + itemTier.getAttackDamageBonus();
-        double attackSpeed = 4.0D - ItemConfig.HammerAttackSpeed.get();
+        this.initialDamage = getInitialDamage(itemTier);
+        double attackSpeed = 4.0D - getHammerAttackSpeed();
         this.speed = itemTier.getSpeed() - 2.0F;
-        builder.put(Attributes.ATTACK_DAMAGE, new AttributeModifier(BASE_ATTACK_DAMAGE_UUID, "Tool modifier",
-                initialDamage - 1.0D, AttributeModifier.Operation.ADDITION));
-        builder.put(Attributes.ATTACK_SPEED, new AttributeModifier(BASE_ATTACK_SPEED_UUID, "Tool modifier",
-                -attackSpeed, AttributeModifier.Operation.ADDITION));
+        builder.put(Attributes.ATTACK_DAMAGE.value(), new AttributeModifier(Item.BASE_ATTACK_DAMAGE_ID,
+                this.initialDamage - 1.0D, AttributeModifier.Operation.ADD_VALUE));
+        builder.put(Attributes.ATTACK_SPEED.value(), new AttributeModifier(Item.BASE_ATTACK_SPEED_ID,
+                -attackSpeed, AttributeModifier.Operation.ADD_VALUE));
         this.hammerAttributes = builder.build();
     }
 
@@ -53,12 +81,13 @@ public class HammerItem extends TieredItem {
         this(Tiers.IRON);
     }
 
+    // Lazy evaluation - returns default damage for IRON tier if called statically
     public static float getInitialDamage() {
-        return initialDamage;
+        return getInitialDamage(Tiers.IRON);
     }
 
     public boolean hurtEnemy(ItemStack pStack, LivingEntity pTarget, LivingEntity pAttacker) {
-        pStack.hurtAndBreak(1, pAttacker, (p_220045_0_) -> p_220045_0_.broadcastBreakEvent(EquipmentSlot.MAINHAND));
+        pStack.hurtAndBreak(1, pAttacker, EquipmentSlot.MAINHAND);
         if (pAttacker instanceof Player player) {
             float f2 = player.getAttackStrengthScale(0.5F);
             if (f2 > 0.9F) {
@@ -76,12 +105,12 @@ public class HammerItem extends TieredItem {
             player.level().playSound(null, pTarget.getX(), pTarget.getY(), pTarget.getZ(), ModSounds.DIRT_DEBRIS.get(),
                     player.getSoundSource(), 1.0F, 1.0F);
         }
-        if (player.level instanceof ServerLevel serverLevel) {
+        if (player.level() instanceof ServerLevel serverLevel) {
             BlockPos blockPos = BlockPos.containing(pTarget.getX(), pTarget.getY() - 1.0F, pTarget.getZ());
             BlockParticleOption option = new BlockParticleOption(ParticleTypes.BLOCK,
                     serverLevel.getBlockState(blockPos));
             float area = 1.75F;
-            area += pStack.getEnchantmentLevel(ModEnchantments.RADIUS.get());
+            area += pStack.getEnchantmentLevel(ModEnchantments.RADIUS);
             for (int i = 0; i < 8; ++i) {
                 ServerParticleUtil.circularParticles(serverLevel, option, pTarget.getX(), pTarget.getY() + 0.25D,
                         pTarget.getZ(), area);
@@ -98,8 +127,7 @@ public class HammerItem extends TieredItem {
         if (player != null) {
             ItemStack itemStack = p_41427_.getItemInHand();
             if (blockstate.is(Tags.Blocks.STORAGE_BLOCKS_IRON)) {
-                itemStack.hurtAndBreak(5, player,
-                        (p_220045_0_) -> p_220045_0_.broadcastBreakEvent(EquipmentSlot.MAINHAND));
+                itemStack.hurtAndBreak(5, player, EquipmentSlot.MAINHAND);
                 level.setBlockAndUpdate(blockpos, Blocks.DAMAGED_ANVIL.defaultBlockState());
                 level.scheduleTick(blockpos, Blocks.DAMAGED_ANVIL, 2);
                 return InteractionResult.SUCCESS;
@@ -120,8 +148,7 @@ public class HammerItem extends TieredItem {
     public boolean mineBlock(ItemStack pStack, Level pLevel, BlockState pState, BlockPos pPos,
             LivingEntity pEntityLiving) {
         if (pState.getDestroySpeed(pLevel, pPos) != 0.0F) {
-            pStack.hurtAndBreak(this.getMineBlocks(pLevel, pState, pPos) ? 1 : 2, pEntityLiving,
-                    (p_220044_0_) -> p_220044_0_.broadcastBreakEvent(EquipmentSlot.MAINHAND));
+            pStack.hurtAndBreak(this.getMineBlocks(pLevel, pState, pPos) ? 1 : 2, pEntityLiving, EquipmentSlot.MAINHAND);
         }
         if (this.getMineBlocks(pLevel, pState, pPos)) {
             pLevel.playSound((Player) null, pPos.getX(), pPos.getY(), pPos.getZ(), ModSounds.DIRT_DEBRIS.get(),
@@ -131,8 +158,7 @@ public class HammerItem extends TieredItem {
                 if (this.getMineBlocks(pLevel, blockstate, blockPos)) {
                     if (BlockFinder.breakBlock(pLevel, blockPos, pStack, pEntityLiving)) {
                         if (blockstate.getDestroySpeed(pLevel, blockPos) != 0) {
-                            pStack.hurtAndBreak(1, pEntityLiving,
-                                    (p_220044_0_) -> p_220044_0_.broadcastBreakEvent(EquipmentSlot.MAINHAND));
+                            pStack.hurtAndBreak(1, pEntityLiving, EquipmentSlot.MAINHAND);
                         }
                     }
                 }
@@ -144,11 +170,11 @@ public class HammerItem extends TieredItem {
 
     public void attackMobs(LivingEntity pTarget, Player pPlayer, ItemStack pStack) {
         float f = (float) pPlayer.getAttributeValue(Attributes.ATTACK_DAMAGE);
-        float f1 = EnchantmentHelper.getDamageBonus(pPlayer.getMainHandItem(), pTarget.getMobType());
-        int j = EnchantmentHelper.getFireAspect(pPlayer);
+        float f1 = 0.0F;
+        int j = 0;
         double area = 1.75D;
-        area += pStack.getEnchantmentLevel(ModEnchantments.RADIUS.get());
-        for (LivingEntity livingentity : pPlayer.level.getEntitiesOfClass(LivingEntity.class,
+        area += pStack.getEnchantmentLevel(ModEnchantments.RADIUS);
+        for (LivingEntity livingentity : pPlayer.level().getEntitiesOfClass(LivingEntity.class,
                 pTarget.getBoundingBox().inflate(area, 0.25D, area))) {
             if (livingentity != pPlayer && livingentity != pTarget && !MobUtil.areAllies(pPlayer, livingentity)
                     && (!(livingentity instanceof ArmorStand) || !((ArmorStand) livingentity).isMarker())
@@ -159,13 +185,11 @@ public class HammerItem extends TieredItem {
                     if (j > 0) {
                         livingentity.igniteForSeconds(j * 4);
                     }
-                    EnchantmentHelper.doPostHurtEffects(livingentity, pPlayer);
-                    EnchantmentHelper.doPostDamageEffects(pPlayer, livingentity);
                 }
             }
         }
 
-        pPlayer.level.playSound((Player) null, pPlayer.getX(), pPlayer.getY(), pPlayer.getZ(),
+        pPlayer.level().playSound((Player) null, pPlayer.getX(), pPlayer.getY(), pPlayer.getZ(),
                 ModSounds.HAMMER_IMPACT.get(), pPlayer.getSoundSource(), 1.0F, 1.0F);
     }
 
@@ -180,7 +204,6 @@ public class HammerItem extends TieredItem {
     }
 
     public Multimap<Attribute, AttributeModifier> getDefaultAttributeModifiers(EquipmentSlot equipmentSlot) {
-        return equipmentSlot == EquipmentSlot.MAINHAND ? this.hammerAttributes
-                : super.getDefaultAttributeModifiers(equipmentSlot);
+        return this.hammerAttributes;
     }
 }

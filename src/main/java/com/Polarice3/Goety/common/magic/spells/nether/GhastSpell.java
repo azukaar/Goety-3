@@ -29,20 +29,20 @@ import java.util.function.Predicate;
 public class GhastSpell extends SummonSpell {
 
     public int defaultSoulCost() {
-        return SpellConfig.GhastCost.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.GhastCost, 0);
     }
 
     public int defaultCastDuration() {
-        return SpellConfig.GhastDuration.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.GhastDuration, 0);
     }
 
     public int SummonDownDuration() {
-        return SpellConfig.GhastSummonDown.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.GhastSummonDown, 0);
     }
 
     @Override
     public int defaultSpellCooldown() {
-        return SpellConfig.GhastCoolDown.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.GhastCoolDown, 0);
     }
 
     public SoundEvent CastingSound(LivingEntity caster) {
@@ -64,7 +64,7 @@ public class GhastSpell extends SummonSpell {
 
     @Override
     public int summonLimit() {
-        return SpellConfig.GhastLimit.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.GhastLimit, 0);
     }
 
     @Override
@@ -103,12 +103,12 @@ public class GhastSpell extends SummonSpell {
                 }
                 ghast.setTrueOwner(caster);
                 ghast.moveTo(blockpos, caster.getYRot(), 0.0F);
-                ghast.finalizeSpawn(worldIn, caster.level.getCurrentDifficultyAt(blockpos), MobSpawnType.MOB_SUMMONED, null, null);
+                ghast.finalizeSpawn(worldIn, caster.level().getCurrentDifficultyAt(blockpos), MobSpawnType.MOB_SUMMONED, null);
                 ghast.setLimitedLife(MobUtil.getSummonLifespan(worldIn) * duration);
                 this.SummonSap(caster, ghast);
                 int boost = Mth.clamp(potency, 0, 10);
-                ghast.setFireBallDamage(boost - EffectsUtil.getAmplifierPlus(caster, MobEffects.WEAKNESS));
-                float extraBlast = Mth.clamp(potency, 0, SpellConfig.MaxRadiusLevel.get()) / 2.5F;
+                ghast.setFireBallDamage(boost - EffectsUtil.getAmplifierPlus(caster, MobEffects.WEAKNESS.value()));
+                float extraBlast = Mth.clamp(potency, 0, com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.MaxRadiusLevel, 0)) / 2.5F;
                 ghast.setExplosionPower(ghast.getExplosionPower() + extraBlast);
                 this.setTarget(caster, ghast);
                 worldIn.addFreshEntity(ghast);
@@ -119,3 +119,4 @@ public class GhastSpell extends SummonSpell {
         }
     }
 }
+

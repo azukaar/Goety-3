@@ -1,32 +1,14 @@
 package com.Polarice3.Goety.common.capabilities.lichdom;
 
-import com.Polarice3.Goety.utils.LichdomHelper;
-import net.minecraft.core.Direction;
-import net.minecraft.nbt.CompoundTag;
-import net.neoforged.neoforge.capabilities.*;
-import net.neoforged.neoforge.common.util.LazyOptional;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
-public class LichProvider implements ICapabilityProvider, ICapabilitySerializable<CompoundTag> {
-    public static Capability<ILichdom> CAPABILITY = CapabilityManager.get(new CapabilityToken<>() {});
-
-    ILichdom instance = new LichImp();
-
-    @Nonnull
-    @Override
-    public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
-        return cap == CAPABILITY ? LazyOptional.of(() -> (T) instance) : LazyOptional.empty();
-    }
-
-    @Override
-    public CompoundTag serializeNBT() {
-        return LichdomHelper.save(new CompoundTag(), instance);
-    }
-
-    @Override
-    public void deserializeNBT(CompoundTag nbt) {
-        LichdomHelper.load(nbt, instance);
-    }
+/**
+ * LichProvider is no longer needed in NeoForge 1.21+.
+ * Capabilities have been replaced with the AttachmentType system.
+ * See ModAttachments.LICHDOM for the new registration.
+ * 
+ * This file is kept for reference only and may be deleted.
+ * @deprecated Use ModAttachments.LICHDOM with entity.getData() instead
+ */
+@Deprecated(forRemoval = true)
+public class LichProvider {
+    // No longer needed - use ModAttachments.LICHDOM with entity.getData()
 }

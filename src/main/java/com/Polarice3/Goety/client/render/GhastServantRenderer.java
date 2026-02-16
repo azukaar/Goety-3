@@ -52,7 +52,7 @@ public class GhastServantRenderer extends MobRenderer<GhastServant, ModGhastMode
 
         @Override
         public void render(PoseStack pMatrixStack, MultiBufferSource pBuffer, int pPackedLight, GhastServant pLivingEntity, float pLimbSwing, float pLimbSwingAmount, float pPartialTicks, float pAgeInTicks, float pNetHeadYaw, float pHeadPitch) {
-            if (MobsConfig.GhastServantTexture.get() && !pLivingEntity.isHostile()) {
+            if (com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MobsConfig.GhastServantTexture, false) && !pLivingEntity.isHostile()) {
                 coloredCutoutModelCopyLayerRender(this.getParentModel(), this.layerModel, TEXTURES, pMatrixStack, pBuffer, pPackedLight, pLivingEntity, pLimbSwing, pLimbSwingAmount, pAgeInTicks, pNetHeadYaw, pHeadPitch, pPartialTicks, -1);
             }
         }

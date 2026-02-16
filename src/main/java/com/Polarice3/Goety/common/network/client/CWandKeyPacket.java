@@ -9,7 +9,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.SimpleMenuProvider;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.network.NetworkEvent;
+import com.Polarice3.Goety.compat.legacy.network.NetworkEvent;
 import java.util.function.Supplier;
 
 public class CWandKeyPacket {
@@ -23,7 +23,7 @@ public class CWandKeyPacket {
 
     public static void consume(CWandKeyPacket packet, Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
-            ServerPlayer playerEntity = ctx.get().getSender();
+            ServerPlayer playerEntity = com.Polarice3.Goety.common.network.NetworkContextHelper.getServerPlayer(ctx);
 
             if (playerEntity != null) {
                 ItemStack stack = playerEntity.getMainHandItem();
@@ -32,14 +32,16 @@ public class CWandKeyPacket {
                 if (!stack.isEmpty() && stack.getItem() instanceof IWand) {
                     SimpleMenuProvider provider = new SimpleMenuProvider(
                             (id, inventory, player) -> new SoulItemContainer(id, inventory, SoulUsingItemHandler.get(stack), stack, playerEntity.getUsedItemHand()), Component.translatable(stack.getDescriptionId()));
-                    NetworkHooks.openScreen(playerEntity, provider, (buffer) -> buffer.writeBoolean(playerEntity.getUsedItemHand() == InteractionHand.MAIN_HAND));
+                    playerEntity.openMenu(provider);
                 } else if (!stack2.isEmpty() && stack2.getItem() instanceof IWand){
                     SimpleMenuProvider provider = new SimpleMenuProvider(
                             (id, inventory, player) -> new SoulItemContainer(id, inventory, SoulUsingItemHandler.get(stack2), stack2, playerEntity.getUsedItemHand()), Component.translatable(stack2.getDescriptionId()));
-                    NetworkHooks.openScreen(playerEntity, provider, (buffer) -> buffer.writeBoolean(playerEntity.getUsedItemHand() == InteractionHand.OFF_HAND));
+                    playerEntity.openMenu(provider);
                 }
             }
         });
         ctx.get().setPacketHandled(true);
     }
 }
+
+

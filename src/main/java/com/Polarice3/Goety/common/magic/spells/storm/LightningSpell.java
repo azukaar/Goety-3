@@ -27,11 +27,11 @@ import java.util.Optional;
 public class LightningSpell extends Spell {
 
     public int defaultSoulCost() {
-        return SpellConfig.LightningCost.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.LightningCost, 0);
     }
 
     public int defaultCastDuration() {
-        return SpellConfig.LightningDuration.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.LightningDuration, 0);
     }
 
     public SoundEvent CastingSound() {
@@ -40,7 +40,7 @@ public class LightningSpell extends Spell {
 
     @Override
     public int defaultSpellCooldown() {
-        return SpellConfig.LightningCoolDown.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.LightningCoolDown, 0);
     }
 
     @Override
@@ -59,7 +59,7 @@ public class LightningSpell extends Spell {
     public void SpellResult(ServerLevel worldIn, LivingEntity caster, ItemStack staff, SpellStat spellStat){
         double radius = spellStat.getRadius();
         int range = spellStat.getRange();
-        float damage = SpellConfig.LightningDamage.get().floatValue() * WandUtil.damageMultiply();
+        float damage = com.Polarice3.Goety.utils.ConfigHelper.getFloat(SpellConfig.LightningDamage, 1.0F) * WandUtil.damageMultiply();
         if (WandUtil.enchantedFocus(caster)) {
             range += WandUtil.getRangeLevel(caster);
             damage += WandUtil.getPotencyLevel(caster);

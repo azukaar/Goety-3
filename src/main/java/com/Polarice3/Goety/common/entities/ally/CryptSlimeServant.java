@@ -89,7 +89,7 @@ public class CryptSlimeServant extends SlimeServant {
                         (this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 1.0F);
                 // doEnchantDamageEffects is no longer available in 1.21
                 // this.doEnchantDamageEffects(this, livingEntity);
-                livingEntity.addEffect(new MobEffectInstance(GoetyEffects.SAPPED.getHolder(), 60, this.getSize()));
+                livingEntity.addEffect(new MobEffectInstance(GoetyEffects.SAPPED, 60, this.getSize()));
             }
         }
     }

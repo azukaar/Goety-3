@@ -32,7 +32,7 @@ public class SpiderServantRenderer<T extends SpiderServant> extends MobRenderer<
    }
 
    public ResourceLocation getTextureLocation(T p_116009_) {
-      if (p_116009_.isHostile() || !MobsConfig.SpiderServantTexture.get()){
+      if (p_116009_.isHostile() || !com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MobsConfig.SpiderServantTexture, false)){
          return ORIGINAL;
       } else {
          return SPIDER_LOCATION;

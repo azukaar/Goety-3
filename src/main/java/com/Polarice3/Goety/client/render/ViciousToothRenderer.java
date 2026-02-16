@@ -13,8 +13,7 @@ import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
 
 public class ViciousToothRenderer extends EntityRenderer<ViciousTooth> {
-    private static final ResourceLocation TEXTURE = new ResourceLocation(Goety.MOD_ID,
-            "textures/entity/projectiles/vicious_tooth.png");
+    private static final ResourceLocation TEXTURE = Goety.location("textures/entity/projectiles/vicious_tooth.png");
     private final ViciousToothModel<ViciousTooth> model;
 
     public ViciousToothRenderer(EntityRendererProvider.Context renderManagerIn) {

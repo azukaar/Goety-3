@@ -67,7 +67,7 @@ public class NecroBolt extends SpellHurtingProjectile {
     protected void onHitEntity(EntityHitResult p_37626_) {
         super.onHitEntity(p_37626_);
         if (!this.level().isClientSide) {
-            float baseDamage = SpellConfig.NecroBoltDamage.get().floatValue() * WandUtil.damageMultiply();
+            float baseDamage = com.Polarice3.Goety.utils.ConfigHelper.getFloat(SpellConfig.NecroBoltDamage, 1.0F) * WandUtil.damageMultiply();
             Entity entity = p_37626_.getEntity();
             Entity entity1 = this.getOwner();
             boolean flag;
@@ -198,7 +198,7 @@ public class NecroBolt extends SpellHurtingProjectile {
     }
 
     // @Override
-    public @NotNull Packet<ClientGamePacketListener> getAddEntityPacket() {
-        return new net.minecraft.network.protocol.game.ClientboundAddEntityPacket(this);
-    }
+    // public @NotNull Packet<ClientGamePacketListener> getAddEntityPacket() {
+    //    return new net.minecraft.network.protocol.game.ClientboundAddEntityPacket(this);
+    // }
 }

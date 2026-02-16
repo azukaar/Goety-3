@@ -5,7 +5,6 @@ import net.minecraft.core.Direction;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.level.*;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -32,7 +31,6 @@ public final class ModFeaturePlacers {
 
         mob.setPersistenceRequired();
         mob.moveTo(pos, 0.0F, 0.0F);
-        net.neoforged.neoforge.event.EventHooks.onFinalizeSpawn(mob, levelAccessor, levelAccessor.getCurrentDifficultyAt(pos), MobSpawnType.STRUCTURE, null, null);
         levelAccessor.addFreshEntityWithPassengers(mob);
         levelAccessor.setBlock(pos, Blocks.AIR.defaultBlockState(), 2);
     }

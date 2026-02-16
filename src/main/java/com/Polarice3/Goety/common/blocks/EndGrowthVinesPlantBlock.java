@@ -7,6 +7,13 @@ import net.minecraft.world.level.block.GrowingPlantHeadBlock;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
 public class EndGrowthVinesPlantBlock extends GrowingPlantBodyBlock {
+   public static final com.mojang.serialization.MapCodec<EndGrowthVinesPlantBlock> CODEC = simpleCodec(EndGrowthVinesPlantBlock::new);
+   
+   @Override
+   protected com.mojang.serialization.MapCodec<? extends GrowingPlantBodyBlock> codec() {
+      return CODEC;
+   }
+   
    public static final VoxelShape SHAPE = Block.box(4.0D, 0.0D, 4.0D, 12.0D, 16.0D, 12.0D);
 
    public EndGrowthVinesPlantBlock(Properties p_154873_) {

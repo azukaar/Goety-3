@@ -27,12 +27,12 @@ public class MagmaSpell extends Spell {
 
     @Override
     public int defaultSoulCost() {
-        return SpellConfig.MagmaBombCost.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.MagmaBombCost, 0);
     }
 
     @Override
     public int defaultCastDuration() {
-        return SpellConfig.MagmaBombDuration.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.MagmaBombDuration, 0);
     }
 
     @Nullable
@@ -43,7 +43,7 @@ public class MagmaSpell extends Spell {
 
     @Override
     public int defaultSpellCooldown() {
-        return SpellConfig.MagmaBombCoolDown.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.MagmaBombCoolDown, 0);
     }
 
     @Override

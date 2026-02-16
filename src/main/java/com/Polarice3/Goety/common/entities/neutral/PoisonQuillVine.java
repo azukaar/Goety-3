@@ -70,20 +70,20 @@ public class PoisonQuillVine extends AbstractVine {
 
     public static AttributeSupplier.Builder setCustomAttributes() {
         return Mob.createMobAttributes()
-                .add(Attributes.MAX_HEALTH, AttributesConfig.PoisonQuillVineHealth.get())
-                .add(Attributes.ARMOR, AttributesConfig.PoisonQuillVineArmor.get())
+                .add(Attributes.MAX_HEALTH, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.PoisonQuillVineHealth, 20.0D))
+                .add(Attributes.ARMOR, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.PoisonQuillVineArmor, 20.0D))
                 .add(Attributes.MOVEMENT_SPEED, 0.0D)
-                .add(Attributes.ATTACK_DAMAGE, AttributesConfig.PoisonQuillVineDamage.get())
+                .add(Attributes.ATTACK_DAMAGE, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.PoisonQuillVineDamage, 20.0D))
                 .add(Attributes.KNOCKBACK_RESISTANCE, 1.0D)
                 .add(Attributes.FOLLOW_RANGE, 16.0D);
     }
 
     public void setConfigurableAttributes() {
         MobUtil.setBaseAttributes(this.getAttribute(Attributes.MAX_HEALTH),
-                AttributesConfig.PoisonQuillVineHealth.get());
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ARMOR), AttributesConfig.PoisonQuillVineArmor.get());
+                com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.PoisonQuillVineHealth, 20.0D));
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ARMOR), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.PoisonQuillVineArmor, 20.0D));
         MobUtil.setBaseAttributes(this.getAttribute(Attributes.ATTACK_DAMAGE),
-                AttributesConfig.PoisonQuillVineDamage.get());
+                com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.PoisonQuillVineDamage, 20.0D));
     }
 
     @Override
@@ -303,7 +303,7 @@ public class PoisonQuillVine extends AbstractVine {
     }
 
     public void shootQuill(@NotNull LivingEntity target) {
-        PoisonQuill quill = new PoisonQuill(this.level(), this);
+        PoisonQuill quill = new PoisonQuill(this.level(), this, new net.minecraft.world.item.ItemStack(net.minecraft.world.item.Items.ARROW));
         Vec3 vector3d = this.getViewVector(1.0F);
         quill.setPos(this.getX() + vector3d.x,
                 this.getEyeY(),

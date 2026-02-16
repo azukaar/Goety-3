@@ -1,5 +1,8 @@
 package com.Polarice3.Goety.common.blocks;
 
+import com.mojang.serialization.MapCodec;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.world.item.alchemy.PotionContents;
 import com.Polarice3.Goety.common.blocks.entities.BrewCauldronBlockEntity;
 import com.Polarice3.Goety.common.blocks.properties.ModStateProperties;
 import com.Polarice3.Goety.common.effects.brew.BrewEffect;
@@ -19,7 +22,9 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.effect.MobEffect;
+import net.minecraft.core.Holder;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -27,7 +32,6 @@ import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.alchemy.PotionUtils;
 import net.minecraft.world.item.alchemy.Potions;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
@@ -62,6 +66,12 @@ import java.util.List;
  */
 @SuppressWarnings("deprecation")
 public class BrewCauldronBlock extends BaseEntityBlock{
+    public static final MapCodec<BrewCauldronBlock> CODEC = simpleCodec(p -> new BrewCauldronBlock());
+
+    @Override
+    protected MapCodec<? extends BaseEntityBlock> codec() {
+        return CODEC;
+    }
     private static final VoxelShape INSIDE = box(2.0D, 3.0D, 2.0D,
             14.0D, 13.0D, 14.0D);
     private static final VoxelShape LEGS = Shapes.or(box(1.0D, 0.0D, 1.0D,
@@ -115,10 +125,10 @@ public class BrewCauldronBlock extends BaseEntityBlock{
     }
 
     @Override
-    public InteractionResult use(BlockState pState, Level pLevel, BlockPos pPos, Player pPlayer, InteractionHand pHand, BlockHitResult pHit) {
+    protected ItemInteractionResult useItemOn(ItemStack stack, BlockState pState, Level pLevel, BlockPos pPos, Player pPlayer, InteractionHand pHand, BlockHitResult pHit) {
         if (pLevel.getBlockEntity(pPos) instanceof BrewCauldronBlockEntity cauldron) {
-            ItemStack stack = pPlayer.getItemInHand(pHand);
-            boolean bucket = ItemHelper.isValidFluidContainerToFill(stack, Fluids.WATER), waterBucket = ItemHelper.isValidFluidContainerToDrain(stack, Fluids.WATER), glassBottle = stack.getItem() == Items.GLASS_BOTTLE, waterBottle = (stack.getItem() == Items.POTION || stack.getItem() == ModItems.BREW.get()) && PotionUtils.getPotion(stack) == Potions.WATER, apple = BrewUtils.brewableFood(stack), waystone = stack.getItem() instanceof WaystoneItem, ladle = stack.getItem() == ModItems.CAULDRON_LADLE.get();
+            // ItemStack stack = pPlayer.getItemInHand(pHand);
+            boolean bucket = ItemHelper.isValidFluidContainerToFill(stack, Fluids.WATER), waterBucket = ItemHelper.isValidFluidContainerToDrain(stack, Fluids.WATER), glassBottle = stack.getItem() == Items.GLASS_BOTTLE, waterBottle = (stack.getItem() == Items.POTION || stack.getItem() == ModItems.BREW.get()) && stack.getOrDefault(DataComponents.POTION_CONTENTS, PotionContents.EMPTY).is(Potions.WATER), apple = BrewUtils.brewableFood(stack), waystone = stack.getItem() instanceof WaystoneItem, ladle = stack.getItem() == ModItems.CAULDRON_LADLE.get();
             boolean taglock = stack.getItem() instanceof TaglockKit && TaglockKit.hasEntity(stack);
             boolean playSound = false;
             if (!pLevel.isClientSide) {
@@ -133,7 +143,9 @@ public class BrewCauldronBlock extends BaseEntityBlock{
                             playSound = true;
                         } else if (apple){
                             if (cauldron.mode == BrewCauldronBlockEntity.Mode.COMPLETED) {
-                                ItemStack itemStack = BrewUtils.setCustomEffects(stack.copyWithCount(1), PotionUtils.getCustomEffects(cauldron.getBrew()), BrewUtils.getBrewEffects(cauldron.getBrew()));
+                                ItemStack brewStack = cauldron.getBrew();
+                                PotionContents contents = brewStack.getOrDefault(DataComponents.POTION_CONTENTS, PotionContents.EMPTY);
+                                ItemStack itemStack = BrewUtils.setCustomEffects(stack.copyWithCount(1), contents.customEffects(), BrewUtils.getBrewEffects(brewStack));
                                 ItemHelper.addAndConsumeItem(pPlayer, pHand, itemStack);
                                 SEHelper.increaseBottling(pPlayer);
                                 playSound = true;
@@ -144,18 +156,17 @@ public class BrewCauldronBlock extends BaseEntityBlock{
                                 if (target != null){
                                     if (TaglockKit.isSameDimension(pPlayer, stack)
                                             && TaglockKit.isInRange(Vec3.atCenterOf(pPos), stack, BrewCauldronBlockEntity.getWitchPoles(cauldron))) {
-                                        List<MobEffectInstance> list = PotionUtils.getMobEffects(cauldron.getBrew());
+                                        PotionContents contents = cauldron.getBrew().getOrDefault(DataComponents.POTION_CONTENTS, PotionContents.EMPTY);
+                                        Iterable<MobEffectInstance> list = contents.getAllEffects();
                                         List<BrewEffectInstance> list1 = BrewUtils.getBrewEffects(cauldron.getBrew());
-                                        if (!list.isEmpty()) {
-                                            for (MobEffectInstance mobeffectinstance : list) {
-                                                MobEffect mobeffect = mobeffectinstance.getEffect();
-                                                if (mobeffect.isInstantenous()) {
-                                                    mobeffect.applyInstantenousEffect(pPlayer, pPlayer, target, mobeffectinstance.getAmplifier(), 1.0F);
-                                                } else {
-                                                    int i = (int) (1.0F * (double) mobeffectinstance.getDuration() + 0.5D);
-                                                    if (i > 20) {
-                                                        target.addEffect(new MobEffectInstance(mobeffect, i, mobeffectinstance.getAmplifier(), mobeffectinstance.isAmbient(), mobeffectinstance.isVisible()), pPlayer);
-                                                    }
+                                        for (MobEffectInstance mobeffectinstance : contents.getAllEffects()) {
+                                            Holder<MobEffect> mobeffect = mobeffectinstance.getEffect();
+                                            if (mobeffect.value().isInstantenous()) {
+                                                mobeffect.value().applyInstantenousEffect(pPlayer, pPlayer, target, mobeffectinstance.getAmplifier(), 1.0F);
+                                            } else {
+                                                int i = (int) (1.0F * (double) mobeffectinstance.getDuration() + 0.5D);
+                                                if (i > 20) {
+                                                    target.addEffect(new MobEffectInstance(mobeffect, i, mobeffectinstance.getAmplifier(), mobeffectinstance.isAmbient(), mobeffectinstance.isVisible()), pPlayer);
                                                 }
                                             }
                                         }
@@ -196,7 +207,7 @@ public class BrewCauldronBlock extends BaseEntityBlock{
                         } else if (glassBottle) {
                             ItemStack bottle = null;
                             if (cauldron.mode == BrewCauldronBlockEntity.Mode.IDLE) {
-                                bottle = PotionUtils.setPotion(new ItemStack(Items.POTION), Potions.WATER);
+                                bottle = PotionContents.createItemStack(Items.POTION, Potions.WATER);
                             } else if (cauldron.mode == BrewCauldronBlockEntity.Mode.COMPLETED) {
                                 SEHelper.increaseBottling(pPlayer);
                                 bottle = cauldron.getBrew();
@@ -218,15 +229,15 @@ public class BrewCauldronBlock extends BaseEntityBlock{
                         }
                         pLevel.setBlockAndUpdate(pPos, pState.setValue(ModStateProperties.LEVEL_BREW, targetLevel));
                         if (playSound) {
-                            pLevel.playSound(null, pPos, bucket ? SoundEvents.BUCKET_FILL : waterBucket ? SoundEvents.BUCKET_EMPTY : glassBottle ? SoundEvents.BOTTLE_FILL : SoundEvents.BOTTLE_EMPTY, SoundSource.BLOCKS, 1.0F, 1.0F);
+                            pLevel.playSound(null, pPos, (bucket ? SoundEvents.BUCKET_FILL : waterBucket ? SoundEvents.BUCKET_EMPTY : glassBottle ? SoundEvents.BOTTLE_FILL : SoundEvents.BOTTLE_EMPTY), SoundSource.BLOCKS, 1.0F, 1.0F);
                         }
                     }
                 }
                 cauldron.markUpdated();
             }
-            return InteractionResult.sidedSuccess(pLevel.isClientSide);
+            return ItemInteractionResult.sidedSuccess(pLevel.isClientSide);
         }
-        return super.use(pState, pLevel, pPos, pPlayer, pHand, pHit);
+        return super.useItemOn(stack, pState, pLevel, pPos, pPlayer, pHand, pHit);
     }
 
     public RenderShape getRenderShape(BlockState p_222219_) {

@@ -4,7 +4,7 @@ import com.Polarice3.Goety.config.MainConfig;
 import com.Polarice3.Goety.utils.LichdomHelper;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
-import net.neoforged.network.NetworkEvent;
+import com.Polarice3.Goety.compat.legacy.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
@@ -19,11 +19,13 @@ public class CSetLichNightVisionMode {
 
     public static void consume(CSetLichNightVisionMode packet, Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
-            ServerPlayer playerEntity = ctx.get().getSender();
-            if (playerEntity != null && LichdomHelper.isLich(playerEntity) && MainConfig.LichNightVision.get()) {
+            ServerPlayer playerEntity = com.Polarice3.Goety.common.network.NetworkContextHelper.getServerPlayer(ctx);
+            if (playerEntity != null && LichdomHelper.isLich(playerEntity) && com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MainConfig.LichNightVision, false)) {
                 LichdomHelper.setNightVision(playerEntity, !LichdomHelper.nightVision(playerEntity));
             }
         });
         ctx.get().setPacketHandled(true);
     }
 }
+
+

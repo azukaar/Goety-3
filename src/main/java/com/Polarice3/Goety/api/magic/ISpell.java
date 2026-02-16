@@ -52,7 +52,7 @@ public interface ISpell {
         BlockPos blockPos = caster.blockPosition();
         Level level = caster.level();
         Holder<Biome> biomeHolder = level.getBiome(blockPos);
-        boolean enable = SpellConfig.EnvironmentalCost.get();
+        boolean enable = com.Polarice3.Goety.utils.ConfigHelper.getBoolean(SpellConfig.EnvironmentalCost, true);
         if (SoulDiscount(caster)){
             cost /= 1.15F;
         }
@@ -327,7 +327,7 @@ public interface ISpell {
 
     @Nullable
     default MobEffectInstance summonDownEffect(LivingEntity caster){
-        return caster.getEffect(GoetyEffects.SUMMON_DOWN.getHolder());
+        return caster.getEffect(GoetyEffects.SUMMON_DOWN);
     }
 
     default int SoulCostUp(LivingEntity caster){

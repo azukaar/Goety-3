@@ -25,12 +25,12 @@ import java.util.List;
 public class FlyingSpell extends EverChargeSpell {
 
     public int defaultSoulCost() {
-        return SpellConfig.FlyingCost.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.FlyingCost, 0);
     }
 
     @Override
     public int defaultCastUp() {
-        return SpellConfig.FlyingChargeUp.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.FlyingChargeUp, 0);
     }
 
     public SoundEvent CastingSound() {
@@ -77,7 +77,7 @@ public class FlyingSpell extends EverChargeSpell {
         caster.setDeltaMovement(vector3d.x * d0, vector3d.y * d0, vector3d.z * d0);
         caster.hasImpulse = true;
         caster.fallDistance = 0;
-        for (int i = 0; i < caster.level.random.nextInt(35) + 10; ++i) {
+        for (int i = 0; i < caster.level().random.nextInt(35) + 10; ++i) {
             worldIn.sendParticles(ParticleTypes.CLOUD, caster.getX(), caster.getY(), caster.getZ(), 1, 0.0F, 0.0F, 0.0F, 0);
         }
     }

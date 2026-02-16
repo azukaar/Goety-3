@@ -1,5 +1,7 @@
 package com.Polarice3.Goety.common.entities.hostile.servants;
 
+import com.Polarice3.Goety.utils.MobType;
+
 import com.Polarice3.Goety.common.entities.neutral.SummonedFlying;
 import com.Polarice3.Goety.common.entities.projectiles.HellBlast;
 import com.Polarice3.Goety.common.entities.projectiles.Lavaball;
@@ -172,12 +174,12 @@ public class Malghast extends SummonedFlying {
     }
 
     public static AttributeSupplier.Builder setCustomAttributes() {
-        return Mob.createMobAttributes().add(Attributes.MAX_HEALTH, AttributesConfig.MalghastHealth.get())
+        return Mob.createMobAttributes().add(Attributes.MAX_HEALTH, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.MalghastHealth, 20.0D))
                 .add(Attributes.FOLLOW_RANGE, 32.0D);
     }
 
     public void setConfigurableAttributes(){
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.MAX_HEALTH), AttributesConfig.MalghastHealth.get());
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.MAX_HEALTH), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.MalghastHealth, 20.0D));
     }
 
     protected SoundEvent getAmbientSound() {

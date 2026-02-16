@@ -28,15 +28,15 @@ import java.util.function.Predicate;
 public class BlazeSpell extends SummonSpell {
 
     public int defaultSoulCost() {
-        return SpellConfig.BlazeCost.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.BlazeCost, 0);
     }
 
     public int defaultCastDuration() {
-        return SpellConfig.BlazeDuration.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.BlazeDuration, 0);
     }
 
     public int SummonDownDuration() {
-        return SpellConfig.BlazeSummonDown.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.BlazeSummonDown, 0);
     }
 
     public SoundEvent CastingSound(LivingEntity caster) {
@@ -48,7 +48,7 @@ public class BlazeSpell extends SummonSpell {
 
     @Override
     public int defaultSpellCooldown() {
-        return SpellConfig.BlazeCoolDown.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.BlazeCoolDown, 0);
     }
 
     @Override
@@ -71,7 +71,7 @@ public class BlazeSpell extends SummonSpell {
 
     @Override
     public int summonLimit() {
-        return SpellConfig.BlazeLimit.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.BlazeLimit, 0);
     }
 
     public void SpellResult(ServerLevel worldIn, LivingEntity caster, ItemStack staff, SpellStat spellStat) {
@@ -85,7 +85,7 @@ public class BlazeSpell extends SummonSpell {
         if (!isShifting(caster)) {
             int i = 1;
             if (rightStaff(staff)){
-                i = 2 + caster.level.random.nextInt(4);
+                i = 2 + caster.level().random.nextInt(4);
             }
             for (int i1 = 0; i1 < i; ++i1) {
                 BlazeServant blazeServant = new BlazeServant(ModEntityType.BLAZE_SERVANT.get(), worldIn);
@@ -101,7 +101,7 @@ public class BlazeSpell extends SummonSpell {
                 MobUtil.moveDownToGround(blazeServant);
                 blazeServant.setLimitedLife(MobUtil.getSummonLifespan(worldIn) * duration);
                 blazeServant.setPersistenceRequired();
-                blazeServant.finalizeSpawn(worldIn, caster.level.getCurrentDifficultyAt(caster.blockPosition()), MobSpawnType.MOB_SUMMONED,null,null);
+                blazeServant.finalizeSpawn(worldIn, caster.level().getCurrentDifficultyAt(caster.blockPosition()), MobSpawnType.MOB_SUMMONED,null);
                 this.buffSummon(caster, blazeServant, potency);
                 this.SummonSap(caster, blazeServant);
                 this.setTarget(caster, blazeServant);
@@ -116,10 +116,12 @@ public class BlazeSpell extends SummonSpell {
     public void buffSummon(LivingEntity caster, LivingEntity summoned, int potency){
         if (potency > 0 && !this.hasSummonDown(caster)){
             int boost = Mth.clamp(potency - 1, 0, 10);
-            summoned.addEffect(new MobEffectInstance(GoetyEffects.BUFF.get(), EffectsUtil.infiniteEffect(), boost, false, false));
+            summoned.addEffect(new MobEffectInstance(GoetyEffects.BUFF, EffectsUtil.infiniteEffect(), boost, false, false));
             if (summoned instanceof BlazeServant blazeServant){
                 blazeServant.setFireBallDamage(blazeServant.getFireBallDamage() + potency);
             }
         }
     }
 }
+
+

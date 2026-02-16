@@ -65,21 +65,21 @@ public class BlackguardServant extends ZombieServant{
 
     public static AttributeSupplier.Builder setCustomAttributes() {
         return Mob.createMobAttributes()
-                .add(Attributes.MAX_HEALTH, AttributesConfig.BlackguardServantHealth.get())
+                .add(Attributes.MAX_HEALTH, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.BlackguardServantHealth, 20.0D))
                 .add(Attributes.FOLLOW_RANGE, 35.0D)
                 .add(Attributes.MOVEMENT_SPEED, 0.23F)
                 .add(Attributes.KNOCKBACK_RESISTANCE, 1.0F)
-                .add(Attributes.ATTACK_DAMAGE, AttributesConfig.BlackguardServantDamage.get())
+                .add(Attributes.ATTACK_DAMAGE, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.BlackguardServantDamage, 20.0D))
                 .add(Attributes.ATTACK_KNOCKBACK, 1.0F)
-                .add(Attributes.ARMOR, AttributesConfig.BlackguardServantArmor.get())
-                .add(Attributes.ARMOR_TOUGHNESS, AttributesConfig.BlackguardServantToughness.get());
+                .add(Attributes.ARMOR, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.BlackguardServantArmor, 20.0D))
+                .add(Attributes.ARMOR_TOUGHNESS, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.BlackguardServantToughness, 20.0D));
     }
 
     public void setConfigurableAttributes(){
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.MAX_HEALTH), AttributesConfig.BlackguardServantHealth.get());
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ATTACK_DAMAGE), AttributesConfig.BlackguardServantDamage.get());
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ARMOR), AttributesConfig.BlackguardServantArmor.get());
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ARMOR_TOUGHNESS), AttributesConfig.BlackguardServantToughness.get());
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.MAX_HEALTH), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.BlackguardServantHealth, 20.0D));
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ATTACK_DAMAGE), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.BlackguardServantDamage, 20.0D));
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ARMOR), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.BlackguardServantArmor, 20.0D));
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ARMOR_TOUGHNESS), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.BlackguardServantToughness, 20.0D));
     }
 
     protected void defineSynchedData(SynchedEntityData.Builder builder) {

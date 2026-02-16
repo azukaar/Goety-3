@@ -23,7 +23,7 @@ public class HuskServantRenderer extends ZombieServantRenderer {
    }
 
    public ResourceLocation getTextureLocation(ZombieServant p_114905_) {
-      if (p_114905_.isHostile() || !MobsConfig.HuskServantTexture.get()){
+      if (p_114905_.isHostile() || !com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MobsConfig.HuskServantTexture, false)){
          return ZOMBIE_LOCATION;
       } else {
          return TEXTURE;

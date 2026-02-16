@@ -3,6 +3,7 @@ package com.Polarice3.Goety.common.items.block;
 import com.Polarice3.Goety.common.blocks.ModBlocks;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.Direction;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
@@ -10,7 +11,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.StandingAndWallBlockItem;
 import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.level.Level;
+import net.minecraft.world.item.component.CustomData;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -28,23 +29,28 @@ public class RedstoneGolemSkullItem extends StandingAndWallBlockItem {
     }
 
     public static void setOwner(@Nullable LivingEntity entity, ItemStack stack) {
-        CompoundTag entityTag = stack.getOrCreateTag();
         if (entity != null) {
-            entityTag.putUUID("owner", entity.getUUID());
-            entityTag.putString("owner_name", entity.getDisplayName().getString());
+            CustomData data = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY);
+            CompoundTag tag = data.copyTag();
+            tag.putUUID("owner", entity.getUUID());
+            tag.putString("owner_name", entity.getDisplayName().getString());
+            stack.set(DataComponents.CUSTOM_DATA, CustomData.of(tag));
         }
     }
 
     public static void setCustomName(String string, ItemStack stack){
-        CompoundTag entityTag = stack.getOrCreateTag();
-        entityTag.putString("mod_custom_name", string);
+        CustomData data = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY);
+        CompoundTag tag = data.copyTag();
+        tag.putString("mod_custom_name", string);
+        stack.set(DataComponents.CUSTOM_DATA, CustomData.of(tag));
     }
 
     public static String getCustomName(ItemStack stack){
-        CompoundTag entityTag = stack.getTag();
-        if (entityTag != null){
-            if (entityTag.contains("mod_custom_name")) {
-                return entityTag.getString("mod_custom_name");
+        CustomData data = stack.get(DataComponents.CUSTOM_DATA);
+        if (data != null){
+            CompoundTag tag = data.copyTag();
+            if (tag.contains("mod_custom_name")) {
+                return tag.getString("mod_custom_name");
             }
         }
         return null;
@@ -52,25 +58,28 @@ public class RedstoneGolemSkullItem extends StandingAndWallBlockItem {
 
     @Nullable
     public static UUID getOwnerID(ItemStack stack){
-        CompoundTag entityTag = stack.getTag();
-        if (entityTag != null){
-            if (entityTag.contains("owner")) {
-                return entityTag.getUUID("owner");
+        CustomData data = stack.get(DataComponents.CUSTOM_DATA);
+        if (data != null){
+            CompoundTag tag = data.copyTag();
+            if (tag.contains("owner")) {
+                return tag.getUUID("owner");
             }
         }
         return null;
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
-        if (stack.getTag() != null) {
-            if (stack.getTag().contains("owner_name")) {
-                tooltip.add(Component.translatable("tooltip.goety.arcaPlayer").setStyle(Style.EMPTY.applyFormat((ChatFormatting.GRAY))).append(Component.literal("" + stack.getTag().getString("owner_name")).setStyle(Style.EMPTY.applyFormat((ChatFormatting.GRAY)))));
+    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag flagIn) {
+        CustomData data = stack.get(DataComponents.CUSTOM_DATA);
+        if (data != null) {
+            CompoundTag tag = data.copyTag();
+            if (tag.contains("owner_name")) {
+                tooltip.add(Component.translatable("tooltip.goety.arcaPlayer").setStyle(Style.EMPTY.applyFormat((ChatFormatting.GRAY))).append(Component.literal("" + tag.getString("owner_name")).setStyle(Style.EMPTY.applyFormat((ChatFormatting.GRAY)))));
             }
-            if (stack.getTag().contains("mod_custom_name")){
-                tooltip.add(Component.translatable("tooltip.goety.customName").setStyle(Style.EMPTY.applyFormat((ChatFormatting.GRAY))).append(Component.literal("" + stack.getTag().getString("mod_custom_name")).setStyle(Style.EMPTY.applyFormat((ChatFormatting.GRAY)))));
+            if (tag.contains("mod_custom_name")){
+                tooltip.add(Component.translatable("tooltip.goety.customName").setStyle(Style.EMPTY.applyFormat((ChatFormatting.GRAY))).append(Component.literal("" + tag.getString("mod_custom_name")).setStyle(Style.EMPTY.applyFormat((ChatFormatting.GRAY)))));
             }
         }
-        super.appendHoverText(stack, worldIn, tooltip, flagIn);
+        super.appendHoverText(stack, context, tooltip, flagIn);
     }
 }

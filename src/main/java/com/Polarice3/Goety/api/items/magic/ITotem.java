@@ -11,7 +11,11 @@ import net.minecraft.world.item.component.CustomData;
 public interface ITotem {
     String SOULS_AMOUNT = "Souls";
     String MAX_SOUL_AMOUNT = "Max Souls";
-    int MAX_SOULS = MainConfig.MaxSouls.get();
+    
+    // Lazy evaluation to avoid accessing config before it's loaded
+    static int getDefaultMaxSouls() {
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(MainConfig.MaxSouls, 10000);
+    }
 
     int getMaxSouls();
 
@@ -59,8 +63,8 @@ public interface ITotem {
         ItemStack itemStack = TotemFinder.FindTotem(player);
         if (!itemStack.isEmpty()) {
             CustomData data = itemStack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY);
-            if (!data.isEmpty() && MainConfig.TotemUndying.get()) {
-                return data.copyTag().getInt(SOULS_AMOUNT) == MAX_SOULS;
+            if (!data.isEmpty() && com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MainConfig.TotemUndying, false)) {
+                return data.copyTag().getInt(SOULS_AMOUNT) == ITotem.getDefaultMaxSouls();
             }
         }
         return false;

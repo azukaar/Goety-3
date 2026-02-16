@@ -1,5 +1,8 @@
 package com.Polarice3.Goety.common.events.spell;
 
+import net.neoforged.bus.api.Event;
+import net.neoforged.bus.api.ICancellableEvent;
+
 import com.Polarice3.Goety.api.magic.ISpell;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -23,7 +26,7 @@ import javax.annotation.Nullable;
  * <br>
  * This event is fired on the {@link NeoForge#EVENT_BUS}.
  **/
-public class BlockMagicEvent extends BlockEvent {
+public class BlockMagicEvent extends BlockEvent implements ICancellableEvent {
     private ISpell spell;
     @Nullable
     private final Direction direction;

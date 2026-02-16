@@ -14,16 +14,14 @@ import net.minecraft.world.item.crafting.SingleRecipeInput;
 
 public abstract class ModCookingRecipe implements Recipe<SingleRecipeInput> {
     protected final RecipeType<?> type;
-    protected final ResourceLocation id;
     protected final String group;
     protected final Ingredient ingredient;
     protected final ItemStack result;
     protected final float experience;
     protected final int cookingTime;
 
-    public ModCookingRecipe(RecipeType<?> pType, ResourceLocation pId, String pGroup, Ingredient pIngredient, ItemStack pResult, float pExperience, int pCookingTime) {
+    public ModCookingRecipe(RecipeType<?> pType, String pGroup, Ingredient pIngredient, ItemStack pResult, float pExperience, int pCookingTime) {
         this.type = pType;
-        this.id = pId;
         this.group = pGroup;
         this.ingredient = pIngredient;
         this.result = pResult;
@@ -65,9 +63,7 @@ public abstract class ModCookingRecipe implements Recipe<SingleRecipeInput> {
         return this.cookingTime;
     }
 
-    public ResourceLocation getId() {
-        return this.id;
-    }
+
 
     public RecipeType<?> getType() {
         return this.type;

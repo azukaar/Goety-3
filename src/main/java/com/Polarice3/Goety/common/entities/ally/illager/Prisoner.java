@@ -112,7 +112,7 @@ public class Prisoner extends RaiderServant implements VillagerDataHolder, ILoot
             }
 
             public int getListenerRadius() {
-                return MobsConfig.PrisonerMiningRange.get() * 2;
+                return com.Polarice3.Goety.utils.ConfigHelper.getInt(MobsConfig.PrisonerMiningRange, 0) * 2;
             }
 
             public boolean handleGameEvent(ServerLevel serverLevel, net.minecraft.core.Holder<GameEvent> p_282184_, GameEvent.Context p_283014_,
@@ -468,7 +468,7 @@ public class Prisoner extends RaiderServant implements VillagerDataHolder, ILoot
                 }
                 if (this.getMainHandItem().is(ItemTags.PICKAXES)
                         && this.getMainHandItem().getItem() instanceof PickaxeItem pickaxe) {
-                    int range = MobsConfig.PrisonerMiningRange.get();
+                    int range = com.Polarice3.Goety.utils.ConfigHelper.getInt(MobsConfig.PrisonerMiningRange, 0);
                     if (this.blockPosList.isEmpty() || this.updateList > 0) {
                         if (!this.blockPosList.isEmpty()) {
                             this.blockPosList.clear();
@@ -482,7 +482,7 @@ public class Prisoner extends RaiderServant implements VillagerDataHolder, ILoot
                                     BlockPos blockPos = this.blockPosition().offset(i, j, k);
                                     BlockState blockState = serverLevel.getBlockState(blockPos);
                                     boolean hasSight = true;
-                                    if (MobsConfig.PrisonerMiningSeeBlocks.get()) {
+                                    if (com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MobsConfig.PrisonerMiningSeeBlocks, false)) {
                                         hasSight = false;
                                         for (Direction direction : Direction.values()) {
                                             hasSight = BlockFinder.canSeeBlock(this, blockPos.relative(direction));
@@ -505,16 +505,16 @@ public class Prisoner extends RaiderServant implements VillagerDataHolder, ILoot
                         }
                     }
                     if (!this.blockPosList.isEmpty()) {
-                        if (this.mineTimes >= MobsConfig.PrisonerMiningSwings.get()) {
+                        if (this.mineTimes >= com.Polarice3.Goety.utils.ConfigHelper.getInt(MobsConfig.PrisonerMiningSwings, 0)) {
                             BlockPos blockPos = this.blockPosList
                                     .get(RandomUtil.nextInt(serverLevel.getRandom(), blockPosList.size()));
                             boolean isRare = false;
                             if (!this.rareList.isEmpty()) {
                                 if (this.rareList.contains(blockPos)) {
                                     isRare = true;
-                                    if (MobsConfig.PrisonerMiningRareChance.get() != 0
+                                    if (com.Polarice3.Goety.utils.ConfigHelper.getInt(MobsConfig.PrisonerMiningRareChance, 0) != 0
                                             && RandomUtil.nextInt(serverLevel.getRandom(),
-                                                    MobsConfig.PrisonerMiningRareChance.get()) != 0) {
+                                                    com.Polarice3.Goety.utils.ConfigHelper.getInt(MobsConfig.PrisonerMiningRareChance, 0)) != 0) {
                                         List<BlockPos> newBlockList = new ArrayList<>(blockPosList);
                                         newBlockList.removeIf(this.rareList::contains);
                                         if (newBlockList.size() > 1) {
@@ -527,8 +527,8 @@ public class Prisoner extends RaiderServant implements VillagerDataHolder, ILoot
                                 }
                             }
                             if (!isRare) {
-                                if (MobsConfig.PrisonerMiningChance.get() != 0 && RandomUtil
-                                        .nextInt(serverLevel.getRandom(), MobsConfig.PrisonerMiningChance.get()) != 0) {
+                                if (com.Polarice3.Goety.utils.ConfigHelper.getInt(MobsConfig.PrisonerMiningChance, 0) != 0 && RandomUtil
+                                        .nextInt(serverLevel.getRandom(), com.Polarice3.Goety.utils.ConfigHelper.getInt(MobsConfig.PrisonerMiningChance, 0)) != 0) {
                                     blockPos = null;
                                 }
                             }
@@ -540,7 +540,7 @@ public class Prisoner extends RaiderServant implements VillagerDataHolder, ILoot
                                         this.getInventory().addItem(itemStack);
                                     }
                                 }
-                                if (MobsConfig.PrisonerMiningBreakBlocks.get()) {
+                                if (com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MobsConfig.PrisonerMiningBreakBlocks, false)) {
                                     serverLevel.destroyBlock(blockPos, false, this);
                                 }
                             }
@@ -698,12 +698,12 @@ public class Prisoner extends RaiderServant implements VillagerDataHolder, ILoot
     }
 
     public boolean wantsToPickUp(ItemStack itemStack) {
-        return MobsConfig.PrisonerPickUpPickaxe.get() && itemStack.is(ItemTags.PICKAXES);
+        return com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MobsConfig.PrisonerPickUpPickaxe, false) && itemStack.is(ItemTags.PICKAXES);
     }
 
     @Override
     public boolean hurt(DamageSource source, float amount) {
-        if (MobsConfig.PrisonerUnshackleDamage.get()) {
+        if (com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MobsConfig.PrisonerUnshackleDamage, false)) {
             if (source.getEntity() != null) {
                 boolean flag = false;
                 LivingEntity owner = this.getLeader();
@@ -830,7 +830,7 @@ public class Prisoner extends RaiderServant implements VillagerDataHolder, ILoot
             this.unshackle(pPlayer);
             return InteractionResult.SUCCESS;
         } else if (this.getMasterOwner() != null && this.getMasterOwner() == pPlayer) {
-            if (MobsConfig.PrisonerMining.get() && (item instanceof PickaxeItem || itemInHand.is(ItemTags.PICKAXES))) {
+            if (com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MobsConfig.PrisonerMining, false) && (item instanceof PickaxeItem || itemInHand.is(ItemTags.PICKAXES))) {
                 this.playSound(SoundEvents.ARMOR_EQUIP_GENERIC.value(), 1.0F, 1.0F);
                 this.setItemSlot(EquipmentSlot.MAINHAND, itemInHand.copyWithCount(1));
                 this.dropEquipment(EquipmentSlot.MAINHAND, mainHandItem);
@@ -916,7 +916,7 @@ public class Prisoner extends RaiderServant implements VillagerDataHolder, ILoot
 
         @Override
         public boolean canUse() {
-            if (MobsConfig.PrisonerMining.get()) {
+            if (com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MobsConfig.PrisonerMining, false)) {
                 if (this.prisoner.getMainHandItem().is(ItemTags.PICKAXES)) {
                     if (this.prisoner.isGuardingArea()) {
                         if (this.prisoner.distanceToSqr(this.prisoner.vec3BoundPos()) > Mth.square(2)) {

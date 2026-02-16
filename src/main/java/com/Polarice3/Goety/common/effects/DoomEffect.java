@@ -11,9 +11,9 @@ public class DoomEffect extends GoetyBaseEffect{
         super(MobEffectCategory.HARMFUL, 0);
     }
 
-    public void applyEffectTick(LivingEntity affected, int amplifier) {
-        if (affected.level instanceof ServerLevel serverLevel) {
-            if (affected.canChangeDimensions()
+    public boolean applyEffectTick(LivingEntity affected, int amplifier) {
+        if (affected.level() instanceof ServerLevel serverLevel) {
+            if (affected.canChangeDimensions(affected.level(), affected.level())
                     && !affected.getType().is(Tags.EntityTypes.BOSSES)
                     && !affected.isDeadOrDying()) {
                 int i1 = affected.isInvisible() ? 15 : 4;
@@ -23,5 +23,6 @@ public class DoomEffect extends GoetyBaseEffect{
                 }
             }
         }
+        return true;
     }
 }

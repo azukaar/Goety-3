@@ -1,5 +1,7 @@
 package com.Polarice3.Goety.common.entities.hostile.servants;
 
+import com.Polarice3.Goety.utils.MobType;
+
 import com.Polarice3.Goety.common.entities.ai.BackawayCrossbowGoal;
 import com.Polarice3.Goety.common.entities.ai.CreatureBowAttackGoal;
 import com.Polarice3.Goety.common.entities.neutral.Owned;
@@ -76,16 +78,16 @@ public class SkeletonVillagerServant extends Owned implements CrossbowAttackMob 
 
     public static AttributeSupplier.Builder setCustomAttributes() {
         return Mob.createMobAttributes()
-                .add(Attributes.MAX_HEALTH, AttributesConfig.SkeletonVillagerServantHealth.get())
-                .add(Attributes.ATTACK_DAMAGE, AttributesConfig.SkeletonVillagerServantDamage.get())
+                .add(Attributes.MAX_HEALTH, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.SkeletonVillagerServantHealth, 20.0D))
+                .add(Attributes.ATTACK_DAMAGE, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.SkeletonVillagerServantDamage, 20.0D))
                 .add(Attributes.MOVEMENT_SPEED, 0.25D);
     }
 
     public void setConfigurableAttributes() {
         MobUtil.setBaseAttributes(this.getAttribute(Attributes.MAX_HEALTH),
-                AttributesConfig.SkeletonVillagerServantHealth.get());
+                com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.SkeletonVillagerServantHealth, 20.0D));
         MobUtil.setBaseAttributes(this.getAttribute(Attributes.ATTACK_DAMAGE),
-                AttributesConfig.SkeletonVillagerServantDamage.get());
+                com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.SkeletonVillagerServantDamage, 20.0D));
     }
 
     public void reassessWeaponGoal() {
@@ -247,7 +249,28 @@ public class SkeletonVillagerServant extends Owned implements CrossbowAttackMob 
         this.playSound(SoundEvents.CROSSBOW_SHOOT, 1.0F, 1.0F / (this.getRandom().nextFloat() * 0.4F + 0.8F));
     }
 
+    @Override
     public void onCrossbowAttackPerformed() {
         this.noActionTime = 0;
+    }
+
+    public org.joml.Vector3f getProjectileShotVector(LivingEntity p_230284_1_, net.minecraft.world.phys.Vec3 p_230284_2_, float p_230284_3_) {
+        org.joml.Vector3f vector3f = new org.joml.Vector3f((float)p_230284_2_.x, (float)p_230284_2_.y, (float)p_230284_2_.z);
+        vector3f.normalize();
+        org.joml.Vector3f vector3f1 = new org.joml.Vector3f(vector3f);
+        vector3f1.cross(new org.joml.Vector3f(0.0F, 1.0F, 0.0F));
+        if (vector3f1.lengthSquared() <= 1.0E-7F) {
+            vector3f1.set(0.0F, 0.0F, 1.0F);
+        }
+
+        vector3f1.normalize();
+        org.joml.Vector3f vector3f2 = new org.joml.Vector3f(vector3f);
+        vector3f2.cross(vector3f1);
+        vector3f2.normalize();
+        vector3f2.mul(p_230284_3_);
+        vector3f1.mul(p_230284_3_);
+        vector3f.add(vector3f1.mul(this.getRandom().nextFloat() * 2.0F - 1.0F));
+        vector3f.add(vector3f2.mul(this.getRandom().nextFloat() * 2.0F - 1.0F));
+        return vector3f;
     }
 }

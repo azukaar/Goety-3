@@ -144,10 +144,10 @@ public class Endersent extends AbstractEnderling implements Enemy {
     @SuppressWarnings("removal")
     public static AttributeSupplier.Builder setCustomAttributes() {
         return Mob.createMobAttributes()
-                .add(Attributes.MAX_HEALTH, AttributesConfig.EndersentHealth.get())
+                .add(Attributes.MAX_HEALTH, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.EndersentHealth, 20.0D))
                 .add(Attributes.MOVEMENT_SPEED, 0.25D)
-                .add(Attributes.ATTACK_DAMAGE, AttributesConfig.EndersentDamage.get())
-                .add(Attributes.ARMOR, AttributesConfig.EndersentArmor.get())
+                .add(Attributes.ATTACK_DAMAGE, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.EndersentDamage, 20.0D))
+                .add(Attributes.ARMOR, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.EndersentArmor, 20.0D))
                 .add(Attributes.KNOCKBACK_RESISTANCE, 1.0D)
                 .add(Attributes.STEP_HEIGHT, 1.0D)
                 .add(Attributes.ATTACK_KNOCKBACK, 2.0D)
@@ -156,10 +156,10 @@ public class Endersent extends AbstractEnderling implements Enemy {
 
     public void setConfigurableAttributes() {
         if (!this.hasEye()) {
-            MobUtil.setBaseAttributes(this.getAttribute(Attributes.MAX_HEALTH), AttributesConfig.EndersentHealth.get());
+            MobUtil.setBaseAttributes(this.getAttribute(Attributes.MAX_HEALTH), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.EndersentHealth, 20.0D));
         }
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ARMOR), AttributesConfig.EndersentArmor.get());
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ATTACK_DAMAGE), AttributesConfig.EndersentDamage.get());
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ARMOR), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.EndersentArmor, 20.0D));
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ATTACK_DAMAGE), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.EndersentDamage, 20.0D));
     }
 
     public void defineSynchedData(SynchedEntityData.Builder builder) {
@@ -535,7 +535,7 @@ public class Endersent extends AbstractEnderling implements Enemy {
         if (this.getEyeType() > 0) {
             AttributeInstance health = this.getAttribute(Attributes.MAX_HEALTH);
             if (health != null) {
-                health.setBaseValue(AttributesConfig.EndersentHealth.get() * 1.15D);
+                health.setBaseValue(com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.EndersentHealth, 20.0D) * 1.15D);
                 this.setHealth(this.getMaxHealth());
             }
         }
@@ -615,20 +615,20 @@ public class Endersent extends AbstractEnderling implements Enemy {
             }
         } else if (this.getEyeType() == SEARING_EYE) {
             this.addEyeEffects(MobEffects.FIRE_RESISTANCE);
-            this.addEyeEffects(GoetyEffects.FIERY_AURA.getHolder());
-            this.addEyeEffects(GoetyEffects.RALLYING.getHolder());
+            this.addEyeEffects(GoetyEffects.FIERY_AURA);
+            this.addEyeEffects(GoetyEffects.RALLYING);
         } else if (this.getEyeType() == HALLOWED_EYE) {
-            this.addEyeEffects(GoetyEffects.ALTRUISTIC.getHolder());
-            this.addEyeEffects(GoetyEffects.RADIANCE.getHolder());
-            this.addEyeEffects(GoetyEffects.SHIELDING.getHolder());
+            this.addEyeEffects(GoetyEffects.ALTRUISTIC);
+            this.addEyeEffects(GoetyEffects.RADIANCE);
+            this.addEyeEffects(GoetyEffects.SHIELDING);
         } else if (this.getEyeType() == TWISTED_EYE) {
             this.addEyeEffects(MobEffects.MOVEMENT_SPEED);
-            this.addEyeEffects(GoetyEffects.ELECTRIFIED.getHolder());
-            this.addEyeEffects(GoetyEffects.SWIRLING.getHolder());
+            this.addEyeEffects(GoetyEffects.ELECTRIFIED);
+            this.addEyeEffects(GoetyEffects.SWIRLING);
         } else if (this.getEyeType() == DREADFUL_EYE) {
-            this.addEyeEffects(GoetyEffects.GRAVITY_PULSE.getHolder());
-            this.addEyeEffects(GoetyEffects.DEFLECTIVE.getHolder());
-            this.addEyeEffects(GoetyEffects.FROSTY_AURA.getHolder());
+            this.addEyeEffects(GoetyEffects.GRAVITY_PULSE);
+            this.addEyeEffects(GoetyEffects.DEFLECTIVE);
+            this.addEyeEffects(GoetyEffects.FROSTY_AURA);
         } else {
             this.addEyeEffects(MobEffects.DAMAGE_BOOST);
             this.addEyeEffects(MobEffects.DAMAGE_RESISTANCE);

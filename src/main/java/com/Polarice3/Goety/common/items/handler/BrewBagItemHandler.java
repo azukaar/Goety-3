@@ -20,65 +20,19 @@ public class BrewBagItemHandler extends ItemStackHandler {
     public BrewBagItemHandler(ItemStack itemStack) {
         super(11);
         this.itemStack = itemStack;
-    }
-
-    public ItemStack extractItem() {
-        return extractItem(slot, 1, false);
-    }
-
-    public ItemStack insertItem(ItemStack insert) {
-        return insertItem(slot, insert, false);
-    }
-
-    public ItemStack getSlot() {
-        return getStackInSlot(slot);
-    }
-
-    @Override
-    public boolean isItemValid(int slot, @Nonnull ItemStack stack)
-    {
-        return stack.getItem() instanceof ThrowableBrewItem;
-    }
-
-    public NonNullList<ItemStack> getContents(){
-        return stacks;
-    }
-
-    @Override
-    public CompoundTag serializeNBT(HolderLookup.Provider provider) {
-        CompoundTag nbt = super.serializeNBT(provider);
-        nbt.putInt("slot", slot);
-        return nbt;
-    }
-
-    @Override
-    public void deserializeNBT(HolderLookup.Provider provider, CompoundTag nbt) {
-        super.deserializeNBT(provider, nbt);
-        ListTag tagList = nbt.getList("Items", Tag.TAG_COMPOUND);
-        for (int i = 0; i < tagList.size(); i++)
-        {
-            CompoundTag itemTags = tagList.getCompound(i);
-            if (nbt.contains("slot")) {
-                slot = nbt.getInt("slot");
-                stacks.set(slot, ItemStack.parse(provider, itemTags).orElse(ItemStack.EMPTY));
-            }
+        net.minecraft.world.item.component.CustomData customData = itemStack.get(net.minecraft.core.component.DataComponents.CUSTOM_DATA);
+        if (customData != null) {
+            deserializeNBT(net.minecraft.core.RegistryAccess.EMPTY, customData.copyTag());
         }
-        onLoad();
-
     }
 
     @Override
     protected void onContentsChanged(int slot) {
-        // NBT access changed in 1.21.1 - using DataComponents instead
-        // CompoundTag nbt = itemStack.getOrCreateTag();
-        // nbt.putBoolean("goety-dirty", !nbt.getBoolean("goety-dirty"));
+        CompoundTag nbt = serializeNBT(net.minecraft.core.RegistryAccess.EMPTY);
+        itemStack.set(net.minecraft.core.component.DataComponents.CUSTOM_DATA, net.minecraft.world.item.component.CustomData.of(nbt));
     }
 
     public static BrewBagItemHandler get(ItemStack stack) {
-        IItemHandler handler = stack.getCapability(Capabilities.ItemHandler.ITEM);
-        if (handler == null) {
-            throw new IllegalArgumentException("ItemStack is missing item capability");
-        }
-        return (BrewBagItemHandler) handler;
+        return new BrewBagItemHandler(stack);
     }
 }

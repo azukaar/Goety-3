@@ -1,4 +1,5 @@
 package com.Polarice3.Goety.common.blocks;
+import com.mojang.serialization.MapCodec;
 
 import com.Polarice3.Goety.common.blocks.entities.CursedInfuserBlockEntity;
 import com.Polarice3.Goety.common.crafting.CursedInfuserRecipes;
@@ -6,7 +7,9 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.Containers;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
@@ -39,49 +42,59 @@ import java.util.Optional;
 import java.util.function.ToIntFunction;
 
 public class CursedInfuserBlock extends BaseEntityBlock implements SimpleWaterloggedBlock {
+    public static final MapCodec<CursedInfuserBlock> CODEC = simpleCodec(CursedInfuserBlock::new);
+
+    @Override
+    protected MapCodec<? extends BaseEntityBlock> codec() {
+        return CODEC;
+    }
     protected static final VoxelShape SHAPE = Block.box(0.0D, 0.0D, 0.0D, 16.0D, 7.0D, 16.0D);
     public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
     public static final BooleanProperty LIT = BlockStateProperties.LIT;
 
+    public CursedInfuserBlock(Properties properties) {
+        super(properties);
+        this.registerDefaultState(this.stateDefinition.any().setValue(WATERLOGGED, Boolean.FALSE).setValue(LIT, Boolean.FALSE));
+    }
+
     public CursedInfuserBlock() {
-        super(Properties.of()
+        this(Properties.of()
                 .mapColor(MapColor.STONE)
                 .strength(3.5F)
                 .sound(SoundType.STONE)
                 .lightLevel(litBlockEmission())
-                .noOcclusion()
-        );
-        this.registerDefaultState(this.stateDefinition.any().setValue(WATERLOGGED, Boolean.FALSE).setValue(LIT, Boolean.FALSE));
+                .noOcclusion());
     }
 
     private static ToIntFunction<BlockState> litBlockEmission() {
         return (state) -> state.getValue(BlockStateProperties.LIT) ? 10 : 0;
     }
 
-    public InteractionResult use(BlockState pState, Level pLevel, BlockPos pPos, Player pPlayer, InteractionHand pHand, BlockHitResult pHit) {
+    @Override
+    protected ItemInteractionResult useItemOn(ItemStack stack, BlockState pState, Level pLevel, BlockPos pPos, Player pPlayer, InteractionHand pHand, BlockHitResult pHit) {
         BlockEntity tileentity = pLevel.getBlockEntity(pPos);
         if (tileentity instanceof CursedInfuserBlockEntity) {
             CursedInfuserBlockEntity burnerTileEntity = (CursedInfuserBlockEntity)tileentity;
-            ItemStack itemstack = pPlayer.getItemInHand(pHand);
+            ItemStack itemstack = stack;
             Optional<CursedInfuserRecipes> optional = burnerTileEntity.getRecipes(itemstack);
             if (optional.isPresent() && !optional.get().isGrim()) {
                 if (!pLevel.isClientSide && burnerTileEntity.placeItem(pPlayer.getAbilities().instabuild ? itemstack.copy() : itemstack, optional.get().getCookingTime())) {
-                    return InteractionResult.SUCCESS;
+                    return ItemInteractionResult.SUCCESS;
                 }
 
-                return InteractionResult.CONSUME;
+                return ItemInteractionResult.CONSUME;
             }
             if (itemstack.isEmpty() || itemstack == burnerTileEntity.getItems().get(0)){
                 if (!burnerTileEntity.getItems().isEmpty()){
                     Containers.dropContents(pLevel, pPlayer.blockPosition(), burnerTileEntity.getItems());
                     burnerTileEntity.getItems().clear();
-                    return InteractionResult.SUCCESS;
+                    return ItemInteractionResult.SUCCESS;
                 }
-                return InteractionResult.CONSUME;
+                return ItemInteractionResult.CONSUME;
             }
         }
 
-        return InteractionResult.PASS;
+        return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
     }
 
     public void onRemove(BlockState pState, Level pLevel, BlockPos pPos, BlockState pNewState, boolean pIsMoving) {
@@ -96,7 +109,7 @@ public class CursedInfuserBlock extends BaseEntityBlock implements SimpleWaterlo
     }
 
     public void entityInside(BlockState pState, Level pLevel, BlockPos pPos, Entity pEntity) {
-        if (!pEntity.fireImmune() && pState.getValue(LIT) && pEntity instanceof LivingEntity && !EnchantmentHelper.hasFrostWalker((LivingEntity)pEntity)) {
+        if (!pEntity.fireImmune() && pState.getValue(LIT) && pEntity instanceof LivingEntity) {
             pEntity.hurt(pEntity.damageSources().inFire(), 1.0F);
         }
 /*        BlockEntity tileentity = pLevel.getBlockEntity(pPos);

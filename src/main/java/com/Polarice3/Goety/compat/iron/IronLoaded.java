@@ -2,6 +2,7 @@ package com.Polarice3.Goety.compat.iron;
 
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attribute;
+import net.minecraft.core.Holder;
 import net.neoforged.fml.ModList;
 
 public enum IronLoaded {
@@ -40,7 +41,7 @@ public enum IronLoaded {
         return isCompat(livingEntity, IronAttributes.EVOCATION_SPELL_POWER);
     }
 
-    public boolean isCompat(LivingEntity livingEntity, Attribute attribute){
-        return this.isLoaded() && livingEntity.getAttribute(attribute) != null;
+    public boolean isCompat(LivingEntity livingEntity, Holder<Attribute> attribute){
+        return this.isLoaded() && attribute != null && livingEntity.getAttribute(attribute) != null;
     }
 }

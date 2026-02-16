@@ -13,8 +13,7 @@ public class EnchantableBlockItem extends BlockItemBase {
         super(blockIn);
     }
 
-    @Override
-    public boolean canApplyAtEnchantingTable(ItemStack stack, Enchantment enchantment) {
+    public boolean canApplyAtEnchantingTable(ItemStack stack, net.minecraft.world.item.enchantment.Enchantment enchantment) {
         if (stack.getItem() == ModBlocks.SCULK_DEVOURER.get().asItem()){
             return stack.getCount() == 1
                     && (enchantment == ModEnchantments.SOUL_EATER.get()
@@ -24,7 +23,7 @@ public class EnchantableBlockItem extends BlockItemBase {
             return stack.getCount() == 1 && enchantment == ModEnchantments.POTENCY.get();
         }
         if (stack.getItem() == ModBlocks.SCULK_GROWER.get().asItem()){
-            if (MainConfig.SculkGrowerPotency.get()){
+            if (com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MainConfig.SculkGrowerPotency, false)){
                 return stack.getCount() == 1 && (enchantment == ModEnchantments.POTENCY.get() || enchantment == ModEnchantments.RADIUS.get());
             } else {
                 return stack.getCount() == 1 && enchantment == ModEnchantments.RADIUS.get();

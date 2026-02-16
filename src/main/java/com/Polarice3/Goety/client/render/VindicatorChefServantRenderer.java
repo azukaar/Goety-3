@@ -50,7 +50,7 @@ public class VindicatorChefServantRenderer<T extends VindicatorChefServant> exte
 
     @Override
     public ResourceLocation getTextureLocation(T entity) {
-        if (entity.isHostile() || !MobsConfig.VindicatorServantTexture.get()){
+        if (entity.isHostile() || !com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MobsConfig.VindicatorServantTexture, false)){
             return ORIGINAL;
         } else {
             return TEXTURE;

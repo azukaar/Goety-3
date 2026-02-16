@@ -11,7 +11,7 @@ import net.minecraft.world.level.Level;
 
 public class PulverizeBlockEffect extends BrewEffect {
     public PulverizeBlockEffect() {
-        super("pulverize", BrewConfig.PulverizeCost.get(), 2, MobEffectCategory.NEUTRAL, 0xbae633);
+        super("pulverize", com.Polarice3.Goety.utils.ConfigHelper.getInt(BrewConfig.PulverizeCost, 0), 2, MobEffectCategory.NEUTRAL, 0xbae633);
     }
 
     @Override

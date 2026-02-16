@@ -1,5 +1,7 @@
 package com.Polarice3.Goety.common.entities.ally.undead.zombie;
 
+import com.Polarice3.Goety.utils.MobType;
+
 import com.Polarice3.Goety.common.entities.ModEntityType;
 import com.Polarice3.Goety.common.entities.ally.Summoned;
 import com.Polarice3.Goety.common.entities.ally.illager.ModRavager;
@@ -51,20 +53,20 @@ public class ZombieRavager extends ModRavager {
                 .add(Attributes.MAX_HEALTH, 75.0D)
                 .add(Attributes.MOVEMENT_SPEED, 0.23D)
                 .add(Attributes.KNOCKBACK_RESISTANCE, 0.75D)
-                .add(Attributes.ATTACK_DAMAGE, AttributesConfig.RavagerDamage.get())
+                .add(Attributes.ATTACK_DAMAGE, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.RavagerDamage, 20.0D))
                 .add(Attributes.ATTACK_KNOCKBACK, 1.5D)
-                .add(Attributes.ARMOR, AttributesConfig.RavagerArmor.get() + 2.0D)
+                .add(Attributes.ARMOR, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.RavagerArmor, 20.0D) + 2.0D)
                 .add(Attributes.FOLLOW_RANGE, 32.0D);
     }
 
     public void setConfigurableAttributes(){
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ARMOR), AttributesConfig.RavagerArmor.get() + 2.0D);
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ATTACK_DAMAGE), AttributesConfig.RavagerDamage.get());
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ARMOR), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.RavagerArmor, 20.0D) + 2.0D);
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ATTACK_DAMAGE), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.RavagerDamage, 20.0D));
     }
 
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.entityData.define(DATA_CONVERTING_ID, false);
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(DATA_CONVERTING_ID, false);
     }
 
     public void addAdditionalSaveData(CompoundTag p_34397_) {
@@ -95,7 +97,6 @@ public class ZombieRavager extends ModRavager {
         return 0.28D;
     }
 
-    @Override
     public MobType getMobType() {
         return MobType.UNDEAD;
     }
@@ -157,7 +158,7 @@ public class ZombieRavager extends ModRavager {
         if (!this.level().isClientSide && this.isAlive() && this.isConverting()) {
             int i = this.getConversionProgress();
             this.villagerConversionTime -= i;
-            if (this.villagerConversionTime <= 0 && net.neoforged.event.net.neoforged.neoforge.event.EventHooks.canLivingConvert(this, EntityType.VILLAGER, (timer) -> this.villagerConversionTime = timer)) {
+            if (this.villagerConversionTime <= 0 && net.neoforged.neoforge.event.EventHooks.canLivingConvert(this, EntityType.VILLAGER, (timer) -> this.villagerConversionTime = timer)) {
                 this.finishConversion((ServerLevel)this.level());
             }
         }
@@ -219,7 +220,7 @@ public class ZombieRavager extends ModRavager {
                     modRavager.setTrueOwner(player);
                 }
             }
-            modRavager.finalizeSpawn(p_34399_, p_34399_.getCurrentDifficultyAt(modRavager.blockPosition()), MobSpawnType.CONVERSION, (SpawnGroupData) null, (CompoundTag) null);
+            modRavager.finalizeSpawn(p_34399_, p_34399_.getCurrentDifficultyAt(modRavager.blockPosition()), MobSpawnType.CONVERSION, (SpawnGroupData) null);
 
             if (this.hasSaddle()) {
                 modRavager.equipSaddle(false);
@@ -231,7 +232,7 @@ public class ZombieRavager extends ModRavager {
             if (!this.isSilent()) {
                 p_34399_.levelEvent((Player) null, 1027, this.blockPosition(), 0);
             }
-            net.neoforged.event.net.neoforged.neoforge.event.EventHooks.onLivingConvert(this, modRavager);
+            net.neoforged.neoforge.event.EventHooks.onLivingConvert(this, modRavager);
         }
     }
 

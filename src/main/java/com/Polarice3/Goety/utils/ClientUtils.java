@@ -7,6 +7,6 @@ public class ClientUtils {
     public static boolean noLoadingExceptions() {
         System.out.println();
         ModLoadingException error = ClientModLoaderAccessor.getError();
-        return error == null || error.getErrors().isEmpty();
+        return error == null;
     }
 }

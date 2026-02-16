@@ -30,7 +30,7 @@ public class BossBarEvent {
     @SubscribeEvent
     public static void renderBossBar(CustomizeGuiOverlayEvent.BossEventProgress event){
         Minecraft minecraft = Minecraft.getInstance();
-        if (MainConfig.SpecialBossBar.get()) {
+        if (com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MainConfig.SpecialBossBar, false)) {
             int i = minecraft.getWindow().getGuiScaledWidth();
             if (BOSS_BARS.containsKey(event.getBossEvent().getId())) {
                 Mob boss = BOSS_BARS.get(event.getBossEvent().getId());

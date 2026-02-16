@@ -1,6 +1,7 @@
 package com.Polarice3.Goety.common.blocks;
 
 import com.Polarice3.Goety.client.particles.ShockwaveParticleOption;
+import com.mojang.serialization.MapCodec;
 import com.Polarice3.Goety.common.blocks.entities.HookBellBlockEntity;
 import com.Polarice3.Goety.common.blocks.entities.ModBlockEntities;
 import net.minecraft.core.BlockPos;
@@ -41,6 +42,12 @@ import javax.annotation.Nullable;
  * Copy of Vanilla's Bell block codes.
  */
 public class HookBellBlock extends BaseEntityBlock {
+    public static final MapCodec<HookBellBlock> CODEC = simpleCodec(p -> new HookBellBlock());
+
+    @Override
+    protected MapCodec<? extends BaseEntityBlock> codec() {
+        return CODEC;
+    }
     public static final DirectionProperty FACING = HorizontalDirectionalBlock.FACING;
     public static final EnumProperty<BellAttachType> ATTACHMENT = BlockStateProperties.BELL_ATTACHMENT;
     public static final BooleanProperty POWERED = BlockStateProperties.POWERED;
@@ -82,7 +89,8 @@ public class HookBellBlock extends BaseEntityBlock {
         this.onHit(p_49708_, p_49709_, p_49710_, player, true);
     }
 
-    public InteractionResult use(BlockState p_49722_, Level p_49723_, BlockPos p_49724_, Player p_49725_, InteractionHand p_49726_, BlockHitResult p_49727_) {
+    @Override
+    protected InteractionResult useWithoutItem(BlockState p_49722_, Level p_49723_, BlockPos p_49724_, Player p_49725_, BlockHitResult p_49727_) {
         return this.onHit(p_49723_, p_49722_, p_49727_, p_49725_, true) ? InteractionResult.sidedSuccess(p_49723_.isClientSide) : InteractionResult.PASS;
     }
 

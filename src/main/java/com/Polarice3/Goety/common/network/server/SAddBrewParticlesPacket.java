@@ -10,13 +10,14 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ItemParticleOption;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.network.NetworkEvent;
+import com.Polarice3.Goety.compat.legacy.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
@@ -34,14 +35,14 @@ public class SAddBrewParticlesPacket {
     }
 
     public static void encode(SAddBrewParticlesPacket packet, FriendlyByteBuf buffer) {
-        buffer.writeItemStack(packet.itemStack, true);
+        buffer.writeResourceLocation(BuiltInRegistries.ITEM.getKey(packet.itemStack.getItem()));
         buffer.writeBlockPos(packet.blockPos);
         buffer.writeBoolean(packet.instant);
         buffer.writeInt(packet.color);
     }
 
     public static SAddBrewParticlesPacket decode(FriendlyByteBuf buffer) {
-        return new SAddBrewParticlesPacket(buffer.readItem(), buffer.readBlockPos(), buffer.readBoolean(), buffer.readInt());
+        return new SAddBrewParticlesPacket(new ItemStack(BuiltInRegistries.ITEM.get(buffer.readResourceLocation())), buffer.readBlockPos(), buffer.readBoolean(), buffer.readInt());
     }
 
     public static void consume(SAddBrewParticlesPacket packet, Supplier<NetworkEvent.Context> ctx) {

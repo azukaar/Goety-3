@@ -13,7 +13,7 @@ public class RitualChecker {
     public int xRange, yRange, zRange, totalCount;
 
     public RitualChecker(Level pLevel, BlockPos pPos, Predicate<BlockState> pPredicate, int xRange, int yRange, int zRange, int totalCount) {
-        this.level() = pLevel;
+        this.level = pLevel;
         this.initialPos = pPos;
         this.predicate = pPredicate;
         this.xRange = xRange;
@@ -57,7 +57,7 @@ public class RitualChecker {
             for (int j = -this.yRange; j <= this.yRange; ++j) {
                 for (int k = -this.zRange; k <= this.zRange; ++k) {
                     BlockPos blockpos1 = this.initialPos.offset(i, j, k);
-                    BlockState blockstate = this.level().getBlockState(blockpos1);
+                    BlockState blockstate = this.level.getBlockState(blockpos1);
                     if (this.isCorrectBlock(blockstate, blockpos1)){
                         ++currentCount;
                     }

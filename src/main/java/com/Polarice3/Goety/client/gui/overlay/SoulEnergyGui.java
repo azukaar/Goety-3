@@ -31,7 +31,7 @@ public class SoulEnergyGui {
     };
 
     public static boolean shouldDisplayBar() {
-        return SEHelper.getSoulsContainer(minecraft.player) && MainConfig.SoulGuiShow.get()
+        return SEHelper.getSoulsContainer(minecraft.player) && com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MainConfig.SoulGuiShow, false)
                 && (minecraft.gameMode != null && minecraft.gameMode.getPlayerMode() != GameType.SPECTATOR);
     }
 
@@ -46,10 +46,10 @@ public class SoulEnergyGui {
 
         ItemStack stack = TotemFinder.FindTotem(minecraft.player);
         int SoulEnergy = 0;
-        int SoulEnergyTotal = MainConfig.MaxSouls.get();
+        int SoulEnergyTotal = com.Polarice3.Goety.utils.ConfigHelper.getInt(MainConfig.MaxSouls, 0);
         if (SEHelper.getSEActive(minecraft.player)) {
             SoulEnergy = SEHelper.getSESouls(minecraft.player);
-            SoulEnergyTotal = MainConfig.MaxArcaSouls.get();
+            SoulEnergyTotal = com.Polarice3.Goety.utils.ConfigHelper.getInt(MainConfig.MaxArcaSouls, 0);
         } else if (!stack.isEmpty()) {
             net.minecraft.world.item.component.CustomData tag = stack.get(net.minecraft.core.component.DataComponents.CUSTOM_DATA);
             if (tag != null && tag.contains(ITotem.SOULS_AMOUNT)) {
@@ -60,11 +60,11 @@ public class SoulEnergyGui {
             }
         }
 
-        int i = (screenWidth / 2) + (MainConfig.SoulGuiHorizontal.get());
+        int i = (screenWidth / 2) + (com.Polarice3.Goety.utils.ConfigHelper.getInt(MainConfig.SoulGuiHorizontal, 0));
         int energylength = (int) (117 * (SoulEnergy / (double) SoulEnergyTotal));
-        int maxenergy = (int) (117 * (MainConfig.MaxSouls.get() / (double) SoulEnergyTotal));
+        int maxenergy = (int) (117 * (com.Polarice3.Goety.utils.ConfigHelper.getInt(MainConfig.MaxSouls, 0) / (double) SoulEnergyTotal));
 
-        int height = screenHeight + (MainConfig.SoulGuiVertical.get());
+        int height = screenHeight + (com.Polarice3.Goety.utils.ConfigHelper.getInt(MainConfig.SoulGuiVertical, 0));
 
         int offset = (int) ((minecraft.player.tickCount + partialTick.getGameTimeDeltaPartialTick(false)) % 234);
 
@@ -107,7 +107,7 @@ public class SoulEnergyGui {
                     90);
         }
 
-        if (MainConfig.ShowNum.get()) {
+        if (com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MainConfig.ShowNum, false)) {
             minecraft.getProfiler().push("soulenergy");
             String s = SoulEnergy + "/" + SoulEnergyTotal;
             int i1 = i + 37;

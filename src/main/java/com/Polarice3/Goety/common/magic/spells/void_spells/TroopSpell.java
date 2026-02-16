@@ -17,12 +17,12 @@ import net.minecraft.world.item.ItemStack;
 public class TroopSpell extends Spell {
     @Override
     public int defaultSoulCost() {
-        return SpellConfig.TroopCost.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.TroopCost, 0);
     }
 
     @Override
     public int defaultCastDuration() {
-        return SpellConfig.TroopDuration.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.TroopDuration, 0);
     }
 
     @Override
@@ -32,7 +32,7 @@ public class TroopSpell extends Spell {
 
     @Override
     public int defaultSpellCooldown() {
-        return SpellConfig.TroopCoolDown.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.TroopCoolDown, 0);
     }
 
     @Override

@@ -18,6 +18,8 @@ import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
+import net.neoforged.bus.api.ICancellableEvent;
+import net.minecraft.core.registries.BuiltInRegistries;
 
 import javax.annotation.Nullable;
 
@@ -27,13 +29,13 @@ import static net.neoforged.neoforge.event.entity.living.LivingChangeTargetEvent
 public class StunnedEvents {
 
     private static boolean isStunned(@Nullable LivingEntity entity) {
-        return entity != null && entity.isAlive() && (entity.hasEffect(GoetyEffects.STUNNED.get())
+        return entity != null && entity.isAlive() && (entity.hasEffect(GoetyEffects.STUNNED)
                 || (entity instanceof Player player && SEHelper.hasCamera(player)));
     }
 
     public static void cancelEvent(LivingEvent event){
-        if (event.isCancelable() && isStunned(event.getEntity())) {
-            event.setCanceled(true);
+        if (event instanceof ICancellableEvent cancellableEvent && isStunned(event.getEntity())) {
+            cancellableEvent.setCanceled(true);
         }
     }
 
@@ -76,7 +78,7 @@ public class StunnedEvents {
     public static void onLivingTarget(LivingChangeTargetEvent event) {
         if (event.getEntity() instanceof Mob mob && isStunned(mob)) {
             if (event.getTargetType() == MOB_TARGET) {
-                event.setNewTarget(null);
+                event.setNewAboutToBeSetTarget(null);
             } else {
                 event.setCanceled(true);
             }
@@ -85,29 +87,31 @@ public class StunnedEvents {
 
     @SubscribeEvent
     public static void onKnockback(LivingKnockBackEvent event) {
-        if (event.getEntity().hasEffect(GoetyEffects.TANGLED.get())){
+        if (event.getEntity().hasEffect(GoetyEffects.TANGLED)){
             event.setCanceled(true);
         }
     }
 
     @SubscribeEvent
     public static void PotionApplicationEvents(MobEffectEvent.Applicable event){
-        if (event.getEffectInstance().getEffect() == GoetyEffects.STUNNED.get()
-                || event.getEffectInstance().getEffect().getDescriptionId().contains("born_in_chaos_v1:stun")){
+        if (event.getEffectInstance().getEffect() == GoetyEffects.STUNNED
+                || event.getEffectInstance().getEffect().value().getDescriptionId().contains("born_in_chaos_v1:stun")){
             if (event.getEntity().getType().is(ModTags.EntityTypes.UNSTUNNABLE)){
-                event.setResult(Event.Result.DENY);
+                if (event instanceof net.neoforged.bus.api.ICancellableEvent cancellable) {
+                    cancellable.setCanceled(true);
+                }
             }
         }
     }
 
     @SubscribeEvent
     public static void onLivingDeath(LivingDeathEvent event){
-        if (!event.getEntity().level.isClientSide) {
+        if (!event.getEntity().level().isClientSide) {
             if (isStunned(event.getEntity())) {
-                event.getEntity().removeEffect(GoetyEffects.STUNNED.get());
-                event.getEntity().removeEffect(GoetyEffects.TANGLED.get());
-                ModNetwork.sendToALL(new SRemoveEffectPacket(event.getEntity().getId(), MobEffect.getId(GoetyEffects.STUNNED.get())));
-                ModNetwork.sendToALL(new SRemoveEffectPacket(event.getEntity().getId(), MobEffect.getId(GoetyEffects.TANGLED.get())));
+                event.getEntity().removeEffect(GoetyEffects.STUNNED);
+                event.getEntity().removeEffect(GoetyEffects.TANGLED);
+                ModNetwork.sendToALL(new SRemoveEffectPacket(event.getEntity().getId(), BuiltInRegistries.MOB_EFFECT.getId(GoetyEffects.STUNNED.value())));
+                ModNetwork.sendToALL(new SRemoveEffectPacket(event.getEntity().getId(), BuiltInRegistries.MOB_EFFECT.getId(GoetyEffects.TANGLED.value())));
             }
         }
     }

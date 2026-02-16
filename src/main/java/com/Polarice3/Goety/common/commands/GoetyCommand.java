@@ -56,7 +56,7 @@ public class GoetyCommand {
     private static final SimpleCommandExceptionType INVALID_POSITION = new SimpleCommandExceptionType(Component.translatable("commands.summon.invalidPosition"));
     private static final SimpleCommandExceptionType ERROR_SET_POINTS_INVALID = new SimpleCommandExceptionType(Component.translatable("commands.goety.soul.set.points.invalid"));
     private static final SimpleCommandExceptionType ERROR_SET_POINTS_INVALID2 = new SimpleCommandExceptionType(Component.translatable("commands.goety.illager.rest.set.points.invalid"));
-    private static final SimpleCommandExceptionType ERROR_SET_POINTS_INVALID3 = new SimpleCommandExceptionType(Component.translatable("commands.goety.brew.level.set.failure"));
+    private static final SimpleCommandExceptionType ERROR_SET_POINTS_INVALID3 = new SimpleCommandExceptionType(Component.translatable("commands.goety.brew.level().set.failure"));
     private static final SimpleCommandExceptionType ERROR_SET_POINTS_INVALID4 = new SimpleCommandExceptionType(Component.translatable("commands.goety.brew.xp.set.failure"));
     private static final SuggestionProvider<CommandSourceStack> SUGGEST_RESEARCHES = (p_136344_, p_136345_) -> {
         Collection<Research> collection = ResearchList.getResearchIdList().values();
@@ -322,7 +322,7 @@ public class GoetyCommand {
 
     private static int spawnIllagers(CommandSourceStack pSource, ServerPlayer pPlayer) {
         int i = SEHelper.getSoulAmountInt(pPlayer);
-        if (i > MobsConfig.IllagerAssaultSEThreshold.get()){
+        if (i > com.Polarice3.Goety.utils.ConfigHelper.getInt(MobsConfig.IllagerAssaultSEThreshold, 0)){
             IllagerSpawner illagerSpawner = new IllagerSpawner();
             illagerSpawner.forceSpawn(pPlayer.serverLevel(), pPlayer, pSource);
             return 1;
@@ -334,7 +334,7 @@ public class GoetyCommand {
 
     private static int getRestPeriod(CommandSourceStack pSource, ServerPlayer pPlayer){
         int i = SEHelper.getRestPeriod(pPlayer);
-        pSource.sendSuccess(() -> Component.translatable("commands.goety.illager.rest.get.success", pPlayer.getDisplayName(), StringUtil.formatTickDuration(i)), false);
+        pSource.sendSuccess(() -> Component.translatable("commands.goety.illager.rest.get.success", pPlayer.getDisplayName(), StringUtil.formatTickDuration(i, 20.0f)), false);
         return 1;
     }
 
@@ -392,7 +392,7 @@ public class GoetyCommand {
                     mob.setNoAi(true);
                     mob.setPersistenceRequired();
                     if (pRandomizeProperties){
-                        net.neoforged.neoforge.event.EventHooks.onFinalizeSpawn(mob, pSource.getLevel(), pSource.getLevel().getCurrentDifficultyAt(entity.blockPosition()), MobSpawnType.COMMAND, null, null);
+                        mob.finalizeSpawn(pSource.getLevel(), pSource.getLevel().getCurrentDifficultyAt(entity.blockPosition()), MobSpawnType.COMMAND, null);
                     }
                 }
 
@@ -424,7 +424,7 @@ public class GoetyCommand {
                 if (entity instanceof Mob mob){
                     mob.setPersistenceRequired();
                     if (pRandomizeProperties){
-                        net.neoforged.neoforge.event.EventHooks.onFinalizeSpawn(mob, pSource.getLevel(), pSource.getLevel().getCurrentDifficultyAt(entity.blockPosition()), MobSpawnType.COMMAND, null, null);
+                        mob.finalizeSpawn(pSource.getLevel(), pSource.getLevel().getCurrentDifficultyAt(entity.blockPosition()), MobSpawnType.COMMAND, null);
                     }
                 }
 
@@ -456,7 +456,7 @@ public class GoetyCommand {
                 if (entity instanceof Mob mob){
                     MobUtil.summonTame(mob, pSource.getPlayerOrException());
                     if (pRandomizeProperties){
-                        net.neoforged.neoforge.event.EventHooks.onFinalizeSpawn(mob, pSource.getLevel(), pSource.getLevel().getCurrentDifficultyAt(entity.blockPosition()), MobSpawnType.COMMAND, null, null);
+                        mob.finalizeSpawn(pSource.getLevel(), pSource.getLevel().getCurrentDifficultyAt(entity.blockPosition()), MobSpawnType.COMMAND, null);
                     }
                 }
 
@@ -495,7 +495,7 @@ public class GoetyCommand {
                         }
                     }
                     if (pRandomizeProperties){
-                        net.neoforged.neoforge.event.EventHooks.onFinalizeSpawn(mob, pSource.getLevel(), pSource.getLevel().getCurrentDifficultyAt(entity.blockPosition()), MobSpawnType.COMMAND, null, null);
+                        mob.finalizeSpawn(pSource.getLevel(), pSource.getLevel().getCurrentDifficultyAt(entity.blockPosition()), MobSpawnType.COMMAND, null);
                     }
                 }
 
@@ -581,7 +581,7 @@ public class GoetyCommand {
 
     private static int getBrewLevel(CommandSourceStack pSource, ServerPlayer pPlayer){
         int i = SEHelper.getBottleLevel(pPlayer);
-        pSource.sendSuccess(() -> Component.translatable("commands.goety.brew.level.get.success", pPlayer.getDisplayName(), i), false);
+        pSource.sendSuccess(() -> Component.translatable("commands.goety.brew.level().get.success", pPlayer.getDisplayName(), i), false);
         return 1;
     }
 
@@ -591,9 +591,9 @@ public class GoetyCommand {
         }
 
         if (pTargets.size() == 1) {
-            pSource.sendSuccess(() -> Component.translatable("commands.goety.brew.level.add.success.single", level, pTargets.iterator().next().getDisplayName()), true);
+            pSource.sendSuccess(() -> Component.translatable("commands.goety.brew.level().add.success.single", level, pTargets.iterator().next().getDisplayName()), true);
         } else {
-            pSource.sendSuccess(() -> Component.translatable("commands.goety.brew.level.add.success.multiple", level, pTargets.size()), true);
+            pSource.sendSuccess(() -> Component.translatable("commands.goety.brew.level().add.success.multiple", level, pTargets.size()), true);
         }
 
         return pTargets.size();
@@ -611,9 +611,9 @@ public class GoetyCommand {
             throw ERROR_SET_POINTS_INVALID3.create();
         } else {
             if (pTargets.size() == 1) {
-                pSource.sendSuccess(() -> Component.translatable("commands.goety.brew.level.set.success.single", level, pTargets.iterator().next().getDisplayName()), true);
+                pSource.sendSuccess(() -> Component.translatable("commands.goety.brew.level().set.success.single", level, pTargets.iterator().next().getDisplayName()), true);
             } else {
-                pSource.sendSuccess(() -> Component.translatable("commands.goety.brew.level.set.success.multiple", level, pTargets.size()), true);
+                pSource.sendSuccess(() -> Component.translatable("commands.goety.brew.level().set.success.multiple", level, pTargets.size()), true);
             }
 
             return pTargets.size();

@@ -1,5 +1,6 @@
 package com.Polarice3.Goety.common.entities.neutral;
 
+import com.Polarice3.Goety.Goety;
 import com.Polarice3.Goety.common.entities.ModEntityType;
 import com.Polarice3.Goety.common.entities.ally.Summoned;
 import com.Polarice3.Goety.common.entities.ally.undead.zombie.ZombieServant;
@@ -29,13 +30,14 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.pathfinder.PathType;
+import net.minecraft.resources.ResourceLocation;
 
 import javax.annotation.Nullable;
 import java.util.UUID;
 
 public class ZPiglinServant extends ZombieServant {
-    private static final UUID SPEED_MODIFIER_ATTACKING_UUID = UUID.fromString("49455A49-7EC5-45BA-B886-3B90B23A1718");
-    private static final AttributeModifier SPEED_MODIFIER_ATTACKING = new AttributeModifier(SPEED_MODIFIER_ATTACKING_UUID, "Attacking speed boost", 0.05D, AttributeModifier.Operation.ADDITION);
+    public static final ResourceLocation SPEED_MODIFIER_ATTACKING_ID = Goety.location("attacking_speed_boost");
+    private static final AttributeModifier SPEED_MODIFIER_ATTACKING = new AttributeModifier(SPEED_MODIFIER_ATTACKING_ID, 0.05D, AttributeModifier.Operation.ADD_VALUE);
     private int playFirstAngerSoundIn;
 
     public ZPiglinServant(EntityType<? extends Summoned> type, Level worldIn) {
@@ -51,17 +53,17 @@ public class ZPiglinServant extends ZombieServant {
 
     public static AttributeSupplier.Builder setCustomAttributes() {
         return Mob.createMobAttributes()
-                .add(Attributes.MAX_HEALTH, AttributesConfig.ZPiglinServantHealth.get())
+                .add(Attributes.MAX_HEALTH, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.ZPiglinServantHealth, 20.0D))
                 .add(Attributes.FOLLOW_RANGE, 35.0D)
                 .add(Attributes.MOVEMENT_SPEED, 0.23D)
-                .add(Attributes.ATTACK_DAMAGE, AttributesConfig.ZPiglinServantDamage.get())
-                .add(Attributes.ARMOR, AttributesConfig.ZPiglinServantArmor.get());
+                .add(Attributes.ATTACK_DAMAGE, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.ZPiglinServantDamage, 20.0D))
+                .add(Attributes.ARMOR, com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.ZPiglinServantArmor, 20.0D));
     }
 
     public void setConfigurableAttributes(){
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.MAX_HEALTH), AttributesConfig.ZPiglinServantHealth.get());
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ARMOR), AttributesConfig.ZPiglinServantArmor.get());
-        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ATTACK_DAMAGE), AttributesConfig.ZPiglinServantDamage.get());
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.MAX_HEALTH), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.ZPiglinServantHealth, 20.0D));
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ARMOR), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.ZPiglinServantArmor, 20.0D));
+        MobUtil.setBaseAttributes(this.getAttribute(Attributes.ATTACK_DAMAGE), com.Polarice3.Goety.utils.ConfigHelper.getDouble(AttributesConfig.ZPiglinServantDamage, 20.0D));
     }
 
     public double getMyRidingOffset() {
@@ -88,10 +90,10 @@ public class ZPiglinServant extends ZombieServant {
 
     @Nullable
     public SpawnGroupData finalizeSpawn(ServerLevelAccessor pLevel, DifficultyInstance pDifficulty, MobSpawnType pReason, @Nullable SpawnGroupData pSpawnData, @Nullable CompoundTag pDataTag) {
-        pSpawnData = super.finalizeSpawn(pLevel, pDifficulty, pReason, pSpawnData, pDataTag);
+        pSpawnData = super.finalizeSpawn(pLevel, pDifficulty, pReason, pSpawnData);
         RandomSource randomSource = pLevel.getRandom();
         this.populateDefaultEquipmentSlots(randomSource, pDifficulty);
-        this.populateDefaultEquipmentEnchantments(randomSource, pDifficulty);
+        this.populateDefaultEquipmentEnchantments(pLevel, randomSource, pDifficulty);
         if (this.getTrueOwner() instanceof Enemy || this.isHostile()){
             this.setWandering(true);
         }
@@ -105,12 +107,12 @@ public class ZPiglinServant extends ZombieServant {
     protected void customServerAiStep() {
         AttributeInstance modifiableattributeinstance = this.getAttribute(Attributes.MOVEMENT_SPEED);
         if (this.isAggressive()) {
-            if (!modifiableattributeinstance.hasModifier(SPEED_MODIFIER_ATTACKING)) {
+            if (!modifiableattributeinstance.hasModifier(SPEED_MODIFIER_ATTACKING.id())) {
                 modifiableattributeinstance.addTransientModifier(SPEED_MODIFIER_ATTACKING);
             }
             this.maybePlayFirstAngerSound();
-        } else if (modifiableattributeinstance.hasModifier(SPEED_MODIFIER_ATTACKING)) {
-            modifiableattributeinstance.removeModifier(SPEED_MODIFIER_ATTACKING);
+        } else if (modifiableattributeinstance.hasModifier(SPEED_MODIFIER_ATTACKING.id())) {
+            modifiableattributeinstance.removeModifier(SPEED_MODIFIER_ATTACKING.id());
         }
 
         super.customServerAiStep();

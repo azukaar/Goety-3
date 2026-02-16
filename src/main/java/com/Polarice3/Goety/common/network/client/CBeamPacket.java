@@ -4,7 +4,7 @@ import com.Polarice3.Goety.common.entities.projectiles.AbstractBeam;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
-import net.neoforged.network.NetworkEvent;
+import com.Polarice3.Goety.compat.legacy.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
@@ -68,9 +68,9 @@ public class CBeamPacket {
         if (packet != null) {
             ctx.get().setPacketHandled(true);
             ctx.get().enqueueWork(() -> {
-                ServerPlayer player = ctx.get().getSender();
+                ServerPlayer player = com.Polarice3.Goety.common.network.NetworkContextHelper.getServerPlayer(ctx);
                 if (player != null) {
-                    Entity entity = player.level.getEntity(packet.beamEntityID);
+                    Entity entity = player.level().getEntity(packet.beamEntityID);
                     if (entity instanceof AbstractBeam corruptedBeam) {
                         if (corruptedBeam.getOwner() != player) {
                             return;
@@ -86,3 +86,6 @@ public class CBeamPacket {
         }
     }
 }
+
+
+

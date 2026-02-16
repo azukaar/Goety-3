@@ -1,6 +1,7 @@
 package com.Polarice3.Goety.common.blocks;
 
 import com.Polarice3.Goety.common.blocks.entities.SpiderMotherDenBlockEntity;
+import com.mojang.serialization.MapCodec;
 import com.Polarice3.Goety.common.entities.ModEntityType;
 import com.Polarice3.Goety.common.entities.hostile.BroodMother;
 import com.Polarice3.Goety.common.entities.util.SummonCircleBoss;
@@ -23,6 +24,12 @@ import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 
 public class SpiderMotherDenBlock extends BaseEntityBlock {
+    public static final MapCodec<SpiderMotherDenBlock> CODEC = simpleCodec(p -> new SpiderMotherDenBlock());
+
+    @Override
+    protected MapCodec<? extends BaseEntityBlock> codec() {
+        return CODEC;
+    }
 
     public SpiderMotherDenBlock() {
         super(Properties.of()
@@ -39,7 +46,7 @@ public class SpiderMotherDenBlock extends BaseEntityBlock {
             Vec3 vec3 = Vec3.atBottomCenterOf(pPos);
             broodMother.setPos(vec3);
             if (pLevel instanceof ServerLevel serverLevel) {
-                broodMother.finalizeSpawn(serverLevel, serverLevel.getCurrentDifficultyAt(pPos), MobSpawnType.MOB_SUMMONED, null, null);
+                broodMother.finalizeSpawn(serverLevel, serverLevel.getCurrentDifficultyAt(pPos), MobSpawnType.MOB_SUMMONED, null);
             }
             if (MobUtil.validEntity(pPlayer)) {
                 broodMother.setTarget(pPlayer);

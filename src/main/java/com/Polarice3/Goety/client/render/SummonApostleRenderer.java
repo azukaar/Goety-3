@@ -68,7 +68,10 @@ public class SummonApostleRenderer extends EntityRenderer<SummonApostle> {
     }
 
     public void drawVertex(Matrix4f matrix4f, Matrix3f matrix3f, VertexConsumer vertexConsumer, float x, float y, float z, float u, float v, float normalX, float normalY, float normalZ) {
-        vertexConsumer.vertex(matrix4f, x, y, z).color(255, 255, 255, 255).uv(u, v).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(LightTexture.FULL_BRIGHT).normal(matrix3f, normalX, normalY, normalZ).endVertex();
+        float transformedNormalX = matrix3f.m00() * normalX + matrix3f.m10() * normalY + matrix3f.m20() * normalZ;
+        float transformedNormalY = matrix3f.m01() * normalX + matrix3f.m11() * normalY + matrix3f.m21() * normalZ;
+        float transformedNormalZ = matrix3f.m02() * normalX + matrix3f.m12() * normalY + matrix3f.m22() * normalZ;
+        vertexConsumer.addVertex(matrix4f, x, y, z).setColor(255, 255, 255, 255).setUv(u, v).setOverlay(OverlayTexture.NO_OVERLAY).setLight(LightTexture.FULL_BRIGHT).setNormal(transformedNormalX, transformedNormalY, transformedNormalZ);
     }
 
     public boolean shouldRender(SummonApostle p_114491_, Frustum p_114492_, double p_114493_, double p_114494_, double p_114495_) {

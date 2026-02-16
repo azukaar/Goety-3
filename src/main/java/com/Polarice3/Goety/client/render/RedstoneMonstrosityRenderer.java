@@ -60,7 +60,7 @@ public class RedstoneMonstrosityRenderer<T extends Mob & IRM> extends MobRendere
             float f2 = f1 - f;
             float f6 = Mth.lerp(pPartialTicks, pEntity.xRotO, pEntity.getXRot());
             float f71 = this.getBob(pEntity, pPartialTicks);
-            this.setupRotations(pEntity, pMatrixStack, f71, f, pPartialTicks);
+            this.setupRotations(pEntity, pMatrixStack, f71, f, pPartialTicks, 1.0F);
             pMatrixStack.scale(-1.0F, -1.0F, 1.0F);
             this.scale(pEntity, pMatrixStack, pPartialTicks);
             pMatrixStack.translate(0.0D, (double) -1.501F, 0.0D);
@@ -199,7 +199,7 @@ public class RedstoneMonstrosityRenderer<T extends Mob & IRM> extends MobRendere
         public void render(PoseStack matrixStackIn, MultiBufferSource bufferIn, int packedLightIn, T entitylivingbaseIn,
                 float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw,
                 float headPitch) {
-            if (!entitylivingbaseIn.isHostile() && MobsConfig.RedstoneMonstrosityTexture.get()) {
+            if (!entitylivingbaseIn.isHostile() && com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MobsConfig.RedstoneMonstrosityTexture, false)) {
                 renderColoredCutoutModel(this.getParentModel(), TEXTURES, matrixStackIn, bufferIn, packedLightIn,
                         entitylivingbaseIn, -1);
             }

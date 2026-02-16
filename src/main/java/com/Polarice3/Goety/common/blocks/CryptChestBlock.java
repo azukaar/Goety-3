@@ -57,7 +57,8 @@ public class CryptChestBlock extends ModChestBlock {
         return this.defaultBlockState().setValue(FACING, p_53128_.getHorizontalDirection().getOpposite()).setValue(WATERLOGGED, Boolean.valueOf(fluidstate.getType() == Fluids.WATER)).setValue(LOCKED, false);
     }
 
-    public InteractionResult use(BlockState pState, Level pLevel, BlockPos pPos, Player pPlayer, InteractionHand pHand, BlockHitResult pResult) {
+    @Override
+    protected InteractionResult useWithoutItem(BlockState pState, Level pLevel, BlockPos pPos, Player pPlayer, BlockHitResult pResult) {
         if (pLevel.isClientSide) {
             return InteractionResult.SUCCESS;
         } else if (pState.getValue(LOCKED)){

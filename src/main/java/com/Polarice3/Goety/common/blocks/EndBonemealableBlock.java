@@ -20,8 +20,9 @@ public class EndBonemealableBlock extends Block implements BonemealableBlock {
         super(p_49795_);
     }
 
-    public boolean isValidBonemealTarget(LevelReader p_256229_, BlockPos p_256432_, BlockState p_255677_, boolean p_256630_) {
-        return p_256229_.getBlockState(p_256432_.above()).isAir();
+    @Override
+    public boolean isValidBonemealTarget(LevelReader level, BlockPos pos, BlockState state) {
+        return level.getBlockState(pos.above()).isAir();
     }
 
     public boolean isBonemealSuccess(Level p_221275_, RandomSource p_221276_, BlockPos p_221277_, BlockState p_221278_) {

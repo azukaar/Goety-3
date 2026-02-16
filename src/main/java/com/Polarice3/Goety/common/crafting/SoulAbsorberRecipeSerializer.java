@@ -10,43 +10,51 @@ import net.minecraft.world.item.crafting.RecipeSerializer;
 
 import javax.annotation.Nullable;
 
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
+
 public class SoulAbsorberRecipeSerializer <T extends SoulAbsorberRecipes>  implements RecipeSerializer<T> {
     private final int defaultSoulIncrease;
     private final int defaultCookingTime;
     private final IFactory<T> factory;
+    private final MapCodec<T> codec;
+    private final StreamCodec<RegistryFriendlyByteBuf, T> streamCodec;
 
     public SoulAbsorberRecipeSerializer(IFactory<T> pFactory, int pDefaultSoulIncrease, int pDefaultCookingTime) {
         this.defaultSoulIncrease = pDefaultSoulIncrease;
         this.defaultCookingTime = pDefaultCookingTime;
         this.factory = pFactory;
+        
+        this.codec = RecordCodecBuilder.mapCodec(instance -> instance.group(
+                Ingredient.CODEC_NONEMPTY.fieldOf("ingredient").forGetter(r -> r.ingredient),
+                Codec.INT.optionalFieldOf("soulIncrease", defaultSoulIncrease).forGetter(r -> r.soulIncrease),
+                Codec.INT.optionalFieldOf("cookingtime", defaultCookingTime).forGetter(r -> r.cookingTime)
+        ).apply(instance, pFactory::create));
+
+        this.streamCodec = StreamCodec.composite(
+                Ingredient.CONTENTS_STREAM_CODEC, r -> r.ingredient,
+                ByteBufCodecs.INT, r -> r.soulIncrease,
+                ByteBufCodecs.INT, r -> r.cookingTime,
+                pFactory::create
+        );
     }
 
     @Override
-    public T fromJson(ResourceLocation pRecipeId, JsonObject pJson) {
-        JsonElement jsonelement = GsonHelper.isArrayNode(pJson, "ingredient") ? GsonHelper.getAsJsonArray(pJson, "ingredient") : GsonHelper.getAsJsonObject(pJson, "ingredient");
-        Ingredient ingredient = Ingredient.fromJson(jsonelement);
-        int s = GsonHelper.getAsInt(pJson, "soulIncrease", this.defaultSoulIncrease);
-        int i = GsonHelper.getAsInt(pJson, "cookingtime", this.defaultCookingTime);
-        return this.factory.create(pRecipeId, ingredient, s, i);
-    }
-
-    @Nullable
-    @Override
-    public T fromNetwork(ResourceLocation pRecipeId, FriendlyByteBuf pBuffer) {
-        Ingredient ingredient = Ingredient.fromNetwork(pBuffer);
-        int s = pBuffer.readVarInt();
-        int i = pBuffer.readVarInt();
-        return this.factory.create(pRecipeId, ingredient, i, s);
+    public MapCodec<T> codec() {
+        return codec;
     }
 
     @Override
-    public void toNetwork(FriendlyByteBuf pBuffer, T pRecipe) {
-        pRecipe.ingredient.toNetwork(pBuffer);
-        pBuffer.writeVarInt(pRecipe.soulIncrease);
-        pBuffer.writeVarInt(pRecipe.cookingTime);
+    public StreamCodec<RegistryFriendlyByteBuf, T> streamCodec() {
+        return streamCodec;
     }
 
-    interface IFactory<T extends SoulAbsorberRecipes> {
-        T create(ResourceLocation p_create_1_, Ingredient p_create_3_, int p_create_4_, int p_create_5_);
+    public interface IFactory<T extends SoulAbsorberRecipes> {
+        // Removed ResourceLocation
+        T create(Ingredient ingredient, int soulIncrease, int cookingTime);
     }
 }

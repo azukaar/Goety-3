@@ -32,8 +32,8 @@ import net.minecraft.world.phys.Vec3;
 import org.joml.Matrix4f;
 
 public class PrisonerRenderer extends MobRenderer<Prisoner, PrisonerModel<Prisoner>> {
-   private static final ResourceLocation VILLAGER_BASE_SKIN = new ResourceLocation("textures/entity/villager/villager.png");
-   private static final ResourceLocation TRADER = new ResourceLocation("textures/entity/wandering_trader.png");
+   private static final ResourceLocation VILLAGER_BASE_SKIN = ResourceLocation.parse("textures/entity/villager/villager.png");
+   private static final ResourceLocation TRADER = ResourceLocation.parse("textures/entity/wandering_trader.png");
    private static final ResourceLocation CHAIN = Goety.location("textures/entity/servants/prisoner_chain.png");
 
    public PrisonerRenderer(EntityRendererProvider.Context p_174437_) {
@@ -117,8 +117,8 @@ public class PrisonerRenderer extends MobRenderer<Prisoner, PrisonerModel<Prison
       BlockPos blockpos1 = BlockPos.containing(p_115466_.getEyePosition(p_115463_));
       int i = this.getBlockLightLevel(p_115462_, blockpos);
       int j = this.getBlockLightLevel(p_115462_, blockpos1);
-      int k = p_115462_.level.getBrightness(LightLayer.SKY, blockpos);
-      int l = p_115462_.level.getBrightness(LightLayer.SKY, blockpos1);
+      int k = p_115462_.level().getBrightness(LightLayer.SKY, blockpos);
+      int l = p_115462_.level().getBrightness(LightLayer.SKY, blockpos1);
 
       for(int i1 = 0; i1 <= 24; ++i1) {
          addVertexPair(vertexconsumer, matrix4f, f, f1, f2, i, j, k, l, 0.025F, 0.025F, f5, f6, i1, false);
@@ -144,8 +144,8 @@ public class PrisonerRenderer extends MobRenderer<Prisoner, PrisonerModel<Prison
       float f5 = p_174310_ * f;
       float f6 = p_174311_ > 0.0F ? p_174311_ * f * f : p_174311_ - p_174311_ * (1.0F - f) * (1.0F - f);
       float f7 = p_174312_ * f;
-      p_174308_.vertex(p_254405_, f5 - p_174319_, f6 + p_174318_, f7 + p_174320_).color(f2, f3, f4, 1.0F).uv2(k).endVertex();
-      p_174308_.vertex(p_254405_, f5 + p_174319_, f6 + p_174317_ - p_174318_, f7 - p_174320_).color(f2, f3, f4, 1.0F).uv2(k).endVertex();
+      p_174308_.addVertex(p_254405_, f5 - p_174319_, f6 + p_174318_, f7 + p_174320_).setColor(f2, f3, f4, 1.0F).setLight(k);
+      p_174308_.addVertex(p_254405_, f5 + p_174319_, f6 + p_174317_ - p_174318_, f7 - p_174320_).setColor(f2, f3, f4, 1.0F).setLight(k);
    }
 
    public static class ShacklesLayer<T extends Prisoner, M extends PrisonerModel<T>> extends RenderLayer<T, M> {

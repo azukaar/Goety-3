@@ -6,7 +6,7 @@ import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.resources.ResourceLocation;
 
 public class NetherMeteorRenderer extends ExplosiveProjectileRenderer<NetherMeteor> {
-    private static final ResourceLocation TEXTURE = new ResourceLocation(Goety.MOD_ID,"textures/entity/projectiles/nether_meteor.png");
+    private static final ResourceLocation TEXTURE = Goety.location("textures/entity/projectiles/nether_meteor.png");
 
     public NetherMeteorRenderer(EntityRendererProvider.Context renderManagerIn) {
         super(renderManagerIn);

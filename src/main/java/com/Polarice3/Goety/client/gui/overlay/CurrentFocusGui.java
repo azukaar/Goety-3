@@ -20,7 +20,7 @@ public class CurrentFocusGui {
     };
 
     public static boolean shouldDisplayBar(){
-        return !WandUtil.findFocus(minecraft.player).isEmpty() && (minecraft.gameMode != null && minecraft.gameMode.getPlayerMode() != GameType.SPECTATOR) && !(minecraft.screen instanceof FocusRadialMenuScreen) && MainConfig.FocusGuiShow.get();
+        return !WandUtil.findFocus(minecraft.player).isEmpty() && (minecraft.gameMode != null && minecraft.gameMode.getPlayerMode() != GameType.SPECTATOR) && !(minecraft.screen instanceof FocusRadialMenuScreen) && com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MainConfig.FocusGuiShow, false);
     }
 
     public static void drawHUD(GuiGraphics guiGraphics, DeltaTracker partialTick, int screenWidth, int screenHeight) {
@@ -31,8 +31,8 @@ public class CurrentFocusGui {
         guiGraphics.pose().pushPose();
         guiGraphics.pose().scale(1.0F, 1.0F, 1.0F);
         if (WandUtil.findFocus(minecraft.player) != null) {
-            guiGraphics.renderFakeItem(WandUtil.findFocus(minecraft.player), ((screenWidth - 16) / 2) + MainConfig.FocusGuiHorizontal.get(), (screenHeight - 52) + MainConfig.FocusGuiVertical.get());
-            guiGraphics.renderItemDecorations(minecraft.font, WandUtil.findFocus(minecraft.player), ((screenWidth - 16) / 2) + MainConfig.FocusGuiHorizontal.get(), (screenHeight - 52) + MainConfig.FocusGuiVertical.get());
+            guiGraphics.renderFakeItem(WandUtil.findFocus(minecraft.player), ((screenWidth - 16) / 2) + com.Polarice3.Goety.utils.ConfigHelper.getInt(MainConfig.FocusGuiHorizontal, 0), (screenHeight - 52) + com.Polarice3.Goety.utils.ConfigHelper.getInt(MainConfig.FocusGuiVertical, 0));
+            guiGraphics.renderItemDecorations(minecraft.font, WandUtil.findFocus(minecraft.player), ((screenWidth - 16) / 2) + com.Polarice3.Goety.utils.ConfigHelper.getInt(MainConfig.FocusGuiHorizontal, 0), (screenHeight - 52) + com.Polarice3.Goety.utils.ConfigHelper.getInt(MainConfig.FocusGuiVertical, 0));
         }
         guiGraphics.pose().popPose();
     }

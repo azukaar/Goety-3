@@ -108,7 +108,7 @@ public class WindBlowerBlockEntity extends BlockEntity {
                 case WEST -> blockPos2 = blockPos2.offset(0, 1, 1);
                 case NORTH -> blockPos2 = blockPos2.offset(1, 1, 0);
             }
-            return new AABB(this.getBlockPos(), blockPos2);
+            return new AABB(Vec3.atLowerCornerOf(this.getBlockPos()), Vec3.atLowerCornerOf(blockPos2));
         } else {
             return new AABB(0.0D, 0.0D, 0.0D, 0.0D, 0.0D, 0.0D);
         }

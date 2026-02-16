@@ -52,7 +52,6 @@ public class DragonBreathCloud extends Entity implements TraceableEntity {
     }
 
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
-        super.defineSynchedData(builder);
         builder.define(DATA_RADIUS, 3.0F);
         builder.define(DATA_WAITING, false);
     }
@@ -304,7 +303,7 @@ public class DragonBreathCloud extends Entity implements TraceableEntity {
     }
 
     @Override
-    public Packet<ClientGamePacketListener> getAddEntityPacket() {
-        return new net.minecraft.network.protocol.game.ClientboundAddEntityPacket(this);
+    public Packet<ClientGamePacketListener> getAddEntityPacket(net.minecraft.server.level.ServerEntity p_345759_) {
+        return new net.minecraft.network.protocol.game.ClientboundAddEntityPacket(this, p_345759_);
     }
 }

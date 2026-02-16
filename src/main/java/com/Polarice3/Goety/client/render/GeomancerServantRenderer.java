@@ -31,7 +31,7 @@ public class GeomancerServantRenderer<T extends GeomancerServant> extends MobRen
 
     @Override
     public ResourceLocation getTextureLocation(T entity) {
-        if (entity.isHostile() || !MobsConfig.GeomancerServantTexture.get()){
+        if (entity.isHostile() || !com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MobsConfig.GeomancerServantTexture, false)){
             return ORIGINAL;
         } else {
             return TEXTURE;

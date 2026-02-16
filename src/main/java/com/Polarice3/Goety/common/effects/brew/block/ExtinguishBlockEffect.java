@@ -18,7 +18,7 @@ import javax.annotation.Nullable;
 
 public class ExtinguishBlockEffect extends BrewEffect {
     public ExtinguishBlockEffect() {
-        super("extinguish", BrewConfig.ExtinguishCost.get(), MobEffectCategory.BENEFICIAL, 0xfff5c6);
+        super("extinguish", com.Polarice3.Goety.utils.ConfigHelper.getInt(BrewConfig.ExtinguishCost, 0), MobEffectCategory.BENEFICIAL, 0xfff5c6);
     }
 
     @Override

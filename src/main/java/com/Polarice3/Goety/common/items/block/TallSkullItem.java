@@ -15,10 +15,7 @@ public class TallSkullItem extends StandingAndWallBlockItem {
         super(pStandingBlock, pWallBlock, pProperties, Direction.DOWN);
     }
 
-    @Override
-    public boolean canEquip(ItemStack stack, EquipmentSlot armorType, Entity entity) {
-        return armorType == EquipmentSlot.HEAD;
-    }
+
 
     @Override
     @Nullable

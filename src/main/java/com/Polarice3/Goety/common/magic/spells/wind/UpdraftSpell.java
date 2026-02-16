@@ -29,11 +29,11 @@ public class UpdraftSpell extends Spell {
     }
 
     public int defaultSoulCost() {
-        return SpellConfig.UpdraftCost.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.UpdraftCost, 0);
     }
 
     public int defaultCastDuration() {
-        return SpellConfig.UpdraftDuration.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.UpdraftDuration, 0);
     }
 
     public SoundEvent CastingSound() {
@@ -42,7 +42,7 @@ public class UpdraftSpell extends Spell {
 
     @Override
     public int defaultSpellCooldown() {
-        return SpellConfig.UpdraftCoolDown.get();
+        return com.Polarice3.Goety.utils.ConfigHelper.getInt(SpellConfig.UpdraftCoolDown, 0);
     }
 
     @Override
@@ -66,7 +66,7 @@ public class UpdraftSpell extends Spell {
             range *= 2;
             radius += 0.5D;
         }
-        float damage = SpellConfig.UpdraftBlastDamage.get().floatValue() * WandUtil.damageMultiply();
+        float damage = com.Polarice3.Goety.utils.ConfigHelper.getFloat(SpellConfig.UpdraftBlastDamage, 1.0F) * WandUtil.damageMultiply();
         if (WandUtil.enchantedFocus(caster)) {
             range += WandUtil.getRangeLevel(caster);
             radius += WandUtil.getLevels(ModEnchantments.RADIUS.get(), caster);

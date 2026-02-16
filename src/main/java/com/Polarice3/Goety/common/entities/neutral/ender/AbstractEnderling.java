@@ -1,6 +1,7 @@
 package com.Polarice3.Goety.common.entities.neutral.ender;
 
 import com.Polarice3.Goety.api.entities.IHiding;
+import com.Polarice3.Goety.api.entities.ally.IServant;
 import com.Polarice3.Goety.client.particles.ModParticleTypes;
 import com.Polarice3.Goety.common.entities.ally.Summoned;
 import com.Polarice3.Goety.common.entities.neutral.Owned;
@@ -35,7 +36,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.alchemy.Potion;
 import net.minecraft.core.Holder;
-import net.minecraft.world.item.alchemy.PotionUtils;
+import com.Polarice3.Goety.utils.PotionUtils;
 import net.minecraft.world.item.alchemy.Potions;
 import net.neoforged.neoforge.event.entity.EntityTeleportEvent;
 import net.minecraft.world.level.Level;

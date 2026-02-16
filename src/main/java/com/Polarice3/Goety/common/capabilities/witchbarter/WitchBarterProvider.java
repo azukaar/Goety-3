@@ -1,41 +1,26 @@
 package com.Polarice3.Goety.common.capabilities.witchbarter;
 
-import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
-import net.neoforged.neoforge.capabilities.*;
-import net.neoforged.neoforge.common.util.LazyOptional;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
-public class WitchBarterProvider implements ICapabilitySerializable<CompoundTag> {
-    public static Capability<IWitchBarter> CAPABILITY = CapabilityManager.get(new CapabilityToken<>() {
-    });
-
-    IWitchBarter instance = new WitchBarterImp();
-
-    // @Nonnull
-    // @Override
-    // public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap,
-    // @Nullable Direction side) {
-    // return cap == CAPABILITY ? LazyOptional.of(() -> (T) instance) :
-    // LazyOptional.empty();
-    // }
-
-    @Override
-    public CompoundTag serializeNBT() {
-        return save(new CompoundTag(), instance);
-    }
-
-    @Override
-    public void deserializeNBT(CompoundTag nbt) {
-        load(nbt, instance);
+/**
+ * WitchBarterProvider now only provides save/load methods for the AttachmentType system.
+ * The old capability system (CapabilityManager, ICapabilitySerializable) is no longer used.
+ * See ModAttachments.WITCH_BARTER for the new registration.
+ */
+public class WitchBarterProvider {
+    
+    public static CompoundTag save(IWitchBarter witchBarter) {
+        return save(new CompoundTag(), witchBarter);
     }
 
     public static CompoundTag save(CompoundTag tag, IWitchBarter witchBarter) {
         tag.putInt("barterTimer", witchBarter.getTimer());
         tag.putInt("barterTraderID", witchBarter.getTraderID());
         return tag;
+    }
+
+    public static IWitchBarter load(CompoundTag tag) {
+        return load(tag, new WitchBarterImp());
     }
 
     public static IWitchBarter load(CompoundTag tag, IWitchBarter witchBarter) {

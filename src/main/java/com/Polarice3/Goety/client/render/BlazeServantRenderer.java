@@ -42,7 +42,7 @@ public class BlazeServantRenderer extends MobRenderer<BlazeServant, BlazeModel<B
 
       @Override
       public void render(PoseStack pMatrixStack, MultiBufferSource pBuffer, int pPackedLight, BlazeServant pLivingEntity, float pLimbSwing, float pLimbSwingAmount, float pPartialTicks, float pAgeInTicks, float pNetHeadYaw, float pHeadPitch) {
-         if (MobsConfig.BlazeServantTexture.get() && !pLivingEntity.isHostile()) {
+         if (com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MobsConfig.BlazeServantTexture, false) && !pLivingEntity.isHostile()) {
             coloredCutoutModelCopyLayerRender(this.getParentModel(), this.layerModel, TEXTURES, pMatrixStack, pBuffer, pPackedLight, pLivingEntity, pLimbSwing, pLimbSwingAmount, pAgeInTicks, pNetHeadYaw, pHeadPitch, pPartialTicks, -1);
          }
       }

@@ -9,8 +9,8 @@ import net.minecraft.world.item.crafting.RecipeSerializer;
 public class CursedInfuserRecipes extends ModCookingRecipe {
     public boolean grim;
 
-    public CursedInfuserRecipes(ResourceLocation pId, String pGroup, Ingredient pIngredient, ItemStack pResult, float pExperience, int pCookingTime, boolean grim) {
-        super(ModRecipeSerializer.CURSED_INFUSER.get(), pId, pGroup, pIngredient, pResult, pExperience, pCookingTime);
+    public CursedInfuserRecipes(String pGroup, Ingredient pIngredient, ItemStack pResult, float pExperience, int pCookingTime, boolean grim) {
+        super(ModRecipeSerializer.CURSED_INFUSER.get(), pGroup, pIngredient, pResult, pExperience, pCookingTime);
         this.grim = grim;
     }
 

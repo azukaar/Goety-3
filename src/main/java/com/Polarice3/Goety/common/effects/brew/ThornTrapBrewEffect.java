@@ -22,7 +22,7 @@ public class ThornTrapBrewEffect extends BrewEffect{
     }
 
     public void applyEntityEffect(LivingEntity pTarget, @Nullable Entity pSource, @Nullable Entity pIndirectSource, int pAmplifier){
-        Level level = pTarget.level;
+        Level level = pTarget.level();
         for (Direction direction : Direction.values()) {
             if (direction.getAxis().isHorizontal()){
                 BlockPos blockPos = pTarget.blockPosition().relative(direction);

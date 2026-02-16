@@ -32,6 +32,8 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -52,11 +54,21 @@ public class PoisonQuill extends Arrow implements ISpellEntity {
     }
 
     public PoisonQuill(Level p_36861_, double p_36862_, double p_36863_, double p_36864_) {
-        super(p_36861_, p_36862_, p_36863_, p_36864_);
+        super(ModEntityType.POISON_QUILL.get(), p_36861_);
+        this.setPos(p_36862_, p_36863_, p_36864_);
     }
 
     public PoisonQuill(Level p_36866_, LivingEntity p_36867_) {
-        super(p_36866_, p_36867_);
+        super(ModEntityType.POISON_QUILL.get(), p_36866_);
+        this.setOwner(p_36867_);
+        this.setPos(p_36867_.getX(), p_36867_.getEyeY() - 0.1, p_36867_.getZ());
+    }
+
+    public PoisonQuill(Level p_36866_, LivingEntity p_36867_, ItemStack stack) {
+        super(ModEntityType.POISON_QUILL.get(), p_36866_);
+        this.setOwner(p_36867_);
+        this.setPos(p_36867_.getX(), p_36867_.getEyeY() - 0.1, p_36867_.getZ());
+        this.setPickupItemStack(stack);
     }
 
     @Override
@@ -211,7 +223,7 @@ public class PoisonQuill extends Arrow implements ISpellEntity {
             }
             Entity entity1 = this.getOwner();
             boolean flag;
-            float damage = entity1 instanceof Mob mob ? (float) MobUtil.getAttributeValue(mob, Attributes.ATTACK_DAMAGE, 2.0D) : SpellConfig.PoisonDartDamage.get().floatValue();
+            float damage = entity1 instanceof Mob mob && mob.getAttribute(Attributes.ATTACK_DAMAGE) != null ? (float) mob.getAttributeValue(Attributes.ATTACK_DAMAGE) : com.Polarice3.Goety.utils.ConfigHelper.getFloat(SpellConfig.PoisonDartDamage, 1.0F);
             damage += this.getExtraDamage();
             if (entity1 instanceof LivingEntity livingentity) {
                 if (!entity.isAlive() && this.piercedAndKilledEntities != null) {
@@ -220,7 +232,7 @@ public class PoisonQuill extends Arrow implements ISpellEntity {
                 flag = entity.hurt(this.damageSources().arrow(this, entity1), damage);
                 if (flag) {
                     if (entity.isAlive()) {
-                        this.doEnchantDamageEffects(livingentity, entity);
+                        // this.doEnchantDamageEffects(livingentity, entity);
                     }
                 }
             } else {
@@ -228,18 +240,18 @@ public class PoisonQuill extends Arrow implements ISpellEntity {
             }
             if (flag && entity.getType() != EntityType.ENDERMAN && entity instanceof LivingEntity livingEntity) {
                 if (entity1 instanceof LivingEntity) {
-                    EnchantmentHelper.doPostHurtEffects(livingEntity, entity1);
-                    EnchantmentHelper.doPostDamageEffects((LivingEntity) entity1, livingEntity);
+                    // EnchantmentHelper.doPostHurtEffects(livingEntity, entity1);
+                    // EnchantmentHelper.doPostDamageEffects((LivingEntity) entity1, livingEntity);
                 }
 
                 this.doPostHurtEffects(livingEntity);
 
-                MobEffect mobEffect = MobEffects.POISON;
+                MobEffect mobEffect = MobEffects.POISON.value();
                 if ((entity1 instanceof IOwned owned && CuriosFinder.hasWildRobe(owned.getMasterOwner()))
                         || (entity1 instanceof LivingEntity livingEntity1 && CuriosFinder.hasWildRobe(livingEntity1))) {
                     mobEffect = GoetyEffects.ACID_VENOM.get();
                 }
-                livingEntity.addEffect(new MobEffectInstance(mobEffect, MathHelper.secondsToTicks(2 + this.getDuration())));
+                livingEntity.addEffect(new MobEffectInstance(net.minecraft.core.Holder.direct(mobEffect), MathHelper.secondsToTicks(2 + this.getDuration())));
 
                 this.playSound(this.getHitGroundSoundEvent(), 1.0F, 1.2F / (this.random.nextFloat() * 0.2F + 0.9F));
                 if (this.getSpearLevel() <= 0) {

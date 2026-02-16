@@ -8,13 +8,43 @@ import net.minecraft.client.renderer.LightTexture;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent;
-import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
+import com.Polarice3.Goety.compat.fml.FMLJavaModLoadingContext;
+import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent;
+import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
+import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
+import com.Polarice3.Goety.common.items.ModItems;
+import com.Polarice3.Goety.common.items.magic.DarkWand;
+import com.Polarice3.Goety.client.render.item.CustomItemsRenderer;
 
 @OnlyIn(Dist.CLIENT)
 public class ClientSideInit extends SidedInit {
 
     public void init() {
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setupParticles);
+        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::registerClientExtensions);
+    }
+
+    public void registerClientExtensions(RegisterClientExtensionsEvent event) {
+        event.registerItem(new DarkWand.DarkWandClient(), 
+            ModItems.DARK_WAND.get(),
+            ModItems.OMINOUS_STAFF.get(),
+            ModItems.NECRO_STAFF.get(),
+            ModItems.GEO_STAFF.get(),
+            ModItems.WIND_STAFF.get(),
+            ModItems.STORM_STAFF.get(),
+            ModItems.FROST_STAFF.get(),
+            ModItems.WILD_STAFF.get(),
+            ModItems.ABYSS_STAFF.get(),
+            ModItems.VOID_STAFF.get(),
+            ModItems.NETHER_STAFF.get()
+        );
+
+        event.registerItem(new DarkWand.DarkWandClient() {
+            @Override
+            public BlockEntityWithoutLevelRenderer getCustomRenderer() {
+                return new CustomItemsRenderer();
+            }
+        }, ModItems.NAMELESS_STAFF.get());
     }
 
     public void setupParticles(RegisterParticleProvidersEvent event) {
@@ -48,8 +78,8 @@ public class ClientSideInit extends SidedInit {
         event.registerSpriteSet(ModParticleTypes.FIERY_PILLAR.get(), FieryPillarParticle.Provider::new);
         event.registerSpriteSet(ModParticleTypes.SOUL_EXPLODE_BITS.get(), AdditiveFlameParticle.Provider::new);
         event.registerSpriteSet(ModParticleTypes.XP_TAKE.get(), AdditiveFlameParticle.Provider::new);
-        event.registerSpriteSet(ModParticleTypes.CULT_SPELL.get(), SpellParticle.MobProvider::new);
-        event.registerSpriteSet(ModParticleTypes.BIG_CULT_SPELL.get(), BigSpellParticle.MobProvider::new);
+        event.registerSpriteSet(ModParticleTypes.CULT_SPELL.get(), SpellParticle.Provider::new);
+        event.registerSpriteSet(ModParticleTypes.BIG_CULT_SPELL.get(), BigSpellParticle.Provider::new);
         event.registerSpriteSet(ModParticleTypes.SMALL_STATION_CULT_SPELL.get(), FireParticle.SmallerColorProvider::new);
         event.registerSpriteSet(ModParticleTypes.STATION_CULT_SPELL.get(), FireParticle.ColorProvider::new);
         event.registerSpriteSet(ModParticleTypes.MUD_GAS.get(), MudGasParticle.Provider::new);

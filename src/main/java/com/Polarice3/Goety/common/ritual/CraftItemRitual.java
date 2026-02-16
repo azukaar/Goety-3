@@ -9,12 +9,8 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.enchantment.Enchantment;
-import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.items.IItemHandler;
-
-import java.util.Map;
 
 public class CraftItemRitual extends Ritual{
 
@@ -42,18 +38,8 @@ public class CraftItemRitual extends Ritual{
 
             resultWand.insertItem(initWand.getStackInSlot(0));
         }
-        if (MainConfig.RitualCraftEnchant.get()) {
-            if (activationItem.isEnchanted()) {
-                Map<Enchantment, Integer> enchants = EnchantmentHelper.getEnchantments(activationItem);
-                for (Enchantment enchantment : enchants.keySet()) {
-                    if (enchantment != null && enchantment.canEnchant(result)) {
-                        enchants.put(enchantment, enchants.get(enchantment));
-                        EnchantmentHelper.setEnchantments(enchants, result);
-                    }
-                }
-            }
-        }
-        if (MainConfig.RitualCraftDamage.get()) {
+        // TODO NeoForge 1.21: restore enchantment transfer using Holder-based APIs.
+        if (com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MainConfig.RitualCraftDamage, false)) {
             if (result.isDamageableItem()) {
                 float percent = 1.0F - (float) (activationItem.getMaxDamage() - activationItem.getDamageValue()) / activationItem.getMaxDamage();
                 int damage = (int) (result.getMaxDamage() * percent);
@@ -62,7 +48,7 @@ public class CraftItemRitual extends Ritual{
         }
         activationItem.shrink(1);
         result.onCraftedBy(world, castingPlayer, 1);
-        IItemHandler handler = tileEntity.itemStackHandler.orElseThrow(RuntimeException::new);
+        IItemHandler handler = tileEntity.itemStackHandler;
         handler.insertItem(0, result, false);
     }
 }
