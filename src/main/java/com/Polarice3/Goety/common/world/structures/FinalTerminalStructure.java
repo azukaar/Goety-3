@@ -2,6 +2,7 @@ package com.Polarice3.Goety.common.world.structures;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
@@ -18,7 +19,7 @@ import java.util.Optional;
 import java.util.function.Function;
 
 public class FinalTerminalStructure extends BiggerJigsawStructure{
-    public static final Codec<FinalTerminalStructure> CODEC = RecordCodecBuilder.<FinalTerminalStructure>mapCodec((p_227640_) -> {
+    public static final MapCodec<FinalTerminalStructure> MAP_CODEC = RecordCodecBuilder.<FinalTerminalStructure>mapCodec((p_227640_) -> {
         return p_227640_.group(settingsCodec(p_227640_), StructureTemplatePool.CODEC.fieldOf("start_pool").forGetter((p_227656_) -> {
             return p_227656_.startPool;
         }), ResourceLocation.CODEC.optionalFieldOf("start_jigsaw_name").forGetter((p_227654_) -> {
@@ -32,7 +33,8 @@ public class FinalTerminalStructure extends BiggerJigsawStructure{
         }), Codec.intRange(1, 1024).fieldOf("max_distance_from_center").forGetter((p_227642_) -> {
             return p_227642_.maxDistanceFromCenter;
         })).apply(p_227640_, FinalTerminalStructure::new);
-    }).flatXmap(verifyRangeTerminal(), verifyRangeTerminal()).codec();
+    }).flatXmap(verifyRangeTerminal(), verifyRangeTerminal());
+    public static final Codec<FinalTerminalStructure> CODEC = MAP_CODEC.codec();
 
     public FinalTerminalStructure(StructureSettings p_227627_, Holder<StructureTemplatePool> p_227628_, Optional<ResourceLocation> p_227629_, int p_227630_, HeightProvider p_227631_, Optional<Heightmap.Types> p_227633_, int p_227634_) {
         super(p_227627_, p_227628_, p_227629_, p_227630_, p_227631_, p_227633_, p_227634_);
@@ -55,6 +57,6 @@ public class FinalTerminalStructure extends BiggerJigsawStructure{
     }
 
     public StructureType<?> type() {
-        return StructureType.JIGSAW;
+        return ModStructureTypes.FINAL_TERMINAL.get();
     }
 }

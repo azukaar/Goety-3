@@ -1,7 +1,8 @@
 {
   "processors": [
     {
-      "processor_type": "goety:waterlogging_stop_processor"
+      "processor_type": "goety:waterlogging_stop_processor",
+      "processor": {}
     }
   ]
 }

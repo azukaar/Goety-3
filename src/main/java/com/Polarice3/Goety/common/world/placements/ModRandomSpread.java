@@ -1,6 +1,7 @@
 package com.Polarice3.Goety.common.world.placements;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
@@ -22,7 +23,7 @@ import java.util.Optional;
 
 //Based on @L_Ender's Cataclysm codes: https://github.com/lender544/L_ender-s-Cataclysm-Backport-1.19.2-1.80/blob/master/src/main/java/com/github/L_Ender/cataclysm/world/structures/placements/ModRandomSpread.java
 public class ModRandomSpread extends RandomSpreadStructurePlacement {
-    public static final Codec<ModRandomSpread> CODEC = RecordCodecBuilder.create((instance) -> instance.group(
+    public static final MapCodec<ModRandomSpread> MAP_CODEC = RecordCodecBuilder.mapCodec((instance) -> instance.group(
             Vec3i.offsetCodec(16).optionalFieldOf("locate_offset", Vec3i.ZERO).forGetter(ModRandomSpread::locateOffset),
             FrequencyReductionMethod.CODEC.optionalFieldOf("frequency_reduction_method", FrequencyReductionMethod.DEFAULT).forGetter(ModRandomSpread::frequencyReductionMethod),
             Codec.floatRange(0.0F, 1.0F).optionalFieldOf("frequency", 1.0F).forGetter(ModRandomSpread::frequency),
@@ -34,6 +35,7 @@ public class ModRandomSpread extends RandomSpreadStructurePlacement {
             RandomSpreadType.CODEC.optionalFieldOf("spread_type", RandomSpreadType.LINEAR).forGetter(ModRandomSpread::spreadType),
             Codec.intRange(0, Integer.MAX_VALUE).optionalFieldOf("min_distance_from_world_origin").forGetter(ModRandomSpread::minDistanceFromWorldOrigin)
     ).apply(instance, instance.stable(ModRandomSpread::new)));
+    public static final Codec<ModRandomSpread> CODEC = MAP_CODEC.codec();
 
     private final int spacing;
     private final int separation;

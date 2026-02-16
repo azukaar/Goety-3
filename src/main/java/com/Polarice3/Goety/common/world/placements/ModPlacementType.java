@@ -14,7 +14,7 @@ public class ModPlacementType {
             STRUCTURE_PLACEMENT_TYPE.register("random_spread", () -> new StructurePlacementType<ModRandomSpread>() {
                 @Override
                 public MapCodec<ModRandomSpread> codec() {
-                    return ModRandomSpread.CODEC.fieldOf("placement");
+                    return ModRandomSpread.MAP_CODEC;
                 }
             });
     
@@ -22,7 +22,7 @@ public class ModPlacementType {
             STRUCTURE_PLACEMENT_TYPE.register("minor_random_spread", () -> new StructurePlacementType<ModMinorRandomSpread>() {
                 @Override
                 public MapCodec<ModMinorRandomSpread> codec() {
-                    return ModMinorRandomSpread.CODEC.fieldOf("placement");
+                    return ModMinorRandomSpread.MAP_CODEC;
                 }
             });
 }

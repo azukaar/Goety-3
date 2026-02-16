@@ -1,6 +1,7 @@
 package com.Polarice3.Goety.common.world.features.trees.trunkplacers;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.RandomSource;
@@ -15,10 +16,13 @@ import net.minecraft.world.level.levelgen.feature.trunkplacers.TrunkPlacerType;
 import java.util.List;
 import java.util.function.BiConsumer;
 
+import static com.Polarice3.Goety.common.world.features.trees.trunkplacers.ModTrunkPlacerTypes.CHORUS_TRUNK_PLACER;
+
 public class ChorusTrunkPlacer extends TrunkPlacer {
-    public static final Codec<ChorusTrunkPlacer> CODEC = RecordCodecBuilder.create(
+    public static final MapCodec<ChorusTrunkPlacer> MAP_CODEC = RecordCodecBuilder.mapCodec(
             instance -> trunkPlacerParts(instance).apply(instance, ChorusTrunkPlacer::new)
     );
+    public static final Codec<ChorusTrunkPlacer> CODEC = MAP_CODEC.codec();
 
     public ChorusTrunkPlacer(int baseHeight, int heightRandA, int heightRandB) {
         super(baseHeight, heightRandA, heightRandB);
@@ -31,7 +35,7 @@ public class ChorusTrunkPlacer extends TrunkPlacer {
 
     @Override
     protected TrunkPlacerType<?> type() {
-        return TrunkPlacerType.STRAIGHT_TRUNK_PLACER;
+        return CHORUS_TRUNK_PLACER.get();
     }
 
     @Override

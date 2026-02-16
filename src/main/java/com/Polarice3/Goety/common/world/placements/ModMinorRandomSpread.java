@@ -1,6 +1,7 @@
 package com.Polarice3.Goety.common.world.placements;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
@@ -17,7 +18,7 @@ import net.minecraft.world.level.levelgen.structure.placement.StructurePlacement
 import java.util.Optional;
 
 public class ModMinorRandomSpread extends RandomSpreadStructurePlacement {
-    public static final Codec<ModMinorRandomSpread> CODEC = RecordCodecBuilder.create((instance) -> instance.group(
+    public static final MapCodec<ModMinorRandomSpread> MAP_CODEC = RecordCodecBuilder.mapCodec((instance) -> instance.group(
             Vec3i.offsetCodec(16).optionalFieldOf("locate_offset", Vec3i.ZERO).forGetter(ModMinorRandomSpread::locateOffset),
             FrequencyReductionMethod.CODEC.optionalFieldOf("frequency_reduction_method", FrequencyReductionMethod.DEFAULT).forGetter(ModMinorRandomSpread::frequencyReductionMethod),
             Codec.floatRange(0.0F, 1.0F).optionalFieldOf("frequency", 1.0F).forGetter(ModMinorRandomSpread::frequency),
@@ -29,6 +30,7 @@ public class ModMinorRandomSpread extends RandomSpreadStructurePlacement {
             RandomSpreadType.CODEC.optionalFieldOf("spread_type", RandomSpreadType.LINEAR).forGetter(ModMinorRandomSpread::spreadType),
             Codec.intRange(0, Integer.MAX_VALUE).optionalFieldOf("min_distance_from_world_origin").forGetter(ModMinorRandomSpread::minDistanceFromWorldOrigin)
     ).apply(instance, instance.stable(ModMinorRandomSpread::new)));
+    public static final Codec<ModMinorRandomSpread> CODEC = MAP_CODEC.codec();
 
     private final int spacing;
     private final int separation;

@@ -2,6 +2,7 @@ package com.Polarice3.Goety.common.world.structures;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
@@ -20,7 +21,7 @@ import java.util.function.Function;
 
 //Based/Stolen from @Fuzss codes:https://github.com/Fuzss/illagerinvasion/blob/main/1.20.1/Common/src/main/java/fuzs/illagerinvasion/world/level/levelgen/structure/structure/structures/LabyrinthStructure.java
 public class CryptStructure extends BiggerJigsawStructure {
-    public static final Codec<CryptStructure> CODEC = RecordCodecBuilder.<CryptStructure>mapCodec((p_227640_) -> {
+    public static final MapCodec<CryptStructure> MAP_CODEC = RecordCodecBuilder.<CryptStructure>mapCodec((p_227640_) -> {
         return p_227640_.group(settingsCodec(p_227640_), StructureTemplatePool.CODEC.fieldOf("start_pool").forGetter((p_227656_) -> {
             return p_227656_.startPool;
         }), ResourceLocation.CODEC.optionalFieldOf("start_jigsaw_name").forGetter((p_227654_) -> {
@@ -34,7 +35,8 @@ public class CryptStructure extends BiggerJigsawStructure {
         }), Codec.intRange(1, 1024).fieldOf("max_distance_from_center").forGetter((p_227642_) -> {
             return p_227642_.maxDistanceFromCenter;
         })).apply(p_227640_, CryptStructure::new);
-    }).flatXmap(verifyCryptRange(), verifyCryptRange()).codec();
+    }).flatXmap(verifyCryptRange(), verifyCryptRange());
+    public static final Codec<CryptStructure> CODEC = MAP_CODEC.codec();
     private static final int SEA_LEVEL = 63;
     private static final int SAFE_UNDERGROUND_TUNNEL_HEIGHT = 16;
 
@@ -66,6 +68,6 @@ public class CryptStructure extends BiggerJigsawStructure {
     }
 
     public StructureType<?> type() {
-        return StructureType.JIGSAW;
+        return ModStructureTypes.CRYPT.get();
     }
 }
