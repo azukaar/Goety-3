@@ -33,7 +33,7 @@ import java.util.function.Consumer;
 
 public class CursedKnightArmor extends ArmorItem implements IPersist {
     public CursedKnightArmor(ArmorItem.Type p_40387_) {
-        super(ModArmorMaterials.CURSED_KNIGHT, p_40387_, ModItems.baseProperties());
+        super(ModArmorMaterials.getCURSED_KNIGHT(), p_40387_, ModItems.baseProperties());
     }
 
     @Override

@@ -52,7 +52,7 @@ public class ForbiddenScroll extends ResearchScroll {
     public void appendHoverText(ItemStack stack, net.minecraft.world.item.Item.TooltipContext context, List<Component> tooltip, TooltipFlag flagIn) {
         super.appendHoverText(stack, context, tooltip, flagIn);
         tooltip.add(Component.translatable("info.goety.items.forbidden").withStyle(ChatFormatting.DARK_PURPLE));
-        if (context.level() != null && context.level().isClientSide){
+        if (context.level() != null && context.level().isClientSide && Goety.PROXY.getPlayer() != null){
             if (SEHelper.hasResearch(Goety.PROXY.getPlayer(), this.research)){
                 tooltip.add(Component.translatable("info.goety.research.learned").withStyle(ChatFormatting.BLUE));
             } else {

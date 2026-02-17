@@ -12,7 +12,8 @@ import com.Polarice3.Goety.common.capabilities.witchbarter.WitchBarterImp;
 import com.Polarice3.Goety.utils.LichdomHelper;
 import com.Polarice3.Goety.utils.MiscCapHelper;
 import com.Polarice3.Goety.utils.SEHelper;
-import com.Polarice3.Goety.common.capabilities.witchbarter.WitchBarterProvider;
+import com.mojang.serialization.Codec;
+import net.minecraft.nbt.CompoundTag;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.attachment.AttachmentType;
 import net.neoforged.neoforge.registries.DeferredRegister;
@@ -27,22 +28,85 @@ public class ModAttachments {
     public static final DeferredRegister<AttachmentType<?>> ATTACHMENT_TYPES = 
             DeferredRegister.create(NeoForgeRegistries.Keys.ATTACHMENT_TYPES, Goety.MOD_ID);
 
+    private static CompoundTag saveLichdom(LichImp lichdom) {
+        return LichdomHelper.save((ILichdom) lichdom);
+    }
+
+    private static LichImp loadLichdom(CompoundTag tag) {
+        ILichdom loaded = LichdomHelper.load(tag);
+        return loaded instanceof LichImp ? (LichImp) loaded : new LichImp();
+    }
+
+    private static CompoundTag saveSoulEnergy(SEImp se) {
+        return SEHelper.save((ISoulEnergy) se);
+    }
+
+    private static SEImp loadSoulEnergy(CompoundTag tag) {
+        ISoulEnergy loaded = SEHelper.load(tag);
+        return loaded instanceof SEImp ? (SEImp) loaded : new SEImp();
+    }
+
+    private static CompoundTag saveMisc(MiscImp misc) {
+        return MiscCapHelper.save((IMisc) misc);
+    }
+
+    private static MiscImp loadMisc(CompoundTag tag) {
+        IMisc loaded = MiscCapHelper.load(tag);
+        return loaded instanceof MiscImp ? (MiscImp) loaded : new MiscImp();
+    }
+
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    private static Codec<LichImp> createLichdomCodec() {
+        Codec tagCodec = CompoundTag.CODEC;
+        return (Codec<LichImp>) tagCodec.xmap(
+                (Object tag) -> loadLichdom((CompoundTag) tag),
+                (Object lichdom) -> saveLichdom((LichImp) lichdom)
+        );
+    }
+
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    private static Codec<SEImp> createSoulEnergyCodec() {
+        Codec tagCodec = CompoundTag.CODEC;
+        return (Codec<SEImp>) tagCodec.xmap(
+                (Object tag) -> loadSoulEnergy((CompoundTag) tag),
+                (Object se) -> saveSoulEnergy((SEImp) se)
+        );
+    }
+
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    private static Codec<MiscImp> createMiscCodec() {
+        Codec tagCodec = CompoundTag.CODEC;
+        return (Codec<MiscImp>) tagCodec.xmap(
+                (Object tag) -> loadMisc((CompoundTag) tag),
+                (Object misc) -> saveMisc((MiscImp) misc)
+        );
+    }
+
+    @SuppressWarnings({"unchecked", "rawtypes"})
     public static final Supplier<AttachmentType<ILichdom>> LICHDOM = ATTACHMENT_TYPES.register(
-            "lichdom", () -> AttachmentType.builder(() -> (ILichdom) new LichImp())
-                    .copyOnDeath()
-                    .build()
+            "lichdom", () -> {
+                Codec codec = createLichdomCodec();
+                AttachmentType.Builder builder = AttachmentType.builder(() -> new LichImp());
+                return builder.serialize(codec).copyOnDeath().build();
+            }
     );
 
+    @SuppressWarnings({"unchecked", "rawtypes"})
     public static final Supplier<AttachmentType<ISoulEnergy>> SOUL_ENERGY = ATTACHMENT_TYPES.register(
-            "soul_energy", () -> AttachmentType.builder(() -> (ISoulEnergy) new SEImp())
-                    .copyOnDeath()
-                    .build()
+            "soul_energy", () -> {
+                Codec codec = createSoulEnergyCodec();
+                AttachmentType.Builder builder = AttachmentType.builder(() -> new SEImp());
+                return builder.serialize(codec).copyOnDeath().build();
+            }
     );
 
+    @SuppressWarnings({"unchecked", "rawtypes"})
     public static final Supplier<AttachmentType<IMisc>> MISC = ATTACHMENT_TYPES.register(
-            "misc", () -> AttachmentType.builder(() -> (IMisc) new MiscImp())
-                    .copyOnDeath()
-                    .build()
+            "misc", () -> {
+                Codec codec = createMiscCodec();
+                AttachmentType.Builder builder = AttachmentType.builder(() -> new MiscImp());
+                return builder.serialize(codec).copyOnDeath().build();
+            }
     );
 
     public static final Supplier<AttachmentType<IWitchBarter>> WITCH_BARTER = ATTACHMENT_TYPES.register(

@@ -31,9 +31,6 @@ public abstract class RaidMixin {
     @Shadow
     public abstract int getGroupsSpawned();
 
-    @Shadow
-    public abstract void addWaveMob(int p_37712_, Raider p_37713_, boolean p_37714_);
-
     @ModifyVariable(at = @At(value = "STORE", ordinal = 0), method = "spawnGroup")
     private Raider spawnCustomRaider(Raider raider, BlockPos blockPos) {
         if (com.Polarice3.Goety.utils.ConfigHelper.getBoolean(MobsConfig.ArmoredRavagerRaid, false)){
@@ -114,7 +111,6 @@ public abstract class RaidMixin {
             raider.setWave(wave);
             raider.setTicksOutsideRaid(0);
             raider.setPos(spawnPos.getX() + 0.5D, spawnPos.getY(), spawnPos.getZ() + 0.5D);
-            this.addWaveMob(wave, raider, false);
             this.level.addFreshEntity(raider);
             injected++;
         }

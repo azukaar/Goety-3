@@ -33,7 +33,7 @@ import java.util.function.Consumer;
 
 public class CursedPaladinArmor extends ArmorItem implements IPersist {
     public CursedPaladinArmor(ArmorItem.Type p_40387_) {
-        super(ModArmorMaterials.CURSED_PALADIN, p_40387_, ModItems.baseProperties());
+        super(ModArmorMaterials.getCURSED_PALADIN(), p_40387_, ModItems.baseProperties());
     }
 
     @Override

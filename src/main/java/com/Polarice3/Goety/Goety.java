@@ -61,6 +61,7 @@ import com.Polarice3.Goety.compat.OtherModCompat;
 import com.Polarice3.Goety.compat.fml.FMLJavaModLoadingContext;
 import com.Polarice3.Goety.config.*;
 import com.Polarice3.Goety.init.*;
+import com.Polarice3.Goety.init.ModAttachments;
 import com.Polarice3.Goety.mixin.FireBlockAccessor;
 import com.Polarice3.Goety.utils.ModPotionUtil;
 import com.google.common.collect.Maps;
@@ -160,6 +161,7 @@ public class Goety {
                 ModPlacementType.STRUCTURE_PLACEMENT_TYPE.register(modEventBus);
                 ModProcessors.STRUCTURE_PROCESSOR.register(modEventBus);
                 ModCreativeTab.CREATIVE_MODE_TABS.register(modEventBus);
+                ModAttachments.init(modEventBus);
 
                 modEventBus.addListener(this::registerCriteriaTriggers);
                 modEventBus.addListener(this::commonSetup);

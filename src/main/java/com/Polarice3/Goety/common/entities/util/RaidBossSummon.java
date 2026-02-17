@@ -193,7 +193,6 @@ public class RaidBossSummon extends Raider {
                                 redstoneMonstrosity.setWave(this.getCurrentRaid().getGroupsSpawned());
                                 redstoneMonstrosity.setTicksOutsideRaid(0);
                                 redstoneMonstrosity.setPos(this.position());
-                                this.getCurrentRaid().addWaveMob(this.getCurrentRaid().getGroupsSpawned(), redstoneMonstrosity, true);
                                 if (serverWorld.addFreshEntity(redstoneMonstrosity)) {
                                     this.getCurrentRaid().removeFromRaid(this, true);
                                     this.discard();

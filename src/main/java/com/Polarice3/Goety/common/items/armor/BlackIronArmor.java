@@ -33,7 +33,7 @@ import java.util.function.Consumer;
 
 public class BlackIronArmor extends ArmorItem implements ISoulDiscount, IPersist {
     public BlackIronArmor(ArmorItem.Type p_40387_) {
-        super(ModArmorMaterials.BLACK_IRON, p_40387_, ModItems.baseProperties());
+        super(ModArmorMaterials.getBLACK_IRON(), p_40387_, ModItems.baseProperties());
     }
 
     public String getArmorTexture(ItemStack stack, Entity entity, EquipmentSlot slot, String layer) {

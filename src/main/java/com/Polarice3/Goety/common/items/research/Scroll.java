@@ -31,7 +31,8 @@ public class Scroll extends ResearchScroll{
         super.appendHoverText(stack, context, tooltip, flagIn);
         tooltip.add(Component.translatable("info.goety.items." + research.getId()).withStyle(ChatFormatting.GOLD));
         if (context.level() != null && context.level().isClientSide){
-            if (SEHelper.hasResearch(Goety.PROXY.getPlayer(), this.research)){
+            net.minecraft.world.entity.player.Player player = Goety.PROXY.getPlayer();
+            if (player != null && SEHelper.hasResearch(player, this.research)){
                 tooltip.add(Component.translatable("info.goety.research.learned").withStyle(ChatFormatting.BLUE));
             } else {
                 tooltip.add(Component.translatable("info.goety.items.scroll").withStyle(ChatFormatting.AQUA));

@@ -29,7 +29,7 @@ import java.util.function.Consumer;
 
 public class DarkArmor extends ArmorItem implements ISoulRepair, ISoulDiscount {
     public DarkArmor(ArmorItem.Type p_40387_) {
-        super(ModArmorMaterials.DARK, p_40387_, ModItems.baseProperties());
+        super(ModArmorMaterials.getDARK(), p_40387_, ModItems.baseProperties());
     }
 
 

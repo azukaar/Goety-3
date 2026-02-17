@@ -107,7 +107,7 @@ public class ItemEvents {
             }
         }
 
-        if (ItemHelper.armorSet(player, ModArmorMaterials.DARK.value())){
+        if (ModArmorMaterials.DARK != null && ItemHelper.armorSet(player, ModArmorMaterials.DARK.value())){
             if (player.getFoodData().needsFood()){
                 if (player.tickCount % 40 == 0){
                     player.heal(1.0F);
@@ -212,7 +212,8 @@ public class ItemEvents {
             AttributeModifier attributemodifier1 = new AttributeModifier(Goety.location("item_modifiers/increase_toughness"), 4.0D, AttributeModifier.Operation.ADD_VALUE);
             AttributeInstance toughness = livingEntity.getAttribute(Attributes.ARMOR_TOUGHNESS);
             if (armor != null){
-                if (ItemHelper.armorSet(livingEntity, ModArmorMaterials.CURSED_KNIGHT.value()) || ItemHelper.armorSet(livingEntity, ModArmorMaterials.CURSED_PALADIN.value())){
+                if ((ModArmorMaterials.CURSED_KNIGHT != null && ItemHelper.armorSet(livingEntity, ModArmorMaterials.CURSED_KNIGHT.value())) || 
+                    (ModArmorMaterials.CURSED_PALADIN != null && ItemHelper.armorSet(livingEntity, ModArmorMaterials.CURSED_PALADIN.value()))){
                     if (!armor.hasModifier(attributemodifier.id())){
                         armor.addPermanentModifier(attributemodifier);
                     }
@@ -223,7 +224,7 @@ public class ItemEvents {
                 }
             }
             if (toughness != null){
-                if (ItemHelper.armorSet(livingEntity, ModArmorMaterials.CURSED_PALADIN.value())){
+                if (ModArmorMaterials.CURSED_PALADIN != null && ItemHelper.armorSet(livingEntity, ModArmorMaterials.CURSED_PALADIN.value())){
                     if (!toughness.hasModifier(attributemodifier1.id())){
                         toughness.addPermanentModifier(attributemodifier1);
                     }

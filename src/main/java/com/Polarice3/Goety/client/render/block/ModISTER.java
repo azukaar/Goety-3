@@ -6,6 +6,7 @@ import com.Polarice3.Goety.common.blocks.entities.BlackCrystalBlockEntity;
 import com.Polarice3.Goety.common.blocks.entities.CryptChestBlockEntity;
 import com.Polarice3.Goety.common.blocks.entities.LoftyChestBlockEntity;
 import com.Polarice3.Goety.common.blocks.entities.ModChestBlockEntity;
+import com.Polarice3.Goety.common.blocks.entities.ModTrappedChestBlockEntity;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import net.minecraft.Util;
@@ -20,6 +21,7 @@ import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.ChestBlock;
+import net.minecraft.world.level.block.entity.ChestBlockEntity;
 import net.neoforged.neoforge.registries.DeferredHolder;
 
 import java.util.HashMap;
@@ -29,21 +31,21 @@ import java.util.Map;
  * Chest Item Rendering based of codes from @TeamTwilight
  */
 public class ModISTER extends BlockEntityWithoutLevelRenderer {
-    private final Map<Block, ModChestBlockEntity> chestEntities = Util.make(new HashMap<>(), map -> {
+    private final Map<Block, ChestBlockEntity> chestEntities = Util.make(new HashMap<>(), map -> {
         makeInstance(map, ModBlocks.HAUNTED_CHEST);
-        makeInstance(map, ModBlocks.TRAPPED_HAUNTED_CHEST);
+        makeTrappedInstance(map, ModBlocks.TRAPPED_HAUNTED_CHEST);
         makeInstance(map, ModBlocks.ROTTEN_CHEST);
-        makeInstance(map, ModBlocks.TRAPPED_ROTTEN_CHEST);
+        makeTrappedInstance(map, ModBlocks.TRAPPED_ROTTEN_CHEST);
         makeInstance(map, ModBlocks.WINDSWEPT_CHEST);
-        makeInstance(map, ModBlocks.TRAPPED_WINDSWEPT_CHEST);
+        makeTrappedInstance(map, ModBlocks.TRAPPED_WINDSWEPT_CHEST);
         makeInstance(map, ModBlocks.PINE_CHEST);
-        makeInstance(map, ModBlocks.TRAPPED_PINE_CHEST);
+        makeTrappedInstance(map, ModBlocks.TRAPPED_PINE_CHEST);
         makeInstance(map, ModBlocks.CHORUS_CHEST);
-        makeInstance(map, ModBlocks.TRAPPED_CHORUS_CHEST);
+        makeTrappedInstance(map, ModBlocks.TRAPPED_CHORUS_CHEST);
         makeInstance(map, ModBlocks.CORRUPT_CHORUS_CHEST);
-        makeInstance(map, ModBlocks.TRAPPED_CORRUPT_CHORUS_CHEST);
+        makeTrappedInstance(map, ModBlocks.TRAPPED_CORRUPT_CHORUS_CHEST);
         makeInstance(map, ModBlocks.RAIDING_CHEST);
-        makeInstance(map, ModBlocks.TRAPPED_RAIDING_CHEST);
+        makeTrappedInstance(map, ModBlocks.TRAPPED_RAIDING_CHEST);
     });
 
     public ModISTER() {
@@ -142,9 +144,15 @@ public class ModISTER extends BlockEntityWithoutLevelRenderer {
         }
     }
 
-    public static void makeInstance(Map<Block, ModChestBlockEntity> map,
+    public static void makeInstance(Map<Block, ChestBlockEntity> map,
             DeferredHolder<Block, ? extends ChestBlock> registryObject) {
         ChestBlock block = registryObject.get();
         map.put(block, new ModChestBlockEntity(BlockPos.ZERO, block.defaultBlockState()));
+    }
+
+    public static void makeTrappedInstance(Map<Block, ChestBlockEntity> map,
+            DeferredHolder<Block, ? extends ChestBlock> registryObject) {
+        ChestBlock block = registryObject.get();
+        map.put(block, new ModTrappedChestBlockEntity(BlockPos.ZERO, block.defaultBlockState()));
     }
 }
