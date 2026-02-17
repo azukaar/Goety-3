@@ -1,5 +1,5 @@
 {
-  "processor": "com.Polarice3.Goety.compat.patchouli.BrewingSacrificeProcessor",
+  "processor": "za.co.infernos.goety.compat.patchouli.BrewingSacrificeProcessor",
   "components": [
     {
       "type": "patchouli:item",

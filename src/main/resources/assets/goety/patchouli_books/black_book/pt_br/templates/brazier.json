@@ -1,5 +1,5 @@
 {
-  "processor": "com.Polarice3.Goety.compat.patchouli.BrazierRecipeProcessor",
+  "processor": "za.co.infernos.goety.compat.patchouli.BrazierRecipeProcessor",
   "components": [
     {
       "type": "patchouli:image",

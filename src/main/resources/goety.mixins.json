@@ -1,6 +1,6 @@
 {
   "required": true,
-  "package": "com.Polarice3.Goety.mixin",
+  "package": "za.co.infernos.goety.mixin",
   "compatibilityLevel": "JAVA_21",
   "minVersion": "0.8",
   "refmap": "goety.refmap.json",
