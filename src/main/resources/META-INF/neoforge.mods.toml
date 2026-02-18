@@ -3,7 +3,7 @@ loaderVersion="[4,)"
 license="MIT License"
 [[mods]]
 modId="goety"
-version="${file.jarVersion}"
+version="${mod_version}"
 displayName="Goety"
 displayURL="https://github.com/imbavirus/Goety-3"
 logoFile="Goety.png" #optional

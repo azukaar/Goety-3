@@ -39,3 +39,5 @@ errors*.txt
 fresh_errors.txt
 initialize_client_list.txt
 water_fix_list.txt
+
+.env
