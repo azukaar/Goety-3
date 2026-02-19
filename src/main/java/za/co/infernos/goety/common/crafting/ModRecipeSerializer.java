@@ -87,10 +87,6 @@ public class ModRecipeSerializer {
                         .register("taglock", () -> TaglockRecipe.SERIALIZER);
 
         static <T extends Recipe<?>> DeferredHolder<RecipeType<?>, RecipeType<T>> register(final String id) {
-                return RECIPE_TYPES.register(id, () -> new RecipeType<T>() {
-                        public String toString() {
-                                return id;
-                        }
-                });
+                return RECIPE_TYPES.register(id, () -> RecipeType.simple(Goety.location(id)));
         }
 }

@@ -162,6 +162,7 @@ public class Goety {
                 ModProcessors.STRUCTURE_PROCESSOR.register(modEventBus);
                 ModCreativeTab.CREATIVE_MODE_TABS.register(modEventBus);
                 ModAttachments.init(modEventBus);
+                ModRecipeSerializer.init();
 
                 modEventBus.addListener(this::registerCriteriaTriggers);
                 modEventBus.addListener(this::commonSetup);
@@ -188,7 +189,6 @@ public class Goety {
                 ModAttributes.init();
                 ModBlocks.init();
                 // ModFluids.init();
-                ModRecipeSerializer.init();
                 ModSpawnEggs.init();
                 ServantSpawnEggs.init();
                 GoetyEffects.init();
