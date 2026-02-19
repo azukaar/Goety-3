@@ -18,10 +18,10 @@
       "item": "goety:venomous_fang"
     },
     {
-      "tag": "forge:eggs"
+      "tag": "c:eggs"
     }
   ],
   "result": {
-    "item": "goety:biomine_focus"
+    "id": "goety:biomine_focus"
   }
 }

@@ -9,31 +9,31 @@
   "duration": 10,
   "ingredients": [
     {
-      "tag": "forge:tools/bows"
+      "tag": "c:rods/wooden"
     },
     {
       "item": "minecraft:fletching_table"
     },
     {
-      "tag": "forge:tools/bows"
+      "tag": "c:rods/wooden"
     },
     {
       "item": "minecraft:fletching_table"
     },
     {
-      "tag": "forge:tools/bows"
+      "tag": "c:rods/wooden"
     },
     {
       "item": "minecraft:fletching_table"
     },
     {
-      "tag": "forge:tools/bows"
+      "tag": "c:rods/wooden"
     },
     {
       "item": "minecraft:fletching_table"
     }
   ],
   "result": {
-    "item": "goety:arrow_rain_focus"
+    "id": "goety:arrow_rain_focus"
   }
 }

@@ -10,16 +10,16 @@
   {
     "s":
     {
-      "tag": "forge:stone"
+      "tag": "c:stone"
     },
     "d":
     {
-      "tag": "forge:storage_blocks/diamond"
+      "tag": "c:stone"
     }
   },
   "result":
   {
-    "item": "goety:diamond_mold_block",
+    "id": "goety:diamond_mold_block",
     "count": 4
   }
 }

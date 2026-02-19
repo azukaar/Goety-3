@@ -6,7 +6,7 @@
   ],
   "key": {
     "b": {
-      "tag": "forge:ingots/gold"
+      "tag": "c:ingots/gold"
     },
     "c": {
       "tag": "minecraft:coals"
@@ -19,6 +19,6 @@
     }
   },
   "result": {
-    "item": "goety:marble_soul_brazier"
+    "id": "goety:marble_soul_brazier"
   }
 }

@@ -1,5 +1,5 @@
 {
-  "type": "goety:cursed_infuser_recipes",
+  "type": "goety:cursed_infuser",
   "ingredient": {
     "item": "goety:witch_robe"
   },

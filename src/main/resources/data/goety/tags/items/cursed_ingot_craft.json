@@ -1,9 +1,12 @@
 {
   "replace": false,
   "values": [
-    "#forge:bones",
-    "#forge:gunpowder",
-    "#forge:string",
+    "#c:bones",
+    "minecraft:bone",
+    "#c:gunpowder",
+    "minecraft:gunpowder",
+    "#c:string",
+    "minecraft:string",
     "minecraft:rotten_flesh"
   ]
 }

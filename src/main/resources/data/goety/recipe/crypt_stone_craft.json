@@ -14,7 +14,7 @@
     },
     "O":
     {
-      "tag": "forge:obsidian"
+      "tag": "c:stone"
     },
     "$":
     {
@@ -23,7 +23,7 @@
   },
   "result":
   {
-    "item": "goety:crypt_stone",
+    "id": "goety:crypt_stone",
     "count": 4
   }
 }

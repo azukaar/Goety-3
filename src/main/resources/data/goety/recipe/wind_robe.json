@@ -27,12 +27,12 @@
       "item": "minecraft:orange_dye"
     },
     {
-      "type": "forge:nbt",
+      "type": "c:nbt",
       "item": "minecraft:potion",
       "nbt": "{\"Potion\": \"minecraft:slow_falling\"}"
     }
   ],
   "result": {
-    "item": "goety:wind_robe"
+    "id": "goety:wind_robe"
   }
 }

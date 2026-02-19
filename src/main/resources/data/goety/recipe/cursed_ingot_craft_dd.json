@@ -15,12 +15,12 @@
   },
   "result":
   {
-    "item": "goety:cursed_ingot",
+    "id": "goety:cursed_ingot",
     "count": 1
   },
   "conditions": [
     {
-      "type": "forge:mod_loaded",
+      "type": "c:mod_loaded",
       "modid": "dungeonsdelight"
     }
   ]

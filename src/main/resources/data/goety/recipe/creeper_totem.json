@@ -10,16 +10,16 @@
   {
     "s":
     {
-      "tag": "forge:stone"
+      "tag": "c:stone"
     },
     "g":
     {
-      "tag": "forge:gunpowder"
+      "tag": "c:gunpowder"
     }
   },
   "result":
   {
-    "item": "goety:creeper_totem",
+    "id": "goety:creeper_totem",
     "count": 4
   }
 }

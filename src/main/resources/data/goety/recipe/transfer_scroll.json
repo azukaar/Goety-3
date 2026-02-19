@@ -5,14 +5,14 @@
       "item": "minecraft:paper"
     },
     {
-      "tag": "forge:feathers"
+      "tag": "c:feathers"
     },
     {
       "item": "minecraft:ink_sac"
     }
   ],
   "result": {
-    "item": "goety:transfer_scroll",
+    "id": "goety:transfer_scroll",
     "count": 1
   }
 }

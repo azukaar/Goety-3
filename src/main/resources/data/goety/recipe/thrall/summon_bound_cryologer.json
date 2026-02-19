@@ -13,13 +13,13 @@
       "item": "goety:ectoplasm"
     },
     {
-      "tag": "forge:storage_blocks/lapis"
+      "tag": "c:stone"
     },
     {
       "item": "minecraft:powder_snow_bucket"
     }
   ],
   "result": {
-    "item": "goety:jei_dummy/none"
+    "id": "goety:jei_dummy/none"
   }
 }

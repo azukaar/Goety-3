@@ -14,13 +14,13 @@
       "item": "minecraft:fletching_table"
     },
     {
-      "tag": "forge:bones"
+      "tag": "c:bones"
     },
     {
-      "tag": "forge:storage_blocks/lapis"
+      "tag": "c:rods/wooden"
     }
   ],
   "result": {
-    "item": "minecraft:enchanted_book"
+    "id": "minecraft:enchanted_book"
   }
 }

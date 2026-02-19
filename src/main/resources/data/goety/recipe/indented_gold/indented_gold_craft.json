@@ -10,7 +10,7 @@
   {
     "s":
     {
-      "tag": "forge:storage_blocks/gold"
+      "tag": "c:sandstone"
     },
     "t":
     {
@@ -19,7 +19,7 @@
   },
   "result":
   {
-    "item": "goety:indented_gold",
+    "id": "goety:indented_gold",
     "count": 8
   }
 }

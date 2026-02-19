@@ -1,7 +1,7 @@
 {
-  "type": "goety:cursed_infuser_recipes",
+  "type": "goety:cursed_infuser",
   "ingredient": {
-    "tag": "forge:ingots/iron"
+    "tag": "c:ingots/iron"
   },
   "result": "goety:cursed_ingot",
   "cookingTime": 60

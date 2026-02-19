@@ -27,10 +27,30 @@ public class PulverizeRecipe implements Recipe<RecipeInput> {
                     .optionalFieldOf("block_result", Blocks.CAVE_AIR).forGetter(r -> r.blockResult))
             .apply(instance, PulverizeRecipe::new));
 
+    // Custom StreamCodec for ItemStack that handles empty stacks by using a dummy item during encoding
+    private static final StreamCodec<net.minecraft.network.RegistryFriendlyByteBuf, ItemStack> ITEM_RESULT_STREAM_CODEC = 
+            StreamCodec.of(
+                    (buf, stack) -> {
+                        // Encode: convert empty to dummy item for network transmission
+                        ItemStack toEncode = stack.isEmpty() 
+                                ? za.co.infernos.goety.common.items.ModItems.JEI_DUMMY_NONE.get().getDefaultInstance() 
+                                : stack;
+                        ItemStack.STREAM_CODEC.encode(buf, toEncode);
+                    },
+                    buf -> {
+                        // Decode: convert dummy item back to empty if it's the dummy
+                        ItemStack decoded = ItemStack.STREAM_CODEC.decode(buf);
+                        if (decoded.getItem() == za.co.infernos.goety.common.items.ModItems.JEI_DUMMY_NONE.get()) {
+                            return ItemStack.EMPTY;
+                        }
+                        return decoded;
+                    }
+            );
+
     public static final StreamCodec<net.minecraft.network.RegistryFriendlyByteBuf, PulverizeRecipe> STREAM_CODEC = StreamCodec
             .composite(
                     Ingredient.CONTENTS_STREAM_CODEC, r -> r.ingredient,
-                    ItemStack.STREAM_CODEC, r -> r.itemResult,
+                    ITEM_RESULT_STREAM_CODEC, r -> r.itemResult,
                     net.minecraft.network.codec.ByteBufCodecs.registry(net.minecraft.core.registries.Registries.BLOCK),
                     r -> r.blockResult,
                     PulverizeRecipe::new);
@@ -62,6 +82,11 @@ public class PulverizeRecipe implements Recipe<RecipeInput> {
 
     @Override
     public ItemStack getResultItem(net.minecraft.core.HolderLookup.Provider p_267052_) {
+        // Pulverize recipes can have empty item results (they produce blocks instead)
+        // Return a dummy item for recipe encoding if itemResult is empty (Minecraft 1.21.1 doesn't allow empty ItemStacks in recipes)
+        if (this.itemResult.isEmpty()) {
+            return za.co.infernos.goety.common.items.ModItems.JEI_DUMMY_NONE.get().getDefaultInstance();
+        }
         return this.itemResult;
     }
 

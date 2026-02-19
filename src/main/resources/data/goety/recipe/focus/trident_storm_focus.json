@@ -9,25 +9,25 @@
   "duration": 10,
   "ingredients": [
     {
-      "tag": "forge:tools/tridents"
+      "tag": "c:rods/wooden"
     },
     {
-      "tag": "forge:storage_blocks/lapis"
+      "tag": "c:rods/wooden"
     },
     {
-      "tag": "forge:storage_blocks/copper"
+      "tag": "c:rods/wooden"
     },
     {
-      "tag": "forge:storage_blocks/copper"
+      "tag": "c:rods/wooden"
     },
     {
-      "tag": "forge:storage_blocks/lapis"
+      "tag": "c:rods/wooden"
     },
     {
-      "tag": "forge:tools/tridents"
+      "tag": "c:rods/wooden"
     }
   ],
   "result": {
-    "item": "goety:trident_storm_focus"
+    "id": "goety:trident_storm_focus"
   }
 }

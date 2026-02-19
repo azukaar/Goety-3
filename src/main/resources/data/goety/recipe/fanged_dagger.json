@@ -22,11 +22,11 @@
     },
     "r":
     {
-      "tag": "forge:rods/wooden"
+      "tag": "c:stone"
     }
   },
   "result":
   {
-    "item": "goety:fanged_dagger"
+    "id": "goety:fanged_dagger"
   }
 }

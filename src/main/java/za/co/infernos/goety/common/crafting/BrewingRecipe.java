@@ -161,7 +161,9 @@ public class BrewingRecipe implements Recipe<RecipeInput> {
 
     @Override
     public ItemStack getResultItem(HolderLookup.Provider p_267052_) {
-        return ItemStack.EMPTY;
+        // Brewing recipes don't produce items, they modify brews in the cauldron
+        // Return a dummy item for recipe encoding (Minecraft 1.21.1 doesn't allow empty ItemStacks in recipes)
+        return za.co.infernos.goety.common.items.ModItems.JEI_DUMMY_NONE.get().getDefaultInstance();
     }
 
     @Override

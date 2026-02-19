@@ -12,7 +12,7 @@
       "item": "minecraft:packed_ice"
     },
     {
-      "tag": "forge:gems/diamond"
+      "tag": "c:gems/diamond"
     },
     {
       "item": "minecraft:tnt"
@@ -21,7 +21,7 @@
       "item": "minecraft:packed_ice"
     },
     {
-      "tag": "forge:gems/diamond"
+      "tag": "c:gems/diamond"
     },
     {
       "item": "minecraft:blue_ice"
@@ -34,6 +34,6 @@
     }
   ],
   "result": {
-    "item": "goety:frostborn_focus"
+    "id": "goety:frostborn_focus"
   }
 }

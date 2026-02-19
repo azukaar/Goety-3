@@ -52,7 +52,10 @@ public class SoulAbsorberRecipes implements Recipe<net.minecraft.world.item.craf
 
     @Override
     public ItemStack getResultItem(net.minecraft.core.HolderLookup.Provider pAccess) {
-        return ItemStack.EMPTY;
+        // Soul Absorber recipes don't produce items, they consume items and increase soul energy
+        // Return a dummy item for recipe encoding (Minecraft 1.21.1 doesn't allow empty ItemStacks in recipes)
+        // The actual result is consumed and soul energy is added to the player's Arca
+        return za.co.infernos.goety.common.items.ModItems.JEI_DUMMY_NONE.get().getDefaultInstance();
     }
 
 

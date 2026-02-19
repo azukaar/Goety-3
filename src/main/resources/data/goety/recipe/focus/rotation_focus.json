@@ -14,7 +14,7 @@
     },
     "i":
     {
-      "tag": "forge:ingots/iron"
+      "tag": "c:ingots/iron"
     },
     "p":
     {
@@ -22,6 +22,6 @@
     }
   },
   "result": {
-    "item": "goety:rotation_focus"
+    "id": "goety:rotation_focus"
   }
 }

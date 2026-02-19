@@ -11,19 +11,19 @@
   "research": "front",
   "ingredients": [
     {
-      "tag": "forge:bones"
+      "tag": "c:bones"
     },
     {
-      "tag": "forge:ingots/iron"
+      "tag": "c:ingots/iron"
     },
     {
       "item": "minecraft:leather_helmet"
     },
     {
-      "tag": "forge:ingots/gold"
+      "tag": "c:ingots/gold"
     }
   ],
   "result": {
-    "item": "goety:jei_dummy/none"
+    "id": "goety:jei_dummy/none"
   }
 }

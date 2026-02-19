@@ -10,25 +10,25 @@
   "research": "bygone",
   "ingredients": [
     {
-      "tag": "forge:ingots/netherite"
+      "tag": "c:ingots/netherite"
     },
     {
-      "tag": "forge:rods/blaze"
+      "tag": "c:stone"
     },
     {
-      "tag": "forge:rods/blaze"
+      "tag": "c:stone"
     },
     {
       "item": "goety:ectoplasm"
     },
     {
-      "tag": "forge:ingots/netherite"
+      "tag": "c:ingots/netherite"
     },
     {
       "item": "goety:ectoplasm"
     }
   ],
   "result": {
-    "item": "goety:nether_crown"
+    "id": "goety:nether_crown"
   }
 }

@@ -14,13 +14,13 @@
       "item": "minecraft:iron_trapdoor"
     },
     {
-      "tag": "forge:cobblestone"
+      "tag": "c:cobblestone"
     },
     {
-      "tag": "forge:gems/lapis"
+      "tag": "c:gems/lapis"
     }
   ],
   "result": {
-    "item": "minecraft:enchanted_book"
+    "id": "minecraft:enchanted_book"
   }
 }

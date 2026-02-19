@@ -2,7 +2,7 @@
   "type": "goety:ritual",
   "ritual_type": "goety:craft",
   "activation_item": {
-    "tag": "forge:storage_blocks/amethyst"
+    "tag": "c:stone"
   },
   "craftType": "geoturgy",
   "soulCost": 1,
@@ -12,10 +12,10 @@
       "item": "minecraft:lava_bucket"
     },
     {
-      "tag": "forge:gems/diamond"
+      "tag": "c:gems/diamond"
     }
   ],
   "result": {
-    "item": "minecraft:budding_amethyst"
+    "id": "minecraft:budding_amethyst"
   }
 }

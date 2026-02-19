@@ -27,13 +27,13 @@
       "item": "goety:cursed_ingot"
     },
     {
-      "tag": "forge:storage_blocks/lapis"
+      "tag": "c:rods/wooden"
     },
     {
       "item": "goety:spirit_fabric"
     }
   ],
   "result": {
-    "item": "goety:necro_staff"
+    "id": "goety:necro_staff"
   }
 }

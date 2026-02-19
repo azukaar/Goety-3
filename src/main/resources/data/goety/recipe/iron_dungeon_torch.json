@@ -13,11 +13,11 @@
       "tag": "minecraft:logs"
     },
     "I": {
-      "tag": "forge:ingots/iron"
+      "tag": "c:ingots/iron"
     }
   },
   "result": {
-    "item": "goety:iron_dungeon_torch",
+    "id": "goety:iron_dungeon_torch",
     "count": 1
   }
 }

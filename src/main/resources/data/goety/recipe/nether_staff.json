@@ -10,31 +10,31 @@
   "research": "bygone",
   "ingredients": [
     {
-      "tag": "forge:ingots/netherite"
+      "tag": "c:ingots/netherite"
     },
     {
-      "tag": "forge:rods/blaze"
+      "tag": "c:rods/wooden"
     },
     {
       "item": "goety:spirit_fabric"
     },
     {
-      "tag": "forge:rods/blaze"
+      "tag": "c:rods/wooden"
     },
     {
       "item": "goety:cursed_ingot"
     },
     {
-      "tag": "forge:rods/blaze"
+      "tag": "c:rods/wooden"
     },
     {
-      "tag": "forge:storage_blocks/lapis"
+      "tag": "c:rods/wooden"
     },
     {
       "item": "goety:occult_fabric"
     }
   ],
   "result": {
-    "item": "goety:nether_staff"
+    "id": "goety:nether_staff"
   }
 }

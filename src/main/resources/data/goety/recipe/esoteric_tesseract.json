@@ -18,10 +18,10 @@
       "item": "goety:recall_focus"
     },
     {
-      "tag": "forge:obsidian"
+      "tag": "c:stone"
     }
   ],
   "result": {
-    "item": "goety:esoteric_tesseract"
+    "id": "goety:esoteric_tesseract"
   }
 }

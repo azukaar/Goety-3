@@ -11,13 +11,13 @@
   "xpLevelCost": 3,
   "ingredients": [
     {
-      "tag": "forge:storage_blocks/iron"
+      "tag": "c:rods/wooden"
     },
     {
-      "tag": "forge:gems/lapis"
+      "tag": "c:gems/lapis"
     }
   ],
   "result": {
-    "item": "minecraft:enchanted_book"
+    "id": "minecraft:enchanted_book"
   }
 }

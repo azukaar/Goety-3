@@ -1,7 +1,7 @@
 {
-  "type": "goety:cursed_infuser_recipes",
+  "type": "goety:cursed_infuser",
   "ingredient": {
-    "tag": "forge:obsidian"
+    "tag": "c:stone"
   },
   "grim": true,
   "result": "goety:crypt_stone",

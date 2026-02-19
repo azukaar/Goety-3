@@ -14,16 +14,16 @@
       "item": "minecraft:cobweb"
     },
     {
-      "tag": "forge:ender_pearls"
+      "tag": "c:ender_pearls"
     },
     {
       "item": "minecraft:cake"
     },
     {
-      "tag": "forge:storage_blocks/lapis"
+      "tag": "c:rods/wooden"
     }
   ],
   "result": {
-    "item": "minecraft:enchanted_book"
+    "id": "minecraft:enchanted_book"
   }
 }

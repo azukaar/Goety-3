@@ -10,7 +10,7 @@
   {
     "s":
     {
-      "tag": "forge:rods/wooden"
+      "tag": "c:stone"
     },
     "p":
     {
@@ -19,7 +19,7 @@
   },
   "result":
   {
-    "item": "goety:cauldron_ladle",
+    "id": "goety:cauldron_ladle",
     "count": 1
   }
 }

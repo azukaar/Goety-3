@@ -18,13 +18,13 @@
       "item": "goety:pale_steel_ingot"
     },
     {
-      "tag": "forge:gems/diamond"
+      "tag": "c:gems/diamond"
     },
     {
       "tag": "goety:haunted_logs"
     }
   ],
   "result": {
-    "item": "goety:dark_scythe"
+    "id": "goety:dark_scythe"
   }
 }

@@ -9,22 +9,22 @@
   "duration": 10,
   "ingredients": [
     {
-      "tag": "forge:ingots/iron"
+      "tag": "c:ingots/iron"
     },
     {
-      "tag": "forge:ingots/iron"
-    },
-    {
-      "item": "goety:cursed_ingot"
+      "tag": "c:ingots/iron"
     },
     {
       "item": "goety:cursed_ingot"
     },
     {
-      "tag": "forge:gems/diamond"
+      "item": "goety:cursed_ingot"
+    },
+    {
+      "tag": "c:gems/diamond"
     }
   ],
   "result": {
-    "item": "goety:black_iron_helmet"
+    "id": "goety:black_iron_helmet"
   }
 }

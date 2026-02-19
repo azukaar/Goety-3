@@ -10,7 +10,7 @@
   {
     "#":
     {
-      "tag": "forge:seeds"
+      "tag": "c:stone"
     },
     "V":
     {
@@ -31,7 +31,7 @@
   },
   "result":
   {
-    "item": "goety:quick_growing_seed",
+    "id": "goety:quick_growing_seed",
     "count": 16
   }
 }

@@ -14,7 +14,7 @@
   "duration": 30,
   "ingredients": [
     {
-      "tag": "forge:storage_blocks/lapis"
+      "tag": "c:stone"
     },
     {
       "item": "goety:soul_emerald"
@@ -24,6 +24,6 @@
     }
   ],
   "result": {
-    "item": "goety:jei_dummy/none"
+    "id": "goety:jei_dummy/none"
   }
 }

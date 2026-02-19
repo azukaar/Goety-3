@@ -14,12 +14,12 @@
     },
     "g":
     {
-      "tag": "forge:ingots/gold"
+      "tag": "c:ingots/gold"
     }
   },
   "result":
   {
-    "item": "goety:gold_chiseled_highrock_bricks",
+    "id": "goety:gold_chiseled_highrock_bricks",
     "count": 3
   }
 }

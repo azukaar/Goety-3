@@ -9,11 +9,11 @@
       "item": "minecraft:snow_block"
     },
     "$": {
-      "tag": "forge:stone"
+      "tag": "c:stone"
     }
   },
   "result": {
-    "item": "goety:snow_bricks",
+    "id": "goety:snow_bricks",
     "count": 4
   }
 }

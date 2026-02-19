@@ -7,16 +7,16 @@
   ],
   "key": {
     "p": {
-      "tag": "forge:ingots/silver"
+      "tag": "c:stone"
     },
     "s": {
-      "tag": "forge:slimeballs"
+      "tag": "c:stone"
     },
     "c": {
       "item": "minecraft:chain"
     }
   },
   "result": {
-    "item": "goety:ominous_shackles"
+    "id": "goety:ominous_shackles"
   }
 }

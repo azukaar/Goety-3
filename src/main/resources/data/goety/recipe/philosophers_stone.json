@@ -27,13 +27,13 @@
       "item": "minecraft:dragon_breath"
     },
     {
-      "tag": "forge:gunpowder"
+      "tag": "c:gunpowder"
     },
     {
       "item": "minecraft:ender_eye"
     }
   ],
   "result": {
-    "item": "goety:philosophers_stone"
+    "id": "goety:philosophers_stone"
   }
 }

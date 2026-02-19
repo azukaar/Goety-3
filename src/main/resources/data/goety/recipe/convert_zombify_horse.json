@@ -6,7 +6,7 @@
   },
   "craftType": "necroturgy",
   "entity_to_convert": {
-    "tag": "forge:horses",
+    "tag": "c:horses",
     "display_name": "entity.minecraft.horse"
   },
   "entity_to_convert_into": "minecraft:zombie_horse",
@@ -27,6 +27,6 @@
     }
   ],
   "result": {
-    "item": "goety:jei_dummy/none"
+    "id": "goety:jei_dummy/none"
   }
 }

@@ -9,31 +9,31 @@
   "duration": 10,
   "ingredients": [
     {
-      "tag": "forge:ender_pearls"
+      "tag": "c:ender_pearls"
     },
     {
       "item": "minecraft:chorus_fruit"
     },
     {
-      "tag": "forge:ender_pearls"
+      "tag": "c:ender_pearls"
     },
     {
       "item": "minecraft:chorus_fruit"
     },
     {
-      "tag": "forge:ender_pearls"
+      "tag": "c:ender_pearls"
     },
     {
       "item": "minecraft:chorus_fruit"
     },
     {
-      "tag": "forge:ender_pearls"
+      "tag": "c:ender_pearls"
     },
     {
       "item": "minecraft:chorus_fruit"
     }
   ],
   "result": {
-    "item": "goety:blink_focus"
+    "id": "goety:blink_focus"
   }
 }

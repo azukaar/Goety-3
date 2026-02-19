@@ -9,31 +9,31 @@
   "duration": 10,
   "ingredients": [
     {
-      "tag": "forge:ender_pearls"
+      "tag": "c:ender_pearls"
     },
     {
-      "tag": "forge:gems/quartz"
+      "tag": "c:gems/quartz"
     },
     {
-      "tag": "forge:gems/quartz"
+      "tag": "c:gems/quartz"
     },
     {
       "tag": "goety:boats"
     },
     {
-      "tag": "forge:gems/diamond"
+      "tag": "c:gems/diamond"
     },
     {
-      "tag": "forge:ingots/iron"
+      "tag": "c:ingots/iron"
     },
     {
-      "tag": "forge:ingots/gold"
+      "tag": "c:ingots/gold"
     },
     {
       "item": "minecraft:lead"
     }
   ],
   "result": {
-    "item": "goety:telekinesis_focus"
+    "id": "goety:telekinesis_focus"
   }
 }

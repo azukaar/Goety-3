@@ -18,13 +18,13 @@
       "item": "goety:dark_ingot"
     },
     {
-      "tag": "forge:gems/lapis"
+      "tag": "c:gems/lapis"
     },
     {
       "item": "goety:occult_fabric"
     }
   ],
   "result": {
-    "item": "goety:dark_metal_scythe"
+    "id": "goety:dark_metal_scythe"
   }
 }

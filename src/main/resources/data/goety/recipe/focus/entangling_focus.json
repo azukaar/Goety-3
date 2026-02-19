@@ -12,28 +12,28 @@
       "item": "minecraft:sweet_berries"
     },
     {
-      "tag": "forge:seeds"
+      "tag": "c:rods/wooden"
     },
     {
       "item": "minecraft:bone_meal"
     },
     {
-      "tag": "forge:seeds"
+      "tag": "c:rods/wooden"
     },
     {
       "item": "goety:venomous_fang"
     },
     {
-      "tag": "forge:seeds"
+      "tag": "c:rods/wooden"
     },
     {
       "item": "goety:overgrown_roots"
     },
     {
-      "tag": "forge:seeds"
+      "tag": "c:rods/wooden"
     }
   ],
   "result": {
-    "item": "goety:entangling_focus"
+    "id": "goety:entangling_focus"
   }
 }

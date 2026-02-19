@@ -14,20 +14,20 @@
     },
     "o":
     {
-      "tag": "forge:obsidian"
+      "tag": "c:stone"
     },
     "e":
     {
-      "tag": "forge:ender_pearls"
+      "tag": "c:ender_pearls"
     },
     "n":
     {
-      "tag": "forge:ingots/netherite"
+      "tag": "c:ingots/netherite"
     }
   },
   "result":
   {
-    "item": "goety:arca_compass",
+    "id": "goety:arca_compass",
     "count": 1
   }
 }

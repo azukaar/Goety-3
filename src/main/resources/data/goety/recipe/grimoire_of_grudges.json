@@ -19,10 +19,10 @@
       "item": "minecraft:book"
     },
     "c": {
-      "tag": "forge:feathers"
+      "tag": "c:feathers"
     }
   },
   "result": {
-    "item": "goety:grimoire_of_grudges"
+    "id": "goety:grimoire_of_grudges"
   }
 }

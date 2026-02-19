@@ -18,13 +18,13 @@
       "item": "minecraft:phantom_membrane"
     },
     {
-      "tag": "forge:bones"
+      "tag": "c:bones"
     },
     {
       "item": "minecraft:phantom_membrane"
     },
     {
-      "tag": "forge:bones"
+      "tag": "c:bones"
     },
     {
       "item": "minecraft:phantom_membrane"
@@ -34,6 +34,6 @@
     }
   ],
   "result": {
-    "item": "goety:phantasm_focus"
+    "id": "goety:phantasm_focus"
   }
 }

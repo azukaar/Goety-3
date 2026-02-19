@@ -10,7 +10,7 @@
   {
     "b":
     {
-      "tag": "forge:rods/blaze"
+      "tag": "c:rods/wooden"
     },
     "e":
     {
@@ -18,11 +18,11 @@
     },
     "c":
     {
-      "tag": "forge:storage_blocks/coal"
+      "tag": "c:rods/wooden"
     },
     "g":
     {
-      "tag": "forge:gunpowder"
+      "tag": "c:gunpowder"
     },
     "d":
     {
@@ -30,6 +30,6 @@
     }
   },
   "result": {
-    "item": "goety:fireball_focus"
+    "id": "goety:fireball_focus"
   }
 }

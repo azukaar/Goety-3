@@ -18,12 +18,12 @@
     },
     "s":
     {
-      "tag": "forge:ingots/copper"
+      "tag": "c:ingots/copper"
     }
   },
   "result":
   {
-    "item": "goety:charge_focus",
+    "id": "goety:charge_focus",
     "count": 1
   }
 }

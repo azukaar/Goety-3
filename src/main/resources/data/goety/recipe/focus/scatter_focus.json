@@ -14,16 +14,16 @@
     },
     "r":
     {
-      "tag": "forge:storage_blocks/redstone"
+      "tag": "c:rods/wooden"
     },
     "g":
     {
-      "tag": "forge:gunpowder"
+      "tag": "c:gunpowder"
     }
   },
   "result":
   {
-    "item": "goety:scatter_focus",
+    "id": "goety:scatter_focus",
     "count": 1
   }
 }

@@ -2,7 +2,7 @@
   "type": "goety:ritual",
   "ritual_type": "goety:craft",
   "activation_item": {
-    "tag": "forge:storage_blocks/amethyst"
+    "tag": "c:stone"
   },
   "craftType": "forge",
   "soulCost": 5,
@@ -15,7 +15,7 @@
       "item": "goety:shadow_essence"
     },
     {
-      "tag": "forge:obsidian"
+      "tag": "c:stone"
     },
     {
       "item": "goety:shadow_essence"
@@ -34,6 +34,6 @@
     }
   ],
   "result": {
-    "item": "goety:black_crystal"
+    "id": "goety:black_crystal"
   }
 }

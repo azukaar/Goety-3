@@ -9,31 +9,31 @@
   "duration": 10,
   "ingredients": [
     {
-      "tag": "forge:glass"
+      "tag": "c:glass"
     },
     {
       "item": "minecraft:arrow"
     },
     {
-      "tag": "forge:glass"
+      "tag": "c:glass"
     },
     {
       "item": "minecraft:arrow"
     },
     {
-      "tag": "forge:gems/lapis"
+      "tag": "c:gems/lapis"
     },
     {
-      "tag": "forge:dusts/glowstone"
+      "tag": "c:dusts/glowstone"
     },
     {
-      "tag": "forge:ender_pearls"
+      "tag": "c:ender_pearls"
     },
     {
-      "tag": "forge:gems/lapis"
+      "tag": "c:gems/lapis"
     }
   ],
   "result": {
-    "item": "goety:illusion_focus"
+    "id": "goety:illusion_focus"
   }
 }

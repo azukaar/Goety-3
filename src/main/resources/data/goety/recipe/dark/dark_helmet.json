@@ -21,10 +21,10 @@
       "item": "goety:dark_ingot"
     },
     {
-      "tag": "forge:bones"
+      "tag": "c:bones"
     }
   ],
   "result": {
-    "item": "goety:dark_helmet"
+    "id": "goety:dark_helmet"
   }
 }

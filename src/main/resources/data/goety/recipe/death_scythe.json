@@ -9,16 +9,16 @@
   "duration": 30,
   "ingredients": [
     {
-      "tag": "forge:bones"
+      "tag": "c:bones"
     },
     {
-      "tag": "forge:bones"
+      "tag": "c:bones"
     },
     {
       "tag": "minecraft:soul_fire_base_blocks"
     },
     {
-      "tag": "forge:gems/lapis"
+      "tag": "c:gems/lapis"
     },
     {
       "item": "goety:unholy_blood"
@@ -34,6 +34,6 @@
     }
   ],
   "result": {
-    "item": "goety:death_scythe"
+    "id": "goety:death_scythe"
   }
 }

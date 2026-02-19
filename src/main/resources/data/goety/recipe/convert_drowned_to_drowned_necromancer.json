@@ -24,13 +24,13 @@
       "tag": "goety:rotting_focus"
     },
     {
-      "tag": "forge:tools/tridents"
+      "tag": "c:stone"
     },
     {
-      "tag": "forge:storage_blocks/gold"
+      "tag": "c:stone"
     }
   ],
   "result": {
-    "item": "goety:jei_dummy/none"
+    "id": "goety:jei_dummy/none"
   }
 }

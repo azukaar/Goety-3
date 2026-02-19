@@ -15,15 +15,15 @@
       "tag": "goety:boats"
     },
     {
-      "tag": "forge:leather"
+      "tag": "c:stone"
     },
     {
-      "tag": "forge:feathers"
+      "tag": "c:feathers"
     }
 
   ],
   "result": {
-    "item": "goety:animation_core",
+    "id": "goety:animation_core",
     "count": 2
   }
 }

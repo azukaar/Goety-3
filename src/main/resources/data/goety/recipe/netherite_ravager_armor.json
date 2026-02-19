@@ -10,19 +10,19 @@
   "research": "ravaging",
   "ingredients": [
     {
-      "tag": "forge:ingots/netherite"
+      "tag": "c:ingots/netherite"
     },
     {
-      "tag": "forge:ingots/netherite"
+      "tag": "c:ingots/netherite"
     },
     {
-      "tag": "forge:ingots/netherite"
+      "tag": "c:ingots/netherite"
     },
     {
-      "tag": "forge:ingots/netherite"
+      "tag": "c:ingots/netherite"
     }
   ],
   "result": {
-    "item": "goety:netherite_ravager_armor"
+    "id": "goety:netherite_ravager_armor"
   }
 }

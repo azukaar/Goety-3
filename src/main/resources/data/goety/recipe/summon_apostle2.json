@@ -2,7 +2,7 @@
   "type": "goety:ritual",
   "ritual_type": "goety:summon",
   "activation_item": {
-    "tag": "forge:ingots/netherite"
+    "tag": "c:ingots/netherite"
   },
   "craftType": "sabbath",
   "entity_to_summon": "goety:summon_apostle",
@@ -35,6 +35,6 @@
     }
   ],
   "result": {
-    "item": "goety:jei_dummy/none"
+    "id": "goety:jei_dummy/none"
   }
 }

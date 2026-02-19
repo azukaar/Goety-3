@@ -14,21 +14,21 @@
       "item": "minecraft:sugar"
     },
     {
-      "tag": "forge:dusts/redstone"
+      "tag": "c:dusts/redstone"
     },
     {
-      "tag": "forge:string"
+      "tag": "c:string"
     },
     {
-      "tag": "forge:gems/lapis"
+      "tag": "c:gems/lapis"
     }
   ],
   "result": {
-    "item": "minecraft:enchanted_book"
+    "id": "minecraft:enchanted_book"
   },
   "conditions": [
     {
-      "type": "forge:mod_loaded",
+      "type": "c:mod_loaded",
       "modid": "cyclic"
     }
   ]

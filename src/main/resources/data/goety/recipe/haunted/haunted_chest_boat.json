@@ -4,13 +4,13 @@
   "group": "chest_boat",
   "ingredients": [
     {
-      "tag": "forge:chests/wooden"
+      "tag": "c:chests/wooden"
     },
     {
       "item": "goety:haunted_boat"
     }
   ],
   "result": {
-    "item": "goety:haunted_chest_boat"
+    "id": "goety:haunted_chest_boat"
   }
 }

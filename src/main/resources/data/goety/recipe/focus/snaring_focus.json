@@ -15,13 +15,13 @@
       "item": "minecraft:slime_block"
     },
     {
-      "tag": "forge:ender_pearls"
+      "tag": "c:ender_pearls"
     },
     {
       "item": "minecraft:slime_block"
     },
     {
-      "tag": "forge:ender_pearls"
+      "tag": "c:ender_pearls"
     },
     {
       "item": "goety:spider_nest"
@@ -34,6 +34,6 @@
     }
   ],
   "result": {
-    "item": "goety:snaring_focus"
+    "id": "goety:snaring_focus"
   }
 }

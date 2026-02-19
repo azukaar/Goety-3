@@ -10,7 +10,7 @@
   "research": "bygone",
   "ingredients": [
     {
-      "tag": "forge:ingots/netherite"
+      "tag": "c:ingots/netherite"
     },
     {
       "tag": "minecraft:wart_blocks"
@@ -19,13 +19,13 @@
       "tag": "minecraft:wart_blocks"
     },
     {
-      "tag": "forge:ingots/gold"
+      "tag": "c:ingots/gold"
     },
     {
-      "tag": "forge:leather"
+      "tag": "c:stone"
     }
   ],
   "result": {
-    "item": "goety:nether_robe"
+    "id": "goety:nether_robe"
   }
 }

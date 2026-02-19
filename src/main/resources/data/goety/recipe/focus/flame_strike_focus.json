@@ -15,13 +15,13 @@
       "item": "minecraft:magma_block"
     },
     {
-      "tag": "forge:rods/blaze"
+      "tag": "c:rods/wooden"
     },
     {
       "item": "goety:updraft_focus"
     }
   ],
   "result": {
-    "item": "goety:flame_strike_focus"
+    "id": "goety:flame_strike_focus"
   }
 }

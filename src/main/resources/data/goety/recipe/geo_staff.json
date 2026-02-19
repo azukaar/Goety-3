@@ -9,16 +9,16 @@
   "duration": 10,
   "ingredients": [
     {
-      "tag": "forge:gems/amethyst"
+      "tag": "c:gems/amethyst"
     },
     {
-      "tag": "forge:gems/amethyst"
+      "tag": "c:gems/amethyst"
     },
     {
-      "tag": "forge:gems/amethyst"
+      "tag": "c:gems/amethyst"
     },
     {
-      "tag": "forge:storage_blocks/amethyst"
+      "tag": "c:rods/wooden"
     },
     {
       "item": "goety:cursed_ingot"
@@ -27,13 +27,13 @@
       "tag": "minecraft:logs"
     },
     {
-      "tag": "forge:storage_blocks/lapis"
+      "tag": "c:rods/wooden"
     },
     {
       "item": "goety:occult_fabric"
     }
   ],
   "result": {
-    "item": "goety:geo_staff"
+    "id": "goety:geo_staff"
   }
 }

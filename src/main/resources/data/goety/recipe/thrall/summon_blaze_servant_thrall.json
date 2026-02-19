@@ -11,13 +11,13 @@
   "research": "bygone",
   "ingredients": [
     {
-      "tag": "forge:storage_blocks/coal"
+      "tag": "c:stone"
     },
     {
       "item": "minecraft:gunpowder"
     }
   ],
   "result": {
-    "item": "goety:jei_dummy/none"
+    "id": "goety:jei_dummy/none"
   }
 }

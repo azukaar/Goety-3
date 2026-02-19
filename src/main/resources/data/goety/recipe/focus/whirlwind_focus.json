@@ -9,13 +9,13 @@
   "duration": 10,
   "ingredients": [
     {
-      "tag": "forge:feathers"
+      "tag": "c:feathers"
     },
     {
-      "tag": "forge:feathers"
+      "tag": "c:feathers"
     },
     {
-      "tag": "forge:dusts/glowstone"
+      "tag": "c:dusts/glowstone"
     },
     {
       "item": "minecraft:phantom_membrane"
@@ -25,6 +25,6 @@
     }
   ],
   "result": {
-    "item": "goety:whirlwind_focus"
+    "id": "goety:whirlwind_focus"
   }
 }

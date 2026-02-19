@@ -21,13 +21,13 @@
       "item": "goety:eerie_pickaxe"
     },
     {
-      "tag": "forge:ingots/netherite"
+      "tag": "c:ingots/netherite"
     },
     {
-      "tag": "forge:ingots/netherite"
+      "tag": "c:ingots/netherite"
     }
   ],
   "result": {
-    "item": "goety:philosophers_mace"
+    "id": "goety:philosophers_mace"
   }
 }

@@ -18,7 +18,7 @@
       "item": "goety:savage_tooth"
     },
     {
-      "tag": "forge:gems/lapis"
+      "tag": "c:gems/lapis"
     },
     {
       "item": "goety:savage_tooth"
@@ -40,6 +40,6 @@
     }
   ],
   "result": {
-    "item": "goety:jei_dummy/none"
+    "id": "goety:jei_dummy/none"
   }
 }

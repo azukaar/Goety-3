@@ -9,28 +9,28 @@
   "duration": 10,
   "ingredients": [
     {
-      "tag": "forge:storage_blocks/iron"
+      "tag": "c:rods/wooden"
     },
     {
-      "tag": "forge:storage_blocks/iron"
+      "tag": "c:rods/wooden"
     },
     {
-      "tag": "forge:storage_blocks/iron"
+      "tag": "c:rods/wooden"
     },
     {
-      "tag": "forge:storage_blocks/iron"
+      "tag": "c:rods/wooden"
     },
     {
-      "tag": "forge:storage_blocks/iron"
+      "tag": "c:rods/wooden"
     },
     {
-      "tag": "forge:gems/emerald"
+      "tag": "c:gems/emerald"
     },
     {
       "tag": "minecraft:logs"
     }
   ],
   "result": {
-    "item": "goety:great_hammer"
+    "id": "goety:great_hammer"
   }
 }

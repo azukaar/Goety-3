@@ -9,31 +9,31 @@
   "duration": 10,
   "ingredients": [
     {
-      "tag": "forge:storage_blocks/jade"
+      "tag": "c:rods/wooden"
     },
     {
-      "tag": "forge:storage_blocks/copper"
+      "tag": "c:rods/wooden"
     },
     {
       "item": "minecraft:tnt"
     },
     {
-      "tag": "forge:storage_blocks/copper"
+      "tag": "c:rods/wooden"
     },
     {
-      "tag": "forge:storage_blocks/redstone"
+      "tag": "c:rods/wooden"
     },
     {
-      "tag": "forge:storage_blocks/copper"
+      "tag": "c:rods/wooden"
     },
     {
-      "tag": "forge:dusts/prismarine"
+      "tag": "c:dusts/prismarine"
     },
     {
-      "tag": "forge:storage_blocks/copper"
+      "tag": "c:rods/wooden"
     }
   ],
   "result": {
-    "item": "goety:discharge_focus"
+    "id": "goety:discharge_focus"
   }
 }

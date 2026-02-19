@@ -9,23 +9,23 @@
   "duration": 10,
   "ingredients": [
     {
-      "tag": "forge:gunpowder"
+      "tag": "c:gunpowder"
     },
     {
-      "tag": "forge:gems/amethyst"
+      "tag": "c:gems/amethyst"
     },
     {
-      "tag": "forge:ender_pearls"
+      "tag": "c:ender_pearls"
     },
     {
-      "tag": "forge:dusts/redstone"
+      "tag": "c:dusts/redstone"
     },
     {
-      "tag": "forge:dusts/glowstone"
+      "tag": "c:dusts/glowstone"
     }
   ],
   "result": {
-    "item": "goety:mystic_core",
+    "id": "goety:mystic_core",
     "count": 2
   }
 }

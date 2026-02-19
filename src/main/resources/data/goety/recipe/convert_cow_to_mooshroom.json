@@ -6,7 +6,7 @@
   },
   "craftType": "overgrown",
   "entity_to_convert": {
-    "tag": "forge:cows",
+    "tag": "c:cows",
     "display_name": "entity.minecraft.cow"
   },
   "entity_to_convert_into": "minecraft:mooshroom",
@@ -27,6 +27,6 @@
     }
   ],
   "result": {
-    "item": "goety:jei_dummy/none"
+    "id": "goety:jei_dummy/none"
   }
 }

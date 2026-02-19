@@ -14,7 +14,7 @@
     },
     "i":
     {
-      "tag": "forge:storage_blocks/iron"
+      "tag": "c:rods/wooden"
     },
     "s":
     {
@@ -22,6 +22,6 @@
     }
   },
   "result": {
-    "item": "goety:pulverize_focus"
+    "id": "goety:pulverize_focus"
   }
 }

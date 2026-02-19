@@ -15,13 +15,13 @@
       "item": "minecraft:dragon_breath"
     },
     {
-      "tag": "forge:ender_pearls"
+      "tag": "c:ender_pearls"
     },
     {
       "item": "minecraft:dragon_breath"
     },
     {
-      "tag": "forge:ender_pearls"
+      "tag": "c:ender_pearls"
     },
     {
       "item": "minecraft:ender_eye"
@@ -34,6 +34,6 @@
     }
   ],
   "result": {
-    "item": "goety:blasting_focus"
+    "id": "goety:blasting_focus"
   }
 }

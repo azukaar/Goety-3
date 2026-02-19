@@ -18,12 +18,12 @@
     },
     "s":
     {
-      "tag": "forge:ingots/iron"
+      "tag": "c:ingots/iron"
     }
   },
   "result":
   {
-    "item": "goety:iron_hide_focus",
+    "id": "goety:iron_hide_focus",
     "count": 1
   }
 }

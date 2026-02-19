@@ -9,31 +9,31 @@
   "duration": 10,
   "ingredients": [
     {
-      "tag": "forge:ender_pearls"
+      "tag": "c:ender_pearls"
     },
     {
-      "tag": "forge:gems/quartz"
+      "tag": "c:gems/quartz"
     },
     {
-      "tag": "forge:gems/quartz"
+      "tag": "c:gems/quartz"
     },
     {
-      "tag": "forge:ender_pearls"
+      "tag": "c:ender_pearls"
     },
     {
-      "tag": "forge:storage_blocks/copper"
+      "tag": "c:rods/wooden"
     },
     {
       "item": "minecraft:sugar"
     },
     {
-      "tag": "forge:gems/quartz"
+      "tag": "c:gems/quartz"
     },
     {
-      "tag": "forge:gems/quartz"
+      "tag": "c:gems/quartz"
     }
   ],
   "result": {
-    "item": "goety:tunnel_focus"
+    "id": "goety:tunnel_focus"
   }
 }

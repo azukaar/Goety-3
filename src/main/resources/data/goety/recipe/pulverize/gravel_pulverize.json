@@ -2,7 +2,7 @@
   "type": "goety:pulverize",
   "ingredient": [
     {
-      "tag": "forge:cobblestone"
+      "tag": "c:cobblestone"
     },
     {
       "item": "minecraft:blackstone"

@@ -11,10 +11,10 @@
       "item": "goety:chorus_slab"
     },
     "s": {
-      "tag": "forge:rods/wooden"
+      "tag": "c:stone"
     }
   },
   "result": {
-    "item": "goety:thatched_chorus_planks"
+    "id": "goety:thatched_chorus_planks"
   }
 }

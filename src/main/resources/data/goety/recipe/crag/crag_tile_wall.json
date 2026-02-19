@@ -10,7 +10,7 @@
     }
   },
   "result": {
-    "item": "goety:crag_tile_wall",
+    "id": "goety:crag_tile_wall",
     "count": 6
   }
 }

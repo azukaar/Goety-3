@@ -1,10 +1,10 @@
 {
   "replace": false,
   "values": [
-    "#forge:is_swamp",
-    "#forge:is_lush",
+    "#c:is_swamp",
+    "#c:is_lush",
     {
-      "id": "#forge:is_jungle",
+      "id": "#c:is_jungle",
       "required": false
     }
   ]

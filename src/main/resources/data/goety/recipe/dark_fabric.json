@@ -2,19 +2,19 @@
   "type": "minecraft:crafting_shapeless",
   "ingredients": [
     {
-      "tag": "forge:string"
+      "tag": "c:string"
     },
     {
-      "tag": "forge:string"
+      "tag": "c:string"
     },
     {
-      "tag": "forge:gems/lapis"
+      "tag": "c:gems/lapis"
     },
     {
       "item": "minecraft:black_dye"
     }
   ],
   "result": {
-    "item": "goety:dark_fabric"
+    "id": "goety:dark_fabric"
   }
 }

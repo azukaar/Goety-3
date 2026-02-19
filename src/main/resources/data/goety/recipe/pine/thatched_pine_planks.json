@@ -11,10 +11,10 @@
       "item": "goety:pine_slab"
     },
     "s": {
-      "tag": "forge:rods/wooden"
+      "tag": "c:stone"
     }
   },
   "result": {
-    "item": "goety:thatched_pine_planks"
+    "id": "goety:thatched_pine_planks"
   }
 }

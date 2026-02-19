@@ -9,25 +9,25 @@
   "duration": 10,
   "ingredients": [
     {
-      "tag": "forge:storage_blocks/copper"
+      "tag": "c:rods/wooden"
     },
     {
-      "tag": "forge:ender_pearls"
+      "tag": "c:ender_pearls"
     },
     {
-      "tag": "forge:storage_blocks/redstone"
+      "tag": "c:rods/wooden"
     },
     {
       "item": "minecraft:bow"
     },
     {
-      "tag": "forge:dusts/prismarine"
+      "tag": "c:dusts/prismarine"
     },
     {
-      "tag": "forge:storage_blocks/jade"
+      "tag": "c:rods/wooden"
     }
   ],
   "result": {
-    "item": "goety:bolting_focus"
+    "id": "goety:bolting_focus"
   }
 }

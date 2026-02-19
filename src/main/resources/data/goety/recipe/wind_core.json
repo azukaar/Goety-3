@@ -9,10 +9,10 @@
   "duration": 10,
   "ingredients": [
     {
-      "tag": "forge:feathers"
+      "tag": "c:feathers"
     },
     {
-      "tag": "forge:dusts/glowstone"
+      "tag": "c:dusts/glowstone"
     },
     {
       "item": "minecraft:note_block"
@@ -25,7 +25,7 @@
     }
   ],
   "result": {
-    "item": "goety:wind_core",
+    "id": "goety:wind_core",
     "count": 2
   }
 }

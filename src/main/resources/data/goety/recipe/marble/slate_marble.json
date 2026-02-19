@@ -14,12 +14,12 @@
     },
     "l":
     {
-      "tag": "forge:gems/lapis"
+      "tag": "c:gems/lapis"
     }
   },
   "result":
   {
-    "item": "goety:slate_marble",
+    "id": "goety:slate_marble",
     "count": 4
   }
 }

@@ -30,12 +30,12 @@
     },
     "r":
     {
-      "tag": "forge:dusts/redstone"
+      "tag": "c:dusts/redstone"
     }
   },
   "result":
   {
-    "item": "goety:ice_bouquet_trap",
+    "id": "goety:ice_bouquet_trap",
     "count": 1
   }
 }

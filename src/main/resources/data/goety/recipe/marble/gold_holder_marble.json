@@ -12,12 +12,12 @@
     },
     "g":
     {
-      "tag": "forge:ingots/gold"
+      "tag": "c:ingots/gold"
     }
   },
   "result":
   {
-    "item": "goety:gold_holder_marble",
+    "id": "goety:gold_holder_marble",
     "count": 1
   }
 }

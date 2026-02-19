@@ -10,7 +10,7 @@
   {
     "d":
     {
-      "tag": "forge:gems/diamond"
+      "tag": "c:gems/diamond"
     },
     "c":
     {
@@ -18,11 +18,11 @@
     },
     "s":
     {
-      "tag": "forge:rods/wooden"
+      "tag": "c:stone"
     }
   },
   "result":
   {
-    "item": "goety:diamond_ice_axe"
+    "id": "goety:diamond_ice_axe"
   }
 }

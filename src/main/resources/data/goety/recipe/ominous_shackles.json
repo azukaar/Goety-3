@@ -10,13 +10,13 @@
       "item": "goety:pale_steel_ingot"
     },
     "s": {
-      "tag": "forge:slimeballs"
+      "tag": "c:stone"
     },
     "c": {
       "item": "minecraft:chain"
     }
   },
   "result": {
-    "item": "goety:ominous_shackles"
+    "id": "goety:ominous_shackles"
   }
 }

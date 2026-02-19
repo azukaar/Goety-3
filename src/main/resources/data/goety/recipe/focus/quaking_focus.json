@@ -18,10 +18,10 @@
     },
     "s":
     {
-      "tag": "forge:stone"
+      "tag": "c:rods/wooden"
     }
   },
   "result": {
-    "item": "goety:quaking_focus"
+    "id": "goety:quaking_focus"
   }
 }

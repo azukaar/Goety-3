@@ -14,13 +14,13 @@
       "item": "goety:dark_metal_block"
     },
     {
-      "tag": "forge:obsidian"
+      "tag": "c:rods/wooden"
     },
     {
-      "tag": "forge:storage_blocks/lapis"
+      "tag": "c:rods/wooden"
     }
   ],
   "result": {
-    "item": "minecraft:enchanted_book"
+    "id": "minecraft:enchanted_book"
   }
 }

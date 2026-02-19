@@ -9,16 +9,16 @@
   "duration": 10,
   "ingredients": [
     {
-      "tag": "forge:ingots/gold"
+      "tag": "c:ingots/gold"
     },
     {
-      "tag": "forge:ingots/gold"
+      "tag": "c:ingots/gold"
     },
     {
-      "tag": "forge:gems/prismarine"
+      "tag": "c:gems/prismarine"
     }
   ],
   "result": {
-    "item": "goety:sea_amulet"
+    "id": "goety:sea_amulet"
   }
 }

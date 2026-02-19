@@ -10,11 +10,11 @@
   {
     "i":
     {
-      "tag": "forge:ingots/iron"
+      "tag": "c:ingots/iron"
     },
     "g":
     {
-      "tag": "forge:ingots/gold"
+      "tag": "c:ingots/gold"
     },
     "d":
     {
@@ -27,7 +27,7 @@
   },
   "result":
   {
-    "item": "goety:cursed_ingot",
+    "id": "goety:cursed_ingot",
     "count": 2
   }
 }

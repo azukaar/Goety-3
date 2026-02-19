@@ -9,22 +9,22 @@
   "duration": 10,
   "ingredients": [
     {
-      "tag": "forge:ingots/gold"
+      "tag": "c:ingots/gold"
     },
     {
-      "tag": "forge:ingots/gold"
+      "tag": "c:ingots/gold"
     },
     {
-      "tag": "forge:gems/lapis"
+      "tag": "c:gems/lapis"
     },
     {
-      "tag": "forge:gems/lapis"
+      "tag": "c:gems/lapis"
     },
     {
       "item": "goety:soul_emerald"
     }
   ],
   "result": {
-    "item": "goety:ring_of_want"
+    "id": "goety:ring_of_want"
   }
 }

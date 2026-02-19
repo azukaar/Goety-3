@@ -12,13 +12,13 @@
       "item": "minecraft:crying_obsidian"
     },
     {
-      "tag": "forge:ender_pearls"
+      "tag": "c:ender_pearls"
     },
     {
       "item": "minecraft:crying_obsidian"
     },
     {
-      "tag": "forge:ender_pearls"
+      "tag": "c:ender_pearls"
     },
     {
       "item": "minecraft:crying_obsidian"
@@ -34,6 +34,6 @@
     }
   ],
   "result": {
-    "item": "goety:rupture_focus"
+    "id": "goety:rupture_focus"
   }
 }

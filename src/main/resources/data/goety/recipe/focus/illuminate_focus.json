@@ -14,11 +14,11 @@
     },
     "e":
     {
-      "tag": "forge:ender_pearls"
+      "tag": "c:ender_pearls"
     },
     "s":
     {
-      "tag": "forge:slimeballs"
+      "tag": "c:rods/wooden"
     },
     "g":
     {
@@ -27,7 +27,7 @@
   },
   "result":
   {
-    "item": "goety:illuminate_focus",
+    "id": "goety:illuminate_focus",
     "count": 1
   }
 }

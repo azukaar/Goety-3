@@ -12,22 +12,22 @@
       "item": "minecraft:lightning_rod"
     },
     {
-      "tag": "forge:storage_blocks/copper"
+      "tag": "c:rods/wooden"
     },
     {
-      "tag": "forge:storage_blocks/copper"
+      "tag": "c:rods/wooden"
     },
     {
-      "tag": "forge:gems/prismarine"
+      "tag": "c:gems/prismarine"
     },
     {
-      "tag": "forge:dusts/prismarine"
+      "tag": "c:dusts/prismarine"
     },
     {
-      "tag": "forge:tools/tridents"
+      "tag": "c:rods/wooden"
     }
   ],
   "result": {
-    "item": "goety:lightning_focus"
+    "id": "goety:lightning_focus"
   }
 }

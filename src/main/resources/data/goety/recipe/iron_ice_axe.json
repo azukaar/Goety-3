@@ -10,7 +10,7 @@
   {
     "i":
     {
-      "tag": "forge:ingots/iron"
+      "tag": "c:ingots/iron"
     },
     "c":
     {
@@ -18,11 +18,11 @@
     },
     "s":
     {
-      "tag": "forge:rods/wooden"
+      "tag": "c:stone"
     }
   },
   "result":
   {
-    "item": "goety:iron_ice_axe"
+    "id": "goety:iron_ice_axe"
   }
 }

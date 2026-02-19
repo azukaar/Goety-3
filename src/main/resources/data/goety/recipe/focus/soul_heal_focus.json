@@ -9,27 +9,27 @@
   "duration": 10,
   "ingredients": [
     {
-      "tag": "forge:storage_blocks/lapis"
+      "tag": "c:rods/wooden"
     },
     {
-      "tag": "forge:storage_blocks/lapis"
+      "tag": "c:rods/wooden"
     },
     {
-      "tag": "forge:storage_blocks/lapis"
-    },
-    {
-      "item": "goety:cursed_ingot"
+      "tag": "c:rods/wooden"
     },
     {
       "item": "goety:cursed_ingot"
     },
     {
-      "type": "forge:nbt",
+      "item": "goety:cursed_ingot"
+    },
+    {
+      "type": "c:nbt",
       "item": "minecraft:potion",
       "nbt": "{\"Potion\": \"minecraft:healing\"}"
     }
   ],
   "result": {
-    "item": "goety:soul_heal_focus"
+    "id": "goety:soul_heal_focus"
   }
 }

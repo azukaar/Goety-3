@@ -12,7 +12,7 @@
       "item": "minecraft:amethyst_block"
     },
     {
-      "tag": "forge:ender_pearls"
+      "tag": "c:ender_pearls"
     },
     {
       "item": "minecraft:anvil"
@@ -24,16 +24,16 @@
       "item": "minecraft:sculk_sensor"
     },
     {
-      "tag": "forge:rods/blaze"
+      "tag": "c:rods/wooden"
     },
     {
-      "tag": "forge:feathers"
+      "tag": "c:feathers"
     },
     {
-      "tag": "forge:dusts/glowstone"
+      "tag": "c:dusts/glowstone"
     }
   ],
   "result": {
-    "item": "goety:vexing_focus"
+    "id": "goety:vexing_focus"
   }
 }

@@ -9,22 +9,22 @@
   "duration": 10,
   "ingredients": [
     {
-      "tag": "forge:ingots/gold"
+      "tag": "c:ingots/gold"
     },
     {
-      "tag": "forge:sand"
+      "tag": "c:stone"
     },
     {
       "item": "minecraft:piston"
     },
     {
-      "tag": "forge:ender_pearls"
+      "tag": "c:ender_pearls"
     },
     {
-      "tag": "forge:gems/lapis"
+      "tag": "c:gems/lapis"
     }
   ],
   "result": {
-    "item": "goety:ring_of_force"
+    "id": "goety:ring_of_force"
   }
 }

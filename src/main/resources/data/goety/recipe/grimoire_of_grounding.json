@@ -13,16 +13,16 @@
       "tag": "minecraft:banners"
     },
     "v": {
-      "tag": "forge:ender_pearls"
+      "tag": "c:ender_pearls"
     },
     "b": {
       "item": "minecraft:book"
     },
     "c": {
-      "tag": "forge:feathers"
+      "tag": "c:feathers"
     }
   },
   "result": {
-    "item": "goety:grimoire_of_grounding"
+    "id": "goety:grimoire_of_grounding"
   }
 }

@@ -7,7 +7,7 @@
   "cookingtime": 50,
   "conditions": [
     {
-      "type": "forge:mod_loaded",
+      "type": "c:mod_loaded",
       "modid": "born_in_chaos_v1"
     }
   ]

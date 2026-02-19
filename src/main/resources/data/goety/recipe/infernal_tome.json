@@ -21,7 +21,7 @@
       "item": "goety:magic_emerald"
     },
     {
-      "tag": "forge:rods/blaze"
+      "tag": "c:stone"
     },
     {
       "item": "minecraft:ghast_tear"
@@ -31,6 +31,6 @@
     }
   ],
   "result": {
-    "item": "goety:infernal_tome"
+    "id": "goety:infernal_tome"
   }
 }

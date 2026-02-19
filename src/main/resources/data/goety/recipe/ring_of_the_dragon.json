@@ -9,10 +9,10 @@
   "duration": 10,
   "ingredients": [
     {
-      "tag": "forge:ingots/iron"
+      "tag": "c:ingots/iron"
     },
     {
-      "tag": "forge:ingots/iron"
+      "tag": "c:ingots/iron"
     },
     {
       "item": "minecraft:dragon_breath"
@@ -25,6 +25,6 @@
     }
   ],
   "result": {
-    "item": "goety:ring_of_the_dragon"
+    "id": "goety:ring_of_the_dragon"
   }
 }

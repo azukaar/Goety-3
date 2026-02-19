@@ -15,7 +15,7 @@
       "item": "goety:ectoplasm"
     },
     {
-      "tag": "forge:feathers"
+      "tag": "c:feathers"
     },
     {
       "item": "minecraft:phantom_membrane"
@@ -24,10 +24,10 @@
       "item": "goety:magic_emerald"
     },
     {
-      "tag": "forge:ender_pearls"
+      "tag": "c:ender_pearls"
     }
   ],
   "result": {
-    "item": "goety:cyclone_focus"
+    "id": "goety:cyclone_focus"
   }
 }

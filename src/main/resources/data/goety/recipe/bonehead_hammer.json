@@ -21,16 +21,16 @@
       "item": "goety:cursed_ingot"
     },
     {
-      "tag": "forge:gems/lapis"
+      "tag": "c:gems/lapis"
     },
     {
-      "tag": "forge:gems/diamond"
+      "tag": "c:gems/diamond"
     },
     {
-      "tag": "forge:ender_pearls"
+      "tag": "c:ender_pearls"
     }
   ],
   "result": {
-    "item": "goety:bonehead_hammer"
+    "id": "goety:bonehead_hammer"
   }
 }

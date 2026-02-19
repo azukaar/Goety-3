@@ -10,12 +10,12 @@
   {
     "a":
     {
-      "tag": "forge:storage_blocks/amethyst"
+      "tag": "c:stone"
     }
   },
   "result":
   {
-    "item": "goety:amethyst_necklace",
+    "id": "goety:amethyst_necklace",
     "count": 1
   }
 }

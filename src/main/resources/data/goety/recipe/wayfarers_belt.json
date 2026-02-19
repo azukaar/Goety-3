@@ -18,10 +18,10 @@
       "item": "minecraft:pufferfish"
     },
     {
-      "tag": "forge:leather"
+      "tag": "c:stone"
     }
   ],
   "result": {
-    "item": "goety:wayfarers_belt"
+    "id": "goety:wayfarers_belt"
   }
 }

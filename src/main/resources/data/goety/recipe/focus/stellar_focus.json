@@ -9,7 +9,7 @@
   "duration": 10,
   "ingredients": [
     {
-      "tag": "forge:ender_pearls"
+      "tag": "c:ender_pearls"
     },
     {
       "item": "goety:void_echo"
@@ -19,6 +19,6 @@
     }
   ],
   "result": {
-    "item": "goety:stellar_focus"
+    "id": "goety:stellar_focus"
   }
 }

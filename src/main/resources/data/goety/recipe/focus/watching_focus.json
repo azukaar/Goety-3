@@ -15,13 +15,13 @@
       "item": "minecraft:ender_eye"
     },
     {
-      "tag": "forge:ender_pearls"
+      "tag": "c:ender_pearls"
     },
     {
       "item": "minecraft:ender_eye"
     },
     {
-      "tag": "forge:ender_pearls"
+      "tag": "c:ender_pearls"
     },
     {
       "item": "minecraft:ender_eye"
@@ -34,6 +34,6 @@
     }
   ],
   "result": {
-    "item": "goety:watching_focus"
+    "id": "goety:watching_focus"
   }
 }

@@ -14,18 +14,18 @@
     },
     "m":
     {
-      "tag": "forge:gems/emerald"
+      "tag": "c:gems/emerald"
     },
     "q":
     {
-      "tag": "forge:gems/quartz"
+      "tag": "c:gems/quartz"
     },
     "i":
     {
-      "tag": "forge:ingots/iron"
+      "tag": "c:ingots/iron"
     }
   },
   "result": {
-    "item": "goety:burrowing_focus"
+    "id": "goety:burrowing_focus"
   }
 }

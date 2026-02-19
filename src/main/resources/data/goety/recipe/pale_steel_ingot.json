@@ -5,10 +5,10 @@
       "item": "goety:cursed_ingot"
     },
     {
-      "tag": "forge:ingots/iron"
+      "tag": "c:ingots/iron"
     },
     {
-      "tag": "forge:gems/lapis"
+      "tag": "c:gems/lapis"
     },
     {
       "tag": "minecraft:coals"
@@ -16,7 +16,7 @@
   ],
   "result":
   {
-    "item": "goety:pale_steel_ingot",
+    "id": "goety:pale_steel_ingot",
     "count": 2
   }
 }

@@ -12,13 +12,13 @@
       "item": "goety:ice_spike_focus"
     },
     {
-      "tag": "forge:gems/diamond"
+      "tag": "c:gems/diamond"
     },
     {
       "item": "minecraft:powder_snow_bucket"
     }
   ],
   "result": {
-    "item": "goety:blizzard_focus"
+    "id": "goety:blizzard_focus"
   }
 }

@@ -9,31 +9,31 @@
   "duration": 10,
   "ingredients": [
     {
-      "tag": "forge:tools/tridents"
+      "tag": "c:rods/wooden"
     },
     {
-      "tag": "forge:gems/prismarine"
+      "tag": "c:gems/prismarine"
     },
     {
-      "tag": "forge:gems/prismarine"
+      "tag": "c:gems/prismarine"
     },
     {
-      "tag": "forge:gems/prismarine"
-    },
-    {
-      "item": "goety:cursed_ingot"
+      "tag": "c:gems/prismarine"
     },
     {
       "item": "goety:cursed_ingot"
     },
     {
-      "tag": "forge:storage_blocks/lapis"
+      "item": "goety:cursed_ingot"
+    },
+    {
+      "tag": "c:rods/wooden"
     },
     {
       "item": "goety:chill_fabric"
     }
   ],
   "result": {
-    "item": "goety:abyss_staff"
+    "id": "goety:abyss_staff"
   }
 }

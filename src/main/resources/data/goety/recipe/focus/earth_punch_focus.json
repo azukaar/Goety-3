@@ -14,7 +14,7 @@
     },
     "f":
     {
-      "tag": "forge:stone"
+      "tag": "c:rods/wooden"
     },
     "p":
     {
@@ -22,7 +22,7 @@
     },
     "g":
     {
-      "tag": "forge:gunpowder"
+      "tag": "c:gunpowder"
     },
     "s":
     {
@@ -30,6 +30,6 @@
     }
   },
   "result": {
-    "item": "goety:earth_punch_focus"
+    "id": "goety:earth_punch_focus"
   }
 }

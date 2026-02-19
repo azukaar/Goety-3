@@ -10,13 +10,13 @@
   "research": "ravaging",
   "ingredients": [
     {
-      "tag": "forge:storage_blocks/iron"
+      "tag": "c:stone"
     },
     {
-      "tag": "forge:ingots/iron"
+      "tag": "c:ingots/iron"
     }
   ],
   "result": {
-    "item": "goety:iron_trampler_armor"
+    "id": "goety:iron_trampler_armor"
   }
 }

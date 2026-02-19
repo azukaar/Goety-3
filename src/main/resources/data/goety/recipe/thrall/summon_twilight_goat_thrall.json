@@ -13,10 +13,10 @@
       "item": "minecraft:wheat"
     },
     {
-      "tag": "forge:bones"
+      "tag": "c:bones"
     }
   ],
   "result": {
-    "item": "goety:jei_dummy/none"
+    "id": "goety:jei_dummy/none"
   }
 }

@@ -13,12 +13,12 @@
     },
     "g":
     {
-      "tag": "forge:ingots/gold"
+      "tag": "c:ingots/gold"
     }
   },
   "result":
   {
-    "item": "goety:gold_arch_marble",
+    "id": "goety:gold_arch_marble",
     "count": 1
   }
 }

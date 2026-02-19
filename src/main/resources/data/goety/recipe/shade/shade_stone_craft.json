@@ -10,7 +10,7 @@
   {
     "s":
     {
-      "tag": "forge:stone"
+      "tag": "c:sandstone"
     },
     "t":
     {
@@ -19,7 +19,7 @@
   },
   "result":
   {
-    "item": "goety:shade_stone",
+    "id": "goety:shade_stone",
     "count": 8
   }
 }

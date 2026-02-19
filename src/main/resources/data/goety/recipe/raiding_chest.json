@@ -5,10 +5,10 @@
       "item": "goety:pale_steel_ingot"
     },
     {
-      "tag": "forge:chests/wooden"
+      "tag": "c:chests/wooden"
     }
   ],
   "result": {
-    "item": "goety:raiding_chest"
+    "id": "goety:raiding_chest"
   }
 }

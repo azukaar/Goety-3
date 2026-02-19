@@ -10,7 +10,7 @@
   "research": "ravaging",
   "ingredients": [
     {
-      "tag": "forge:storage_blocks/silver"
+      "tag": "c:stone"
     },
     {
       "item": "minecraft:chain"
@@ -26,14 +26,14 @@
     }
   ],
   "result": {
-    "item": "goety:ominous_saddle"
+    "id": "goety:ominous_saddle"
   },
   "conditions": [
     {
-      "type": "forge:not",
+      "type": "c:not",
       "value": {
-        "tag": "forge:storage_blocks/silver",
-        "type": "forge:tag_empty"
+        "tag": "c:stone",
+        "type": "c:tag_empty"
       }
     }
   ]

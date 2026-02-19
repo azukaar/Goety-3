@@ -12,22 +12,22 @@
       "item": "goety:hunger_core"
     },
     {
-      "tag": "forge:ender_pearls"
+      "tag": "c:ender_pearls"
     },
     {
-      "tag": "forge:ender_pearls"
+      "tag": "c:ender_pearls"
     },
     {
-      "tag": "forge:ender_pearls"
+      "tag": "c:ender_pearls"
     },
     {
-      "tag": "forge:ender_pearls"
+      "tag": "c:ender_pearls"
     },
     {
       "item": "goety:soul_ruby"
     }
   ],
   "result": {
-    "item": "goety:feast_focus"
+    "id": "goety:feast_focus"
   }
 }

@@ -1,10 +1,10 @@
 {
   "replace": false,
   "values": [
-    "#forge:is_desert",
-    "#forge:is_wasteland",
+    "#c:is_desert",
+    "#c:is_wasteland",
     {
-      "id": "#forge:is_dead",
+      "id": "#c:is_dead",
       "required": false
     }
   ]

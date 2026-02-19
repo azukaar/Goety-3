@@ -1,7 +1,7 @@
 {
   "replace": false,
   "values": [
-    "#forge:enderman",
+    "#c:enderman",
     "#goety:endermen",
     "#goety:enderlings",
     "minecraft:endermite",

@@ -10,7 +10,7 @@
   {
     "#":
     {
-      "tag": "forge:ingots/brick"
+      "tag": "c:ingots/brick"
     },
     "$":
     {
@@ -19,7 +19,7 @@
   },
   "result":
   {
-    "item": "goety:stash_urn",
+    "id": "goety:stash_urn",
     "nbt": {
       "BlockEntityTag": {
         "id": "goety:crypt_urn",

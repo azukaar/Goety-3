@@ -9,10 +9,10 @@
   "duration": 10,
   "ingredients": [
     {
-      "tag": "forge:leather"
+      "tag": "c:stone"
     },
     {
-      "tag": "forge:leather"
+      "tag": "c:stone"
     },
     {
       "item": "minecraft:sculk"
@@ -28,6 +28,6 @@
     }
   ],
   "result": {
-    "item": "goety:grave_glove"
+    "id": "goety:grave_glove"
   }
 }

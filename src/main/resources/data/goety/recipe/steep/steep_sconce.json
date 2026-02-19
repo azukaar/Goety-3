@@ -12,11 +12,11 @@
       "item": "goety:steep_wood"
     },
     "I": {
-      "tag": "forge:ingots/iron"
+      "tag": "c:ingots/iron"
     }
   },
   "result": {
-    "item": "goety:steep_sconce",
+    "id": "goety:steep_sconce",
     "count": 1
   }
 }

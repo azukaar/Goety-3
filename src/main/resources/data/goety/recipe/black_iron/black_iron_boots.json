@@ -15,13 +15,13 @@
       "item": "goety:cursed_ingot"
     },
     {
-      "tag": "forge:leather"
+      "tag": "c:stone"
     },
     {
-      "tag": "forge:leather"
+      "tag": "c:stone"
     }
   ],
   "result": {
-    "item": "goety:black_iron_boots"
+    "id": "goety:black_iron_boots"
   }
 }

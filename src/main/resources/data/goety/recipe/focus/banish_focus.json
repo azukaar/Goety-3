@@ -9,13 +9,13 @@
   "duration": 10,
   "ingredients": [
     {
-      "tag": "forge:ender_pearls"
+      "tag": "c:ender_pearls"
     },
     {
-      "tag": "forge:gems/quartz"
+      "tag": "c:gems/quartz"
     },
     {
-      "tag": "forge:gems/diamond"
+      "tag": "c:gems/diamond"
     },
     {
       "item": "minecraft:chorus_fruit"
@@ -24,10 +24,10 @@
       "item": "minecraft:name_tag"
     },
     {
-      "tag": "forge:bones"
+      "tag": "c:bones"
     }
   ],
   "result": {
-    "item": "goety:banish_focus"
+    "id": "goety:banish_focus"
   }
 }

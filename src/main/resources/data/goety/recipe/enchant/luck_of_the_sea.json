@@ -17,16 +17,16 @@
       "tag": "minecraft:fishes"
     },
     {
-      "tag": "forge:gems/emerald"
+      "tag": "c:gems/emerald"
     },
     {
-      "tag": "forge:gems/emerald"
+      "tag": "c:gems/emerald"
     },
     {
-      "tag": "forge:gems/lapis"
+      "tag": "c:gems/lapis"
     }
   ],
   "result": {
-    "item": "minecraft:enchanted_book"
+    "id": "minecraft:enchanted_book"
   }
 }

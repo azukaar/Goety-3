@@ -10,15 +10,15 @@
   {
     "i":
     {
-      "tag": "forge:raw_materials/iron"
+      "tag": "c:rods/wooden"
     },
     "q":
     {
-      "tag": "forge:gems/quartz"
+      "tag": "c:gems/quartz"
     },
     "r":
     {
-      "tag": "forge:dusts/redstone"
+      "tag": "c:dusts/redstone"
     },
     "t":
     {
@@ -27,7 +27,7 @@
   },
   "result":
   {
-    "item": "goety:empty_focus",
+    "id": "goety:empty_focus",
     "count": 4
   }
 }

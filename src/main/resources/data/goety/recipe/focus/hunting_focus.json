@@ -18,12 +18,12 @@
     },
     "s":
     {
-      "tag": "forge:bones"
+      "tag": "c:bones"
     }
   },
   "result":
   {
-    "item": "goety:hunting_focus",
+    "id": "goety:hunting_focus",
     "count": 1
   }
 }

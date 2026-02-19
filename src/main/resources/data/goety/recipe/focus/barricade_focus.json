@@ -9,31 +9,31 @@
   "duration": 10,
   "ingredients": [
     {
-      "tag": "forge:storage_blocks/amethyst"
+      "tag": "c:rods/wooden"
     },
     {
       "item": "goety:magic_emerald"
     },
     {
-      "tag": "forge:stone"
+      "tag": "c:rods/wooden"
     },
     {
-      "tag": "forge:stone"
+      "tag": "c:rods/wooden"
     },
     {
-      "tag": "forge:stone"
+      "tag": "c:rods/wooden"
     },
     {
-      "tag": "forge:stone"
+      "tag": "c:rods/wooden"
     },
     {
-      "tag": "forge:storage_blocks/amethyst"
+      "tag": "c:rods/wooden"
     },
     {
       "item": "minecraft:tnt"
     }
   ],
   "result": {
-    "item": "goety:barricade_focus"
+    "id": "goety:barricade_focus"
   }
 }

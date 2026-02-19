@@ -14,7 +14,7 @@
     },
     "f":
     {
-      "tag": "forge:gems/jade"
+      "tag": "c:gems/jade"
     },
     "s":
     {
@@ -23,7 +23,7 @@
   },
   "result":
   {
-    "item": "goety:updraft_focus",
+    "id": "goety:updraft_focus",
     "count": 1
   }
 }

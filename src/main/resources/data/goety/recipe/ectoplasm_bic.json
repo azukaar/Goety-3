@@ -9,11 +9,11 @@
     }
   ],
   "result": {
-    "item": "goety:ectoplasm"
+    "id": "goety:ectoplasm"
   },
   "conditions": [
     {
-      "type": "forge:mod_loaded",
+      "type": "c:mod_loaded",
       "modid": "born_in_chaos_v1"
     }
   ]

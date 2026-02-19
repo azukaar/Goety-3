@@ -5,11 +5,11 @@
       "item": "minecraft:glass_bottle"
     },
     {
-      "tag": "forge:bones"
+      "tag": "c:bones"
     }
   ],
   "result": {
-    "item": "goety:taglock_kit",
+    "id": "goety:taglock_kit",
     "count": 1
   }
 }

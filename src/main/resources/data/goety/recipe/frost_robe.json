@@ -21,13 +21,13 @@
       "item": "goety:chill_fabric"
     },
     {
-      "tag": "forge:leather"
+      "tag": "c:stone"
     },
     {
-      "tag": "forge:leather"
+      "tag": "c:stone"
     }
   ],
   "result": {
-    "item": "goety:frost_robe"
+    "id": "goety:frost_robe"
   }
 }

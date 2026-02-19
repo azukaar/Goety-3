@@ -14,16 +14,16 @@
     },
     "s":
     {
-      "tag": "forge:dusts/glowstone"
+      "tag": "c:dusts/glowstone"
     },
     "c":
     {
-      "tag": "forge:netherrack"
+      "tag": "c:rods/wooden"
     }
   },
   "result":
   {
-    "item": "goety:glow_light_focus",
+    "id": "goety:glow_light_focus",
     "count": 1
   }
 }

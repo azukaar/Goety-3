@@ -18,12 +18,12 @@
     },
     "c":
     {
-      "tag": "forge:rods/wooden"
+      "tag": "c:rods/wooden"
     }
   },
   "result":
   {
-    "item": "goety:soul_light_focus",
+    "id": "goety:soul_light_focus",
     "count": 1
   }
 }

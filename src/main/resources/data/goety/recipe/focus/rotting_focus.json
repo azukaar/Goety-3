@@ -9,13 +9,13 @@
   "duration": 10,
   "ingredients": [
     {
-      "tag": "forge:ingots/iron"
+      "tag": "c:ingots/iron"
     },
     {
-      "tag": "forge:crops/carrot"
+      "tag": "c:crops/carrot"
     },
     {
-      "tag": "forge:crops/potato"
+      "tag": "c:crops/potato"
     },
     {
       "item": "minecraft:rotten_flesh"
@@ -31,6 +31,6 @@
     }
   ],
   "result": {
-    "item": "goety:rotting_focus"
+    "id": "goety:rotting_focus"
   }
 }

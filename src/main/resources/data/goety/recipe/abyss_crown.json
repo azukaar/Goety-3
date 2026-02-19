@@ -9,31 +9,31 @@
   "duration": 10,
   "ingredients": [
     {
-      "tag": "forge:dusts/prismarine"
+      "tag": "c:dusts/prismarine"
     },
     {
-      "tag": "forge:dusts/prismarine"
+      "tag": "c:dusts/prismarine"
     },
     {
-      "tag": "forge:dusts/prismarine"
+      "tag": "c:dusts/prismarine"
     },
     {
-      "tag": "forge:dusts/prismarine"
+      "tag": "c:dusts/prismarine"
     },
     {
-      "tag": "forge:gems/prismarine"
+      "tag": "c:gems/prismarine"
     },
     {
-      "tag": "forge:gems/prismarine"
+      "tag": "c:gems/prismarine"
     },
     {
-      "tag": "forge:gems/prismarine"
+      "tag": "c:gems/prismarine"
     },
     {
-      "tag": "forge:gems/prismarine"
+      "tag": "c:gems/prismarine"
     }
   ],
   "result": {
-    "item": "goety:abyss_crown"
+    "id": "goety:abyss_crown"
   }
 }

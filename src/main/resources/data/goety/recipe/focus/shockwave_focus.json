@@ -9,19 +9,19 @@
   "duration": 10,
   "ingredients": [
     {
-      "tag": "forge:gunpowder"
+      "tag": "c:gunpowder"
     },
     {
       "item": "minecraft:sculk_shrieker"
     },
     {
-      "tag": "forge:dusts/glowstone"
+      "tag": "c:dusts/glowstone"
     },
     {
       "item": "minecraft:ghast_tear"
     }
   ],
   "result": {
-    "item": "goety:shockwave_focus"
+    "id": "goety:shockwave_focus"
   }
 }

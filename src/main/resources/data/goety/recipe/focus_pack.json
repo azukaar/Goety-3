@@ -10,7 +10,7 @@
   {
     "l":
     {
-      "tag": "forge:leather"
+      "tag": "c:rods/wooden"
     },
     "b":
     {
@@ -19,7 +19,7 @@
   },
   "result":
   {
-    "item": "goety:focus_pack",
+    "id": "goety:focus_pack",
     "count": 1
   }
 }

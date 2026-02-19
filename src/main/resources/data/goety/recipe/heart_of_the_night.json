@@ -19,10 +19,10 @@
       "item": "goety:grave_dust"
     },
     {
-      "tag": "forge:slimeballs"
+      "tag": "c:stone"
     },
     {
-      "tag": "forge:ender_pearls"
+      "tag": "c:ender_pearls"
     },
     {
       "item": "minecraft:clock"
@@ -35,6 +35,6 @@
     }
   ],
   "result": {
-    "item": "goety:heart_of_the_night"
+    "id": "goety:heart_of_the_night"
   }
 }

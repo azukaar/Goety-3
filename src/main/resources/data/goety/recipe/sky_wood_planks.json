@@ -14,12 +14,12 @@
     },
     "l":
     {
-      "tag": "forge:gems/lapis"
+      "tag": "c:gems/lapis"
     }
   },
   "result":
   {
-    "item": "goety:sky_wood_planks",
+    "id": "goety:sky_wood_planks",
     "count": 4
   }
 }

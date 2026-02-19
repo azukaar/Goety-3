@@ -10,7 +10,7 @@
   {
     "s":
     {
-      "tag": "forge:gems/amethyst"
+      "tag": "c:gems/amethyst"
     },
     "t":
     {
@@ -19,7 +19,7 @@
   },
   "result":
   {
-    "item": "goety:empty_focus",
+    "id": "goety:empty_focus",
     "count": 4
   }
 }

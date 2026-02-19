@@ -19,10 +19,10 @@
       "item": "minecraft:lead"
     },
     {
-      "tag": "forge:gems/lapis"
+      "tag": "c:gems/lapis"
     }
   ],
   "result": {
-    "item": "goety:feline_amulet"
+    "id": "goety:feline_amulet"
   }
 }

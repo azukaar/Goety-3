@@ -12,12 +12,12 @@
     },
     "g":
     {
-      "tag": "forge:nuggets/gold"
+      "tag": "c:sandstone"
     }
   },
   "result":
   {
-    "item": "goety:gold_indented_highrock_bricks",
+    "id": "goety:gold_indented_highrock_bricks",
     "count": 1
   }
 }

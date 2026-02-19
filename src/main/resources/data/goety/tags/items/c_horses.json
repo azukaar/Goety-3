@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    "#c:horses",
+    "minecraft:horse",
+    "minecraft:donkey",
+    "minecraft:mule"
+  ]
+}

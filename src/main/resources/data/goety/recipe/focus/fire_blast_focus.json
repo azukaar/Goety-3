@@ -9,10 +9,10 @@
   "duration": 10,
   "ingredients": [
     {
-      "tag": "forge:storage_blocks/coal"
+      "tag": "c:rods/wooden"
     },
     {
-      "tag": "forge:rods/blaze"
+      "tag": "c:rods/wooden"
     },
     {
       "item": "minecraft:tnt"
@@ -21,10 +21,10 @@
       "item": "minecraft:lava_bucket"
     },
     {
-      "tag": "forge:storage_blocks/coal"
+      "tag": "c:rods/wooden"
     },
     {
-      "tag": "forge:rods/blaze"
+      "tag": "c:rods/wooden"
     },
     {
       "item": "minecraft:lava_bucket"
@@ -34,6 +34,6 @@
     }
   ],
   "result": {
-    "item": "goety:fire_blast_focus"
+    "id": "goety:fire_blast_focus"
   }
 }

@@ -13,10 +13,10 @@
       "item": "minecraft:clock"
     },
     {
-      "tag": "forge:mushrooms"
+      "tag": "c:stone"
     }
   ],
   "result": {
-    "item": "goety:jei_dummy/none"
+    "id": "goety:jei_dummy/none"
   }
 }

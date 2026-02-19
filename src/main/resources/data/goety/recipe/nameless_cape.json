@@ -28,10 +28,10 @@
       "item": "goety:forbidden_piece"
     },
     {
-      "tag": "forge:bones"
+      "tag": "c:bones"
     }
   ],
   "result": {
-    "item": "goety:nameless_cape"
+    "id": "goety:nameless_cape"
   }
 }

@@ -4,8 +4,8 @@
     "#minecraft:is_forest",
     "#minecraft:is_savanna",
     "#minecraft:is_taiga",
-    "#forge:is_desert",
-    "#forge:is_plains",
-    "#forge:is_plateau"
+    "#c:is_desert",
+    "#c:is_plains",
+    "#c:is_plateau"
   ]
 }

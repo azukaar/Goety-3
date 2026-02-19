@@ -1,0 +1,10 @@
+{
+  "replace": false,
+  "values": [
+    "#c:sandstone",
+    "minecraft:sandstone",
+    "minecraft:cut_sandstone",
+    "minecraft:chiseled_sandstone",
+    "minecraft:smooth_sandstone"
+  ]
+}

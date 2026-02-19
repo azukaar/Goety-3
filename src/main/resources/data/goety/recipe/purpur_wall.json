@@ -10,14 +10,14 @@
     }
   },
   "result": {
-    "item": "goety:purpur_wall",
+    "id": "goety:purpur_wall",
     "count": 6
   },
   "conditions": [
     {
-      "type": "forge:not",
+      "type": "c:not",
       "value": {
-        "type": "forge:mod_loaded",
+        "type": "c:mod_loaded",
         "modid": "cataclysm"
       }
     }

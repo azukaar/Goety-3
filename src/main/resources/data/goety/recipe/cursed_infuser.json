@@ -9,7 +9,7 @@
   {
     "l":
     {
-      "tag": "forge:gems/lapis"
+      "tag": "c:gems/lapis"
     },
     "s":
     {
@@ -26,7 +26,7 @@
   },
   "result":
   {
-    "item": "goety:cursed_infuser",
+    "id": "goety:cursed_infuser",
     "count": 1
   }
 }

@@ -12,7 +12,7 @@
       "item": "goety:ectoplasm"
     },
     {
-      "tag": "forge:gems/diamond"
+      "tag": "c:gems/diamond"
     },
     {
       "item": "minecraft:tnt"
@@ -28,6 +28,6 @@
     }
   ],
   "result": {
-    "item": "goety:frost_nova_focus"
+    "id": "goety:frost_nova_focus"
   }
 }

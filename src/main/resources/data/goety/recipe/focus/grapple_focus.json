@@ -9,16 +9,16 @@
   "duration": 10,
   "ingredients": [
     {
-      "tag": "forge:slimeballs"
+      "tag": "c:rods/wooden"
     },
     {
-      "tag": "forge:string"
+      "tag": "c:string"
     },
     {
       "item": "minecraft:cobweb"
     },
     {
-      "tag": "forge:slimeballs"
+      "tag": "c:rods/wooden"
     },
     {
       "item": "minecraft:vine"
@@ -34,6 +34,6 @@
     }
   ],
   "result": {
-    "item": "goety:grapple_focus"
+    "id": "goety:grapple_focus"
   }
 }

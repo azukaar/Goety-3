@@ -18,13 +18,13 @@
       "item": "minecraft:paper"
     },
     {
-      "tag": "forge:rods/blaze"
+      "tag": "c:stone"
     },
     {
       "item": "goety:ectoplasm"
     }
   ],
   "result": {
-    "item": "goety:bygone_scroll"
+    "id": "goety:bygone_scroll"
   }
 }

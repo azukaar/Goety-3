@@ -10,7 +10,7 @@
   {
     "g":
     {
-      "tag": "forge:glass"
+      "tag": "c:glass"
     },
     "e":
     {
@@ -19,7 +19,7 @@
   },
   "result":
   {
-    "item": "goety:haunted_glass",
+    "id": "goety:haunted_glass",
     "count": 4
   }
 }

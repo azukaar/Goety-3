@@ -14,14 +14,14 @@
     },
     "a":
     {
-      "tag": "forge:gems/amethyst"
+      "tag": "c:gems/amethyst"
     },
     "s":
     {
-      "tag": "forge:dusts/redstone"
+      "tag": "c:dusts/redstone"
     }
   },
   "result": {
-    "item": "goety:sensing_focus"
+    "id": "goety:sensing_focus"
   }
 }

@@ -2,7 +2,7 @@
   "type": "goety:ritual",
   "ritual_type": "goety:craft",
   "activation_item": {
-    "tag": "forge:ender_pearls"
+    "tag": "c:ender_pearls"
   },
   "craftType": "end",
   "soulCost": 1,
@@ -27,13 +27,13 @@
       "item": "goety:void_block"
     },
     {
-      "tag": "forge:ender_pearls"
+      "tag": "c:ender_pearls"
     },
     {
       "item": "minecraft:crying_obsidian"
     }
   ],
   "result": {
-    "item": "goety:void_robe"
+    "id": "goety:void_robe"
   }
 }

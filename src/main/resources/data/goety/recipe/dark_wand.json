@@ -14,7 +14,7 @@
     },
     "e":
     {
-      "tag": "forge:gems/lapis"
+      "tag": "c:gems/lapis"
     },
     "m":
     {
@@ -27,7 +27,7 @@
   },
   "result":
   {
-    "item": "goety:dark_wand",
+    "id": "goety:dark_wand",
     "count": 1
   }
 }

@@ -10,7 +10,7 @@
   "duration": 30,
   "ingredients": [
     {
-      "tag": "forge:bones"
+      "tag": "c:bones"
     },
     {
       "item": "goety:spirit_fabric"
@@ -20,6 +20,6 @@
     }
   ],
   "result": {
-    "item": "goety:jei_dummy/none"
+    "id": "goety:jei_dummy/none"
   }
 }

@@ -10,11 +10,11 @@
       "item": "goety:rotten_planks"
     },
     "C": {
-      "tag": "forge:chests/wooden"
+      "tag": "c:chests/wooden"
     }
   },
   "result": {
-    "item": "goety:rotten_chest",
+    "id": "goety:rotten_chest",
     "count": 2
   }
 }

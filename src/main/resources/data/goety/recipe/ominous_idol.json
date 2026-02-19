@@ -12,13 +12,13 @@
       "tag": "minecraft:stone_bricks"
     },
     {
-      "tag": "forge:storage_blocks/lapis"
+      "tag": "c:stone"
     },
     {
       "tag": "minecraft:stone_bricks"
     },
     {
-      "tag": "forge:storage_blocks/lapis"
+      "tag": "c:stone"
     },
     {
       "tag": "minecraft:stone_bricks"
@@ -34,6 +34,6 @@
     }
   ],
   "result": {
-    "item": "goety:ominous_idol"
+    "id": "goety:ominous_idol"
   }
 }

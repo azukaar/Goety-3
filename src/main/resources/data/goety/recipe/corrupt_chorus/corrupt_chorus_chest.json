@@ -10,11 +10,11 @@
       "item": "goety:corrupt_chorus_planks"
     },
     "C": {
-      "tag": "forge:chests/wooden"
+      "tag": "c:chests/wooden"
     }
   },
   "result": {
-    "item": "goety:corrupt_chorus_chest",
+    "id": "goety:corrupt_chorus_chest",
     "count": 2
   }
 }

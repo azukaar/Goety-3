@@ -14,16 +14,16 @@
     },
     "f":
     {
-      "tag": "forge:storage_blocks/redstone"
+      "tag": "c:rods/wooden"
     },
     "s":
     {
-      "tag": "forge:gems/diamond"
+      "tag": "c:gems/diamond"
     }
   },
   "result":
   {
-    "item": "goety:thunderbolt_focus",
+    "id": "goety:thunderbolt_focus",
     "count": 1
   }
 }

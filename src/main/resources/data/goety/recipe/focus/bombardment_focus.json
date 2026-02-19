@@ -10,7 +10,7 @@
   {
     "b":
     {
-      "tag": "forge:rods/blaze"
+      "tag": "c:rods/wooden"
     },
     "e":
     {
@@ -26,6 +26,6 @@
     }
   },
   "result": {
-    "item": "goety:bombardment_focus"
+    "id": "goety:bombardment_focus"
   }
 }

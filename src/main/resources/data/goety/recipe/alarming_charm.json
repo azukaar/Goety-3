@@ -12,13 +12,13 @@
       "item": "minecraft:bell"
     },
     {
-      "tag": "forge:gems/emerald"
+      "tag": "c:gems/emerald"
     },
     {
       "item": "minecraft:goat_horn"
     }
   ],
   "result": {
-    "item": "goety:alarming_charm"
+    "id": "goety:alarming_charm"
   }
 }

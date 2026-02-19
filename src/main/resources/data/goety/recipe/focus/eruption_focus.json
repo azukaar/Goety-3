@@ -12,19 +12,19 @@
       "item": "minecraft:lava_bucket"
     },
     {
-      "tag": "forge:obsidian"
+      "tag": "c:rods/wooden"
     },
     {
       "item": "minecraft:lava_bucket"
     },
     {
-      "tag": "forge:stone"
+      "tag": "c:rods/wooden"
     },
     {
-      "tag": "forge:stone"
+      "tag": "c:rods/wooden"
     }
   ],
   "result": {
-    "item": "goety:eruption_focus"
+    "id": "goety:eruption_focus"
   }
 }

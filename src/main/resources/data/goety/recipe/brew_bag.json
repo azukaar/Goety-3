@@ -10,7 +10,7 @@
   {
     "l":
     {
-      "tag": "forge:leather"
+      "tag": "c:stone"
     },
     "e":
     {
@@ -23,7 +23,7 @@
   },
   "result":
   {
-    "item": "goety:brew_bag",
+    "id": "goety:brew_bag",
     "count": 1
   }
 }

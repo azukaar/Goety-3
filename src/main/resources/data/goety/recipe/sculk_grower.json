@@ -9,7 +9,7 @@
   "duration": 10,
   "ingredients": [
     {
-      "tag": "forge:bones"
+      "tag": "c:bones"
     },
     {
       "item": "minecraft:sculk"
@@ -18,7 +18,7 @@
       "item": "minecraft:composter"
     },
     {
-      "tag": "forge:bones"
+      "tag": "c:bones"
     },
     {
       "item": "minecraft:sculk"
@@ -28,6 +28,6 @@
     }
   ],
   "result": {
-    "item": "goety:sculk_grower"
+    "id": "goety:sculk_grower"
   }
 }

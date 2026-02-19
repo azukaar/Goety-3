@@ -14,11 +14,11 @@
     },
     "s":
     {
-      "tag": "forge:rods/wooden"
+      "tag": "c:stone"
     }
   },
   "result":
   {
-    "item": "goety:dark_sword"
+    "id": "goety:dark_sword"
   }
 }

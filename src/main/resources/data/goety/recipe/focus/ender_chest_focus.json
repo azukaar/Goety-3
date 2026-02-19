@@ -21,10 +21,10 @@
       "item": "minecraft:obsidian"
     },
     {
-      "tag": "forge:ender_pearls"
+      "tag": "c:ender_pearls"
     }
   ],
   "result": {
-    "item": "goety:ender_chest_focus"
+    "id": "goety:ender_chest_focus"
   }
 }

@@ -10,13 +10,13 @@
   "duration": 10,
   "ingredients": [
     {
-      "tag": "forge:ingots/iron"
+      "tag": "c:ingots/iron"
     },
     {
-      "tag": "forge:ingots/iron"
+      "tag": "c:ingots/iron"
     },
     {
-      "tag": "forge:ingots/iron"
+      "tag": "c:ingots/iron"
     },
     {
       "item": "goety:soul_emerald"
@@ -29,6 +29,6 @@
     }
   ],
   "result": {
-    "item": "goety:nameless_crown"
+    "id": "goety:nameless_crown"
   }
 }

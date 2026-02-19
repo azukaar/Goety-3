@@ -18,7 +18,7 @@
       "item": "goety:hunger_core"
     },
     {
-      "tag": "forge:gems/diamond"
+      "tag": "c:gems/diamond"
     },
     {
       "item": "goety:shadow_essence"
@@ -31,6 +31,6 @@
     }
   ],
   "result": {
-    "item": "goety:hungry_dagger"
+    "id": "goety:hungry_dagger"
   }
 }

@@ -11,19 +11,19 @@
   "xpLevelCost": 5,
   "ingredients": [
     {
-      "tag": "forge:gems/quartz"
+      "tag": "c:gems/quartz"
     },
     {
-      "tag": "forge:gems/quartz"
+      "tag": "c:gems/quartz"
     },
     {
-      "tag": "forge:ingots/gold"
+      "tag": "c:ingots/gold"
     },
     {
-      "tag": "forge:gems/lapis"
+      "tag": "c:gems/lapis"
     }
   ],
   "result": {
-    "item": "minecraft:enchanted_book"
+    "id": "minecraft:enchanted_book"
   }
 }

@@ -18,7 +18,7 @@
       "item": "minecraft:respawn_anchor"
     },
     {
-      "tag": "forge:ender_pearls"
+      "tag": "c:ender_pearls"
     },
     {
       "item": "minecraft:dark_prismarine"
@@ -27,13 +27,13 @@
       "item": "minecraft:lodestone"
     },
     {
-      "tag": "forge:obsidian"
+      "tag": "c:stone"
     },
     {
-      "tag": "forge:obsidian"
+      "tag": "c:stone"
     }
   ],
   "result": {
-    "item": "goety:arca"
+    "id": "goety:arca"
   }
 }

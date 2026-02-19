@@ -11,21 +11,21 @@
   "xpLevelCost": 5,
   "ingredients": [
     {
-      "tag": "forge:obsidian"
+      "tag": "c:rods/wooden"
     },
     {
-      "tag": "forge:slimeballs"
+      "tag": "c:rods/wooden"
     },
     {
-      "tag": "forge:gems/lapis"
+      "tag": "c:gems/lapis"
     }
   ],
   "result": {
-    "item": "minecraft:enchanted_book"
+    "id": "minecraft:enchanted_book"
   },
   "conditions": [
     {
-      "type": "forge:mod_loaded",
+      "type": "c:mod_loaded",
       "modid": "cyclic"
     }
   ]

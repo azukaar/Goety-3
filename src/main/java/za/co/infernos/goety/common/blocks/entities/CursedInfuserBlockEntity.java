@@ -1,6 +1,7 @@
 package za.co.infernos.goety.common.blocks.entities;
 
 
+import za.co.infernos.goety.Goety;
 import za.co.infernos.goety.common.blocks.CursedInfuserBlock;
 import za.co.infernos.goety.common.crafting.CursedInfuserRecipes;
 import za.co.infernos.goety.common.crafting.ModRecipeSerializer;
@@ -264,7 +265,13 @@ public class CursedInfuserBlockEntity extends ModBlockEntity implements Clearabl
     }
 
     public Optional<CursedInfuserRecipes> getRecipes(ItemStack pStack) {
-        return this.items.stream().noneMatch(ItemStack::isEmpty) ? Optional.empty() : this.getLevel().getRecipeManager().getRecipeFor(ModRecipeSerializer.CURSED_INFUSER.get(), new SingleRecipeInput(pStack), this.getLevel()).map(net.minecraft.world.item.crafting.RecipeHolder::value);
+        Optional<net.minecraft.world.item.crafting.RecipeHolder<CursedInfuserRecipes>> recipeHolder = this.getLevel().getRecipeManager().getRecipeFor(ModRecipeSerializer.CURSED_INFUSER.get(), new SingleRecipeInput(pStack), this.getLevel());
+        if (recipeHolder.isPresent()) {
+            Goety.LOGGER.debug("[GOETY RECIPE DEBUG] CursedInfuser: Found recipe {} for item {}", recipeHolder.get().id(), pStack.getItem());
+        } else {
+            Goety.LOGGER.debug("[GOETY RECIPE DEBUG] CursedInfuser: No recipe found for item {}", pStack.getItem());
+        }
+        return this.items.stream().noneMatch(ItemStack::isEmpty) ? Optional.empty() : recipeHolder.map(net.minecraft.world.item.crafting.RecipeHolder::value);
     }
 
     @Override

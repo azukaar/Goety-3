@@ -12,13 +12,13 @@
       "item": "minecraft:ender_eye"
     },
     {
-      "tag": "forge:ender_pearls"
+      "tag": "c:ender_pearls"
     },
     {
       "item": "goety:flame_capture"
     }
   ],
   "result": {
-    "item": "goety:call_focus"
+    "id": "goety:call_focus"
   }
 }

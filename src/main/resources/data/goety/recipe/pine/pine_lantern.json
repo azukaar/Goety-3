@@ -11,13 +11,13 @@
       "item": "goety:pine_log"
     },
     "S": {
-      "tag": "forge:string"
+      "tag": "c:string"
     },
     "L": {
       "item": "minecraft:lantern"
     }
   },
   "result": {
-    "item": "goety:pine_lantern"
+    "id": "goety:pine_lantern"
   }
 }

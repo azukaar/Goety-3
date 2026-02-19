@@ -9,7 +9,7 @@
   "duration": 3600,
   "conditions": [
     {
-      "type": "forge:mod_loaded",
+      "type": "c:mod_loaded",
       "modid": "alexscaves"
     }
   ]

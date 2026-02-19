@@ -9,19 +9,19 @@
   "duration": 10,
   "ingredients": [
     {
-      "tag": "forge:ingots/gold"
+      "tag": "c:ingots/gold"
     },
     {
       "item": "goety:ectoplasm"
     },
     {
-      "tag": "forge:leather"
+      "tag": "c:stone"
     },
     {
-      "tag": "forge:leather"
+      "tag": "c:stone"
     }
   ],
   "result": {
-    "item": "goety:targeting_monocle"
+    "id": "goety:targeting_monocle"
   }
 }

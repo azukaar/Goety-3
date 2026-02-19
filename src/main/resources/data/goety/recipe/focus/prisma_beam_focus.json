@@ -14,16 +14,16 @@
     },
     "f":
     {
-      "tag": "forge:dusts/prismarine"
+      "tag": "c:dusts/prismarine"
     },
     "s":
     {
-      "tag": "forge:gems/prismarine"
+      "tag": "c:gems/prismarine"
     }
   },
   "result":
   {
-    "item": "goety:prisma_beam_focus",
+    "id": "goety:prisma_beam_focus",
     "count": 1
   }
 }

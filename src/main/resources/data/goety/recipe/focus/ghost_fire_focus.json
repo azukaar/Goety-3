@@ -24,13 +24,13 @@
       "item": "minecraft:powder_snow_bucket"
     },
     {
-      "tag": "forge:ender_pearls"
+      "tag": "c:ender_pearls"
     },
     {
       "item": "goety:magic_emerald"
     }
   ],
   "result": {
-    "item": "goety:ghost_fire_focus"
+    "id": "goety:ghost_fire_focus"
   }
 }

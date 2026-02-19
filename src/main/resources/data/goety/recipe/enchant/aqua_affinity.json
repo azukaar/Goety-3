@@ -11,16 +11,16 @@
   "xpLevelCost": 5,
   "ingredients": [
     {
-      "tag": "forge:leather"
+      "tag": "c:rods/wooden"
     },
     {
-      "tag": "forge:dusts/prismarine"
+      "tag": "c:dusts/prismarine"
     },
     {
-      "tag": "forge:gems/lapis"
+      "tag": "c:gems/lapis"
     }
   ],
   "result": {
-    "item": "minecraft:enchanted_book"
+    "id": "minecraft:enchanted_book"
   }
 }

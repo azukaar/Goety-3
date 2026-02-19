@@ -30,10 +30,10 @@
       "item": "minecraft:netherite_scrap"
     },
     {
-      "tag": "forge:storage_blocks/gold"
+      "tag": "c:stone"
     }
   ],
   "result": {
-    "item": "goety:jei_dummy/none"
+    "id": "goety:jei_dummy/none"
   }
 }

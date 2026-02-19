@@ -22,12 +22,12 @@
     },
     "g":
     {
-      "tag": "forge:ingots/gold"
+      "tag": "c:ingots/gold"
     }
   },
   "result":
   {
-    "item": "goety:blazing_horn",
+    "id": "goety:blazing_horn",
     "count": 1
   }
 }

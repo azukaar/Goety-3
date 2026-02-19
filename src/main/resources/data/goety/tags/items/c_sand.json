@@ -1,0 +1,8 @@
+{
+  "replace": false,
+  "values": [
+    "#c:sand",
+    "minecraft:sand",
+    "minecraft:red_sand"
+  ]
+}

@@ -20,11 +20,11 @@
     }
   ],
   "result": {
-    "item": "goety:terminus_scroll"
+    "id": "goety:terminus_scroll"
   },
   "conditions": [
     {
-      "type": "forge:mod_loaded",
+      "type": "c:mod_loaded",
       "modid": "cataclysm"
     }
   ]

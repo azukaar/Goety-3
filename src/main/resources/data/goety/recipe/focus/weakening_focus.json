@@ -21,12 +21,12 @@
       "item": "goety:cursed_ingot"
     },
     {
-      "type": "forge:nbt",
+      "type": "c:nbt",
       "item": "minecraft:potion",
       "nbt": "{\"Potion\": \"minecraft:weakness\"}"
     }
   ],
   "result": {
-    "item": "goety:weakening_focus"
+    "id": "goety:weakening_focus"
   }
 }

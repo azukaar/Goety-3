@@ -10,11 +10,11 @@
   {
     "l":
     {
-      "tag": "forge:gems/lapis"
+      "tag": "c:gems/lapis"
     },
     "g":
     {
-      "tag": "forge:rods/wooden"
+      "tag": "c:stone"
     },
     "s":
     {
@@ -23,7 +23,7 @@
   },
   "result":
   {
-    "item": "goety:totem_of_roots",
+    "id": "goety:totem_of_roots",
     "count": 1
   }
 }

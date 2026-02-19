@@ -13,11 +13,11 @@
       "item": "goety:steep_wood"
     },
     "G": {
-      "tag": "forge:ingots/gold"
+      "tag": "c:ingots/gold"
     }
   },
   "result": {
-    "item": "goety:gold_dungeon_torch",
+    "id": "goety:gold_dungeon_torch",
     "count": 1
   }
 }

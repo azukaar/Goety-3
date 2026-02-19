@@ -13,11 +13,11 @@
       "item": "goety:steep_wood_slab"
     },
     "I": {
-      "tag": "forge:ingots/gold"
+      "tag": "c:ingots/gold"
     }
   },
   "result": {
-    "item": "goety:steep_lamp",
+    "id": "goety:steep_lamp",
     "count": 1
   }
 }

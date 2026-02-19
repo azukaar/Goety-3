@@ -12,10 +12,10 @@
       "item": "minecraft:sculk_catalyst"
     },
     {
-      "tag": "forge:gems/lapis"
+      "tag": "c:gems/lapis"
     },
     {
-      "tag": "forge:ender_pearls"
+      "tag": "c:ender_pearls"
     },
     {
       "item": "goety:ectoplasm"
@@ -25,6 +25,6 @@
     }
   ],
   "result": {
-    "item": "goety:ring_of_thirst"
+    "id": "goety:ring_of_thirst"
   }
 }

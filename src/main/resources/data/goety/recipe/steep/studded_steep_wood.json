@@ -10,11 +10,11 @@
       "item": "goety:steep_wood"
     },
     "I": {
-      "tag": "forge:ingots/gold"
+      "tag": "c:ingots/gold"
     }
   },
   "result": {
-    "item": "goety:studded_steep_wood",
+    "id": "goety:studded_steep_wood",
     "count": 1
   }
 }

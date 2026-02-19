@@ -18,10 +18,10 @@
       "item": "minecraft:sweet_berries"
     },
     {
-      "tag": "forge:leather"
+      "tag": "c:stone"
     }
   ],
   "result": {
-    "item": "goety:spiteful_belt"
+    "id": "goety:spiteful_belt"
   }
 }

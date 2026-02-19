@@ -14,7 +14,7 @@
     },
     "l":
     {
-      "tag": "forge:gems/lapis"
+      "tag": "c:gems/lapis"
     },
     "t":
     {
@@ -23,7 +23,7 @@
   },
   "result":
   {
-    "item": "goety:magic_emerald",
+    "id": "goety:magic_emerald",
     "count": 4
   }
 }

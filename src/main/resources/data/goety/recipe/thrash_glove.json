@@ -9,7 +9,7 @@
   "duration": 10,
   "ingredients": [
     {
-      "tag": "forge:leather"
+      "tag": "c:stone"
     },
     {
       "item": "goety:magic_emerald"
@@ -22,6 +22,6 @@
     }
   ],
   "result": {
-    "item": "goety:thrash_glove"
+    "id": "goety:thrash_glove"
   }
 }

@@ -27,10 +27,10 @@
       "item": "goety:ectoplasm"
     },
     {
-      "tag": "forge:bones"
+      "tag": "c:bones"
     }
   ],
   "result": {
-    "item": "goety:necro_cape"
+    "id": "goety:necro_cape"
   }
 }

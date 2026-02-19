@@ -10,11 +10,11 @@
       "item": "goety:haunted_planks"
     },
     "C": {
-      "tag": "forge:chests/wooden"
+      "tag": "c:chests/wooden"
     }
   },
   "result": {
-    "item": "goety:haunted_chest",
+    "id": "goety:haunted_chest",
     "count": 2
   }
 }

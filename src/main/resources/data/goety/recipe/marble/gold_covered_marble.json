@@ -10,11 +10,11 @@
       "item": "goety:marble"
     },
     "#": {
-      "tag": "forge:ingots/gold"
+      "tag": "c:ingots/gold"
     }
   },
   "result": {
-    "item": "goety:gold_covered_marble",
+    "id": "goety:gold_covered_marble",
     "count": 4
   }
 }

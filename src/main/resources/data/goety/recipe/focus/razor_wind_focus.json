@@ -12,13 +12,13 @@
       "item": "minecraft:iron_sword"
     },
     {
-      "tag": "forge:storage_blocks/lapis"
+      "tag": "c:rods/wooden"
     },
     {
-      "tag": "forge:gems/quartz"
+      "tag": "c:gems/quartz"
     },
     {
-      "tag": "forge:gems/quartz"
+      "tag": "c:gems/quartz"
     },
     {
       "item": "minecraft:iron_sword"
@@ -28,6 +28,6 @@
     }
   ],
   "result": {
-    "item": "goety:razor_wind_focus"
+    "id": "goety:razor_wind_focus"
   }
 }

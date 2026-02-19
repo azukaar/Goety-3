@@ -14,11 +14,11 @@
     },
     "p":
     {
-      "tag": "forge:ender_pearls"
+      "tag": "c:ender_pearls"
     },
     "r":
     {
-      "tag": "forge:dusts/redstone"
+      "tag": "c:dusts/redstone"
     },
     "s":
     {
@@ -27,7 +27,7 @@
   },
   "result":
   {
-    "item": "goety:soul_transfer",
+    "id": "goety:soul_transfer",
     "count": 1
   }
 }

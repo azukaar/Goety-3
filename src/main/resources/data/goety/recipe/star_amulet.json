@@ -9,16 +9,16 @@
   "duration": 10,
   "ingredients": [
     {
-      "tag": "forge:string"
+      "tag": "c:string"
     },
     {
-      "tag": "forge:string"
+      "tag": "c:string"
     },
     {
-      "tag": "forge:gems/lapis"
+      "tag": "c:gems/lapis"
     }
   ],
   "result": {
-    "item": "goety:star_amulet"
+    "id": "goety:star_amulet"
   }
 }

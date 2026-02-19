@@ -2,7 +2,7 @@
   "type": "goety:ritual",
   "ritual_type": "goety:summon_tamed",
   "activation_item": {
-    "tag": "forge:bones"
+    "tag": "c:bones"
   },
   "craftType": "end",
   "entity_to_summon": "goety:blastling_servant",
@@ -20,6 +20,6 @@
     }
   ],
   "result": {
-    "item": "goety:jei_dummy/none"
+    "id": "goety:jei_dummy/none"
   }
 }

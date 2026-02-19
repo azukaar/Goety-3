@@ -14,7 +14,7 @@
   "duration": 10,
   "ingredients": [
     {
-      "tag": "forge:gems/lapis"
+      "tag": "c:gems/lapis"
     },
     {
       "item": "goety:venomous_fang"
@@ -27,6 +27,6 @@
     }
   ],
   "result": {
-    "item": "goety:jei_dummy/none"
+    "id": "goety:jei_dummy/none"
   }
 }

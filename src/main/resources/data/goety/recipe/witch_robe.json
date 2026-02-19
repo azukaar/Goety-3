@@ -21,19 +21,19 @@
       "item": "goety:occult_fabric"
     },
     {
-      "tag": "forge:slimeballs"
+      "tag": "c:stone"
     },
     {
-      "tag": "forge:slimeballs"
+      "tag": "c:stone"
     },
     {
-      "tag": "forge:rods/wooden"
+      "tag": "c:stone"
     },
     {
-      "tag": "forge:rods/wooden"
+      "tag": "c:stone"
     }
   ],
   "result": {
-    "item": "goety:witch_robe"
+    "id": "goety:witch_robe"
   }
 }

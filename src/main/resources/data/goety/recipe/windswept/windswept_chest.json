@@ -10,11 +10,11 @@
       "item": "goety:windswept_planks"
     },
     "C": {
-      "tag": "forge:chests/wooden"
+      "tag": "c:chests/wooden"
     }
   },
   "result": {
-    "item": "goety:windswept_chest",
+    "id": "goety:windswept_chest",
     "count": 2
   }
 }

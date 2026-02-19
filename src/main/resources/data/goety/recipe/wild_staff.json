@@ -12,13 +12,13 @@
       "item": "goety:corpse_blossom"
     },
     {
-      "tag": "forge:slimeballs"
+      "tag": "c:rods/wooden"
     },
     {
       "item": "minecraft:fermented_spider_eye"
     },
     {
-      "tag": "forge:bones"
+      "tag": "c:bones"
     },
     {
       "item": "goety:cursed_ingot"
@@ -27,13 +27,13 @@
       "tag": "minecraft:logs"
     },
     {
-      "tag": "forge:storage_blocks/lapis"
+      "tag": "c:rods/wooden"
     },
     {
       "item": "goety:magic_fabric"
     }
   ],
   "result": {
-    "item": "goety:wild_staff"
+    "id": "goety:wild_staff"
   }
 }

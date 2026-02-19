@@ -27,13 +27,13 @@
       "item": "minecraft:warped_fungus"
     },
     {
-      "tag": "forge:mushrooms"
+      "tag": "c:stone"
     },
     {
-      "tag": "forge:mushrooms"
+      "tag": "c:stone"
     }
   ],
   "result": {
-    "item": "goety:warlock_robe"
+    "id": "goety:warlock_robe"
   }
 }

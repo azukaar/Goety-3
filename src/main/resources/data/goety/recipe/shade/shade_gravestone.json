@@ -24,7 +24,7 @@
       "tag": "minecraft:soul_fire_base_blocks"
     },
     {
-      "tag": "forge:cobblestone/mossy"
+      "tag": "c:cobblestone/mossy"
     },
     {
       "item": "goety:grave_dust"
@@ -34,6 +34,6 @@
     }
   ],
   "result": {
-    "item": "goety:shade_gravestone"
+    "id": "goety:shade_gravestone"
   }
 }

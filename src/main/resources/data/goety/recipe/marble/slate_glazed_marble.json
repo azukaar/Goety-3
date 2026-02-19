@@ -5,11 +5,11 @@
       "item": "goety:marble"
     },
     {
-      "tag": "forge:gems/lapis"
+      "tag": "c:gems/lapis"
     }
   ],
   "result": {
-    "item": "goety:slate_glazed_marble",
+    "id": "goety:slate_glazed_marble",
     "count": 1
   }
 }

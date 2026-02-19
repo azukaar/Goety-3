@@ -19,11 +19,11 @@
     }
   ],
   "result": {
-    "item": "goety:bulwark_focus"
+    "id": "goety:bulwark_focus"
   },
   "conditions": [
     {
-      "type": "forge:mod_loaded",
+      "type": "c:mod_loaded",
       "modid": "twilightforest"
     }
   ]

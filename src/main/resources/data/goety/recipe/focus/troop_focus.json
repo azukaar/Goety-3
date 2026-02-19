@@ -9,16 +9,16 @@
   "duration": 10,
   "ingredients": [
     {
-      "tag": "forge:ender_pearls"
+      "tag": "c:ender_pearls"
     },
     {
-      "tag": "forge:ender_pearls"
+      "tag": "c:ender_pearls"
     },
     {
       "item": "goety:waystone"
     }
   ],
   "result": {
-    "item": "goety:troop_focus"
+    "id": "goety:troop_focus"
   }
 }

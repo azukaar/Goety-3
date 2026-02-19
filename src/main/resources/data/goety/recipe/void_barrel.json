@@ -10,7 +10,7 @@
   {
     "g":
     {
-      "tag": "forge:glass/magenta"
+      "tag": "c:glass/magenta"
     },
     "v":
     {
@@ -18,12 +18,12 @@
     },
     "e":
     {
-      "tag": "forge:ender_pearls"
+      "tag": "c:ender_pearls"
     }
   },
   "result":
   {
-    "item": "goety:void_barrel",
+    "id": "goety:void_barrel",
     "count": 1
   }
 }

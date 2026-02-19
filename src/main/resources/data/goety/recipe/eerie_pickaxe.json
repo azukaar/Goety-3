@@ -12,19 +12,19 @@
       "item": "goety:ectoplasm"
     },
     {
-      "tag": "forge:ender_pearls"
+      "tag": "c:ender_pearls"
     },
     {
       "item": "goety:cursed_ingot"
     },
     {
-      "tag": "forge:gems/diamond"
+      "tag": "c:gems/diamond"
     },
     {
       "tag": "goety:haunted_logs"
     }
   ],
   "result": {
-    "item": "goety:eerie_pickaxe"
+    "id": "goety:eerie_pickaxe"
   }
 }

@@ -18,11 +18,11 @@
     }
   },
   "result": {
-    "item": "netherexp:ectoplasm_bucket"
+    "id": "netherexp:ectoplasm_bucket"
   },
   "conditions": [
     {
-      "type": "forge:mod_loaded",
+      "type": "c:mod_loaded",
       "modid": "netherexp"
     }
   ]

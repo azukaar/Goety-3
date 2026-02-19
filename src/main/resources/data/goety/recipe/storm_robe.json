@@ -9,31 +9,31 @@
   "duration": 10,
   "ingredients": [
     {
-      "tag": "forge:ingots/gold"
+      "tag": "c:ingots/gold"
     },
     {
-      "tag": "forge:gems/lapis"
+      "tag": "c:gems/lapis"
     },
     {
-      "tag": "forge:ingots/gold"
+      "tag": "c:ingots/gold"
     },
     {
-      "tag": "forge:gems/lapis"
+      "tag": "c:gems/lapis"
     },
     {
-      "tag": "forge:storage_blocks/copper"
+      "tag": "c:stone"
     },
     {
-      "tag": "forge:storage_blocks/redstone"
+      "tag": "c:stone"
     },
     {
-      "tag": "forge:gems/diamond"
+      "tag": "c:gems/diamond"
     },
     {
-      "tag": "forge:gems/diamond"
+      "tag": "c:gems/diamond"
     }
   ],
   "result": {
-    "item": "goety:storm_robe"
+    "id": "goety:storm_robe"
   }
 }

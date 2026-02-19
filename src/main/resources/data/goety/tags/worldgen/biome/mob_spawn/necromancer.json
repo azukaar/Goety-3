@@ -1,8 +1,8 @@
 {
   "replace": false,
   "values": [
-    "#forge:is_dry/overworld",
-    "#forge:is_desert",
+    "#c:is_dry/overworld",
+    "#c:is_desert",
     "#minecraft:is_forest"
   ]
 }

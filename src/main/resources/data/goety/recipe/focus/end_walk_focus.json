@@ -9,7 +9,7 @@
   "duration": 10,
   "ingredients": [
     {
-      "tag": "forge:ender_pearls"
+      "tag": "c:ender_pearls"
     },
     {
       "item": "goety:shadow_essence"
@@ -21,7 +21,7 @@
       "item": "goety:shadow_essence"
     },
     {
-      "tag": "forge:ender_pearls"
+      "tag": "c:ender_pearls"
     },
     {
       "item": "goety:shadow_essence"
@@ -34,6 +34,6 @@
     }
   ],
   "result": {
-    "item": "goety:end_walk_focus"
+    "id": "goety:end_walk_focus"
   }
 }

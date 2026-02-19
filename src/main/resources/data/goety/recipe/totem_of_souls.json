@@ -14,11 +14,11 @@
     },
     "l":
     {
-      "tag": "forge:gems/lapis"
+      "tag": "c:gems/lapis"
     },
     "g":
     {
-      "tag": "forge:ingots/gold"
+      "tag": "c:ingots/gold"
     },
     "s":
     {
@@ -27,7 +27,7 @@
   },
   "result":
   {
-    "item": "goety:totem_of_souls",
+    "id": "goety:totem_of_souls",
     "count": 1
   }
 }

@@ -13,12 +13,12 @@
     },
     "g":
     {
-      "tag": "forge:ingots/gold"
+      "tag": "c:ingots/gold"
     }
   },
   "result":
   {
-    "item": "goety:rimmed_steep_wood",
+    "id": "goety:rimmed_steep_wood",
     "count": 3
   }
 }

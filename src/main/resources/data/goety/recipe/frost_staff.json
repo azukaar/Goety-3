@@ -12,7 +12,7 @@
       "item": "minecraft:snow_block"
     },
     {
-      "tag": "forge:stone"
+      "tag": "c:rods/wooden"
     },
     {
       "item": "goety:chill_fabric"
@@ -27,13 +27,13 @@
       "item": "minecraft:blue_ice"
     },
     {
-      "tag": "forge:storage_blocks/lapis"
+      "tag": "c:rods/wooden"
     },
     {
       "item": "goety:chill_fabric"
     }
   ],
   "result": {
-    "item": "goety:frost_staff"
+    "id": "goety:frost_staff"
   }
 }

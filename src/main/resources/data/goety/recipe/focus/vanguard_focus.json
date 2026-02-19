@@ -16,10 +16,10 @@
       "item": "minecraft:anvil"
     },
     {
-      "tag": "forge:ingots/iron"
+      "tag": "c:ingots/iron"
     },
     {
-      "tag": "forge:ingots/iron"
+      "tag": "c:ingots/iron"
     },
     {
       "item": "minecraft:leather_helmet"
@@ -31,10 +31,10 @@
       "item": "minecraft:leather"
     },
     {
-      "tag": "forge:ingots/gold"
+      "tag": "c:ingots/gold"
     }
   ],
   "result": {
-    "item": "goety:vanguard_focus"
+    "id": "goety:vanguard_focus"
   }
 }

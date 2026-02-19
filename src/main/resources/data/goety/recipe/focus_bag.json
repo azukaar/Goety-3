@@ -9,11 +9,11 @@
   {
     "b":
     {
-      "tag": "forge:leather"
+      "tag": "c:rods/wooden"
     },
     "g":
     {
-      "tag": "forge:ingots/gold"
+      "tag": "c:ingots/gold"
     },
     "e":
     {
@@ -22,7 +22,7 @@
   },
   "result":
   {
-    "item": "goety:focus_bag",
+    "id": "goety:focus_bag",
     "count": 1
   }
 }

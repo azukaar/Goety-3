@@ -41,7 +41,8 @@ public class TaglockRecipe extends CustomRecipe {
         // Default values for ingredient and result, as this constructor doesn't provide them.
         // This might need adjustment based on how this recipe is intended to be used with the new fields.
         this.ingredient = Ingredient.EMPTY;
-        this.result = ItemStack.EMPTY;
+        // Use dummy item instead of EMPTY for recipe encoding compatibility (Minecraft 1.21.1 doesn't allow empty ItemStacks)
+        this.result = za.co.infernos.goety.common.items.ModItems.JEI_DUMMY_NONE.get().getDefaultInstance();
     }
 
     // New constructor to match CODEC and STREAM_CODEC
@@ -116,6 +117,16 @@ public class TaglockRecipe extends CustomRecipe {
     @Override
     public boolean canCraftInDimensions(int p_43999_, int p_44000_) {
         return p_43999_ * p_44000_ >= 2;
+    }
+
+    @Override
+    public ItemStack getResultItem(net.minecraft.core.HolderLookup.Provider pAccess) {
+        // Return the result item for recipe encoding
+        // If result is empty (from default constructor), return dummy item
+        if (this.result.isEmpty()) {
+            return za.co.infernos.goety.common.items.ModItems.JEI_DUMMY_NONE.get().getDefaultInstance();
+        }
+        return this.result;
     }
 
     @Override

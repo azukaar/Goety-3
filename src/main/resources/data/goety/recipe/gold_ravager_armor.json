@@ -2,7 +2,7 @@
   "type": "goety:ritual",
   "ritual_type": "goety:craft",
   "activation_item": {
-    "tag": "forge:storage_blocks/gold"
+    "tag": "c:stone"
   },
   "craftType": "forge",
   "soulCost": 1,
@@ -10,19 +10,19 @@
   "research": "ravaging",
   "ingredients": [
     {
-      "tag": "forge:storage_blocks/iron"
+      "tag": "c:stone"
     },
     {
-      "tag": "forge:storage_blocks/iron"
+      "tag": "c:stone"
     },
     {
-      "tag": "forge:ingots/gold"
+      "tag": "c:ingots/gold"
     },
     {
-      "tag": "forge:ingots/gold"
+      "tag": "c:ingots/gold"
     }
   ],
   "result": {
-    "item": "goety:gold_ravager_armor"
+    "id": "goety:gold_ravager_armor"
   }
 }
