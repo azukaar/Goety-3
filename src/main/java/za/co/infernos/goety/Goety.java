@@ -841,8 +841,10 @@ public class Goety {
                                             return false;
                                         }
                                         // In Nether/End, wraiths can spawn without darkness check
-                                        if (level.dimension() == Level.NETHER || level.dimension() == Level.END || !level.dimensionType().natural()) {
-                                            return true;
+                                        if (level.getLevel() instanceof ServerLevel serverLevel) {
+                                            if (serverLevel.dimension() == Level.NETHER || serverLevel.dimension() == Level.END || !serverLevel.dimensionType().natural()) {
+                                                return true;
+                                            }
                                         }
                                         // In Overworld, require darkness
                                         return Monster.isDarkEnoughToSpawn(level, pos, random);
