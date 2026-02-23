@@ -72,10 +72,10 @@ public class Piker extends HuntingIllagerEntity {
         MobUtil.setBaseAttributes(this.getAttribute(Attributes.ARMOR), za.co.infernos.goety.utils.ConfigHelper.getDouble(AttributesConfig.PikerArmor, 20.0D));
     }
 
-    // protected void defineSynchedData(SynchedEntityData.Builder builder) {
-    //    super.defineSynchedData(builder);
-    //    builder.define(DATA_FLAGS_ID, (byte) 0);
-    // }
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(DATA_FLAGS_ID, (byte) 0);
+    }
 
     @Override
     protected SoundEvent getCastingSoundEvent() {

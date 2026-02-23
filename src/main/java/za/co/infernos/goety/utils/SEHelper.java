@@ -90,8 +90,9 @@ public class SEHelper {
 
     public static void setSoulsAmount(Player player, int souls){
         if (SEHelper.getSEActive(player)){
-            if (SEHelper.getSESouls(player) + souls > MainConfig.MaxArcaSouls.get()) {
-                souls = MainConfig.MaxArcaSouls.get();
+            int maxArcaSouls = ConfigHelper.getInt(MainConfig.MaxArcaSouls, 100000);
+            if (SEHelper.getSESouls(player) + souls > maxArcaSouls) {
+                souls = maxArcaSouls;
             }
             SEHelper.setSESouls(player, souls);
             SEHelper.sendSEUpdatePacket(player);
@@ -187,31 +188,31 @@ public class SEHelper {
                 if (SoulTakenListener.getSoulAmount(victim) > 0){
                     return SoulTakenListener.getSoulAmount(victim);
                 } else if (victim.isInvertedHealAndHarm()) {
-                    return MainConfig.UndeadSouls.get();
+                    return ConfigHelper.getInt(MainConfig.UndeadSouls, 5);
                 } else if (victim.getType().is(ModTags.EntityTypes.WILD_HEAL)) {
-                    return MainConfig.AnthropodSouls.get();
+                    return ConfigHelper.getInt(MainConfig.AnthropodSouls, 5);
                 } else if (victim instanceof Animal || victim instanceof AnimalSummon) {
-                    return MainConfig.AnimalSouls.get();
+                    return ConfigHelper.getInt(MainConfig.AnimalSouls, 5);
                 } else if (victim instanceof Raider && !(victim instanceof Ripper)) {
-                    return MainConfig.IllagerSouls.get();
+                    return ConfigHelper.getInt(MainConfig.IllagerSouls, 25);
                 } else if (victim instanceof VillagerDataHolder
                         || victim instanceof ReputationEventHandler
                         || victim instanceof Npc
                         || victim instanceof Merchant
                         || victim instanceof Prisoner) {
-                    return MainConfig.VillagerSouls.get();
+                    return ConfigHelper.getInt(MainConfig.VillagerSouls, 100);
                 } else if (victim instanceof AbstractPiglin) {
-                    return MainConfig.PiglinSouls.get();
+                    return ConfigHelper.getInt(MainConfig.PiglinSouls, 10);
                 } else if (victim instanceof EnderMan){
-                    return MainConfig.EndermanSouls.get();
+                    return ConfigHelper.getInt(MainConfig.EndermanSouls, 10);
                 } else if (victim instanceof Player) {
-                    return MainConfig.PlayerSouls.get();
+                    return ConfigHelper.getInt(MainConfig.PlayerSouls, 100);
                 } else if (MinecoloniesLoaded.MINECOLONIES.isLoaded()
                         && victim.getType().getDescriptionId().contains("minecolonies")
                         && victim.getType().getCategory() != MobCategory.MISC){
-                    return MainConfig.VillagerSouls.get();
+                    return ConfigHelper.getInt(MainConfig.VillagerSouls, 100);
                 } else {
-                    return MainConfig.DefaultSouls.get();
+                    return ConfigHelper.getInt(MainConfig.DefaultSouls, 5);
                 }
             }
         }
@@ -220,7 +221,7 @@ public class SEHelper {
 
     public static void rawHandleKill(LivingEntity killer, LivingEntity victim, int soulEater, DamageSource source) {
         Player player = null;
-        int multi = Mth.clamp(MainConfig.SoulTakenMultiplier.get(), 1, Integer.MAX_VALUE);
+        int multi = Mth.clamp(ConfigHelper.getInt(MainConfig.SoulTakenMultiplier, 2), 1, Integer.MAX_VALUE);
         float extra = soulEater;
         if (killer instanceof Player){
             player = (Player) killer;

@@ -836,7 +836,17 @@ public class Goety {
                                 Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, (type, level, spawnType, pos, random) -> true,
                                 RegisterSpawnPlacementsEvent.Operation.AND);
                 event.register(ModEntityType.WRAITH.get(), SpawnPlacementTypes.ON_GROUND,
-                                Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, (type, level, spawnType, pos, random) -> true,
+                                Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, (type, level, spawnType, pos, random) -> {
+                                        if (level.getDifficulty() == net.minecraft.world.Difficulty.PEACEFUL) {
+                                            return false;
+                                        }
+                                        // In Nether/End, wraiths can spawn without darkness check
+                                        if (level.dimension() == Level.NETHER || level.dimension() == Level.END || !level.dimensionType().natural()) {
+                                            return true;
+                                        }
+                                        // In Overworld, require darkness
+                                        return Monster.isDarkEnoughToSpawn(level, pos, random);
+                                },
                                 RegisterSpawnPlacementsEvent.Operation.AND);
                 event.register(ModEntityType.BORDER_WRAITH.get(), SpawnPlacementTypes.ON_GROUND,
                                 Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, (type, level, spawnType, pos, random) -> true,
