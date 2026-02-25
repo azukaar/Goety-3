@@ -16,6 +16,8 @@ public class ModMobSpawnBiomeModifier implements BiomeModifier {
 
     public void modify(Holder<Biome> biome, Phase phase, ModifiableBiomeInfo.BiomeInfo.Builder builder) {
         if (phase == Phase.ADD) {
+            String biomeName = biome.unwrapKey().map(k -> k.location().toString()).orElse("unknown");
+            za.co.infernos.goety.Goety.LOGGER.info("ModMobSpawnBiomeModifier: Modifying biome {}", biomeName);
             ModLevelRegistry.addBiomeSpawns(biome, builder);
         }
     }

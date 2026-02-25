@@ -351,6 +351,7 @@ public class ModEvents {
 
     private static final Map<ServerLevel, IllagerSpawner> ILLAGER_SPAWN_MAP = new HashMap<>();
     private static final Map<ServerLevel, WightSpawner> WIGHT_SPAWN_MAP = new HashMap<>();
+    private static final Map<ServerLevel, NaturalMobSpawner> NATURAL_MOB_SPAWN_MAP = new HashMap<>();
 
     @SubscribeEvent
     public static void worldLoad(LevelEvent.Load event) {
@@ -358,6 +359,7 @@ public class ModEvents {
         if (!event.getLevel().isClientSide() && event.getLevel() instanceof ServerLevel serverWorld) {
             ILLAGER_SPAWN_MAP.put(serverWorld, new IllagerSpawner());
             WIGHT_SPAWN_MAP.put(serverWorld, new WightSpawner());
+            NATURAL_MOB_SPAWN_MAP.put(serverWorld, new NaturalMobSpawner());
         }
     }
 
@@ -366,6 +368,7 @@ public class ModEvents {
         if (!event.getLevel().isClientSide() && event.getLevel() instanceof ServerLevel serverWorld) {
             ILLAGER_SPAWN_MAP.remove(serverWorld);
             WIGHT_SPAWN_MAP.remove(serverWorld);
+            NATURAL_MOB_SPAWN_MAP.remove(serverWorld);
         }
     }
 
@@ -380,6 +383,10 @@ public class ModEvents {
             WightSpawner wightSpawner = WIGHT_SPAWN_MAP.get(serverWorld);
             if (wightSpawner != null) {
                 wightSpawner.tick(serverWorld);
+            }
+            NaturalMobSpawner naturalMobSpawner = NATURAL_MOB_SPAWN_MAP.get(serverWorld);
+            if (naturalMobSpawner != null) {
+                naturalMobSpawner.tick(serverWorld);
             }
         }
 

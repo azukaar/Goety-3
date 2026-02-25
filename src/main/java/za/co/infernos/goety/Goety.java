@@ -172,13 +172,21 @@ public class Goety {
                 modEventBus.addListener(EventPriority.LOWEST, this::finalLoad);
                 modEventBus.addListener(ModNetwork::registerPayloadHandlers);
 
-                getOrCreateDirectory(FMLPaths.CONFIGDIR.get().resolve("goety"), "goety");
-                // TODO NeoForge 1.21: restore config registration when the final config API migration lands.
+                Path configDir = getOrCreateDirectory(FMLPaths.CONFIGDIR.get().resolve("goety"), "goety");
+                
+                // Load config files - creates config files if they don't exist and loads them
+                za.co.infernos.goety.config.MainConfig.loadConfig(za.co.infernos.goety.config.MainConfig.SPEC, configDir.resolve("main.toml").toString());
+                za.co.infernos.goety.config.MobsConfig.loadConfig(za.co.infernos.goety.config.MobsConfig.SPEC, configDir.resolve("mobs.toml").toString());
+                za.co.infernos.goety.config.SpellConfig.loadConfig(za.co.infernos.goety.config.SpellConfig.SPEC, configDir.resolve("spells.toml").toString());
+                za.co.infernos.goety.config.ItemConfig.loadConfig(za.co.infernos.goety.config.ItemConfig.SPEC, configDir.resolve("items.toml").toString());
+                za.co.infernos.goety.config.BrewConfig.loadConfig(za.co.infernos.goety.config.BrewConfig.SPEC, configDir.resolve("brews.toml").toString());
+                za.co.infernos.goety.config.AttributesConfig.loadConfig(za.co.infernos.goety.config.AttributesConfig.SPEC, configDir.resolve("attributes.toml").toString());
 
                 final DeferredRegister<MapCodec<? extends BiomeModifier>> biomeModifiers = DeferredRegister
                                 .create(NeoForgeRegistries.Keys.BIOME_MODIFIER_SERIALIZERS, Goety.MOD_ID);
                 biomeModifiers.register(modEventBus);
-                biomeModifiers.register("mob_spawns", ModMobSpawnBiomeModifier::makeCodec);
+                var mobSpawnsSerializer = biomeModifiers.register("mob_spawns", ModMobSpawnBiomeModifier::makeCodec);
+                LOGGER.info("Goety: Registered biome modifier serializer 'goety:mob_spawns' = {}", mobSpawnsSerializer.getId());
                 final DeferredRegister<MapCodec<? extends StructureModifier>> structureModifiers = DeferredRegister
                                 .create(NeoForgeRegistries.Keys.STRUCTURE_MODIFIER_SERIALIZERS, Goety.MOD_ID);
                 structureModifiers.register(modEventBus);
@@ -840,9 +848,15 @@ public class Goety {
                                         if (level.getDifficulty() == net.minecraft.world.Difficulty.PEACEFUL) {
                                             return false;
                                         }
-                                        // In Nether/End, wraiths can spawn without darkness check
-                                        if (level.getLevel() instanceof ServerLevel serverLevel) {
-                                            if (serverLevel.dimension() == Level.NETHER || serverLevel.dimension() == Level.END || !serverLevel.dimensionType().natural()) {
+                                        // Check if we're in Nether/End by checking dimension type or biome
+                                        Level actualLevel = level.getLevel();
+                                        if (actualLevel != null) {
+                                            // Check if biome is Soul Sand Valley (hardcoded Nether spawn)
+                                            if (level.getBiome(pos).is(net.minecraft.world.level.biome.Biomes.SOUL_SAND_VALLEY)) {
+                                                return true;
+                                            }
+                                            // If dimension type is not natural (Nether/End), allow spawning without darkness
+                                            if (!actualLevel.dimensionType().natural()) {
                                                 return true;
                                             }
                                         }
