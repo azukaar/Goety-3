@@ -1,0 +1,25 @@
+{
+  "pools": [
+    {
+      "entries": [
+        {
+          "type": "item",
+          "functions": [
+            {
+              "function": "set_count",
+              "count": {
+                "min": 0,
+                "max": 1,
+                "type": "minecraft:uniform"
+              }
+            }
+          ],
+          "name": "minecraft:saddle",
+          "weight": 1
+        }
+      ],
+      "rolls": 1,
+      "name": "trampler"
+    }
+  ]
+}

@@ -1,0 +1,176 @@
+# Goety Mob Spawn Commands
+
+## Bosses
+```
+/summon goety:apostle ~ ~ ~
+/summon goety:ender_keeper ~ ~ ~
+/summon goety:vizier ~ ~ ~
+/summon goety:vizier_clone ~ ~ ~
+```
+
+## Hostile Mobs
+```
+/summon goety:wraith ~ ~ ~
+/summon goety:reaper ~ ~ ~
+/summon goety:border_wraith ~ ~ ~
+/summon goety:muck_wraith ~ ~ ~
+/summon goety:necromancer ~ ~ ~
+/summon goety:cairn_necromancer ~ ~ ~
+/summon goety:mossy_necromancer ~ ~ ~
+/summon goety:wither_necromancer ~ ~ ~
+/summon goety:drowned_necromancer_servant ~ ~ ~
+/summon goety:warlock ~ ~ ~
+/summon goety:heretic ~ ~ ~
+/summon goety:maverick ~ ~ ~
+/summon goety:crone ~ ~ ~
+/summon goety:web_spider ~ ~ ~
+/summon goety:icy_spider ~ ~ ~
+/summon goety:bone_spider ~ ~ ~
+/summon goety:brood_mother ~ ~ ~
+/summon goety:watchling ~ ~ ~
+/summon goety:blastling ~ ~ ~
+/summon goety:snareling ~ ~ ~
+/summon goety:endersent ~ ~ ~
+/summon goety:redstone_golem ~ ~ ~
+/summon goety:grave_golem ~ ~ ~
+/summon goety:squall_golem ~ ~ ~
+/summon goety:ice_golem ~ ~ ~
+/summon goety:redstone_monstrosity ~ ~ ~
+/summon goety:redstone_cube ~ ~ ~
+/summon goety:hostile_redstone_golem ~ ~ ~
+/summon goety:hostile_redstone_monstrosity ~ ~ ~
+/summon goety:obsidian_monolith ~ ~ ~
+/summon goety:whisperer ~ ~ ~
+/summon goety:wavewhisperer ~ ~ ~
+/summon goety:leapleaf ~ ~ ~
+/summon goety:haunt ~ ~ ~
+/summon goety:skull_lord ~ ~ ~
+/summon goety:bone_lord ~ ~ ~
+/summon goety:wight ~ ~ ~
+/summon goety:wildfire ~ ~ ~
+/summon goety:inferno ~ ~ ~
+/summon goety:malghast ~ ~ ~
+/summon goety:damned ~ ~ ~
+/summon goety:hostile_black_wolf ~ ~ ~
+/summon goety:black_wolf ~ ~ ~
+/summon goety:skeleton_wolf ~ ~ ~
+/summon goety:hellhound ~ ~ ~
+/summon goety:twilight_goat ~ ~ ~
+/summon goety:snapper ~ ~ ~
+/summon goety:gnasher ~ ~ ~
+/summon goety:black_beast ~ ~ ~
+/summon goety:vampire_bat ~ ~ ~
+/summon goety:wartling ~ ~ ~
+/summon goety:irk ~ ~ ~
+/summon goety:carrion_maggot ~ ~ ~
+/summon goety:carrion_fly ~ ~ ~
+/summon goety:sorcerer ~ ~ ~
+/summon goety:envioker ~ ~ ~
+/summon goety:tormentor ~ ~ ~
+/summon goety:inquillager ~ ~ ~
+/summon goety:conquillager ~ ~ ~
+/summon goety:piker ~ ~ ~
+/summon goety:ripper ~ ~ ~
+/summon goety:trampler ~ ~ ~
+/summon goety:crusher ~ ~ ~
+/summon goety:storm_caster ~ ~ ~
+/summon goety:cryologer ~ ~ ~
+/summon goety:preacher ~ ~ ~
+/summon goety:minister ~ ~ ~
+/summon goety:crypt_slime ~ ~ ~
+/summon goety:ravaged ~ ~ ~
+/summon goety:ravager ~ ~ ~
+/summon goety:armored_ravager ~ ~ ~
+/summon goety:zombie_ravager ~ ~ ~
+/summon goety:prisoner ~ ~ ~
+/summon goety:neollager ~ ~ ~
+/summon goety:mini_ghast ~ ~ ~
+/summon goety:haunted_armor ~ ~ ~
+/summon goety:haunted_skull ~ ~ ~
+```
+
+## Servants
+```
+/summon goety:zombie_servant ~ ~ ~
+/summon goety:zombie_villager_servant ~ ~ ~
+/summon goety:husk_servant ~ ~ ~
+/summon goety:drowned_servant ~ ~ ~
+/summon goety:frozen_zombie_servant ~ ~ ~
+/summon goety:jungle_zombie_servant ~ ~ ~
+/summon goety:blackguard_servant ~ ~ ~
+/summon goety:zombie_vindicator ~ ~ ~
+/summon goety:skeleton_servant ~ ~ ~
+/summon goety:skeleton_villager_servant ~ ~ ~
+/summon goety:stray_servant ~ ~ ~
+/summon goety:wither_skeleton_servant ~ ~ ~
+/summon goety:mossy_skeleton_servant ~ ~ ~
+/summon goety:sunken_skeleton_servant ~ ~ ~
+/summon goety:skeleton_pillager ~ ~ ~
+/summon goety:necromancer_servant ~ ~ ~
+/summon goety:cairn_necromancer_servant ~ ~ ~
+/summon goety:mossy_necromancer_servant ~ ~ ~
+/summon goety:wither_necromancer_servant ~ ~ ~
+/summon goety:vanguard_servant ~ ~ ~
+/summon goety:reaper_servant ~ ~ ~
+/summon goety:wraith_servant ~ ~ ~
+/summon goety:border_wraith_servant ~ ~ ~
+/summon goety:muck_wraith_servant ~ ~ ~
+/summon goety:phantom_servant ~ ~ ~
+/summon goety:pillager_servant ~ ~ ~
+/summon goety:vindicator_servant ~ ~ ~
+/summon goety:vindicator_chef_servant ~ ~ ~
+/summon goety:evoker_servant ~ ~ ~
+/summon goety:geomancer_servant ~ ~ ~
+/summon goety:iceologer_servant ~ ~ ~
+/summon goety:cryologer_servant ~ ~ ~
+/summon goety:wind_caller_servant ~ ~ ~
+/summon goety:storm_caster_servant ~ ~ ~
+/summon goety:preacher ~ ~ ~
+/summon goety:minister ~ ~ ~
+/summon goety:web_spider_servant ~ ~ ~
+/summon goety:icy_spider_servant ~ ~ ~
+/summon goety:bone_spider_servant ~ ~ ~
+/summon goety:brood_mother_servant ~ ~ ~
+/summon goety:watchling_servant ~ ~ ~
+/summon goety:blastling_servant ~ ~ ~
+/summon goety:snareling_servant ~ ~ ~
+/summon goety:ghast_servant ~ ~ ~
+/summon goety:blaze_servant ~ ~ ~
+/summon goety:slime_servant ~ ~ ~
+/summon goety:magma_cube_servant ~ ~ ~
+/summon goety:crypt_slime_servant ~ ~ ~
+/summon goety:tropical_slime_servant ~ ~ ~
+/summon goety:spider_servant ~ ~ ~
+/summon goety:cave_spider_servant ~ ~ ~
+/summon goety:witch_servant ~ ~ ~
+/summon goety:warlock_servant ~ ~ ~
+/summon goety:maverick_servant ~ ~ ~
+/summon goety:zpiglin_servant ~ ~ ~
+/summon goety:zpiglin_brute_servant ~ ~ ~
+/summon goety:bound_evoker ~ ~ ~
+/summon goety:bound_geomancer ~ ~ ~
+/summon goety:bound_iceologer ~ ~ ~
+/summon goety:bound_cryologer ~ ~ ~
+/summon goety:bound_wind_caller ~ ~ ~
+/summon goety:bound_storm_caster ~ ~ ~
+/summon goety:haunted_armor_servant ~ ~ ~
+/summon goety:vex_servant ~ ~ ~
+/summon goety:irk_servant ~ ~ ~
+/summon goety:mountaineer_servant ~ ~ ~
+/summon goety:crusher_servant ~ ~ ~
+/summon goety:piker_servant ~ ~ ~
+/summon goety:signaler_servant ~ ~ ~
+/summon goety:trampler_servant ~ ~ ~
+/summon goety:bear_servant ~ ~ ~
+/summon goety:polar_bear_servant ~ ~ ~
+/summon goety:hoglin_servant ~ ~ ~
+/summon goety:guardian_servant ~ ~ ~
+```
+
+## Decorative/Utility
+```
+/summon goety:haunted_armor_stand ~ ~ ~
+/summon goety:haunted_painting ~ ~ ~
+/summon goety:boat ~ ~ ~
+/summon goety:chest_boat ~ ~ ~
+```

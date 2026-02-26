@@ -1,0 +1,48 @@
+{
+  "pools": [
+    {
+      "entries": [
+        {
+          "type": "item",
+          "functions": [
+            {
+              "add": false,
+              "count": {
+                "type": "minecraft:uniform",
+                "max": 2,
+                "min": 0
+              },
+              "function": "set_count"
+            }
+          ],
+          "name": "minecraft:crying_obsidian",
+          "weight": 1
+        }
+      ],
+      "rolls": 1,
+      "name": "obsidian_monolith"
+    },
+    {
+      "entries": [
+        {
+          "type": "item",
+          "functions": [
+            {
+              "add": false,
+              "count": {
+                "type": "minecraft:uniform",
+                "max": 5,
+                "min": 3
+              },
+              "function": "set_count"
+            }
+          ],
+          "name": "minecraft:obsidian",
+          "weight": 1
+        }
+      ],
+      "rolls": 1,
+      "name": "obsidian_monolith_1"
+    }
+  ]
+}

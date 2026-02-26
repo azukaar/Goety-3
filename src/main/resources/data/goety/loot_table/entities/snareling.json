@@ -1,0 +1,35 @@
+{
+  "pools": [
+    {
+      "entries": [
+        {
+          "type": "item",
+          "functions": [
+            {
+              "add": false,
+              "count": {
+                "type": "minecraft:uniform",
+                "max": 1,
+                "min": 0
+              },
+              "function": "set_count"
+            },
+            {
+              "count": {
+                "type": "minecraft:uniform",
+                "max": 1,
+                "min": 0
+              },
+              "function": "minecraft:enchanted_count_increase",
+              "enchantment": "minecraft:looting"
+            }
+          ],
+          "name": "minecraft:ender_pearl",
+          "weight": 1
+        }
+      ],
+      "rolls": 1,
+      "name": "snareling"
+    }
+  ]
+}

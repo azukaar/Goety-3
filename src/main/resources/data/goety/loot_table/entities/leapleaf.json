@@ -1,0 +1,48 @@
+{
+  "pools": [
+    {
+      "entries": [
+        {
+          "type": "item",
+          "functions": [
+            {
+              "add": false,
+              "count": {
+                "type": "minecraft:uniform",
+                "max": 4,
+                "min": 0
+              },
+              "function": "set_count"
+            }
+          ],
+          "name": "minecraft:jungle_leaves",
+          "weight": 1
+        }
+      ],
+      "rolls": 1,
+      "name": "leapleaf"
+    },
+    {
+      "entries": [
+        {
+          "type": "item",
+          "functions": [
+            {
+              "add": false,
+              "count": {
+                "type": "minecraft:uniform",
+                "max": 4,
+                "min": 0
+              },
+              "function": "set_count"
+            }
+          ],
+          "name": "minecraft:stick",
+          "weight": 1
+        }
+      ],
+      "rolls": 1,
+      "name": "leapleaf_1"
+    }
+  ]
+}

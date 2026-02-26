@@ -1,0 +1,48 @@
+{
+  "pools": [
+    {
+      "entries": [
+        {
+          "type": "item",
+          "functions": [
+            {
+              "add": false,
+              "count": {
+                "type": "minecraft:uniform",
+                "max": 64,
+                "min": 32
+              },
+              "function": "set_count"
+            }
+          ],
+          "name": "minecraft:cobblestone",
+          "weight": 1
+        }
+      ],
+      "rolls": 1,
+      "name": "redstone_monstrosity"
+    },
+    {
+      "entries": [
+        {
+          "type": "item",
+          "functions": [
+            {
+              "add": false,
+              "count": {
+                "type": "minecraft:uniform",
+                "max": 16,
+                "min": 8
+              },
+              "function": "set_count"
+            }
+          ],
+          "name": "minecraft:redstone_block",
+          "weight": 1
+        }
+      ],
+      "rolls": 1,
+      "name": "redstone_monstrosity_1"
+    }
+  ]
+}

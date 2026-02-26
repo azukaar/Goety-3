@@ -3,6 +3,7 @@ package za.co.infernos.goety.common.entities.neutral;
 import za.co.infernos.goety.client.particles.ModParticleTypes;
 import za.co.infernos.goety.client.particles.TeleportInShockwaveParticleOption;
 import za.co.infernos.goety.client.particles.TeleportShockwaveParticleOption;
+import za.co.infernos.goety.Goety;
 import za.co.infernos.goety.common.entities.ModEntityType;
 import za.co.infernos.goety.common.entities.ai.FloatSwimGoal;
 import za.co.infernos.goety.common.entities.ai.SummonTargetGoal;
@@ -38,10 +39,17 @@ import net.minecraft.world.entity.ai.goal.RandomLookAroundGoal;
 import net.minecraft.world.entity.ai.util.LandRandomPos;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.pathfinder.Path;
+import net.minecraft.world.level.storage.loot.LootParams;
+import net.minecraft.world.level.storage.loot.LootTable;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.common.Tags;
@@ -142,6 +150,192 @@ public class AbstractWraith extends Summoned {
     @Override
     public int getSummonLimit(LivingEntity owner) {
         return SpellConfig.WraithLimit.get();
+    }
+
+    // Removed getDefaultLootTable() override - let Minecraft use default behavior
+    // which constructs the path from the entity type's registry name automatically
+    
+    @Override
+    protected void dropCustomDeathLoot(ServerLevel serverLevel, DamageSource damageSource, boolean wasRecentlyHit) {
+        // Comprehensive logging to debug loot table issues
+        ResourceKey<LootTable> lootTableKey = this.getLootTable();
+        za.co.infernos.goety.Goety.LOGGER.info("[LOOT DEBUG] Wraith dropping loot - Table key: {}", lootTableKey.location());
+        
+        // Call super first
+        za.co.infernos.goety.Goety.LOGGER.info("[LOOT DEBUG] Calling super.dropCustomDeathLoot()...");
+        super.dropCustomDeathLoot(serverLevel, damageSource, wasRecentlyHit);
+        za.co.infernos.goety.Goety.LOGGER.info("[LOOT DEBUG] super.dropCustomDeathLoot() completed");
+        
+        // Now manually process the loot table with extensive logging
+        if (serverLevel.getServer() != null) {
+            try {
+                // Step 1: Retrieve loot table
+                za.co.infernos.goety.Goety.LOGGER.info("[LOOT DEBUG] Retrieving loot table from registry...");
+                za.co.infernos.goety.Goety.LOGGER.info("[LOOT DEBUG] Loot table key: {} (namespace: {}, path: {})", 
+                    lootTableKey.location(), lootTableKey.location().getNamespace(), lootTableKey.location().getPath());
+                za.co.infernos.goety.Goety.LOGGER.info("[LOOT DEBUG] Expected resource path: data/{}/loot_tables/{}.json", 
+                    lootTableKey.location().getNamespace(), lootTableKey.location().getPath());
+                LootTable lootTable = serverLevel.getServer().reloadableRegistries().getLootTable(lootTableKey);
+                
+                if (lootTable == null) {
+                    za.co.infernos.goety.Goety.LOGGER.error("[LOOT DEBUG] Loot table is NULL!");
+                    return;
+                }
+                
+                ResourceLocation tableId = lootTable.getLootTableId();
+                za.co.infernos.goety.Goety.LOGGER.info("[LOOT DEBUG] Loot table retrieved successfully. Table ID: {}", tableId);
+                
+                // Check if it's the empty loot table
+                if (lootTable == LootTable.EMPTY) {
+                    za.co.infernos.goety.Goety.LOGGER.error("[LOOT DEBUG] Loot table is EMPTY! This means the table wasn't found or loaded.");
+                    za.co.infernos.goety.Goety.LOGGER.error("[LOOT DEBUG] Expected table: {}, but got EMPTY table", lootTableKey.location());
+                    za.co.infernos.goety.Goety.LOGGER.warn("[LOOT DEBUG] Since loot table loading is broken, using fallback manual drop. The loot table file exists and is valid JSON, but Minecraft isn't loading it.");
+                    // Skip the rest of the loot table processing and go straight to fallback
+                    if (za.co.infernos.goety.common.items.ModItems.ECTOPLASM.isBound()) {
+                        int count = 1 + serverLevel.random.nextInt(2); // 1-2 ectoplasm
+                        this.spawnAtLocation(new net.minecraft.world.item.ItemStack(za.co.infernos.goety.common.items.ModItems.ECTOPLASM.get(), count));
+                        za.co.infernos.goety.Goety.LOGGER.info("[LOOT DEBUG] Manually dropped {} ectoplasm as fallback (loot table system not working)", count);
+                    }
+                    return; // Exit early, skip all the loot table processing
+                } else {
+                    za.co.infernos.goety.Goety.LOGGER.info("[LOOT DEBUG] Loot table is not empty. Comparing with EMPTY: {}", lootTable == LootTable.EMPTY);
+                    za.co.infernos.goety.Goety.LOGGER.info("[LOOT DEBUG] Loot table EMPTY ID: {}", LootTable.EMPTY.getLootTableId());
+                }
+                
+                // Try to check if the loot table file actually exists in resources and try to manually load it
+                try {
+                    var resourceManager = serverLevel.getServer().getResourceManager();
+                    
+                    // Check BOTH paths: loot_tables (plural) and loot_table (singular)
+                    ResourceLocation resourceLocationPlural = ResourceLocation.fromNamespaceAndPath(
+                        lootTableKey.location().getNamespace(), 
+                        "loot_tables/" + lootTableKey.location().getPath() + ".json"
+                    );
+                    ResourceLocation resourceLocationSingular = ResourceLocation.fromNamespaceAndPath(
+                        lootTableKey.location().getNamespace(), 
+                        "loot_table/" + lootTableKey.location().getPath() + ".json"
+                    );
+                    
+                    za.co.infernos.goety.Goety.LOGGER.info("[LOOT DEBUG] Checking for resource at PLURAL path: {}", resourceLocationPlural);
+                    var resourcePlural = resourceManager.getResource(resourceLocationPlural);
+                    za.co.infernos.goety.Goety.LOGGER.info("[LOOT DEBUG] Plural path exists: {}", resourcePlural.isPresent());
+                    
+                    za.co.infernos.goety.Goety.LOGGER.info("[LOOT DEBUG] Checking for resource at SINGULAR path: {}", resourceLocationSingular);
+                    var resourceSingular = resourceManager.getResource(resourceLocationSingular);
+                    za.co.infernos.goety.Goety.LOGGER.info("[LOOT DEBUG] Singular path exists: {}", resourceSingular.isPresent());
+                    
+                    // Use whichever exists
+                    var resource = resourcePlural.isPresent() ? resourcePlural : resourceSingular;
+                    ResourceLocation resourceLocation = resourcePlural.isPresent() ? resourceLocationPlural : resourceLocationSingular;
+                    
+                    if (resource.isPresent()) {
+                        za.co.infernos.goety.Goety.LOGGER.info("[LOOT DEBUG] Resource file EXISTS at: {} (using {})", resourceLocation, resourcePlural.isPresent() ? "PLURAL" : "SINGULAR");
+                        // Try to read the file content and manually parse it
+                        try (var inputStream = resource.get().open()) {
+                            String content = new String(inputStream.readAllBytes(), java.nio.charset.StandardCharsets.UTF_8);
+                            za.co.infernos.goety.Goety.LOGGER.info("[LOOT DEBUG] Resource file content (first 200 chars): {}", 
+                                content.length() > 200 ? content.substring(0, 200) : content);
+                            
+                            // Try to manually parse the JSON to see if there's a parsing error
+                            try {
+                                var gson = new com.google.gson.Gson();
+                                var jsonObject = com.google.gson.JsonParser.parseString(content).getAsJsonObject();
+                                za.co.infernos.goety.Goety.LOGGER.info("[LOOT DEBUG] JSON parsed successfully. Type: {}, Pools: {}", 
+                                    jsonObject.get("type"), jsonObject.get("pools") != null ? jsonObject.getAsJsonArray("pools").size() : "null");
+                            } catch (Exception parseEx) {
+                                za.co.infernos.goety.Goety.LOGGER.error("[LOOT DEBUG] JSON parsing error: ", parseEx);
+                            }
+                        }
+                    } else {
+                        za.co.infernos.goety.Goety.LOGGER.error("[LOOT DEBUG] Resource file NOT FOUND at: {}", resourceLocation);
+                    }
+                } catch (Exception e) {
+                    za.co.infernos.goety.Goety.LOGGER.error("[LOOT DEBUG] Error checking resource file: ", e);
+                }
+                
+                // Step 2: Verify item exists
+                var itemRegistry = serverLevel.registryAccess().registryOrThrow(net.minecraft.core.registries.Registries.ITEM);
+                var ectoplasmKey = net.minecraft.resources.ResourceKey.create(net.minecraft.core.registries.Registries.ITEM, Goety.location("ectoplasm"));
+                boolean itemExists = itemRegistry.containsKey(ectoplasmKey);
+                za.co.infernos.goety.Goety.LOGGER.info("[LOOT DEBUG] Ectoplasm item exists in registry: {}", itemExists);
+                
+                if (itemExists) {
+                    var ectoplasmItem = itemRegistry.get(ectoplasmKey);
+                    za.co.infernos.goety.Goety.LOGGER.info("[LOOT DEBUG] Ectoplasm item: {} (bound: {})", 
+                        ectoplasmItem != null ? ectoplasmItem.getDescriptionId() : "null",
+                        za.co.infernos.goety.common.items.ModItems.ECTOPLASM.isBound());
+                }
+                
+                // Step 3: Build LootParams
+                za.co.infernos.goety.Goety.LOGGER.info("[LOOT DEBUG] Building LootParams...");
+                LootParams.Builder lootParamsBuilder = (new LootParams.Builder(serverLevel))
+                        .withParameter(LootContextParams.THIS_ENTITY, this)
+                        .withParameter(LootContextParams.ORIGIN, this.position())
+                        .withParameter(LootContextParams.DAMAGE_SOURCE, damageSource)
+                        .withOptionalParameter(LootContextParams.ATTACKING_ENTITY, damageSource.getEntity())
+                        .withOptionalParameter(LootContextParams.DIRECT_ATTACKING_ENTITY, damageSource.getDirectEntity());
+                
+                if (this.lastHurtByPlayerTime > 0 && this.lastHurtByPlayer != null) {
+                    lootParamsBuilder = lootParamsBuilder
+                            .withParameter(LootContextParams.LAST_DAMAGE_PLAYER, this.lastHurtByPlayer)
+                            .withLuck(this.lastHurtByPlayer.getLuck());
+                    za.co.infernos.goety.Goety.LOGGER.info("[LOOT DEBUG] Added player context - Luck: {}", this.lastHurtByPlayer.getLuck());
+                } else {
+                    za.co.infernos.goety.Goety.LOGGER.info("[LOOT DEBUG] No player context (lastHurtByPlayerTime: {}, lastHurtByPlayer: {})", 
+                        this.lastHurtByPlayerTime, this.lastHurtByPlayer != null);
+                }
+                
+                LootParams lootParams = lootParamsBuilder.create(LootContextParamSets.ENTITY);
+                za.co.infernos.goety.Goety.LOGGER.info("[LOOT DEBUG] LootParams created. Context type: ENTITY");
+                
+                // Step 4: Try method 1 - getRandomItems without seed (like Inferno)
+                za.co.infernos.goety.Goety.LOGGER.info("[LOOT DEBUG] Method 1: Calling getRandomItems(lootParams) without seed...");
+                java.util.List<net.minecraft.world.item.ItemStack> lootItems1 = lootTable.getRandomItems(lootParams);
+                za.co.infernos.goety.Goety.LOGGER.info("[LOOT DEBUG] Method 1 result: {} items generated", lootItems1.size());
+                if (!lootItems1.isEmpty()) {
+                    lootItems1.forEach(item -> {
+                        za.co.infernos.goety.Goety.LOGGER.info("[LOOT DEBUG] Method 1 item: {} x{}", item.getItem().getDescriptionId(), item.getCount());
+                        this.spawnAtLocation(item);
+                    });
+                }
+                
+                // Step 5: Try method 2 - getRandomItems with seed and callback (like CryptSlime)
+                za.co.infernos.goety.Goety.LOGGER.info("[LOOT DEBUG] Method 2: Calling getRandomItems(lootParams, seed, callback) with seed {}...", this.getLootTableSeed());
+                java.util.List<net.minecraft.world.item.ItemStack> lootItems2 = new java.util.ArrayList<>();
+                lootTable.getRandomItems(lootParams, this.getLootTableSeed(), (itemStack) -> {
+                    lootItems2.add(itemStack);
+                    za.co.infernos.goety.Goety.LOGGER.info("[LOOT DEBUG] Method 2 callback invoked: {} x{}", itemStack.getItem().getDescriptionId(), itemStack.getCount());
+                    this.spawnAtLocation(itemStack);
+                });
+                za.co.infernos.goety.Goety.LOGGER.info("[LOOT DEBUG] Method 2 result: {} items generated (callback count)", lootItems2.size());
+                
+                // Step 6: Summary
+                int totalItems = lootItems1.size() + lootItems2.size();
+                za.co.infernos.goety.Goety.LOGGER.info("[LOOT DEBUG] Total items generated: {} (Method 1: {}, Method 2: {})", totalItems, lootItems1.size(), lootItems2.size());
+                
+                // Fallback if still empty
+                if (totalItems == 0) {
+                    za.co.infernos.goety.Goety.LOGGER.warn("[LOOT DEBUG] Both methods generated 0 items! Using fallback manual drop.");
+                    if (za.co.infernos.goety.common.items.ModItems.ECTOPLASM.isBound()) {
+                        int count = 1 + serverLevel.random.nextInt(2); // 1-2 ectoplasm
+                        this.spawnAtLocation(new net.minecraft.world.item.ItemStack(za.co.infernos.goety.common.items.ModItems.ECTOPLASM.get(), count));
+                        za.co.infernos.goety.Goety.LOGGER.info("[LOOT DEBUG] Manually dropped {} ectoplasm as fallback", count);
+                    } else {
+                        za.co.infernos.goety.Goety.LOGGER.error("[LOOT DEBUG] ECTOPLASM item is not bound for fallback!");
+                    }
+                }
+            } catch (Exception e) {
+                za.co.infernos.goety.Goety.LOGGER.error("[LOOT DEBUG] Exception during loot processing: ", e);
+                // Fallback on error
+                if (za.co.infernos.goety.common.items.ModItems.ECTOPLASM.isBound()) {
+                    int count = 1 + serverLevel.random.nextInt(2);
+                    this.spawnAtLocation(new net.minecraft.world.item.ItemStack(za.co.infernos.goety.common.items.ModItems.ECTOPLASM.get(), count));
+                    za.co.infernos.goety.Goety.LOGGER.info("[LOOT DEBUG] Manually dropped {} ectoplasm as error fallback", count);
+                }
+            }
+        } else {
+            za.co.infernos.goety.Goety.LOGGER.error("[LOOT DEBUG] Server is null!");
+        }
     }
 
     protected boolean getWraithFlags(int mask) {
@@ -418,7 +612,7 @@ public class AbstractWraith extends Summoned {
                         }
                     }
                 } else {
-                    if (MobsConfig.WraithAggressiveTeleport.get()) {
+                    if (za.co.infernos.goety.utils.ConfigHelper.getBoolean(MobsConfig.WraithAggressiveTeleport, true)) {
                         if (this.canTeleport()) {
                             this.getNavigation().stop();
                             this.setIsTeleporting(true);

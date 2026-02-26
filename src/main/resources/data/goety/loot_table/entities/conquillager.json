@@ -1,0 +1,140 @@
+{
+  "pools": [
+    {
+      "name": "conquillager",
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "item",
+          "functions": [
+            {
+              "function": "set_count",
+              "count": {
+                "min": 0,
+                "max": 2,
+                "type": "minecraft:uniform"
+              }
+            },
+            {
+              "function": "minecraft:enchanted_count_increase",
+              "count": {
+                "min": 0,
+                "max": 1
+              },
+              "enchantment": "minecraft:looting"
+            }
+          ],
+          "name": "minecraft:emerald",
+          "weight": 1
+        }
+      ],
+      "conditions": [
+        {
+          "condition": "minecraft:killed_by_player"
+        }
+      ]
+    },
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "item",
+          "functions": [
+            {
+              "function": "set_count",
+              "count": {
+                "min": 0,
+                "max": 2,
+                "type": "minecraft:uniform"
+              }
+            },
+            {
+              "function": "minecraft:enchanted_count_increase",
+              "count": {
+                "min": 0,
+                "max": 1
+              },
+              "enchantment": "minecraft:looting"
+            }
+          ],
+          "name": "minecraft:gold_ingot",
+          "weight": 1
+        }
+      ],
+      "conditions": [
+        {
+          "condition": "minecraft:killed_by_player"
+        }
+      ],
+      "name": "conquillager_1"
+    },
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "item",
+          "functions": [
+            {
+              "function": "set_count",
+              "count": {
+                "min": 0,
+                "max": 2,
+                "type": "minecraft:uniform"
+              }
+            },
+            {
+              "function": "minecraft:enchanted_count_increase",
+              "count": {
+                "min": 0,
+                "max": 1
+              },
+              "enchantment": "minecraft:looting"
+            }
+          ],
+          "name": "minecraft:cocoa_beans",
+          "weight": 1
+        }
+      ],
+      "conditions": [
+        {
+          "condition": "minecraft:killed_by_player"
+        }
+      ],
+      "name": "conquillager_2"
+    },
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "item",
+          "functions": [
+            {
+              "function": "set_count",
+              "count": {
+                "min": 0,
+                "max": 2,
+                "type": "minecraft:uniform"
+              }
+            },
+            {
+              "function": "minecraft:enchanted_count_increase",
+              "count": {
+                "min": 0,
+                "max": 1
+              },
+              "enchantment": "minecraft:looting"
+            }
+          ],
+          "name": "minecraft:gunpowder",
+          "weight": 1
+        }
+      ],
+      "conditions": [
+        {
+          "condition": "minecraft:killed_by_player"
+        }
+      ],
+      "name": "conquillager_3"
+    }
+  ]
+}

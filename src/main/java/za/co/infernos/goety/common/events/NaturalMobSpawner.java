@@ -1,18 +1,20 @@
 package za.co.infernos.goety.common.events;
 
 import za.co.infernos.goety.common.entities.ModEntityType;
-import za.co.infernos.goety.common.entities.hostile.Reaper;
-import za.co.infernos.goety.common.entities.hostile.Wraith;
 import za.co.infernos.goety.config.MobsConfig;
 import za.co.infernos.goety.init.ModTags;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.biome.Biomes;
+import net.minecraft.world.phys.AABB;
 
 import java.util.Random;
 
@@ -25,8 +27,8 @@ public class NaturalMobSpawner {
         if (this.nextTick > 0) {
             return 0;
         } else {
-            // Check every 20 ticks (1 second) for spawn opportunities
-            this.nextTick = 20;
+            // Check every 200 ticks (10 seconds) for spawn opportunities
+            this.nextTick = 200;
             
             if (!pLevel.getGameRules().getBoolean(GameRules.RULE_DOMOBSPAWNING)) {
                 return 0;
@@ -46,11 +48,35 @@ public class NaturalMobSpawner {
             BlockPos playerPos = player.blockPosition();
             var biome = pLevel.getBiome(playerPos);
             
-            // Check for Wraith spawning in Soul Sand Valley or tagged biomes
-            if (biome.is(Biomes.SOUL_SAND_VALLEY) || 
-                (biome.is(ModTags.Biomes.WRAITH_SPAWN) && !biome.is(ModTags.Biomes.WRAITH_EXCLUDE_SPAWN))) {
+            // Check for Wraith spawning in Soul Sand Valley, tagged biomes, or Overworld at night
+            boolean canSpawnWraith = false;
+            if (biome.is(Biomes.SOUL_SAND_VALLEY)) {
+                // Always allow in Soul Sand Valley
+                canSpawnWraith = true;
+            } else if (biome.is(ModTags.Biomes.WRAITH_SPAWN) && !biome.is(ModTags.Biomes.WRAITH_EXCLUDE_SPAWN)) {
+                // Tagged biomes
+                canSpawnWraith = true;
+            } else if (pLevel.dimensionType().natural()) {
+                // Overworld - check if it's night (light level check will be done by spawn predicate)
+                canSpawnWraith = true;
+            }
+            
+            if (canSpawnWraith) {
+                // Check density - don't spawn if there are too many wraiths nearby
+                AABB searchBox = new AABB(playerPos).inflate(48.0D);
+                int nearbyWraiths = countEntitiesByType(pLevel, ModEntityType.WRAITH.get(), searchBox);
+                
+                // Limit to max 3-5 wraiths within 48 blocks of player
+                int maxNearbyWraiths = 4;
+                if (nearbyWraiths >= maxNearbyWraiths) {
+                    return 0;
+                }
+                
+                // Use weight more conservatively - divide by 5 to get a reasonable spawn chance
+                // Weight of 20 = 4% chance per check (every 10 seconds)
                 int wraithWeight = za.co.infernos.goety.utils.ConfigHelper.getInt(MobsConfig.WraithSpawnWeight, 20);
-                if (wraithWeight > 0 && random.nextInt(100) < wraithWeight) {
+                int spawnChance = Math.max(1, wraithWeight / 5); // Convert weight to percentage (20 -> 4%)
+                if (wraithWeight > 0 && random.nextInt(100) < spawnChance) {
                     if (trySpawnWraith(pLevel, player, playerPos)) {
                         return 1;
                     }
@@ -58,12 +84,25 @@ public class NaturalMobSpawner {
             }
             
             // Check for Reaper spawning in Soul Sand Valley or tagged biomes
-            if (biome.is(Biomes.SOUL_SAND_VALLEY) || 
-                (biome.is(ModTags.Biomes.REAPER_SPAWN) && !biome.is(ModTags.Biomes.REAPER_EXCLUDE_SPAWN))) {
-                int reaperWeight = za.co.infernos.goety.utils.ConfigHelper.getInt(MobsConfig.ReaperSpawnWeight, 20);
-                if (reaperWeight > 0 && random.nextInt(100) < reaperWeight) {
-                    if (trySpawnReaper(pLevel, player, playerPos)) {
-                        return 1;
+            boolean canSpawnReaper = false;
+            if (biome.is(Biomes.SOUL_SAND_VALLEY)) {
+                canSpawnReaper = true;
+            } else if (biome.is(ModTags.Biomes.REAPER_SPAWN) && !biome.is(ModTags.Biomes.REAPER_EXCLUDE_SPAWN)) {
+                canSpawnReaper = true;
+            }
+            
+            if (canSpawnReaper) {
+                // Check density - don't spawn if there are too many reapers nearby
+                AABB searchBox = new AABB(playerPos).inflate(48.0D);
+                int nearbyReapers = countEntitiesByType(pLevel, ModEntityType.REAPER.get(), searchBox);
+                int maxNearbyReapers = 4;
+                if (nearbyReapers < maxNearbyReapers) {
+                    int reaperWeight = za.co.infernos.goety.utils.ConfigHelper.getInt(MobsConfig.ReaperSpawnWeight, 20);
+                    int spawnChance = Math.max(1, reaperWeight / 5); // Convert weight to percentage (20 -> 4%)
+                    if (reaperWeight > 0 && random.nextInt(100) < spawnChance) {
+                        if (trySpawnReaper(pLevel, player, playerPos)) {
+                            return 1;
+                        }
                     }
                 }
             }
@@ -72,70 +111,112 @@ public class NaturalMobSpawner {
             if (!biome.is(ModTags.Biomes.COMMON_BLACKLIST)) {
                 // Muck Wraith
                 if (biome.is(ModTags.Biomes.MUCK_WRAITH_SPAWN) && !biome.is(ModTags.Biomes.MUCK_WRAITH_EXCLUDE_SPAWN)) {
-                    int weight = za.co.infernos.goety.utils.ConfigHelper.getInt(MobsConfig.MuckWraithSpawnWeight, 20);
-                    if (weight > 0 && random.nextInt(100) < weight) {
-                        if (trySpawnMuckWraith(pLevel, player, playerPos)) {
-                            return 1;
+                    AABB searchBox = new AABB(playerPos).inflate(48.0D);
+                    int nearbyMuckWraiths = countEntitiesByType(pLevel, ModEntityType.MUCK_WRAITH.get(), searchBox);
+                    int maxNearbyMuckWraiths = 4;
+                    if (nearbyMuckWraiths < maxNearbyMuckWraiths) {
+                        int weight = za.co.infernos.goety.utils.ConfigHelper.getInt(MobsConfig.MuckWraithSpawnWeight, 20);
+                        int spawnChance = Math.max(1, weight / 5);
+                        if (weight > 0 && random.nextInt(100) < spawnChance) {
+                            if (trySpawnMuckWraith(pLevel, player, playerPos)) {
+                                return 1;
+                            }
                         }
                     }
                 }
                 
                 // Web Spider
                 if (biome.is(ModTags.Biomes.WEB_SPIDER_SPAWN) && !biome.is(ModTags.Biomes.WEB_SPIDER_EXCLUDE_SPAWN)) {
-                    int weight = za.co.infernos.goety.utils.ConfigHelper.getInt(MobsConfig.WebSpiderSpawnWeight, 20);
-                    if (weight > 0 && random.nextInt(100) < weight) {
-                        if (trySpawnWebSpider(pLevel, player, playerPos)) {
-                            return 1;
+                    AABB searchBox = new AABB(playerPos).inflate(48.0D);
+                    int nearbyWebSpiders = countEntitiesByType(pLevel, ModEntityType.WEB_SPIDER.get(), searchBox);
+                    int maxNearbyWebSpiders = 4;
+                    if (nearbyWebSpiders < maxNearbyWebSpiders) {
+                        int weight = za.co.infernos.goety.utils.ConfigHelper.getInt(MobsConfig.WebSpiderSpawnWeight, 20);
+                        int spawnChance = Math.max(1, weight / 5);
+                        if (weight > 0 && random.nextInt(100) < spawnChance) {
+                            if (trySpawnWebSpider(pLevel, player, playerPos)) {
+                                return 1;
+                            }
                         }
                     }
                 }
                 
                 // Icy Spider
                 if (biome.is(ModTags.Biomes.ICY_SPIDER_SPAWN) && !biome.is(ModTags.Biomes.ICY_SPIDER_EXCLUDE_SPAWN)) {
-                    int weight = za.co.infernos.goety.utils.ConfigHelper.getInt(MobsConfig.IcySpiderSpawnWeight, 20);
-                    if (weight > 0 && random.nextInt(100) < weight) {
-                        if (trySpawnIcySpider(pLevel, player, playerPos)) {
-                            return 1;
+                    AABB searchBox = new AABB(playerPos).inflate(48.0D);
+                    int nearbyIcySpiders = countEntitiesByType(pLevel, ModEntityType.ICY_SPIDER.get(), searchBox);
+                    int maxNearbyIcySpiders = 4;
+                    if (nearbyIcySpiders < maxNearbyIcySpiders) {
+                        int weight = za.co.infernos.goety.utils.ConfigHelper.getInt(MobsConfig.IcySpiderSpawnWeight, 20);
+                        int spawnChance = Math.max(1, weight / 5);
+                        if (weight > 0 && random.nextInt(100) < spawnChance) {
+                            if (trySpawnIcySpider(pLevel, player, playerPos)) {
+                                return 1;
+                            }
                         }
                     }
                 }
                 
                 // Necromancer
                 if (biome.is(ModTags.Biomes.NECROMANCER_SPAWN) && !biome.is(ModTags.Biomes.NECROMANCER_EXCLUDE_SPAWN)) {
-                    int weight = za.co.infernos.goety.utils.ConfigHelper.getInt(MobsConfig.NecromancerSpawnWeight, 20);
-                    if (weight > 0 && random.nextInt(100) < weight) {
-                        if (trySpawnNecromancer(pLevel, player, playerPos)) {
-                            return 1;
+                    AABB searchBox = new AABB(playerPos).inflate(48.0D);
+                    int nearbyNecromancers = countEntitiesByType(pLevel, ModEntityType.NECROMANCER.get(), searchBox);
+                    int maxNearbyNecromancers = 4;
+                    if (nearbyNecromancers < maxNearbyNecromancers) {
+                        int weight = za.co.infernos.goety.utils.ConfigHelper.getInt(MobsConfig.NecromancerSpawnWeight, 20);
+                        int spawnChance = Math.max(1, weight / 5);
+                        if (weight > 0 && random.nextInt(100) < spawnChance) {
+                            if (trySpawnNecromancer(pLevel, player, playerPos)) {
+                                return 1;
+                            }
                         }
                     }
                 }
                 
                 // Warlock
                 if (biome.is(ModTags.Biomes.WARLOCK_SPAWN) && !biome.is(ModTags.Biomes.WARLOCK_EXCLUDE_SPAWN)) {
-                    int weight = za.co.infernos.goety.utils.ConfigHelper.getInt(MobsConfig.WarlockSpawnWeight, 20);
-                    if (weight > 0 && random.nextInt(100) < weight) {
-                        if (trySpawnWarlock(pLevel, player, playerPos)) {
-                            return 1;
+                    AABB searchBox = new AABB(playerPos).inflate(48.0D);
+                    int nearbyWarlocks = countEntitiesByType(pLevel, ModEntityType.WARLOCK.get(), searchBox);
+                    int maxNearbyWarlocks = 4;
+                    if (nearbyWarlocks < maxNearbyWarlocks) {
+                        int weight = za.co.infernos.goety.utils.ConfigHelper.getInt(MobsConfig.WarlockSpawnWeight, 20);
+                        int spawnChance = Math.max(1, weight / 5);
+                        if (weight > 0 && random.nextInt(100) < spawnChance) {
+                            if (trySpawnWarlock(pLevel, player, playerPos)) {
+                                return 1;
+                            }
                         }
                     }
                 }
                 
                 // Heretic
                 if (biome.is(ModTags.Biomes.HERETIC_SPAWN) && !biome.is(ModTags.Biomes.HERETIC_EXCLUDE_SPAWN)) {
-                    int weight = za.co.infernos.goety.utils.ConfigHelper.getInt(MobsConfig.HereticSpawnWeight, 20);
-                    if (weight > 0 && random.nextInt(100) < weight) {
-                        if (trySpawnHeretic(pLevel, player, playerPos)) {
-                            return 1;
+                    AABB searchBox = new AABB(playerPos).inflate(48.0D);
+                    int nearbyHeretics = countEntitiesByType(pLevel, ModEntityType.HERETIC.get(), searchBox);
+                    int maxNearbyHeretics = 4;
+                    if (nearbyHeretics < maxNearbyHeretics) {
+                        int weight = za.co.infernos.goety.utils.ConfigHelper.getInt(MobsConfig.HereticSpawnWeight, 20);
+                        int spawnChance = Math.max(1, weight / 5);
+                        if (weight > 0 && random.nextInt(100) < spawnChance) {
+                            if (trySpawnHeretic(pLevel, player, playerPos)) {
+                                return 1;
+                            }
                         }
                     }
                 }
                 
                 // Maverick
                 if (biome.is(ModTags.Biomes.MAVERICK_SPAWN) && !biome.is(ModTags.Biomes.MAVERICK_EXCLUDE_SPAWN)) {
-                    int weight = za.co.infernos.goety.utils.ConfigHelper.getInt(MobsConfig.MaverickSpawnWeight, 20);
-                    if (weight > 0 && random.nextInt(100) < weight) {
-                        if (trySpawnMaverick(pLevel, player, playerPos)) {
-                            return 1;
+                    AABB searchBox = new AABB(playerPos).inflate(48.0D);
+                    int nearbyMavericks = countEntitiesByType(pLevel, ModEntityType.MAVERICK.get(), searchBox);
+                    int maxNearbyMavericks = 4;
+                    if (nearbyMavericks < maxNearbyMavericks) {
+                        int weight = za.co.infernos.goety.utils.ConfigHelper.getInt(MobsConfig.MaverickSpawnWeight, 20);
+                        int spawnChance = Math.max(1, weight / 5);
+                        if (weight > 0 && random.nextInt(100) < spawnChance) {
+                            if (trySpawnMaverick(pLevel, player, playerPos)) {
+                                return 1;
+                            }
                         }
                     }
                 }
@@ -145,13 +226,15 @@ public class NaturalMobSpawner {
     }
     
     private boolean trySpawnWraith(ServerLevel serverLevel, ServerPlayer player, BlockPos playerPos) {
-        Wraith wraith = new Wraith(ModEntityType.WRAITH.get(), serverLevel);
-        return trySpawnMob(serverLevel, player, wraith, playerPos, 24.0D);
+        Mob mob = ModEntityType.WRAITH.get().create(serverLevel);
+        if (mob == null) return false;
+        return trySpawnMob(serverLevel, player, mob, playerPos, 24.0D);
     }
     
     private boolean trySpawnReaper(ServerLevel serverLevel, ServerPlayer player, BlockPos playerPos) {
-        Reaper reaper = new Reaper(ModEntityType.REAPER.get(), serverLevel);
-        return trySpawnMob(serverLevel, player, reaper, playerPos, 24.0D);
+        Mob mob = ModEntityType.REAPER.get().create(serverLevel);
+        if (mob == null) return false;
+        return trySpawnMob(serverLevel, player, mob, playerPos, 24.0D);
     }
     
     private boolean trySpawnMuckWraith(ServerLevel serverLevel, ServerPlayer player, BlockPos playerPos) {
@@ -235,5 +318,25 @@ public class NaturalMobSpawner {
             }
         }
         return false;
+    }
+    
+    /**
+     * Count entities of a specific type within a bounding box.
+     * Uses EntityType instead of class to avoid class loading issues.
+     * Optimized to stop counting once we exceed the limit.
+     */
+    private int countEntitiesByType(ServerLevel level, EntityType<?> entityType, AABB searchBox) {
+        int count = 0;
+        // Early exit optimization - stop counting once we exceed typical limits
+        for (Entity entity : level.getEntitiesOfClass(Entity.class, searchBox)) {
+            if (entity.isAlive() && entity.getType() == entityType) {
+                count++;
+                // Early exit if we've exceeded the typical max (4)
+                if (count >= 4) {
+                    break;
+                }
+            }
+        }
+        return count;
     }
 }

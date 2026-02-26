@@ -19,9 +19,16 @@ public class ModLootInject {
 
     @SubscribeEvent
     public static void InjectLootTables(LootTableLoadEvent evt) {
+        String name = evt.getName().toString();
+        
+        // Debug logging for wraith loot table and any goety loot tables
+        if (name.startsWith("goety:")) {
+            Goety.LOGGER.info("[LOOT DEBUG] LootTableLoadEvent fired for: {}", name);
+            Goety.LOGGER.info("[LOOT DEBUG] Loot table is EMPTY: {}", evt.getTable() == net.minecraft.world.level.storage.loot.LootTable.EMPTY);
+        }
+        
         String chestsPrefix = "minecraft:chests/";
         String entitiesPrefix = "minecraft:entities/";
-        String name = evt.getName().toString();
 
         if ((name.startsWith(chestsPrefix) && CHEST_TABLES.contains(name.substring(chestsPrefix.length())))
                 || (name.startsWith(entitiesPrefix) && ENTITY_TABLES.contains(name.substring(entitiesPrefix.length())))) {

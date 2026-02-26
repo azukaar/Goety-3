@@ -228,7 +228,7 @@ public abstract class AbstractNecromancer extends AbstractSkeletonServant implem
 
     @Override
     public int getSummonLimit(LivingEntity owner) {
-        return SpellConfig.NecromancerLimit.get();
+        return za.co.infernos.goety.utils.ConfigHelper.getInt(SpellConfig.NecromancerLimit, 8);
     }
 
     @Override
@@ -373,7 +373,7 @@ public abstract class AbstractNecromancer extends AbstractSkeletonServant implem
     }
 
     public void soulJar() {
-        if (this.getTrueOwner() instanceof Player player && MobsConfig.NecromancerSoulJar.get()) {
+        if (this.getTrueOwner() instanceof Player player && za.co.infernos.goety.utils.ConfigHelper.getBoolean(MobsConfig.NecromancerSoulJar, true)) {
             Optional<ItemStack> optional = player.getInventory().items.stream()
                     .filter(itemStack1 -> itemStack1.is(ModItems.EMPTY_SOUL_JAR.get())).findFirst();
             if (optional.isPresent()) {
@@ -834,7 +834,7 @@ public abstract class AbstractNecromancer extends AbstractSkeletonServant implem
                         summonedentity.setTrueOwner(AbstractNecromancer.this);
                         summonedentity.moveTo(blockPos, AbstractNecromancer.this.getYRot(),
                                 AbstractNecromancer.this.getXRot());
-                        if (MobsConfig.NecromancerSummonsLife.get()) {
+                        if (za.co.infernos.goety.utils.ConfigHelper.getBoolean(MobsConfig.NecromancerSummonsLife, true)) {
                             summonedentity.setLimitedLife(MobUtil.getSummonLifespan(serverLevel));
                         }
                         summonedentity.setPersistenceRequired();
@@ -953,7 +953,7 @@ public abstract class AbstractNecromancer extends AbstractSkeletonServant implem
                         summonedentity.setTrueOwner(owner);
                         summonedentity.moveTo(blockPos, AbstractNecromancer.this.getYRot(),
                                 AbstractNecromancer.this.getXRot());
-                        if (MobsConfig.NecromancerSummonsLife.get()) {
+                        if (za.co.infernos.goety.utils.ConfigHelper.getBoolean(MobsConfig.NecromancerSummonsLife, true)) {
                             summonedentity.setLimitedLife(MobUtil.getSummonLifespan(serverLevel));
                         }
                         summonedentity.setPersistenceRequired();

@@ -1,0 +1,66 @@
+{
+  "pools": [
+    {
+      "entries": [
+        {
+          "type": "item",
+          "functions": [
+            {
+              "add": false,
+              "count": {
+                "type": "minecraft:uniform",
+                "max": 12,
+                "min": 6
+              },
+              "function": "set_count"
+            },
+            {
+              "count": {
+                "type": "minecraft:uniform",
+                "max": 1,
+                "min": 0
+              },
+              "function": "minecraft:enchanted_count_increase",
+              "enchantment": "minecraft:looting"
+            }
+          ],
+          "name": "minecraft:cobblestone",
+          "weight": 1
+        }
+      ],
+      "rolls": 1,
+      "name": "redstone_golem"
+    },
+    {
+      "entries": [
+        {
+          "type": "item",
+          "functions": [
+            {
+              "add": false,
+              "count": {
+                "type": "minecraft:uniform",
+                "max": 5,
+                "min": 3
+              },
+              "function": "set_count"
+            },
+            {
+              "count": {
+                "type": "minecraft:uniform",
+                "max": 1,
+                "min": 0
+              },
+              "function": "minecraft:enchanted_count_increase",
+              "enchantment": "minecraft:looting"
+            }
+          ],
+          "name": "minecraft:redstone",
+          "weight": 1
+        }
+      ],
+      "rolls": 1,
+      "name": "redstone_golem_1"
+    }
+  ]
+}

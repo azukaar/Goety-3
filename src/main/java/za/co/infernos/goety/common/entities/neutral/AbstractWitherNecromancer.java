@@ -275,7 +275,7 @@ public class AbstractWitherNecromancer extends AbstractNecromancer {
                     summoned.moveTo(blockPos, 0.0F, 0.0F);
                     MobUtil.moveDownToGround(summoned);
                     if (!AbstractWitherNecromancer.this.getType().is(ModTags.EntityTypes.MINI_BOSSES)) {
-                        if (MobsConfig.NecromancerSummonsLife.get()) {
+                        if (za.co.infernos.goety.utils.ConfigHelper.getBoolean(MobsConfig.NecromancerSummonsLife, true)) {
                             summoned.setLimitedLife(MobUtil.getSummonLifespan(serverLevel));
                         }
                     }

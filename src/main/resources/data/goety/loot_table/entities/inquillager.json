@@ -1,0 +1,107 @@
+{
+  "pools": [
+    {
+      "name": "inquillager",
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "item",
+          "functions": [
+            {
+              "function": "set_count",
+              "count": {
+                "min": 0,
+                "max": 4,
+                "type": "minecraft:uniform"
+              }
+            },
+            {
+              "function": "minecraft:enchanted_count_increase",
+              "count": {
+                "min": 1,
+                "max": 2
+              },
+              "enchantment": "minecraft:looting"
+            }
+          ],
+          "name": "minecraft:emerald",
+          "weight": 1
+        }
+      ],
+      "conditions": [
+        {
+          "condition": "minecraft:killed_by_player"
+        }
+      ]
+    },
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "item",
+          "functions": [
+            {
+              "function": "set_count",
+              "count": {
+                "min": 0,
+                "max": 2,
+                "type": "minecraft:uniform"
+              }
+            },
+            {
+              "function": "minecraft:enchanted_count_increase",
+              "count": {
+                "min": 0,
+                "max": 1
+              },
+              "enchantment": "minecraft:looting"
+            }
+          ],
+          "name": "minecraft:gold_ingot",
+          "weight": 1
+        }
+      ],
+      "conditions": [
+        {
+          "condition": "minecraft:killed_by_player"
+        }
+      ],
+      "name": "inquillager_1"
+    },
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "item",
+          "functions": [
+            {
+              "function": "minecraft:set_potion",
+              "id": "minecraft:harming"
+            }
+          ],
+          "name": "minecraft:splash_potion",
+          "weight": 1
+        }
+      ],
+      "conditions": [
+        {
+          "condition": "minecraft:killed_by_player"
+        },
+        {
+          "condition": "minecraft:match_tool",
+          "predicate": {
+            "enchantments": [
+              {
+                "enchantment": "minecraft:looting",
+                "levels": {
+                  "min": 1
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "name": "inquillager_2"
+    }
+  ]
+}
