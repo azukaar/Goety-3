@@ -388,7 +388,7 @@ public class Apostle extends SpellCastingCultist implements RangedAttackMob {
             this.antiRegenTotal = 0;
             this.setItemInHand(InteractionHand.MAIN_HAND, ItemStack.EMPTY);
         }
-        if (MobsConfig.FancierApostleDeath.get() || this.isInNether()) {
+        if (za.co.infernos.goety.utils.ConfigHelper.getBoolean(MobsConfig.FancierApostleDeath, false) || this.isInNether()) {
             this.setNoGravity(true);
             if (this.getKillCredit() instanceof Player) {
                 this.lastHurtByPlayerTime = 100;
@@ -518,7 +518,7 @@ public class Apostle extends SpellCastingCultist implements RangedAttackMob {
             itementity.setExtendedLifetime();
         }
         if (this.isInNether()) {
-            if (MainConfig.EnableNightBeacon.get()) {
+            if (za.co.infernos.goety.utils.ConfigHelper.getBoolean(MainConfig.EnableNightBeacon, true)) {
                 ItemEntity itementity2 = this.spawnAtLocation(ModBlocks.NIGHT_BEACON.get().asItem());
                 if (itementity2 != null) {
                     itementity2.setExtendedLifetime();
@@ -545,7 +545,7 @@ public class Apostle extends SpellCastingCultist implements RangedAttackMob {
 
     @Override
     public boolean isPersistenceRequired() {
-        return super.isPersistenceRequired() || MobsConfig.ApostlePersistent.get();
+        return super.isPersistenceRequired() || za.co.infernos.goety.utils.ConfigHelper.getBoolean(MobsConfig.ApostlePersistent, true);
     }
 
     @Nullable
@@ -852,7 +852,7 @@ public class Apostle extends SpellCastingCultist implements RangedAttackMob {
         if (this.moddedInvul <= 0) {
             super.actuallyHurt(source, amount);
             if (source.getEntity() != null) {
-                this.moddedInvul = MobsConfig.BossInvulnerabilityTime.get();
+                this.moddedInvul = za.co.infernos.goety.utils.ConfigHelper.getInt(MobsConfig.BossInvulnerabilityTime, 15);
             }
         }
     }
@@ -1112,7 +1112,7 @@ public class Apostle extends SpellCastingCultist implements RangedAttackMob {
             } else {
                 this.level().broadcastEntityEvent(this, (byte) 102);
             }
-            if (this.level().getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING) && MobsConfig.ApocalypseMode.get()
+            if (this.level().getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING) && za.co.infernos.goety.utils.ConfigHelper.getBoolean(MobsConfig.ApocalypseMode, false)
                     && !this.isInNether()) {
                 this.netherSpreaderUtil.updateCursors(this.level(), this.blockPosition().below(), this.random, true);
                 if (this.tickCount >= 100 && this.tickCount % 100 == 0 && !this.isSettingUpSecond()) {
@@ -1285,7 +1285,7 @@ public class Apostle extends SpellCastingCultist implements RangedAttackMob {
                 if (blockPos.getY() > this.getY() + 32.0D) {
                     NetherMeteor fireball = this.getNetherMeteor();
                     fireball.setDangerous(this.level().getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING)
-                            && MobsConfig.ApocalypseMode.get());
+                            && za.co.infernos.goety.utils.ConfigHelper.getBoolean(MobsConfig.ApocalypseMode, false));
                     fireball.setPos(blockPos.getX(), blockPos.getY(), blockPos.getZ());
                     this.level().addFreshEntity(fireball);
                 }
@@ -1311,7 +1311,7 @@ public class Apostle extends SpellCastingCultist implements RangedAttackMob {
         }
         for (LivingEntity living : this.level().getEntitiesOfClass(LivingEntity.class,
                 this.getBoundingBox().inflate(32))) {
-            if (MobsConfig.ApostleBoilsWater.get()) {
+            if (za.co.infernos.goety.utils.ConfigHelper.getBoolean(MobsConfig.ApostleBoilsWater, true)) {
                 if (!(living instanceof Cultist) && !(living instanceof Witch)
                         && !(living instanceof IOwned && ((IOwned) living).getTrueOwner() == this)) {
                     if (living.isInWater()) {
@@ -1319,7 +1319,7 @@ public class Apostle extends SpellCastingCultist implements RangedAttackMob {
                     }
                 }
             }
-            if (MobsConfig.ApostleConvertsVillagers.get()) {
+            if (za.co.infernos.goety.utils.ConfigHelper.getBoolean(MobsConfig.ApostleConvertsVillagers, true)) {
                 if (this.level() instanceof ServerLevel serverLevel) {
                     if (living instanceof AbstractVillager villager) {
                         float chance = 0.25F;

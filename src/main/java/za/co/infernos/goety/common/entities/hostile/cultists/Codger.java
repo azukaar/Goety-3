@@ -128,7 +128,7 @@ public class Codger extends Cultist implements RangedAttackMob {
 
     public void startSeenByPlayer(ServerPlayer pPlayer) {
         super.startSeenByPlayer(pPlayer);
-        if (MainConfig.SpecialBossBar.get()) {
+        if (za.co.infernos.goety.utils.ConfigHelper.getBoolean(MainConfig.SpecialBossBar, true)) {
             this.bossInfo.addPlayer(pPlayer);
         }
     }

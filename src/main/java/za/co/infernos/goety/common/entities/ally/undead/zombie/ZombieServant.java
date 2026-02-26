@@ -164,7 +164,7 @@ public class ZombieServant extends Summoned {
 
     @Override
     public int getSummonLimit(LivingEntity owner) {
-        return SpellConfig.ZombieLimit.get();
+        return za.co.infernos.goety.utils.ConfigHelper.getInt(SpellConfig.ZombieLimit, 32);
     }
 
     @Override
@@ -313,7 +313,7 @@ public class ZombieServant extends Summoned {
     }
 
     public static boolean getSpawnAsBabyOdds(RandomSource p_219163_) {
-        return p_219163_.nextFloat() < MobsConfig.ZombieServantBabyChance.get();
+        return p_219163_.nextFloat() < za.co.infernos.goety.utils.ConfigHelper.getDouble(MobsConfig.ZombieServantBabyChance, 0.05);
     }
 
     protected void handleAttributes(float difficulty) {

@@ -118,7 +118,7 @@ public class AbstractReaper extends Summoned {
 
     @Override
     public int getSummonLimit(LivingEntity owner) {
-        return SpellConfig.ReaperLimit.get();
+        return za.co.infernos.goety.utils.ConfigHelper.getInt(SpellConfig.ReaperLimit, 8);
     }
 
     @Override
@@ -552,7 +552,7 @@ public class AbstractReaper extends Summoned {
 
         public void attackMobs(LivingEntity pTarget, AbstractReaper reaper) {
             if (reaper.getTrueOwner() instanceof Player player) {
-                SEHelper.increaseSouls(player, ItemConfig.DarkScytheSouls.get() * 5);
+                SEHelper.increaseSouls(player, za.co.infernos.goety.utils.ConfigHelper.getInt(ItemConfig.DarkScytheSouls, 0) * 5);
             }
             float f = (float) reaper.getAttributeValue(Attributes.ATTACK_DAMAGE);
             float f1 = 0.0F; // EnchantmentHelper.getDamageBonus(reaper.getMainHandItem(), pTarget.getMobType());
@@ -578,10 +578,10 @@ public class AbstractReaper extends Summoned {
                         if (reaper.getTrueOwner() instanceof Player player) {
                             if (livingentity instanceof IOwned owned) {
                                 if (owned.getTrueOwner() != reaper) {
-                                    SEHelper.increaseSouls(player, ItemConfig.DarkScytheSouls.get() * 5);
+                                    SEHelper.increaseSouls(player, za.co.infernos.goety.utils.ConfigHelper.getInt(ItemConfig.DarkScytheSouls, 0) * 5);
                                 }
                             } else {
-                                SEHelper.increaseSouls(player, ItemConfig.DarkScytheSouls.get() * 5);
+                                SEHelper.increaseSouls(player, za.co.infernos.goety.utils.ConfigHelper.getInt(ItemConfig.DarkScytheSouls, 0) * 5);
                             }
                         }
                         // EnchantmentHelper.doPostHurtEffects(livingentity, reaper);

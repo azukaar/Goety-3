@@ -145,6 +145,22 @@ public class ClientInitEvents {
         event.registerLayerDefinition(ModModelLayer.HAS_INNER, () -> HauntedArmorStandArmorModel.createBodyLayer(new CubeDeformation(0.5F)));
         event.registerLayerDefinition(ModModelLayer.HAS_OUTER, () -> HauntedArmorStandArmorModel.createBodyLayer(new CubeDeformation(1.0F)));
         event.registerLayerDefinition(ModModelLayer.BEAR, BearServantModel::createBodyLayer);
+        
+        // Register boat model layers for all boat types
+        event.registerLayerDefinition(ModModelLayer.createBoatModelName(za.co.infernos.goety.common.entities.vehicle.ModBoat.Type.HAUNTED), net.minecraft.client.model.BoatModel::createBodyModel);
+        event.registerLayerDefinition(ModModelLayer.createBoatModelName(za.co.infernos.goety.common.entities.vehicle.ModBoat.Type.ROTTEN), net.minecraft.client.model.BoatModel::createBodyModel);
+        event.registerLayerDefinition(ModModelLayer.createBoatModelName(za.co.infernos.goety.common.entities.vehicle.ModBoat.Type.WINDSWEPT), net.minecraft.client.model.BoatModel::createBodyModel);
+        event.registerLayerDefinition(ModModelLayer.createBoatModelName(za.co.infernos.goety.common.entities.vehicle.ModBoat.Type.PINE), net.minecraft.client.model.BoatModel::createBodyModel);
+        event.registerLayerDefinition(ModModelLayer.createBoatModelName(za.co.infernos.goety.common.entities.vehicle.ModBoat.Type.CHORUS), net.minecraft.client.model.BoatModel::createBodyModel);
+        event.registerLayerDefinition(ModModelLayer.createBoatModelName(za.co.infernos.goety.common.entities.vehicle.ModBoat.Type.CORRUPT_CHORUS), net.minecraft.client.model.BoatModel::createBodyModel);
+        
+        // Register chest boat model layers for all boat types
+        event.registerLayerDefinition(ModModelLayer.createChestBoatModelName(za.co.infernos.goety.common.entities.vehicle.ModBoat.Type.HAUNTED), net.minecraft.client.model.ChestBoatModel::createBodyModel);
+        event.registerLayerDefinition(ModModelLayer.createChestBoatModelName(za.co.infernos.goety.common.entities.vehicle.ModBoat.Type.ROTTEN), net.minecraft.client.model.ChestBoatModel::createBodyModel);
+        event.registerLayerDefinition(ModModelLayer.createChestBoatModelName(za.co.infernos.goety.common.entities.vehicle.ModBoat.Type.WINDSWEPT), net.minecraft.client.model.ChestBoatModel::createBodyModel);
+        event.registerLayerDefinition(ModModelLayer.createChestBoatModelName(za.co.infernos.goety.common.entities.vehicle.ModBoat.Type.PINE), net.minecraft.client.model.ChestBoatModel::createBodyModel);
+        event.registerLayerDefinition(ModModelLayer.createChestBoatModelName(za.co.infernos.goety.common.entities.vehicle.ModBoat.Type.CHORUS), net.minecraft.client.model.ChestBoatModel::createBodyModel);
+        event.registerLayerDefinition(ModModelLayer.createChestBoatModelName(za.co.infernos.goety.common.entities.vehicle.ModBoat.Type.CORRUPT_CHORUS), net.minecraft.client.model.ChestBoatModel::createBodyModel);
         event.registerLayerDefinition(ModModelLayer.BLOCK, BlockModel::createBodyLayer);
         event.registerLayerDefinition(ModModelLayer.BOUND_ILLAGER, BoundIllagerModel::createBodyLayer);
         event.registerLayerDefinition(ModModelLayer.CRONE, CroneModel::createBodyLayer);
@@ -453,6 +469,11 @@ public class ClientInitEvents {
             Goety.LOGGER.error("Failed to register Whisperer renderer", e);
         }
         try {
+            event.registerEntityRenderer(ModEntityType.WAVEWHISPERER.get(), WhispererRenderer::new);
+        } catch (Exception e) {
+            Goety.LOGGER.error("Failed to register Wavewhisperer renderer", e);
+        }
+        try {
             event.registerEntityRenderer(ModEntityType.LEAPLEAF.get(), LeapleafRenderer::new);
         } catch (Exception e) {
             Goety.LOGGER.error("Failed to register Leapleaf renderer", e);
@@ -466,6 +487,11 @@ public class ClientInitEvents {
             event.registerEntityRenderer(ModEntityType.SKULL_LORD.get(), SkullLordRenderer::new);
         } catch (Exception e) {
             Goety.LOGGER.error("Failed to register SkullLord renderer", e);
+        }
+        try {
+            event.registerEntityRenderer(ModEntityType.BONE_LORD.get(), BoneLordRenderer::new);
+        } catch (Exception e) {
+            Goety.LOGGER.error("Failed to register BoneLord renderer", e);
         }
         try {
             event.registerEntityRenderer(ModEntityType.WIGHT.get(), WightRenderer::new);
@@ -936,6 +962,11 @@ public class ClientInitEvents {
             Goety.LOGGER.error("Failed to register SnarelingServant renderer", e);
         }
         try {
+            event.registerEntityRenderer(ModEntityType.HAUNTED_ARMOR.get(), HauntedArmorRenderer::new);
+        } catch (Exception e) {
+            Goety.LOGGER.error("Failed to register HauntedArmor renderer", e);
+        }
+        try {
             event.registerEntityRenderer(ModEntityType.HAUNTED_ARMOR_SERVANT.get(), HauntedArmorRenderer::new);
         } catch (Exception e) {
             Goety.LOGGER.error("Failed to register HauntedArmorServant renderer", e);
@@ -1094,9 +1125,19 @@ public class ClientInitEvents {
             Goety.LOGGER.error("Failed to register QuickGrowingVine renderer", e);
         }
         try {
+            event.registerEntityRenderer(ModEntityType.QUICK_GROWING_KELP.get(), QuickGrowingVineRenderer::new);
+        } catch (Exception e) {
+            Goety.LOGGER.error("Failed to register QuickGrowingKelp renderer", e);
+        }
+        try {
             event.registerEntityRenderer(ModEntityType.POISON_QUILL_VINE.get(), PoisonQuillVineRenderer::new);
         } catch (Exception e) {
             Goety.LOGGER.error("Failed to register PoisonQuillVine renderer", e);
+        }
+        try {
+            event.registerEntityRenderer(ModEntityType.POISON_ANEMONE.get(), PoisonQuillVineRenderer::new);
+        } catch (Exception e) {
+            Goety.LOGGER.error("Failed to register PoisonAnemone renderer", e);
         }
         try {
             event.registerEntityRenderer(ModEntityType.BIOMINE.get(), BioMineRenderer::new);
@@ -1107,6 +1148,11 @@ public class ClientInitEvents {
             event.registerEntityRenderer(ModEntityType.SPIDER_EGG.get(), SpiderEggRenderer::new);
         } catch (Exception e) {
             Goety.LOGGER.error("Failed to register SpiderEgg renderer", e);
+        }
+        try {
+            event.registerEntityRenderer(ModEntityType.INSECT_SWARM.get(), InsectSwarmRenderer::new);
+        } catch (Exception e) {
+            Goety.LOGGER.error("Failed to register InsectSwarm renderer", e);
         }
         try {
             event.registerEntityRenderer(ModEntityType.BEAST_HEAD.get(), BeastHeadRenderer::new);
@@ -1260,12 +1306,37 @@ public class ClientInitEvents {
         } catch (Exception e) {
             Goety.LOGGER.error("Failed to register SoulBullet renderer", e);
         }
+        try {
+            event.registerEntityRenderer(ModEntityType.SOUL_LIGHT.get(), SoulBulletRenderer::new);
+        } catch (Exception e) {
+            Goety.LOGGER.error("Failed to register SoulLight renderer", e);
+        }
+        try {
+            event.registerEntityRenderer(ModEntityType.GLOW_LIGHT.get(), SoulBulletRenderer::new);
+        } catch (Exception e) {
+            Goety.LOGGER.error("Failed to register GlowLight renderer", e);
+        }
+        try {
+            event.registerEntityRenderer(ModEntityType.BONE_SHARD.get(), (ctx) -> new BoneShardRenderer<>(ctx, ctx.getItemRenderer()));
+        } catch (Exception e) {
+            Goety.LOGGER.error("Failed to register BoneShard renderer", e);
+        }
+        try {
+            event.registerEntityRenderer(ModEntityType.SWORD.get(), (ctx) -> new SwordProjectileRenderer<>(ctx, ctx.getItemRenderer()));
+        } catch (Exception e) {
+            Goety.LOGGER.error("Failed to register Sword renderer", e);
+        }
         
         // Projectiles - Fireballs and Explosives
         try {
             event.registerEntityRenderer(ModEntityType.MOD_FIREBALL.get(), ModFireballRenderer::new);
         } catch (Exception e) {
             Goety.LOGGER.error("Failed to register ModFireball renderer", e);
+        }
+        try {
+            event.registerEntityRenderer(ModEntityType.LAVABALL.get(), ModFireballRenderer::new);
+        } catch (Exception e) {
+            Goety.LOGGER.error("Failed to register Lavaball renderer", e);
         }
         try {
             event.registerEntityRenderer(ModEntityType.HELL_BOLT.get(), HellBoltRenderer::new);
@@ -1377,6 +1448,25 @@ public class ClientInitEvents {
             Goety.LOGGER.error("Failed to register FallingBlock renderer", e);
         }
         
+        // Vehicles
+        try {
+            event.registerEntityRenderer(ModEntityType.MOD_BOAT.get(), (ctx) -> new ModBoatRenderer(ctx, false));
+        } catch (Exception e) {
+            Goety.LOGGER.error("Failed to register ModBoat renderer", e);
+        }
+        try {
+            event.registerEntityRenderer(ModEntityType.MOD_CHEST_BOAT.get(), (ctx) -> new ModBoatRenderer(ctx, true));
+        } catch (Exception e) {
+            Goety.LOGGER.error("Failed to register ModChestBoat renderer", e);
+        }
+        
+        // Servants - Ghast
+        try {
+            event.registerEntityRenderer(ModEntityType.MINI_GHAST.get(), MiniGhastRenderer::new);
+        } catch (Exception e) {
+            Goety.LOGGER.error("Failed to register MiniGhast renderer", e);
+        }
+        
         // Traps and Utilities
         try {
             event.registerEntityRenderer(ModEntityType.LIGHTNING_TRAP.get(), TrapRenderer::new);
@@ -1397,6 +1487,118 @@ public class ClientInitEvents {
             event.registerEntityRenderer(ModEntityType.FIRE_RAIN_TRAP.get(), TrapRenderer::new);
         } catch (Exception e) {
             Goety.LOGGER.error("Failed to register FireRainTrap renderer", e);
+        }
+        
+        // Utility entities that need simple empty renderers
+        try {
+            event.registerEntityRenderer(ModEntityType.GHOST_ARROW.get(), EmptyEntityRenderer::new);
+        } catch (Exception e) {
+            Goety.LOGGER.error("Failed to register GhostArrow renderer", e);
+        }
+        try {
+            event.registerEntityRenderer(ModEntityType.MAGIC_BOLT.get(), EmptyEntityRenderer::new);
+        } catch (Exception e) {
+            Goety.LOGGER.error("Failed to register MagicBolt renderer", e);
+        }
+        try {
+            event.registerEntityRenderer(ModEntityType.BREW.get(), (ctx) -> new net.minecraft.client.renderer.entity.ThrownItemRenderer<>(ctx));
+        } catch (Exception e) {
+            Goety.LOGGER.error("Failed to register Brew renderer", e);
+        }
+        try {
+            event.registerEntityRenderer(ModEntityType.FLYING_ITEM.get(), (ctx) -> new net.minecraft.client.renderer.entity.ThrownItemRenderer<>(ctx));
+        } catch (Exception e) {
+            Goety.LOGGER.error("Failed to register FlyingItem renderer", e);
+        }
+        try {
+            event.registerEntityRenderer(ModEntityType.ACID_POOL.get(), EmptyEntityRenderer::new);
+        } catch (Exception e) {
+            Goety.LOGGER.error("Failed to register AcidPool renderer", e);
+        }
+        try {
+            event.registerEntityRenderer(ModEntityType.FIRE_PILLAR.get(), EmptyEntityRenderer::new);
+        } catch (Exception e) {
+            Goety.LOGGER.error("Failed to register FirePillar renderer", e);
+        }
+        try {
+            event.registerEntityRenderer(ModEntityType.SURVEY_EYE.get(), EmptyEntityRenderer::new);
+        } catch (Exception e) {
+            Goety.LOGGER.error("Failed to register SurveyEye renderer", e);
+        }
+        try {
+            event.registerEntityRenderer(ModEntityType.VOID_EYE.get(), EmptyEntityRenderer::new);
+        } catch (Exception e) {
+            Goety.LOGGER.error("Failed to register VoidEye renderer", e);
+        }
+        try {
+            event.registerEntityRenderer(ModEntityType.CRYPTIC_EYE.get(), EmptyEntityRenderer::new);
+        } catch (Exception e) {
+            Goety.LOGGER.error("Failed to register CrypticEye renderer", e);
+        }
+        try {
+            event.registerEntityRenderer(ModEntityType.MONSOON_CLOUD.get(), EmptyEntityRenderer::new);
+        } catch (Exception e) {
+            Goety.LOGGER.error("Failed to register MonsoonCloud renderer", e);
+        }
+        try {
+            event.registerEntityRenderer(ModEntityType.HAIL_CLOUD.get(), EmptyEntityRenderer::new);
+        } catch (Exception e) {
+            Goety.LOGGER.error("Failed to register HailCloud renderer", e);
+        }
+        try {
+            event.registerEntityRenderer(ModEntityType.HELL_CLOUD.get(), EmptyEntityRenderer::new);
+        } catch (Exception e) {
+            Goety.LOGGER.error("Failed to register HellCloud renderer", e);
+        }
+        try {
+            event.registerEntityRenderer(ModEntityType.DRAGON_BREATH_CLOUD.get(), EmptyEntityRenderer::new);
+        } catch (Exception e) {
+            Goety.LOGGER.error("Failed to register DragonBreathCloud renderer", e);
+        }
+        try {
+            event.registerEntityRenderer(ModEntityType.BREW_EFFECT_CLOUD.get(), EmptyEntityRenderer::new);
+        } catch (Exception e) {
+            Goety.LOGGER.error("Failed to register BrewEffectCloud renderer", e);
+        }
+        try {
+            event.registerEntityRenderer(ModEntityType.BREW_EFFECT_GAS.get(), EmptyEntityRenderer::new);
+        } catch (Exception e) {
+            Goety.LOGGER.error("Failed to register BrewEffectGas renderer", e);
+        }
+        try {
+            event.registerEntityRenderer(ModEntityType.BERSERK_FUNGUS.get(), EmptyEntityRenderer::new);
+        } catch (Exception e) {
+            Goety.LOGGER.error("Failed to register BerserkFungus renderer", e);
+        }
+        try {
+            event.registerEntityRenderer(ModEntityType.CUSHION.get(), EmptyEntityRenderer::new);
+        } catch (Exception e) {
+            Goety.LOGGER.error("Failed to register Cushion renderer", e);
+        }
+        try {
+            event.registerEntityRenderer(ModEntityType.MAGIC_GROUND.get(), EmptyEntityRenderer::new);
+        } catch (Exception e) {
+            Goety.LOGGER.error("Failed to register MagicGround renderer", e);
+        }
+        try {
+            event.registerEntityRenderer(ModEntityType.STORM_UTIL.get(), EmptyEntityRenderer::new);
+        } catch (Exception e) {
+            Goety.LOGGER.error("Failed to register StormUtil renderer", e);
+        }
+        try {
+            event.registerEntityRenderer(ModEntityType.DELAYED_SUMMON.get(), EmptyEntityRenderer::new);
+        } catch (Exception e) {
+            Goety.LOGGER.error("Failed to register DelayedSummon renderer", e);
+        }
+        try {
+            event.registerEntityRenderer(ModEntityType.RAID_BOSS_SUMMON.get(), EmptyEntityRenderer::new);
+        } catch (Exception e) {
+            Goety.LOGGER.error("Failed to register RaidBossSummon renderer", e);
+        }
+        try {
+            event.registerEntityRenderer(ModEntityType.CAMERA_SHAKE.get(), EmptyEntityRenderer::new);
+        } catch (Exception e) {
+            Goety.LOGGER.error("Failed to register CameraShake renderer", e);
         }
         try {
             event.registerEntityRenderer(ModEntityType.ARROW_RAIN_TRAP.get(), TrapRenderer::new);

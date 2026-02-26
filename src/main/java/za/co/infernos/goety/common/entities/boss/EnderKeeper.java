@@ -653,7 +653,7 @@ public class EnderKeeper extends AbstractEnderling implements Enemy {
         if (this.moddedInvul <= 0){
             super.actuallyHurt(source, amount);
             if (source.getEntity() != null) {
-                this.moddedInvul = MobsConfig.BossInvulnerabilityTime.get();
+                this.moddedInvul = za.co.infernos.goety.utils.ConfigHelper.getInt(MobsConfig.BossInvulnerabilityTime, 15);
             }
         }
     }
@@ -853,7 +853,7 @@ public class EnderKeeper extends AbstractEnderling implements Enemy {
 
     public void startSeenByPlayer(ServerPlayer pPlayer) {
         super.startSeenByPlayer(pPlayer);
-        if (MainConfig.SpecialBossBar.get()) {
+        if (za.co.infernos.goety.utils.ConfigHelper.getBoolean(MainConfig.SpecialBossBar, true)) {
             this.bossInfo.addPlayer(pPlayer);
         }
     }

@@ -393,7 +393,7 @@ public class Wight extends Summoned implements Enemy, NeutralMob, IHiding {
 
     public void startSeenByPlayer(ServerPlayer pPlayer) {
         super.startSeenByPlayer(pPlayer);
-        if (MainConfig.SpecialBossBar.get() && !this.isHallucination()) {
+        if (za.co.infernos.goety.utils.ConfigHelper.getBoolean(MainConfig.SpecialBossBar, true) && !this.isHallucination()) {
             this.bossInfo.addPlayer(pPlayer);
         }
     }

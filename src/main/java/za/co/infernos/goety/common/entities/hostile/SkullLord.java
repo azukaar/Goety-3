@@ -752,7 +752,7 @@ public class SkullLord extends Monster implements ICustomAttributes {
 
     protected void customServerAiStep() {
         super.customServerAiStep();
-        this.bossInfo.setVisible(MainConfig.SpecialBossBar.get());
+        this.bossInfo.setVisible(za.co.infernos.goety.utils.ConfigHelper.getBoolean(MainConfig.SpecialBossBar, true));
     }
 
     public void startSeenByPlayer(ServerPlayer pPlayer) {

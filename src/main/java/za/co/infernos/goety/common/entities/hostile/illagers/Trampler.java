@@ -270,7 +270,7 @@ public class Trampler extends Raider implements ICharger, ICustomAttributes {
     public SpawnGroupData finalizeSpawn(ServerLevelAccessor pLevel, DifficultyInstance pDifficulty,
             MobSpawnType pReason, @Nullable SpawnGroupData pSpawnData) {
         pSpawnData = super.finalizeSpawn(pLevel, pDifficulty, pReason, pSpawnData);
-        if (MobsConfig.ArmoredTramplerRaid.get() && this.getCurrentRaid() != null) {
+        if (za.co.infernos.goety.utils.ConfigHelper.getBoolean(MobsConfig.ArmoredTramplerRaid, true) && this.getCurrentRaid() != null) {
             int i = pLevel.getLevel().random.nextInt(2);
             float f = pLevel.getLevel().getDifficulty() == Difficulty.HARD ? 0.75F : 0.45F;
             if (pLevel.getLevel().random.nextFloat() < f) {

@@ -67,7 +67,7 @@ public class BrewEffectCloud extends Entity {
         builder.define(DATA_COLOR, 0);
         builder.define(DATA_RADIUS, 0.5F);
         builder.define(DATA_WAITING, false);
-        builder.define(DATA_PARTICLE, (ParticleOptions) ParticleTypes.ENTITY_EFFECT);
+        builder.define(DATA_PARTICLE, net.minecraft.core.particles.ColorParticleOption.create(ParticleTypes.ENTITY_EFFECT, 1.0F, 1.0F, 1.0F));
     }
 
     public void setRadius(float p_19713_) {

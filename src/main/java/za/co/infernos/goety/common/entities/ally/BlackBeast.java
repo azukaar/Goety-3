@@ -200,7 +200,7 @@ public class BlackBeast extends Summoned{
 
     @Override
     public int getSummonLimit(LivingEntity owner) {
-        return SpellConfig.BlackBeastLimit.get();
+        return za.co.infernos.goety.utils.ConfigHelper.getInt(SpellConfig.BlackBeastLimit, 2);
     }
 
     public boolean isPretty(){
@@ -403,7 +403,7 @@ public class BlackBeast extends Summoned{
     protected void tickDeath() {
         ++this.deathTime;
         if (this.deathTime == 40) {
-            if (this.getTrueOwner() != null && MobsConfig.BlackBeastHowlingSoul.get()){
+            if (this.getTrueOwner() != null && za.co.infernos.goety.utils.ConfigHelper.getBoolean(MobsConfig.BlackBeastHowlingSoul, true)){
                 ItemStack itemStack = new ItemStack(ModItems.HOWLING_SOUL.get());
                 HowlingSoul.setOwnerName(this.getTrueOwner(), itemStack);
                 HowlingSoul.setSummon(this, itemStack);
@@ -509,7 +509,7 @@ public class BlackBeast extends Summoned{
                     if (!target.hasEffect(GoetyEffects.DOOM) && !MobUtil.isInSunlightNoRain(this)) {
                         int debuffDuration = MathHelper.secondsToTicks(15);
                         int regenAmp = 2;
-                        if (MobsConfig.BlackBeastDayStrength.get()) {
+                        if (za.co.infernos.goety.utils.ConfigHelper.getBoolean(MobsConfig.BlackBeastDayStrength, true)) {
                             if (this.level().dayTime() >= MathHelper.minecraftDayToTicks(50)) {
                                 regenAmp += 1;
                             }
@@ -537,7 +537,7 @@ public class BlackBeast extends Summoned{
         boolean flag = super.shouldChunkLoad();
         if (!flag) {
             if (this.getPrey() != null) {
-                flag = MobsConfig.BlackBeastChunkLoad.get();
+                flag = za.co.infernos.goety.utils.ConfigHelper.getBoolean(MobsConfig.BlackBeastChunkLoad, true);
             }
         }
         return flag;
@@ -596,7 +596,7 @@ public class BlackBeast extends Summoned{
                         }
                     }
                 }
-                if (MobsConfig.BlackBeastDayStrength.get()) {
+                if (za.co.infernos.goety.utils.ConfigHelper.getBoolean(MobsConfig.BlackBeastDayStrength, true)) {
                     int boostAmp = 1;
                     int resistAmp = 0;
 
@@ -743,7 +743,7 @@ public class BlackBeast extends Summoned{
 
     @Override
     public void mobSense() {
-        if (MobsConfig.MobSense.get()) {
+        if (za.co.infernos.goety.utils.ConfigHelper.getBoolean(MobsConfig.MobSense, true)) {
             if (this.isAlive()) {
                 if (this.getTarget() != null) {
                     if (!this.isInvisible()) {

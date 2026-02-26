@@ -91,7 +91,7 @@ public class AbstractWitherNecromancer extends AbstractNecromancer {
 
     @Override
     public int getSummonLimit(LivingEntity owner) {
-        return SpellConfig.WitherNecromancerLimit.get();
+        return za.co.infernos.goety.utils.ConfigHelper.getInt(SpellConfig.WitherNecromancerLimit, 2);
     }
 
     protected float getStandingEyeHeight(Pose poseIn, EntityDimensions sizeIn) {

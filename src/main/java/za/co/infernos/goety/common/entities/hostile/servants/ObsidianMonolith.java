@@ -437,7 +437,7 @@ public class ObsidianMonolith extends AbstractMonolith implements Enemy {
                     this.teleportTowards(apostle);
                 }
                 apostle.obsidianInvul = 10;
-                if (MobsConfig.ApocalypseMode.get()) {
+                if (za.co.infernos.goety.utils.ConfigHelper.getBoolean(MobsConfig.ApocalypseMode, false)) {
                     this.spreadNether();
                 } else {
                     if (!this.netherSpreaderUtil.getCursors().isEmpty()) {
@@ -491,7 +491,7 @@ public class ObsidianMonolith extends AbstractMonolith implements Enemy {
                     int spawnChance = 256;
                     if (this.empowered > 0) {
                         this.spreadNether();
-                        if (MobsConfig.ObsidianMonolithSpawner.get()) {
+                        if (za.co.infernos.goety.utils.ConfigHelper.getBoolean(MobsConfig.ObsidianMonolithSpawner, true)) {
                             int i = this.level()
                                     .getEntitiesOfClass(LivingEntity.class,
                                             this.getBoundingBox().inflate(24.0D, 16.0D, 24.0D),
@@ -529,7 +529,7 @@ public class ObsidianMonolith extends AbstractMonolith implements Enemy {
                     } else {
                         this.netherSpreaderUtil.clear();
                     }
-                    if (MobsConfig.ObsidianMonolithSpawner.get()) {
+                    if (za.co.infernos.goety.utils.ConfigHelper.getBoolean(MobsConfig.ObsidianMonolithSpawner, true)) {
                         if (serverLevel.random.nextInt(spawnChance) == 0) {
                             int j = serverLevel.getNearbyEntities(Mob.class, TargetingConditions.DEFAULT, this,
                                     this.getBoundingBox().inflate(32.0D, 16.0D, 32.0D)).size();
@@ -635,7 +635,7 @@ public class ObsidianMonolith extends AbstractMonolith implements Enemy {
     }
 
     public boolean startSpreading() {
-        return this.startUp >= MathHelper.minecraftDayToTicks(MobsConfig.ObsidianMonolithStartUpTime.get());
+        return this.startUp >= MathHelper.minecraftDayToTicks(za.co.infernos.goety.utils.ConfigHelper.getInt(MobsConfig.ObsidianMonolithStartUpTime, 3));
     }
 
     public void spreadNether() {
@@ -644,7 +644,7 @@ public class ObsidianMonolith extends AbstractMonolith implements Enemy {
                     living -> living.isAlive() && living.isCasting() && living.getMonolith() == this).size();
             Vec3 skyVec = new Vec3(this.getX(), this.getY() + 16.0D, this.getZ());
             if (this.level().getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING)
-                    && MobsConfig.ObsidianMonolithSpread.get() && this.level().dimension() != Level.NETHER) {
+                    && za.co.infernos.goety.utils.ConfigHelper.getBoolean(MobsConfig.ObsidianMonolithSpread, true) && this.level().dimension() != Level.NETHER) {
                 if (this.startSpreading()) {
                     if (this.level().isEmptyBlock(BlockPos.containing(skyVec))) {
                         ServerParticleUtil.addAuraParticles(serverLevel, ModParticleTypes.SPELL_CLOUD.get(), skyVec,
@@ -688,7 +688,7 @@ public class ObsidianMonolith extends AbstractMonolith implements Enemy {
                         if (this.level().isEmptyBlock(BlockPos.containing(skyVec))) {
                             float radius = 2.0F;
                             float totalTime = MathHelper
-                                    .minecraftDayToTicks(MobsConfig.ObsidianMonolithStartUpTime.get());
+                                    .minecraftDayToTicks(za.co.infernos.goety.utils.ConfigHelper.getInt(MobsConfig.ObsidianMonolithStartUpTime, 3));
                             if (this.startUp > totalTime / 4.0F) {
                                 radius = 4.0F;
                             }

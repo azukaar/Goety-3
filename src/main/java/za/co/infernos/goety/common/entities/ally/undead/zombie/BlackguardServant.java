@@ -111,7 +111,7 @@ public class BlackguardServant extends ZombieServant{
 
     @Override
     public int getSummonLimit(LivingEntity owner) {
-        return SpellConfig.BlackguardLimit.get();
+        return za.co.infernos.goety.utils.ConfigHelper.getInt(SpellConfig.BlackguardLimit, 16);
     }
 
     private boolean getFlag(int mask) {

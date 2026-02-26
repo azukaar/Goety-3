@@ -156,7 +156,7 @@ public class HookBellBlockEntity extends BlockEntity {
                 && !p_155198_.isRemoved()
                 && areRaidersClose(p_155197_, p_155198_)
                 && p_155198_.getType().is(EntityTypeTags.RAIDERS)
-                && !MobUtil.hasEntityTypesConfig(MainConfig.HookBellBlackList.get(), p_155198_.getType());
+                && !MobUtil.hasEntityTypesConfig(za.co.infernos.goety.utils.ConfigHelper.getList(MainConfig.HookBellBlackList, java.util.Collections.emptyList()), p_155198_.getType());
     }
 
     private static void teleport(LivingEntity p_58841_, HookBellBlockEntity blockEntity) {

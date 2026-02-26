@@ -572,7 +572,7 @@ public class Cryologer extends HuntingIllagerEntity implements IBreathing {
         @Override
         public boolean canUse() {
             return super.canUse() && Cryologer.this.level().getDifficulty() == Difficulty.HARD
-                    && MobsConfig.CryologerIceChunk.get();
+                    && za.co.infernos.goety.utils.ConfigHelper.getBoolean(MobsConfig.CryologerIceChunk, false);
         }
 
         public void start() {

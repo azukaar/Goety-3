@@ -155,7 +155,7 @@ public class Crone extends Cultist implements RangedAttackMob {
 
     public void startSeenByPlayer(ServerPlayer pPlayer) {
         super.startSeenByPlayer(pPlayer);
-        if (MainConfig.SpecialBossBar.get()) {
+        if (za.co.infernos.goety.utils.ConfigHelper.getBoolean(MainConfig.SpecialBossBar, true)) {
             this.bossInfo.addPlayer(pPlayer);
         }
     }
@@ -556,7 +556,7 @@ public class Crone extends Cultist implements RangedAttackMob {
 
         if (pSource.getEntity() instanceof LivingEntity livingentity && livingentity != this) {
             this.lastHitTime = MathHelper.secondsToTicks(15);
-            if (MobsConfig.CroneThornDefense.get()) {
+            if (za.co.infernos.goety.utils.ConfigHelper.getBoolean(MobsConfig.CroneThornDefense, true)) {
                 if (!pSource.is(DamageTypeTags.AVOIDS_GUARDIAN_THORNS) && !pSource.is(DamageTypes.THORNS)) {
                     float thorn = 2.0F;
                     if (this.level().getDifficulty() == Difficulty.HARD) {

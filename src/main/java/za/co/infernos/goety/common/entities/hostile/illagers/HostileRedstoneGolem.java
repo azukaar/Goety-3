@@ -253,12 +253,12 @@ public class HostileRedstoneGolem extends HostileGolem {
 
     protected void customServerAiStep() {
         super.customServerAiStep();
-        this.bossInfo.setVisible(MainConfig.SpecialBossBar.get());
+        this.bossInfo.setVisible(za.co.infernos.goety.utils.ConfigHelper.getBoolean(MainConfig.SpecialBossBar, true));
     }
 
     public void startSeenByPlayer(ServerPlayer pPlayer) {
         super.startSeenByPlayer(pPlayer);
-        if (MainConfig.SpecialBossBar.get()) {
+        if (za.co.infernos.goety.utils.ConfigHelper.getBoolean(MainConfig.SpecialBossBar, true)) {
             this.bossInfo.addPlayer(pPlayer);
         }
     }

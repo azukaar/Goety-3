@@ -290,7 +290,7 @@ public class AbstractBroodMother extends Summoned implements IAutoRideable, Play
 
     @Override
     public int getSummonLimit(LivingEntity owner) {
-        return SpellConfig.BroodMotherLimit.get();
+        return za.co.infernos.goety.utils.ConfigHelper.getInt(SpellConfig.BroodMotherLimit, 2);
     }
 
     public int xpReward() {
@@ -391,7 +391,7 @@ public class AbstractBroodMother extends Summoned implements IAutoRideable, Play
         if (!this.isNoAi()) {
             Entity entity = this.getFirstPassenger();
             if (entity instanceof Mob mob){
-                if (MobsConfig.ServantRideAutonomous.get()){
+                if (za.co.infernos.goety.utils.ConfigHelper.getBoolean(MobsConfig.ServantRideAutonomous, false)){
                     return null;
                 }
                 return mob;

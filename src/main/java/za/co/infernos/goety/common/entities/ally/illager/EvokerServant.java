@@ -507,9 +507,9 @@ public class EvokerServant extends SpellcasterIllagerServant{
                     mob.setYRot(victim.getYRot());
                     mob.spawnAnim();
                 }
-                EvokerServant.this.ravageCool = MathHelper.secondsToTicks(MobsConfig.EvokerServantRavagedCooldown.get());
+                EvokerServant.this.ravageCool = MathHelper.secondsToTicks(za.co.infernos.goety.utils.ConfigHelper.getInt(MobsConfig.EvokerServantRavagedCooldown, 1200));
                 for (EvokerServant evokerServant : this.otherEvokers()) {
-                    evokerServant.ravageCool = MathHelper.secondsToTicks(MobsConfig.EvokerServantRavagedCooldown.get());
+                    evokerServant.ravageCool = MathHelper.secondsToTicks(za.co.infernos.goety.utils.ConfigHelper.getInt(MobsConfig.EvokerServantRavagedCooldown, 1200));
                 }
             }
 

@@ -55,9 +55,9 @@ public abstract class RaidMixin {
         this.goety$lastAugmentedWave = wave;
         int injected = 0;
 
-        injected += this.goety$spawnWaveRaiders(blockPos, ModEntityType.WARLOCK.get(), za.co.infernos.goety.utils.ConfigHelper.getBoolean(MobsConfig.WarlockRaid, true), MobsConfig.WarlockRaidCount.get(), wave);
-        injected += this.goety$spawnWaveRaiders(blockPos, ModEntityType.MAVERICK.get(), za.co.infernos.goety.utils.ConfigHelper.getBoolean(MobsConfig.MaverickRaid, true), MobsConfig.MaverickRaidCount.get(), wave);
-        injected += this.goety$spawnWaveRaiders(blockPos, ModEntityType.HERETIC.get(), za.co.infernos.goety.utils.ConfigHelper.getBoolean(MobsConfig.HereticRaid, true), MobsConfig.HereticRaidCount.get(), wave);
+        injected += this.goety$spawnWaveRaiders(blockPos, ModEntityType.WARLOCK.get(), za.co.infernos.goety.utils.ConfigHelper.getBoolean(MobsConfig.WarlockRaid, true), za.co.infernos.goety.utils.ConfigHelper.getList(MobsConfig.WarlockRaidCount, java.util.Arrays.asList(0, 0, 0, 0, 1, 2, 0, 1)), wave);
+        injected += this.goety$spawnWaveRaiders(blockPos, ModEntityType.MAVERICK.get(), za.co.infernos.goety.utils.ConfigHelper.getBoolean(MobsConfig.MaverickRaid, true), za.co.infernos.goety.utils.ConfigHelper.getList(MobsConfig.MaverickRaidCount, java.util.Arrays.asList(0, 1, 0, 1, 0, 0, 0, 1)), wave);
+        injected += this.goety$spawnWaveRaiders(blockPos, ModEntityType.HERETIC.get(), za.co.infernos.goety.utils.ConfigHelper.getBoolean(MobsConfig.HereticRaid, true), za.co.infernos.goety.utils.ConfigHelper.getList(MobsConfig.HereticRaidCount, java.util.Arrays.asList(0, 0, 0, 1, 0, 0, 2, 1)), wave);
 
         if (!za.co.infernos.goety.utils.ConfigHelper.getBoolean(MobsConfig.IllagerRaid, false)) {
             if (za.co.infernos.goety.utils.ConfigHelper.getBoolean(MobsConfig.RaidAugmentDebug, false) && injected > 0) {
@@ -66,24 +66,24 @@ public abstract class RaidMixin {
             return;
         }
 
-        injected += this.goety$spawnWaveRaiders(blockPos, ModEntityType.PIKER.get(), za.co.infernos.goety.utils.ConfigHelper.getBoolean(MobsConfig.PikerRaid, true), MobsConfig.PikerRaidCount.get(), wave);
-        injected += this.goety$spawnWaveRaiders(blockPos, ModEntityType.RIPPER.get(), za.co.infernos.goety.utils.ConfigHelper.getBoolean(MobsConfig.RipperRaid, true), MobsConfig.RipperRaidCount.get(), wave);
-        injected += this.goety$spawnWaveRaiders(blockPos, ModEntityType.CRUSHER.get(), za.co.infernos.goety.utils.ConfigHelper.getBoolean(MobsConfig.CrusherRaid, true), MobsConfig.CrusherRaidCount.get(), wave);
-        injected += this.goety$spawnWaveRaiders(blockPos, ModEntityType.STORM_CASTER.get(), za.co.infernos.goety.utils.ConfigHelper.getBoolean(MobsConfig.StormCasterRaid, true), MobsConfig.StormCasterRaidCount.get(), wave);
-        injected += this.goety$spawnWaveRaiders(blockPos, ModEntityType.CRYOLOGER.get(), za.co.infernos.goety.utils.ConfigHelper.getBoolean(MobsConfig.CryologerRaid, true), MobsConfig.CryologerRaidCount.get(), wave);
-        injected += this.goety$spawnWaveRaiders(blockPos, ModEntityType.PREACHER.get(), za.co.infernos.goety.utils.ConfigHelper.getBoolean(MobsConfig.PreacherRaid, true), MobsConfig.PreacherRaidCount.get(), wave);
-        injected += this.goety$spawnWaveRaiders(blockPos, ModEntityType.CONQUILLAGER.get(), za.co.infernos.goety.utils.ConfigHelper.getBoolean(MobsConfig.ConquillagerRaid, true), MobsConfig.ConquillagerRaidCount.get(), wave);
-        injected += this.goety$spawnWaveRaiders(blockPos, ModEntityType.INQUILLAGER.get(), za.co.infernos.goety.utils.ConfigHelper.getBoolean(MobsConfig.InquillagerRaid, true), MobsConfig.InquillagerRaidCount.get(), wave);
-        injected += this.goety$spawnWaveRaiders(blockPos, ModEntityType.ENVIOKER.get(), za.co.infernos.goety.utils.ConfigHelper.getBoolean(MobsConfig.EnviokerRaid, true), MobsConfig.EnviokerRaidCount.get(), wave);
-        injected += this.goety$spawnWaveRaiders(blockPos, ModEntityType.SORCERER.get(), za.co.infernos.goety.utils.ConfigHelper.getBoolean(MobsConfig.SorcererRaid, true), MobsConfig.SorcererRaidCount.get(), wave);
-        injected += this.goety$spawnWaveRaiders(blockPos, ModEntityType.MINISTER.get(), za.co.infernos.goety.utils.ConfigHelper.getBoolean(MobsConfig.MinisterRaid, true), MobsConfig.MinisterRaidCount.get(), wave);
-        injected += this.goety$spawnWaveRaiders(blockPos, ModEntityType.HOSTILE_REDSTONE_GOLEM.get(), za.co.infernos.goety.utils.ConfigHelper.getBoolean(MobsConfig.HostileRedstoneGolemRaid, true), MobsConfig.HostileRedstoneGolemRaidCount.get(), wave);
+        injected += this.goety$spawnWaveRaiders(blockPos, ModEntityType.PIKER.get(), za.co.infernos.goety.utils.ConfigHelper.getBoolean(MobsConfig.PikerRaid, true), za.co.infernos.goety.utils.ConfigHelper.getList(MobsConfig.PikerRaidCount, java.util.Arrays.asList(0, 0, 0, 2, 0, 3, 3, 5)), wave);
+        injected += this.goety$spawnWaveRaiders(blockPos, ModEntityType.RIPPER.get(), za.co.infernos.goety.utils.ConfigHelper.getBoolean(MobsConfig.RipperRaid, true), za.co.infernos.goety.utils.ConfigHelper.getList(MobsConfig.RipperRaidCount, java.util.Arrays.asList(0, 0, 0, 4, 0, 6, 6, 10)), wave);
+        injected += this.goety$spawnWaveRaiders(blockPos, ModEntityType.CRUSHER.get(), za.co.infernos.goety.utils.ConfigHelper.getBoolean(MobsConfig.CrusherRaid, true), za.co.infernos.goety.utils.ConfigHelper.getList(MobsConfig.CrusherRaidCount, java.util.Arrays.asList(0, 0, 0, 0, 2, 2, 0, 2)), wave);
+        injected += this.goety$spawnWaveRaiders(blockPos, ModEntityType.STORM_CASTER.get(), za.co.infernos.goety.utils.ConfigHelper.getBoolean(MobsConfig.StormCasterRaid, true), za.co.infernos.goety.utils.ConfigHelper.getList(MobsConfig.StormCasterRaidCount, java.util.Arrays.asList(0, 0, 0, 0, 1, 1, 0, 2)), wave);
+        injected += this.goety$spawnWaveRaiders(blockPos, ModEntityType.CRYOLOGER.get(), za.co.infernos.goety.utils.ConfigHelper.getBoolean(MobsConfig.CryologerRaid, true), za.co.infernos.goety.utils.ConfigHelper.getList(MobsConfig.CryologerRaidCount, java.util.Arrays.asList(0, 0, 1, 1, 0, 0, 0, 2)), wave);
+        injected += this.goety$spawnWaveRaiders(blockPos, ModEntityType.PREACHER.get(), za.co.infernos.goety.utils.ConfigHelper.getBoolean(MobsConfig.PreacherRaid, true), za.co.infernos.goety.utils.ConfigHelper.getList(MobsConfig.PreacherRaidCount, java.util.Arrays.asList(0, 0, 1, 1, 0, 0, 0, 2)), wave);
+        injected += this.goety$spawnWaveRaiders(blockPos, ModEntityType.CONQUILLAGER.get(), za.co.infernos.goety.utils.ConfigHelper.getBoolean(MobsConfig.ConquillagerRaid, true), za.co.infernos.goety.utils.ConfigHelper.getList(MobsConfig.ConquillagerRaidCount, java.util.Arrays.asList(0, 4, 3, 3, 4, 4, 4, 2)), wave);
+        injected += this.goety$spawnWaveRaiders(blockPos, ModEntityType.INQUILLAGER.get(), za.co.infernos.goety.utils.ConfigHelper.getBoolean(MobsConfig.InquillagerRaid, true), za.co.infernos.goety.utils.ConfigHelper.getList(MobsConfig.InquillagerRaidCount, java.util.Arrays.asList(0, 0, 2, 0, 1, 2, 2, 3)), wave);
+        injected += this.goety$spawnWaveRaiders(blockPos, ModEntityType.ENVIOKER.get(), za.co.infernos.goety.utils.ConfigHelper.getBoolean(MobsConfig.EnviokerRaid, true), za.co.infernos.goety.utils.ConfigHelper.getList(MobsConfig.EnviokerRaidCount, java.util.Arrays.asList(0, 0, 0, 1, 0, 1, 1, 2)), wave);
+        injected += this.goety$spawnWaveRaiders(blockPos, ModEntityType.SORCERER.get(), za.co.infernos.goety.utils.ConfigHelper.getBoolean(MobsConfig.SorcererRaid, true), za.co.infernos.goety.utils.ConfigHelper.getList(MobsConfig.SorcererRaidCount, java.util.Arrays.asList(0, 0, 1, 0, 1, 0, 1, 1)), wave);
+        injected += this.goety$spawnWaveRaiders(blockPos, ModEntityType.MINISTER.get(), za.co.infernos.goety.utils.ConfigHelper.getBoolean(MobsConfig.MinisterRaid, true), za.co.infernos.goety.utils.ConfigHelper.getList(MobsConfig.MinisterRaidCount, java.util.Arrays.asList(0, 0, 0, 0, 0, 0, 0, 1)), wave);
+        injected += this.goety$spawnWaveRaiders(blockPos, ModEntityType.HOSTILE_REDSTONE_GOLEM.get(), za.co.infernos.goety.utils.ConfigHelper.getBoolean(MobsConfig.HostileRedstoneGolemRaid, true), za.co.infernos.goety.utils.ConfigHelper.getList(MobsConfig.HostileRedstoneGolemRaidCount, java.util.Arrays.asList(0, 0, 0, 0, 0, 1, 1, 0)), wave);
 
         EntityType<? extends Raider> hrmType = ModEntityType.HOSTILE_REDSTONE_MONSTROSITY.get();
         if (za.co.infernos.goety.utils.ConfigHelper.getBoolean(MobsConfig.HRMSpawnNoRaiders, false)) {
             hrmType = ModEntityType.RAID_BOSS_SUMMON.get();
         }
-        injected += this.goety$spawnWaveRaiders(blockPos, hrmType, za.co.infernos.goety.utils.ConfigHelper.getBoolean(MobsConfig.HostileRedstoneMonstrosityRaid, true), MobsConfig.HostileRedstoneMonstrosityRaidCount.get(), wave);
+        injected += this.goety$spawnWaveRaiders(blockPos, hrmType, za.co.infernos.goety.utils.ConfigHelper.getBoolean(MobsConfig.HostileRedstoneMonstrosityRaid, true), za.co.infernos.goety.utils.ConfigHelper.getList(MobsConfig.HostileRedstoneMonstrosityRaidCount, java.util.Arrays.asList(0, 0, 0, 0, 0, 0, 0, 1)), wave);
 
         if (za.co.infernos.goety.utils.ConfigHelper.getBoolean(MobsConfig.RaidAugmentDebug, false) && injected > 0) {
             Goety.LOGGER.info("Goety raid augment: wave {} injected {} custom raiders", wave, injected);

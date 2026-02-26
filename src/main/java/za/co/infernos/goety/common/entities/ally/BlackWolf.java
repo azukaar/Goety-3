@@ -283,7 +283,7 @@ public class BlackWolf extends AnimalSummon{
 
     @Override
     public void mobSense() {
-        if (MobsConfig.MobSense.get()) {
+        if (za.co.infernos.goety.utils.ConfigHelper.getBoolean(MobsConfig.MobSense, true)) {
             if (this.isAlive()) {
                 if (this.getTarget() != null) {
                     if (!this.isInvisible()) {

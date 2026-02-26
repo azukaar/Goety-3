@@ -47,7 +47,7 @@ public class ViciousPike extends Entity implements ISpellEntity {
     }
 
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
-        // No data to define
+        // Entity.defineSynchedData is abstract, no super to call
     }
 
     @Override

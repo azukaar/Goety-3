@@ -186,7 +186,7 @@ public class AbstractBlastling extends AbstractEnderling implements RangedAttack
 
     @Override
     public int getSummonLimit(LivingEntity owner) {
-        return SpellConfig.BlastlingLimit.get();
+        return za.co.infernos.goety.utils.ConfigHelper.getInt(SpellConfig.BlastlingLimit, 8);
     }
 
     @Nullable

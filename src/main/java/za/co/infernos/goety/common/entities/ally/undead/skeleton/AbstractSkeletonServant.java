@@ -148,7 +148,7 @@ public abstract class AbstractSkeletonServant extends Summoned implements Ranged
 
     @Override
     public int getSummonLimit(LivingEntity owner) {
-        return SpellConfig.SkeletonLimit.get();
+        return za.co.infernos.goety.utils.ConfigHelper.getInt(SpellConfig.SkeletonLimit, 32);
     }
 
     public void setItemSlot(EquipmentSlot pSlot, ItemStack pStack) {

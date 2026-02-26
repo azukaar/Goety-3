@@ -306,7 +306,7 @@ public class RedstoneCube extends AbstractGolemServant{
                     }
                 }
                 ItemStack itemStack = this.getMainHandItem();
-                if (!itemStack.isEmpty() && MobsConfig.RedstoneCubeBlockFind.get()){
+                if (!itemStack.isEmpty() && za.co.infernos.goety.utils.ConfigHelper.getBoolean(MobsConfig.RedstoneCubeBlockFind, true)){
                     Block block = Block.byItem(itemStack.getItem());
                     if (this.tickCount % 20 == 0) {
                         List<BlockPos> blockPosList = new ArrayList<>();
@@ -375,7 +375,7 @@ public class RedstoneCube extends AbstractGolemServant{
             if (this.getTrueOwner() != null && pPlayer == this.getTrueOwner()) {
                 if ((pPlayer.isCrouching() || pPlayer.isShiftKeyDown())
                         && pHand == InteractionHand.MAIN_HAND
-                        && MobsConfig.RedstoneCubeBlockFind.get()){
+                        && za.co.infernos.goety.utils.ConfigHelper.getBoolean(MobsConfig.RedstoneCubeBlockFind, true)){
                     if (item instanceof BlockItem blockItem
                             && blockItem.getBlock().defaultBlockState().is(ModTags.Blocks.REDSTONE_CUBE_DETECT)
                             && !blockItem.getBlock().defaultBlockState().is(ModTags.Blocks.REDSTONE_CUBE_EXEMPT)

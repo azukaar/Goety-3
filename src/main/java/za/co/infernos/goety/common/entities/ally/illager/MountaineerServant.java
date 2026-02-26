@@ -78,7 +78,7 @@ public class MountaineerServant extends AbstractIllagerServant {
     }
 
     protected PathNavigation createNavigation(Level level) {
-        if (MobsConfig.MountaineerClimb.get()) {
+        if (za.co.infernos.goety.utils.ConfigHelper.getBoolean(MobsConfig.MountaineerClimb, true)) {
             return new ModClimberNavigation(this, level);
         }
         return super.createNavigation(level);
@@ -160,7 +160,7 @@ public class MountaineerServant extends AbstractIllagerServant {
     }
 
     public boolean onClimbable() {
-        if (MobsConfig.MountaineerClimb.get()) {
+        if (za.co.infernos.goety.utils.ConfigHelper.getBoolean(MobsConfig.MountaineerClimb, true)) {
             return this.isClimbing();
         }
         return super.onClimbable();
@@ -173,7 +173,7 @@ public class MountaineerServant extends AbstractIllagerServant {
             boolean shouldClimb = this.horizontalCollision
                     /*&& this.canClimbAtCurrentPosition()*/
                     && !this.isStuckAtCeiling()
-                    && MobsConfig.MountaineerClimb.get();
+                    && za.co.infernos.goety.utils.ConfigHelper.getBoolean(MobsConfig.MountaineerClimb, true);
             this.setClimbing(shouldClimb);
         }
     }

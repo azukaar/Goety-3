@@ -149,7 +149,7 @@ public class AbstractWraith extends Summoned {
 
     @Override
     public int getSummonLimit(LivingEntity owner) {
-        return SpellConfig.WraithLimit.get();
+        return za.co.infernos.goety.utils.ConfigHelper.getInt(SpellConfig.WraithLimit, 6);
     }
 
     // Removed getDefaultLootTable() override - let Minecraft use default behavior

@@ -239,7 +239,7 @@ public class AllyTrampler extends RaiderServant implements ICharger, IAutoRideab
         if (!this.isNoAi()) {
             Entity entity = this.getFirstPassenger();
             if (entity instanceof Mob mob){
-                if (MobsConfig.ServantRideAutonomous.get()){
+                if (za.co.infernos.goety.utils.ConfigHelper.getBoolean(MobsConfig.ServantRideAutonomous, false)){
                     return null;
                 }
                 return mob;
@@ -263,7 +263,7 @@ public class AllyTrampler extends RaiderServant implements ICharger, IAutoRideab
     public void setArmorEquipment(ItemStack armor, boolean sound) {
         if (!this.level().isClientSide) {
             this.setItemSlot(EquipmentSlot.CHEST, armor);
-            float chance = MobsConfig.PlayerRavagerArmorDrop.get() ? 2.0F : 0.0F;
+            float chance = za.co.infernos.goety.utils.ConfigHelper.getBoolean(MobsConfig.PlayerRavagerArmorDrop, true) ? 2.0F : 0.0F;
             this.setDropChance(EquipmentSlot.CHEST, chance);
             this.updateArmor();
             if (sound) {

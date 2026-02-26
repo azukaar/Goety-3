@@ -311,7 +311,7 @@ public class Minister extends HuntingIllagerEntity implements RangedAttackMob {
         this.deathRotation = this.getYRot();
         if (this.level() instanceof ServerLevel serverLevel){
             for (Player player : serverLevel.getEntitiesOfClass(Player.class, this.getBoundingBox().inflate(32.0F))){
-                SEHelper.setRestPeriod(player, MathHelper.minecraftDayToTicks(MobsConfig.IllagerAssaultRestMinister.get()));
+                SEHelper.setRestPeriod(player, MathHelper.minecraftDayToTicks(za.co.infernos.goety.utils.ConfigHelper.getInt(MobsConfig.IllagerAssaultRestMinister, 10)));
             }
         }
         super.die(p_21014_);
@@ -362,7 +362,7 @@ public class Minister extends HuntingIllagerEntity implements RangedAttackMob {
 
     protected void customServerAiStep() {
         super.customServerAiStep();
-        this.bossInfo.setVisible(MainConfig.SpecialBossBar.get());
+        this.bossInfo.setVisible(za.co.infernos.goety.utils.ConfigHelper.getBoolean(MainConfig.SpecialBossBar, true));
     }
 
     public void startSeenByPlayer(ServerPlayer pPlayer) {

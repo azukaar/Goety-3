@@ -132,7 +132,7 @@ public class PhantomServant extends SummonedFlying {
 
     @Override
     public boolean isInvisible() {
-        if (this.isUpgraded() && MobsConfig.PhantomServantTranslucent.get()){
+        if (this.isUpgraded() && za.co.infernos.goety.utils.ConfigHelper.getBoolean(MobsConfig.PhantomServantTranslucent, true)){
             return true;
         }
         return super.isInvisible();
@@ -140,7 +140,7 @@ public class PhantomServant extends SummonedFlying {
 
     @Override
     public boolean isInvisibleTo(Player p_20178_) {
-        if (this.isUpgraded() && MobsConfig.PhantomServantTranslucent.get()){
+        if (this.isUpgraded() && za.co.infernos.goety.utils.ConfigHelper.getBoolean(MobsConfig.PhantomServantTranslucent, true)){
             return false;
         }
         return super.isInvisibleTo(p_20178_);

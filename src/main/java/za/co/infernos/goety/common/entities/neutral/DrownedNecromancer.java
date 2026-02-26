@@ -152,7 +152,7 @@ public class DrownedNecromancer extends AbstractNecromancer {
 
     @Override
     public int getSummonLimit(LivingEntity owner) {
-        return SpellConfig.DrownedNecromancerLimit.get();
+        return za.co.infernos.goety.utils.ConfigHelper.getInt(SpellConfig.DrownedNecromancerLimit, 2);
     }
 
     public void onSyncedDataUpdated(EntityDataAccessor<?> p_33609_) {
@@ -619,7 +619,7 @@ public class DrownedNecromancer extends AbstractNecromancer {
                     if (!DrownedNecromancer.this.isUnderWater()){
                         MobUtil.moveDownToGround(summonedentity);
                     }
-                    if (MobsConfig.NecromancerSummonsLife.get()) {
+                    if (za.co.infernos.goety.utils.ConfigHelper.getBoolean(MobsConfig.NecromancerSummonsLife, true)) {
                         summonedentity.setLimitedLife(MobUtil.getSummonLifespan(serverLevel));
                     }
                     summonedentity.setPersistenceRequired();
@@ -915,7 +915,7 @@ public class DrownedNecromancer extends AbstractNecromancer {
                         LivingEntity owner = DrownedNecromancer.this.getTrueOwner() != null ? DrownedNecromancer.this.getTrueOwner() : DrownedNecromancer.this;
                         summonedentity.setTrueOwner(owner);
                         summonedentity.moveTo(blockPos, DrownedNecromancer.this.getYRot(), DrownedNecromancer.this.getXRot());
-                        if (MobsConfig.NecromancerSummonsLife.get()) {
+                        if (za.co.infernos.goety.utils.ConfigHelper.getBoolean(MobsConfig.NecromancerSummonsLife, true)) {
                             summonedentity.setLimitedLife(MobUtil.getSummonLifespan(serverLevel));
                         }
                         summonedentity.setPersistenceRequired();

@@ -217,7 +217,7 @@ public class Sorcerer extends HuntingIllagerEntity {
     public void setSorcererLevel(int level, boolean heal) {
         int i = Mth.clamp(level, 1, 5);
         this.entityData.set(LEVEL, i);
-        if (MobsConfig.SorcererHPIncrease.get()) {
+        if (za.co.infernos.goety.utils.ConfigHelper.getBoolean(MobsConfig.SorcererHPIncrease, true)) {
             AttributeInstance health = this.getAttribute(Attributes.MAX_HEALTH);
             if (health != null && i > 1) {
                 float increase = (i - 1) * 1.25F;

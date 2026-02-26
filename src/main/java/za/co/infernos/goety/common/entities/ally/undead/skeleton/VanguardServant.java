@@ -119,7 +119,7 @@ public class VanguardServant extends AbstractSkeletonServant {
 
     @Override
     public int getSummonLimit(LivingEntity owner) {
-        return SpellConfig.VanguardLimit.get();
+        return za.co.infernos.goety.utils.ConfigHelper.getInt(SpellConfig.VanguardLimit, 16);
     }
 
     private boolean getVanguardFlag(int mask) {

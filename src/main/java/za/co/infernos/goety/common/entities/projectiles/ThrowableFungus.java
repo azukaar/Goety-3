@@ -23,5 +23,6 @@ public abstract class ThrowableFungus extends ThrowableItemProjectile {
 
     @Override
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
     }
 }

@@ -230,7 +230,7 @@ public class CarrionFly extends Summoned {
     public void uncreditedKill(LivingEntity target) {
         if (!MobUtil.areAllies(this, target)) {
             int total = this.level().getEntitiesOfClass(CarrionMaggot.class, this.getBoundingBox().inflate(16.0F), maggot -> MobUtil.areAllies(this, maggot)).size();
-            if (total < SpellConfig.CarrionLimit.get()) {
+            if (total < za.co.infernos.goety.utils.ConfigHelper.getInt(SpellConfig.CarrionLimit, 16)) {
                 int random = this.getRandom().nextIntBetweenInclusive(1, 3);
                 if (target.getMaxHealth() < 20.0F) {
                     random = 1;

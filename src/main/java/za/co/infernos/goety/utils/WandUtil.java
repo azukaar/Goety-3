@@ -149,7 +149,7 @@ public class WandUtil {
     }
 
     public static int getPotencyLevel(LivingEntity livingEntity) {
-        return getLevels(ModEnchantments.POTENCY.get(), livingEntity) * SpellConfig.PotencyPower.get();
+        return getLevels(ModEnchantments.POTENCY.get(), livingEntity) * za.co.infernos.goety.utils.ConfigHelper.getInt(SpellConfig.PotencyPower, 1);
     }
 
     public static int getRangeLevel(LivingEntity livingEntity) {

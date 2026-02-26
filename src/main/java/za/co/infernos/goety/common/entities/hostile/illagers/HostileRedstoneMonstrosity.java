@@ -529,7 +529,7 @@ public class HostileRedstoneMonstrosity extends HostileGolem implements IRM {
         MiscCapHelper.updateMobTarget(this);
         if (!this.level().isClientSide){
             if (this.isAlive() && !this.isActivating()) {
-                if (MobsConfig.RedstoneMonstrosityLeafBreak.get()) {
+                if (za.co.infernos.goety.utils.ConfigHelper.getBoolean(MobsConfig.RedstoneMonstrosityLeafBreak, true)) {
                     if (this.level().getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING)) {
                         boolean flag = false;
                         AABB aabb = this.getBoundingBox().inflate(0.2D);

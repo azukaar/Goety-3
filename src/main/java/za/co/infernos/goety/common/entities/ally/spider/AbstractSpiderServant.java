@@ -217,25 +217,9 @@ public abstract class AbstractSpiderServant extends Spider
                     this.maybeDisableShield(player, this.getMainHandItem(),
                             player.isUsingItem() ? player.getUseItem() : ItemStack.EMPTY);
                 }
-                    if (entity != null) {
-                        EnchantmentHelper.doPostAttackEffects((ServerLevel) this.level(), this, (DamageSource) null); 
-                        // Note: doPostAttackEffects signature might need verification, usually it's (ServerLevel, LivingEntity attacker, DamageSource) or (ServerLevel, Entity target, DamageSource)
-                        // In 1.21 it might be doPostAttackEffects(ServerLevel, LivingEntity, Entity) for "post attack on target"
-                        // Or do_post_damage_effects(ServerLevel, Entity, DamageSource) ?
-                        // Error said: EnchantmentHelper.doPostAttackEffects((ServerLevel) this.level(), this, entity);
-                        // incompatible types: Entity cannot be converted to DamageSource.
-                        // It seems the 3rd arg is DamageSource.
-                        // I will assume we want "doPostDamageEffects" (invoked on attacker when they deal damage?)
-                        // or "doPostHurtEffects"?
-                        // Let's use generic handling or comment out if unsure, but better to fix.
-                        // The original code was: EnchantmentHelper.doPostAttackEffects((ServerLevel) this.level(), this, entity);
-                        // If entity is the target (Entity), and this is attacker.
-                        // It seems it wanted to pass specific args.
-                        // Let's try passing 'null' for DamageSource if acceptable or construct one.
-                        // But wait, if previous code passed 'entity', maybe it was the victim?
-                        // 1.20.1: doPostDamageEffects(LivingEntity attacker, Entity target)
-                        EnchantmentHelper.doPostAttackEffects((ServerLevel) this.level(), this, (DamageSource) null);
-                    }
+                if (entity != null && this.level() instanceof ServerLevel serverLevel) {
+                    EnchantmentHelper.doPostAttackEffects(serverLevel, entity, this.damageSources().mobAttack(this));
+                }
             }
 
             return flag;

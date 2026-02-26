@@ -59,4 +59,16 @@ public class ConfigHelper {
     public static float getFloatFromDouble(double value) {
         return (float) value;
     }
+    
+    /**
+     * Safely gets a List config value with a default fallback.
+     */
+    @SuppressWarnings("unchecked")
+    public static <T> java.util.List<T> getList(ModConfigSpec.ConfigValue<? extends java.util.List<? extends T>> configValue, java.util.List<T> defaultValue) {
+        try {
+            return (java.util.List<T>) configValue.get();
+        } catch (IllegalStateException e) {
+            return defaultValue;
+        }
+    }
 }

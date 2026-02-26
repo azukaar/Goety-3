@@ -188,7 +188,7 @@ public class AbstractWatchling extends AbstractEnderling {
 
     @Override
     public int getSummonLimit(LivingEntity owner) {
-        return SpellConfig.WatchlingLimit.get();
+        return za.co.infernos.goety.utils.ConfigHelper.getInt(SpellConfig.WatchlingLimit, 8);
     }
 
     @Nullable

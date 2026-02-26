@@ -201,7 +201,7 @@ public class Vizier extends SpellcasterIllager implements PowerableMob, ICustomA
             this.setCasting(0);
         }
         int i = this.level().getEntitiesOfClass(Irk.class, this.getBoundingBox().inflate(64)).size();
-        if (MobsConfig.VizierMinion.get()) {
+        if (za.co.infernos.goety.utils.ConfigHelper.getBoolean(MobsConfig.VizierMinion, false)) {
             i = this.level().getEntitiesOfClass(Vex.class, this.getBoundingBox().inflate(64)).size();
         }
         if (this.getCastTimes() == 1) {
@@ -468,7 +468,7 @@ public class Vizier extends SpellcasterIllager implements PowerableMob, ICustomA
 
     public void die(DamageSource cause) {
         this.playSound(ModSounds.VIZIER_SCREAM.get(), 4.0F, 1.0F);
-        if (!MobsConfig.VizierMinion.get()) {
+        if (!za.co.infernos.goety.utils.ConfigHelper.getBoolean(MobsConfig.VizierMinion, false)) {
             for (Irk ally : Vizier.this.level().getEntitiesOfClass(Irk.class,
                     Vizier.this.getBoundingBox().inflate(64.0D), field_213690_b)) {
                 ally.hurt(ally.damageSources().starve(), 200.0F);
@@ -545,7 +545,7 @@ public class Vizier extends SpellcasterIllager implements PowerableMob, ICustomA
             if (pSource.getEntity() instanceof Irk irk && irk.getTarget() != this) {
                 return false;
             } else {
-                if (!MobsConfig.VizierMinion.get()) {
+                if (!za.co.infernos.goety.utils.ConfigHelper.getBoolean(MobsConfig.VizierMinion, false)) {
                     int irks = this.level().getEntitiesOfClass(Irk.class, this.getBoundingBox().inflate(32)).size();
                     if ((this.level().random.nextBoolean() || this.getHealth() < this.getMaxHealth() / 2)
                             && irks < 16) {
@@ -593,7 +593,7 @@ public class Vizier extends SpellcasterIllager implements PowerableMob, ICustomA
         if (this.moddedInvul <= 0) {
             super.actuallyHurt(source, amount);
             if (source.getEntity() != null) {
-                this.moddedInvul = MobsConfig.BossInvulnerabilityTime.get();
+                this.moddedInvul = za.co.infernos.goety.utils.ConfigHelper.getInt(MobsConfig.BossInvulnerabilityTime, 15);
             }
         }
     }
@@ -699,7 +699,7 @@ public class Vizier extends SpellcasterIllager implements PowerableMob, ICustomA
 
     @Override
     public boolean isPersistenceRequired() {
-        return super.isPersistenceRequired() || MobsConfig.VizierPersistent.get();
+        return super.isPersistenceRequired() || za.co.infernos.goety.utils.ConfigHelper.getBoolean(MobsConfig.VizierPersistent, false);
     }
 
     @Nullable

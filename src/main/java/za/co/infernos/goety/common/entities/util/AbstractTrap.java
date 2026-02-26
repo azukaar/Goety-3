@@ -2,6 +2,7 @@ package za.co.infernos.goety.common.entities.util;
 
 import za.co.infernos.goety.api.entities.ISpellEntity;
 import za.co.infernos.goety.utils.ServerParticleUtil;
+import net.minecraft.core.particles.ColorParticleOption;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
@@ -39,7 +40,7 @@ public abstract class AbstractTrap extends Entity implements ISpellEntity {
 
     @Override
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
-        builder.define(DATA_PARTICLE, (net.minecraft.core.particles.ParticleOptions) ParticleTypes.ENTITY_EFFECT);
+        builder.define(DATA_PARTICLE, ColorParticleOption.create(ParticleTypes.ENTITY_EFFECT, 1.0F, 1.0F, 1.0F));
     }
 
     @Override

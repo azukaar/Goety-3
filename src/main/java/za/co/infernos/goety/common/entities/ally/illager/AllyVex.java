@@ -87,7 +87,7 @@ public class AllyVex extends Minion {
     public void tick() {
         super.tick();
         LivingEntity owner = this.getTrueOwner();
-        if (MobsConfig.ServantOwnedServantPlayerBenefit.get()) {
+        if (za.co.infernos.goety.utils.ConfigHelper.getBoolean(MobsConfig.ServantOwnedServantPlayerBenefit, true)) {
             owner = this.getMasterOwner();
         }
         if (owner != null) {

@@ -188,7 +188,7 @@ public class AbstractSnareling extends AbstractEnderling implements RangedAttack
 
     @Override
     public int getSummonLimit(LivingEntity owner) {
-        return SpellConfig.SnarelingLimit.get();
+        return za.co.infernos.goety.utils.ConfigHelper.getInt(SpellConfig.SnarelingLimit, 8);
     }
 
     @Nullable

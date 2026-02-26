@@ -59,7 +59,7 @@ public class AllyIrk extends Minion {
             }
         }
         LivingEntity owner = this.getTrueOwner();
-        if (MobsConfig.ServantOwnedServantPlayerBenefit.get()) {
+        if (za.co.infernos.goety.utils.ConfigHelper.getBoolean(MobsConfig.ServantOwnedServantPlayerBenefit, true)) {
             owner = this.getMasterOwner();
         }
         if (owner != null) {

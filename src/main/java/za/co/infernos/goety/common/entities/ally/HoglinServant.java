@@ -286,7 +286,7 @@ public class HoglinServant extends AnimalSummon implements HoglinBase, PlayerRid
         if (!this.isNoAi()) {
             Entity entity = this.getFirstPassenger();
             if (entity instanceof Mob mob) {
-                if (MobsConfig.ServantRideAutonomous.get()) {
+                if (za.co.infernos.goety.utils.ConfigHelper.getBoolean(MobsConfig.ServantRideAutonomous, false)) {
                     return null;
                 }
                 return mob;

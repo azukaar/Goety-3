@@ -416,7 +416,7 @@ public class Endersent extends AbstractEnderling implements Enemy {
 
     public void startSeenByPlayer(ServerPlayer pPlayer) {
         super.startSeenByPlayer(pPlayer);
-        if (MainConfig.SpecialBossBar.get()) {
+        if (za.co.infernos.goety.utils.ConfigHelper.getBoolean(MainConfig.SpecialBossBar, true)) {
             this.bossInfo.addPlayer(pPlayer);
         }
     }

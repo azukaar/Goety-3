@@ -53,7 +53,8 @@ public abstract class AbstractSpellCloud extends SpellEntity {
 
     @Override
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
-        builder.define(DATA_PARTICLE, (ParticleOptions) ParticleTypes.RAIN);
+        super.defineSynchedData(builder);
+        builder.define(DATA_PARTICLE, ParticleTypes.RAIN);
         builder.define(DATA_RADIUS, 2.0F);
         builder.define(DATA_COLOR, 0);
         builder.define(DATA_WAIT_TIME, 0);

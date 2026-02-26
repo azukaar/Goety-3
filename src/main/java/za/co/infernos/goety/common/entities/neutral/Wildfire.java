@@ -236,7 +236,7 @@ public class Wildfire extends Summoned {
 
     @Override
     public int getSummonLimit(LivingEntity owner) {
-        return SpellConfig.WildfireLimit.get();
+        return za.co.infernos.goety.utils.ConfigHelper.getInt(SpellConfig.WildfireLimit, 2);
     }
 
     @Nullable
@@ -463,7 +463,7 @@ public class Wildfire extends Summoned {
 
     @Override
     public void die(DamageSource pCause) {
-        if (this.getTrueOwner() != null && MobsConfig.WildfireBlazingHelm.get()){
+        if (this.getTrueOwner() != null && za.co.infernos.goety.utils.ConfigHelper.getBoolean(MobsConfig.WildfireBlazingHelm, true)){
             ItemStack itemStack = new ItemStack(ModItems.BLAZING_HELM.get());
             BlazingHelm.setOwnerName(this.getTrueOwner(), itemStack);
             BlazingHelm.setSummon(this, itemStack);
@@ -628,7 +628,7 @@ public class Wildfire extends Summoned {
                     BlockPos blockPos = BlockFinder.SummonFlyingRadius(Wildfire.this.blockPosition(), blazeServant, serverLevel, 3);
                     blazeServant.setTrueOwner(Wildfire.this);
                     blazeServant.moveTo(blockPos, Wildfire.this.getYRot(), Wildfire.this.getXRot());
-                    if (MobsConfig.WildfireSummonsLife.get()) {
+                    if (za.co.infernos.goety.utils.ConfigHelper.getBoolean(MobsConfig.WildfireSummonsLife, true)) {
                         blazeServant.setLimitedLife(MobUtil.getSummonLifespan(serverLevel));
                     }
                     blazeServant.setPersistenceRequired();

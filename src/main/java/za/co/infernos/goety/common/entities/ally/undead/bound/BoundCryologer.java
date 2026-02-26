@@ -570,7 +570,7 @@ public class BoundCryologer extends AbstractBoundIllager implements IBreathing {
         public boolean canUse() {
             return super.canUse()
                     && BoundCryologer.this.level().getDifficulty() == Difficulty.HARD
-                    && MobsConfig.CryologerIceChunk.get();
+                    && za.co.infernos.goety.utils.ConfigHelper.getBoolean(MobsConfig.CryologerIceChunk, false);
         }
 
         public void start() {

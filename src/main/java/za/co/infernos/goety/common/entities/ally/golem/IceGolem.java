@@ -121,7 +121,7 @@ public class IceGolem extends AbstractGolemServant{
 
     @Override
     public int getSummonLimit(LivingEntity owner) {
-        return SpellConfig.IceGolemLimit.get();
+        return za.co.infernos.goety.utils.ConfigHelper.getInt(SpellConfig.IceGolemLimit, 2);
     }
 
     public void setAnimationState(String input) {

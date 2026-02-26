@@ -105,7 +105,7 @@ public class TelekinesisSpell extends EverChargeSpell {
             if ((caster.getBoundingBox().inflate(0.5D).getSize() * potency) >= target.getBoundingBox().getSize()) {
                 if (this.victim instanceof LivingEntity livingTarget){
                     if (livingTarget.getMaxHealth() >= za.co.infernos.goety.utils.ConfigHelper.getInt(SpellConfig.TelekinesisMaxHealth, 0)
-                            || MobUtil.hasEntityTypesConfig(SpellConfig.TelekinesisBlackList.get(), livingTarget.getType())){
+                            || MobUtil.hasEntityTypesConfig(za.co.infernos.goety.utils.ConfigHelper.getList(SpellConfig.TelekinesisBlackList, java.util.Collections.emptyList()), livingTarget.getType())){
                         flag = false;
                     }
                 }
