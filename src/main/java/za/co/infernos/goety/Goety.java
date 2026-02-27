@@ -841,7 +841,25 @@ public class Goety {
                                 Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, (type, level, spawnType, pos, random) -> true,
                                 RegisterSpawnPlacementsEvent.Operation.AND);
                 event.register(ModEntityType.REAPER.get(), SpawnPlacementTypes.ON_GROUND,
-                                Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, (type, level, spawnType, pos, random) -> true,
+                                Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, (type, level, spawnType, pos, random) -> {
+                                        if (level.getDifficulty() == net.minecraft.world.Difficulty.PEACEFUL) {
+                                            return false;
+                                        }
+                                        // Check if we're in Nether/End by checking dimension type or biome
+                                        Level actualLevel = level.getLevel();
+                                        if (actualLevel != null) {
+                                            // Check if biome is Soul Sand Valley (hardcoded Nether spawn)
+                                            if (level.getBiome(pos).is(net.minecraft.world.level.biome.Biomes.SOUL_SAND_VALLEY)) {
+                                                return true;
+                                            }
+                                            // If dimension type is not natural (Nether/End), allow spawning without darkness
+                                            if (!actualLevel.dimensionType().natural()) {
+                                                return true;
+                                            }
+                                        }
+                                        // In Overworld, require darkness
+                                        return Monster.isDarkEnoughToSpawn(level, pos, random);
+                                },
                                 RegisterSpawnPlacementsEvent.Operation.AND);
                 event.register(ModEntityType.WRAITH.get(), SpawnPlacementTypes.ON_GROUND,
                                 Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, (type, level, spawnType, pos, random) -> {
