@@ -4,11 +4,15 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.*;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.DirectionProperty;
@@ -87,5 +91,15 @@ public class JadeLightBlock extends Block {
 
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> p_58150_) {
         p_58150_.add(FACING);
+    }
+
+    @Override
+    public void playerDestroy(Level pLevel, Player pPlayer, BlockPos pPos, BlockState pState, @Nullable BlockEntity pTe, ItemStack pStack) {
+        // Explicitly drop the block item using popResource
+        if (!pLevel.isClientSide) {
+            ItemStack itemStack = new ItemStack(this);
+            popResource(pLevel, pPos, itemStack);
+        }
+        super.playerDestroy(pLevel, pPlayer, pPos, pState, pTe, pStack);
     }
 }

@@ -9,12 +9,14 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
@@ -22,6 +24,8 @@ import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
+
+import javax.annotation.Nullable;
 
 public class DungeonTorchBlock extends Block {
     public static final BooleanProperty LIT = BlockStateProperties.LIT;
@@ -73,5 +77,15 @@ public class DungeonTorchBlock extends Block {
             p_222594_.addParticle(ModParticleTypes.BIG_FIRE.get(), d0, d1, d2, 0.0D, 0.0D, 0.0D);
             p_222594_.addParticle(ModParticleTypes.BIG_FIRE_DROP.get(), d0, d1, d2, 0.0D, 0.0D, 0.0D);
         }
+    }
+
+    @Override
+    public void playerDestroy(Level pLevel, Player pPlayer, BlockPos pPos, BlockState pState, @Nullable BlockEntity pTe, ItemStack pStack) {
+        // Explicitly drop the block item using popResource
+        if (!pLevel.isClientSide) {
+            ItemStack itemStack = new ItemStack(this);
+            popResource(pLevel, pPos, itemStack);
+        }
+        super.playerDestroy(pLevel, pPlayer, pPos, pState, pTe, pStack);
     }
 }

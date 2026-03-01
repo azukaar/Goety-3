@@ -157,7 +157,9 @@ public class CursedCageBlockEntity extends BlockEntity implements Clearable {
     }
 
     public CompoundTag writeNetwork(CompoundTag tag, net.minecraft.core.HolderLookup.Provider pRegistries) {
-        tag.put("item", item.save(pRegistries, new CompoundTag()));
+        if (!item.isEmpty()) {
+            tag.put("item", item.save(pRegistries, new CompoundTag()));
+        }
         return tag;
     }
 

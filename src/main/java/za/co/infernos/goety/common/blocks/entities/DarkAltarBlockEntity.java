@@ -144,7 +144,9 @@ public class DarkAltarBlockEntity extends PedestalBlockEntity implements GameEve
             if (this.consumedIngredients.size() > 0) {
                 ListTag list = new ListTag();
                 for (ItemStack stack : this.consumedIngredients) {
-                    list.add(stack.save(provider, new CompoundTag()));
+                    if (!stack.isEmpty()) {
+                        list.add(stack.save(provider, new CompoundTag()));
+                    }
                 }
                 compound.put("consumedIngredients", list);
             }

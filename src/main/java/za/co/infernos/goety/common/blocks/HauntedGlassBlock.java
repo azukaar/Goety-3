@@ -2,13 +2,17 @@ package za.co.infernos.goety.common.blocks;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.HalfTransparentBlock;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
@@ -116,5 +120,15 @@ public class HauntedGlassBlock extends HalfTransparentBlock {
     private boolean isSideConnectable(BlockGetter world, BlockPos pos, Direction side) {
         final BlockState stateConnection = world.getBlockState(pos.relative(side));
         return stateConnection != null && stateConnection.getBlock() == this;
+    }
+
+    @Override
+    public void playerDestroy(Level pLevel, Player pPlayer, BlockPos pPos, BlockState pState, @Nullable BlockEntity pTe, ItemStack pStack) {
+        // Explicitly drop the block item using popResource
+        if (!pLevel.isClientSide) {
+            ItemStack itemStack = new ItemStack(this);
+            popResource(pLevel, pPos, itemStack);
+        }
+        super.playerDestroy(pLevel, pPlayer, pPos, pState, pTe, pStack);
     }
 }

@@ -367,7 +367,9 @@ public abstract class TrainingBlockEntity extends OwnedBlockEntity implements IT
         tag1.putInt("TrainTime", this.trainTime);
         tag1.putInt("TrainTimeTotal", this.trainTimeTotal);
         tag1.putInt("TrainAmount", this.trainAmount);
-        tag1.put("Item", this.itemStack.save(pRegistries, new CompoundTag()));
+        if (!this.itemStack.isEmpty()) {
+            tag1.put("Item", this.itemStack.save(pRegistries, new CompoundTag()));
+        }
         tag1.put("EntityToSpawn", this.entityToSpawn);
         tag1.putBoolean("showArea", this.showArea);
         tag1.putBoolean("sensorSensitive", this.sensorSensitive);

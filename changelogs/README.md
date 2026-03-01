@@ -4,6 +4,7 @@ This folder contains user-relevant changelogs for all versions since the NeoForg
 
 ## Available Versions
 
+- [3.0.7](3.0.7.md) - Block Drop Fixes
 - [3.0.6](3.0.6.md) - Spawn Fixes
 - [3.0.5](3.0.5.md) - Critical Rendering & Entity Fixes
 - [3.0.4](3.0.4.md) - Critical Bug Fixes & NeoForge Compatibility Improvements
