@@ -171,6 +171,7 @@ public class Goety {
                 modEventBus.addListener(this::enqueueIMC);
                 modEventBus.addListener(EventPriority.LOWEST, this::finalLoad);
                 modEventBus.addListener(ModNetwork::registerPayloadHandlers);
+                modEventBus.addListener(this::registerFluidBlocks);
 
                 Path configDir = getOrCreateDirectory(FMLPaths.CONFIGDIR.get().resolve("goety"), "goety");
                 
