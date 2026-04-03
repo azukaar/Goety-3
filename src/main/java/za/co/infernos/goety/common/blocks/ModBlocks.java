@@ -418,8 +418,9 @@ public class ModBlocks {
         public static final DeferredHolder<Block, Block> VOID_BLOCK = register("void_block", VoidBlock::new);
         public static final DeferredHolder<Block, Block> VOID_FLAME = register("void_flame", VoidFlameBlock::new, false,
                         LootTableType.EMPTY);
-        // VOID_FLUID is registered manually in Goety.registerFluidBlocks() after fluids are bound
-        public static DeferredHolder<Block, LiquidBlock> VOID_FLUID;
+        public static final DeferredHolder<Block, LiquidBlock> VOID_FLUID = BLOCKS.register("void_fluid",
+                () -> new VoidFluidBlock(
+                        za.co.infernos.goety.common.blocks.fluids.ModFluids.VOID_FLUID_SOURCE.get()));
         public static final DeferredHolder<Block, Block> VOID_BARREL = register("void_barrel", VoidBarrelBlock::new,
                         true,
                         LootTableType.EMPTY);
@@ -537,8 +538,9 @@ public class ModBlocks {
                                         .sound(SoundType.MUD)));
         public static final DeferredHolder<Block, Block> END_MUD_SLAB = registerSlabs("end_mud_slab",
                         END_MUD);
-        // END_MUD_FLUID is registered manually in Goety.registerFluidBlocks() after fluids are bound
-        public static DeferredHolder<Block, LiquidBlock> END_MUD_FLUID;
+        public static final DeferredHolder<Block, LiquidBlock> END_MUD_FLUID = BLOCKS.register("end_mud_fluid",
+                () -> new EndMudFluidBlock(
+                        za.co.infernos.goety.common.blocks.fluids.ModFluids.END_MUD_FLUID_SOURCE.get()));
         public static final DeferredHolder<Block, Block> END_MUD_CAULDRON = register("end_mud_cauldron",
                         () -> new EndMudCauldronBlock(
                                         BlockBehaviour.Properties.ofFullCopy(Blocks.CAULDRON)),

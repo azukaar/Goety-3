@@ -416,7 +416,7 @@ public class AbstractBroodMother extends Summoned implements IAutoRideable, Play
     @Override
     public boolean canBeAffected(MobEffectInstance instance) {
         if (instance.getEffect() == GoetyEffects.ACID_VENOM.unwrap().map(o -> o, o -> o) || instance.getEffect() == MobEffects.POISON) {
-            net.neoforged.neoforge.event.entity.living.MobEffectEvent.Applicable event = new net.neoforged.neoforge.event.entity.living.MobEffectEvent.Applicable(this, instance);
+            net.neoforged.neoforge.event.entity.living.MobEffectEvent.Applicable event = new net.neoforged.neoforge.event.entity.living.MobEffectEvent.Applicable(this, instance, null);
             net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(event);
             return false; // event.getResult() == net.neoforged.bus.api.Event.Result.ALLOW;
         }

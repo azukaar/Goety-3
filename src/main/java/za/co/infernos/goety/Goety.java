@@ -171,7 +171,6 @@ public class Goety {
                 modEventBus.addListener(this::enqueueIMC);
                 modEventBus.addListener(EventPriority.LOWEST, this::finalLoad);
                 modEventBus.addListener(ModNetwork::registerPayloadHandlers);
-                modEventBus.addListener(this::registerFluidBlocks);
 
                 Path configDir = getOrCreateDirectory(FMLPaths.CONFIGDIR.get().resolve("goety"), "goety");
                 
@@ -573,23 +572,6 @@ public class Goety {
                 });
         }
 
-        private void registerFluidBlocks(net.neoforged.neoforge.registries.RegisterEvent event) {
-                // Register fluid blocks after fluids are bound
-                if (event.getRegistryKey() == net.minecraft.core.registries.Registries.BLOCK) {
-                        // Register void fluid block - fluid should be bound by now
-                        if (ModBlocks.VOID_FLUID == null) {
-                                ModBlocks.VOID_FLUID = ModBlocks.BLOCKS.register("void_fluid", 
-                                                () -> new za.co.infernos.goety.common.blocks.VoidFluidBlock(
-                                                                za.co.infernos.goety.common.blocks.fluids.ModFluids.VOID_FLUID_SOURCE.get()));
-                        }
-                        // Register end mud fluid block - fluid should be bound by now
-                        if (ModBlocks.END_MUD_FLUID == null) {
-                                ModBlocks.END_MUD_FLUID = ModBlocks.BLOCKS.register("end_mud_fluid",
-                                                () -> new za.co.infernos.goety.common.blocks.EndMudFluidBlock(
-                                                                za.co.infernos.goety.common.blocks.fluids.ModFluids.END_MUD_FLUID_SOURCE.get()));
-                        }
-                }
-        }
 
         private void finalLoad(FMLLoadCompleteEvent event) {
                 event.enqueueWork(() -> {
