@@ -60,7 +60,9 @@ import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.event.entity.living.*;
+import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
 import net.neoforged.neoforge.event.entity.player.AttackEntityEvent;
+
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import net.neoforged.neoforge.event.tick.EntityTickEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
@@ -203,39 +205,58 @@ public class ItemEvents {
 
     @SubscribeEvent
     public static void LivingEffects(EntityTickEvent.Post event){
-        if (!(event.getEntity() instanceof LivingEntity livingEntity)) {
-            return;
-        }
+        // Removed ticking armor set modifier logic
+    }
+
+    @SubscribeEvent
+    public static void ArmorSetEvents(LivingEquipmentChangeEvent event){
+        LivingEntity livingEntity = event.getEntity();
         if (livingEntity != null && livingEntity.isAlive()){
-            AttributeModifier attributemodifier = new AttributeModifier(Goety.location("item_modifiers/increase_armor"), 4.0D, AttributeModifier.Operation.ADD_VALUE);
-            AttributeInstance armor = livingEntity.getAttribute(Attributes.ARMOR);
-            AttributeModifier attributemodifier1 = new AttributeModifier(Goety.location("item_modifiers/increase_toughness"), 4.0D, AttributeModifier.Operation.ADD_VALUE);
-            AttributeInstance toughness = livingEntity.getAttribute(Attributes.ARMOR_TOUGHNESS);
-            if (armor != null){
-                if ((ModArmorMaterials.CURSED_KNIGHT != null && ItemHelper.armorSet(livingEntity, ModArmorMaterials.CURSED_KNIGHT.value())) || 
-                    (ModArmorMaterials.CURSED_PALADIN != null && ItemHelper.armorSet(livingEntity, ModArmorMaterials.CURSED_PALADIN.value()))){
-                    if (!armor.hasModifier(attributemodifier.id())){
-                        armor.addPermanentModifier(attributemodifier);
-                    }
-                } else {
-                    if (armor.hasModifier(attributemodifier.id())){
-                        armor.removeModifier(attributemodifier.id());
-                    }
+            if (event.getSlot().isArmor()) {
+                updateArmorSetBonus(livingEntity);
+            }
+        }
+    }
+
+    @SubscribeEvent
+    public static void EntityJoinEvents(EntityJoinLevelEvent event){
+        if (event.getEntity() instanceof LivingEntity livingEntity){
+            updateArmorSetBonus(livingEntity);
+        }
+    }
+
+    private static void updateArmorSetBonus(LivingEntity livingEntity) {
+        AttributeModifier attributemodifier = new AttributeModifier(Goety.location("item_modifiers/increase_armor"), 4.0D, AttributeModifier.Operation.ADD_VALUE);
+        AttributeInstance armor = livingEntity.getAttribute(Attributes.ARMOR);
+        AttributeModifier attributemodifier1 = new AttributeModifier(Goety.location("item_modifiers/increase_toughness"), 4.0D, AttributeModifier.Operation.ADD_VALUE);
+        AttributeInstance toughness = livingEntity.getAttribute(Attributes.ARMOR_TOUGHNESS);
+
+        if (armor != null) {
+            if ((ModArmorMaterials.CURSED_KNIGHT != null && ItemHelper.armorSet(livingEntity, ModArmorMaterials.CURSED_KNIGHT.value())) ||
+                    (ModArmorMaterials.CURSED_PALADIN != null && ItemHelper.armorSet(livingEntity, ModArmorMaterials.CURSED_PALADIN.value()))) {
+                if (!armor.hasModifier(attributemodifier.id())) {
+                    armor.addPermanentModifier(attributemodifier);
+                }
+            } else {
+                if (armor.hasModifier(attributemodifier.id())) {
+                    armor.removeModifier(attributemodifier.id());
                 }
             }
-            if (toughness != null){
-                if (ModArmorMaterials.CURSED_PALADIN != null && ItemHelper.armorSet(livingEntity, ModArmorMaterials.CURSED_PALADIN.value())){
-                    if (!toughness.hasModifier(attributemodifier1.id())){
-                        toughness.addPermanentModifier(attributemodifier1);
-                    }
-                } else {
-                    if (toughness.hasModifier(attributemodifier1.id())){
-                        toughness.removeModifier(attributemodifier1.id());
-                    }
+        }
+        if (toughness != null) {
+            if (ModArmorMaterials.CURSED_PALADIN != null && ItemHelper.armorSet(livingEntity, ModArmorMaterials.CURSED_PALADIN.value())) {
+                if (!toughness.hasModifier(attributemodifier1.id())) {
+                    toughness.addPermanentModifier(attributemodifier1);
+                }
+            } else {
+                if (toughness.hasModifier(attributemodifier1.id())) {
+                    toughness.removeModifier(attributemodifier1.id());
                 }
             }
         }
     }
+
+
 
     @SubscribeEvent
     public static void HurtEvent(LivingDamageEvent.Post event){

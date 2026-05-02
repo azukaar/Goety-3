@@ -9,6 +9,8 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.ResourceLocation;
+
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
@@ -129,11 +131,18 @@ public class ItemHelper {
 
     public static boolean armorSet(LivingEntity living, ArmorMaterial material){
         int i = 0;
-        if (living.getItemBySlot(EquipmentSlot.HEAD).getItem() instanceof ArmorItem helmet && helmet.getMaterial().value() == material) {
+        ItemStack helmetStack = living.getItemBySlot(EquipmentSlot.HEAD);
+        if (helmetStack.getItem() instanceof ArmorItem helmet && helmet.getMaterial().value() == material) {
+            ResourceLocation leather = ResourceLocation.withDefaultNamespace("leather");
+            boolean isLeather = material.equals(BuiltInRegistries.ARMOR_MATERIAL.get(leather));
             for (EquipmentSlot equipmentSlot : EquipmentSlot.values()) {
                 if (equipmentSlot.isArmor()) {
-                    if (living.getItemBySlot(equipmentSlot).getItem() instanceof ArmorItem armorItem) {
+                    ItemStack stack = living.getItemBySlot(equipmentSlot);
+                    if (stack.getItem() instanceof ArmorItem armorItem) {
                         if (armorItem.getMaterial().value() == material) {
+                            if (isLeather && BuiltInRegistries.ITEM.getKey(armorItem).getNamespace().equals("minecraft")) {
+                                continue;
+                            }
                             ++i;
                         }
                     }
@@ -142,6 +151,8 @@ public class ItemHelper {
         }
         return i >= 4;
     }
+
+
 
     public static boolean isFullEquipped(LivingEntity living){
         int i = 0;
