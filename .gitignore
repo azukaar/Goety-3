@@ -41,3 +41,5 @@ initialize_client_list.txt
 water_fix_list.txt
 
 .env
+.vscode/
+compile_errors.txt
