@@ -811,7 +811,7 @@ public abstract class AbstractNecromancer extends AbstractSkeletonServant implem
 
         public boolean canUse() {
             Predicate<Entity> predicate = entity -> entity.isAlive() && entity instanceof IOwned owned
-                    && owned.getTrueOwner() == AbstractNecromancer.this;
+                    && owned.getOwnerId() != null && owned.getOwnerId().equals(AbstractNecromancer.this.getUUID());
             int i = AbstractNecromancer.this.level().getEntitiesOfClass(LivingEntity.class,
                     AbstractNecromancer.this.getBoundingBox().inflate(64.0D, 16.0D, 64.0D), predicate).size();
             return super.canUse() && i < 7;
@@ -820,7 +820,7 @@ public abstract class AbstractNecromancer extends AbstractSkeletonServant implem
         protected void castSpell() {
             if (AbstractNecromancer.this.level() instanceof ServerLevel serverLevel) {
                 Predicate<Entity> predicate = entity -> entity.isAlive() && entity instanceof IOwned owned
-                        && owned.getTrueOwner() == AbstractNecromancer.this;
+                        && owned.getOwnerId() != null && owned.getOwnerId().equals(AbstractNecromancer.this.getUUID());
                 int i = AbstractNecromancer.this.level()
                         .getEntitiesOfClass(LivingEntity.class,
                                 AbstractNecromancer.this.getBoundingBox().inflate(64.0D, 16.0D, 64.0D), predicate)

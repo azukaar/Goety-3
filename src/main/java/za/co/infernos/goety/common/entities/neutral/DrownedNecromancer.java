@@ -590,7 +590,7 @@ public class DrownedNecromancer extends AbstractNecromancer {
     public class SummonServantSpell extends SummoningSpellGoal {
 
         public boolean canUse() {
-            Predicate<Entity> predicate = entity -> entity.isAlive() && entity instanceof IOwned owned && owned.getTrueOwner() instanceof DrownedNecromancer;
+            Predicate<Entity> predicate = entity -> entity.isAlive() && entity instanceof IOwned owned && owned.getOwnerId() != null && owned.getOwnerId().equals(DrownedNecromancer.this.getUUID());
             int i = DrownedNecromancer.this.level().getEntitiesOfClass(LivingEntity.class, DrownedNecromancer.this.getBoundingBox().inflate(64.0D, 16.0D, 64.0D)
                     , predicate).size();
             return super.canUse() && i < 10;
@@ -901,7 +901,11 @@ public class DrownedNecromancer extends AbstractNecromancer {
             if (this.spellTime == 0) {
                 DrownedNecromancer.this.playSound(ModSounds.DROWNED_NECROMANCER_AMBIENT.get(), 2.0F, DrownedNecromancer.this.getVoicePitch());
                 DrownedNecromancer.this.setNecromancerSpellType(NecromancerSpellType.NONE);
+                Predicate<Entity> predicate = entity -> entity.isAlive() && entity instanceof IOwned owned && owned.getOwnerId() != null && owned.getOwnerId().equals(DrownedNecromancer.this.getUUID());
+                int currentSummons = DrownedNecromancer.this.level().getEntitiesOfClass(LivingEntity.class, DrownedNecromancer.this.getBoundingBox().inflate(64.0D, 16.0D, 64.0D), predicate).size();
+                int remaining = Math.max(0, 10 - currentSummons);
                 int i = 2 + DrownedNecromancer.this.level().random.nextInt(4);
+                i = Math.min(i, remaining);
                 for (int i1 = 0; i1 < i; ++i1) {
                     if (DrownedNecromancer.this.level() instanceof ServerLevel serverLevel) {
                         Summoned summonedentity = DrownedNecromancer.this.getSummon();
