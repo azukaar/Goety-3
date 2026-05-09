@@ -89,6 +89,12 @@ public class TotemFinder {
                 }
             }
         }
+        if (foundStack.isEmpty()) {
+            ItemStack curioStack = CuriosFinder.findCurio(playerEntity, TotemFinder::isTotem);
+            if (!curioStack.isEmpty()) {
+                foundStack = curioStack;
+            }
+        }
         return foundStack;
     }
 }

@@ -16,6 +16,17 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
+import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
+import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
+import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
+import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
+import za.co.infernos.goety.client.gui.overlay.CurrentFocusGui;
+import za.co.infernos.goety.client.gui.screen.inventory.BrewBagScreen;
+import za.co.infernos.goety.client.gui.screen.inventory.DarkAnvilScreen;
+import za.co.infernos.goety.client.gui.screen.inventory.FocusBagScreen;
+import za.co.infernos.goety.client.gui.screen.inventory.FocusPackScreen;
+import za.co.infernos.goety.client.gui.screen.inventory.SoulItemScreen;
+import za.co.infernos.goety.client.inventory.container.ModContainerType;
 
 @EventBusSubscriber(modid = Goety.MOD_ID, bus = EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
 public class ClientInitEvents {
@@ -23,8 +34,26 @@ public class ClientInitEvents {
     public static void clientInit(FMLClientSetupEvent event) {
         event.enqueueWork(() -> {
             CuriosRenderer.register();
-            ModKeybindings.init();
         });
+    }
+
+    @SubscribeEvent
+    public static void registerKeyMappings(RegisterKeyMappingsEvent event) {
+        ModKeybindings.register(event);
+    }
+
+    @SubscribeEvent
+    public static void registerGuiLayers(RegisterGuiLayersEvent event) {
+        event.registerAbove(VanillaGuiLayers.EXPERIENCE_BAR, CurrentFocusGui.LAYER_ID, CurrentFocusGui.LAYER);
+    }
+
+    @SubscribeEvent
+    public static void registerMenuScreens(RegisterMenuScreensEvent event) {
+        event.register(ModContainerType.WAND.get(), SoulItemScreen::new);
+        event.register(ModContainerType.FOCUS_BAG.get(), FocusBagScreen::new);
+        event.register(ModContainerType.FOCUS_PACK.get(), FocusPackScreen::new);
+        event.register(ModContainerType.BREW_BAG.get(), BrewBagScreen::new);
+        event.register(ModContainerType.DARK_ANVIL.get(), DarkAnvilScreen::new);
     }
 
     @SubscribeEvent
