@@ -872,11 +872,8 @@ public class DarkWand extends Item implements IWand {
         tooltip.add(Component.translatable(item.getDescriptionId() + ".info").withStyle(ChatFormatting.GRAY));
     }
 
-    @Override
-    public void initializeClient(Consumer<IClientItemExtensions> consumer) {
-        super.initializeClient(consumer);
-        consumer.accept(new DarkWandClient());
-    }
+    // Client extensions are registered via RegisterClientExtensionsEvent in ClientSideInit;
+    // do not also override initializeClient (deprecated in NeoForge 1.21) or registration runs twice.
 
     // ------------------------------------------------------------------
     // Phase 5: client-side visuals

@@ -22,6 +22,7 @@ import za.co.infernos.goety.common.network.client.CExtractPotionKeyPacket;
 import za.co.infernos.goety.common.network.client.CMagnetPacket;
 import za.co.infernos.goety.common.network.client.CMultiJumpPacket;
 import za.co.infernos.goety.common.network.client.CRavagerRoarPacket;
+import za.co.infernos.goety.common.network.client.CScytheStrikePacket;
 import za.co.infernos.goety.common.network.client.CSetLichMode;
 import za.co.infernos.goety.common.network.client.CSetLichNightVisionMode;
 import za.co.infernos.goety.common.network.client.CStopAttackPacket;
@@ -29,6 +30,11 @@ import za.co.infernos.goety.common.network.client.CTargetPlayerPacket;
 import za.co.infernos.goety.common.network.client.CWandKeyPacket;
 import za.co.infernos.goety.common.network.client.CWitchRobePacket;
 import za.co.infernos.goety.common.network.client.brew.CBrewBagKeyPacket;
+import za.co.infernos.goety.common.network.client.focus.CAddFocusToBagPacket;
+import za.co.infernos.goety.common.network.client.focus.CAddFocusToInventoryPacket;
+import za.co.infernos.goety.common.network.client.focus.CSwapFocusPacket;
+import za.co.infernos.goety.common.network.client.focus.CSwapFocusTwoPacket;
+import za.co.infernos.goety.common.network.server.SFocusCooldownPacket;
 import za.co.infernos.goety.common.network.server.SPlayEntitySoundPacket;
 import za.co.infernos.goety.common.network.server.SPlayPlayerSoundPacket;
 
@@ -59,9 +65,15 @@ public class ModNetwork {
         registrar.playToServer(CDismissServantsPacket.TYPE, CDismissServantsPacket.STREAM_CODEC, CDismissServantsPacket::handle);
         registrar.playToServer(CTargetPlayerPacket.TYPE, CTargetPlayerPacket.STREAM_CODEC, CTargetPlayerPacket::handle);
         registrar.playToServer(CMultiJumpPacket.TYPE, CMultiJumpPacket.STREAM_CODEC, CMultiJumpPacket::handle);
+        registrar.playToServer(CScytheStrikePacket.TYPE, CScytheStrikePacket.STREAM_CODEC, CScytheStrikePacket::handle);
+        registrar.playToServer(CAddFocusToBagPacket.TYPE, CAddFocusToBagPacket.STREAM_CODEC, CAddFocusToBagPacket::handle);
+        registrar.playToServer(CAddFocusToInventoryPacket.TYPE, CAddFocusToInventoryPacket.STREAM_CODEC, CAddFocusToInventoryPacket::handle);
+        registrar.playToServer(CSwapFocusPacket.TYPE, CSwapFocusPacket.STREAM_CODEC, CSwapFocusPacket::handle);
+        registrar.playToServer(CSwapFocusTwoPacket.TYPE, CSwapFocusTwoPacket.STREAM_CODEC, CSwapFocusTwoPacket::handle);
 
         // Clientbound (server -> client)
         registrar.playToClient(SEUpdatePacket.TYPE, SEUpdatePacket.STREAM_CODEC, SEUpdatePacket::handle);
+        registrar.playToClient(SFocusCooldownPacket.TYPE, SFocusCooldownPacket.STREAM_CODEC, SFocusCooldownPacket::handle);
         registrar.playToClient(LichUpdatePacket.TYPE, LichUpdatePacket.STREAM_CODEC, LichUpdatePacket::handle);
         registrar.playToClient(MiscCapUpdatePacket.TYPE, MiscCapUpdatePacket.STREAM_CODEC, MiscCapUpdatePacket::handle);
         registrar.playToClient(WBUpdatePacket.TYPE, WBUpdatePacket.STREAM_CODEC, WBUpdatePacket::handle);
