@@ -8,10 +8,11 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.item.TooltipFlag;
+import top.theillusivec4.curios.api.type.capability.ICurioItem;
 
 import java.util.List;
 
-public class TotemOfSouls extends Item implements ITotem {
+public class TotemOfSouls extends Item implements ITotem, ICurioItem {
     public int maxSouls;
 
     public TotemOfSouls(int maxSouls) {

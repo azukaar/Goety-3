@@ -114,7 +114,6 @@ import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.fml.event.lifecycle.FMLLoadCompleteEvent;
 import net.neoforged.fml.event.lifecycle.InterModEnqueueEvent;
-import net.neoforged.fml.loading.FMLPaths;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import za.co.infernos.goety.compat.legacy.neoforge.registries.RegistryObject;
@@ -172,15 +171,13 @@ public class Goety {
                 modEventBus.addListener(EventPriority.LOWEST, this::finalLoad);
                 modEventBus.addListener(ModNetwork::registerPayloadHandlers);
 
-                Path configDir = getOrCreateDirectory(FMLPaths.CONFIGDIR.get().resolve("goety"), "goety");
-                
-                // Load config files - creates config files if they don't exist and loads them
-                za.co.infernos.goety.config.MainConfig.loadConfig(za.co.infernos.goety.config.MainConfig.SPEC, configDir.resolve("main.toml").toString());
-                za.co.infernos.goety.config.MobsConfig.loadConfig(za.co.infernos.goety.config.MobsConfig.SPEC, configDir.resolve("mobs.toml").toString());
-                za.co.infernos.goety.config.SpellConfig.loadConfig(za.co.infernos.goety.config.SpellConfig.SPEC, configDir.resolve("spells.toml").toString());
-                za.co.infernos.goety.config.ItemConfig.loadConfig(za.co.infernos.goety.config.ItemConfig.SPEC, configDir.resolve("items.toml").toString());
-                za.co.infernos.goety.config.BrewConfig.loadConfig(za.co.infernos.goety.config.BrewConfig.SPEC, configDir.resolve("brews.toml").toString());
-                za.co.infernos.goety.config.AttributesConfig.loadConfig(za.co.infernos.goety.config.AttributesConfig.SPEC, configDir.resolve("attributes.toml").toString());
+                net.neoforged.fml.ModContainer container = ModLoadingContext.get().getActiveContainer();
+                container.registerConfig(ModConfig.Type.COMMON, za.co.infernos.goety.config.MainConfig.SPEC, "goety/main.toml");
+                container.registerConfig(ModConfig.Type.COMMON, za.co.infernos.goety.config.MobsConfig.SPEC, "goety/mobs.toml");
+                container.registerConfig(ModConfig.Type.COMMON, za.co.infernos.goety.config.SpellConfig.SPEC, "goety/spells.toml");
+                container.registerConfig(ModConfig.Type.COMMON, za.co.infernos.goety.config.ItemConfig.SPEC, "goety/items.toml");
+                container.registerConfig(ModConfig.Type.COMMON, za.co.infernos.goety.config.BrewConfig.SPEC, "goety/brews.toml");
+                container.registerConfig(ModConfig.Type.COMMON, za.co.infernos.goety.config.AttributesConfig.SPEC, "goety/attributes.toml");
 
                 final DeferredRegister<MapCodec<? extends BiomeModifier>> biomeModifiers = DeferredRegister
                                 .create(NeoForgeRegistries.Keys.BIOME_MODIFIER_SERIALIZERS, Goety.MOD_ID);
