@@ -1,8 +1,14 @@
 package za.co.infernos.goety.init;
 
 import za.co.infernos.goety.Goety;
+import net.minecraft.client.renderer.item.ItemProperties;
+import net.minecraft.resources.ResourceLocation;
 import za.co.infernos.goety.client.render.*;
 import za.co.infernos.goety.client.render.block.ArcaRenderer;
+import za.co.infernos.goety.client.render.block.CursedInfuserRenderer;
+import za.co.infernos.goety.common.blocks.entities.ModBlockEntities;
+import za.co.infernos.goety.common.items.FlameCaptureItem;
+import za.co.infernos.goety.common.items.ModItems;
 import za.co.infernos.goety.client.render.block.BlackCrystalRenderer;
 import za.co.infernos.goety.client.render.block.LoftyChestRenderer;
 import za.co.infernos.goety.client.render.block.ModBlockLayer;
@@ -34,6 +40,10 @@ public class ClientInitEvents {
     public static void clientInit(FMLClientSetupEvent event) {
         event.enqueueWork(() -> {
             CuriosRenderer.register();
+            ItemProperties.register(
+                    ModItems.FLAME_CAPTURE.get(),
+                    ResourceLocation.fromNamespaceAndPath(Goety.MOD_ID, "capture"),
+                    (stack, level, entity, seed) -> FlameCaptureItem.hasEntity(stack) ? 1.0F : 0.0F);
         });
     }
 
@@ -225,8 +235,15 @@ public class ClientInitEvents {
 
     @SubscribeEvent
     public static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
+        // Block entity renderers
+        try {
+            event.registerBlockEntityRenderer(ModBlockEntities.CURSED_INFUSER.get(), CursedInfuserRenderer::new);
+        } catch (Exception e) {
+            Goety.LOGGER.error("Failed to register CursedInfuser renderer", e);
+        }
+
         // Register all entity renderers - using try-catch for each to handle missing renderers gracefully
-        
+
         // Register Wraith and IceBouquet (already working)
         try {
             event.registerEntityRenderer(ModEntityType.WRAITH.get(), WraithRenderer::new);

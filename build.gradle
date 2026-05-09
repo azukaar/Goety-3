@@ -107,10 +107,10 @@ dependencies {
     // which blocks compilation. We'll re-enable proper AP/remapping once the mod builds cleanly.
     compileOnly 'org.spongepowered:mixin:0.8.5'
 
-    //JEI - Commented out until 1.21.1 version is available
-    //compileOnly("mezz.jei:jei-${minecraft_version}-common-api:${jei_version}")
-    //compileOnly("mezz.jei:jei-${minecraft_version}-neoforge-api:${jei_version}")
-    //runtimeOnly("mezz.jei:jei-${minecraft_version}-neoforge:${jei_version}")
+    //JEI
+    compileOnly("mezz.jei:jei-${minecraft_version}-common-api:${jei_version}")
+    compileOnly("mezz.jei:jei-${minecraft_version}-neoforge-api:${jei_version}")
+    runtimeOnly("mezz.jei:jei-${minecraft_version}-neoforge:${jei_version}")
 
     //Curios (required)
     compileOnly("top.theillusivec4.curios:curios-neoforge:${curio_version}+${minecraft_version}:api")
