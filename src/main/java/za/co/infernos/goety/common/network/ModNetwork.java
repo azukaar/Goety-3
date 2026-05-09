@@ -1,11 +1,19 @@
 package za.co.infernos.goety.common.network;
 
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.chunk.LevelChunk;
+import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
+import za.co.infernos.goety.common.capabilities.lichdom.LichUpdatePacket;
+import za.co.infernos.goety.common.capabilities.misc.MiscCapUpdatePacket;
+import za.co.infernos.goety.common.capabilities.soulenergy.SEUpdatePacket;
+import za.co.infernos.goety.common.capabilities.witchbarter.WBUpdatePacket;
 import za.co.infernos.goety.common.network.client.CActivateCurioKeyPacket;
 import za.co.infernos.goety.common.network.client.CAutoRideablePacket;
 import za.co.infernos.goety.common.network.client.CBagKeyPacket;
@@ -21,11 +29,13 @@ import za.co.infernos.goety.common.network.client.CTargetPlayerPacket;
 import za.co.infernos.goety.common.network.client.CWandKeyPacket;
 import za.co.infernos.goety.common.network.client.CWitchRobePacket;
 import za.co.infernos.goety.common.network.client.brew.CBrewBagKeyPacket;
+import za.co.infernos.goety.common.network.server.SPlayEntitySoundPacket;
+import za.co.infernos.goety.common.network.server.SPlayPlayerSoundPacket;
 
 /**
  * NeoForge 1.21+ networking uses the payload system (CustomPacketPayload + StreamCodec) registered via
- * {@link RegisterPayloadHandlersEvent}. Use {@link net.neoforged.neoforge.network.PacketDistributor} at
- * call sites to actually send payloads.
+ * {@link RegisterPayloadHandlersEvent}. This class registers all Goety payloads and exposes
+ * convenience send helpers backed by {@link PacketDistributor}.
  */
 public class ModNetwork {
     public static final String VERSION = "1";
@@ -33,6 +43,7 @@ public class ModNetwork {
     public static void registerPayloadHandlers(RegisterPayloadHandlersEvent event) {
         PayloadRegistrar registrar = event.registrar(VERSION);
 
+        // Serverbound (client -> server) keypackets
         registrar.playToServer(CWandKeyPacket.TYPE, CWandKeyPacket.STREAM_CODEC, CWandKeyPacket::handle);
         registrar.playToServer(CBagKeyPacket.TYPE, CBagKeyPacket.STREAM_CODEC, CBagKeyPacket::handle);
         registrar.playToServer(CWitchRobePacket.TYPE, CWitchRobePacket.STREAM_CODEC, CWitchRobePacket::handle);
@@ -48,38 +59,61 @@ public class ModNetwork {
         registrar.playToServer(CDismissServantsPacket.TYPE, CDismissServantsPacket.STREAM_CODEC, CDismissServantsPacket::handle);
         registrar.playToServer(CTargetPlayerPacket.TYPE, CTargetPlayerPacket.STREAM_CODEC, CTargetPlayerPacket::handle);
         registrar.playToServer(CMultiJumpPacket.TYPE, CMultiJumpPacket.STREAM_CODEC, CMultiJumpPacket::handle);
+
+        // Clientbound (server -> client)
+        registrar.playToClient(SEUpdatePacket.TYPE, SEUpdatePacket.STREAM_CODEC, SEUpdatePacket::handle);
+        registrar.playToClient(LichUpdatePacket.TYPE, LichUpdatePacket.STREAM_CODEC, LichUpdatePacket::handle);
+        registrar.playToClient(MiscCapUpdatePacket.TYPE, MiscCapUpdatePacket.STREAM_CODEC, MiscCapUpdatePacket::handle);
+        registrar.playToClient(WBUpdatePacket.TYPE, WBUpdatePacket.STREAM_CODEC, WBUpdatePacket::handle);
+        registrar.playToClient(SPlayPlayerSoundPacket.TYPE, SPlayPlayerSoundPacket.STREAM_CODEC, SPlayPlayerSoundPacket::handle);
+        registrar.playToClient(SPlayEntitySoundPacket.TYPE, SPlayEntitySoundPacket.STREAM_CODEC, SPlayEntitySoundPacket::handle);
     }
 
     // ---------------------------------------------------------------------
-    // Temporary compatibility helpers while porting to NeoForge payload networking.
-    // These keep the project compiling; they will be replaced with real payload registration + PacketDistributor usage.
+    // Send helpers — PacketDistributor wrappers used across the codebase.
+    // Caller must pass a registered CustomPacketPayload; passing anything
+    // else is a programming error.
     // ---------------------------------------------------------------------
 
     public static void sendTo(Player player, Object msg) {
-        // TODO (NeoForge 1.21): clientbound payload to a specific player
+        if (player instanceof ServerPlayer sp && msg instanceof CustomPacketPayload payload) {
+            PacketDistributor.sendToPlayer(sp, payload);
+        }
     }
 
     public static void sendToServer(Object msg) {
-        // TODO (NeoForge 1.21): serverbound payload
+        if (msg instanceof CustomPacketPayload payload) {
+            PacketDistributor.sendToServer(payload);
+        }
     }
 
     public static void sentToTrackingChunk(LevelChunk chunk, Object msg) {
-        // TODO (NeoForge 1.21): payload to players tracking a chunk
+        if (msg instanceof CustomPacketPayload payload && chunk.getLevel() instanceof ServerLevel sl) {
+            PacketDistributor.sendToPlayersTrackingChunk(sl, chunk.getPos(), payload);
+        }
     }
 
     public static void sentToTrackingEntity(Entity entity, Object msg) {
-        // TODO (NeoForge 1.21): payload to players tracking an entity
+        if (msg instanceof CustomPacketPayload payload && !(entity.level() instanceof Level lvl ? lvl.isClientSide : true)) {
+            PacketDistributor.sendToPlayersTrackingEntity(entity, payload);
+        }
     }
 
     public static void sentToTrackingEntityAndPlayer(Entity entity, Object msg) {
-        // TODO (NeoForge 1.21): payload to players tracking an entity + self
+        if (msg instanceof CustomPacketPayload payload && !(entity.level() instanceof Level lvl ? lvl.isClientSide : true)) {
+            PacketDistributor.sendToPlayersTrackingEntityAndSelf(entity, payload);
+        }
     }
 
     public static void sendToALL(Object msg) {
-        // TODO (NeoForge 1.21): payload to all players
+        if (msg instanceof CustomPacketPayload payload) {
+            PacketDistributor.sendToAllPlayers(payload);
+        }
     }
 
     public static void sendToClient(ServerPlayer player, Object msg) {
-        // TODO (NeoForge 1.21): payload to client for given player
+        if (msg instanceof CustomPacketPayload payload) {
+            PacketDistributor.sendToPlayer(player, payload);
+        }
     }
 }
